@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, type Ref, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
@@ -10,21 +10,22 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleHelp,
+  Flame,
   FolderTree,
-  GitBranch,
   LayoutGrid,
   List,
   MinusCircle,
   Package,
   RotateCcw,
   Loader2,
+  PackageSearch,
   Search,
   ShoppingBag,
+  Star,
   Sparkles,
   X,
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -49,7 +50,13 @@ import { stockMatchesDraftSnapshot, type ProductSelectionResult } from './Produc
 import { cn } from '@/lib/utils';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { stockApi } from '@/features/stock/api/stock-api';
-import type { StockRelationDto } from '@/features/stock/types';
+import type { StockGetDto, StockRelationDto } from '@/features/stock/types';
+import {
+  fetchPricingRuleCampaignStockData,
+  type PricingRuleCampaignLineDisplay,
+} from '@/features/pricing-rule/utils/fetch-pricing-rule-campaign-stock-codes';
+import type { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import { formatSystemCurrency, getSystemCurrency } from '@/lib/system-settings';
 import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } from './RelatedStocksSelectionDialog';
 
 interface CatalogStockSelectDialogProps {
@@ -61,9 +68,158 @@ interface CatalogStockSelectDialogProps {
   initialSelectedResults?: ProductSelectionResult[];
   /** Belgedeki mevcut satır stokları — “Satırda” rozeti */
   existingLineStockMarkers?: ProductSelectionResult[];
+  pricingRuleType: PricingRuleType;
+  pricingRuleCustomerId?: number | null;
+  pricingRuleErpCustomerCode?: string | null;
 }
 
+function mapStockGetToCatalogItem(stock: StockGetDto): CatalogStockItemDto {
+  const primary = stock.stockImages?.find((img) => img.isPrimary) ?? stock.stockImages?.[0];
+  return {
+    id: stock.id,
+    stockCategoryId: 0,
+    stockId: stock.id,
+    erpStockCode: stock.erpStockCode ?? '',
+    stockName: stock.stockName ?? '',
+    unit: stock.unit,
+    grupKodu: stock.grupKodu,
+    grupAdi: stock.grupAdi,
+    kod1: stock.kod1,
+    kod1Adi: stock.kod1Adi,
+    kod2: stock.kod2,
+    kod2Adi: stock.kod2Adi,
+    kod3: stock.kod3,
+    kod3Adi: stock.kod3Adi,
+    isPrimaryCategory: true,
+    isFavorite: false,
+    favoriteId: null,
+    imageUrl: primary?.filePath ?? null,
+  };
+}
+
+function normalizeCampaignCurrency(currencyCode: string | number): string {
+  const raw = String(currencyCode ?? '').trim();
+  if (raw === '' || /^\d+$/.test(raw)) {
+    return getSystemCurrency();
+  }
+  return raw.length >= 3 ? raw.slice(0, 3).toUpperCase() : getSystemCurrency();
+}
+
+function deriveReferenceUnitPriceFromDiscountedNet(
+  net: number,
+  r1: number,
+  r2: number,
+  r3: number,
+): number | null {
+  let denom = 1;
+  for (const r of [r1, r2, r3]) {
+    if (r > 0.0001) {
+      const f = 1 - r / 100;
+      if (f <= 0.001 || f >= 1) {
+        return null;
+      }
+      denom *= f;
+    }
+  }
+  if (denom >= 0.999) {
+    return null;
+  }
+  const ref = net / denom;
+  if (!Number.isFinite(ref) || ref <= net) {
+    return null;
+  }
+  return ref;
+}
+
+function formatDiscountRateChip(rate: number): string {
+  const rounded =
+    Math.abs(rate - Math.round(rate)) < 0.05 ? Math.round(rate) : Math.round(rate * 10) / 10;
+  return `%${rounded}`;
+}
+
+function formatPositiveDiscountRatesSummary(line: PricingRuleCampaignLineDisplay): string {
+  const parts: string[] = [];
+  for (const r of [line.discountRate1, line.discountRate2, line.discountRate3]) {
+    if (r > 0.0001) {
+      parts.push(formatDiscountRateChip(r));
+    }
+  }
+  return parts.join(' + ');
+}
+
+type CatalogCampaignPricingRowProps = {
+  line: PricingRuleCampaignLineDisplay | undefined;
+};
+
+function CatalogCampaignPricingRow({ line }: CatalogCampaignPricingRowProps): ReactElement | null {
+  const { t } = useTranslation('common');
+  if (!line) {
+    return null;
+  }
+  const currency = normalizeCampaignCurrency(line.currencyCode);
+  const fixed = line.fixedUnitPrice;
+  const ratesSummary = formatPositiveDiscountRatesSummary(line);
+  const hasPositiveRates = ratesSummary.length > 0;
+  const refPrice =
+    fixed != null && Number.isFinite(fixed)
+      ? deriveReferenceUnitPriceFromDiscountedNet(
+          fixed,
+          line.discountRate1,
+          line.discountRate2,
+          line.discountRate3,
+        )
+      : null;
+  const showFixed = fixed != null && Number.isFinite(fixed);
+
+  if (!showFixed && !hasPositiveRates) {
+    return null;
+  }
+
+  return (
+    <div
+      className={cn(
+        'relative mt-1 w-full max-w-full text-[11px] leading-snug',
+        hasPositiveRates && 'pr-8',
+      )}
+    >
+      {hasPositiveRates ? (
+        <span className="absolute right-0 top-0 z-[1] rounded-sm border border-red-600/35 bg-red-600/[0.09] px-[3px] py-px text-[6.5px] font-bold uppercase leading-none tracking-wide text-red-700 shadow-sm dark:border-red-500/30 dark:bg-red-950/50 dark:text-red-300">
+          {t('catalogStockPicker.campaignPromoLabel')}
+        </span>
+      ) : null}
+      {(refPrice != null && fixed != null) || showFixed ? (
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+          {refPrice != null && fixed != null ? (
+            <span className="text-slate-400 line-through decoration-slate-400/80 dark:text-slate-500">
+              {formatSystemCurrency(refPrice, currency)}
+            </span>
+          ) : null}
+          {showFixed ? (
+            <span className="font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+              {formatSystemCurrency(fixed!, currency)}
+            </span>
+          ) : null}
+        </div>
+      ) : null}
+      {hasPositiveRates ? (
+        <div className="mt-1 flex max-w-full">
+          <span className="inline-flex max-w-full shrink items-center rounded-full border border-red-500/45 bg-red-500/10 px-1.5 py-0.5 text-[9px] font-semibold leading-tight text-red-900 dark:border-red-400/40 dark:bg-red-950/35 dark:text-red-100">
+            {t('catalogStockPicker.campaignDiscountBadge', { rates: ratesSummary })}
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+type CampaignStocksQueryData = {
+  items: CatalogStockItemDto[];
+  pricingByCodeLower: Record<string, PricingRuleCampaignLineDisplay>;
+};
+
 const PAGE_SIZE = 24;
+
+type CatalogStockBrowseMode = 'category' | 'campaign' | 'favorites';
 
 type HorizontalScrollRowProps = {
   syncKey?: string | number;
@@ -157,193 +313,6 @@ function HorizontalScrollRow({
   );
 }
 
-const PREVIEW_CHIP_CLASS =
-  'max-w-[min(140px,38vw)] truncate rounded-md border border-slate-400/55 bg-slate-50 px-1.5 py-0.5 text-left text-[9px] font-semibold text-slate-900 shadow-sm transition-colors hover:border-pink-500/55 hover:bg-pink-50 hover:text-pink-900 dark:border-white/[0.08] dark:bg-white/[0.04] dark:font-medium dark:text-slate-300 dark:shadow-none dark:hover:border-pink-400/40 dark:hover:bg-pink-500/15 dark:hover:text-pink-100';
-
-interface InlinePreviewDepthProps {
-  catalogId: number;
-  dialogOpen: boolean;
-  chainPrefix: CatalogCategoryNodeDto[];
-  depth: number;
-  maxDepth: number;
-  rootExpanded: boolean;
-  onNavigateChain: (chain: CatalogCategoryNodeDto[]) => void;
-}
-
-function InlinePreviewDepth({
-  catalogId,
-  dialogOpen,
-  chainPrefix,
-  depth,
-  maxDepth,
-  rootExpanded,
-  onNavigateChain,
-}: InlinePreviewDepthProps): ReactElement | null {
-  const parent = chainPrefix[chainPrefix.length - 1];
-  const childrenQuery = useQuery({
-    queryKey: ['catalog-stock-picker-child-preview', catalogId, parent.catalogCategoryId],
-    queryFn: (): Promise<CatalogCategoryNodeDto[]> =>
-      categoryDefinitionsApi.getCatalogCategories(catalogId, parent.catalogCategoryId),
-    enabled: dialogOpen && rootExpanded && parent.hasChildren && depth <= maxDepth,
-    staleTime: 120_000,
-  });
-  const list = childrenQuery.data ?? [];
-
-  if (!rootExpanded || depth > maxDepth || !parent.hasChildren) {
-    return null;
-  }
-
-  return (
-    <div
-      className={cn(
-        'mt-1 space-y-1',
-        depth >= 1 && 'ml-2 border-l border-pink-400/45 pl-2 dark:border-pink-500/15',
-      )}
-    >
-      <div className="text-[8px] font-semibold uppercase tracking-wide text-slate-700 dark:text-slate-500">
-        <span className="truncate">{parent.name}</span>
-      </div>
-      <div className="flex min-h-[1.1rem] flex-wrap gap-1">
-        {childrenQuery.isPending || (childrenQuery.isFetching && list.length === 0) ? (
-          <span className="text-[9px] font-medium text-slate-600 dark:text-slate-500">…</span>
-        ) : list.length > 0 ? (
-          list.map((node) => (
-            <button
-              key={node.catalogCategoryId}
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onNavigateChain([...chainPrefix, node]);
-              }}
-              title={node.fullPath ?? node.name}
-              className={PREVIEW_CHIP_CLASS}
-            >
-              {node.name}
-            </button>
-          ))
-        ) : (
-          <span className="text-[9px] font-medium text-slate-600 dark:text-slate-500">—</span>
-        )}
-      </div>
-      {list
-        .filter((n) => n.hasChildren)
-        .map((n) => (
-          <InlinePreviewDepth
-            key={n.catalogCategoryId}
-            catalogId={catalogId}
-            dialogOpen={dialogOpen}
-            chainPrefix={[...chainPrefix, n]}
-            depth={depth + 1}
-            maxDepth={maxDepth}
-            rootExpanded={rootExpanded}
-            onNavigateChain={onNavigateChain}
-          />
-        ))}
-    </div>
-  );
-}
-
-interface CategoryInlinePreviewTreeProps {
-  row: CatalogCategoryNodeDto;
-  catalogId: number;
-  dialogOpen: boolean;
-  onNavigateChain: (chain: CatalogCategoryNodeDto[]) => void;
-}
-
-function CategoryInlinePreviewTree({
-  row,
-  catalogId,
-  dialogOpen,
-  onNavigateChain,
-}: CategoryInlinePreviewTreeProps): ReactElement | null {
-  const { t } = useTranslation('common');
-  const [treeExpanded, setTreeExpanded] = useState(false);
-  const childPreviewQuery = useQuery({
-    queryKey: ['catalog-stock-picker-child-preview', catalogId, row.catalogCategoryId],
-    queryFn: (): Promise<CatalogCategoryNodeDto[]> =>
-      categoryDefinitionsApi.getCatalogCategories(catalogId, row.catalogCategoryId),
-    enabled: dialogOpen && row.hasChildren,
-    staleTime: 120_000,
-  });
-  const list = childPreviewQuery.data ?? [];
-
-  if (!row.hasChildren) {
-    return null;
-  }
-
-  return (
-    <div className="border-t border-dashed border-slate-300/90 px-2 py-1.5 dark:border-white/[0.07] sm:px-2.5">
-      <div className="flex items-center gap-1.5">
-        <button
-          type="button"
-          aria-expanded={treeExpanded}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            setTreeExpanded((v) => !v);
-          }}
-          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-slate-400/60 bg-slate-50 text-slate-700 transition-colors hover:border-pink-400/70 hover:bg-pink-50 hover:text-pink-700 dark:border-white/10 dark:bg-transparent dark:text-slate-400 dark:hover:border-pink-500/30 dark:hover:bg-pink-500/10 dark:hover:text-pink-200"
-          title={
-            treeExpanded
-              ? t('catalogStockPicker.collapseNestedPreview')
-              : t('catalogStockPicker.expandNestedPreview')
-          }
-        >
-          <ChevronDown
-            className={cn('h-3.5 w-3.5 transition-transform duration-200', treeExpanded && 'rotate-180')}
-            aria-hidden
-          />
-        </button>
-        <div className="min-w-0 flex-1 text-[8px] font-semibold uppercase tracking-[0.16em] text-slate-700 dark:text-slate-500">
-          {t('catalogStockPicker.childBranchPreviewLabel')}
-        </div>
-      </div>
-      <div className="mt-1 flex min-h-[1.25rem] flex-wrap items-center gap-1">
-        {childPreviewQuery.isPending || (childPreviewQuery.isFetching && list.length === 0) ? (
-          <span className="text-[9px] font-medium text-slate-600 dark:text-slate-500">…</span>
-        ) : list.length > 0 ? (
-          <>
-            {list.map((child) => (
-              <button
-                key={child.catalogCategoryId}
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onNavigateChain([row, child]);
-                }}
-                title={child.fullPath ?? child.name}
-                className={PREVIEW_CHIP_CLASS}
-              >
-                {child.name}
-              </button>
-            ))}
-          </>
-        ) : (
-          <span className="text-[9px] font-medium text-slate-600 dark:text-slate-500">—</span>
-        )}
-      </div>
-      {treeExpanded && list.length > 0
-        ? list
-            .filter((c) => c.hasChildren)
-            .map((c) => (
-              <InlinePreviewDepth
-                key={c.catalogCategoryId}
-                catalogId={catalogId}
-                dialogOpen={dialogOpen}
-                chainPrefix={[row, c]}
-                depth={1}
-                maxDepth={5}
-                rootExpanded={treeExpanded}
-                onNavigateChain={onNavigateChain}
-              />
-            ))
-        : null}
-    </div>
-  );
-}
-
 export function CatalogStockSelectDialog({
   open,
   onOpenChange,
@@ -352,6 +321,9 @@ export function CatalogStockSelectDialog({
   multiSelect = false,
   initialSelectedResults = [],
   existingLineStockMarkers = [],
+  pricingRuleType,
+  pricingRuleCustomerId,
+  pricingRuleErpCustomerCode,
 }: CatalogStockSelectDialogProps): ReactElement {
   const { t } = useTranslation('common');
   const [selectedCatalog, setSelectedCatalog] = useState<ProductCatalogDto | null>(null);
@@ -366,17 +338,18 @@ export function CatalogStockSelectDialog({
   const [relatedDialogRelations, setRelatedDialogRelations] = useState<StockRelationDto[]>([]);
   const [hierarchyInfoOpen, setHierarchyInfoOpen] = useState(false);
   const [helperStripOpen, setHelperStripOpen] = useState(false);
-  /** C: kompakt tablo satırları vs kartlar */
   const [stockLayoutMode, setStockLayoutMode] = useState<'cards' | 'list'>('list');
-  /** Yalnızca max-lg: dar ekranda accordion; xl+ iki sütun düzeni değişmez */
+  const [stockBrowseMode, setStockBrowseMode] = useState<CatalogStockBrowseMode>('category');
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(true);
   const [mobileStocksOpen, setMobileStocksOpen] = useState(true);
   const [categoryClientSearch, setCategoryClientSearch] = useState('');
   const [categorySearchShowBranches, setCategorySearchShowBranches] = useState(false);
-  const [categoryPanelLayout, setCategoryPanelLayout] = useState<'rich' | 'levelList'>('rich');
+  const [expandedCatalogIds, setExpandedCatalogIds] = useState<Set<number>>(() => new Set());
+  const [catalogPaths, setCatalogPaths] = useState<Record<number, CatalogCategoryNodeDto[]>>({});
   const debouncedStockSearch = useDebouncedValue(stockSearch, 300);
   const debouncedCategoryClientSearch = useDebouncedValue(categoryClientSearch, 320);
   const wasOpenRef = useRef(false);
+  const categorySelectionRowRef = useRef<HTMLElement | null>(null);
   const initialDraftSnapshotRef = useRef<ProductSelectionResult[]>([]);
   const documentLinesSnapshotRef = useRef<ProductSelectionResult[]>([]);
 
@@ -395,11 +368,13 @@ export function CatalogStockSelectDialog({
       setHierarchyInfoOpen(false);
       setHelperStripOpen(false);
       setStockLayoutMode('list');
+      setStockBrowseMode('category');
       setMobileCategoriesOpen(true);
       setMobileStocksOpen(true);
       setCategoryClientSearch('');
       setCategorySearchShowBranches(false);
-      setCategoryPanelLayout('rich');
+      setExpandedCatalogIds(new Set());
+      setCatalogPaths({});
       wasOpenRef.current = false;
       initialDraftSnapshotRef.current = [];
       documentLinesSnapshotRef.current = [];
@@ -421,10 +396,7 @@ export function CatalogStockSelectDialog({
     enabled: open,
   });
 
-  useEffect(() => {
-    if (!open || !catalogsQuery.data?.length || selectedCatalog) return;
-    setSelectedCatalog(catalogsQuery.data[0]);
-  }, [open, catalogsQuery.data, selectedCatalog]);
+  const catalogListForQueries = catalogsQuery.data ?? [];
 
   useEffect(() => {
     if (!open || typeof window === 'undefined') return;
@@ -438,14 +410,25 @@ export function CatalogStockSelectDialog({
     }
   }, [open, selectedLeafCategory?.catalogCategoryId]);
 
-  const currentParentCategoryId = navigationPath.length > 0
-    ? navigationPath[navigationPath.length - 1]?.catalogCategoryId ?? null
-    : null;
+  useEffect(() => {
+    if (!open || !selectedLeafCategory) {
+      return;
+    }
+    categorySelectionRowRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [open, selectedLeafCategory?.catalogCategoryId]);
 
-  const categoriesQuery = useQuery({
-    queryKey: ['catalog-stock-picker-categories', selectedCatalog?.id, currentParentCategoryId],
-    queryFn: () => categoryDefinitionsApi.getCatalogCategories(selectedCatalog!.id, currentParentCategoryId),
-    enabled: open && selectedCatalog != null,
+  const categoryQueries = useQueries({
+    queries: catalogListForQueries.map((c) => {
+      const path = catalogPaths[c.id] ?? [];
+      const parentCategoryId =
+        path.length > 0 ? path[path.length - 1]!.catalogCategoryId : null;
+      return {
+        queryKey: ['catalog-stock-picker-categories', c.id, parentCategoryId] as const,
+        queryFn: (): Promise<CatalogCategoryNodeDto[]> =>
+          categoryDefinitionsApi.getCatalogCategories(c.id, parentCategoryId),
+        enabled: open && expandedCatalogIds.has(c.id),
+      };
+    }),
   });
 
   const fullCategoryTreeQuery = useQuery({
@@ -473,11 +456,12 @@ export function CatalogStockSelectDialog({
 
   useEffect(() => {
     setPageNumber(1);
-  }, [selectedLeafCategory?.catalogCategoryId, debouncedStockSearch, includeDescendants]);
+  }, [selectedLeafCategory?.catalogCategoryId, debouncedStockSearch, includeDescendants, stockBrowseMode]);
 
   const stocksQuery = useQuery({
     queryKey: [
       'catalog-stock-picker-stocks',
+      stockBrowseMode,
       selectedCatalog?.id,
       selectedLeafCategory?.catalogCategoryId,
       includeDescendants,
@@ -491,30 +475,95 @@ export function CatalogStockSelectDialog({
         search: debouncedStockSearch.trim() || undefined,
         includeDescendants,
       }),
-    enabled: open && selectedCatalog != null && selectedLeafCategory != null,
+    enabled:
+      open &&
+      stockBrowseMode === 'category' &&
+      selectedCatalog != null &&
+      selectedLeafCategory != null,
   });
 
   const stockItems = stocksQuery.data?.data ?? [];
   const totalCount = stocksQuery.data?.totalCount ?? stockItems.length;
   const hasNextPage = pageNumber * PAGE_SIZE < totalCount;
 
+  const campaignStocksQuery = useQuery({
+    queryKey: [
+      'catalog-stock-picker-campaign-stocks',
+      pricingRuleType,
+      pricingRuleCustomerId ?? null,
+      pricingRuleErpCustomerCode ?? null,
+    ] as const,
+    queryFn: async (): Promise<CampaignStocksQueryData> => {
+      const { orderedCodes, pricingByCodeLower } = await fetchPricingRuleCampaignStockData({
+        ruleType: pricingRuleType,
+        customerId: pricingRuleCustomerId,
+        erpCustomerCode: pricingRuleErpCustomerCode,
+      });
+      const stocks = await stockApi.getListByErpStockCodes(orderedCodes);
+      const byLower = new Map(stocks.map((s) => [String(s.erpStockCode ?? '').toLowerCase(), s]));
+      const ordered: StockGetDto[] = [];
+      for (const code of orderedCodes) {
+        const row = byLower.get(code.toLowerCase());
+        if (row) {
+          ordered.push(row);
+        }
+      }
+      return {
+        items: ordered.map(mapStockGetToCatalogItem),
+        pricingByCodeLower,
+      };
+    },
+    enabled: open && stockBrowseMode === 'campaign',
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const campaignCatalogItems = campaignStocksQuery.data?.items ?? [];
+  const campaignPricingByCodeLower = campaignStocksQuery.data?.pricingByCodeLower ?? {};
+  const campaignSearchFilteredItems = useMemo((): CatalogStockItemDto[] => {
+    const q = debouncedStockSearch.trim().toLowerCase();
+    if (!q) {
+      return campaignCatalogItems;
+    }
+    return campaignCatalogItems.filter(
+      (s) =>
+        s.erpStockCode.toLowerCase().includes(q) ||
+        s.stockName.toLowerCase().includes(q) ||
+        (s.grupKodu?.toLowerCase().includes(q) ?? false),
+    );
+  }, [campaignCatalogItems, debouncedStockSearch]);
+  const campaignDisplayItems = useMemo((): CatalogStockItemDto[] => {
+    const start = (pageNumber - 1) * PAGE_SIZE;
+    return campaignSearchFilteredItems.slice(start, start + PAGE_SIZE);
+  }, [campaignSearchFilteredItems, pageNumber]);
+  const campaignHasNextPage = pageNumber * PAGE_SIZE < campaignSearchFilteredItems.length;
+
+  const activeStockRows: CatalogStockItemDto[] =
+    stockBrowseMode === 'campaign' ? campaignDisplayItems : stockItems;
+  const activeStockLoading =
+    stockBrowseMode === 'campaign' ? campaignStocksQuery.isLoading : stocksQuery.isLoading;
+  const activeStockHasNextPage = stockBrowseMode === 'campaign' ? campaignHasNextPage : hasNextPage;
+
   const relationQueries = useQueries({
-    queries: stockItems.map((stock) => ({
+    queries: activeStockRows.map((stock) => ({
       queryKey: ['catalog-stock-picker-relations', stock.stockId],
       queryFn: () => stockApi.getRelations(stock.stockId),
-      enabled: open && selectedLeafCategory != null,
+      enabled:
+        open &&
+        activeStockRows.length > 0 &&
+        (stockBrowseMode === 'campaign' ||
+          (stockBrowseMode === 'category' && selectedLeafCategory != null)),
       staleTime: 5 * 60 * 1000,
     })),
   });
 
   const relationMap = useMemo(() => {
     const map = new Map<number, StockRelationDto[]>();
-    stockItems.forEach((stock, index) => {
+    activeStockRows.forEach((stock, index) => {
       const relations = relationQueries[index]?.data ?? [];
       map.set(stock.stockId, relations);
     });
     return map;
-  }, [stockItems, relationQueries]);
+  }, [activeStockRows, relationQueries]);
 
   const getSelectionKey = (value: { id?: number; code: string }): string =>
     value.id != null ? `id:${value.id}` : `code:${value.code}`;
@@ -545,36 +594,36 @@ export function CatalogStockSelectDialog({
     [selectedResults]
   );
 
-  const currentStep = !selectedCatalog ? 1 : !selectedLeafCategory ? 2 : 3;
-
-  const handleCatalogChange = (catalog: ProductCatalogDto): void => {
-    setSelectedCatalog(catalog);
-    setNavigationPath([]);
-    setSelectedLeafCategory(null);
-    setIncludeDescendants(false);
-    setStockSearch('');
-    setPageNumber(1);
-    setCategoryClientSearch('');
-    setCategorySearchShowBranches(false);
-    setCategoryPanelLayout('rich');
-  };
-
-  const activateCategorySelection = useCallback(
-    (category: CatalogCategoryNodeDto, branchPath?: CatalogCategoryNodeDto[]): void => {
-      const nextPath = branchPath ?? (category.hasChildren ? [...navigationPath, category] : navigationPath);
+  const activateCategoryInCatalog = useCallback(
+    (catalogId: number, category: CatalogCategoryNodeDto, branchPath?: CatalogCategoryNodeDto[]): void => {
+      setStockBrowseMode('category');
+      const catalog = catalogsQuery.data?.find((c) => c.id === catalogId);
+      if (!catalog) {
+        return;
+      }
+      const pathBase = branchPath ?? catalogPaths[catalogId] ?? [];
+      const nextPath =
+        branchPath !== undefined
+          ? branchPath
+          : category.hasChildren
+            ? [...pathBase, category]
+            : pathBase;
+      setCatalogPaths((prev) => ({ ...prev, [catalogId]: nextPath }));
+      setSelectedCatalog(catalog);
       setNavigationPath(nextPath);
       setSelectedLeafCategory(category);
       setIncludeDescendants(category.hasChildren);
       setStockSearch('');
       setPageNumber(1);
     },
-    [navigationPath],
+    [catalogPaths, catalogsQuery.data],
   );
 
   const handleCategoryClientSearchPick = useCallback(
     (node: CatalogCategoryNodeDto): void => {
       const flat = fullCategoryTreeQuery.data;
-      if (!flat?.length) {
+      const cid = selectedCatalog?.id;
+      if (!flat?.length || cid == null) {
         return;
       }
       const byId = buildCategoryIdIndex(flat);
@@ -582,72 +631,115 @@ export function CatalogStockSelectDialog({
       if (chain.length === 0) {
         return;
       }
-      activateCategorySelection(node, node.hasChildren ? chain : chain.slice(0, -1));
+      activateCategoryInCatalog(cid, node, node.hasChildren ? chain : chain.slice(0, -1));
       setCategoryClientSearch('');
     },
-    [activateCategorySelection, fullCategoryTreeQuery.data]
+    [activateCategoryInCatalog, fullCategoryTreeQuery.data, selectedCatalog?.id],
   );
 
-  const handleCategoryClick = (category: CatalogCategoryNodeDto): void => {
-    activateCategorySelection(category);
+  const handleCategoryClick = (catalogId: number, category: CatalogCategoryNodeDto): void => {
+    activateCategoryInCatalog(catalogId, category);
   };
 
-  const handleCategoryList = (category: CatalogCategoryNodeDto): void => {
-    activateCategorySelection(category);
+  const toggleStockBrowseCampaign = (): void => {
+    setStockBrowseMode((m) => (m === 'campaign' ? 'category' : 'campaign'));
+  };
+
+  const toggleStockBrowseFavorites = (): void => {
+    setStockBrowseMode((m) => (m === 'favorites' ? 'category' : 'favorites'));
+  };
+
+  const handleCatalogTrailSegmentClick = (catalogId: number, endIndexInclusive: number): void => {
+    setStockBrowseMode('category');
+    const catalog = catalogsQuery.data?.find((c) => c.id === catalogId);
+    if (!catalog) {
+      return;
+    }
+    const path = catalogPaths[catalogId] ?? [];
+    const nextPath = path.slice(0, endIndexInclusive + 1);
+    setCatalogPaths((p) => ({ ...p, [catalogId]: nextPath }));
+    setSelectedCatalog(catalog);
+    const folder = nextPath.length > 0 ? nextPath[nextPath.length - 1]! : null;
+    setNavigationPath(nextPath);
+    setSelectedLeafCategory(folder);
+    setIncludeDescendants(folder?.hasChildren ?? false);
+    setStockSearch('');
+    setPageNumber(1);
+  };
+
+  const toggleCatalogExpanded = (catalogId: number): void => {
+    const willCollapse = expandedCatalogIds.has(catalogId);
+    setExpandedCatalogIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(catalogId)) {
+        next.delete(catalogId);
+      } else {
+        next.add(catalogId);
+      }
+      return next;
+    });
+    if (!willCollapse) {
+      return;
+    }
+    setCatalogPaths((p) => {
+      const copy = { ...p };
+      delete copy[catalogId];
+      return copy;
+    });
+    if (selectedCatalog?.id === catalogId) {
+      setSelectedCatalog(null);
+      setNavigationPath([]);
+      setSelectedLeafCategory(null);
+      setIncludeDescendants(false);
+      setStockSearch('');
+      setPageNumber(1);
+    }
+  };
+
+  const handleBackLevelInCatalog = (catalogId: number): void => {
+    setStockBrowseMode('category');
+    const path = catalogPaths[catalogId] ?? (selectedCatalog?.id === catalogId ? navigationPath : []);
+    const nextPath = path.slice(0, -1);
+    setCatalogPaths((p) => ({ ...p, [catalogId]: nextPath }));
+    if (selectedCatalog?.id !== catalogId) {
+      return;
+    }
+    const parent = nextPath[nextPath.length - 1] ?? null;
+    setNavigationPath(nextPath);
+    setSelectedLeafCategory(parent);
+    setIncludeDescendants(parent?.hasChildren ?? false);
+    setStockSearch('');
+    setPageNumber(1);
   };
 
   const handleBackLevel = (): void => {
-    setNavigationPath((prev) => {
-      const nextPath = prev.slice(0, -1);
-      const parent = nextPath[nextPath.length - 1] ?? null;
-      setSelectedLeafCategory(parent);
-      setIncludeDescendants(parent?.hasChildren ?? false);
-      setStockSearch('');
-      setPageNumber(1);
-      return nextPath;
-    });
+    if (!selectedCatalog) {
+      return;
+    }
+    handleBackLevelInCatalog(selectedCatalog.id);
   };
 
   const handleResetCategoryBranch = (): void => {
     setNavigationPath([]);
     setSelectedLeafCategory(null);
+    setSelectedCatalog(null);
     setIncludeDescendants(false);
     setStockSearch('');
     setPageNumber(1);
     setCategoryClientSearch('');
+    setCatalogPaths({});
+    setExpandedCatalogIds(new Set());
+    setStockBrowseMode('category');
   };
 
   const canResetCategoryBranch =
-    selectedCatalog != null &&
-    (navigationPath.length > 0 ||
-      selectedLeafCategory != null ||
-      includeDescendants ||
-      stockSearch.trim() !== '' ||
-      pageNumber > 1);
-
-  const handleBreadcrumbClick = (index: number): void => {
-    setNavigationPath((prev) => {
-      const nextPath = prev.slice(0, index + 1);
-      const selected = nextPath[nextPath.length - 1] ?? null;
-      setSelectedLeafCategory(selected);
-      setIncludeDescendants(selected?.hasChildren ?? false);
-      setStockSearch('');
-      setPageNumber(1);
-      return nextPath;
-    });
-  };
-
-  const handlePreviewNavigateChain = useCallback((chain: CatalogCategoryNodeDto[]): void => {
-    if (chain.length === 0) {
-      return;
-    }
-    const last = chain[chain.length - 1];
-    if (last.hasChildren) {
-      activateCategorySelection(last, chain);
-    } else {
-      activateCategorySelection(last, chain.slice(0, -1));
-    }
-  }, [activateCategorySelection]);
+    selectedCatalog != null ||
+    Object.keys(catalogPaths).some((k) => (catalogPaths[Number(k)]?.length ?? 0) > 0) ||
+    selectedLeafCategory != null ||
+    includeDescendants ||
+    stockSearch.trim() !== '' ||
+    pageNumber > 1 ||
+    stockBrowseMode !== 'category';
 
   const toSelectionResult = (stock: CatalogStockItemDto): ProductSelectionResult => ({
     id: stock.stockId,
@@ -722,69 +814,74 @@ export function CatalogStockSelectDialog({
     onOpenChange(false);
   };
 
-  const selectedLeafLabel = selectedLeafCategory?.name ?? t('catalogStockPicker.noLeafSelected');
-  const selectedLeafPathLabel = selectedLeafCategory?.fullPath ?? selectedLeafCategory?.name ?? t('catalogStockPicker.noLeafSelected');
-  const selectionModeLabel = selectedLeafCategory
-    ? includeDescendants
-      ? t('catalogStockPicker.listDescendantsModeBadge')
-      : t('catalogStockPicker.directCategoryModeBadge')
-    : null;
-  const currentHierarchyPath = useMemo(() => {
-    const parts = [
-      selectedCatalog?.name,
-      ...navigationPath.map((item) => item.name),
-      navigationPath[navigationPath.length - 1]?.catalogCategoryId === selectedLeafCategory?.catalogCategoryId
-        ? null
-        : selectedLeafCategory?.name,
-    ].filter(Boolean);
-
-    return parts.length > 0 ? parts.join(' / ') : t('catalogStockPicker.noCatalogSelected');
-  }, [navigationPath, selectedCatalog?.name, selectedLeafCategory?.catalogCategoryId, selectedLeafCategory?.name, t]);
-
-  const categoryScrollSyncKey = useMemo(
-    () => `${selectedCatalog?.id ?? 0}-${navigationPath.map((p) => p.catalogCategoryId).join('-')}`,
-    [navigationPath, selectedCatalog?.id],
-  );
-
-  const categoryTreeDepth = navigationPath.length;
-
-  const catalogHeaderScrollSyncKey = useMemo(
-    () => `${catalogsQuery.data?.map((c) => c.id).join('-') ?? ''}-${selectedCatalog?.id ?? 0}`,
-    [catalogsQuery.data, selectedCatalog?.id],
-  );
-
   const catalogDraftSnapshotList = initialDraftSnapshotRef.current;
   const catalogDocumentLinesList = documentLinesSnapshotRef.current;
 
-  const stockBadgesScrollSyncKey = useMemo(
-    () =>
-      `${selectedLeafCategory?.catalogCategoryId ?? 0}-${includeDescendants ? '1' : '0'}-${selectedResults.length + catalogDraftSnapshotList.length}-${currentHierarchyPath.length}`,
-    [
-      selectedLeafCategory?.catalogCategoryId,
-      includeDescendants,
-      selectedResults.length,
-      catalogDraftSnapshotList.length,
-      currentHierarchyPath.length,
-    ],
-  );
-
   const hasAnyPicksOrDraft = selectedResults.length > 0 || catalogDraftSnapshotList.length > 0;
 
-  const helperTitle = !selectedLeafCategory
-    ? t('catalogStockPicker.rightPanelTitle')
-    : hasAnyPicksOrDraft
+  const helperTitle = useMemo((): string => {
+    if (stockBrowseMode === 'favorites') {
+      return t('catalogStockPicker.favoriteStocksChip');
+    }
+    if (stockBrowseMode === 'campaign') {
+      if (campaignStocksQuery.isLoading) {
+        return t('catalogStockPicker.loadingStocks');
+      }
+      return hasAnyPicksOrDraft
+        ? t('catalogStockPicker.selectionReadyTitle')
+        : campaignSearchFilteredItems.length > 0
+          ? t('catalogStockPicker.stocksFoundTitle', { count: campaignSearchFilteredItems.length })
+          : t('catalogStockPicker.emptyStocksTitle');
+    }
+    if (!selectedLeafCategory) {
+      return t('catalogStockPicker.rightPanelTitle');
+    }
+    return hasAnyPicksOrDraft
       ? t('catalogStockPicker.selectionReadyTitle')
       : stockItems.length > 0
         ? t('catalogStockPicker.stocksFoundTitle', { count: stockItems.length })
         : t('catalogStockPicker.emptyStocksTitle');
+  }, [
+    stockBrowseMode,
+    campaignStocksQuery.isLoading,
+    hasAnyPicksOrDraft,
+    campaignSearchFilteredItems.length,
+    selectedLeafCategory,
+    stockItems.length,
+    t,
+  ]);
 
-  const helperDescription = !selectedLeafCategory
-    ? t('catalogStockPicker.selectLeafHint')
-    : hasAnyPicksOrDraft
+  const helperDescription = useMemo((): string => {
+    if (stockBrowseMode === 'favorites') {
+      return t('catalogStockPicker.specialStockListPlaceholderHint');
+    }
+    if (stockBrowseMode === 'campaign') {
+      if (campaignStocksQuery.isLoading) {
+        return t('catalogStockPicker.loadingStocks');
+      }
+      return hasAnyPicksOrDraft
+        ? t('catalogStockPicker.selectionReadyHint')
+        : campaignSearchFilteredItems.length > 0
+          ? t('catalogStockPicker.rightPanelLeafHint')
+          : t('catalogStockPicker.emptyStocks');
+    }
+    if (!selectedLeafCategory) {
+      return t('catalogStockPicker.selectLeafHint');
+    }
+    return hasAnyPicksOrDraft
       ? t('catalogStockPicker.selectionReadyHint')
       : stockItems.length > 0
         ? t('catalogStockPicker.rightPanelLeafHint')
         : t('catalogStockPicker.emptyStocks');
+  }, [
+    stockBrowseMode,
+    campaignStocksQuery.isLoading,
+    hasAnyPicksOrDraft,
+    campaignSearchFilteredItems.length,
+    selectedLeafCategory,
+    stockItems.length,
+    t,
+  ]);
 
   const helperStrip = (
     <div className="shrink-0 border-b border-slate-300/90 bg-white backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80">
@@ -815,19 +912,36 @@ export function CatalogStockSelectDialog({
         <div className="border-t border-slate-300/90 px-3 pb-2 pt-1.5 dark:border-white/10 sm:px-5 sm:pb-3 sm:pt-2">
           <div className="rounded-xl border border-slate-300/90 bg-slate-50/90 p-2 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none sm:rounded-2xl sm:p-3">
             <div className="text-xs text-slate-600 dark:text-slate-400 sm:text-sm">{helperDescription}</div>
-            {selectedLeafCategory ? (
-              <div className="mt-2 rounded-xl border border-dashed border-pink-500/25 bg-pink-50/60 px-2.5 py-1.5 text-xs text-slate-700 backdrop-blur-sm dark:bg-zinc-950/40 dark:text-slate-300">
-                <span className="font-semibold text-slate-900 dark:text-slate-100">{t('catalogStockPicker.selectedPathLabel')}:</span>{' '}
-                <span className="line-clamp-2 break-all font-mono text-[11px] text-pink-600 dark:text-pink-200/90">{selectedLeafPathLabel}</span>
-              </div>
-            ) : null}
           </div>
         </div>
       ) : null}
     </div>
   );
 
-  const stockListScrollInner = !selectedLeafCategory ? (
+  const stockListScrollInner =
+    stockBrowseMode === 'favorites' ? (
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
+        <div className="max-w-md">
+          <div
+            className={cn(
+              'mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border shadow-[0_0_28px_rgba(236,72,153,0.18)] dark:shadow-[0_0_32px_rgba(236,72,153,0.2)]',
+              'border-amber-400/50 bg-gradient-to-br from-amber-50 via-yellow-50/90 to-amber-100/40 text-amber-600 shadow-amber-200/30 dark:border-amber-400/45 dark:from-amber-500/[0.16] dark:via-yellow-600/10 dark:to-amber-600/5 dark:text-amber-200',
+            )}
+          >
+            <Star className="h-7 w-7" strokeWidth={1.65} aria-hidden />
+          </div>
+          <div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+            {t('catalogStockPicker.favoriteStocksChip')}
+          </div>
+          <div className="mt-2 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            {t('catalogStockPicker.specialStockListPlaceholderTitle')}
+          </div>
+          <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            {t('catalogStockPicker.specialStockListPlaceholderHint')}
+          </div>
+        </div>
+      </div>
+    ) : stockBrowseMode === 'category' && !selectedLeafCategory ? (
     <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
       <div className="max-w-md">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border border-pink-500/30 bg-pink-500/10 text-pink-500 shadow-[0_0_24px_rgba(236,72,153,0.22)] dark:text-pink-400 dark:shadow-[0_0_28px_rgba(236,72,153,0.25)]">
@@ -839,11 +953,11 @@ export function CatalogStockSelectDialog({
         <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t('catalogStockPicker.selectLeafHint')}</div>
       </div>
     </div>
-  ) : stocksQuery.isLoading ? (
+  ) : activeStockLoading ? (
     <div className="flex min-h-0 flex-1 items-center justify-center py-8 text-sm text-slate-500 dark:text-slate-400">
       {t('catalogStockPicker.loadingStocks')}
     </div>
-  ) : stockItems.length ? (
+  ) : activeStockRows.length ? (
     stockLayoutMode === 'list' ? (
       <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none max-lg:overflow-visible lg:overflow-hidden">
         <div className="min-h-0 flex-1 touch-pan-y overscroll-contain [-webkit-overflow-scrolling:touch] max-lg:overflow-visible lg:overflow-auto">
@@ -859,7 +973,7 @@ export function CatalogStockSelectDialog({
               </tr>
             </thead>
             <tbody>
-              {stockItems.map((stock) => {
+              {activeStockRows.map((stock) => {
                 const selectionKey = getSelectionKey({ id: stock.stockId, code: stock.erpStockCode });
                 const selected = selectedKeys.has(selectionKey);
                 const inOpeningDraft = stockMatchesDraftSnapshot(
@@ -926,7 +1040,16 @@ export function CatalogStockSelectDialog({
                       </div>
                     </td>
                     <td className="px-2 py-1 align-middle sm:px-3 sm:py-1.5">
-                      <span className="line-clamp-2 text-sm font-medium leading-relaxed tracking-tight text-slate-900 dark:text-slate-100">{stock.stockName}</span>
+                      <div className="min-w-0">
+                        <span className="line-clamp-2 text-sm font-medium leading-relaxed tracking-tight text-slate-900 dark:text-slate-100">
+                          {stock.stockName}
+                        </span>
+                        {stockBrowseMode === 'campaign' ? (
+                          <CatalogCampaignPricingRow
+                            line={campaignPricingByCodeLower[stock.erpStockCode.toLowerCase()]}
+                          />
+                        ) : null}
+                      </div>
                     </td>
                     <td className="px-2 py-1 align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs">{stock.unit || '—'}</td>
                     <td className="px-2 py-1 align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs">{stock.grupKodu || '—'}</td>
@@ -958,7 +1081,7 @@ export function CatalogStockSelectDialog({
             </tbody>
           </table>
         </div>
-        {hasNextPage ? (
+        {activeStockHasNextPage ? (
           <div className="shrink-0 border-t border-slate-300/90 bg-slate-100/80 p-2 dark:border-white/10 dark:bg-white/[0.02] sm:p-3">
             <Button
               type="button"
@@ -980,7 +1103,7 @@ export function CatalogStockSelectDialog({
         />
         <div className="relative min-h-0 flex-1 touch-pan-y overscroll-contain px-1 pt-1.5 [-webkit-overflow-scrolling:touch] max-lg:overflow-visible lg:overflow-y-auto">
           <div className="grid grid-cols-2 gap-2.5 pb-4 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
-            {stockItems.map((stock) => {
+            {activeStockRows.map((stock) => {
               const selectionKey = getSelectionKey({ id: stock.stockId, code: stock.erpStockCode });
               const selected = selectedKeys.has(selectionKey);
               const inOpeningDraft = stockMatchesDraftSnapshot(
@@ -997,7 +1120,7 @@ export function CatalogStockSelectDialog({
 
               return (
                 <button
-                  key={stock.stockCategoryId}
+                  key={`${stock.stockCategoryId}-${stock.stockId}`}
                   type="button"
                   onClick={() => void handleStockClick(stock)}
                   className={cn(
@@ -1119,6 +1242,12 @@ export function CatalogStockSelectDialog({
                       {stock.stockName}
                     </h3>
 
+                    {stockBrowseMode === 'campaign' ? (
+                      <CatalogCampaignPricingRow
+                        line={campaignPricingByCodeLower[stock.erpStockCode.toLowerCase()]}
+                      />
+                    ) : null}
+
                     {(stock.grupKodu || stock.kod1) ? (
                       <div className="mt-auto flex items-center gap-1 pt-0.5">
                         {stock.grupKodu ? (
@@ -1139,7 +1268,7 @@ export function CatalogStockSelectDialog({
             })}
           </div>
         </div>
-        {hasNextPage ? (
+        {activeStockHasNextPage ? (
           <div className="relative z-10 shrink-0 border-t border-slate-300/90 bg-slate-100/80 p-2 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.02] sm:p-2.5">
             <Button
               type="button"
@@ -1178,109 +1307,33 @@ export function CatalogStockSelectDialog({
           type="button"
           onClick={() => onOpenChange(false)}
           aria-label={t('cancel', { ns: 'common' })}
-          className="absolute right-2.5 top-2.5 z-30 flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300/90 bg-white text-slate-600 shadow-sm backdrop-blur-sm transition-all hover:border-red-400/60 hover:bg-red-50 hover:text-red-600 hover:shadow-[0_0_16px_rgba(239,68,68,0.35)] dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:shadow-[0_0_18px_rgba(239,68,68,0.3)] sm:right-3 sm:top-3 sm:h-9 sm:w-9"
+          className="absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300/90 bg-white text-slate-600 shadow-sm backdrop-blur-sm transition-all hover:border-red-400/60 hover:bg-red-50 hover:text-red-600 hover:shadow-[0_0_16px_rgba(239,68,68,0.35)] dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:shadow-[0_0_18px_rgba(239,68,68,0.3)] sm:right-2.5 sm:top-2 sm:h-8 sm:w-8"
         >
           <X className="h-4 w-4" />
         </button>
-        <DialogHeader className="relative z-10 shrink-0 border-b border-slate-300/90 bg-white px-3 py-1.5 pr-12 shadow-[inset_0_-1px_0_rgba(148,163,184,0.12)] backdrop-blur-xl before:pointer-events-none before:absolute before:inset-x-0 before:-bottom-px before:h-px before:bg-gradient-to-r before:from-transparent before:via-pink-500/35 before:to-transparent dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-4 sm:py-2 sm:pr-14 xl:py-1.5 xl:pb-2">
-          <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between lg:gap-4">
-            <div className="min-w-0 flex-1">
-              <DialogTitle className="flex items-center gap-2 text-base font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-lg">
-                <div className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-pink-500/30 bg-gradient-to-br from-pink-500/20 to-fuchsia-500/10 text-pink-500 shadow-[0_0_24px_rgba(236,72,153,0.25)] dark:text-pink-300 dark:shadow-[0_0_24px_rgba(236,72,153,0.28)] sm:h-8 sm:w-8 sm:rounded-2xl">
-                  <LayoutGrid className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
-                  <span
-                    className="pointer-events-none absolute inset-0 animate-pulse rounded-xl bg-pink-500/10 sm:rounded-2xl"
-                    aria-hidden
-                  />
-                </div>
-                <span className="truncate bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent dark:from-slate-50 dark:to-slate-300">
-                  {t('catalogStockPicker.title')}
-                </span>
-              </DialogTitle>
-              <p className="mt-0.5 line-clamp-1 text-[11px] text-slate-500 dark:text-slate-400 sm:text-xs">
-                {t('catalogStockPicker.description')}
-              </p>
-              <div className="mt-1.5 min-w-0">
-                {catalogsQuery.isLoading ? (
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{t('catalogStockPicker.loadingCatalogs')}</div>
-                ) : (
-                  <HorizontalScrollRow
-                    syncKey={catalogHeaderScrollSyncKey}
-                    scrollBackLabel={t('catalogStockPicker.scrollBack')}
-                    scrollForwardLabel={t('catalogStockPicker.scrollForward')}
-                    scrollStep={180}
-                    trackClassName="[scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                  >
-                    {catalogsQuery.data?.map((catalog) => (
-                      <button
-                        key={catalog.id}
-                        type="button"
-                        onClick={() => handleCatalogChange(catalog)}
-                        className={cn(
-                          'shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold transition-all sm:px-3 sm:py-1.5 sm:text-[13px]',
-                          selectedCatalog?.id === catalog.id
-                            ? 'border-pink-500/50 bg-pink-500/15 text-pink-700 shadow-[0_0_20px_rgba(236,72,153,0.25)] backdrop-blur-sm dark:text-pink-100'
-                            : 'border border-slate-300/90 bg-white text-slate-800 shadow-sm backdrop-blur-sm hover:border-pink-400/55 hover:text-pink-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-200 dark:shadow-none dark:hover:border-pink-500/35 dark:hover:text-pink-200'
-                        )}
-                      >
-                        <span className="whitespace-nowrap">{catalog.name}</span>
-                        <span
-                          className={cn(
-                            'ml-1.5 font-mono text-[10px] sm:text-xs',
-                            selectedCatalog?.id === catalog.id
-                              ? 'text-pink-600/90 dark:text-pink-200/90'
-                              : 'text-slate-500',
-                          )}
-                        >
-                          {catalog.code}
-                        </span>
-                      </button>
-                    ))}
-                  </HorizontalScrollRow>
-                )}
+        <DialogHeader className="relative z-10 shrink-0 border-b border-slate-300/90 bg-white px-3 py-1.5 pr-10 shadow-[inset_0_-1px_0_rgba(148,163,184,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-4 sm:py-2 sm:pr-11">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-pink-500/20 bg-pink-50 text-pink-500 shadow-sm dark:border-pink-500/30 dark:bg-pink-500/15 dark:text-pink-300 sm:h-9 sm:w-9 sm:rounded-xl">
+                <PackageSearch className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden />
+              </div>
+              <div className="min-w-0">
+                <DialogTitle className="truncate text-left text-sm font-bold tracking-tight text-slate-800 dark:text-slate-100 sm:text-base">
+                  {t('catalogStockPicker.pickerMainHeading')}
+                </DialogTitle>
+                <DialogDescription className="sr-only">{t('catalogStockPicker.description')}</DialogDescription>
               </div>
             </div>
-
-            <div className="flex w-full shrink-0 flex-col gap-1.5 lg:w-auto lg:min-w-[280px] xl:min-w-[300px]">
-              <div className="grid grid-cols-3 gap-1 sm:gap-1.5">
-                {[1, 2, 3].map((step) => (
-                  <div
-                    key={step}
-                    className={cn(
-                      'relative overflow-hidden rounded-xl border px-2 py-1.5 text-left backdrop-blur-sm transition-all duration-300 sm:rounded-2xl sm:px-2.5 sm:py-2',
-                      currentStep === step
-                        ? 'border-pink-500/45 bg-gradient-to-br from-pink-500/15 to-fuchsia-500/5 text-pink-700 shadow-[0_0_20px_rgba(236,72,153,0.18)] dark:text-pink-100'
-                        : currentStep > step
-                          ? 'border-emerald-500/35 bg-emerald-500/10 text-emerald-700 dark:text-emerald-100'
-                          : 'border border-slate-300/85 bg-slate-50/90 text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none'
-                    )}
-                  >
-                    {currentStep === step ? (
-                      <span
-                        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-400/60 to-transparent"
-                        aria-hidden
-                      />
-                    ) : null}
-                    <div className="text-[9px] font-semibold uppercase leading-tight tracking-[0.14em] text-slate-500 dark:text-slate-400 sm:text-[10px] sm:tracking-[0.16em]">
-                      {t(`catalogStockPicker.step${step}Label`)}
-                    </div>
-                    <div className="mt-0.5 line-clamp-2 text-[11px] font-semibold leading-snug text-slate-900 dark:text-slate-100 sm:mt-1 sm:text-xs">
-                      {t(`catalogStockPicker.step${step}Title`)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-8 w-full shrink-0 justify-center gap-1.5 rounded-lg border border-slate-300/90 bg-white px-2 text-[11px] font-medium text-slate-800 shadow-sm backdrop-blur-sm hover:border-pink-400/55 hover:bg-pink-50 hover:text-pink-600 dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:shadow-none dark:hover:border-pink-500/35 dark:hover:bg-pink-500/10 dark:hover:text-pink-100 sm:text-xs lg:max-w-none"
-                onClick={() => setHierarchyInfoOpen(true)}
-              >
-                <CircleHelp className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
-                <span className="truncate">{t('catalogStockPicker.hierarchyInfoButton')}</span>
-              </Button>
-            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 shrink-0 gap-1 rounded-lg border border-slate-300/90 bg-white px-2 text-[11px] font-medium text-slate-800 shadow-sm backdrop-blur-sm hover:border-pink-400/55 hover:bg-pink-50 hover:text-pink-600 dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:shadow-none dark:hover:border-pink-500/35 dark:hover:bg-pink-500/10 dark:hover:text-pink-100 sm:px-2.5 sm:text-xs"
+              onClick={() => setHierarchyInfoOpen(true)}
+            >
+              <CircleHelp className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
+              <span className="hidden max-w-[10rem] truncate sm:inline">{t('catalogStockPicker.hierarchyInfoButton')}</span>
+            </Button>
           </div>
         </DialogHeader>
 
@@ -1333,8 +1386,8 @@ export function CatalogStockSelectDialog({
                     <FolderTree className="h-3.5 w-3.5" aria-hidden />
                   </span>
                   <div className="min-w-0">
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-600 dark:text-slate-500">
-                      {t('catalogStockPicker.categoriesTitle')}
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-sky-600/95 dark:text-sky-400/90">
+                      {t('catalogStockPicker.hierarchySectionTitle')}
                     </div>
                   </div>
                 </div>
@@ -1376,74 +1429,6 @@ export function CatalogStockSelectDialog({
                 ) : null}
               </div>
 
-              <HorizontalScrollRow
-                syncKey={categoryScrollSyncKey}
-                scrollBackLabel={t('catalogStockPicker.scrollBack')}
-                scrollForwardLabel={t('catalogStockPicker.scrollForward')}
-                className="mt-1.5"
-                scrollStep={220}
-                trackClassName="[scrollbar-width:thin]"
-              >
-                <span className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-300/90 bg-white px-2 py-1 text-[11px] font-medium text-slate-900 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100">
-                  <span className="h-1 w-1 shrink-0 rounded-full bg-pink-400/80" aria-hidden />
-                  {selectedCatalog?.name ?? t('catalogStockPicker.noCatalogSelected')}
-                </span>
-                {navigationPath.map((item, index) => (
-                  <span key={item.catalogCategoryId} className="flex shrink-0 items-center gap-1">
-                    <span className="text-slate-300 dark:text-slate-600" aria-hidden>
-                      /
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => handleBreadcrumbClick(index)}
-                      className="max-w-[min(200px,40vw)] truncate rounded-lg border border-transparent bg-transparent px-1.5 py-0.5 text-left text-[11px] text-slate-600 transition-colors hover:border-pink-300/40 hover:bg-pink-500/[0.06] hover:text-pink-700 dark:text-slate-300 dark:hover:border-pink-500/30 dark:hover:text-pink-200"
-                    >
-                      {item.name}
-                    </button>
-                  </span>
-                ))}
-              </HorizontalScrollRow>
-
-              {selectedCatalog ? (
-                <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-slate-200/90 pt-2 dark:border-white/[0.06]">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    {t('catalogStockPicker.categoryNavigationLayoutLabel')}
-                  </span>
-                  <div className="inline-flex rounded-lg border border-slate-300/90 bg-white p-0.5 shadow-sm dark:border-white/12 dark:bg-white/[0.04]">
-                    <Button
-                      type="button"
-                      variant={categoryPanelLayout === 'rich' ? 'default' : 'ghost'}
-                      size="sm"
-                      className={cn(
-                        'h-7 gap-1 rounded-md px-2.5 text-[10px] font-semibold sm:h-8 sm:px-3 sm:text-[11px]',
-                        categoryPanelLayout === 'rich'
-                          ? 'bg-pink-600 text-white hover:bg-pink-700 dark:bg-pink-600 dark:hover:bg-pink-500'
-                          : 'text-slate-600 dark:text-slate-300'
-                      )}
-                      onClick={() => setCategoryPanelLayout('rich')}
-                    >
-                      <LayoutGrid className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
-                      {t('catalogStockPicker.categoryNavigationLayoutRich')}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant={categoryPanelLayout === 'levelList' ? 'default' : 'ghost'}
-                      size="sm"
-                      className={cn(
-                        'h-7 gap-1 rounded-md px-2.5 text-[10px] font-semibold sm:h-8 sm:px-3 sm:text-[11px]',
-                        categoryPanelLayout === 'levelList'
-                          ? 'bg-pink-600 text-white hover:bg-pink-700 dark:bg-pink-600 dark:hover:bg-pink-500'
-                          : 'text-slate-600 dark:text-slate-300'
-                      )}
-                      onClick={() => setCategoryPanelLayout('levelList')}
-                    >
-                      <List className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
-                      {t('catalogStockPicker.categoryNavigationLayoutLevelList')}
-                    </Button>
-                  </div>
-                </div>
-              ) : null}
-
               <div className="mt-3 space-y-2 border-t border-slate-200/95 pt-3 dark:border-white/[0.06]">
                 {fullCategoryTreeQuery.isError ? (
                   <div className="flex flex-wrap items-center gap-2 rounded-lg border border-red-300/50 bg-red-50/90 px-2.5 py-2 text-[11px] text-red-800 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-100">
@@ -1468,13 +1453,13 @@ export function CatalogStockSelectDialog({
                 ) : null}
 
                 <div className="relative">
-                  <Search className="pointer-events-none absolute left-2.5 top-2 h-3.5 w-3.5 text-pink-500/70 dark:text-pink-400/70" aria-hidden />
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-pink-500/75 dark:text-pink-400/75" aria-hidden />
                   <Input
                     value={categoryClientSearch}
                     onChange={(e) => setCategoryClientSearch(e.target.value)}
                     placeholder={t('catalogStockPicker.categoryClientSearchPlaceholder')}
                     disabled={!fullCategoryTreeQuery.data?.length || fullCategoryTreeQuery.isLoading}
-                    className="h-9 rounded-xl border border-slate-300/90 bg-white pl-8 text-xs text-slate-900 shadow-sm placeholder:text-slate-500 dark:border-white/15 dark:bg-white/[0.06] dark:text-slate-100 dark:placeholder:text-slate-500 sm:h-9 sm:pl-9"
+                    className="h-10 rounded-2xl border border-slate-200/95 bg-white pl-9 text-xs text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.04)] placeholder:text-slate-500 focus-visible:border-pink-400/50 focus-visible:ring-pink-500/15 dark:border-white/12 dark:bg-zinc-900/50 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus-visible:border-pink-500/40 sm:pl-10 sm:text-[13px]"
                   />
                 </div>
 
@@ -1548,282 +1533,199 @@ export function CatalogStockSelectDialog({
               </div>
             </div>
 
-            <div
-              className={cn(
-                'relative flex min-h-0 flex-1 flex-col overscroll-contain bg-[linear-gradient(180deg,rgba(255,255,255,0.35)_0%,transparent_28%),linear-gradient(180deg,transparent,rgba(241,245,249,0.35)_100%)] [-webkit-overflow-scrolling:touch] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.03)_0%,transparent_30%),linear-gradient(180deg,transparent,rgba(9,9,11,0.45)_100%)]',
-                categoryPanelLayout === 'levelList'
-                  ? 'touch-pan-y overflow-hidden px-2.5 py-1.5 sm:px-3 sm:py-2 xl:px-2.5 xl:py-1 xl:ring-1 xl:ring-inset xl:ring-slate-200/40 dark:xl:ring-white/[0.05]'
-                  : 'touch-pan-y overflow-y-auto px-2.5 py-2 sm:px-3 sm:py-2.5 xl:px-3 xl:py-3 xl:ring-1 xl:ring-inset xl:ring-slate-200/40 dark:xl:ring-white/[0.05]',
-              )}
-            >
-              {categoriesQuery.isLoading ? (
-                categoryPanelLayout === 'levelList' ? (
-                  <div className="flex min-h-[9rem] flex-1 flex-col justify-center xl:min-h-0">
-                    <div className="rounded-lg border border-dashed border-slate-300/90 bg-slate-50/80 px-3 py-6 text-center text-xs text-slate-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-slate-400">
-                      {t('catalogStockPicker.loadingCategories')}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="rounded-lg border border-dashed border-slate-300/90 bg-slate-50/80 px-3 py-6 text-center text-xs text-slate-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-slate-400">
-                    {t('catalogStockPicker.loadingCategories')}
-                  </div>
-                )
-              ) : categoriesQuery.data?.length ? (
-                categoryPanelLayout === 'levelList' ? (
-                  <div className="flex min-h-0 flex-1 flex-col justify-start overflow-hidden xl:justify-center">
-                    <div className="min-h-0 w-full max-h-full min-w-0 flex-1 touch-pan-y overflow-y-auto [-webkit-overflow-scrolling:touch]">
-                      <div className="relative min-w-0 max-w-full pb-0.5">
-                    <div className="max-w-full min-w-0 overflow-hidden rounded-xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/30 ring-1 ring-slate-200/40 dark:border-white/10 dark:bg-[#130822]/95 dark:shadow-none dark:ring-white/[0.06]">
-                      <div className="flex items-center gap-2.5 border-b border-slate-200/90 bg-gradient-to-r from-pink-500/[0.08] via-white to-slate-50/80 px-3 py-2.5 dark:border-white/10 dark:from-pink-500/[0.12] dark:via-transparent dark:to-white/[0.02]">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-pink-300/45 bg-pink-50 text-pink-600 shadow-sm dark:border-pink-500/35 dark:bg-pink-500/15 dark:text-pink-300">
-                          <List className="h-4 w-4" aria-hidden />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-pink-600 dark:text-pink-300">
-                            {t('catalogStockPicker.categoryLevelTableTitle')}
-                          </p>
-                          <p className="mt-0.5 line-clamp-2 text-[10px] font-medium leading-snug text-slate-500 dark:text-slate-400">
-                            {t('catalogStockPicker.categoryLevelTableSubtitle')}
-                          </p>
-                        </div>
-                      </div>
-                      <Table
-                        containerClassName="overflow-x-hidden"
-                        className="table-fixed min-w-0"
-                      >
-                        <TableHeader className="sticky top-0 z-[2] shadow-[0_1px_0_rgba(148,163,184,0.25)] dark:shadow-[0_1px_0_rgba(255,255,255,0.06)]">
-                          <TableRow className="border-slate-200/90 bg-slate-50/98 backdrop-blur-sm hover:bg-slate-50/98 dark:border-white/10 dark:bg-zinc-950/90 dark:hover:bg-zinc-950/90">
-                            <TableHead className="h-9 w-9 shrink-0 border-r border-slate-200/90 py-1.5 pl-1 pr-2 text-center text-[9px] font-semibold uppercase tracking-[0.06em] text-slate-500 whitespace-nowrap dark:border-white/[0.08] dark:text-slate-400">
-                              {t('catalogStockPicker.categoryLevelTableColLevel')}
-                            </TableHead>
-                            <TableHead className="h-9 w-[30%] max-w-[30%] min-w-0 border-0 py-1.5 pl-2.5 pr-3 text-left text-[9px] font-semibold uppercase tracking-[0.06em] text-slate-500 dark:text-slate-400">
-                              {t('catalogStockPicker.listColCode')}
-                            </TableHead>
-                            <TableHead className="h-9 min-w-0 py-1.5 pl-1 pr-1 text-left text-[9px] font-semibold uppercase tracking-[0.06em] text-slate-500 dark:text-slate-400">
-                              {t('catalogStockPicker.listColName')}
-                            </TableHead>
-                            <TableHead className="h-9 w-7 px-0 py-1.5 text-center align-middle">
-                              <span className="sr-only">{t('catalogStockPicker.categoryLevelTableColNav')}</span>
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {categoriesQuery.data.map((category) => {
-                            const isActive = selectedLeafCategory?.catalogCategoryId === category.catalogCategoryId;
-                            return (
-                              <TableRow
-                                key={category.catalogCategoryId}
-                                data-state={isActive ? 'selected' : undefined}
-                                className={cn(
-                                  'cursor-pointer border-slate-200/85 transition-colors odd:bg-white/80 even:bg-slate-50/65 dark:border-white/[0.06] dark:odd:bg-transparent dark:even:bg-white/[0.03]',
-                                  isActive
-                                    ? 'bg-pink-50/95 hover:bg-pink-50 data-[state=selected]:bg-pink-50/95 dark:bg-pink-500/14 dark:hover:bg-pink-500/18 dark:data-[state=selected]:bg-pink-500/14'
-                                    : 'hover:bg-pink-500/[0.055] dark:hover:bg-white/[0.06]',
-                                )}
-                                role="button"
-                                tabIndex={0}
-                                onClick={() => handleCategoryClick(category)}
-                                onKeyDown={(event) => {
-                                  if (event.key === 'Enter' || event.key === ' ') {
-                                    event.preventDefault();
-                                    handleCategoryClick(category);
-                                  }
-                                }}
-                              >
-                                <TableCell className="w-9 shrink-0 border-r border-slate-200/85 px-1 py-1.5 text-center align-middle dark:border-white/[0.07]">
-                                  <span className="inline-flex min-w-[1.35rem] max-w-full items-center justify-center rounded-md border border-slate-200/90 bg-slate-50/95 px-1 py-0.5 font-mono text-[9px] font-semibold tabular-nums leading-none text-slate-600 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] dark:border-white/12 dark:bg-white/[0.07] dark:text-slate-300 dark:shadow-none">
-                                    {category.level}
-                                  </span>
-                                </TableCell>
-                                <TableCell className="max-w-0 w-[30%] min-w-0 overflow-hidden py-1.5 pl-2.5 pr-3 align-middle">
-                                  <Tooltip delayDuration={300}>
-                                    <TooltipTrigger asChild>
-                                      <span className="inline-flex max-w-full min-w-0 cursor-default items-center truncate rounded-full border border-pink-300/45 bg-gradient-to-r from-pink-500/[0.12] via-pink-500/[0.06] to-transparent px-2 py-0.5 font-mono text-[10px] font-medium leading-tight tracking-tight text-pink-700 shadow-sm dark:border-pink-500/35 dark:from-pink-500/20 dark:via-pink-500/10 dark:to-transparent dark:text-pink-100 dark:shadow-none">
-                                        {category.code}
-                                      </span>
-                                    </TooltipTrigger>
-                                    <TooltipContent
-                                      side="top"
-                                      align="start"
-                                      className="max-w-[min(90vw,22rem)] break-all font-mono text-xs"
-                                    >
-                                      {category.code}
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TableCell>
-                                <TableCell className="min-w-0 overflow-hidden py-1.5 pl-1.5 pr-1 align-top whitespace-normal">
-                                  <div className="min-w-0">
-                                    <div className="line-clamp-2 text-[11px] font-medium leading-snug tracking-tight text-slate-800 dark:text-slate-100">
-                                      {category.name}
-                                    </div>
-                                    {category.fullPath ? (
-                                      <div className="mt-0.5 line-clamp-2 text-[9px] font-normal leading-relaxed tracking-wide text-slate-500 dark:text-slate-400">
-                                        {category.fullPath}
-                                      </div>
-                                    ) : null}
-                                  </div>
-                                </TableCell>
-                                <TableCell className="w-7 px-0 py-1.5 text-center align-middle">
-                                  {category.hasChildren ? (
-                                    <ChevronRight
-                                      className={cn(
-                                        'mx-auto block h-4 w-4 shrink-0 stroke-[2.5] transition-transform',
-                                        isActive
-                                          ? 'text-cyan-500 drop-shadow-[0_0_6px_rgba(6,182,212,0.35)] dark:text-cyan-300'
-                                          : 'text-cyan-600/90 dark:text-cyan-400/90',
-                                      )}
-                                      aria-hidden
-                                    />
-                                  ) : null}
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="relative min-w-0 max-w-full">
-                    <ul
-                      className={cn(
-                        'relative space-y-1',
-                        categoryTreeDepth > 0 &&
-                          'ml-0.5 border-l-2 border-pink-400/50 pl-3 dark:border-pink-500/20',
-                      )}
-                    >
-                      {categoriesQuery.data.map((category) => {
-                        const isActive = selectedLeafCategory?.catalogCategoryId === category.catalogCategoryId;
-                        return (
-                          <li
-                            key={category.catalogCategoryId}
+            <div className="relative flex min-h-0 flex-1 touch-pan-y flex-col overflow-hidden overscroll-contain bg-slate-100/55 px-2 py-2 [-webkit-overflow-scrolling:touch] dark:bg-zinc-950/40 sm:px-3 sm:py-2.5 xl:px-3 xl:py-2">
+              {catalogsQuery.isLoading ? (
+                <div className="flex min-h-[9rem] flex-1 flex-col justify-center py-8 text-center text-xs text-slate-500 xl:min-h-0 dark:text-slate-400">
+                  {t('catalogStockPicker.loadingCatalogs')}
+                </div>
+              ) : catalogListForQueries.length > 0 ? (
+                <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto [-webkit-overflow-scrolling:touch] touch-pan-y pb-2 pl-0.5 pr-1 pt-0.5 sm:pr-1.5">
+                  <p className="shrink-0 px-0.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                    {t('catalogStockPicker.hierarchySectionTitle')}
+                  </p>
+                  {catalogListForQueries.map((catalog, catalogIdx) => {
+                    const catalogExpanded = expandedCatalogIds.has(catalog.id);
+                    const catQ = categoryQueries[catalogIdx];
+                    const localPath = catalogPaths[catalog.id] ?? [];
+                    const categoriesForCatalog = catQ?.data ?? [];
+                    const catalogLoading =
+                      catalogExpanded && (catQ?.isPending || catQ?.isFetching) && categoriesForCatalog.length === 0;
+
+                    return (
+                      <div key={catalog.id} className="mb-1.5 last:mb-0">
+                        <button
+                          type="button"
+                          onClick={() => toggleCatalogExpanded(catalog.id)}
+                          aria-expanded={catalogExpanded}
+                          className={cn(
+                            'flex w-full items-center gap-2 rounded-lg py-2.5 pl-1 pr-2 text-left transition-colors',
+                            catalogExpanded
+                              ? 'bg-pink-500/[0.11] dark:bg-pink-500/[0.14]'
+                              : 'hover:bg-slate-200/40 dark:hover:bg-white/[0.05]',
+                          )}
+                        >
+                          <span
                             className={cn(
-                              'group/category relative rounded-xl border transition-all duration-200',
-                              isActive
-                                ? 'border-pink-400/45 bg-gradient-to-br from-pink-500/[0.07] to-white/80 shadow-[0_0_0_1px_rgba(236,72,153,0.12)] dark:border-pink-500/35 dark:from-pink-500/10 dark:to-transparent'
-                                : 'border-slate-300/80 bg-white shadow-sm hover:border-pink-300/50 hover:bg-white dark:border-white/[0.07] dark:bg-white/[0.02] dark:shadow-none dark:hover:border-pink-500/25',
+                              'shrink-0 self-stretch rounded-full transition-[width,background-color] duration-200',
+                              catalogExpanded
+                                ? 'w-1 bg-pink-500 dark:bg-pink-400'
+                                : 'w-0 bg-transparent',
+                            )}
+                            aria-hidden
+                          />
+                          <Package
+                            className={cn(
+                              'h-4 w-4 shrink-0',
+                              catalogExpanded
+                                ? 'text-pink-600 dark:text-pink-400'
+                                : 'text-slate-500 dark:text-slate-400',
+                            )}
+                            aria-hidden
+                          />
+                          <span
+                            className={cn(
+                              'min-w-0 flex-1 truncate text-[11px] font-bold uppercase tracking-[0.08em]',
+                              catalogExpanded
+                                ? 'text-pink-700 dark:text-pink-300'
+                                : 'text-slate-800 dark:text-slate-100',
                             )}
                           >
-                            <button
-                              type="button"
-                              onClick={() => handleCategoryClick(category)}
-                              className="flex w-full items-start gap-2 px-2 py-2 text-left sm:gap-2.5 sm:px-2.5"
-                            >
-                              <span
-                                className={cn(
-                                  'mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border transition-colors',
-                                  category.hasChildren
-                                    ? 'border-pink-300/70 bg-pink-50 text-pink-600 dark:border-pink-500/25 dark:bg-pink-500/[0.06] dark:text-pink-300'
-                                    : 'border-slate-300/85 bg-slate-50 text-pink-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-pink-300',
-                                )}
-                                aria-hidden
-                              >
-                                {category.hasChildren ? (
-                                  <GitBranch className="h-3.5 w-3.5 opacity-90" />
-                                ) : (
-                                  <span className="text-[10px] font-bold leading-none">●</span>
-                                )}
-                              </span>
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-start justify-between gap-2">
-                                  <div className="min-w-0">
-                                    <div className="flex items-center gap-1">
-                                      <span className="truncate text-[13px] font-semibold leading-tight text-slate-900 dark:text-slate-50">
-                                        {category.name}
-                                      </span>
-                                      {category.hasChildren ? (
-                                        <ChevronRight className="h-3 w-3 shrink-0 text-slate-300 opacity-0 transition-all group-hover/category:translate-x-0.5 group-hover/category:opacity-100 dark:text-slate-500" aria-hidden />
-                                      ) : null}
-                                    </div>
-                                    <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                                      <span className="font-mono text-[9px] tracking-wide text-pink-600/75 dark:text-pink-300/80">
-                                        {category.code}
-                                      </span>
-                                      <span className="text-[9px] text-slate-300 dark:text-slate-600">·</span>
-                                      <span className="text-[9px] tabular-nums text-slate-400 dark:text-slate-500">
-                                        L{category.level}
-                                      </span>
-                                      <span className="text-[9px] text-slate-300 dark:text-slate-600">·</span>
-                                      <span
-                                        className={cn(
-                                          'text-[9px] font-medium',
-                                          category.hasChildren ? 'text-cyan-600/90 dark:text-cyan-300/90' : 'text-pink-600/90 dark:text-pink-300/90',
-                                        )}
-                                      >
-                                        {category.hasChildren
-                                          ? t('catalogStockPicker.subCategoryBadge')
-                                          : t('catalogStockPicker.leafBadge')}
-                                      </span>
-                                    </div>
-                                    {category.fullPath ? (
-                                      <p className="mt-1 line-clamp-1 border-l border-slate-200/60 pl-2 text-[9px] leading-snug text-slate-400 dark:border-white/10 dark:text-slate-500">
-                                        {category.fullPath}
-                                      </p>
+                            {catalog.name}
+                          </span>
+                          <ChevronRight
+                            className={cn(
+                              'h-4 w-4 shrink-0 transition-transform duration-200',
+                              catalogExpanded
+                                ? 'rotate-90 text-pink-600 dark:text-pink-400'
+                                : 'text-slate-600 dark:text-slate-400',
+                            )}
+                            aria-hidden
+                          />
+                        </button>
+                        {catalogExpanded ? (
+                          <div className="ml-2 mt-0.5 border-l border-slate-300/80 dark:border-white/12">
+                            <div className="flex flex-col gap-0.5 py-0.5">
+                              {localPath.map((segment, pathIdx) => {
+                                const isTrailEnd = pathIdx === localPath.length - 1;
+                                const trailFolderFocus =
+                                  selectedCatalog?.id === catalog.id &&
+                                  isTrailEnd &&
+                                  selectedLeafCategory?.catalogCategoryId ===
+                                    localPath[localPath.length - 1]?.catalogCategoryId;
+                                const trailPadRem = 0.75 + pathIdx * 0.65;
+                                return (
+                                  <button
+                                    key={`${catalog.id}-trail-${segment.catalogCategoryId}-${pathIdx}`}
+                                    type="button"
+                                    ref={
+                                      trailFolderFocus
+                                        ? (categorySelectionRowRef as Ref<HTMLButtonElement>)
+                                        : undefined
+                                    }
+                                    style={{ paddingLeft: `${trailPadRem}rem` }}
+                                    onClick={() => handleCatalogTrailSegmentClick(catalog.id, pathIdx)}
+                                    className={cn(
+                                      'flex w-full items-center justify-between gap-2 rounded-md py-2 pr-2 text-left text-[13px] transition-colors',
+                                      isTrailEnd
+                                        ? 'bg-pink-500/15 font-semibold text-pink-900 dark:bg-pink-500/20 dark:text-pink-100'
+                                        : 'bg-pink-500/[0.07] font-medium text-slate-800 dark:bg-pink-500/10 dark:text-slate-100',
+                                    )}
+                                  >
+                                    <span className="min-w-0 flex-1 leading-snug">{segment.name}</span>
+                                    {segment.hasChildren ? (
+                                      isTrailEnd ? (
+                                        <ChevronDown
+                                          className="h-3.5 w-3.5 shrink-0 text-pink-600 dark:text-pink-400"
+                                          aria-hidden
+                                        />
+                                      ) : (
+                                        <ChevronRight
+                                          className="h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500"
+                                          aria-hidden
+                                        />
+                                      )
                                     ) : null}
-                                    {category.description ? (
-                                      <p className="mt-1 line-clamp-1 text-[10px] text-slate-500 dark:text-slate-400">
-                                        {category.description}
-                                      </p>
-                                    ) : null}
-                                  </div>
-                                </div>
-                              </div>
-                            </button>
-
-                            {category.hasChildren && selectedCatalog != null ? (
-                              <CategoryInlinePreviewTree
-                                row={category}
-                                catalogId={selectedCatalog.id}
-                                dialogOpen={open}
-                                onNavigateChain={handlePreviewNavigateChain}
-                              />
-                            ) : null}
-
-                            <div className="flex flex-wrap gap-1 border-t border-slate-200/95 bg-slate-50 px-2 py-1.5 dark:border-white/[0.06] dark:bg-white/[0.02] sm:px-2.5">
-                              {category.hasChildren ? (
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleCategoryClick(category)}
-                                  className="h-7 rounded-md border border-slate-300/90 bg-white px-2 text-[10px] font-medium text-slate-800 shadow-sm dark:border-white/12 dark:bg-white/[0.05] dark:text-slate-200"
-                                >
-                                  {t('catalogStockPicker.browseChildrenButton')}
-                                </Button>
-                              ) : null}
-                              <Button
-                                type="button"
-                                size="sm"
-                                onClick={() => handleCategoryList(category)}
-                                className={cn(
-                                  'h-7 rounded-md px-2.5 text-[10px] font-semibold shadow-sm transition-all',
-                                  isActive
-                                    ? 'bg-pink-500 text-white hover:bg-pink-600 dark:bg-pink-600 dark:hover:bg-pink-500'
-                                    : 'border border-pink-300/55 bg-pink-50 text-pink-700 hover:bg-pink-100 dark:border-pink-500/30 dark:bg-pink-500/15 dark:text-pink-100 dark:hover:bg-pink-500/25',
-                                )}
-                                variant={category.hasChildren ? 'secondary' : 'default'}
-                              >
-                                {t('catalogStockPicker.listDescendantsButton')}
-                              </Button>
+                                  </button>
+                                );
+                              })}
                             </div>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                )
-              )
-              : categoryPanelLayout === 'levelList' ? (
-                <div className="flex min-h-[9rem] flex-1 flex-col justify-center xl:min-h-0">
-                  <div className="rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/90 p-6 text-sm text-slate-600 dark:border-white/15 dark:bg-white/[0.02] dark:text-slate-400">
-                    {t('catalogStockPicker.emptyCategories')}
-                  </div>
+                            {catalogLoading ? (
+                              <div
+                                className="flex items-center gap-2 py-4 text-[11px] text-slate-500 dark:text-slate-400"
+                                style={{ paddingLeft: `${0.75 + localPath.length * 0.65}rem` }}
+                              >
+                                <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" aria-hidden />
+                                {t('catalogStockPicker.loadingCategories')}
+                              </div>
+                            ) : categoriesForCatalog.length > 0 ? (
+                              <div
+                                className="mt-0.5 flex flex-col gap-0.5 border-t border-slate-200/80 pt-1 dark:border-white/[0.08]"
+                                style={{ paddingLeft: `${0.75 + localPath.length * 0.65}rem` }}
+                              >
+                                {categoriesForCatalog.map((category) => {
+                                  const isActive =
+                                    selectedLeafCategory?.catalogCategoryId === category.catalogCategoryId;
+                                  const listRowRef =
+                                    isActive &&
+                                    selectedCatalog?.id === catalog.id &&
+                                    !(
+                                      localPath.length > 0 &&
+                                      selectedLeafCategory?.catalogCategoryId ===
+                                        localPath[localPath.length - 1]?.catalogCategoryId
+                                    );
+                                  return (
+                                    <button
+                                      key={category.catalogCategoryId}
+                                      type="button"
+                                      ref={
+                                        listRowRef
+                                          ? (categorySelectionRowRef as Ref<HTMLButtonElement>)
+                                          : undefined
+                                      }
+                                      onClick={() => handleCategoryClick(catalog.id, category)}
+                                      className={cn(
+                                        'w-full rounded-md px-2 py-2 text-left text-[13px] transition-colors',
+                                        isActive
+                                          ? 'bg-slate-200/90 text-slate-900 dark:bg-white/10 dark:text-slate-50'
+                                          : 'text-slate-600 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:bg-white/[0.06]',
+                                      )}
+                                    >
+                                      <div className="flex items-start justify-between gap-2">
+                                        <span className="min-w-0 flex-1 font-medium leading-snug text-slate-800 dark:text-slate-100">
+                                          {category.name}
+                                        </span>
+                                        {category.hasChildren ? (
+                                          <ChevronRight
+                                            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500"
+                                            aria-hidden
+                                          />
+                                        ) : null}
+                                      </div>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            ) : localPath.length > 0 ? (
+                              <div
+                                className="py-3 text-center text-[11px] text-slate-500 dark:text-slate-400"
+                                style={{ paddingLeft: `${0.75 + localPath.length * 0.65}rem` }}
+                              >
+                                {t('catalogStockPicker.emptyCategories')}
+                              </div>
+                            ) : (
+                              <div className="py-3 pl-3 text-center text-[11px] text-slate-500 dark:text-slate-400">
+                                {t('catalogStockPicker.emptyCategories')}
+                              </div>
+                            )}
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
-                <div className="rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/90 p-6 text-sm text-slate-600 dark:border-white/15 dark:bg-white/[0.02] dark:text-slate-400">
-                  {t('catalogStockPicker.emptyCategories')}
+                <div className="flex min-h-[9rem] flex-1 flex-col justify-center py-8 text-center text-sm text-slate-500 xl:min-h-0 dark:text-slate-400">
+                  {t('catalogStockPicker.noCatalogSelected')}
                 </div>
               )}
             </div>
@@ -1858,57 +1760,79 @@ export function CatalogStockSelectDialog({
             <div
               className={cn(
                 'flex min-h-0 flex-1 flex-col',
-                /* Mobilde: başlık + arama + seçtiklerin + yardımcı şerit + liste tek sütunda kayar */
                 'max-lg:min-h-0 max-lg:flex-1 max-lg:overflow-y-auto max-lg:overscroll-y-contain max-lg:touch-pan-y max-lg:[-webkit-overflow-scrolling:touch]',
                 'lg:overflow-hidden',
                 !mobileStocksOpen && 'max-lg:hidden lg:flex',
               )}
             >
-            <div className="shrink-0 border-b border-slate-300/90 bg-white px-4 py-2 shadow-[inset_0_-1px_0_rgba(148,163,184,0.1)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-5 sm:py-2.5">
-              <div className="flex flex-col gap-2 xl:flex-row xl:items-center xl:justify-between xl:gap-3">
-                <div className="min-w-0">
-                  <div className="hidden items-center gap-1.5 text-xs font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-sm lg:flex">
-                    <ShoppingBag className="h-3.5 w-3.5 shrink-0 text-pink-500 drop-shadow-[0_0_6px_rgba(244,114,182,0.45)] dark:text-pink-400 dark:drop-shadow-[0_0_6px_rgba(244,114,182,0.6)] sm:h-4 sm:w-4" />
-                    {t('catalogStockPicker.stocksTitle')}
-                  </div>
-                  <HorizontalScrollRow
-                    syncKey={stockBadgesScrollSyncKey}
-                    scrollBackLabel={t('catalogStockPicker.scrollBack')}
-                    scrollForwardLabel={t('catalogStockPicker.scrollForward')}
-                    className="mt-1.5"
-                    scrollStep={240}
+            <div className="shrink-0 overflow-visible border-b border-slate-300/90 bg-white px-4 py-2 shadow-[inset_0_-1px_0_rgba(148,163,184,0.1)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-5 sm:py-2.5">
+              <div className="flex w-full shrink-0 flex-col gap-3 overflow-visible sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <div className="flex shrink-0 flex-wrap items-center justify-start gap-4 overflow-visible sm:gap-5 md:gap-6">
+                  <button
+                    type="button"
+                    onClick={toggleStockBrowseCampaign}
+                    aria-pressed={stockBrowseMode === 'campaign'}
+                    className={cn(
+                      'group relative isolate flex items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
+                      stockBrowseMode === 'campaign'
+                        ? 'scale-105 border-transparent bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white shadow-[0_8px_20px_rgba(244,63,94,0.4)] ring-4 ring-pink-100 dark:ring-pink-950/55'
+                        : 'border-pink-200 bg-gradient-to-r from-rose-50 to-pink-50 text-rose-600 hover:from-rose-100 hover:to-pink-100 dark:border-pink-800/50 dark:from-rose-950/45 dark:to-pink-950/35 dark:text-rose-200 dark:hover:from-rose-900/55 dark:hover:to-pink-900/45',
+                    )}
                   >
-                    <span className="shrink-0 whitespace-nowrap rounded-full border border-slate-300/90 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-800 shadow-sm backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:shadow-none sm:text-xs">
-                      <span className="max-w-[200px] truncate sm:max-w-[280px]">
-                        {t('catalogStockPicker.selectedLeaf')}: {selectedLeafLabel}
-                      </span>
+                    <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-xl" aria-hidden>
+                      <span
+                        className={cn(
+                          'catalog-tab-shine-layer pointer-events-none',
+                          stockBrowseMode !== 'campaign' && 'catalog-tab-shine-layer--muted',
+                        )}
+                      />
                     </span>
-                    <span className="max-w-[min(360px,55vw)] shrink-0 rounded-full border border-pink-500/25 bg-pink-500/10 px-2.5 py-1 text-[11px] text-pink-700 backdrop-blur-sm dark:text-pink-200 sm:text-xs">
-                      <span className="truncate">
-                        {t('catalogStockPicker.currentPathLabel')}: {currentHierarchyPath}
-                      </span>
+                    <span
+                      className={cn(
+                        'relative z-[2] inline-flex shrink-0',
+                        stockBrowseMode === 'campaign' && 'catalog-tab-flame-flicker text-yellow-300',
+                      )}
+                    >
+                      <Flame className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden />
                     </span>
-                    {selectedLeafCategory ? (
-                      <span className="shrink-0 whitespace-nowrap rounded-full border border-cyan-400/30 bg-cyan-500/10 px-2.5 py-1 font-mono text-[10px] text-cyan-700 backdrop-blur-sm dark:text-cyan-200 sm:text-[11px]">
-                        {t('catalogStockPicker.levelBadge', { level: selectedLeafCategory.level })}
-                      </span>
-                    ) : null}
-                    {selectionModeLabel ? (
-                      <span className="shrink-0 whitespace-nowrap rounded-full border border-slate-300/90 bg-slate-50 px-2.5 py-1 text-[10px] text-slate-700 shadow-sm backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:text-slate-300 dark:shadow-none sm:text-[11px]">
-                        {selectionModeLabel}
-                      </span>
-                    ) : null}
-                    {multiSelect && (selectedResults.length > 0 || catalogDraftSnapshotList.length > 0) ? (
-                      <span className="shrink-0 whitespace-nowrap rounded-full border border-pink-500/40 bg-pink-500/15 px-2.5 py-1 text-[10px] font-semibold text-pink-700 shadow-[0_0_16px_rgba(236,72,153,0.25)] backdrop-blur-sm dark:text-pink-100 sm:text-xs">
-                        {t('catalogStockPicker.confirmTotalCount', {
-                          count: catalogDraftSnapshotList.length + selectedResults.length,
-                        })}
-                      </span>
-                    ) : null}
-                  </HorizontalScrollRow>
+                    <span className="relative z-[2] whitespace-nowrap">{t('catalogStockPicker.campaignStocksChip')}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={toggleStockBrowseFavorites}
+                    aria-pressed={stockBrowseMode === 'favorites'}
+                    className={cn(
+                      'group relative isolate flex items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
+                      stockBrowseMode === 'favorites'
+                        ? 'scale-105 border-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-amber-950 shadow-[0_8px_20px_rgba(251,191,36,0.4)] ring-4 ring-amber-100 dark:ring-amber-950/50'
+                        : 'border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-600 hover:from-amber-100 hover:to-yellow-100 dark:border-amber-800/45 dark:from-amber-950/40 dark:to-yellow-950/30 dark:text-amber-200 dark:hover:from-amber-900/50 dark:hover:to-yellow-900/40',
+                    )}
+                  >
+                    <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-xl" aria-hidden>
+                      <span
+                        className={cn(
+                          'catalog-tab-shine-layer catalog-tab-shine-layer--delay pointer-events-none',
+                          stockBrowseMode !== 'favorites' && 'catalog-tab-shine-layer--muted',
+                        )}
+                      />
+                    </span>
+                    <span
+                      className={cn(
+                        'relative z-[2] inline-flex shrink-0',
+                        stockBrowseMode === 'favorites' ? 'catalog-tab-star-twinkle' : 'catalog-tab-star-twinkle-soft',
+                      )}
+                    >
+                      <Star
+                        className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                        strokeWidth={1.75}
+                        fill={stockBrowseMode === 'favorites' ? 'currentColor' : 'none'}
+                        aria-hidden
+                      />
+                    </span>
+                    <span className="relative z-[2] whitespace-nowrap">{t('catalogStockPicker.favoriteStocksChip')}</span>
+                  </button>
                 </div>
-
-                <div className="flex w-full shrink-0 flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-end xl:w-auto">
+                <div className="flex min-w-0 flex-1 flex-wrap items-center justify-start gap-2 sm:justify-end sm:gap-3">
                   <div
                     className="flex shrink-0 gap-0.5 rounded-lg border border-slate-300/90 bg-slate-50 p-0.5 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none"
                     role="group"
@@ -1947,14 +1871,17 @@ export function CatalogStockSelectDialog({
                       <span className="ml-1.5 hidden text-xs font-medium sm:inline">{t('catalogStockPicker.viewModeCards')}</span>
                     </Button>
                   </div>
-                  <div className="relative min-w-0 flex-1 sm:max-w-[360px]">
+                  <div className="relative min-w-0 w-full flex-1 sm:min-w-[200px] sm:max-w-md">
                     <Search className="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-pink-500/70 dark:text-pink-400/70 sm:left-3 sm:top-2.5 sm:h-4 sm:w-4" />
                     <Input
                       value={stockSearch}
                       onChange={(event) => setStockSearch(event.target.value)}
                       placeholder={t('catalogStockPicker.searchPlaceholder')}
                       className="h-8 rounded-xl border border-slate-300/90 bg-white pl-8 text-sm text-slate-900 shadow-sm placeholder:text-slate-500 backdrop-blur-sm focus-visible:border-pink-400/60 focus-visible:ring-pink-500/20 dark:border-white/15 dark:bg-white/[0.06] dark:text-slate-100 dark:placeholder:text-slate-500 dark:shadow-none dark:focus-visible:border-pink-500/40 sm:h-9 sm:rounded-2xl sm:pl-10"
-                      disabled={!selectedLeafCategory}
+                      disabled={
+                        stockBrowseMode === 'favorites' ||
+                        (stockBrowseMode === 'category' && !selectedLeafCategory)
+                      }
                     />
                   </div>
                 </div>

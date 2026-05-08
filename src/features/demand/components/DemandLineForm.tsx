@@ -14,6 +14,7 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { CatalogStockSelectDialog } from '@/components/shared/CatalogStockSelectDialog';
+import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
 import { useProductSelection } from '../hooks/useProductSelection';
@@ -1707,6 +1708,7 @@ export function DemandLineForm({
         multiSelect
         onMultiSelect={handleMultiProductSelect}
         existingLineStockMarkers={existingLineStockMarkers}
+        pricingRuleType={PricingRuleType.Demand}
         initialSelectedResults={bulkDraftLines.map((lineItem) => ({
           ...(lineItem.productId != null && lineItem.productId > 0 ? { id: lineItem.productId } : {}),
           code: lineItem.productCode || '',

@@ -15,6 +15,7 @@ import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { CatalogStockSelectDialog } from '@/components/shared/CatalogStockSelectDialog';
+import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared/CustomerSelectDialog';
 import { PricingRuleInsightDialog } from '@/components/shared/PricingRuleInsightDialog';
 import { useProductSelection } from '../hooks/useProductSelection';
@@ -1761,6 +1762,7 @@ export function QuotationLineForm({
         multiSelect
         onMultiSelect={handleMultiProductSelect}
         existingLineStockMarkers={existingLineStockMarkers}
+        pricingRuleType={PricingRuleType.Quotation}
         initialSelectedResults={bulkDraftLines.map((lineItem) => ({
           ...(lineItem.productId != null && lineItem.productId > 0 ? { id: lineItem.productId } : {}),
           code: lineItem.productCode || '',
