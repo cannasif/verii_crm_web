@@ -22,4 +22,13 @@ export interface ApprovalFlowStepUpdateDto {
   approvalRoleGroupId: number;
 }
 
+export interface ApprovalFlowStepReorderDto {
+  approvalFlowId: number;
+  steps: ApprovalFlowStepOrderDto[];
+}
+
+export interface ApprovalFlowStepOrderDto {
+  id: number;
+  stepOrder: number;
+}
 

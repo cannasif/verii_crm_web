@@ -4,6 +4,7 @@ import type {
   ApprovalFlowStepGetDto,
   ApprovalFlowStepCreateDto,
   ApprovalFlowStepUpdateDto,
+  ApprovalFlowStepReorderDto,
 } from '../types/approval-flow-step-types';
 
 export const approvalFlowStepApi = {
@@ -69,6 +70,17 @@ export const approvalFlowStepApi = {
       return response.data;
     }
     throw new Error(response.message || 'Onay akış adımı güncellenemedi');
+  },
+
+  reorder: async (data: ApprovalFlowStepReorderDto): Promise<ApprovalFlowStepGetDto[]> => {
+    const response = await api.post<ApiResponse<ApprovalFlowStepGetDto[]>>(
+      '/api/ApprovalFlowStep/reorder',
+      data
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Onay akış adımları sıralanamadı');
   },
 
   delete: async (id: number): Promise<void> => {

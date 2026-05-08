@@ -24,6 +24,7 @@ import { useApprovalFlowStepList } from '../hooks/useApprovalFlowStepList';
 import { useCreateApprovalFlowStep } from '../hooks/useCreateApprovalFlowStep';
 import { useUpdateApprovalFlowStep } from '../hooks/useUpdateApprovalFlowStep';
 import { useDeleteApprovalFlowStep } from '../hooks/useDeleteApprovalFlowStep';
+import { useReorderApprovalFlowSteps } from '../hooks/useReorderApprovalFlowSteps';
 import { useApprovalRoleGroupOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import type { ApprovalFlowStepGetDto } from '../types/approval-flow-step-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
@@ -79,6 +80,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
   const createStep = useCreateApprovalFlowStep();
   const updateStep = useUpdateApprovalFlowStep();
   const deleteStep = useDeleteApprovalFlowStep();
+  const reorderSteps = useReorderApprovalFlowSteps();
 
   const sortedSteps = [...steps].sort((a, b) => a.stepOrder - b.stepOrder);
 
@@ -147,16 +149,13 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
         }
       }
 
-      const updates = newSteps.map((step, index) => ({
-        id: step.id,
-        data: {
-          approvalFlowId: step.approvalFlowId,
+      reorderSteps.mutate({
+        approvalFlowId,
+        steps: newSteps.map((step, index) => ({
+          id: step.id,
           stepOrder: index + 1,
-          approvalRoleGroupId: step.approvalRoleGroupId,
-        },
-      }));
-
-      Promise.all(updates.map(({ id, data }) => updateStep.mutateAsync({ id, data }))).catch(() => {});
+        })),
+      });
     }
 
     setDraggedIndex(null);
