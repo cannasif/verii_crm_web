@@ -405,7 +405,8 @@ async function refreshAccessToken(): Promise<string | null> {
 
 api.interceptors.request.use((config) => {
   config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
-  if ((config.method ?? 'get').toLowerCase() === 'get') {
+  const originalMethod = (config.method ?? 'get').toLowerCase();
+  if (originalMethod === 'get') {
     config.url = clampPagedRequestUrl(config.url);
     config.params = clampPagedRequestParams(config.params);
   }
@@ -430,6 +431,11 @@ api.interceptors.request.use((config) => {
   const branchCode = branch?.code || resolveBranchCodeFromPersistedState();
   if (branchCode) {
     config.headers['X-Branch-Code'] = branchCode;
+  }
+
+  if (originalMethod === 'put' || originalMethod === 'patch' || originalMethod === 'delete') {
+    config.headers['X-HTTP-Method-Override'] = originalMethod.toUpperCase();
+    config.method = 'post';
   }
 
   return config;
