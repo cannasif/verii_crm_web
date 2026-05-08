@@ -28,13 +28,13 @@ export interface ColumnDef<T> {
 type PricingRuleColumnKey = keyof PricingRuleHeaderGetDto | 'status';
 
 const getColumnsConfig = (t: TFunction): ColumnDef<PricingRuleHeaderGetDto>[] => [
-  { key: 'ruleCode', label: t('pricingRule.table.ruleCode'), type: 'code', className: 'w-[96px] md:w-[120px]' },
-  { key: 'ruleName', label: t('pricingRule.table.ruleName'), type: 'text', className: 'min-w-[160px] md:min-w-[200px] font-medium' },
-  { key: 'ruleType', label: t('pricingRule.table.ruleType'), type: 'ruleType', className: 'w-[110px] md:w-[140px]' },
-  { key: 'validFrom', label: t('pricingRule.table.validFrom'), type: 'date', className: 'w-[110px] md:w-[140px]' },
-  { key: 'validTo', label: t('pricingRule.table.validTo'), type: 'date', className: 'w-[110px] md:w-[140px]' },
-  { key: 'customerName', label: t('pricingRule.table.customer'), type: 'customer', className: 'min-w-[150px] md:min-w-[180px]' },
-  { key: 'isActive', label: t('pricingRule.table.status'), type: 'status', className: 'w-[96px] md:w-[120px]' },
+  { key: 'ruleCode', label: t('table.ruleCode'), type: 'code', className: 'w-[96px] md:w-[120px]' },
+  { key: 'ruleName', label: t('table.ruleName'), type: 'text', className: 'min-w-[160px] md:min-w-[200px] font-medium' },
+  { key: 'ruleType', label: t('table.ruleType'), type: 'ruleType', className: 'w-[110px] md:w-[140px]' },
+  { key: 'validFrom', label: t('table.validFrom'), type: 'date', className: 'w-[110px] md:w-[140px]' },
+  { key: 'validTo', label: t('table.validTo'), type: 'date', className: 'w-[110px] md:w-[140px]' },
+  { key: 'customerName', label: t('table.customer'), type: 'customer', className: 'min-w-[150px] md:min-w-[180px]' },
+  { key: 'isActive', label: t('table.status'), type: 'status', className: 'w-[96px] md:w-[120px]' },
 ];
 
 export { getColumnsConfig };
