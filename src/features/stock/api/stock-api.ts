@@ -47,6 +47,39 @@ export const stockApi = {
     return pagedData;
   },
 
+  getListByErpStockCodes: async (erpStockCodes: string[]): Promise<StockGetDto[]> => {
+    const unique = [...new Set(erpStockCodes.map((c) => c.trim()).filter((c) => c.length > 0))];
+    if (unique.length === 0) {
+      return [];
+    }
+    const chunkSize = 25;
+    const merged: StockGetDto[] = [];
+    const seenIds = new Set<number>();
+    for (let i = 0; i < unique.length; i += chunkSize) {
+      const chunk = unique.slice(i, i + chunkSize);
+      const page = await stockApi.getList({
+        pageNumber: 1,
+        pageSize: Math.max(60, chunk.length * 3),
+        search: '',
+        sortBy: 'Id',
+        sortDirection: 'asc',
+        filterLogic: 'or',
+        filters: chunk.map((code) => ({
+          column: 'ErpStockCode',
+          operator: 'eq',
+          value: code,
+        })),
+      });
+      for (const row of page.data) {
+        if (!seenIds.has(row.id)) {
+          seenIds.add(row.id);
+          merged.push(row);
+        }
+      }
+    }
+    return merged;
+  },
+
   getById: async (id: number): Promise<StockGetDto> => {
     const response = await api.get<ApiResponse<StockGetDto>>(`/api/Stock/${id}`);
     
