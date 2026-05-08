@@ -61,8 +61,8 @@ export const approvalFlowStepApi = {
     id: number,
     data: ApprovalFlowStepUpdateDto
   ): Promise<ApprovalFlowStepGetDto> => {
-    const response = await api.put<ApiResponse<ApprovalFlowStepGetDto>>(
-      `/api/ApprovalFlowStep/${id}`,
+    const response = await api.post<ApiResponse<ApprovalFlowStepGetDto>>(
+      `/api/ApprovalFlowStep/${id}/update`,
       data
     );
     if (response.success && response.data) {
@@ -72,7 +72,7 @@ export const approvalFlowStepApi = {
   },
 
   delete: async (id: number): Promise<void> => {
-    const response = await api.delete<ApiResponse<object>>(`/api/ApprovalFlowStep/${id}`);
+    const response = await api.post<ApiResponse<object>>(`/api/ApprovalFlowStep/${id}/delete`);
     if (!response.success) {
       throw new Error(response.message || 'Onay akış adımı silinemedi');
     }
