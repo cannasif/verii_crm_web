@@ -18,7 +18,9 @@
     "showing": "{{from}}-{{to}} / {{total}}",
     "page": "Pagina {{current}} / {{total}}",
     "previous": "Precedente",
-    "next": "Successivo"
+    "next": "Successivo",
+    "addFavorite": "Aggiungi ai preferiti",
+    "removeFavorite": "Rimuovi dai preferiti"
   },
   "detail": {
     "title": "Dettaglio articolo",
@@ -118,6 +120,9 @@
     "uploadSuccess": "Immagini caricate",
     "setPrimarySuccess": "Immagine principale aggiornata",
     "relationCreateSuccess": "Articolo collegato aggiunto",
-    "error": "Si è verificato un errore"
+    "error": "Si è verificato un errore",
+    "favoriteAddSuccess": "Stock aggiunto ai preferiti",
+    "favoriteRemoveSuccess": "Stock rimosso dai preferiti",
+    "favoriteToggleError": "Impossibile aggiornare il preferito"
   }
 }

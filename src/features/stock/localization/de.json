@@ -18,7 +18,9 @@
     "showing": "{{from}}-{{to}} / {{total}}",
     "page": "Seite {{current}} / {{total}}",
     "previous": "Zurück",
-    "next": "Weiter"
+    "next": "Weiter",
+    "addFavorite": "Zu Favoriten hinzufügen",
+    "removeFavorite": "Aus Favoriten entfernen"
   },
   "detail": {
     "title": "Bestandsdetails",
@@ -118,6 +120,9 @@
     "uploadSuccess": "Bilder wurden hochgeladen",
     "setPrimarySuccess": "Hauptbild wurde gesetzt",
     "relationCreateSuccess": "Verknüpfter Bestand wurde hinzugefügt",
-    "error": "Ein Fehler ist aufgetreten"
+    "error": "Ein Fehler ist aufgetreten",
+    "favoriteAddSuccess": "Artikel zu Favoriten hinzugefügt",
+    "favoriteRemoveSuccess": "Artikel aus Favoriten entfernt",
+    "favoriteToggleError": "Favoritenstatus konnte nicht aktualisiert werden"
   }
 }

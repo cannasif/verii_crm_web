@@ -18,7 +18,9 @@
     "showing": "{{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
     "previous": "Précédent",
-    "next": "Suivant"
+    "next": "Suivant",
+    "addFavorite": "Ajouter aux favoris",
+    "removeFavorite": "Retirer des favoris"
   },
   "detail": {
     "title": "Fiche stock",
@@ -118,6 +120,9 @@
     "uploadSuccess": "Images téléversées",
     "setPrimarySuccess": "Image principale mise à jour",
     "relationCreateSuccess": "Stock lié ajouté",
-    "error": "Une erreur s’est produite"
+    "error": "Une erreur s’est produite",
+    "favoriteAddSuccess": "Stock ajouté aux favoris",
+    "favoriteRemoveSuccess": "Stock retiré des favoris",
+    "favoriteToggleError": "Impossible de mettre à jour le favori"
   }
 }

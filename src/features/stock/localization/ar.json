@@ -18,7 +18,9 @@
     "showing": "{{from}}-{{to}} / {{total}}",
     "page": "صفحة {{current}} / {{total}}",
     "previous": "السابق",
-    "next": "التالي"
+    "next": "التالي",
+    "addFavorite": "إضافة إلى المفضلة",
+    "removeFavorite": "إزالة من المفضلة"
   },
   "detail": {
     "title": "تفاصيل الصنف",
@@ -118,6 +120,9 @@
     "uploadSuccess": "تم رفع الصور بنجاح",
     "setPrimarySuccess": "تم تعيين الصورة الرئيسية بنجاح",
     "relationCreateSuccess": "تمت إضافة الصنف المرتبط بنجاح",
-    "error": "حدث خطأ"
+    "error": "حدث خطأ",
+    "favoriteAddSuccess": "تمت إضافة المخزون إلى المفضلة",
+    "favoriteRemoveSuccess": "تمت إزالة المخزون من المفضلة",
+    "favoriteToggleError": "تعذر تحديث حالة المفضلة"
   }
 }

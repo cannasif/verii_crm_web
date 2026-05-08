@@ -19,6 +19,8 @@ export interface StockGetDto {
   kod5?: string;
   kod5Adi?: string;
   branchCode: number;
+  isFavorite?: boolean;
+  favoriteId?: number | null;
   stockDetail?: StockDetailGetDto;
   stockImages?: StockImageDto[];
   parentRelations?: StockRelationDto[];
@@ -140,4 +142,14 @@ export interface StockUpdateDto {
 
 export interface StockGetWithMainImageDto extends StockGetDto {
   mainImage?: StockImageDto;
+}
+
+export interface StockFavoriteToggleDto {
+  isFavorite?: boolean;
+}
+
+export interface StockFavoriteToggleResultDto {
+  stockId: number;
+  isFavorite: boolean;
+  favoriteId?: number | null;
 }

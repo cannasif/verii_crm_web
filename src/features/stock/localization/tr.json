@@ -18,7 +18,9 @@
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
     "page": "Sayfa {{current}} / {{total}}",
     "previous": "Önceki",
-    "next": "Sonraki"
+    "next": "Sonraki",
+    "addFavorite": "Favoriye ekle",
+    "removeFavorite": "Favoriden çıkar"
   },
   "detail": {
     "title": "Stok Detayı",
@@ -118,7 +120,10 @@
     "uploadSuccess": "Görseller başarıyla yüklendi",
     "setPrimarySuccess": "Ana görsel başarıyla ayarlandı",
     "relationCreateSuccess": "Bağlı stok başarıyla eklendi",
-    "error": "Bir hata oluştu"
+    "error": "Bir hata oluştu",
+    "favoriteAddSuccess": "Stok favorilere eklendi",
+    "favoriteRemoveSuccess": "Stok favorilerden çıkarıldı",
+    "favoriteToggleError": "Favori durumu güncellenemedi"
   },
   "bulkImport": {
     "button": "Toplu görsel yükle",

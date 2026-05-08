@@ -8,6 +8,8 @@ import type {
   StockDetailUpdateDto,
   StockImageDto,
   StockImageBulkImportQueuedDto,
+  StockFavoriteToggleDto,
+  StockFavoriteToggleResultDto,
   StockRelationDto,
   StockRelationCreateDto,
 } from '../types';
@@ -220,6 +222,20 @@ export const stockApi = {
     if (!response.success) {
       throw new Error(response.message || 'Stok ilişkisi silinemedi');
     }
+  },
+
+  toggleFavorite: async (stockId: number, data: StockFavoriteToggleDto): Promise<StockFavoriteToggleResultDto> => {
+    const response = await api.post<ApiResponse<StockFavoriteToggleResultDto>>(`/api/Stock/${stockId}/favorite/toggle`, data);
+
+    if (!response.success) {
+      throw new Error(response.message || 'Favori durumu güncellenemedi');
+    }
+
+    if (!response.data) {
+      throw new Error('Favori durumu cevabı alınamadı');
+    }
+
+    return response.data;
   },
 
   getListWithImages: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<StockGetWithMainImageDto>> => {

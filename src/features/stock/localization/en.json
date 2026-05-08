@@ -18,7 +18,9 @@
     "showing": "{{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "addFavorite": "Add to favorites",
+    "removeFavorite": "Remove from favorites"
   },
   "detail": {
     "title": "Stock details",
@@ -118,7 +120,10 @@
     "uploadSuccess": "Images uploaded",
     "setPrimarySuccess": "Primary image updated",
     "relationCreateSuccess": "Linked stock added",
-    "error": "Something went wrong"
+    "error": "Something went wrong",
+    "favoriteAddSuccess": "Stock added to favorites",
+    "favoriteRemoveSuccess": "Stock removed from favorites",
+    "favoriteToggleError": "Favorite status could not be updated"
   },
   "bulkImport": {
     "button": "Bulk image upload",

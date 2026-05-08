@@ -2,7 +2,7 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, Eye } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Heart } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useStockList } from '../hooks/useStockList';
+import { useToggleStockFavorite } from '../hooks/useToggleStockFavorite';
 import { stockApi } from '../api/stock-api';
 import { STOCK_QUERY_KEYS } from '../utils/query-keys';
 import type { StockGetDto } from '../types';
@@ -135,6 +136,7 @@ export function StockListPage(): ReactElement {
     sortDirection,
     ...filtersParam,
   });
+  const toggleStockFavorite = useToggleStockFavorite();
   const pagedData = stockQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;
@@ -351,6 +353,25 @@ export function StockListPage(): ReactElement {
                 actionsHeaderLabel={t('list.actions')}
                 renderActionsCell={(stock) => (
                   <div className="flex justify-end gap-2 opacity-100 transition-opacity pr-4">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={cn(
+                        'h-8 w-8 text-slate-400 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-500/10',
+                        stock.isFavorite && 'text-pink-600 dark:text-pink-400'
+                      )}
+                      disabled={toggleStockFavorite.isPending}
+                      aria-label={stock.isFavorite ? t('list.removeFavorite') : t('list.addFavorite')}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleStockFavorite.mutate({
+                          stockId: stock.id,
+                          data: { isFavorite: !stock.isFavorite },
+                        });
+                      }}
+                    >
+                      <Heart className={cn('h-4 w-4', stock.isFavorite && 'fill-current')} />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"
