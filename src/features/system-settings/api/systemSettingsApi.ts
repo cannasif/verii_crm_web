@@ -18,7 +18,7 @@ export const systemSettingsApi = {
   },
 
   update: async (data: UpdateSystemSettingsDto): Promise<SystemSettingsDto> => {
-    const response = await api.put<ApiResponse<SystemSettingsDto>>(SYSTEM_SETTINGS_BASE, data);
+    const response = await api.post<ApiResponse<SystemSettingsDto>>(`${SYSTEM_SETTINGS_BASE}/update`, data);
     if (response.success === true && response.data) return response.data;
     throw new Error(getErrorMessage(response, 'common.UnexpectedError'));
   },
