@@ -43,8 +43,8 @@
     "stocksGuideDescription": "Here you decide which products belong to the selected category. You can assign stocks one by one if needed.",
     "stocksHelperText": "Simple flow: first pick a category, then click 'Add Stock', then choose the product from the list.",
     "favoritesGuideTitle": "What are favorites for?",
-    "favoritesGuideDescription": "Keeps frequently used catalog stocks in a user-specific quick access list without changing category assignments.",
-    "favoritesHelperText": "This catalog has {{count}} favorite stocks. Click the heart again to remove a stock from favorites.",
+    "favoritesGuideDescription": "Shows the stocks you like inside the selected category in a user-specific quick access list. Stock favorites and category favorites are kept separate.",
+    "favoritesHelperText": "This category has {{count}} favorite stocks. Click the heart again to remove a stock from favorites.",
     "rulesGuideTitle": "What does the rule screen do?",
     "rulesGuideDescription": "If you do not want to assign similar products one by one, define a rule here. For example, if Code1 = GLASS, put it into this category.",
     "rulesHelperText": "First create the rule. Then use 'Preview Rules' to see what will happen. If it looks correct, use 'Apply Rules' to assign automatically.",
@@ -78,7 +78,7 @@
     "noCatalogs": "No catalogs have been defined yet.",
     "noCategories": "No categories were found at this level.",
     "noStocks": "No stocks are linked to this category.",
-    "noFavorites": "No favorite stocks have been added to this catalog yet.",
+    "noFavorites": "No favorite stocks have been added to this category yet.",
     "selectLeafHint": "Select a leaf category to view linked stocks.",
     "stockSearchPlaceholder": "Search by stock code or stock name...",
     "favoriteSearchPlaceholder": "Search favorites by stock code or name...",
@@ -151,7 +151,9 @@
       "previewingStockHierarchy": "Reading Hierarchy",
       "refreshStockHierarchyPreview": "Refresh Preview",
       "applyStockHierarchy": "Build Catalog Tree",
-      "applyingStockHierarchy": "Building Catalog Tree"
+      "applyingStockHierarchy": "Building Catalog Tree",
+      "addCategoryFavorite": "Add category to favorites",
+      "removeCategoryFavorite": "Remove category from favorites"
     },
     "messages": {
       "catalogCreateSuccess": "Catalog created successfully.",
@@ -187,7 +189,9 @@
       "ruleApplyError": "Rules could not be applied.",
       "stockHierarchyPreviewError": "Stock hierarchy preview could not be loaded.",
       "stockHierarchyApplySuccess": "Catalog tree generated from RII_STOK hierarchy.",
-      "stockHierarchyApplyError": "Catalog tree could not be generated from RII_STOK hierarchy."
+      "stockHierarchyApplyError": "Catalog tree could not be generated from RII_STOK hierarchy.",
+      "categoryFavoriteAddSuccess": "Category was added to favorites.",
+      "categoryFavoriteRemoveSuccess": "Category was removed from favorites."
     },
     "stockHierarchyImport": {
       "title": "Build catalog from RII_STOK hierarchy",

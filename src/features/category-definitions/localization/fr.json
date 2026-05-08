@@ -112,7 +112,9 @@
       "applyRules": "Appliquer les règles",
       "applyingRules": "Application des règles",
       "addFavorite": "Ajouter aux favoris",
-      "removeFavorite": "Retirer des favoris"
+      "removeFavorite": "Retirer des favoris",
+      "addCategoryFavorite": "Ajouter la catégorie aux favoris",
+      "removeCategoryFavorite": "Retirer la catégorie des favoris"
     },
     "messages": {
       "catalogCreateSuccess": "Catalogue créé avec succès.",
@@ -145,7 +147,9 @@
       "ruleApplyError": "Les règles n’ont pas pu être appliquées.",
       "favoriteAddSuccess": "Stock ajouté aux favoris.",
       "favoriteRemoveSuccess": "Stock retiré des favoris.",
-      "favoriteToggleError": "Le statut favori n’a pas pu être mis à jour."
+      "favoriteToggleError": "Le statut favori n’a pas pu être mis à jour.",
+      "categoryFavoriteAddSuccess": "Catégorie ajoutée aux favoris.",
+      "categoryFavoriteRemoveSuccess": "Catégorie retirée des favoris."
     },
     "rulePreviewSummaryTitle": "Résumé de l’aperçu des règles",
     "rulePreviewSummary": {
@@ -426,9 +430,9 @@
       "code3": "Code 3"
     },
     "favoritesGuideTitle": "À quoi servent les favoris ?",
-    "favoritesGuideDescription": "Conserve les stocks fréquemment utilisés dans une liste rapide propre à chaque utilisateur sans modifier les affectations de catégorie.",
-    "favoritesHelperText": "Ce catalogue contient {{count}} stocks favoris. Cliquez de nouveau sur le cœur pour retirer un stock.",
-    "noFavorites": "Aucun stock favori n’a encore été ajouté à ce catalogue.",
+    "favoritesGuideDescription": "Affiche les stocks favoris de la catégorie sélectionnée dans une liste rapide propre à chaque utilisateur. Les favoris de stock et de catégorie restent séparés.",
+    "favoritesHelperText": "Cette catégorie contient {{count}} stocks favoris. Cliquez de nouveau sur le cœur pour retirer un stock.",
+    "noFavorites": "Aucun stock favori n’a encore été ajouté à cette catégorie.",
     "favoriteSearchPlaceholder": "Rechercher dans les favoris par code ou nom..."
   }
 }

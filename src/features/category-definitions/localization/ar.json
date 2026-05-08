@@ -112,7 +112,9 @@
       "applyRules": "تطبيق القواعد",
       "applyingRules": "جاري تطبيق القواعد",
       "addFavorite": "إضافة إلى المفضلة",
-      "removeFavorite": "إزالة من المفضلة"
+      "removeFavorite": "إزالة من المفضلة",
+      "addCategoryFavorite": "إضافة الفئة إلى المفضلة",
+      "removeCategoryFavorite": "إزالة الفئة من المفضلة"
     },
     "messages": {
       "catalogCreateSuccess": "تم إنشاء الكتالوج بنجاح.",
@@ -145,7 +147,9 @@
       "ruleApplyError": "تعذر تطبيق القواعد.",
       "favoriteAddSuccess": "تمت إضافة المخزون إلى المفضلة.",
       "favoriteRemoveSuccess": "تمت إزالة المخزون من المفضلة.",
-      "favoriteToggleError": "تعذر تحديث حالة المفضلة."
+      "favoriteToggleError": "تعذر تحديث حالة المفضلة.",
+      "categoryFavoriteAddSuccess": "تمت إضافة الفئة إلى المفضلة.",
+      "categoryFavoriteRemoveSuccess": "تمت إزالة الفئة من المفضلة."
     },
     "rulePreviewSummaryTitle": "ملخص معاينة القواعد",
     "rulePreviewSummary": {
@@ -426,9 +430,9 @@
       "code3": "الرمز 3"
     },
     "favoritesGuideTitle": "ما فائدة المفضلة؟",
-    "favoritesGuideDescription": "تحتفظ بالمخزونات كثيرة الاستخدام في قائمة وصول سريع خاصة بالمستخدم دون تغيير ربط الفئات.",
-    "favoritesHelperText": "يحتوي هذا الكتالوج على {{count}} مخزون مفضل. اضغط على القلب مرة أخرى للإزالة.",
-    "noFavorites": "لم تتم إضافة أي مخزون مفضل إلى هذا الكتالوج بعد.",
+    "favoritesGuideDescription": "يعرض المخزونات المفضلة داخل الفئة المحددة في قائمة وصول سريع خاصة بالمستخدم. مفضلة المخزون ومفضلة الفئة منفصلتان.",
+    "favoritesHelperText": "تحتوي هذه الفئة على {{count}} مخزون مفضل. اضغط على القلب مرة أخرى للإزالة.",
+    "noFavorites": "لم تتم إضافة أي مخزون مفضل إلى هذه الفئة بعد.",
     "favoriteSearchPlaceholder": "ابحث في المفضلة برمز المخزون أو اسمه..."
   }
 }

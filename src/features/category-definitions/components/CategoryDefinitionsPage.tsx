@@ -58,6 +58,7 @@ import { usePreviewCategoryRules } from '../hooks/usePreviewCategoryRules';
 import { useReorderCatalogCategories } from '../hooks/useReorderCatalogCategories';
 import { useApplyStockHierarchyImport, usePreviewStockHierarchyImport } from '../hooks/useStockHierarchyImport';
 import { useToggleCatalogFavorite } from '../hooks/useToggleCatalogFavorite';
+import { useToggleCatalogCategoryFavorite } from '../hooks/useToggleCatalogCategoryFavorite';
 import type { CatalogCategoryNodeDto, ProductCatalogDto } from '../types/category-definition-types';
 import type { CatalogCategoryCreateDto, CatalogCategoryUpdateDto, CatalogStockHierarchyImportPreviewDto, CatalogStockHierarchyImportRequestDto, CategoryRuleApplyResultDto, CategoryRulePreviewResultDto, ProductCatalogCreateDto, ProductCatalogUpdateDto, ProductCategoryRuleCreateDto, ProductCategoryRuleDto, ProductCategoryRuleUpdateDto } from '../types/category-definition-types';
 import { CreateCatalogDialog } from './CreateCatalogDialog';
@@ -166,6 +167,7 @@ export function CategoryDefinitionsPage(): ReactElement {
   const previewStockHierarchyImport = usePreviewStockHierarchyImport(selectedCatalogId);
   const applyStockHierarchyImport = useApplyStockHierarchyImport(selectedCatalogId);
   const toggleCatalogFavorite = useToggleCatalogFavorite(selectedCatalogId);
+  const toggleCatalogCategoryFavorite = useToggleCatalogCategoryFavorite(selectedCatalogId);
 
   const stocksQuery = useCatalogCategoryStocks(
     selectedCatalogId,
@@ -174,6 +176,7 @@ export function CategoryDefinitionsPage(): ReactElement {
   );
   const favoritesQuery = useCatalogFavorites(
     selectedCatalogId,
+    selectedLeaf?.catalogCategoryId ?? null,
     { pageNumber: 1, pageSize: 20, search: stockSearch || undefined }
   );
 
@@ -764,11 +767,18 @@ export function CategoryDefinitionsPage(): ReactElement {
               {orderedCategories.map((node) => {
                 const isSelected = selectedLeaf?.catalogCategoryId === node.catalogCategoryId;
                 return (
-                  <button
+                  <div
                     key={node.catalogCategoryId}
-                    type="button"
+                    role="button"
+                    tabIndex={0}
                     draggable
                     onClick={() => handleCategoryClick(node)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        handleCategoryClick(node);
+                      }
+                    }}
                     onDragStart={() => handleCategoryDragStart(node.catalogCategoryId)}
                     onDragOver={(event) => {
                       event.preventDefault();
@@ -814,9 +824,31 @@ export function CategoryDefinitionsPage(): ReactElement {
                           </div>
                         </div>
                       </div>
-                      <Badge variant="outline" className={cn("rounded-lg shrink-0 border-slate-200 dark:border-white/10", node.isLeaf ? "bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-500/20" : "")}>
-                        {node.isLeaf ? t('categoryDefinitions.leaf') : t('categoryDefinitions.branch')}
-                      </Badge>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className={cn(
+                            'h-8 w-8 rounded-lg p-0 text-slate-400 hover:bg-pink-50 hover:text-pink-600 dark:hover:bg-pink-500/10',
+                            node.isFavorite && 'text-pink-600 dark:text-pink-400'
+                          )}
+                          disabled={toggleCatalogCategoryFavorite.isPending}
+                          aria-label={node.isFavorite ? t('categoryDefinitions.actions.removeCategoryFavorite') : t('categoryDefinitions.actions.addCategoryFavorite')}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            toggleCatalogCategoryFavorite.mutate({
+                              catalogCategoryId: node.catalogCategoryId,
+                              data: { isFavorite: !node.isFavorite },
+                            });
+                          }}
+                        >
+                          <Heart className={cn('h-4 w-4', node.isFavorite && 'fill-current')} />
+                        </Button>
+                        <Badge variant="outline" className={cn("rounded-lg border-slate-200 dark:border-white/10", node.isLeaf ? "bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-500/20" : "")}>
+                          {node.isLeaf ? t('categoryDefinitions.leaf') : t('categoryDefinitions.branch')}
+                        </Badge>
+                      </div>
                     </div>
                     {node.description ? (
                       <p className="mt-4 line-clamp-2 text-sm font-medium text-slate-500 dark:text-slate-400 relative z-10">{node.description}</p>
@@ -827,7 +859,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                       </span>
                       <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -1087,9 +1119,9 @@ export function CategoryDefinitionsPage(): ReactElement {
                   />
                 </div>
 
-                {!selectedCatalog ? (
+                {!selectedLeaf ? (
                   <div className="rounded-2xl border border-dashed border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1627] p-8 text-center text-sm font-medium text-slate-500 dark:text-slate-400">
-                    {t('categoryDefinitions.chooseCatalogFirst')}
+                    {t('categoryDefinitions.selectLeafHint')}
                   </div>
                 ) : (
                   <div className="space-y-4">

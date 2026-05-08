@@ -112,7 +112,9 @@
       "applyRules": "Aplicar reglas",
       "applyingRules": "Aplicando reglas",
       "addFavorite": "Agregar a favoritos",
-      "removeFavorite": "Quitar de favoritos"
+      "removeFavorite": "Quitar de favoritos",
+      "addCategoryFavorite": "Agregar categoría a favoritos",
+      "removeCategoryFavorite": "Quitar categoría de favoritos"
     },
     "messages": {
       "catalogCreateSuccess": "Catálogo creado correctamente.",
@@ -145,7 +147,9 @@
       "ruleApplyError": "No se han podido aplicar las reglas.",
       "favoriteAddSuccess": "Stock agregado a favoritos.",
       "favoriteRemoveSuccess": "Stock eliminado de favoritos.",
-      "favoriteToggleError": "No se ha podido actualizar el estado de favorito."
+      "favoriteToggleError": "No se ha podido actualizar el estado de favorito.",
+      "categoryFavoriteAddSuccess": "Categoría agregada a favoritos.",
+      "categoryFavoriteRemoveSuccess": "Categoría eliminada de favoritos."
     },
     "rulePreviewSummaryTitle": "Resumen de la vista previa de reglas",
     "rulePreviewSummary": {
@@ -426,9 +430,9 @@
       "code3": "Código 3"
     },
     "favoritesGuideTitle": "¿Para qué sirven los favoritos?",
-    "favoritesGuideDescription": "Mantiene los stocks usados con frecuencia en una lista rápida por usuario sin cambiar las asignaciones de categoría.",
-    "favoritesHelperText": "Este catálogo tiene {{count}} stocks favoritos. Pulse el corazón otra vez para quitar un stock.",
-    "noFavorites": "Todavía no hay stocks favoritos en este catálogo.",
+    "favoritesGuideDescription": "Muestra los stocks favoritos de la categoría seleccionada en una lista rápida por usuario. Los favoritos de stock y categoría se guardan separados.",
+    "favoritesHelperText": "Esta categoría tiene {{count}} stocks favoritos. Pulse el corazón otra vez para quitar un stock.",
+    "noFavorites": "Todavía no hay stocks favoritos en esta categoría.",
     "favoriteSearchPlaceholder": "Buscar favoritos por código o nombre..."
   }
 }

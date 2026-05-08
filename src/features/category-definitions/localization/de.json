@@ -39,8 +39,8 @@
     "stocksGuideDescription": "Hier legen Sie fest, welche Produkte zur ausgewählten Kategorie gehören. Bei Bedarf können Sie Artikel einzeln zuordnen.",
     "stocksHelperText": "Einfacher Ablauf: zuerst eine Kategorie wählen, dann auf 'Artikel zuordnen' klicken und anschließend das Produkt aus der Liste auswählen.",
     "favoritesGuideTitle": "Wofür sind Favoriten?",
-    "favoritesGuideDescription": "Häufig genutzte Katalogartikel werden benutzerbezogen schnell erreichbar gemacht, ohne Kategoriezuordnungen zu ändern.",
-    "favoritesHelperText": "Dieser Katalog enthält {{count}} Favoriten. Klicken Sie erneut auf das Herz, um einen Artikel zu entfernen.",
+    "favoritesGuideDescription": "Zeigt die favorisierten Artikel der ausgewählten Kategorie in einer benutzerbezogenen Schnellliste. Artikel- und Kategoriefavoriten bleiben getrennt.",
+    "favoritesHelperText": "Diese Kategorie enthält {{count}} Favoriten. Klicken Sie erneut auf das Herz, um einen Artikel zu entfernen.",
     "rulesGuideTitle": "Was macht der Regelbereich?",
     "rulesGuideDescription": "Wenn Sie ähnliche Produkte nicht einzeln zuordnen möchten, definieren Sie hier eine Regel. Zum Beispiel: Wenn Code1 = GLAS, dann gehört der Artikel in diese Kategorie.",
     "rulesHelperText": "Zuerst die Regel anlegen. Dann mit 'Regeln vorschauen' prüfen, was passieren wird. Wenn alles passt, mit 'Regeln anwenden' automatisch zuordnen.",
@@ -73,7 +73,7 @@
     "noCatalogs": "Es wurden noch keine Kataloge definiert.",
     "noCategories": "Auf dieser Ebene wurden keine Kategorien gefunden.",
     "noStocks": "Mit dieser Kategorie sind keine Artikel verknüpft.",
-    "noFavorites": "Für diesen Katalog wurden noch keine Favoriten hinzugefügt.",
+    "noFavorites": "Für diese Kategorie wurden noch keine Favoriten-Artikel hinzugefügt.",
     "selectLeafHint": "Wählen Sie eine Blattkategorie aus, um verknüpfte Artikel zu sehen.",
     "stockSearchPlaceholder": "Nach Lagercode oder Lagername suchen...",
     "favoriteSearchPlaceholder": "Favoriten nach Artikelcode oder Name suchen...",
@@ -117,7 +117,9 @@
       "previewRules": "Regeln vorschauen",
       "previewingRules": "Vorschau wird erstellt",
       "applyRules": "Regeln anwenden",
-      "applyingRules": "Regeln werden angewendet"
+      "applyingRules": "Regeln werden angewendet",
+      "addCategoryFavorite": "Kategorie zu Favoriten hinzufügen",
+      "removeCategoryFavorite": "Kategorie aus Favoriten entfernen"
     },
     "messages": {
       "catalogCreateSuccess": "Katalog erfolgreich erstellt.",
@@ -150,7 +152,9 @@
       "ruleDeleteError": "Regel konnte nicht gelöscht werden.",
       "rulePreviewError": "Regelvorschau konnte nicht geladen werden.",
       "ruleApplySuccess": "Regeln wurden erfolgreich angewendet.",
-      "ruleApplyError": "Regeln konnten nicht angewendet werden."
+      "ruleApplyError": "Regeln konnten nicht angewendet werden.",
+      "categoryFavoriteAddSuccess": "Kategorie wurde zu Favoriten hinzugefügt.",
+      "categoryFavoriteRemoveSuccess": "Kategorie wurde aus Favoriten entfernt."
     },
     "rulePreviewSummaryTitle": "Zusammenfassung der Regelvorschau",
     "rulePreviewSummary": {

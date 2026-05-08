@@ -43,8 +43,8 @@
     "stocksGuideDescription": "Burada seçtiğin kategoriye hangi ürünlerin gireceğini belirliyorsun. İstersen tek tek stok bağlayabilirsin.",
     "stocksHelperText": "Kolay mantık: önce kategori seç, sonra 'Stok Bağla' butonuna bas, açılan listeden ürünü seç.",
     "favoritesGuideTitle": "Favoriler ne işe yarar?",
-    "favoritesGuideDescription": "Katalog içinde sık kullanılan stokları kullanıcı bazlı hızlı erişim listesine alır. Kategori bağlantısını değiştirmez.",
-    "favoritesHelperText": "Bu katalogda {{count}} favori stok var. Kalp ikonuna tekrar basarak favoriden çıkarabilirsiniz.",
+    "favoritesGuideDescription": "Seçili kategori içindeki beğendiğiniz stokları kullanıcı bazlı hızlı erişim listesinde gösterir. Stok favorisi kategori favorisiyle karışmaz.",
+    "favoritesHelperText": "Bu kategoride {{count}} favori stok var. Kalp ikonuna tekrar basarak favoriden çıkarabilirsiniz.",
     "rulesGuideTitle": "Kural ekranı ne yapar?",
     "rulesGuideDescription": "Aynı tip ürünleri tek tek bağlamak istemiyorsan burada kural tanımlarsın. Örneğin Kod1 = CAM ise bu kategoriye girsin diyebilirsin.",
     "rulesHelperText": "Önce kuralı ekle. Sonra 'Kuralları Önizle' ile ne olacağını gör. Doğruysa 'Kuralları Uygula' ile otomatik bağla.",
@@ -78,7 +78,7 @@
     "noCatalogs": "Henüz tanımlı katalog bulunmuyor.",
     "noCategories": "Bu seviyede kategori bulunmuyor.",
     "noStocks": "Bu kategoriye bağlı stok bulunmuyor.",
-    "noFavorites": "Bu katalogda henüz favori stok bulunmuyor.",
+    "noFavorites": "Bu kategoride henüz favori stok bulunmuyor.",
     "selectLeafHint": "Stokları görmek için uç bir kategori seçin.",
     "stockSearchPlaceholder": "Stok kodu veya stok adına göre ara...",
     "favoriteSearchPlaceholder": "Favorilerde stok kodu veya adına göre ara...",
@@ -151,7 +151,9 @@
       "previewingStockHierarchy": "Kırılım Okunuyor",
       "refreshStockHierarchyPreview": "Önizlemeyi Yenile",
       "applyStockHierarchy": "Katalog Ağacını Oluştur",
-      "applyingStockHierarchy": "Katalog Ağacı Oluşturuluyor"
+      "applyingStockHierarchy": "Katalog Ağacı Oluşturuluyor",
+      "addCategoryFavorite": "Kategoriyi favoriye ekle",
+      "removeCategoryFavorite": "Kategoriyi favoriden çıkar"
     },
     "messages": {
       "catalogCreateSuccess": "Katalog başarıyla oluşturuldu.",
@@ -187,7 +189,9 @@
       "ruleApplyError": "Kurallar uygulanamadı.",
       "stockHierarchyPreviewError": "Stok kırılımı önizlemesi alınamadı.",
       "stockHierarchyApplySuccess": "RII_STOK kırılımından katalog ağacı oluşturuldu.",
-      "stockHierarchyApplyError": "RII_STOK kırılımından katalog ağacı oluşturulamadı."
+      "stockHierarchyApplyError": "RII_STOK kırılımından katalog ağacı oluşturulamadı.",
+      "categoryFavoriteAddSuccess": "Kategori favorilere eklendi.",
+      "categoryFavoriteRemoveSuccess": "Kategori favorilerden çıkarıldı."
     },
     "stockHierarchyImport": {
       "title": "RII_STOK kırılımından katalog oluştur",

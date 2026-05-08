@@ -37,6 +37,8 @@ export interface CatalogCategoryNodeDto {
   imageUrl?: string | null;
   iconName?: string | null;
   colorHex?: string | null;
+  isFavorite?: boolean;
+  favoriteId?: number | null;
 }
 
 export interface CatalogCategoryCreateDto {
@@ -88,6 +90,17 @@ export interface CatalogFavoriteToggleDto {
 export interface CatalogFavoriteToggleResultDto {
   catalogId: number;
   stockId: number;
+  isFavorite: boolean;
+  favoriteId?: number | null;
+}
+
+export interface CatalogCategoryFavoriteToggleDto {
+  isFavorite?: boolean;
+}
+
+export interface CatalogCategoryFavoriteToggleResultDto {
+  catalogId: number;
+  catalogCategoryId: number;
   isFavorite: boolean;
   favoriteId?: number | null;
 }
