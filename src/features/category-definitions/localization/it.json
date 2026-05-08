@@ -77,7 +77,8 @@
       "summary": "Cosa devo fare?",
       "stocks": "Aggiungi articolo",
       "rules": "Aggiungi regola",
-      "tips": "Guida"
+      "tips": "Guida",
+      "favorites": "Preferiti"
     },
     "catalogTypes": {
       "b2b": "B2B",
@@ -109,7 +110,9 @@
       "previewRules": "Anteprima regole",
       "previewingRules": "Generazione anteprima",
       "applyRules": "Applica regole",
-      "applyingRules": "Applicazione regole"
+      "applyingRules": "Applicazione regole",
+      "addFavorite": "Aggiungi ai preferiti",
+      "removeFavorite": "Rimuovi dai preferiti"
     },
     "messages": {
       "catalogCreateSuccess": "Catalogo creato correttamente.",
@@ -139,7 +142,10 @@
       "ruleDeleteError": "Impossibile eliminare la regola.",
       "rulePreviewError": "Impossibile caricare l'anteprima delle regole.",
       "ruleApplySuccess": "Regole applicate correttamente.",
-      "ruleApplyError": "Impossibile applicare le regole."
+      "ruleApplyError": "Impossibile applicare le regole.",
+      "favoriteAddSuccess": "Articolo aggiunto ai preferiti.",
+      "favoriteRemoveSuccess": "Articolo rimosso dai preferiti.",
+      "favoriteToggleError": "Impossibile aggiornare lo stato preferito."
     },
     "rulePreviewSummaryTitle": "Riepilogo anteprima regole",
     "rulePreviewSummary": {
@@ -418,6 +424,11 @@
       "code1": "Codice 1",
       "code2": "Codice 2",
       "code3": "Codice 3"
-    }
+    },
+    "favoritesGuideTitle": "A cosa servono i preferiti?",
+    "favoritesGuideDescription": "Mantiene gli articoli usati spesso in una lista rapida per utente senza modificare le assegnazioni di categoria.",
+    "favoritesHelperText": "Questo catalogo contiene {{count}} articoli preferiti. Clicca di nuovo sul cuore per rimuovere un articolo.",
+    "noFavorites": "Non ci sono ancora articoli preferiti in questo catalogo.",
+    "favoriteSearchPlaceholder": "Cerca nei preferiti per codice o nome..."
   }
 }

@@ -77,7 +77,8 @@
       "summary": "ماذا أفعل؟",
       "stocks": "إضافة مخزون",
       "rules": "إضافة قاعدة",
-      "tips": "دليل"
+      "tips": "دليل",
+      "favorites": "المفضلة"
     },
     "catalogTypes": {
       "b2b": "B2B",
@@ -109,7 +110,9 @@
       "previewRules": "معاينة القواعد",
       "previewingRules": "جاري بناء المعاينة",
       "applyRules": "تطبيق القواعد",
-      "applyingRules": "جاري تطبيق القواعد"
+      "applyingRules": "جاري تطبيق القواعد",
+      "addFavorite": "إضافة إلى المفضلة",
+      "removeFavorite": "إزالة من المفضلة"
     },
     "messages": {
       "catalogCreateSuccess": "تم إنشاء الكتالوج بنجاح.",
@@ -139,7 +142,10 @@
       "ruleDeleteError": "تعذر حذف القاعدة.",
       "rulePreviewError": "تعذر تحميل معاينة القواعد.",
       "ruleApplySuccess": "تم تطبيق القواعد بنجاح.",
-      "ruleApplyError": "تعذر تطبيق القواعد."
+      "ruleApplyError": "تعذر تطبيق القواعد.",
+      "favoriteAddSuccess": "تمت إضافة المخزون إلى المفضلة.",
+      "favoriteRemoveSuccess": "تمت إزالة المخزون من المفضلة.",
+      "favoriteToggleError": "تعذر تحديث حالة المفضلة."
     },
     "rulePreviewSummaryTitle": "ملخص معاينة القواعد",
     "rulePreviewSummary": {
@@ -418,6 +424,11 @@
       "code1": "الرمز 1",
       "code2": "الرمز 2",
       "code3": "الرمز 3"
-    }
+    },
+    "favoritesGuideTitle": "ما فائدة المفضلة؟",
+    "favoritesGuideDescription": "تحتفظ بالمخزونات كثيرة الاستخدام في قائمة وصول سريع خاصة بالمستخدم دون تغيير ربط الفئات.",
+    "favoritesHelperText": "يحتوي هذا الكتالوج على {{count}} مخزون مفضل. اضغط على القلب مرة أخرى للإزالة.",
+    "noFavorites": "لم تتم إضافة أي مخزون مفضل إلى هذا الكتالوج بعد.",
+    "favoriteSearchPlaceholder": "ابحث في المفضلة برمز المخزون أو اسمه..."
   }
 }

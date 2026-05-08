@@ -77,7 +77,8 @@
       "summary": "Que faire ?",
       "stocks": "Assigner un stock",
       "rules": "Ajouter une règle",
-      "tips": "Guide"
+      "tips": "Guide",
+      "favorites": "Favoris"
     },
     "catalogTypes": {
       "b2b": "B2B",
@@ -109,7 +110,9 @@
       "previewRules": "Aperçu des règles",
       "previewingRules": "Génération de l’aperçu",
       "applyRules": "Appliquer les règles",
-      "applyingRules": "Application des règles"
+      "applyingRules": "Application des règles",
+      "addFavorite": "Ajouter aux favoris",
+      "removeFavorite": "Retirer des favoris"
     },
     "messages": {
       "catalogCreateSuccess": "Catalogue créé avec succès.",
@@ -139,7 +142,10 @@
       "ruleDeleteError": "La règle n’a pas pu être supprimée.",
       "rulePreviewError": "L’aperçu des règles n’a pas pu être chargé.",
       "ruleApplySuccess": "Règles appliquées avec succès.",
-      "ruleApplyError": "Les règles n’ont pas pu être appliquées."
+      "ruleApplyError": "Les règles n’ont pas pu être appliquées.",
+      "favoriteAddSuccess": "Stock ajouté aux favoris.",
+      "favoriteRemoveSuccess": "Stock retiré des favoris.",
+      "favoriteToggleError": "Le statut favori n’a pas pu être mis à jour."
     },
     "rulePreviewSummaryTitle": "Résumé de l’aperçu des règles",
     "rulePreviewSummary": {
@@ -418,6 +424,11 @@
       "code1": "Code 1",
       "code2": "Code 2",
       "code3": "Code 3"
-    }
+    },
+    "favoritesGuideTitle": "À quoi servent les favoris ?",
+    "favoritesGuideDescription": "Conserve les stocks fréquemment utilisés dans une liste rapide propre à chaque utilisateur sans modifier les affectations de catégorie.",
+    "favoritesHelperText": "Ce catalogue contient {{count}} stocks favoris. Cliquez de nouveau sur le cœur pour retirer un stock.",
+    "noFavorites": "Aucun stock favori n’a encore été ajouté à ce catalogue.",
+    "favoriteSearchPlaceholder": "Rechercher dans les favoris par code ou nom..."
   }
 }

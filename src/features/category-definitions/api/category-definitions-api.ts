@@ -15,6 +15,8 @@ import type {
   ProductCategoryRuleDto,
   ProductCategoryRuleUpdateDto,
   CategoryRuleValueOptionDto,
+  CatalogFavoriteToggleDto,
+  CatalogFavoriteToggleResultDto,
   ProductCatalogCreateDto,
   ProductCatalogDto,
   ProductCatalogUpdateDto,
@@ -293,5 +295,48 @@ export const categoryDefinitionsApi = {
     }
 
     throw new Error(response.message || 'Kategori stokları yüklenemedi');
+  },
+
+  getCatalogFavorites: async (
+    catalogId: number,
+    params?: { pageNumber?: number; pageSize?: number; search?: string }
+  ): Promise<PagedResponse<CatalogStockItemDto>> => {
+    const queryParams = new URLSearchParams();
+    if (params?.pageNumber) queryParams.append('pageNumber', String(params.pageNumber));
+    if (params?.pageSize) queryParams.append('pageSize', String(params.pageSize));
+    if (params?.search) queryParams.append('search', params.search);
+
+    const suffix = queryParams.toString() ? `?${queryParams.toString()}` : '';
+    const response = await api.get<ApiResponse<PagedResponse<CatalogStockItemDto>>>(`/api/Catalog/${catalogId}/favorites${suffix}`);
+
+    if (response.success && response.data) {
+      const pagedData = response.data;
+      const rawData = pagedData as unknown as { items?: CatalogStockItemDto[]; data?: CatalogStockItemDto[] };
+
+      if (rawData.items && !rawData.data) {
+        return {
+          ...pagedData,
+          data: rawData.items,
+        };
+      }
+
+      return pagedData;
+    }
+
+    throw new Error(response.message || 'Favoriler yüklenemedi');
+  },
+
+  toggleCatalogFavorite: async (
+    catalogId: number,
+    data: CatalogFavoriteToggleDto
+  ): Promise<CatalogFavoriteToggleResultDto> => {
+    const response = await api.post<ApiResponse<CatalogFavoriteToggleResultDto>>(
+      `/api/Catalog/${catalogId}/favorites/toggle`,
+      data
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Favori durumu güncellenemedi');
   },
 };

@@ -73,10 +73,24 @@ export interface CatalogStockItemDto {
   kod3?: string | null;
   kod3Adi?: string | null;
   isPrimaryCategory: boolean;
+  isFavorite?: boolean;
+  favoriteId?: number | null;
   imageUrl?: string | null;
 }
 
 export type CatalogStockListResponse = PagedResponse<CatalogStockItemDto>;
+
+export interface CatalogFavoriteToggleDto {
+  stockId: number;
+  isFavorite?: boolean;
+}
+
+export interface CatalogFavoriteToggleResultDto {
+  catalogId: number;
+  stockId: number;
+  isFavorite: boolean;
+  favoriteId?: number | null;
+}
 
 export interface StockCategoryCreateDto {
   stockId: number;

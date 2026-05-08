@@ -15,6 +15,7 @@ import {
   ChevronRight,
   GitBranchPlus,
   GripVertical,
+  Heart,
   Layers3,
   ListTree,
   Package2,
@@ -38,6 +39,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
 import { useCatalogCategories } from '../hooks/useCatalogCategories';
 import { useCatalogCategoryStocks } from '../hooks/useCatalogCategoryStocks';
+import { useCatalogFavorites } from '../hooks/useCatalogFavorites';
 import { useCatalogs } from '../hooks/useCatalogs';
 import { useCreateCatalog } from '../hooks/useCreateCatalog';
 import { useCreateCatalogCategory } from '../hooks/useCreateCatalogCategory';
@@ -55,6 +57,7 @@ import { useApplyCategoryRules } from '../hooks/useApplyCategoryRules';
 import { usePreviewCategoryRules } from '../hooks/usePreviewCategoryRules';
 import { useReorderCatalogCategories } from '../hooks/useReorderCatalogCategories';
 import { useApplyStockHierarchyImport, usePreviewStockHierarchyImport } from '../hooks/useStockHierarchyImport';
+import { useToggleCatalogFavorite } from '../hooks/useToggleCatalogFavorite';
 import type { CatalogCategoryNodeDto, ProductCatalogDto } from '../types/category-definition-types';
 import type { CatalogCategoryCreateDto, CatalogCategoryUpdateDto, CatalogStockHierarchyImportPreviewDto, CatalogStockHierarchyImportRequestDto, CategoryRuleApplyResultDto, CategoryRulePreviewResultDto, ProductCatalogCreateDto, ProductCatalogUpdateDto, ProductCategoryRuleCreateDto, ProductCategoryRuleDto, ProductCategoryRuleUpdateDto } from '../types/category-definition-types';
 import { CreateCatalogDialog } from './CreateCatalogDialog';
@@ -90,7 +93,7 @@ function getCurrentPath(stack: CatalogCategoryNodeDto[], selectedLeaf: CatalogCa
 export function CategoryDefinitionsPage(): ReactElement {
   const { t } = useTranslation(['category-definitions', 'common']);
   const { setPageTitle } = useUIStore();
-  const [activeTab, setActiveTab] = useState<'summary' | 'stocks' | 'rules' | 'tips'>('summary');
+  const [activeTab, setActiveTab] = useState<'summary' | 'stocks' | 'favorites' | 'rules' | 'tips'>('summary');
   const [selectedCatalogId, setSelectedCatalogId] = useState<number | null>(null);
   const [navigationStack, setNavigationStack] = useState<CatalogCategoryNodeDto[]>([]);
   const [selectedLeaf, setSelectedLeaf] = useState<CatalogCategoryNodeDto | null>(null);
@@ -162,10 +165,15 @@ export function CategoryDefinitionsPage(): ReactElement {
   const applyCategoryRules = useApplyCategoryRules(selectedCatalogId, selectedLeaf?.catalogCategoryId ?? null);
   const previewStockHierarchyImport = usePreviewStockHierarchyImport(selectedCatalogId);
   const applyStockHierarchyImport = useApplyStockHierarchyImport(selectedCatalogId);
+  const toggleCatalogFavorite = useToggleCatalogFavorite(selectedCatalogId);
 
   const stocksQuery = useCatalogCategoryStocks(
     selectedCatalogId,
     selectedLeaf?.catalogCategoryId ?? null,
+    { pageNumber: 1, pageSize: 20, search: stockSearch || undefined }
+  );
+  const favoritesQuery = useCatalogFavorites(
+    selectedCatalogId,
     { pageNumber: 1, pageSize: 20, search: stockSearch || undefined }
   );
 
@@ -852,10 +860,11 @@ export function CategoryDefinitionsPage(): ReactElement {
             </div>
           </CardHeader>
           <CardContent className="flex-1">
-            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'summary' | 'stocks' | 'rules' | 'tips')} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4 bg-slate-100 dark:bg-white/5 rounded-xl p-1 shadow-inner h-12">
+            <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'summary' | 'stocks' | 'favorites' | 'rules' | 'tips')} className="space-y-6">
+              <TabsList className="grid w-full grid-cols-5 bg-slate-100 dark:bg-white/5 rounded-xl p-1 shadow-inner h-12">
                 <TabsTrigger value="summary" className="rounded-lg data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.summary')}</TabsTrigger>
                 <TabsTrigger value="stocks" className="rounded-lg data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.stocks')}</TabsTrigger>
+                <TabsTrigger value="favorites" className="rounded-lg data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.favorites')}</TabsTrigger>
                 <TabsTrigger value="rules" className="rounded-lg data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.rules')}</TabsTrigger>
                 <TabsTrigger value="tips" className="rounded-lg data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.tips')}</TabsTrigger>
               </TabsList>
@@ -1021,9 +1030,24 @@ export function CategoryDefinitionsPage(): ReactElement {
                                   {t('categoryDefinitions.primaryBadge')}
                                 </span>
                               ) : null}
-                              <Button variant="ghost" size="sm" className="text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg" onClick={() => setStockAssignmentToDelete(stock.stockCategoryId)}>
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className={cn(
+                                    'rounded-lg text-slate-400 hover:bg-pink-50 hover:text-pink-600 dark:hover:bg-pink-500/10',
+                                    stock.isFavorite && 'text-pink-600 dark:text-pink-400'
+                                  )}
+                                  disabled={toggleCatalogFavorite.isPending}
+                                  aria-label={stock.isFavorite ? t('categoryDefinitions.actions.removeFavorite') : t('categoryDefinitions.actions.addFavorite')}
+                                  onClick={() => toggleCatalogFavorite.mutate({ stockId: stock.stockId, isFavorite: !stock.isFavorite })}
+                                >
+                                  <Heart className={cn('h-4 w-4', stock.isFavorite && 'fill-current')} />
+                                </Button>
+                                <Button variant="ghost" size="sm" className="text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg" onClick={() => setStockAssignmentToDelete(stock.stockCategoryId)}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
                           <div className="mt-4 grid grid-cols-2 gap-3 text-xs font-medium text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-white/5 pt-4">
@@ -1039,6 +1063,72 @@ export function CategoryDefinitionsPage(): ReactElement {
                     {!stocksQuery.isLoading && (stocksQuery.data?.data?.length ?? 0) === 0 ? (
                       <div className="rounded-2xl border border-dashed border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1627] p-8 text-center text-sm font-medium text-slate-500 dark:text-slate-400">
                         {t('categoryDefinitions.noStocks')}
+                      </div>
+                    ) : null}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="favorites" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
+                <Alert className="border-pink-200 dark:border-pink-500/30 bg-pink-50/80 dark:bg-pink-500/5 rounded-2xl shadow-sm">
+                  <Heart className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+                  <AlertTitle className="font-bold text-pink-800 dark:text-pink-300">{t('categoryDefinitions.favoritesGuideTitle')}</AlertTitle>
+                  <AlertDescription className="text-pink-700/80 dark:text-pink-400/80 font-medium mt-1">{t('categoryDefinitions.favoritesGuideDescription')}</AlertDescription>
+                </Alert>
+
+                <div className="relative group">
+                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
+                  <Input
+                    value={stockSearch}
+                    onChange={(event) => setStockSearch(event.target.value)}
+                    placeholder={t('categoryDefinitions.favoriteSearchPlaceholder')}
+                    className="pl-12 h-12 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1627] focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                    disabled={!selectedCatalog}
+                  />
+                </div>
+
+                {!selectedCatalog ? (
+                  <div className="rounded-2xl border border-dashed border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1627] p-8 text-center text-sm font-medium text-slate-500 dark:text-slate-400">
+                    {t('categoryDefinitions.chooseCatalogFirst')}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="rounded-2xl border border-dashed border-pink-200 dark:border-pink-500/30 bg-pink-50/50 dark:bg-pink-500/5 p-4 text-sm font-medium text-pink-600 dark:text-pink-400 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4" />
+                      {t('categoryDefinitions.favoritesHelperText', { count: favoritesQuery.data?.totalCount ?? 0 })}
+                    </div>
+
+                    <div className="space-y-3">
+                      {(favoritesQuery.data?.data ?? []).map((stock) => (
+                        <div key={stock.stockId} className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-[#1E1627] shadow-sm hover:border-pink-500/30 transition-all">
+                          <div className="flex items-start justify-between gap-4">
+                            <div>
+                              <div className="font-bold text-base text-slate-800 dark:text-white">{stock.stockName}</div>
+                              <div className="mt-1 font-mono text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400">#{stock.erpStockCode}</div>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="rounded-lg text-pink-600 hover:bg-pink-50 hover:text-pink-700 dark:text-pink-400 dark:hover:bg-pink-500/10"
+                              disabled={toggleCatalogFavorite.isPending}
+                              onClick={() => toggleCatalogFavorite.mutate({ stockId: stock.stockId, isFavorite: false })}
+                            >
+                              <Heart className="h-4 w-4 fill-current" />
+                            </Button>
+                          </div>
+                          <div className="mt-4 grid grid-cols-2 gap-3 text-xs font-medium text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-white/5 pt-4">
+                            <div className="flex items-center gap-1.5"><span className="text-slate-400 dark:text-slate-500">{t('categoryDefinitions.meta.group')}:</span> <span className="text-slate-700 dark:text-slate-300">{[stock.grupKodu, stock.grupAdi].filter(Boolean).join(' - ') || '-'}</span></div>
+                            <div className="flex items-center gap-1.5"><span className="text-slate-400 dark:text-slate-500">{t('categoryDefinitions.meta.code1')}:</span> <span className="text-slate-700 dark:text-slate-300">{[stock.kod1, stock.kod1Adi].filter(Boolean).join(' - ') || '-'}</span></div>
+                            <div className="flex items-center gap-1.5"><span className="text-slate-400 dark:text-slate-500">{t('categoryDefinitions.meta.code2')}:</span> <span className="text-slate-700 dark:text-slate-300">{[stock.kod2, stock.kod2Adi].filter(Boolean).join(' - ') || '-'}</span></div>
+                            <div className="flex items-center gap-1.5"><span className="text-slate-400 dark:text-slate-500">{t('categoryDefinitions.meta.code3')}:</span> <span className="text-slate-700 dark:text-slate-300">{[stock.kod3, stock.kod3Adi].filter(Boolean).join(' - ') || '-'}</span></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {!favoritesQuery.isLoading && (favoritesQuery.data?.data?.length ?? 0) === 0 ? (
+                      <div className="rounded-2xl border border-dashed border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1627] p-8 text-center text-sm font-medium text-slate-500 dark:text-slate-400">
+                        {t('categoryDefinitions.noFavorites')}
                       </div>
                     ) : null}
                   </div>

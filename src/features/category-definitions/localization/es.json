@@ -77,7 +77,8 @@
       "summary": "¿Qué debo hacer?",
       "stocks": "Asignar stock",
       "rules": "Añadir regla",
-      "tips": "Guía"
+      "tips": "Guía",
+      "favorites": "Favoritos"
     },
     "catalogTypes": {
       "b2b": "B2B",
@@ -109,7 +110,9 @@
       "previewRules": "Vista previa de reglas",
       "previewingRules": "Generando vista previa",
       "applyRules": "Aplicar reglas",
-      "applyingRules": "Aplicando reglas"
+      "applyingRules": "Aplicando reglas",
+      "addFavorite": "Agregar a favoritos",
+      "removeFavorite": "Quitar de favoritos"
     },
     "messages": {
       "catalogCreateSuccess": "Catálogo creado correctamente.",
@@ -139,7 +142,10 @@
       "ruleDeleteError": "No se ha podido eliminar la regla.",
       "rulePreviewError": "No se ha podido cargar la vista previa de reglas.",
       "ruleApplySuccess": "Reglas aplicadas correctamente.",
-      "ruleApplyError": "No se han podido aplicar las reglas."
+      "ruleApplyError": "No se han podido aplicar las reglas.",
+      "favoriteAddSuccess": "Stock agregado a favoritos.",
+      "favoriteRemoveSuccess": "Stock eliminado de favoritos.",
+      "favoriteToggleError": "No se ha podido actualizar el estado de favorito."
     },
     "rulePreviewSummaryTitle": "Resumen de la vista previa de reglas",
     "rulePreviewSummary": {
@@ -418,6 +424,11 @@
       "code1": "Código 1",
       "code2": "Código 2",
       "code3": "Código 3"
-    }
+    },
+    "favoritesGuideTitle": "¿Para qué sirven los favoritos?",
+    "favoritesGuideDescription": "Mantiene los stocks usados con frecuencia en una lista rápida por usuario sin cambiar las asignaciones de categoría.",
+    "favoritesHelperText": "Este catálogo tiene {{count}} stocks favoritos. Pulse el corazón otra vez para quitar un stock.",
+    "noFavorites": "Todavía no hay stocks favoritos en este catálogo.",
+    "favoriteSearchPlaceholder": "Buscar favoritos por código o nombre..."
   }
 }
