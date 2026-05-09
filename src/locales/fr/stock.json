@@ -111,6 +111,24 @@
     "noStockFound": "Stock non trouvé",
     "saving": "Traitement..."
   },
+  "bulkImport": {
+    "rule1": "Les dossiers du ZIP doivent être groupés par code stock ERP.",
+    "rule2": "Exemples : STK-001/img1.jpg, STK-001/1/img2.png, Images/STK-001/img3.jpg",
+    "rule3": "Si le code est trouvé, les images sont ajoutées ; sinon, le fichier est ignoré.",
+    "rule4": "Les grandes archives sont traitées en arrière-plan (Hangfire). Un ZIP est requis.",
+    "fileRequired": "Veuillez d'abord sélectionner un fichier ZIP.",
+    "queued": "Importation d'images en file d'attente. Tâche : {{jobId}}",
+    "button": "Importation d'images en masse",
+    "title": "Importation d'images de stock en masse",
+    "description": "Importez un ZIP. Le système lit le code dans le nom du dossier et ajoute les images au stock.",
+    "structureTitle": "Structure du fichier ZIP",
+    "selectArchive": "Sélectionner l'archive ZIP",
+    "uploadHint": "Glissez-déposez le fichier ZIP ici ou cliquez pour sélectionner",
+    "uploadLimit": "Max 500MB (Traité en arrière-plan)",
+    "notesTitle": "Remarques importantes",
+    "submitting": "Mise en file d'attente...",
+    "submit": "Importer le ZIP et Démarrer"
+  },
   "messages": {
     "detailCreateSuccess": "Détails du stock créés avec succès",
     "detailUpdateSuccess": "Détails du stock mis à jour avec succès",

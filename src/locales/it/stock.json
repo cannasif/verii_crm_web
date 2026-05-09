@@ -140,6 +140,24 @@
     "noStockFound": "Nessun prodotto trovato",
     "saving": "Salvataggio..."
   },
+  "bulkImport": {
+    "rule1": "Le cartelle nello ZIP devono essere raggruppate per codice stock ERP.",
+    "rule2": "Esempi supportati: STK-001/img1.jpg, STK-001/1/img2.png, Immagini/STK-001/img3.jpg",
+    "rule3": "Se il codice viene trovato, le immagini vengono aggiunte; in caso contrario, il file viene saltato.",
+    "rule4": "Gli archivi di grandi dimensioni vengono elaborati in background (Hangfire). È richiesto uno ZIP.",
+    "fileRequired": "Seleziona prima un file ZIP.",
+    "queued": "Importazione di massa delle immagini in coda. Job: {{jobId}}",
+    "button": "Importazione Immagini di Massa",
+    "title": "Importazione Immagini Stock di Massa",
+    "description": "Carica un singolo ZIP. Il sistema legge il codice dal nome della cartella e aggiunge immagini allo stock.",
+    "structureTitle": "Struttura file ZIP",
+    "selectArchive": "Seleziona Archivio ZIP",
+    "uploadHint": "Trascina e rilascia il file ZIP qui o fai clic per selezionarlo",
+    "uploadLimit": "Max 500 MB (Elaborato in background)",
+    "notesTitle": "Note Importanti",
+    "submitting": "Messa in coda...",
+    "submit": "Carica ZIP e Avvia"
+  },
   "messages": {
     "detailCreateSuccess": "Dettaglio creato correttamente",
     "detailUpdateSuccess": "Dettaglio aggiornato correttamente",

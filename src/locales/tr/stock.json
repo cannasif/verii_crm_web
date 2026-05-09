@@ -111,6 +111,24 @@
     "noStockFound": "Stok bulunamadı",
     "saving": "İşleniyor..."
   },
+  "bulkImport": {
+    "rule1": "ZIP içindeki klasörler ERP stok koduna göre gruplanmalıdır.",
+    "rule2": "Desteklenen örnekler: STK-001/resim1.jpg, STK-001/1/resim2.png, Resimler/STK-001/resim3.jpg",
+    "rule3": "Sistem stok kodunu bulursa görselleri o stoğa ekler; bulamazsa dosyayı atlar.",
+    "rule4": "Büyük arşivler arka planda Hangfire job olarak işlenir. Bu alan ZIP arşivi bekler.",
+    "fileRequired": "Önce bir ZIP dosyası seç.",
+    "queued": "Toplu görsel içe aktarma kuyruğa alındı. Job: {{jobId}}",
+    "button": "Toplu görsel yükle",
+    "title": "Toplu stok görsel yükleme",
+    "description": "Tek ZIP yükle. Sistem klasör adından ERP stok kodunu okuyup görselleri ilgili stoğa ekler.",
+    "structureTitle": "ZIP Dosya Yapısı",
+    "selectArchive": "ZIP Arşivi Seçin",
+    "uploadHint": "ZIP dosyasını buraya sürükleyin veya seçin",
+    "uploadLimit": "Maksimum 500MB (Arka planda işlenir)",
+    "notesTitle": "Dikkat Edilmesi Gerekenler",
+    "submitting": "Sıraya alınıyor...",
+    "submit": "ZIP Yükle ve Başlat"
+  },
   "messages": {
     "detailCreateSuccess": "Stok detayı başarıyla oluşturuldu",
     "detailUpdateSuccess": "Stok detayı başarıyla güncellendi",

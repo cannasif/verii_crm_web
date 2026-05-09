@@ -111,6 +111,24 @@
     "stockCode": "Stock Code",
     "stockName": "Stock Name"
   },
+  "bulkImport": {
+    "rule1": "Folders in the ZIP must be grouped by ERP stock code.",
+    "rule2": "Supported examples: STK-001/img1.jpg, STK-001/1/img2.png, Images/STK-001/img3.jpg",
+    "rule3": "If the stock code is found, images are added to it; otherwise, the file is skipped.",
+    "rule4": "Large archives are processed as a Hangfire job in the background. A ZIP archive is required.",
+    "fileRequired": "Please select a ZIP file first.",
+    "queued": "Bulk image import queued. Job: {{jobId}}",
+    "button": "Bulk Image Import",
+    "title": "Bulk Stock Image Import",
+    "description": "Upload a single ZIP. The system reads the ERP stock code from the folder name and adds images to the related stock.",
+    "structureTitle": "ZIP File Structure",
+    "selectArchive": "Select ZIP Archive",
+    "uploadHint": "Drag and drop the ZIP file here or click to select",
+    "uploadLimit": "Max 500MB (Processed in background)",
+    "notesTitle": "Important Notes",
+    "submitting": "Queuing...",
+    "submit": "Upload ZIP and Start"
+  },
   "messages": {
     "detailCreateSuccess": "Stock detail created successfully",
     "detailUpdateSuccess": "Stock detail updated successfully",

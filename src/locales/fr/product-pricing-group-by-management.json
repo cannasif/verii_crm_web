@@ -97,10 +97,10 @@
     "updatedDate": "Date de Mise à Jour",
     "showing": "Affichage de {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
-    "title": "Fiyatlandırma Grubu Listesi"
+    "title": "Liste des Groupes de Prix"
   },
   "advancedFilter": {
-    "columnErpGroupCode": "ERP Grup Kodu",
-    "columnCurrency": "Para Birimi"
+    "columnErpGroupCode": "Code de Groupe ERP",
+    "columnCurrency": "Devise"
   }
 }
