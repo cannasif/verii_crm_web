@@ -138,3 +138,32 @@ export function tryOccupyAt(
   occupyRectangle(grid, row0, col0, rows, cols);
   return true;
 }
+
+export function findRectanglePlacementContainingCell(
+  grid: boolean[][],
+  dropRow: number,
+  dropCol: number,
+  rows: number,
+  cols: number,
+  maxRows: number,
+  maxCols: number,
+): { row0: number; col0: number } | null {
+  if (rows < 1 || cols < 1) return null;
+  if (dropRow < 0 || dropCol < 0 || dropRow >= maxRows || dropCol >= maxCols) return null;
+  if (rows > maxRows || cols > maxCols) return null;
+  const rMin = Math.max(0, dropRow - rows + 1);
+  const rMax = Math.min(dropRow, maxRows - rows);
+  const cMin = Math.max(0, dropCol - cols + 1);
+  const cMax = Math.min(dropCol, maxCols - cols);
+  if (rMin > rMax || cMin > cMax) return null;
+  let best: { row0: number; col0: number } | null = null;
+  for (let r0 = rMin; r0 <= rMax; r0 += 1) {
+    for (let c0 = cMin; c0 <= cMax; c0 += 1) {
+      if (!isRectangleFree(grid, r0, c0, rows, cols, maxRows, maxCols)) continue;
+      if (best === null || r0 < best.row0 || (r0 === best.row0 && c0 < best.col0)) {
+        best = { row0: r0, col0: c0 };
+      }
+    }
+  }
+  return best;
+}

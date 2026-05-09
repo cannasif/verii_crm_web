@@ -21,6 +21,7 @@ export {
   canAppend1x1Tile,
   canPlaceWidgetAtCell,
   createDashboardItem,
+  resolvePlacementForDashboardDrop,
   loadMyDashboardLayout,
   reconcileDashboardLayoutPositions,
   sanitizeMyDashboardLayout,

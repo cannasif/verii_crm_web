@@ -41,8 +41,8 @@ import type {
 import {
   buildOccupancyForItemsAtStoredPositions,
   canAppend1x1Tile,
-  canPlaceWidgetAtCell,
   createDashboardItem,
+  resolvePlacementForDashboardDrop,
   loadMyDashboardLayout,
   reconcileDashboardLayoutPositions,
   sanitizeMyDashboardLayout,
@@ -1108,14 +1108,23 @@ export function AssignedReportsDashboardSection({
       if (!item) return current;
       const cols = clampGridSpan(item.colSpan, 1, current.maxCols);
       const rows = clampGridSpan(item.rowSpan, 1, current.maxRows);
-      if (!canPlaceWidgetAtCell(current, itemKey, getItemKey, dropRow, dropCol, rows, cols)) {
+      const resolved = resolvePlacementForDashboardDrop(
+        current,
+        itemKey,
+        getItemKey,
+        dropRow,
+        dropCol,
+        rows,
+        cols,
+      );
+      if (!resolved) {
         toast.error(t('common.reportBuilder.dashboardDropDoesNotFit'));
         return current;
       }
       return {
         ...current,
         items: current.items.map((i) =>
-          getItemKey(i) === itemKey ? { ...i, gridRow: dropRow + 1, gridCol: dropCol + 1 } : i,
+          getItemKey(i) === itemKey ? { ...i, gridRow: resolved.gridRow, gridCol: resolved.gridCol } : i,
         ),
         updatedAt: new Date().toISOString(),
       };

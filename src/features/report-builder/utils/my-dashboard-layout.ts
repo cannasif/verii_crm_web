@@ -2,6 +2,7 @@ import type { MyReportDashboardItem, MyReportDashboardLayout } from '../types';
 import {
   clampGridSpan,
   createEmptyOccupancyGrid,
+  findRectanglePlacementContainingCell,
   isRectangleFree,
   occupyRectangle,
   tryPlaceFirstFit,
@@ -94,6 +95,31 @@ export function canPlaceWidgetAtCell(
   const cols = clampGridSpan(colSpan, 1, layout.maxCols);
   const rows = clampGridSpan(rowSpan, 1, layout.maxRows);
   return isRectangleFree(grid, dropRow0, dropCol0, rows, cols, layout.maxRows, layout.maxCols);
+}
+
+export function resolvePlacementForDashboardDrop(
+  layout: MyReportDashboardLayout,
+  excludeKey: string,
+  getKey: (item: MyReportDashboardItem) => string,
+  dropRow0: number,
+  dropCol0: number,
+  rowSpan: number,
+  colSpan: number,
+): { gridRow: number; gridCol: number } | null {
+  const grid = buildOccupancyForItemsAtStoredPositions(layout, excludeKey, getKey);
+  const cols = clampGridSpan(colSpan, 1, layout.maxCols);
+  const rows = clampGridSpan(rowSpan, 1, layout.maxRows);
+  const placement = findRectanglePlacementContainingCell(
+    grid,
+    dropRow0,
+    dropCol0,
+    rows,
+    cols,
+    layout.maxRows,
+    layout.maxCols,
+  );
+  if (!placement) return null;
+  return { gridRow: placement.row0 + 1, gridCol: placement.col0 + 1 };
 }
 
 export function canAppend1x1Tile(layout: MyReportDashboardLayout): boolean {
