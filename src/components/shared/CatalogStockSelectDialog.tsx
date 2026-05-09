@@ -50,7 +50,8 @@ import { stockMatchesDraftSnapshot, type ProductSelectionResult } from './Produc
 import { cn } from '@/lib/utils';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { stockApi } from '@/features/stock/api/stock-api';
-import type { StockGetDto, StockRelationDto } from '@/features/stock/types';
+import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto } from '@/features/stock/types';
+import { getImageUrl } from '@/features/stock/utils/image-url';
 import {
   fetchPricingRuleCampaignStockData,
   type PricingRuleCampaignLineDisplay,
@@ -74,7 +75,8 @@ interface CatalogStockSelectDialogProps {
 }
 
 function mapStockGetToCatalogItem(stock: StockGetDto): CatalogStockItemDto {
-  const primary = stock.stockImages?.find((img) => img.isPrimary) ?? stock.stockImages?.[0];
+  const stockWithMainImage = stock as StockGetWithMainImageDto;
+  const primary = stockWithMainImage.mainImage ?? stock.stockImages?.find((img) => img.isPrimary) ?? stock.stockImages?.[0];
   return {
     id: stock.id,
     stockCategoryId: 0,
@@ -343,7 +345,7 @@ export function CatalogStockSelectDialog({
   const [relatedDialogRelations, setRelatedDialogRelations] = useState<StockRelationDto[]>([]);
   const [hierarchyInfoOpen, setHierarchyInfoOpen] = useState(false);
   const [helperStripOpen, setHelperStripOpen] = useState(false);
-  const [stockLayoutMode, setStockLayoutMode] = useState<'cards' | 'list'>('list');
+  const [stockLayoutMode, setStockLayoutMode] = useState<'cards' | 'list'>('cards');
   const [stockBrowseMode, setStockBrowseMode] = useState<CatalogStockBrowseMode>('category');
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(true);
   const [mobileCategoryToolsOpen, setMobileCategoryToolsOpen] = useState(false);
@@ -373,7 +375,7 @@ export function CatalogStockSelectDialog({
       setRelatedDialogRelations([]);
       setHierarchyInfoOpen(false);
       setHelperStripOpen(false);
-      setStockLayoutMode('list');
+      setStockLayoutMode('cards');
       setStockBrowseMode('category');
       setMobileCategoriesOpen(true);
       setMobileCategoryToolsOpen(false);
@@ -558,8 +560,45 @@ export function CatalogStockSelectDialog({
         pageSize: PAGE_SIZE,
         search: debouncedStockSearch.trim() || undefined,
       });
+      const rawItems = response.data ?? [];
+
+      const codesNeedingImage = rawItems
+        .filter((item) => !item.imageUrl?.trim())
+        .map((item) => item.erpStockCode)
+        .filter((code): code is string => typeof code === 'string' && code.length > 0);
+
+      let imageByCodeLower = new Map<string, string>();
+      if (codesNeedingImage.length > 0) {
+        try {
+          const stocks = await stockApi.getListByErpStockCodes(codesNeedingImage);
+          imageByCodeLower = new Map(
+            stocks
+              .map((s): [string, string | null] => {
+                const enriched = s as StockGetWithMainImageDto;
+                const primary =
+                  enriched.mainImage ??
+                  s.stockImages?.find((img) => img.isPrimary) ??
+                  s.stockImages?.[0];
+                const filePath = primary?.filePath ?? null;
+                return [String(s.erpStockCode ?? '').toLowerCase(), filePath];
+              })
+              .filter((entry): entry is [string, string] => entry[1] != null && entry[1].length > 0),
+          );
+        } catch {
+          imageByCodeLower = new Map();
+        }
+      }
+
+      const enrichedItems: CatalogStockItemDto[] = rawItems.map((item) => {
+        if (item.imageUrl?.trim()) {
+          return item;
+        }
+        const filePath = imageByCodeLower.get(String(item.erpStockCode ?? '').toLowerCase());
+        return filePath ? { ...item, imageUrl: filePath } : item;
+      });
+
       return {
-        items: response.data ?? [],
+        items: enrichedItems,
         totalCount: response.totalCount ?? 0,
       };
     },
@@ -645,6 +684,7 @@ export function CatalogStockSelectDialog({
   const activateCategoryInCatalog = useCallback(
     (catalogId: number, category: CatalogCategoryNodeDto, branchPath?: CatalogCategoryNodeDto[]): void => {
       setStockBrowseMode('category');
+      setStockLayoutMode('cards');
       const catalog = catalogsQuery.data?.find((c) => c.id === catalogId);
       if (!catalog) {
         return;
@@ -690,15 +730,18 @@ export function CatalogStockSelectDialog({
   };
 
   const toggleStockBrowseCampaign = (): void => {
+    setStockLayoutMode('cards');
     setStockBrowseMode((m) => (m === 'campaign' ? 'category' : 'campaign'));
   };
 
   const toggleStockBrowseFavorites = (): void => {
+    setStockLayoutMode('cards');
     setStockBrowseMode((m) => (m === 'favorites' ? 'category' : 'favorites'));
   };
 
   const handleCatalogTrailSegmentClick = (catalogId: number, endIndexInclusive: number): void => {
     setStockBrowseMode('category');
+    setStockLayoutMode('cards');
     const catalog = catalogsQuery.data?.find((c) => c.id === catalogId);
     if (!catalog) {
       return;
@@ -746,6 +789,7 @@ export function CatalogStockSelectDialog({
 
   const handleBackLevelInCatalog = (catalogId: number): void => {
     setStockBrowseMode('category');
+    setStockLayoutMode('cards');
     const path = catalogPaths[catalogId] ?? (selectedCatalog?.id === catalogId ? navigationPath : []);
     const nextPath = path.slice(0, -1);
     setCatalogPaths((p) => ({ ...p, [catalogId]: nextPath }));
@@ -778,6 +822,7 @@ export function CatalogStockSelectDialog({
     setCatalogPaths({});
     setExpandedCatalogIds(new Set());
     setStockBrowseMode('category');
+    setStockLayoutMode('cards');
   };
 
   const canResetCategoryBranch =
@@ -1142,7 +1187,7 @@ export function CatalogStockSelectDialog({
               );
               const watermark = (stock.erpStockCode ?? '').slice(0, 2).toUpperCase() || '·';
               const relCount = relationMap.get(stock.stockId)?.length ?? 0;
-              const imageUrl = stock.imageUrl?.trim() ? stock.imageUrl : null;
+              const imageUrl = stock.imageUrl?.trim() ? getImageUrl(stock.imageUrl) : null;
 
               return (
                 <button
@@ -1810,7 +1855,7 @@ export function CatalogStockSelectDialog({
             >
             <div className="shrink-0 overflow-visible border-b border-slate-300/90 bg-white px-4 py-2 shadow-[inset_0_-1px_0_rgba(148,163,184,0.1)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-5 sm:py-2.5">
               <div className="flex w-full shrink-0 flex-col gap-3 overflow-visible sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                <div className="flex min-w-0 shrink-0 items-center justify-start gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-3 md:gap-4">
+                <div className="flex min-w-0 shrink-0 items-center justify-start gap-3 overflow-x-auto px-2 py-1.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-4 md:gap-5">
                   <button
                     type="button"
                     onClick={toggleStockBrowseCampaign}
