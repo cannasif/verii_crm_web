@@ -28,6 +28,14 @@ export const api = axios.create({
 
 let refreshPromise: Promise<string | null> | null = null;
 
+function appendPathSegment(url: string | undefined, segment: string): string | undefined {
+  if (!url) return url;
+
+  const [path, query] = url.split('?');
+  const nextPath = path.endsWith(`/${segment}`) ? path : `${path.replace(/\/$/, '')}/${segment}`;
+  return query ? `${nextPath}?${query}` : nextPath;
+}
+
 function resolveBranchCodeFromPersistedState(): string | null {
   try {
     const raw = localStorage.getItem('auth-storage');
@@ -406,6 +414,13 @@ async function refreshAccessToken(): Promise<string | null> {
 api.interceptors.request.use((config) => {
   config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
   const originalMethod = (config.method ?? 'get').toLowerCase();
+  if (originalMethod === 'put') {
+    config.method = 'post';
+  } else if (originalMethod === 'delete') {
+    config.method = 'post';
+    config.url = appendPathSegment(config.url, 'delete');
+  }
+
   if (originalMethod === 'get') {
     config.url = clampPagedRequestUrl(config.url);
     config.params = clampPagedRequestParams(config.params);
