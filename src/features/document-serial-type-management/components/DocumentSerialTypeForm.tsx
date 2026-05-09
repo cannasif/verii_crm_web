@@ -68,7 +68,7 @@ export function DocumentSerialTypeForm({
   documentSerialType,
   isLoading = false,
 }: DocumentSerialTypeFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['document-serial-type-management', 'pricing-rule', 'common']);
   const [customerTypeSearchTerm, setCustomerTypeSearchTerm] = useState('');
   const [salesRepSearchTerm, setSalesRepSearchTerm] = useState('');
   const customerTypeDropdown = useCustomerTypeOptionsInfinite(customerTypeSearchTerm, open);
@@ -138,13 +138,13 @@ export function DocumentSerialTypeForm({
             <div>
               <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
                 {documentSerialType
-                  ? t('documentSerialTypeManagement.form.editTitle')
-                  : t('documentSerialTypeManagement.form.addTitle')}
+                  ? t('form.editTitle')
+                  : t('form.addTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
                 {documentSerialType
-                  ? t('documentSerialTypeManagement.form.editDescription')
-                  : t('documentSerialTypeManagement.form.addDescription')}
+                  ? t('form.editDescription')
+                  : t('form.addDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -167,7 +167,7 @@ export function DocumentSerialTypeForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(documentSerialTypeFormSchema, 'ruleType')}>
-                        {t('documentSerialTypeManagement.form.ruleType')}
+                        {t('form.ruleType')}
                       </FormLabel>
                       <Select
                         onValueChange={(value) => field.onChange(parseInt(value))}
@@ -175,18 +175,18 @@ export function DocumentSerialTypeForm({
                       >
                         <FormControl>
                           <SelectTrigger className={`${INPUT_STYLE} w-full flex items-center`}>
-                            <SelectValue placeholder={t('documentSerialTypeManagement.form.selectRuleType')} />
+                            <SelectValue placeholder={t('form.selectRuleType')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value={PricingRuleType.Demand.toString()}>
-                            {t('pricingRule.ruleType.demand')}
+                            {t('pricingRule.ruleType.demand', { ns: 'pricing-rule' })}
                           </SelectItem>
                           <SelectItem value={PricingRuleType.Quotation.toString()}>
-                            {t('pricingRule.ruleType.quotation')}
+                            {t('pricingRule.ruleType.quotation', { ns: 'pricing-rule' })}
                           </SelectItem>
                           <SelectItem value={PricingRuleType.Order.toString()}>
-                            {t('pricingRule.ruleType.order')}
+                            {t('pricingRule.ruleType.order', { ns: 'pricing-rule' })}
                           </SelectItem>
                         </SelectContent>
                       </Select>
@@ -201,7 +201,7 @@ export function DocumentSerialTypeForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE}>
-                        {t('documentSerialTypeManagement.form.customerType')}
+                        {t('form.customerType')}
                       </FormLabel>
                       <FormControl>
                         <VoiceSearchCombobox
@@ -213,8 +213,8 @@ export function DocumentSerialTypeForm({
                           hasNextPage={customerTypeDropdown.hasNextPage}
                           isLoading={customerTypeDropdown.isLoading}
                           isFetchingNextPage={customerTypeDropdown.isFetchingNextPage}
-                          placeholder={t('documentSerialTypeManagement.form.selectCustomerType')}
-                          searchPlaceholder={t('documentSerialTypeManagement.form.searchCustomerType')}
+                          placeholder={t('form.selectCustomerType')}
+                          searchPlaceholder={t('form.searchCustomerType')}
                           className={INPUT_STYLE}
                         />
                       </FormControl>
@@ -231,7 +231,7 @@ export function DocumentSerialTypeForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE}>
-                        {t('documentSerialTypeManagement.form.salesRep')}
+                        {t('form.salesRep')}
                       </FormLabel>
                       <FormControl>
                         <VoiceSearchCombobox
@@ -243,8 +243,8 @@ export function DocumentSerialTypeForm({
                           hasNextPage={salesRepDropdown.hasNextPage}
                           isLoading={salesRepDropdown.isLoading}
                           isFetchingNextPage={salesRepDropdown.isFetchingNextPage}
-                          placeholder={t('documentSerialTypeManagement.form.selectSalesRep')}
-                          searchPlaceholder={t('documentSerialTypeManagement.form.searchSalesRep')}
+                          placeholder={t('form.selectSalesRep')}
+                          searchPlaceholder={t('form.searchSalesRep')}
                           className={INPUT_STYLE}
                         />
                       </FormControl>
@@ -259,14 +259,14 @@ export function DocumentSerialTypeForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(documentSerialTypeFormSchema, 'serialPrefix')}>
-                        {t('documentSerialTypeManagement.form.serialPrefix')}
+                        {t('form.serialPrefix')}
                       </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           value={field.value}
                           className={INPUT_STYLE}
-                          placeholder={t('documentSerialTypeManagement.form.serialPrefixPlaceholder')}
+                          placeholder={t('form.serialPrefixPlaceholder')}
                           maxLength={50}
                         />
                       </FormControl>
@@ -283,7 +283,7 @@ export function DocumentSerialTypeForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(documentSerialTypeFormSchema, 'serialLength')}>
-                        {t('documentSerialTypeManagement.form.serialLength')}
+                        {t('form.serialLength')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -292,7 +292,7 @@ export function DocumentSerialTypeForm({
                           {...field}
                           value={field.value}
                           onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : 1)}
-                          placeholder={t('documentSerialTypeManagement.form.serialLengthPlaceholder')}
+                          placeholder={t('form.serialLengthPlaceholder')}
                           className={INPUT_STYLE}
                           min={1}
                           max={100}
@@ -309,7 +309,7 @@ export function DocumentSerialTypeForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(documentSerialTypeFormSchema, 'serialIncrement')}>
-                        {t('documentSerialTypeManagement.form.serialIncrement')}
+                        {t('form.serialIncrement')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -318,7 +318,7 @@ export function DocumentSerialTypeForm({
                           {...field}
                           value={field.value}
                           onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : 1)}
-                          placeholder={t('documentSerialTypeManagement.form.serialIncrementPlaceholder')}
+                          placeholder={t('form.serialIncrementPlaceholder')}
                           className={INPUT_STYLE}
                           min={1}
                           max={100}
@@ -337,7 +337,7 @@ export function DocumentSerialTypeForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(documentSerialTypeFormSchema, 'serialStart')}>
-                        {t('documentSerialTypeManagement.form.serialStart')}
+                        {t('form.serialStart')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -346,7 +346,7 @@ export function DocumentSerialTypeForm({
                           {...field}
                           value={field.value}
                           onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : 0)}
-                          placeholder={t('documentSerialTypeManagement.form.serialStartPlaceholder')}
+                          placeholder={t('form.serialStartPlaceholder')}
                           className={INPUT_STYLE}
                           min={0}
                         />
@@ -362,7 +362,7 @@ export function DocumentSerialTypeForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0">
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(documentSerialTypeFormSchema, 'serialCurrent')}>
-                        {t('documentSerialType.form.serialCurrent')}
+                        {t('form.serialCurrent')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -371,7 +371,7 @@ export function DocumentSerialTypeForm({
                           {...field}
                           value={field.value}
                           onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : 0)}
-                          placeholder={t('documentSerialType.form.serialCurrentPlaceholder')}
+                          placeholder={t('form.serialCurrentPlaceholder')}
                           className={INPUT_STYLE}
                           min={0}
                         />

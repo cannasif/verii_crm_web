@@ -51,7 +51,7 @@ export const documentSerialTypeApi = {
   },
 
   update: async (id: number, data: UpdateDocumentSerialTypeDto): Promise<DocumentSerialTypeDto> => {
-    const response = await api.put<ApiResponse<DocumentSerialTypeDto>>(`/api/DocumentSerialType/${id}`, data);
+    const response = await api.post<ApiResponse<DocumentSerialTypeDto>>(`/api/DocumentSerialType/${id}`, data);
     if (response.success && response.data) {
       return response.data;
     }
@@ -59,7 +59,7 @@ export const documentSerialTypeApi = {
   },
 
   delete: async (id: number): Promise<void> => {
-    const response = await api.delete<ApiResponse<object>>(`/api/DocumentSerialType/${id}`);
+    const response = await api.post<ApiResponse<object>>(`/api/DocumentSerialType/${id}/delete`);
     if (!response.success) {
       throw new Error(response.message || 'Dosya tip silinemedi');
     }

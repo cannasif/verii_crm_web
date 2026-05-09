@@ -65,11 +65,12 @@ const SORT_MAP: Record<string, string> = {
 };
 
 function resolveLabel(
-  t: (key: string) => string,
+  t: (key: string, options?: Record<string, unknown>) => string,
   key: string,
-  fallback: string
+  fallback: string,
+  options?: Record<string, unknown>
 ): string {
-  const translated = t(key);
+  const translated = t(key, options);
   return translated && translated !== key ? translated : fallback;
 }
 
@@ -397,7 +398,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
               },
               isLoading: isLoading || isFetching,
               cooldownSeconds: 60,
-              label: resolveLabel(t, 'common.refresh', 'Yenile'),
+              label: resolveLabel(t, 'common.refresh', 'Yenile', { ns: 'common' }),
             }}
           />
         </CardHeader>
@@ -423,7 +424,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
                 }}
                 isLoading={isLoading || isFetching}
                 loadingText={t('loading')}
-                errorText={t('error', { defaultValue: t('common.error') })}
+                errorText={t('error', { defaultValue: t('common.error', { ns: 'common' }) })}
                 emptyText={t('noData')}
                 minTableWidthClassName="min-w-[800px] lg:min-w-[1000px]"
                 showActionsColumn
@@ -464,6 +465,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
                 previousLabel={t('previous', { defaultValue: 'Önceki' })}
                 nextLabel={t('next', { defaultValue: 'Sonraki' })}
                 paginationInfoText={t('common.table.showing', {
+                  ns: 'common',
                   from: startRow,
                   to: endRow,
                   total: totalCount,
@@ -506,7 +508,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('cancel', { defaultValue: t('common.cancel') })}
+              {t('cancel', { defaultValue: t('common.cancel', { ns: 'common' }) })}
             </Button>
             <Button
               type="button"
@@ -516,7 +518,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteDocumentSerialType.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {t('common.delete.action')}
+              {t('common.delete.action', { ns: 'common' })}
             </Button>
           </DialogFooter>
         </DialogContent>
