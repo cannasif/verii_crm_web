@@ -60,6 +60,10 @@ type QuotationColumnKey =
   | 'ValidUntil'
   | 'Currency'
   | 'GrandTotal'
+  | 'IsERPIntegrated'
+  | 'ERPIntegrationNumber'
+  | 'LastSyncDate'
+  | 'CountTriedBy'
   | 'Status';
 type SortDirection = 'asc' | 'desc';
 
@@ -81,6 +85,10 @@ const QUOTATION_COLUMN_CONFIG: readonly QuotationColumnConfig[] = [
   { key: 'ValidUntil', labelKey: 'quotation.list.validUntil', fallbackLabel: 'Geçerlilik', filterType: 'date' },
   { key: 'Currency', labelKey: 'quotation.list.currency', fallbackLabel: 'Para Birimi', filterType: 'string' },
   { key: 'GrandTotal', labelKey: 'quotation.list.grandTotal', fallbackLabel: 'Toplam', filterType: 'number' },
+  { key: 'IsERPIntegrated', labelKey: 'quotation.list.isERPIntegrated', fallbackLabel: 'Netsis', filterType: 'boolean' },
+  { key: 'ERPIntegrationNumber', labelKey: 'quotation.list.erpIntegrationNumber', fallbackLabel: 'Netsis No', filterType: 'string' },
+  { key: 'LastSyncDate', labelKey: 'quotation.list.lastSyncDate', fallbackLabel: 'Netsis Tarihi', filterType: 'date' },
+  { key: 'CountTriedBy', labelKey: 'quotation.list.countTriedBy', fallbackLabel: 'Deneme', filterType: 'number' },
   { key: 'Status', labelKey: 'quotation.list.status', fallbackLabel: 'Durum', filterType: 'number' },
 ];
 
@@ -130,9 +138,15 @@ export function QuotationListPage(): ReactElement {
     () =>
       baseColumns.map((col) => ({
         ...col,
-        headClassName: col.key === 'GrandTotal' ? 'text-right' : undefined,
+        headClassName: col.key === 'GrandTotal' ? 'text-right' : col.key === 'IsERPIntegrated' || col.key === 'CountTriedBy' ? 'text-center' : undefined,
         cellClassName:
-          col.key === 'GrandTotal' ? 'text-right font-semibold' : col.key === 'Id' ? 'font-medium' : undefined,
+          col.key === 'GrandTotal'
+            ? 'text-right font-semibold'
+            : col.key === 'IsERPIntegrated' || col.key === 'CountTriedBy'
+              ? 'text-center'
+              : col.key === 'Id'
+                ? 'font-medium'
+                : undefined,
         sortable: true,
       })),
     [baseColumns]
@@ -226,6 +240,10 @@ export function QuotationListPage(): ReactElement {
         ValidUntil: quotation.validUntil ? new Date(quotation.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(quotation),
         GrandTotal: getGrandTotalLabel(quotation),
+        IsERPIntegrated: quotation.isERPIntegrated ? '1' : '0',
+        ERPIntegrationNumber: quotation.erpIntegrationNumber ?? '-',
+        LastSyncDate: quotation.lastSyncDate ? new Date(quotation.lastSyncDate).toLocaleDateString(i18n.language) : '-',
+        CountTriedBy: quotation.countTriedBy ?? 0,
         Status:
           typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 4
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][quotation.status]}`)
@@ -268,6 +286,10 @@ export function QuotationListPage(): ReactElement {
         ValidUntil: quotation.validUntil ? new Date(quotation.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(quotation),
         GrandTotal: getGrandTotalLabel(quotation),
+        IsERPIntegrated: quotation.isERPIntegrated ? '1' : '0',
+        ERPIntegrationNumber: quotation.erpIntegrationNumber ?? '-',
+        LastSyncDate: quotation.lastSyncDate ? new Date(quotation.lastSyncDate).toLocaleDateString(i18n.language) : '-',
+        CountTriedBy: quotation.countTriedBy ?? 0,
         Status:
           typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 4
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][quotation.status]}`)
@@ -316,6 +338,20 @@ export function QuotationListPage(): ReactElement {
     if (key === 'ValidUntil') return formatDate(quotation.validUntil);
     if (key === 'Currency') return getCurrencyLabel(quotation);
     if (key === 'GrandTotal') return getGrandTotalLabel(quotation);
+    if (key === 'IsERPIntegrated') {
+      return (
+        <span className={`inline-flex min-w-8 justify-center rounded-full px-2 py-1 text-xs font-semibold ${
+          quotation.isERPIntegrated
+            ? 'bg-emerald-100 text-emerald-700'
+            : 'bg-slate-100 text-slate-600'
+        }`}>
+          {quotation.isERPIntegrated ? '1' : '0'}
+        </span>
+      );
+    }
+    if (key === 'ERPIntegrationNumber') return quotation.erpIntegrationNumber || '-';
+    if (key === 'LastSyncDate') return formatDate(quotation.lastSyncDate);
+    if (key === 'CountTriedBy') return quotation.countTriedBy ?? 0;
     if (key === 'Status') {
       return typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 4 ? (
         <ApprovalStatusBadge status={quotation.status as ApprovalStatus} />

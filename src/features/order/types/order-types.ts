@@ -226,6 +226,10 @@ export interface OrderGetDto {
   activityId?: number | null;
   generalDiscountRate?: number | null;
   generalDiscountAmount?: number | null;
+  isERPIntegrated?: boolean;
+  erpIntegrationNumber?: string | null;
+  lastSyncDate?: string | null;
+  countTriedBy?: number | null;
   createdAt: string;
   updatedAt?: string | null;
   createdBy?: string | null;

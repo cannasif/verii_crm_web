@@ -60,6 +60,10 @@ type OrderColumnKey =
   | 'ValidUntil'
   | 'Currency'
   | 'GrandTotal'
+  | 'IsERPIntegrated'
+  | 'ERPIntegrationNumber'
+  | 'LastSyncDate'
+  | 'CountTriedBy'
   | 'Status';
 type SortDirection = 'asc' | 'desc';
 
@@ -81,6 +85,10 @@ const ORDER_COLUMN_CONFIG: readonly OrderColumnConfig[] = [
   { key: 'ValidUntil', labelKey: 'order.list.validUntil', fallbackLabel: 'Geçerlilik', filterType: 'date' },
   { key: 'Currency', labelKey: 'order.list.currency', fallbackLabel: 'Para Birimi', filterType: 'string' },
   { key: 'GrandTotal', labelKey: 'order.list.grandTotal', fallbackLabel: 'Toplam', filterType: 'number' },
+  { key: 'IsERPIntegrated', labelKey: 'order.list.isERPIntegrated', fallbackLabel: 'Netsis', filterType: 'boolean' },
+  { key: 'ERPIntegrationNumber', labelKey: 'order.list.erpIntegrationNumber', fallbackLabel: 'Netsis No', filterType: 'string' },
+  { key: 'LastSyncDate', labelKey: 'order.list.lastSyncDate', fallbackLabel: 'Netsis Tarihi', filterType: 'date' },
+  { key: 'CountTriedBy', labelKey: 'order.list.countTriedBy', fallbackLabel: 'Deneme', filterType: 'number' },
   { key: 'Status', labelKey: 'order.list.status', fallbackLabel: 'Durum', filterType: 'number' },
 ];
 
@@ -133,10 +141,14 @@ export function OrderListPage(): ReactElement {
         headClassName:
           col.key === 'GrandTotal'
             ? 'text-right'
+            : col.key === 'IsERPIntegrated' || col.key === 'CountTriedBy'
+              ? 'text-center'
             : undefined,
         cellClassName:
           col.key === 'GrandTotal'
             ? 'text-right font-semibold'
+            : col.key === 'IsERPIntegrated' || col.key === 'CountTriedBy'
+              ? 'text-center'
             : col.key === 'Id'
               ? 'font-medium'
               : undefined,
@@ -243,6 +255,10 @@ export function OrderListPage(): ReactElement {
         ValidUntil: order.validUntil ? new Date(order.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(order),
         GrandTotal: getGrandTotalLabel(order),
+        IsERPIntegrated: order.isERPIntegrated ? '1' : '0',
+        ERPIntegrationNumber: order.erpIntegrationNumber ?? '-',
+        LastSyncDate: order.lastSyncDate ? new Date(order.lastSyncDate).toLocaleDateString(i18n.language) : '-',
+        CountTriedBy: order.countTriedBy ?? 0,
         Status: typeof order.status === 'number' && order.status >= 0 && order.status <= 4
           ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][order.status]}`)
           : '-',
@@ -275,6 +291,10 @@ export function OrderListPage(): ReactElement {
         ValidUntil: order.validUntil ? new Date(order.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(order),
         GrandTotal: getGrandTotalLabel(order),
+        IsERPIntegrated: order.isERPIntegrated ? '1' : '0',
+        ERPIntegrationNumber: order.erpIntegrationNumber ?? '-',
+        LastSyncDate: order.lastSyncDate ? new Date(order.lastSyncDate).toLocaleDateString(i18n.language) : '-',
+        CountTriedBy: order.countTriedBy ?? 0,
         Status: typeof order.status === 'number' && order.status >= 0 && order.status <= 4
           ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][order.status]}`)
           : '-',
@@ -317,6 +337,20 @@ export function OrderListPage(): ReactElement {
     if (key === 'ValidUntil') return formatDate(order.validUntil);
     if (key === 'Currency') return getCurrencyLabel(order);
     if (key === 'GrandTotal') return getGrandTotalLabel(order);
+    if (key === 'IsERPIntegrated') {
+      return (
+        <span className={`inline-flex min-w-8 justify-center rounded-full px-2 py-1 text-xs font-semibold ${
+          order.isERPIntegrated
+            ? 'bg-emerald-100 text-emerald-700'
+            : 'bg-slate-100 text-slate-600'
+        }`}>
+          {order.isERPIntegrated ? '1' : '0'}
+        </span>
+      );
+    }
+    if (key === 'ERPIntegrationNumber') return order.erpIntegrationNumber || '-';
+    if (key === 'LastSyncDate') return formatDate(order.lastSyncDate);
+    if (key === 'CountTriedBy') return order.countTriedBy ?? 0;
     if (key === 'Status') {
       return typeof order.status === 'number' && order.status >= 0 && order.status <= 4 ? (
         <ApprovalStatusBadge status={order.status as ApprovalStatus} />

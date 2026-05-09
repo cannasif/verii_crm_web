@@ -60,6 +60,10 @@ type DemandColumnKey =
   | 'ValidUntil'
   | 'Currency'
   | 'GrandTotal'
+  | 'IsERPIntegrated'
+  | 'ERPIntegrationNumber'
+  | 'LastSyncDate'
+  | 'CountTriedBy'
   | 'Status';
 type SortDirection = 'asc' | 'desc';
 
@@ -81,6 +85,10 @@ const DEMAND_COLUMN_CONFIG: readonly DemandColumnConfig[] = [
   { key: 'ValidUntil', labelKey: 'demand.list.validUntil', fallbackLabel: 'Geçerlilik', filterType: 'date' },
   { key: 'Currency', labelKey: 'demand.list.currency', fallbackLabel: 'Para Birimi', filterType: 'string' },
   { key: 'GrandTotal', labelKey: 'demand.list.grandTotal', fallbackLabel: 'Toplam', filterType: 'number' },
+  { key: 'IsERPIntegrated', labelKey: 'demand.list.isERPIntegrated', fallbackLabel: 'Netsis', filterType: 'boolean' },
+  { key: 'ERPIntegrationNumber', labelKey: 'demand.list.erpIntegrationNumber', fallbackLabel: 'Netsis No', filterType: 'string' },
+  { key: 'LastSyncDate', labelKey: 'demand.list.lastSyncDate', fallbackLabel: 'Netsis Tarihi', filterType: 'date' },
+  { key: 'CountTriedBy', labelKey: 'demand.list.countTriedBy', fallbackLabel: 'Deneme', filterType: 'number' },
   { key: 'Status', labelKey: 'demand.list.status', fallbackLabel: 'Durum', filterType: 'number' },
 ];
 
@@ -130,9 +138,15 @@ export function DemandListPage(): ReactElement {
     () =>
       baseColumns.map((col) => ({
         ...col,
-        headClassName: col.key === 'GrandTotal' ? 'text-right' : undefined,
+        headClassName: col.key === 'GrandTotal' ? 'text-right' : col.key === 'IsERPIntegrated' || col.key === 'CountTriedBy' ? 'text-center' : undefined,
         cellClassName:
-          col.key === 'GrandTotal' ? 'text-right font-semibold' : col.key === 'Id' ? 'font-medium' : undefined,
+          col.key === 'GrandTotal'
+            ? 'text-right font-semibold'
+            : col.key === 'IsERPIntegrated' || col.key === 'CountTriedBy'
+              ? 'text-center'
+              : col.key === 'Id'
+                ? 'font-medium'
+                : undefined,
         sortable: true,
       })),
     [baseColumns]
@@ -222,6 +236,10 @@ export function DemandListPage(): ReactElement {
         ValidUntil: demand.validUntil ? new Date(demand.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(demand),
         GrandTotal: getGrandTotalLabel(demand),
+        IsERPIntegrated: demand.isERPIntegrated ? '1' : '0',
+        ERPIntegrationNumber: demand.erpIntegrationNumber ?? '-',
+        LastSyncDate: demand.lastSyncDate ? new Date(demand.lastSyncDate).toLocaleDateString(i18n.language) : '-',
+        CountTriedBy: demand.countTriedBy ?? 0,
         Status:
           typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][demand.status]}`)
@@ -264,6 +282,10 @@ export function DemandListPage(): ReactElement {
         ValidUntil: demand.validUntil ? new Date(demand.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(demand),
         GrandTotal: getGrandTotalLabel(demand),
+        IsERPIntegrated: demand.isERPIntegrated ? '1' : '0',
+        ERPIntegrationNumber: demand.erpIntegrationNumber ?? '-',
+        LastSyncDate: demand.lastSyncDate ? new Date(demand.lastSyncDate).toLocaleDateString(i18n.language) : '-',
+        CountTriedBy: demand.countTriedBy ?? 0,
         Status:
           typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4
             ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][demand.status]}`)
@@ -312,6 +334,20 @@ export function DemandListPage(): ReactElement {
     if (key === 'ValidUntil') return formatDate(demand.validUntil);
     if (key === 'Currency') return getCurrencyLabel(demand);
     if (key === 'GrandTotal') return getGrandTotalLabel(demand);
+    if (key === 'IsERPIntegrated') {
+      return (
+        <span className={`inline-flex min-w-8 justify-center rounded-full px-2 py-1 text-xs font-semibold ${
+          demand.isERPIntegrated
+            ? 'bg-emerald-100 text-emerald-700'
+            : 'bg-slate-100 text-slate-600'
+        }`}>
+          {demand.isERPIntegrated ? '1' : '0'}
+        </span>
+      );
+    }
+    if (key === 'ERPIntegrationNumber') return demand.erpIntegrationNumber || '-';
+    if (key === 'LastSyncDate') return formatDate(demand.lastSyncDate);
+    if (key === 'CountTriedBy') return demand.countTriedBy ?? 0;
     if (key === 'Status') {
       return typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4 ? (
         <ApprovalStatusBadge status={demand.status as ApprovalStatus} />
