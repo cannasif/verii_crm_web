@@ -12,6 +12,14 @@
     },
     "table": {
       "title": "Fiyat Kuralı Listesi",
+      "ruleCode": "Kural Kodu",
+      "ruleName": "Kural Adı",
+      "ruleType": "Kural Tipi",
+      "validFrom": "Geçerlilik Başlangıç",
+      "validTo": "Geçerlilik Bitiş",
+      "customer": "Müşteri",
+      "currency": "Para Birimi",
+      "status": "Durum",
       "actions": "İşlemler"
     },
     "status": {
@@ -145,6 +153,7 @@
     "deleteError": "Hata",
     "deleteErrorMessage": "Satışçı kaldırılırken bir hata oluştu",
     "add": "Satışçı Ekle",
+    "search": "Satışçı ara...",
     "empty": "Henüz satışçı eklenmedi",
     "emptyDescription": "Tüm satışçılar için geçerli olacaktır",
     "salesman": "Satışçı"

@@ -97,10 +97,10 @@
     "updatedDate": "Aktualisierungsdatum",
     "showing": "{{from}}-{{to}} / {{total}} angezeigt",
     "page": "Seite {{current}} / {{total}}",
-    "title": "Fiyatlandırma Grubu Listesi"
+    "title": "Preisgruppenliste"
   },
   "advancedFilter": {
-    "columnErpGroupCode": "ERP Grup Kodu",
-    "columnCurrency": "Para Birimi"
+    "columnErpGroupCode": "ERP-Gruppencode",
+    "columnCurrency": "Währung"
   }
 }

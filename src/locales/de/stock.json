@@ -111,6 +111,24 @@
     "noStockFound": "Lagerbestand nicht gefunden",
     "saving": "Verarbeitung..."
   },
+  "bulkImport": {
+    "rule1": "Ordner im ZIP müssen nach ERP-Bestandscode gruppiert werden.",
+    "rule2": "Unterstützte Beispiele: STK-001/bild1.jpg, STK-001/1/bild2.png, Bilder/STK-001/bild3.jpg",
+    "rule3": "Wenn der Code gefunden wird, werden Bilder hinzugefügt; andernfalls wird die Datei übersprungen.",
+    "rule4": "Große Archive werden im Hintergrund als Hangfire-Job verarbeitet. Ein ZIP-Archiv ist erforderlich.",
+    "fileRequired": "Bitte wählen Sie zuerst eine ZIP-Datei aus.",
+    "queued": "Massen-Bildimport in Warteschlange. Job: {{jobId}}",
+    "button": "Massen-Bildimport",
+    "title": "Massen-Bestandsbildimport",
+    "description": "Laden Sie eine ZIP hoch. Das System liest den Code aus dem Ordnernamen und fügt Bilder dem Bestand hinzu.",
+    "structureTitle": "ZIP-Dateistruktur",
+    "selectArchive": "ZIP-Archiv auswählen",
+    "uploadHint": "Ziehen Sie die ZIP-Datei hierher oder klicken Sie zur Auswahl",
+    "uploadLimit": "Max. 500MB (Wird im Hintergrund verarbeitet)",
+    "notesTitle": "Wichtige Hinweise",
+    "submitting": "In Warteschlange...",
+    "submit": "ZIP hochladen und starten"
+  },
   "messages": {
     "detailCreateSuccess": "Bestandsdetails erfolgreich erstellt",
     "detailUpdateSuccess": "Bestandsdetails erfolgreich aktualisiert",

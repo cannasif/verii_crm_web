@@ -95,9 +95,9 @@ export function StockBulkImageImportDialog(): ReactElement {
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:rotate-90 shadow-sm"
+              className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 shadow-sm"
             >
-              <X className="relative z-10 rotate-180" size={20} />
+              <X className="relative z-10" size={20} />
               <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
           </DialogHeader>
