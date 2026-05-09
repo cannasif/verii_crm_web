@@ -217,6 +217,11 @@ type CampaignStocksQueryData = {
   pricingByCodeLower: Record<string, PricingRuleCampaignLineDisplay>;
 };
 
+type FavoriteStocksQueryData = {
+  items: CatalogStockItemDto[];
+  totalCount: number;
+};
+
 const PAGE_SIZE = 24;
 
 type CatalogStockBrowseMode = 'category' | 'campaign' | 'favorites';
@@ -341,6 +346,7 @@ export function CatalogStockSelectDialog({
   const [stockLayoutMode, setStockLayoutMode] = useState<'cards' | 'list'>('list');
   const [stockBrowseMode, setStockBrowseMode] = useState<CatalogStockBrowseMode>('category');
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(true);
+  const [mobileCategoryToolsOpen, setMobileCategoryToolsOpen] = useState(false);
   const [mobileStocksOpen, setMobileStocksOpen] = useState(true);
   const [categoryClientSearch, setCategoryClientSearch] = useState('');
   const [categorySearchShowBranches, setCategorySearchShowBranches] = useState(false);
@@ -370,6 +376,7 @@ export function CatalogStockSelectDialog({
       setStockLayoutMode('list');
       setStockBrowseMode('category');
       setMobileCategoriesOpen(true);
+      setMobileCategoryToolsOpen(false);
       setMobileStocksOpen(true);
       setCategoryClientSearch('');
       setCategorySearchShowBranches(false);
@@ -536,12 +543,52 @@ export function CatalogStockSelectDialog({
     return campaignSearchFilteredItems.slice(start, start + PAGE_SIZE);
   }, [campaignSearchFilteredItems, pageNumber]);
   const campaignHasNextPage = pageNumber * PAGE_SIZE < campaignSearchFilteredItems.length;
+  const favoriteCatalogId = selectedCatalog?.id ?? catalogsQuery.data?.[0]?.id ?? null;
+
+  const favoriteStocksQuery = useQuery({
+    queryKey: [
+      'catalog-stock-picker-favorites',
+      favoriteCatalogId,
+      pageNumber,
+      debouncedStockSearch,
+    ] as const,
+    queryFn: async (): Promise<FavoriteStocksQueryData> => {
+      const response = await categoryDefinitionsApi.getCatalogFavorites(favoriteCatalogId!, {
+        pageNumber,
+        pageSize: PAGE_SIZE,
+        search: debouncedStockSearch.trim() || undefined,
+      });
+      return {
+        items: response.data ?? [],
+        totalCount: response.totalCount ?? 0,
+      };
+    },
+    enabled: open && stockBrowseMode === 'favorites' && favoriteCatalogId != null,
+    staleTime: 60 * 1000,
+  });
+
+  const favoriteItems = favoriteStocksQuery.data?.items ?? [];
+  const favoriteTotalCount = favoriteStocksQuery.data?.totalCount ?? favoriteItems.length;
+  const favoriteHasNextPage = pageNumber * PAGE_SIZE < favoriteTotalCount;
 
   const activeStockRows: CatalogStockItemDto[] =
-    stockBrowseMode === 'campaign' ? campaignDisplayItems : stockItems;
+    stockBrowseMode === 'campaign'
+      ? campaignDisplayItems
+      : stockBrowseMode === 'favorites'
+        ? favoriteItems
+        : stockItems;
   const activeStockLoading =
-    stockBrowseMode === 'campaign' ? campaignStocksQuery.isLoading : stocksQuery.isLoading;
-  const activeStockHasNextPage = stockBrowseMode === 'campaign' ? campaignHasNextPage : hasNextPage;
+    stockBrowseMode === 'campaign'
+      ? campaignStocksQuery.isLoading
+      : stockBrowseMode === 'favorites'
+        ? favoriteStocksQuery.isLoading
+        : stocksQuery.isLoading;
+  const activeStockHasNextPage =
+    stockBrowseMode === 'campaign'
+      ? campaignHasNextPage
+      : stockBrowseMode === 'favorites'
+        ? favoriteHasNextPage
+        : hasNextPage;
 
   const relationQueries = useQueries({
     queries: activeStockRows.map((stock) => ({
@@ -551,6 +598,7 @@ export function CatalogStockSelectDialog({
         open &&
         activeStockRows.length > 0 &&
         (stockBrowseMode === 'campaign' ||
+          stockBrowseMode === 'favorites' ||
           (stockBrowseMode === 'category' && selectedLeafCategory != null)),
       staleTime: 5 * 60 * 1000,
     })),
@@ -919,29 +967,7 @@ export function CatalogStockSelectDialog({
   );
 
   const stockListScrollInner =
-    stockBrowseMode === 'favorites' ? (
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
-        <div className="max-w-md">
-          <div
-            className={cn(
-              'mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border shadow-[0_0_28px_rgba(236,72,153,0.18)] dark:shadow-[0_0_32px_rgba(236,72,153,0.2)]',
-              'border-amber-400/50 bg-gradient-to-br from-amber-50 via-yellow-50/90 to-amber-100/40 text-amber-600 shadow-amber-200/30 dark:border-amber-400/45 dark:from-amber-500/[0.16] dark:via-yellow-600/10 dark:to-amber-600/5 dark:text-amber-200',
-            )}
-          >
-            <Star className="h-7 w-7" strokeWidth={1.65} aria-hidden />
-          </div>
-          <div className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            {t('catalogStockPicker.favoriteStocksChip')}
-          </div>
-          <div className="mt-2 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-            {t('catalogStockPicker.specialStockListPlaceholderTitle')}
-          </div>
-          <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-            {t('catalogStockPicker.specialStockListPlaceholderHint')}
-          </div>
-        </div>
-      </div>
-    ) : stockBrowseMode === 'category' && !selectedLeafCategory ? (
+    stockBrowseMode === 'category' && !selectedLeafCategory ? (
     <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
       <div className="max-w-md">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border border-pink-500/30 bg-pink-500/10 text-pink-500 shadow-[0_0_24px_rgba(236,72,153,0.22)] dark:text-pink-400 dark:shadow-[0_0_28px_rgba(236,72,153,0.25)]">
@@ -959,9 +985,9 @@ export function CatalogStockSelectDialog({
     </div>
   ) : activeStockRows.length ? (
     stockLayoutMode === 'list' ? (
-      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none max-lg:overflow-visible lg:overflow-hidden">
-        <div className="min-h-0 flex-1 touch-pan-y overscroll-contain [-webkit-overflow-scrolling:touch] max-lg:overflow-visible lg:overflow-auto">
-          <table className="w-full min-w-[720px] table-fixed border-collapse text-left text-sm">
+      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none max-lg:overflow-auto lg:overflow-hidden">
+        <div className="min-h-0 flex-1 touch-pan-y overscroll-contain [-webkit-overflow-scrolling:touch] max-lg:overflow-auto lg:overflow-auto">
+          <table className="w-full min-w-[620px] table-fixed border-collapse text-left text-sm sm:min-w-[720px]">
             <thead>
               <tr className="border-b border-slate-300/90 bg-slate-100/90 text-[10px] font-semibold uppercase tracking-wide text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 sm:text-[11px]">
                 <th className="w-[120px] px-2 py-1.5 sm:px-3 sm:py-2">{t('catalogStockPicker.listColCode')}</th>
@@ -1102,7 +1128,7 @@ export function CatalogStockSelectDialog({
           aria-hidden
         />
         <div className="relative min-h-0 flex-1 touch-pan-y overscroll-contain px-1 pt-1.5 [-webkit-overflow-scrolling:touch] max-lg:overflow-visible lg:overflow-y-auto">
-          <div className="grid grid-cols-2 gap-2.5 pb-4 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
+          <div className="grid grid-cols-1 gap-2.5 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
             {activeStockRows.map((stock) => {
               const selectionKey = getSelectionKey({ id: stock.stockId, code: stock.erpStockCode });
               const selected = selectedKeys.has(selectionKey);
@@ -1375,6 +1401,22 @@ export function CatalogStockSelectDialog({
               )}
             >
             <div className="shrink-0 border-b border-slate-300/90 bg-gradient-to-b from-white to-transparent px-3 py-1.5 shadow-[inset_0_-1px_0_rgba(148,163,184,0.06)] dark:border-white/10 dark:from-white/[0.03] dark:shadow-none sm:px-3.5 sm:py-2 xl:px-3 xl:pb-1.5 xl:pt-1">
+              <button
+                type="button"
+                onClick={() => setMobileCategoryToolsOpen((v) => !v)}
+                aria-expanded={mobileCategoryToolsOpen}
+                className="mb-2 flex w-full items-center justify-between rounded-lg border border-slate-300/90 bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-200 dark:hover:bg-white/[0.08] lg:hidden"
+              >
+                <span>{t('catalogStockPicker.hierarchySectionTitle')}</span>
+                <ChevronDown
+                  className={cn(
+                    'h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200 dark:text-slate-400',
+                    mobileCategoryToolsOpen && 'rotate-180',
+                  )}
+                  aria-hidden
+                />
+              </button>
+              <div className={cn(!mobileCategoryToolsOpen && 'max-lg:hidden', 'lg:block')}>
               <div
                 className={cn(
                   'flex items-center justify-between gap-2',
@@ -1530,6 +1572,7 @@ export function CatalogStockSelectDialog({
                     ) : null}
                   </div>
                 ) : null}
+              </div>
               </div>
             </div>
 
@@ -1767,13 +1810,13 @@ export function CatalogStockSelectDialog({
             >
             <div className="shrink-0 overflow-visible border-b border-slate-300/90 bg-white px-4 py-2 shadow-[inset_0_-1px_0_rgba(148,163,184,0.1)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-5 sm:py-2.5">
               <div className="flex w-full shrink-0 flex-col gap-3 overflow-visible sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                <div className="flex shrink-0 flex-wrap items-center justify-start gap-4 overflow-visible sm:gap-5 md:gap-6">
+                <div className="flex min-w-0 shrink-0 items-center justify-start gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-3 md:gap-4">
                   <button
                     type="button"
                     onClick={toggleStockBrowseCampaign}
                     aria-pressed={stockBrowseMode === 'campaign'}
                     className={cn(
-                      'group relative isolate flex items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
+                      'group relative isolate flex shrink-0 items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
                       stockBrowseMode === 'campaign'
                         ? 'scale-105 border-transparent bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white shadow-[0_8px_20px_rgba(244,63,94,0.4)] ring-4 ring-pink-100 dark:ring-pink-950/55'
                         : 'border-pink-200 bg-gradient-to-r from-rose-50 to-pink-50 text-rose-600 hover:from-rose-100 hover:to-pink-100 dark:border-pink-800/50 dark:from-rose-950/45 dark:to-pink-950/35 dark:text-rose-200 dark:hover:from-rose-900/55 dark:hover:to-pink-900/45',
@@ -1802,7 +1845,7 @@ export function CatalogStockSelectDialog({
                     onClick={toggleStockBrowseFavorites}
                     aria-pressed={stockBrowseMode === 'favorites'}
                     className={cn(
-                      'group relative isolate flex items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
+                      'group relative isolate flex shrink-0 items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
                       stockBrowseMode === 'favorites'
                         ? 'scale-105 border-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-amber-950 shadow-[0_8px_20px_rgba(251,191,36,0.4)] ring-4 ring-amber-100 dark:ring-amber-950/50'
                         : 'border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-600 hover:from-amber-100 hover:to-yellow-100 dark:border-amber-800/45 dark:from-amber-950/40 dark:to-yellow-950/30 dark:text-amber-200 dark:hover:from-amber-900/50 dark:hover:to-yellow-900/40',
@@ -1878,10 +1921,7 @@ export function CatalogStockSelectDialog({
                       onChange={(event) => setStockSearch(event.target.value)}
                       placeholder={t('catalogStockPicker.searchPlaceholder')}
                       className="h-8 rounded-xl border border-slate-300/90 bg-white pl-8 text-sm text-slate-900 shadow-sm placeholder:text-slate-500 backdrop-blur-sm focus-visible:border-pink-400/60 focus-visible:ring-pink-500/20 dark:border-white/15 dark:bg-white/[0.06] dark:text-slate-100 dark:placeholder:text-slate-500 dark:shadow-none dark:focus-visible:border-pink-500/40 sm:h-9 sm:rounded-2xl sm:pl-10"
-                      disabled={
-                        stockBrowseMode === 'favorites' ||
-                        (stockBrowseMode === 'category' && !selectedLeafCategory)
-                      }
+                      disabled={stockBrowseMode === 'category' && !selectedLeafCategory}
                     />
                   </div>
                 </div>
