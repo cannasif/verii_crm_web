@@ -433,11 +433,6 @@ api.interceptors.request.use((config) => {
     config.headers['X-Branch-Code'] = branchCode;
   }
 
-  if (originalMethod === 'put' || originalMethod === 'patch' || originalMethod === 'delete') {
-    config.headers['X-HTTP-Method-Override'] = originalMethod.toUpperCase();
-    config.method = 'post';
-  }
-
   return config;
 });
 
