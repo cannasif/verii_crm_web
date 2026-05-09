@@ -5,12 +5,24 @@ import type { PagedParams, PagedFilter, PagedResponse } from '@/types/api';
 import { normalizeQueryParams } from '@/utils/query-params';
 import type { StockGetWithMainImageDto } from '../types';
 
+type UseStockListWithImagesOptions = {
+  enabled?: boolean;
+};
+
 export const useStockListWithImages = (
-  params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }
+  params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> },
+  options?: UseStockListWithImagesOptions
 ): UseQueryResult<PagedResponse<StockGetWithMainImageDto>, Error> => {
+  const keyParams = {
+    ...normalizeQueryParams(params),
+    ...(Array.isArray(params.filters) && params.filters.length > 0
+      ? { filtersSignature: JSON.stringify(params.filters), filterLogic: params.filterLogic ?? 'and' }
+      : {}),
+  };
   return useQuery({
-    queryKey: queryKeys.listWithImages(normalizeQueryParams(params)),
+    queryKey: queryKeys.listWithImages(keyParams),
     queryFn: () => stockApi.getListWithImages(params),
     staleTime: 5 * 60 * 1000,
+    enabled: options?.enabled ?? true,
   });
 };

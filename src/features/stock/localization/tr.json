@@ -20,7 +20,10 @@
     "previous": "Önceki",
     "next": "Sonraki",
     "addFavorite": "Favoriye ekle",
-    "removeFavorite": "Favoriden çıkar"
+    "removeFavorite": "Favoriden çıkar",
+    "viewModeTable": "Liste",
+    "viewModeGrid": "Izgara",
+    "viewModeGroupLabel": "Görünüm"
   },
   "detail": {
     "title": "Stok Detayı",

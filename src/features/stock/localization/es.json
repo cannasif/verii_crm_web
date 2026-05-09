@@ -20,7 +20,10 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "addFavorite": "Agregar a favoritos",
-    "removeFavorite": "Quitar de favoritos"
+    "removeFavorite": "Quitar de favoritos",
+    "viewModeTable": "Lista",
+    "viewModeGrid": "Cuadrícula",
+    "viewModeGroupLabel": "Vista"
   },
   "detail": {
     "title": "Detalle del stock",

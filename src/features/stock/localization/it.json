@@ -20,7 +20,10 @@
     "previous": "Precedente",
     "next": "Successivo",
     "addFavorite": "Aggiungi ai preferiti",
-    "removeFavorite": "Rimuovi dai preferiti"
+    "removeFavorite": "Rimuovi dai preferiti",
+    "viewModeTable": "Elenco",
+    "viewModeGrid": "Griglia",
+    "viewModeGroupLabel": "Vista"
   },
   "detail": {
     "title": "Dettaglio articolo",

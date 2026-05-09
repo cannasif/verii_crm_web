@@ -20,7 +20,10 @@
     "previous": "Zurück",
     "next": "Weiter",
     "addFavorite": "Zu Favoriten hinzufügen",
-    "removeFavorite": "Aus Favoriten entfernen"
+    "removeFavorite": "Aus Favoriten entfernen",
+    "viewModeTable": "Liste",
+    "viewModeGrid": "Raster",
+    "viewModeGroupLabel": "Ansicht"
   },
   "detail": {
     "title": "Bestandsdetails",

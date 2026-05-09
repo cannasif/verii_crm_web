@@ -5,8 +5,13 @@ import type { PagedParams, PagedFilter, PagedResponse } from '@/types/api';
 import { normalizeQueryParams } from '@/utils/query-params';
 import type { StockGetDto } from '../types';
 
+type UseStockListOptions = {
+  enabled?: boolean;
+};
+
 export const useStockList = (
-  params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }
+  params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> },
+  options?: UseStockListOptions
 ): UseQueryResult<PagedResponse<StockGetDto>, Error> => {
   const keyParams = {
     ...normalizeQueryParams(params),
@@ -18,5 +23,6 @@ export const useStockList = (
     queryKey: queryKeys.list(keyParams),
     queryFn: () => stockApi.getList(params),
     staleTime: 5 * 60 * 1000,
+    enabled: options?.enabled ?? true,
   });
 };
