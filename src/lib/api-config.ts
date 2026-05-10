@@ -19,6 +19,12 @@ interface PersistedRuntimeConfig {
   fetchedAt: number;
 }
 
+declare global {
+  interface Window {
+    __RUNTIME_CONFIG__?: RuntimeConfig;
+  }
+}
+
 function isValidApiUrl(value: string | undefined | null): boolean {
   if (!value || typeof value !== 'string') return false;
   const trimmed = value.trim();
@@ -76,6 +82,30 @@ function toBaseRelativePath(fileName: string): string {
   return `${normalizedBase}${fileName}`;
 }
 
+function resolveRuntimeConfig(config: RuntimeConfig | undefined | null, fallbackConfig: ResolvedRuntimeConfig): ResolvedRuntimeConfig {
+  const configuredApiUrl = config?.apiUrl ?? config?.apiBaseUrl ?? config?.apiBaseURL;
+
+  return {
+    apiUrl: isValidApiUrl(configuredApiUrl) ? normalizeBaseUrl(configuredApiUrl!) : fallbackConfig.apiUrl,
+    baseUrl: normalizeAppBasePath(config?.baseUrl ?? fallbackConfig.baseUrl),
+  };
+}
+
+function loadRuntimeConfigScript(): Promise<RuntimeConfig | null> {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return Promise.resolve(null);
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = `${toBaseRelativePath('config.js')}?v=${Date.now()}`;
+    script.async = true;
+    script.onload = () => resolve(window.__RUNTIME_CONFIG__ ?? null);
+    script.onerror = () => reject(new Error('config.js yüklenemedi'));
+    document.head.appendChild(script);
+  });
+}
+
 async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
   const fallbackConfig: ResolvedRuntimeConfig = {
     apiUrl: isValidApiUrl(import.meta.env.VITE_API_URL)
@@ -94,15 +124,19 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
     }
 
     const config = (await response.json()) as RuntimeConfig;
-    const configuredApiUrl = config?.apiUrl ?? config?.apiBaseUrl ?? config?.apiBaseURL;
-
-    return {
-      apiUrl: isValidApiUrl(configuredApiUrl) ? normalizeBaseUrl(configuredApiUrl!) : fallbackConfig.apiUrl,
-      baseUrl: normalizeAppBasePath(config?.baseUrl ?? fallbackConfig.baseUrl),
-    };
+    return resolveRuntimeConfig(config, fallbackConfig);
   } catch (error) {
     if (import.meta.env.DEV) {
-      console.warn('[api-config] config.json yüklenemedi, fallback kullanılıyor:', error);
+      console.warn('[api-config] config.json yüklenemedi, config.js deneniyor:', error);
+    }
+  }
+
+  try {
+    const scriptConfig = await loadRuntimeConfigScript();
+    return resolveRuntimeConfig(scriptConfig, fallbackConfig);
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn('[api-config] config.js yüklenemedi, fallback kullanılıyor:', error);
     }
   }
 
