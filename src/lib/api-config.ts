@@ -1,4 +1,5 @@
 export const DEFAULT_API_BASE_URL = 'https://crmapi.v3rii.com';
+const RUNTIME_CONFIG_FILE_NAME = 'runtime-settings.json';
 const RUNTIME_CONFIG_CACHE_KEY = 'runtime-config-cache';
 
 interface RuntimeConfig {
@@ -94,19 +95,19 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
   };
 
   try {
-    const response = await fetch(`${toBaseRelativePath('config.json')}?v=${Date.now()}`, {
+    const response = await fetch(`${toBaseRelativePath(RUNTIME_CONFIG_FILE_NAME)}?v=${Date.now()}`, {
       cache: 'no-store',
       credentials: 'same-origin',
     });
     if (!response.ok) {
-      throw new Error(`config.json HTTP ${response.status}`);
+      throw new Error(`${RUNTIME_CONFIG_FILE_NAME} HTTP ${response.status}`);
     }
 
     const config = (await response.json()) as RuntimeConfig;
     return resolveRuntimeConfig(config, fallbackConfig);
   } catch (error) {
     if (import.meta.env.DEV) {
-      console.warn('[api-config] config.json yüklenemedi, fallback kullanılıyor:', error);
+      console.warn(`[api-config] ${RUNTIME_CONFIG_FILE_NAME} yüklenemedi, fallback kullanılıyor:`, error);
     }
   }
 
@@ -171,7 +172,7 @@ export function loadConfig(): Promise<string> {
         const persisted = readPersistedRuntimeConfig();
         if (persisted) {
           if (import.meta.env.DEV) {
-            console.warn('[api-config] config.json okunamadı, persisted fallback kullanılıyor:', error);
+            console.warn(`[api-config] ${RUNTIME_CONFIG_FILE_NAME} okunamadı, persisted fallback kullanılıyor:`, error);
           }
           return {
             apiUrl: persisted.apiUrl,
