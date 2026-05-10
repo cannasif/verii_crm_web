@@ -1,7 +1,6 @@
 export const DEFAULT_API_BASE_URL = 'https://crmapi.v3rii.com';
 const RUNTIME_CONFIG_CACHE_KEY = 'runtime-config-cache';
 const RUNTIME_CONFIG_TTL_MS = 60 * 60 * 1000;
-const ENABLE_RUNTIME_CONFIG_FETCH = String(import.meta.env.VITE_RUNTIME_CONFIG ?? '').toLowerCase() === 'true';
 
 interface RuntimeConfig {
   apiUrl?: string;
@@ -84,10 +83,6 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
       : normalizeBaseUrl(DEFAULT_API_BASE_URL),
     baseUrl: normalizeAppBasePath(import.meta.env.BASE_URL || '/'),
   };
-
-  if (import.meta.env.PROD && !ENABLE_RUNTIME_CONFIG_FETCH) {
-    return fallbackConfig;
-  }
 
   try {
     const response = await fetch(toBaseRelativePath('config.json'), {
