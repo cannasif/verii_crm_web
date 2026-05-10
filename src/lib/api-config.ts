@@ -19,12 +19,6 @@ interface PersistedRuntimeConfig {
   fetchedAt: number;
 }
 
-declare global {
-  interface Window {
-    __RUNTIME_CONFIG__?: RuntimeConfig;
-  }
-}
-
 function isValidApiUrl(value: string | undefined | null): boolean {
   if (!value || typeof value !== 'string') return false;
   const trimmed = value.trim();
@@ -91,21 +85,6 @@ function resolveRuntimeConfig(config: RuntimeConfig | undefined | null, fallback
   };
 }
 
-function loadRuntimeConfigScript(): Promise<RuntimeConfig | null> {
-  if (typeof window === 'undefined' || typeof document === 'undefined') {
-    return Promise.resolve(null);
-  }
-
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = `${toBaseRelativePath('config.js')}?v=${Date.now()}`;
-    script.async = true;
-    script.onload = () => resolve(window.__RUNTIME_CONFIG__ ?? null);
-    script.onerror = () => reject(new Error('config.js yüklenemedi'));
-    document.head.appendChild(script);
-  });
-}
-
 async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
   const fallbackConfig: ResolvedRuntimeConfig = {
     apiUrl: isValidApiUrl(import.meta.env.VITE_API_URL)
@@ -113,15 +92,6 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
       : normalizeBaseUrl(DEFAULT_API_BASE_URL),
     baseUrl: normalizeAppBasePath(import.meta.env.BASE_URL || '/'),
   };
-
-  try {
-    const scriptConfig = await loadRuntimeConfigScript();
-    return resolveRuntimeConfig(scriptConfig, fallbackConfig);
-  } catch (error) {
-    if (import.meta.env.DEV) {
-      console.warn('[api-config] config.js yüklenemedi, config.json deneniyor:', error);
-    }
-  }
 
   try {
     const response = await fetch(`${toBaseRelativePath('config.json')}?v=${Date.now()}`, {
