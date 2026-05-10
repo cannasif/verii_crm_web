@@ -115,6 +115,15 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
   };
 
   try {
+    const scriptConfig = await loadRuntimeConfigScript();
+    return resolveRuntimeConfig(scriptConfig, fallbackConfig);
+  } catch (error) {
+    if (import.meta.env.DEV) {
+      console.warn('[api-config] config.js yüklenemedi, config.json deneniyor:', error);
+    }
+  }
+
+  try {
     const response = await fetch(`${toBaseRelativePath('config.json')}?v=${Date.now()}`, {
       cache: 'no-store',
       credentials: 'same-origin',
@@ -127,16 +136,7 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
     return resolveRuntimeConfig(config, fallbackConfig);
   } catch (error) {
     if (import.meta.env.DEV) {
-      console.warn('[api-config] config.json yüklenemedi, config.js deneniyor:', error);
-    }
-  }
-
-  try {
-    const scriptConfig = await loadRuntimeConfigScript();
-    return resolveRuntimeConfig(scriptConfig, fallbackConfig);
-  } catch (error) {
-    if (import.meta.env.DEV) {
-      console.warn('[api-config] config.js yüklenemedi, fallback kullanılıyor:', error);
+      console.warn('[api-config] config.json yüklenemedi, fallback kullanılıyor:', error);
     }
   }
 
