@@ -35,6 +35,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { CustomerSelectDialog } from '@/components/shared/CustomerSelectDialog';
+import { useCustomerComboListKeyboard } from '@/components/shared/useCustomerComboListKeyboard';
 import { useShippingAddresses } from '../hooks/useShippingAddresses';
 import { useQuotationRelatedUsers } from '../hooks/useQuotationRelatedUsers';
 import {
@@ -278,6 +279,32 @@ export function QuotationHeaderForm({
     setCustomerComboboxOpen(false);
   };
 
+  const customerCommandListRef = useRef<HTMLDivElement | null>(null);
+  const customerKeyboard = useCustomerComboListKeyboard({
+    readOnly,
+    filterKey: customerSearchQuery,
+    filteredOptions: filteredCustomerOptions,
+    comboboxOpen: customerComboboxOpen,
+    setComboboxOpen: setCustomerComboboxOpen,
+    onSelectOption: handleComboboxSelect,
+  });
+
+  useEffect(() => {
+    if (!customerComboboxOpen || customerKeyboard.highlightIndex < 0) {
+      return;
+    }
+    const root = customerCommandListRef.current;
+    if (!root) {
+      return;
+    }
+    window.requestAnimationFrame(() => {
+      const active = root.querySelector('[data-kb-customer-active="true"]');
+      if (active instanceof HTMLElement) {
+        active.scrollIntoView({ block: 'nearest' });
+      }
+    });
+  }, [customerKeyboard.highlightIndex, customerComboboxOpen]);
+
   useEffect(() => {
     const currentRepresentativeId = form.watch('quotation.representativeId');
     if (!currentRepresentativeId && user?.id) {
@@ -422,6 +449,7 @@ export function QuotationHeaderForm({
                             setCustomerSearchQuery(v);
                             setCustomerComboboxOpen(v.trim().length > 0);
                           }}
+                          onKeyDown={customerKeyboard.onInputKeyDown}
                           placeholder={t('quotation:header.selectCustomer')}
                           disabled={readOnly}
                           autoComplete="off"
@@ -438,7 +466,11 @@ export function QuotationHeaderForm({
                           onOpenAutoFocus={(e) => e.preventDefault()}
                         >
                           <Command shouldFilter={false}>
-                            <CommandList className="max-h-[350px] overflow-y-auto p-2 space-y-1">
+                            <div
+                              ref={customerCommandListRef}
+                              className="max-h-[350px] overflow-y-auto"
+                            >
+                              <CommandList className="p-2 space-y-1">
                               {filteredCustomerOptions.length === 0 && (
                                 <CommandEmpty className="py-8 text-center flex flex-col items-center gap-2">
                                   <SearchX className="w-5 h-5 text-zinc-400" />
@@ -446,12 +478,17 @@ export function QuotationHeaderForm({
                                 </CommandEmpty>
                               )}
                               <CommandGroup>
-                                {filteredCustomerOptions.map((option) => (
+                                {filteredCustomerOptions.map((option, index) => (
                                   <CommandItem
                                     key={option.value}
                                     value={option.value}
+                                    data-kb-customer-active={customerKeyboard.isOptionKeyboardActive(index) ? 'true' : undefined}
                                     onSelect={() => handleComboboxSelect(option)}
-                                    className="cursor-pointer mb-1 rounded-xl px-3 py-2 data-[selected=true]:bg-pink-50 dark:data-[selected=true]:bg-pink-900/20 transition-colors"
+                                    className={cn(
+                                      'cursor-pointer mb-1 rounded-xl px-3 py-2 data-[selected=true]:bg-pink-50 dark:data-[selected=true]:bg-pink-900/20 transition-colors',
+                                      customerKeyboard.isOptionKeyboardActive(index) &&
+                                        'ring-2 ring-pink-500 ring-offset-2 ring-offset-white dark:ring-offset-zinc-950',
+                                    )}
                                   >
                                     <div className="flex items-center gap-3 w-full">
                                       <div className={cn(
@@ -474,6 +511,7 @@ export function QuotationHeaderForm({
                                 ))}
                               </CommandGroup>
                             </CommandList>
+                            </div>
                           </Command>
                         </PopoverContent>
                       </Popover>
