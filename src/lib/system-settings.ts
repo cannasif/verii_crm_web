@@ -68,31 +68,15 @@ export function getHtmlNumberInputStepForDecimals(fractionDigits?: number): stri
   return step.toFixed(p);
 }
 
-/**
- * Miktar tam sayı olmalı (oklar ±1 adet): AD/ADET ve yaygın ERP kodları.
- * Birim metni farklı yazılmış olsa da (ör. sondaki nokta) eşleşir.
- */
-export function isIntegerQuantityUnit(unit: string | null | undefined): boolean {
-  const u = (unit ?? '')
-    .trim()
-    .toUpperCase()
-    .replace(/\u00A0/g, '')
-    .replace(/\.+$/g, '');
-  if (u === 'AD' || u === 'ADET') return true;
-  if (u === 'ADT' || u === 'PCS' || u === 'PCE' || u === 'PC') return true;
-  return false;
-}
-
-/** Line table quick-edit draft: quantity (AD/ADET = integer), unit price & discount rates use system decimals. */
+/** Line table quick-edit draft: quantity, unit price & discount rates use system decimals. */
 export function formatLineTableQuickEditDraft(
   field: string,
   value: number | null | undefined,
-  options?: { unit?: string | null }
+  _options?: { unit?: string | null }
 ): string {
   if (value == null || typeof value !== 'number' || !Number.isFinite(value)) return '';
 
   if (field === 'quantity') {
-    if (isIntegerQuantityUnit(options?.unit)) return String(Math.max(1, Math.round(value)));
     return formatHtmlNumberInputDraft(value);
   }
 
