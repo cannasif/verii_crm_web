@@ -16,6 +16,7 @@ import {
   List,
   MinusCircle,
   Package,
+  PlusCircle,
   RotateCcw,
   Loader2,
   PackageSearch,
@@ -226,6 +227,11 @@ type FavoriteStocksQueryData = {
 
 const PAGE_SIZE = 24;
 
+type CatalogSessionPick = {
+  pickId: string;
+  result: ProductSelectionResult;
+};
+
 type CatalogStockBrowseMode = 'category' | 'campaign' | 'favorites';
 
 type HorizontalScrollRowProps = {
@@ -339,7 +345,7 @@ export function CatalogStockSelectDialog({
   const [includeDescendants, setIncludeDescendants] = useState(false);
   const [stockSearch, setStockSearch] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [selectedResults, setSelectedResults] = useState<ProductSelectionResult[]>([]);
+  const [sessionPicks, setSessionPicks] = useState<CatalogSessionPick[]>([]);
   const [relatedDialogOpen, setRelatedDialogOpen] = useState(false);
   const [relatedDialogStock, setRelatedDialogStock] = useState<CatalogStockItemDto | null>(null);
   const [relatedDialogRelations, setRelatedDialogRelations] = useState<StockRelationDto[]>([]);
@@ -369,7 +375,7 @@ export function CatalogStockSelectDialog({
       setIncludeDescendants(false);
       setStockSearch('');
       setPageNumber(1);
-      setSelectedResults([]);
+      setSessionPicks([]);
       setRelatedDialogOpen(false);
       setRelatedDialogStock(null);
       setRelatedDialogRelations([]);
@@ -394,7 +400,7 @@ export function CatalogStockSelectDialog({
       const snapshot = initialSelectedResults.map((r) => ({ ...r }));
       initialDraftSnapshotRef.current = snapshot;
       documentLinesSnapshotRef.current = (existingLineStockMarkers ?? []).map((r) => ({ ...r }));
-      setSelectedResults([]);
+      setSessionPicks([]);
       wasOpenRef.current = true;
     }
   }, [initialSelectedResults, open, existingLineStockMarkers]);
@@ -655,30 +661,42 @@ export function CatalogStockSelectDialog({
   const getSelectionKey = (value: { id?: number; code: string }): string =>
     value.id != null ? `id:${value.id}` : `code:${value.code}`;
 
-  const upsertSelection = (result: ProductSelectionResult): void => {
+  const upsertSessionPickByStockKey = (result: ProductSelectionResult): void => {
     const nextKey = getSelectionKey(result);
-    setSelectedResults((prev) => {
-      const existingIndex = prev.findIndex((item) => getSelectionKey(item) === nextKey);
+    setSessionPicks((prev) => {
+      const existingIndex = prev.findIndex((p) => getSelectionKey(p.result) === nextKey);
       if (existingIndex >= 0) {
-        return prev.map((item, index) => (index === existingIndex ? result : item));
+        return prev.map((p, i) => (i === existingIndex ? { ...p, result: { ...result } } : p));
       }
-      return [...prev, result];
+      return [...prev, { pickId: crypto.randomUUID(), result: { ...result } }];
     });
   };
 
-  const removeSelection = (result: ProductSelectionResult): void => {
-    const targetKey = getSelectionKey(result);
-    setSelectedResults((prev) => prev.filter((item) => getSelectionKey(item) !== targetKey));
+  const removeSessionPickById = (pickId: string): void => {
+    setSessionPicks((prev) => prev.filter((p) => p.pickId !== pickId));
   };
 
-  const selectedKeys = useMemo(
-    () => new Set(selectedResults.map((item) => getSelectionKey(item))),
-    [selectedResults]
-  );
+  const duplicateSessionPickById = (pickId: string): void => {
+    setSessionPicks((prev) => {
+      const found = prev.find((p) => p.pickId === pickId);
+      if (!found) {
+        return prev;
+      }
+      return [...prev, { pickId: crypto.randomUUID(), result: { ...found.result } }];
+    });
+  };
+
+  const selectedKeys = useMemo(() => {
+    const keys = new Set<string>();
+    for (const p of sessionPicks) {
+      keys.add(getSelectionKey(p.result));
+    }
+    return keys;
+  }, [sessionPicks]);
 
   const selectedScrollSyncKey = useMemo(
-    () => selectedResults.map((item) => getSelectionKey(item)).join('|'),
-    [selectedResults]
+    () => sessionPicks.map((p) => p.pickId).join('|'),
+    [sessionPicks],
   );
 
   const activateCategoryInCatalog = useCallback(
@@ -855,11 +873,12 @@ export function CatalogStockSelectDialog({
 
     if (multiSelect) {
       const key = getSelectionKey(result);
-      if (selectedResults.some((item) => getSelectionKey(item) === key)) {
-        removeSelection(result);
-      } else {
-        upsertSelection(result);
-      }
+      setSessionPicks((prev) => {
+        if (prev.some((p) => getSelectionKey(p.result) === key)) {
+          return prev.filter((p) => getSelectionKey(p.result) !== key);
+        }
+        return [...prev, { pickId: crypto.randomUUID(), result: { ...result } }];
+      });
       return;
     }
 
@@ -883,7 +902,7 @@ export function CatalogStockSelectDialog({
     };
 
     if (multiSelect) {
-      upsertSelection(result);
+      upsertSessionPickByStockKey(result);
       setRelatedDialogOpen(false);
       setRelatedDialogStock(null);
       setRelatedDialogRelations([]);
@@ -900,7 +919,7 @@ export function CatalogStockSelectDialog({
   const handleConfirmMulti = async (): Promise<void> => {
     if (!multiSelect || !onMultiSelect) return;
     const draft = initialDraftSnapshotRef.current;
-    const session = selectedResults;
+    const session = sessionPicks.map((p) => p.result);
     if (draft.length === 0 && session.length === 0) return;
     const merged = [...draft, ...session];
     await onMultiSelect(merged);
@@ -910,7 +929,7 @@ export function CatalogStockSelectDialog({
   const catalogDraftSnapshotList = initialDraftSnapshotRef.current;
   const catalogDocumentLinesList = documentLinesSnapshotRef.current;
 
-  const hasAnyPicksOrDraft = selectedResults.length > 0 || catalogDraftSnapshotList.length > 0;
+  const hasAnyPicksOrDraft = sessionPicks.length > 0 || catalogDraftSnapshotList.length > 0;
 
   const helperTitle = useMemo((): string => {
     if (stockBrowseMode === 'favorites') {
@@ -1973,7 +1992,7 @@ export function CatalogStockSelectDialog({
               </div>
             </div>
 
-            {multiSelect && (selectedResults.length > 0 || catalogDraftSnapshotList.length > 0) ? (
+            {multiSelect && (sessionPicks.length > 0 || catalogDraftSnapshotList.length > 0) ? (
               <div className="shrink-0 border-b border-slate-300/90 bg-white px-4 py-1.5 backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 sm:px-5">
                 <div className="rounded-xl border border-pink-400/35 bg-pink-50/90 p-2 shadow-sm ring-1 ring-pink-200/40 backdrop-blur-md dark:border-pink-500/25 dark:bg-pink-500/[0.08] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:ring-0 sm:rounded-2xl sm:p-2.5">
                   <div className="flex items-center justify-between gap-2">
@@ -1987,7 +2006,7 @@ export function CatalogStockSelectDialog({
                     </div>
                     <span className="shrink-0 rounded-full border border-pink-500/40 bg-pink-500/15 px-2 py-0.5 text-[10px] font-semibold text-pink-700 shadow-[0_0_14px_rgba(236,72,153,0.25)] dark:text-pink-100 sm:text-xs">
                       {t('catalogStockPicker.confirmTotalCount', {
-                        count: catalogDraftSnapshotList.length + selectedResults.length,
+                        count: catalogDraftSnapshotList.length + sessionPicks.length,
                       })}
                     </span>
                   </div>
@@ -1996,7 +2015,7 @@ export function CatalogStockSelectDialog({
                       {t('catalogStockPicker.draftRetainedInConfirm', { count: catalogDraftSnapshotList.length })}
                     </p>
                   ) : null}
-                  {selectedResults.length > 0 ? (
+                  {sessionPicks.length > 0 ? (
                     <HorizontalScrollRow
                       syncKey={selectedScrollSyncKey}
                       scrollBackLabel={t('catalogStockPicker.scrollBack')}
@@ -2004,19 +2023,28 @@ export function CatalogStockSelectDialog({
                       className="mt-1.5"
                       scrollStep={280}
                     >
-                      {selectedResults.map((item) => (
+                      {sessionPicks.map((pick) => (
                         <div
-                          key={getSelectionKey(item)}
-                          className="flex max-w-[min(320px,70vw)] shrink-0 items-center gap-2 rounded-xl border border-slate-300/90 bg-white px-2.5 py-1.5 text-xs shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none"
+                          key={pick.pickId}
+                          className="flex max-w-[min(320px,70vw)] shrink-0 items-center gap-1.5 rounded-xl border border-slate-300/90 bg-white px-2.5 py-1.5 text-xs shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none"
                         >
                           <div className="min-w-0 flex-1 truncate">
-                            <span className="font-mono font-semibold text-pink-600 dark:text-pink-300">{item.code}</span>
+                            <span className="font-mono font-semibold text-pink-600 dark:text-pink-300">{pick.result.code}</span>
                             <span className="text-slate-400 dark:text-slate-500"> · </span>
-                            <span className="text-slate-600 dark:text-slate-400">{item.name}</span>
+                            <span className="text-slate-600 dark:text-slate-400">{pick.result.name}</span>
                           </div>
                           <button
                             type="button"
-                            onClick={() => removeSelection(item)}
+                            onClick={() => duplicateSessionPickById(pick.pickId)}
+                            className="shrink-0 rounded-full p-1 text-slate-500 transition-colors hover:bg-emerald-100 hover:text-emerald-700 dark:text-slate-500 dark:hover:bg-emerald-500/15 dark:hover:text-emerald-300"
+                            aria-label={t('catalogStockPicker.duplicateSelection')}
+                            title={t('catalogStockPicker.duplicateSelection')}
+                          >
+                            <PlusCircle className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeSessionPickById(pick.pickId)}
                             className="shrink-0 rounded-full p-1 text-slate-500 transition-colors hover:bg-pink-100 hover:text-pink-600 dark:text-slate-500 dark:hover:bg-pink-500/15 dark:hover:text-pink-300"
                             aria-label={t('catalogStockPicker.removeSelection')}
                             title={t('catalogStockPicker.removeSelection')}
@@ -2068,7 +2096,7 @@ export function CatalogStockSelectDialog({
                     type="button"
                     variant="ghost"
                     onClick={() => void handleConfirmMulti()}
-                    disabled={selectedResults.length === 0 && catalogDraftSnapshotList.length === 0}
+                    disabled={sessionPicks.length === 0 && catalogDraftSnapshotList.length === 0}
                     className="min-w-[180px] border border-pink-500/35 bg-gradient-to-r from-pink-600 to-fuchsia-600 text-white shadow-[0_0_24px_rgba(236,72,153,0.35)] hover:border-pink-400/60 hover:from-pink-500 hover:to-fuchsia-500 hover:bg-gradient-to-r hover:text-white disabled:opacity-40"
                   >
                     {t('catalogStockPicker.confirmSelection')}

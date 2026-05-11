@@ -3653,6 +3653,7 @@
     "selectionPanelTitle": "Selected Stocks",
     "selectionPanelHint": "Your picks stay here even if you switch categories. Remove any stock from this list if needed.",
     "removeSelection": "Remove selection",
+    "duplicateSelection": "Add another line with this product",
     "alreadyInDraftBadge": "In draft",
     "alreadyInDraftTooltip": "This stock is already in your selection strip (added earlier on this screen).",
     "confirmTotalCount": "Total {{count}} lines",

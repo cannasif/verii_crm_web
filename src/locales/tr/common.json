@@ -3672,6 +3672,7 @@
     "selectionPanelTitle": "Seçtiklerin",
     "selectionPanelHint": "Kategori değiştirsen bile seçtiklerin burada kalır. İstersen buradan çıkarabilirsin.",
     "removeSelection": "Seçimi kaldır",
+    "duplicateSelection": "Aynı üründen bir satır daha ekle",
     "alreadyInDraftBadge": "Taslakta",
     "alreadyInDraftTooltip": "Bu stok seçim şeridinizde zaten var (daha önce eklediğiniz satırlardan).",
     "confirmTotalCount": "Toplam {{count}} satır",

@@ -4901,6 +4901,7 @@
     "selectionPanelTitle": "Stocks seleccionados",
     "selectionPanelHint": "Sus elecciones permanecen aquí aunque cambie de categoría. Quite un stock de la lista si lo necesita.",
     "removeSelection": "Quitar selección",
+    "duplicateSelection": "Añadir otra línea con este producto",
     "alreadyInDraftBadge": "Borrador",
     "alreadyInDraftTooltip": "Este stock ya está en su franja de selección (añadido antes en esta pantalla).",
     "confirmTotalCount": "Total {{count}} líneas",

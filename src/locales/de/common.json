@@ -3204,6 +3204,7 @@
     "selectionPanelTitle": "Ausgewählte Bestände",
     "selectionPanelHint": "Ihre Auswahl bleibt hier sichtbar, auch wenn Sie die Kategorie wechseln. Bei Bedarf können Sie Bestände hier entfernen.",
     "removeSelection": "Auswahl entfernen",
+    "duplicateSelection": "Weitere Position mit diesem Artikel",
     "alreadyInDraftBadge": "Entwurf",
     "alreadyInDraftTooltip": "Dieser Bestand steht bereits in Ihrer Auswahlleiste (zuvor hinzugefügte Zeilen).",
     "alreadyOnLineBadge": "In Zeile",

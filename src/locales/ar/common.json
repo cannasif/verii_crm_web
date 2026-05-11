@@ -4901,6 +4901,7 @@
     "selectionPanelTitle": "المخزونات المحددة",
     "selectionPanelHint": "تبقى اختياراتك هنا حتى لو غيّرت التصنيف. أزل أي مخزون من القائمة إن لزم.",
     "removeSelection": "إزالة الاختيار",
+    "duplicateSelection": "إضافة سطر آخر بنفس المنتج",
     "alreadyInDraftBadge": "مسودة",
     "alreadyInDraftTooltip": "هذا المخزون موجود بالفعل في شريط الاختيار (أُضيف سابقًا في هذه الشاشة).",
     "confirmTotalCount": "إجمالي {{count}} سطر",
