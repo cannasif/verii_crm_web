@@ -55,7 +55,6 @@ import { getImageUrl } from '@/lib/image-url';
 import {
   formatLineTableQuickEditDraft,
   getHtmlNumberInputStepForDecimals,
-  isIntegerQuantityUnit,
 } from '@/lib/system-settings';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
@@ -395,9 +394,8 @@ export function OrderLineTable({
 
     let value: number;
     if (quickEdit.field === 'quantity') {
-      const intOnly = isIntegerQuantityUnit(originalLine.unit);
       if (parsedFloat < 0) return;
-      value = intOnly ? Math.max(1, Math.round(parsedFloat)) : parsedFloat;
+      value = parsedFloat;
     } else if (quickEdit.field === 'unitPrice') {
       if (parsedFloat < 0) return;
       value = parsedFloat;
@@ -1123,8 +1121,8 @@ export function OrderLineTable({
                             >
                               <Input
                                 type="number"
-                                step={isIntegerQuantityUnit(line.unit) ? '1' : numberInputStep}
-                                min={isIntegerQuantityUnit(line.unit) ? 1 : 0.1}
+                                step={numberInputStep}
+                                min={0}
                                 value={quickEdit.draft}
                                 onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
                                 className="h-8 w-16 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
