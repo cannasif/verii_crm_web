@@ -238,6 +238,20 @@ input[type="number"] {
   appearance: textfield;
 }
 
+input[type="number"].allow-native-number-spinners::-webkit-outer-spin-button,
+input[type="number"].allow-native-number-spinners::-webkit-inner-spin-button {
+  -webkit-appearance: inner-spin-button;
+  appearance: auto;
+  margin: 0;
+  opacity: 1;
+  height: auto;
+}
+
+input[type="number"].allow-native-number-spinners {
+  -moz-appearance: auto;
+  appearance: auto;
+}
+
 .dark input:-webkit-autofill,
 .dark input:-webkit-autofill:hover,
 .dark input:-webkit-autofill:focus,
