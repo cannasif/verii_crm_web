@@ -7,6 +7,27 @@ const SUPPORTED_NUMBER_FORMATS = new Set(['tr-TR', 'en-US', 'de-DE']);
 const SUPPORTED_DEMAND_ACTIONS = new Set([1, 2, 3, 4, 5]);
 const SUPPORTED_QUOTATION_ACTIONS = new Set([1, 2, 3, 4, 5, 6]);
 const SUPPORTED_ORDER_ACTIONS = new Set([1, 2, 3, 4]);
+const DEMAND_ACTION_NAMES: Record<string, number> = {
+  NoAction: 1,
+  CreateNetsisDemand: 2,
+  CreateQuotation: 3,
+  CreateNetsisDemandRecord: 4,
+  CreateNetsisDemandAndQuotation: 5,
+};
+const QUOTATION_ACTION_NAMES: Record<string, number> = {
+  NoAction: 1,
+  CreateNetsisQuotation: 2,
+  CreateOrder: 3,
+  CreateNetsisOrder: 4,
+  CreateNetsisQuotationAndOrder: 5,
+  CreateOrderAndNetsisOrder: 6,
+};
+const ORDER_ACTION_NAMES: Record<string, number> = {
+  NoAction: 1,
+  CreateNetsisOrder: 2,
+  CreateNetsisSalesInvoice: 3,
+  CreateNetsisOrderAndSalesInvoice: 4,
+};
 
 const DEFAULT_SYSTEM_SETTINGS: SystemSettingsDto = {
   numberFormat: 'tr-TR',
@@ -42,17 +63,48 @@ export function normalizeSystemSettings(
         ? Math.min(6, Math.max(0, settings.decimalPlaces))
         : DEFAULT_SYSTEM_SETTINGS.decimalPlaces,
     restrictCustomersBySalesRepMatch: Boolean(settings?.restrictCustomersBySalesRepMatch),
-    demandApprovalCompletionAction: normalizeActionValue(settings?.demandApprovalCompletionAction, SUPPORTED_DEMAND_ACTIONS),
-    quotationApprovalCompletionAction: normalizeActionValue(settings?.quotationApprovalCompletionAction, SUPPORTED_QUOTATION_ACTIONS),
-    orderApprovalCompletionAction: normalizeActionValue(settings?.orderApprovalCompletionAction, SUPPORTED_ORDER_ACTIONS),
+    demandApprovalCompletionAction: normalizeActionValue(
+      settings?.demandApprovalCompletionAction,
+      SUPPORTED_DEMAND_ACTIONS,
+      DEMAND_ACTION_NAMES
+    ),
+    quotationApprovalCompletionAction: normalizeActionValue(
+      settings?.quotationApprovalCompletionAction,
+      SUPPORTED_QUOTATION_ACTIONS,
+      QUOTATION_ACTION_NAMES
+    ),
+    orderApprovalCompletionAction: normalizeActionValue(
+      settings?.orderApprovalCompletionAction,
+      SUPPORTED_ORDER_ACTIONS,
+      ORDER_ACTION_NAMES
+    ),
     updatedAt: settings?.updatedAt,
   };
 }
 
-function normalizeActionValue(value: number | undefined, supportedValues: Set<number>): number {
-  return typeof value === 'number' && Number.isInteger(value) && supportedValues.has(value)
-    ? value
-    : 1;
+function normalizeActionValue(
+  value: number | string | undefined,
+  supportedValues: Set<number>,
+  namedValues: Record<string, number>
+): number {
+  if (typeof value === 'number' && Number.isInteger(value) && supportedValues.has(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string') {
+    const trimmedValue = value.trim();
+    const numericValue = Number(trimmedValue);
+    if (Number.isInteger(numericValue) && supportedValues.has(numericValue)) {
+      return numericValue;
+    }
+
+    const namedValue = namedValues[trimmedValue];
+    if (supportedValues.has(namedValue)) {
+      return namedValue;
+    }
+  }
+
+  return 1;
 }
 
 interface SystemSettingsState {

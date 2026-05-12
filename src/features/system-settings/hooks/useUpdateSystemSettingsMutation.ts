@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { systemSettingsApi } from '../api/systemSettingsApi';
 import type { SystemSettingsDto, UpdateSystemSettingsDto } from '../types/systemSettings';
-import { useSystemSettingsStore } from '@/stores/system-settings-store';
+import { normalizeSystemSettings, useSystemSettingsStore } from '@/stores/system-settings-store';
 
 const SYSTEM_SETTINGS_QUERY_KEY = ['system-settings'] as const;
 
@@ -15,8 +15,9 @@ export function useUpdateSystemSettingsMutation() {
   return useMutation<SystemSettingsDto, Error, UpdateSystemSettingsDto>({
     mutationFn: (data) => systemSettingsApi.update(data),
     onSuccess: (data) => {
-      setSettings(data);
-      queryClient.setQueryData(SYSTEM_SETTINGS_QUERY_KEY, data);
+      const normalized = normalizeSystemSettings(data);
+      setSettings(normalized);
+      queryClient.setQueryData(SYSTEM_SETTINGS_QUERY_KEY, normalized);
       toast.success(t('systemSettings.SavedSuccessfully'));
     },
     onError: (error) => {

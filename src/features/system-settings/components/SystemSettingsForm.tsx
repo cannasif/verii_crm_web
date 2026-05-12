@@ -18,7 +18,6 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -28,6 +27,29 @@ import {
   type SystemSettingsDto,
   type SystemSettingsFormSchema,
 } from '../types/systemSettings';
+import { normalizeSystemSettings } from '@/stores/system-settings-store';
+
+const SUPPORTED_DEMAND_ACTIONS = new Set([1, 2, 3, 4, 5]);
+const SUPPORTED_QUOTATION_ACTIONS = new Set([1, 2, 3, 4, 5, 6]);
+const SUPPORTED_ORDER_ACTIONS = new Set([1, 2, 3, 4]);
+
+function normalizeSupportedActionValue(
+  value: number | string | undefined,
+  supportedValues: Set<number>
+): number | undefined {
+  if (typeof value === 'number' && Number.isInteger(value) && supportedValues.has(value)) {
+    return value;
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const numericValue = Number(value);
+    if (Number.isInteger(numericValue) && supportedValues.has(numericValue)) {
+      return numericValue;
+    }
+  }
+
+  return undefined;
+}
 
 interface SystemSettingsFormProps {
   data: SystemSettingsDto | undefined;
@@ -44,12 +66,10 @@ export function SystemSettingsForm({
 }: SystemSettingsFormProps): ReactElement {
   const { t } = useTranslation();
 
-  const getSelectedOptionLabel = useMemo(
-    () =>
-      (options: Array<{ value: string; label: string }>, value: number | string | undefined): string | undefined =>
-        options.find((option) => option.value === String(value))?.label,
-    []
-  );
+  const getSelectedOptionLabel = (
+    options: Array<{ value: string; label: string }>,
+    value: number | string | undefined
+  ): string | undefined => options.find((option) => option.value === String(value))?.label;
 
   const numberFormatOptions = useMemo(
     () => [
@@ -98,17 +118,82 @@ export function SystemSettingsForm({
     },
   });
 
+  const demandActionValue = form.watch('demandApprovalCompletionAction');
+  const quotationActionValue = form.watch('quotationApprovalCompletionAction');
+  const orderActionValue = form.watch('orderApprovalCompletionAction');
+
   useEffect(() => {
     if (!data) return;
+    const normalizedData = normalizeSystemSettings(data);
     form.reset({
-      numberFormat: data.numberFormat,
-      decimalPlaces: data.decimalPlaces,
-      restrictCustomersBySalesRepMatch: data.restrictCustomersBySalesRepMatch,
-      demandApprovalCompletionAction: data.demandApprovalCompletionAction ?? 1,
-      quotationApprovalCompletionAction: data.quotationApprovalCompletionAction ?? 1,
-      orderApprovalCompletionAction: data.orderApprovalCompletionAction ?? 1,
+      numberFormat: normalizedData.numberFormat,
+      decimalPlaces: normalizedData.decimalPlaces,
+      restrictCustomersBySalesRepMatch: normalizedData.restrictCustomersBySalesRepMatch,
+      demandApprovalCompletionAction: normalizedData.demandApprovalCompletionAction ?? 1,
+      quotationApprovalCompletionAction: normalizedData.quotationApprovalCompletionAction ?? 1,
+      orderApprovalCompletionAction: normalizedData.orderApprovalCompletionAction ?? 1,
     });
   }, [data, form]);
+
+  useEffect(() => {
+    const normalizedValue = normalizeSupportedActionValue(demandActionValue, SUPPORTED_DEMAND_ACTIONS);
+    if (normalizedValue === demandActionValue || normalizedValue === undefined) {
+      if (normalizedValue !== undefined) return;
+    } else {
+      form.setValue('demandApprovalCompletionAction', normalizedValue, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: true,
+      });
+      return;
+    }
+
+    form.setValue('demandApprovalCompletionAction', 1, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+  }, [demandActionValue, form]);
+
+  useEffect(() => {
+    const normalizedValue = normalizeSupportedActionValue(quotationActionValue, SUPPORTED_QUOTATION_ACTIONS);
+    if (normalizedValue === quotationActionValue || normalizedValue === undefined) {
+      if (normalizedValue !== undefined) return;
+    } else {
+      form.setValue('quotationApprovalCompletionAction', normalizedValue, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: true,
+      });
+      return;
+    }
+
+    form.setValue('quotationApprovalCompletionAction', 1, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+  }, [form, quotationActionValue]);
+
+  useEffect(() => {
+    const normalizedValue = normalizeSupportedActionValue(orderActionValue, SUPPORTED_ORDER_ACTIONS);
+    if (normalizedValue === orderActionValue || normalizedValue === undefined) {
+      if (normalizedValue !== undefined) return;
+    } else {
+      form.setValue('orderApprovalCompletionAction', normalizedValue, {
+        shouldDirty: false,
+        shouldTouch: false,
+        shouldValidate: true,
+      });
+      return;
+    }
+
+    form.setValue('orderApprovalCompletionAction', 1, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+  }, [form, orderActionValue]);
 
   const handleSubmit: SubmitHandler<SystemSettingsFormSchema> = (values) => onSubmit(values);
 
@@ -145,7 +230,7 @@ export function SystemSettingsForm({
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.NumberFormat')} />
+                        <span>{getSelectedOptionLabel(numberFormatOptions, field.value) ?? t('systemSettings.Placeholders.NumberFormat')}</span>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -244,9 +329,7 @@ export function SystemSettingsForm({
                   <Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')}>
-                          {getSelectedOptionLabel(demandActionOptions, field.value)}
-                        </SelectValue>
+                        <span>{getSelectedOptionLabel(demandActionOptions, field.value) ?? t('systemSettings.Placeholders.ApprovalCompletionAction')}</span>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -271,9 +354,7 @@ export function SystemSettingsForm({
                   <Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')}>
-                          {getSelectedOptionLabel(quotationActionOptions, field.value)}
-                        </SelectValue>
+                        <span>{getSelectedOptionLabel(quotationActionOptions, field.value) ?? t('systemSettings.Placeholders.ApprovalCompletionAction')}</span>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -298,9 +379,7 @@ export function SystemSettingsForm({
                   <Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')}>
-                          {getSelectedOptionLabel(orderActionOptions, field.value)}
-                        </SelectValue>
+                        <span>{getSelectedOptionLabel(orderActionOptions, field.value) ?? t('systemSettings.Placeholders.ApprovalCompletionAction')}</span>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
