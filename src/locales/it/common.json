@@ -4930,6 +4930,7 @@
     "selectionPanelTitle": "Stock selezionati",
     "selectionPanelHint": "Le tue scelte restano qui anche se cambi categoria. Rimuovi uno stock dall’elenco se serve.",
     "removeSelection": "Rimuovi selezione",
+    "duplicateSelection": "Aggiungi un'altra riga con questo prodotto",
     "alreadyInDraftBadge": "Bozza",
     "alreadyInDraftTooltip": "Questo stock è già nella striscia di selezione (aggiunto prima in questa schermata).",
     "confirmTotalCount": "Totale {{count}} righe",

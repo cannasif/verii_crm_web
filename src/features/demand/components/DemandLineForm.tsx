@@ -13,6 +13,7 @@ import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
+import { LineFormStockSearchField } from '@/components/shared/LineFormStockSearchField';
 import { CatalogStockSelectDialog } from '@/components/shared/CatalogStockSelectDialog';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
@@ -24,7 +25,19 @@ import { demandApi } from '../api/demand-api';
 import { pdfReportTemplateApi } from '@/features/pdf-report';
 import type { UploadPdfAssetOptions } from '@/features/pdf-report/api/pdf-report-template-api';
 import { getImageUrl } from '@/lib/image-url';
-import { isIntegerQuantityUnit } from '@/lib/system-settings';
+import { getSystemDecimalPlaces } from '@/lib/system-settings';
+import {
+  formatMonetaryTrDraftFromNumber,
+  normalizeMonetaryTrOnBlur,
+  parseMonetaryTrDraft,
+  sanitizeMonetaryTrTyping,
+} from '@/lib/monetary-input-tr';
+import {
+  formatQuantityInputDraftFromNumber,
+  normalizeQuantityTrOnBlur,
+  parseQuantityTrDraft,
+  sanitizeQuantityTrTyping,
+} from '@/lib/quantity-input-tr';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 import { WindoQuickCreateDialog } from '@/features/windo-profil-demir-vida-management/components/WindoQuickCreateDialog';
 import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/demand-types';
@@ -161,11 +174,16 @@ export function DemandLineForm({
   const [pricingInfoOpen, setPricingInfoOpen] = useState(false);
   const [temporaryStockData, setTemporaryStockData] = useState<TemporaryStockData[]>([]);
   const [lastLoadedProductCode, setLastLoadedProductCode] = useState<string | null>(null);
-  const [quantityInputValue, setQuantityInputValue] = useState<string>(String(line.quantity || ''));
+  const [quantityInputValue, setQuantityInputValue] = useState<string>(() =>
+    formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit),
+  );
   const [vatRateInputValue, setVatRateInputValue] = useState<string>(String(line.vatRate || ''));
   const [discountRate1InputValue, setDiscountRate1InputValue] = useState<string>(String(line.discountRate1 || ''));
   const [discountRate2InputValue, setDiscountRate2InputValue] = useState<string>(String(line.discountRate2 || ''));
   const [discountRate3InputValue, setDiscountRate3InputValue] = useState<string>(String(line.discountRate3 || ''));
+  const [unitPriceInputValue, setUnitPriceInputValue] = useState<string>(() =>
+    formatMonetaryTrDraftFromNumber(line.unitPrice ?? 0),
+  );
   const prevDiscountRatesRef = useRef({ discountRate1: line.discountRate1, discountRate2: line.discountRate2, discountRate3: line.discountRate3 });
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -288,7 +306,8 @@ export function DemandLineForm({
 
   useEffect(() => {
     setFormData(line);
-    setQuantityInputValue(String(line.quantity || ''));
+    setQuantityInputValue(formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit));
+    setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(line.unitPrice ?? 0));
     setVatRateInputValue(String(line.vatRate || ''));
     setDiscountRate1InputValue(String(line.discountRate1 || ''));
     setDiscountRate2InputValue(String(line.discountRate2 || ''));
@@ -300,6 +319,11 @@ export function DemandLineForm({
       setRelatedLines([]);
     }
   }, [line]);
+
+  useEffect(() => {
+    setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(formData.unitPrice ?? 0));
+    setQuantityInputValue(formatQuantityInputDraftFromNumber(formData.quantity ?? 0, formData.unit));
+  }, [formData.productCode, line.id]);
 
   useEffect(() => {
     setFormData((prev) => {
@@ -659,6 +683,8 @@ export function DemandLineForm({
           groupCode: product.groupCode || null,
         };
         setFormData(mainLine);
+        setQuantityInputValue(formatQuantityInputDraftFromNumber(mainLine.quantity ?? 0, mainLine.unit));
+        setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(mainLine.unitPrice ?? 0));
         const relatedLinesData = allLines.slice(1).map((relatedLine, index) => {
           const relatedStockIdFromArray = product.relatedStockIds?.[index];
           if (relatedStockIdFromArray) {
@@ -709,6 +735,8 @@ export function DemandLineForm({
       };
 
       setFormData(updatedFormData);
+      setQuantityInputValue(formatQuantityInputDraftFromNumber(updatedFormData.quantity ?? 0, updatedFormData.unit));
+      setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(updatedFormData.unitPrice ?? 0));
       setRelatedLines([]);
 
       const targetCurrencyCode = currencyOptions.find((opt) => opt.dovizTipi === currency)?.code || 'TRY';
@@ -769,7 +797,8 @@ export function DemandLineForm({
     const firstLine = collectedLines[0];
     if (firstLine) {
       setFormData(firstLine);
-      setQuantityInputValue(String(firstLine.quantity || ''));
+      setQuantityInputValue(formatQuantityInputDraftFromNumber(firstLine.quantity ?? 0, firstLine.unit));
+      setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(firstLine.unitPrice ?? 0));
       setVatRateInputValue(String(firstLine.vatRate || ''));
       setDiscountRate1InputValue(String(firstLine.discountRate1 || ''));
       setDiscountRate2InputValue(String(firstLine.discountRate2 || ''));
@@ -793,7 +822,10 @@ export function DemandLineForm({
     } else {
       const firstLine = bulkDraftLines[0];
       if (firstLine) {
-        setFormData({ ...firstLine, id: formData.id });
+        const merged = { ...firstLine, id: formData.id };
+        setFormData(merged);
+        setQuantityInputValue(formatQuantityInputDraftFromNumber(merged.quantity ?? 0, merged.unit));
+        setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(merged.unitPrice ?? 0));
         const nested = (firstLine as DemandLineFormState & { relatedLines?: DemandLineFormState[] }).relatedLines ?? [];
         setRelatedLines(nested);
       }
@@ -807,7 +839,8 @@ export function DemandLineForm({
     if (!selected) return;
     setActiveBulkIndex(index);
     setFormData(selected);
-    setQuantityInputValue(String(selected.quantity || ''));
+    setQuantityInputValue(formatQuantityInputDraftFromNumber(selected.quantity ?? 0, selected.unit));
+    setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(selected.unitPrice ?? 0));
     setVatRateInputValue(String(selected.vatRate || ''));
     setDiscountRate1InputValue(String(selected.discountRate1 || ''));
     setDiscountRate2InputValue(String(selected.discountRate2 || ''));
@@ -824,7 +857,8 @@ export function DemandLineForm({
     if (next.length === 0) {
       setActiveBulkIndex(0);
       setFormData(line);
-      setQuantityInputValue(String(line.quantity || ''));
+      setQuantityInputValue(formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit));
+      setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(line.unitPrice ?? 0));
       setVatRateInputValue(String(line.vatRate || ''));
       setDiscountRate1InputValue(String(line.discountRate1 || ''));
       setDiscountRate2InputValue(String(line.discountRate2 || ''));
@@ -844,7 +878,8 @@ export function DemandLineForm({
     const selected = next[newActive];
     if (selected) {
       setFormData(selected);
-      setQuantityInputValue(String(selected.quantity || ''));
+      setQuantityInputValue(formatQuantityInputDraftFromNumber(selected.quantity ?? 0, selected.unit));
+      setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(selected.unitPrice ?? 0));
       setVatRateInputValue(String(selected.vatRate || ''));
       setDiscountRate1InputValue(String(selected.discountRate1 || ''));
       setDiscountRate2InputValue(String(selected.discountRate2 || ''));
@@ -856,6 +891,8 @@ export function DemandLineForm({
   };
 
   const handleFieldChange = (field: keyof DemandLineFormState, value: unknown): void => {
+    const prevUnitPrice = formData.unitPrice;
+    const prevQuantity = formData.quantity;
     const updated = { ...formData, [field]: value };
     let calculated = calculateLineTotals(updated);
 
@@ -957,6 +994,16 @@ export function DemandLineForm({
       );
     }
 
+    if (field !== 'unitPrice' && calculated.unitPrice !== prevUnitPrice) {
+      setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(calculated.unitPrice ?? 0));
+    }
+
+    if (field !== 'quantity' && calculated.quantity !== prevQuantity) {
+      setQuantityInputValue(
+        formatQuantityInputDraftFromNumber(calculated.quantity ?? 0, calculated.unit ?? formData.unit),
+      );
+    }
+
     if (field === 'quantity' && formData.productCode) {
       setDiscountRate1InputValue(String(calculated.discountRate1 || ''));
       setDiscountRate2InputValue(String(calculated.discountRate2 || ''));
@@ -1027,10 +1074,8 @@ export function DemandLineForm({
   const hasDiscount = totalDiscount > 0;
   const hasApprovalWarning = discountValidation.exceedsLimit || formData.approvalStatus === 1;
   const bulkDraftGrandTotal = bulkDraftLines.reduce((sum, item) => sum + (item.lineGrandTotal || 0), 0);
-  const isQuantityIntegerOnly = isIntegerQuantityUnit(formData.unit);
-  const quantityStep = isQuantityIntegerOnly ? '1' : '0.1';
-  const quantityMin = isQuantityIntegerOnly ? '1' : '0.1';
   const percentageStep = '0.1';
+  const isLineStockSelected = Boolean((formData.productCode ?? '').trim());
   const pinkFocusClass = 'focus-visible:border-pink-500 focus-visible:ring-2 focus-visible:ring-pink-500/20';
 
   return (
@@ -1044,13 +1089,14 @@ export function DemandLineForm({
 
         <div className="flex flex-col gap-3">
           <div className="flex flex-row gap-3">
-            <div className="relative flex-1">
-              <Input
-                value={formData.productCode || ''}
-                placeholder={t('lines.productCode')}
-                readOnly
-                onClick={() => setProductDialogOpen(true)}
-                className={`cursor-pointer bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-mono text-sm h-11 rounded-xl ${pinkFocusClass}`}
+            <div className="group relative min-w-0 flex-1">
+              <div className="pointer-events-none absolute left-3 top-1/2 z-20 flex -translate-y-1/2 items-center justify-center text-slate-400 transition-colors group-focus-within:text-pink-500">
+                <Search className="h-4 w-4" />
+              </div>
+              <LineFormStockSearchField
+                productCode={formData.productCode || ''}
+                onSelectResult={handleProductSelect}
+                inputClassName={`border-slate-200 bg-slate-50 pl-10 font-mono text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
               />
             </div>
             <Button
@@ -1074,7 +1120,7 @@ export function DemandLineForm({
               type="button"
               variant="outline"
               onClick={() => setPricingInfoOpen(true)}
-              disabled={!formData.productCode}
+              disabled={!isLineStockSelected}
               className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex-none items-center gap-2"
             >
               <Info className="h-4 w-4" />
@@ -1176,35 +1222,25 @@ export function DemandLineForm({
             {t('lines.quantity')}
           </label>
           <Input
-            type="number"
-            step={quantityStep}
-            min={quantityMin}
+            type="text"
+            inputMode="decimal"
+            autoComplete="off"
+            disabled={!isLineStockSelected}
             value={quantityInputValue}
             onChange={(e) => {
-              const inputValue = e.target.value;
-              setQuantityInputValue(inputValue);
-              if (inputValue === '' || inputValue === '.') {
+              const next = sanitizeQuantityTrTyping(e.target.value, formData.unit);
+              setQuantityInputValue(next);
+              const parsed = parseQuantityTrDraft(next);
+              if (parsed === null) {
                 handleFieldChange('quantity', 0);
-              } else {
-                const numValue = parseFloat(inputValue);
-                if (!isNaN(numValue)) {
-                  const normalizedQuantity = isQuantityIntegerOnly ? Math.round(numValue) : numValue;
-                  handleFieldChange('quantity', normalizedQuantity);
-                }
+                return;
               }
+              handleFieldChange('quantity', parsed);
             }}
             onBlur={() => {
-              if (quantityInputValue === '' || quantityInputValue === '.') {
-                setQuantityInputValue('0');
-                handleFieldChange('quantity', 0);
-              } else {
-                const numValue = parseFloat(quantityInputValue);
-                if (!isNaN(numValue)) {
-                  const normalizedQuantity = isQuantityIntegerOnly ? Math.round(numValue) : numValue;
-                  setQuantityInputValue(String(normalizedQuantity));
-                  handleFieldChange('quantity', normalizedQuantity);
-                }
-              }
+              const { display, numeric } = normalizeQuantityTrOnBlur(quantityInputValue, formData.unit);
+              setQuantityInputValue(display);
+              handleFieldChange('quantity', numeric);
             }}
             className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-extrabold text-center shadow-sm ${pinkFocusClass}`}
           />
@@ -1217,18 +1253,26 @@ export function DemandLineForm({
           </label>
           <div className="relative">
             <Input
-              type="number"
-              step="0.000001"
-              min="0"
-              value={formData.unitPrice}
+              type="text"
+              inputMode="decimal"
+              autoComplete="off"
+              disabled={!isLineStockSelected}
+              value={unitPriceInputValue}
               onChange={(e) => {
-                const inputValue = e.target.value;
-                if (inputValue === '' || inputValue === '.') {
+                const maxFrac = getSystemDecimalPlaces();
+                const next = sanitizeMonetaryTrTyping(e.target.value, maxFrac);
+                setUnitPriceInputValue(next);
+                const parsed = parseMonetaryTrDraft(next);
+                if (parsed === null) {
                   handleFieldChange('unitPrice', 0);
                   return;
                 }
-                const numValue = parseFloat(inputValue);
-                if (!isNaN(numValue)) handleFieldChange('unitPrice', numValue);
+                handleFieldChange('unitPrice', parsed);
+              }}
+              onBlur={() => {
+                const { display, numeric } = normalizeMonetaryTrOnBlur(unitPriceInputValue);
+                setUnitPriceInputValue(display);
+                handleFieldChange('unitPrice', numeric);
               }}
               className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-mono font-extrabold text-center pr-10 shadow-sm ${pinkFocusClass}`}
             />
@@ -1244,6 +1288,7 @@ export function DemandLineForm({
           <Input
             value={formData.unit || '-'}
             readOnly
+            disabled={!isLineStockSelected}
             className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-semibold text-center shadow-sm ${pinkFocusClass}`}
           />
         </div>
@@ -1259,6 +1304,7 @@ export function DemandLineForm({
               step={percentageStep}
               min="0"
               max="100"
+              disabled={!isLineStockSelected}
               value={vatRateInputValue}
               onChange={(e) => {
                 const inputValue = e.target.value;
@@ -1310,6 +1356,7 @@ export function DemandLineForm({
                   step={percentageStep}
                   min="0"
                   max="100"
+                  disabled={!isLineStockSelected}
                   value={item.val}
                   onChange={(e) => {
                     const inputValue = e.target.value;

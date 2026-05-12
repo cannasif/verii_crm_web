@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useId, useLayoutEffect } from 'react';
 import { AlertCircle, Check, ChevronsUpDown, Loader2, Mic, MicOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -69,6 +69,49 @@ export function VoiceSearchCombobox({
   const [searchQuery, setSearchQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const contentDomId = useId().replace(/:/g, '');
+
+  const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>): void => {
+    if (disabled) {
+      return;
+    }
+    if (open) {
+      return;
+    }
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      setOpen(true);
+      return;
+    }
+    const isTypeaheadChar =
+      event.key.length === 1 &&
+      !event.ctrlKey &&
+      !event.metaKey &&
+      !event.altKey &&
+      event.key.charCodeAt(0) >= 32 &&
+      event.key !== ' ';
+    if (isTypeaheadChar) {
+      event.preventDefault();
+      setSearchQuery(event.key);
+      setOpen(true);
+    }
+  };
+
+  useLayoutEffect(() => {
+    if (!open || disabled) {
+      return;
+    }
+    window.requestAnimationFrame(() => {
+      const root = document.getElementById(contentDomId);
+      const input = root?.querySelector('[data-slot="command-input"]') as HTMLInputElement | null;
+      if (!input) {
+        return;
+      }
+      input.focus();
+      const len = input.value.length;
+      input.setSelectionRange(len, len);
+    });
+  }, [open, disabled, contentDomId]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -196,9 +239,11 @@ export function VoiceSearchCombobox({
     <Popover open={open} onOpenChange={setOpen} modal={modal}>
       <PopoverTrigger asChild>
         <Button
+          type="button"
           variant="outline"
           role="combobox"
           aria-expanded={open}
+          onKeyDown={handleTriggerKeyDown}
           className={cn(
             "w-full justify-between px-3 text-left font-normal [&>.truncate]:min-w-0 [&>.truncate]:overflow-hidden",
             !value && "text-muted-foreground",
@@ -213,7 +258,11 @@ export function VoiceSearchCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-2xl border border-slate-300 bg-white p-0 shadow-[0_1px_0_rgba(15,23,42,0.05),0_16px_32px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/70 dark:border-white/14 dark:bg-[#130822] dark:ring-white/10" align="start">
+      <PopoverContent
+        id={contentDomId}
+        className="w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-2xl border border-slate-300 bg-white p-0 shadow-[0_1px_0_rgba(15,23,42,0.05),0_16px_32px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/70 dark:border-white/14 dark:bg-[#130822] dark:ring-white/10"
+        align="start"
+      >
         <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
           <CommandInput 
             placeholder={searchPlaceholder || t('common.search')} 

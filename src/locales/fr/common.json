@@ -4856,6 +4856,7 @@
     "selectionPanelTitle": "Stocks sélectionnés",
     "selectionPanelHint": "Vos choix restent ici même si vous changez de catégorie. Retirez un stock de cette liste si besoin.",
     "removeSelection": "Retirer la sélection",
+    "duplicateSelection": "Ajouter une autre ligne avec ce produit",
     "alreadyInDraftBadge": "Brouillon",
     "alreadyInDraftTooltip": "Ce stock figure déjà dans votre bandeau de sélection (ajouté plus tôt sur cet écran).",
     "confirmTotalCount": "Total {{count}} lignes",
