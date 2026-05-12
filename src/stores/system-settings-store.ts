@@ -4,6 +4,9 @@ import type { SystemSettingsDto } from '@/features/system-settings';
 
 export const SYSTEM_SETTINGS_CACHE_TTL_MS = 60 * 60 * 1000;
 const SUPPORTED_NUMBER_FORMATS = new Set(['tr-TR', 'en-US', 'de-DE']);
+const SUPPORTED_DEMAND_ACTIONS = new Set([1, 2, 3, 4, 5]);
+const SUPPORTED_QUOTATION_ACTIONS = new Set([1, 2, 3, 4, 5, 6]);
+const SUPPORTED_ORDER_ACTIONS = new Set([1, 2, 3, 4]);
 
 const DEFAULT_SYSTEM_SETTINGS: SystemSettingsDto = {
   numberFormat: 'tr-TR',
@@ -39,16 +42,16 @@ export function normalizeSystemSettings(
         ? Math.min(6, Math.max(0, settings.decimalPlaces))
         : DEFAULT_SYSTEM_SETTINGS.decimalPlaces,
     restrictCustomersBySalesRepMatch: Boolean(settings?.restrictCustomersBySalesRepMatch),
-    demandApprovalCompletionAction: normalizeActionValue(settings?.demandApprovalCompletionAction, 1, 5),
-    quotationApprovalCompletionAction: normalizeActionValue(settings?.quotationApprovalCompletionAction, 1, 6),
-    orderApprovalCompletionAction: normalizeActionValue(settings?.orderApprovalCompletionAction, 1, 4),
+    demandApprovalCompletionAction: normalizeActionValue(settings?.demandApprovalCompletionAction, SUPPORTED_DEMAND_ACTIONS),
+    quotationApprovalCompletionAction: normalizeActionValue(settings?.quotationApprovalCompletionAction, SUPPORTED_QUOTATION_ACTIONS),
+    orderApprovalCompletionAction: normalizeActionValue(settings?.orderApprovalCompletionAction, SUPPORTED_ORDER_ACTIONS),
     updatedAt: settings?.updatedAt,
   };
 }
 
-function normalizeActionValue(value: number | undefined, min: number, max: number): number {
-  return typeof value === 'number' && Number.isInteger(value)
-    ? Math.min(max, Math.max(min, value))
+function normalizeActionValue(value: number | undefined, supportedValues: Set<number>): number {
+  return typeof value === 'number' && Number.isInteger(value) && supportedValues.has(value)
+    ? value
     : 1;
 }
 

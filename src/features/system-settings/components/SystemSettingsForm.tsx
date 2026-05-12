@@ -44,6 +44,13 @@ export function SystemSettingsForm({
 }: SystemSettingsFormProps): ReactElement {
   const { t } = useTranslation();
 
+  const getSelectedOptionLabel = useMemo(
+    () =>
+      (options: Array<{ value: string; label: string }>, value: number | string | undefined): string | undefined =>
+        options.find((option) => option.value === String(value))?.label,
+    []
+  );
+
   const numberFormatOptions = useMemo(
     () => [
       { value: 'tr-TR', label: t('systemSettings.NumberFormatOptions.trTR') },
@@ -54,7 +61,7 @@ export function SystemSettingsForm({
   );
 
   const demandActionOptions = useMemo(
-    () => [1, 2, 3, 5].map((value) => ({
+    () => [1, 2, 3, 4, 5].map((value) => ({
       value: String(value),
       label: t(`systemSettings.ApprovalCompletionActions.Demand.${value}`),
     })),
@@ -70,7 +77,7 @@ export function SystemSettingsForm({
   );
 
   const orderActionOptions = useMemo(
-    () => [1, 2, 3].map((value) => ({
+    () => [1, 2, 3, 4].map((value) => ({
       value: String(value),
       label: t(`systemSettings.ApprovalCompletionActions.Order.${value}`),
     })),
@@ -237,7 +244,9 @@ export function SystemSettingsForm({
                   <Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
+                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')}>
+                          {getSelectedOptionLabel(demandActionOptions, field.value)}
+                        </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -262,7 +271,9 @@ export function SystemSettingsForm({
                   <Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
+                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')}>
+                          {getSelectedOptionLabel(quotationActionOptions, field.value)}
+                        </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -287,7 +298,9 @@ export function SystemSettingsForm({
                   <Select value={String(field.value)} onValueChange={(value) => field.onChange(Number(value))}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
+                        <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')}>
+                          {getSelectedOptionLabel(orderActionOptions, field.value)}
+                        </SelectValue>
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
