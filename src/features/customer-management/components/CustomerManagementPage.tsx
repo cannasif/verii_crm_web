@@ -1,5 +1,6 @@
-import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,11 @@ import { useTriggerCustomerSync } from '../hooks/useTriggerCustomerSync';
 import { useUpdateCustomer } from '../hooks/useUpdateCustomer';
 import { useCustomerList } from '../hooks/useCustomerList';
 import type { CustomerStats as CustomerStatsData } from '../hooks/useCustomerStats';
+import {
+  loadTablePaginationState,
+  saveTablePaginationState,
+  clearTablePaginationState,
+} from '@/lib/table-pagination-persistence';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
@@ -79,13 +85,23 @@ export function CustomerManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['customer-management', 'common']);
   const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
+  const location = useLocation();
+
+  const isFrom360 = location.state?.from360 === true;
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<CustomerDto | null>(null);
   const [duplicateConflicts, setDuplicateConflicts] = useState<CustomerDuplicateConflictPayload | null>(null);
   const [quickActivityCustomer, setQuickActivityCustomer] = useState<CustomerDto | null>(null);
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(() => {
+    const userId = useAuthStore.getState().user?.id;
+    if (!isFrom360) {
+      clearTablePaginationState(PAGE_KEY, userId);
+      return '';
+    }
+    return loadTablePaginationState(PAGE_KEY, userId, { pageNumber: 1, pageSize: 10, searchTerm: '' }).searchTerm ?? '';
+  });
   const tableColumns = useMemo(
     () => getColumnsConfig(t),
     [t, i18n.language, i18n.resolvedLanguage]
@@ -99,22 +115,38 @@ export function CustomerManagementPage(): ReactElement {
     [tableColumns]
   );
   const defaultColumnKeys = useMemo(() => tableColumns.map((c) => c.key as string), [tableColumns]);
-  const initialSortPrefs = useMemo(
-    () =>
-      loadTableSortPreference(
-        PAGE_KEY,
-        user?.id,
-        { sortBy: DEFAULT_SORT_BY, sortDirection: DEFAULT_SORT_DIRECTION },
-        defaultColumnKeys
-      ),
-    [user?.id, defaultColumnKeys]
-  );
-  const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [sortBy, setSortBy] = useState<CustomerColumnKey>(initialSortPrefs.sortBy as CustomerColumnKey);
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(initialSortPrefs.sortDirection);
-  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
-  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+  const [pageNumber, setPageNumber] = useState(() => {
+    const userId = useAuthStore.getState().user?.id;
+    if (!isFrom360) return 1;
+    return loadTablePaginationState(PAGE_KEY, userId, { pageNumber: 1, pageSize: 10, searchTerm: '' }).pageNumber;
+  });
+  const [pageSize, setPageSize] = useState(() => {
+    const userId = useAuthStore.getState().user?.id;
+    if (!isFrom360) return 10;
+    return loadTablePaginationState(PAGE_KEY, userId, { pageNumber: 1, pageSize: 10, searchTerm: '' }).pageSize;
+  });
+  const [sortBy, setSortBy] = useState<CustomerColumnKey>(() => {
+    const userId = useAuthStore.getState().user?.id;
+    const prefs = loadTableSortPreference(PAGE_KEY, userId, { sortBy: DEFAULT_SORT_BY, sortDirection: DEFAULT_SORT_DIRECTION }, defaultColumnKeys);
+    return prefs.sortBy as CustomerColumnKey;
+  });
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(() => {
+    const userId = useAuthStore.getState().user?.id;
+    const prefs = loadTableSortPreference(PAGE_KEY, userId, { sortBy: DEFAULT_SORT_BY, sortDirection: DEFAULT_SORT_DIRECTION }, defaultColumnKeys);
+    return prefs.sortDirection;
+  });
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>(() => {
+    const userId = useAuthStore.getState().user?.id;
+    if (!isFrom360) return [];
+    return loadTablePaginationState(PAGE_KEY, userId, { pageNumber: 1, pageSize: 10, searchTerm: '' }).appliedFilterRows ?? [];
+  });
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>(() => {
+    const userId = useAuthStore.getState().user?.id;
+    if (!isFrom360) return [];
+    return loadTablePaginationState(PAGE_KEY, userId, { pageNumber: 1, pageSize: 10, searchTerm: '' }).appliedFilterRows ?? [];
+  });
+
+  const prevParamsRef = useRef({ pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection });
 
   const queryClient = useQueryClient();
   const createCustomer = useCreateCustomer();
@@ -135,6 +167,10 @@ export function CustomerManagementPage(): ReactElement {
     setVisibleColumns(prefs.visibleKeys);
     setColumnOrder(prefs.order);
   }, [user?.id, defaultColumnKeys]);
+
+  useEffect(() => {
+    saveTablePaginationState(PAGE_KEY, user?.id, { pageNumber, pageSize, searchTerm, appliedFilterRows });
+  }, [pageNumber, pageSize, searchTerm, appliedFilterRows, user?.id]);
 
   const handleCustomerSort = useCallback(
     (k: CustomerColumnKey) => {
@@ -262,7 +298,17 @@ export function CustomerManagementPage(): ReactElement {
   );
 
   useEffect(() => {
-    setPageNumber(1);
+    const paramsChanged =
+      prevParamsRef.current.pageSize !== pageSize ||
+      prevParamsRef.current.searchTerm !== searchTerm ||
+      prevParamsRef.current.sortBy !== sortBy ||
+      prevParamsRef.current.sortDirection !== sortDirection ||
+      JSON.stringify(prevParamsRef.current.appliedFilterRows) !== JSON.stringify(appliedFilterRows);
+
+    if (paramsChanged) {
+      setPageNumber(1);
+      prevParamsRef.current = { pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection };
+    }
   }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {

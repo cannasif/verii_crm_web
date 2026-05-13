@@ -98,6 +98,7 @@
     "description": "Descrizione",
     "descriptionPlaceholder": "Descrizione facoltativa",
     "isMandatory": "Obbligatorio",
+    "isMandatoryDesc": "Quando questa opzione è selezionata, diventa obbligatorio che questo sottoprodotto venga detratto dallo stock quando viene venduto il prodotto principale.",
     "mandatory": "Obbligatorio",
     "optional": "Facoltativo",
     "delete": "Elimina",

@@ -1,6 +1,7 @@
 {
   "common": {
     "loading": "جاري التحميل...",
+    "descriptionDetail": "تفاصيل الوصف",
     "loadingDescription": "يتم تحميل البيانات، يرجى الانتظار",
     "save": "حفظ",
     "saving": "جاري الحفظ...",

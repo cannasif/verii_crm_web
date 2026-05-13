@@ -1,6 +1,7 @@
 {
   "common": {
     "loading": "Wird geladen...",
+    "descriptionDetail": "Beschreibung Detail",
     "save": "Speichern",
     "saving": "Wird gespeichert...",
     "cancel": "Abbrechen",

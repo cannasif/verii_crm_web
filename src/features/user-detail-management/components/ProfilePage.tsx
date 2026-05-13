@@ -658,9 +658,9 @@ export function ProfilePage(): ReactElement {
         />
         <StatCard
           title="Elde Tutma"
-          value={`${Math.round((revenueQuality?.retentionRate || 0) * 100)}%`}
+          value={`${Math.round(revenueQuality?.retentionRate || 0)}%`}
           icon={TrendingUp}
-          progress={Math.round((revenueQuality?.retentionRate || 0) * 100)}
+          progress={Math.round(revenueQuality?.retentionRate || 0)}
           colorClass="text-blue-200 dark:text-blue-100 bg-blue-600 dark:bg-blue-900"
           description="Müşteri Elde Tutma Oranı"
         />

@@ -1,6 +1,7 @@
 {
   "common": {
     "loading": "Chargement...",
+    "descriptionDetail": "Détails de description",
     "save": "Enregistrer",
     "saving": "Enregistrement...",
     "cancel": "Annuler",

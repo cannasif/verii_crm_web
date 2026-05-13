@@ -1,7 +1,7 @@
 import { type ReactElement, useCallback, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CircleHelp, RefreshCw, User, MapPin, FileText, ClipboardList, ShoppingCart, Activity, Clock, Image as ImageIcon } from 'lucide-react';
+import { ArrowLeft, CircleHelp, RefreshCw, User, MapPin, FileText, ClipboardList, ShoppingCart, Activity, Clock, Image as ImageIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -828,7 +828,8 @@ const ALL_CURRENCY = 'ALL';
 
 export function Customer360Page(): ReactElement {
   const { customerId } = useParams<{ customerId: string }>();
-  const { t, i18n } = useTranslation(['customer360', 'common']);
+  const navigate = useNavigate();
+  const { t, i18n } = useTranslation(['customer-management', 'customer360', 'common']);
   const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
   const { user } = useAuthStore();
   const id = Number(customerId ?? 0);
@@ -974,12 +975,23 @@ export function Customer360Page(): ReactElement {
       <div className="container py-6 space-y-6">
       <header className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-bold tracking-tight">{tc('title')}</h1>
-            <p className="text-muted-foreground text-sm">
-              {profile.name ?? ''}
-              {profile.customerCode ? ` · ${profile.customerCode}` : ''}
-            </p>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => navigate('/customer-management', { state: { from360: true } })}
+              className="h-10 w-10 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5"
+              title={t('common.back')}
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div className="flex flex-col gap-1">
+              <h1 className="text-2xl font-bold tracking-tight">{tc('title')}</h1>
+              <p className="text-muted-foreground text-sm">
+                {profile.name ?? ''}
+                {profile.customerCode ? ` · ${profile.customerCode}` : ''}
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <Button

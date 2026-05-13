@@ -98,6 +98,7 @@
     "description": "Description",
     "descriptionPlaceholder": "Description facultative",
     "isMandatory": "Obligatoire",
+    "isMandatoryDesc": "Lorsque cette option est cochée, il devient obligatoire de déduire ce sous-produit du stock lors de la vente du produit principal.",
     "mandatory": "Obligatoire",
     "optional": "Facultatif",
     "delete": "Supprimer",

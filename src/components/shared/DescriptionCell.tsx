@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FileText, MoreHorizontal } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
@@ -8,6 +9,7 @@ interface DescriptionCellProps {
 }
 
 export function DescriptionCell({ content, colWidth }: DescriptionCellProps) {
+  const { t } = useTranslation('common');
   const textRef = useRef<HTMLSpanElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
 
@@ -47,7 +49,7 @@ export function DescriptionCell({ content, colWidth }: DescriptionCellProps) {
               <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-white/5">
                 <FileText size={14} className="text-pink-500" />
                 <span className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white">
-                  Açıklama Detayı
+                  {t('common.descriptionDetail')}
                 </span>
               </div>
               <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap max-h-[300px] overflow-y-auto">

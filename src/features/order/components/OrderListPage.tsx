@@ -2,7 +2,7 @@ import { lazy, Suspense, type ReactElement, useCallback, useEffect, useMemo, use
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, Mail, Plus } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, GitBranchPlus, Mail, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
@@ -426,6 +426,7 @@ export function OrderListPage(): ReactElement {
           }}
           disabled={createRevisionMutation.isPending}
         >
+          <GitBranchPlus className="h-4 w-4 mr-1" />
           {createRevisionMutation.isPending ? t('loading') : t('list.revise')}
         </Button>
       )}

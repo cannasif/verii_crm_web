@@ -98,6 +98,7 @@
     "description": "Açıklama",
     "descriptionPlaceholder": "Açıklama giriniz (opsiyonel)",
     "isMandatory": "Zorunlu",
+    "isMandatoryDesc": "Bu seçenek işaretlendiğinde, ana ürün satıldığında bu alt ürünün de stoktan düşmesi zorunlu hale gelir.",
     "mandatory": "Zorunlu",
     "optional": "Opsiyonel",
     "delete": "Sil",

@@ -1,5 +1,6 @@
 {
   "common": {
+    "descriptionDetail": "Açıklama Detayı",
     "loading": "Yükleniyor...",
     "loadingDescription": "Veriler yükleniyor, lütfen bekleyin",
     "save": "Kaydet",

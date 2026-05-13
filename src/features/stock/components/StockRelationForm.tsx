@@ -253,7 +253,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                   {field.value && <AlertCircle className="w-3 h-3 text-pink-600 animate-pulse" />}
                 </FormLabel>
                 <FormDescription className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
-                  Bu seçenek işaretlendiğinde, ana ürün satıldığında bu alt ürünün de stoktan düşmesi zorunlu hale gelir.
+                  {t('relations.isMandatoryDesc')}
                 </FormDescription>
               </div>
             </FormItem>

@@ -98,6 +98,7 @@
     "description": "Description",
     "descriptionPlaceholder": "Optional description",
     "isMandatory": "Required",
+    "isMandatoryDesc": "When this option is selected, it becomes mandatory for this sub-product to be deducted from stock when the main product is sold.",
     "mandatory": "Required",
     "optional": "Optional",
     "delete": "Delete",

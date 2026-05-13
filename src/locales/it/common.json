@@ -1,6 +1,7 @@
 {
   "common": {
     "loading": "Caricamento...",
+    "descriptionDetail": "Descrizione Dettaglio",
     "loadingDescription": "I dati sono in fase di caricamento, attendere prego",
     "save": "Salva",
     "saving": "Salvataggio...",

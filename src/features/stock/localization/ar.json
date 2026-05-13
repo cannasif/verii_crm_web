@@ -98,6 +98,7 @@
     "description": "الوصف",
     "descriptionPlaceholder": "وصف اختياري",
     "isMandatory": "إلزامي",
+    "isMandatoryDesc": "عند تحديد هذا الخيار، يصبح من الضروري خصم هذا المنتج الفرعي من المخزون عند بيع المنتج الرئيسي.",
     "mandatory": "إلزامي",
     "optional": "اختياري",
     "delete": "حذف",
