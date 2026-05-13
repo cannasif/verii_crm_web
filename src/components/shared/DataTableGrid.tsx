@@ -451,30 +451,30 @@ export function DataTableGrid<TRow, TKey extends string>({
         onPointerCancel={handleDragEnd}
         onClickCapture={handleClickCapture}
       >
-        <Table className={cn(minTableWidthClassName, hasAnyWidth && 'table-fixed')}>
-          {hasAnyWidth && (
-            <colgroup>
-              {localVisibleColumnKeys.map((key) => (
-                <col
-                  key={key}
-                  style={{
-                    width: columnWidths[key] ? `${columnWidths[key]}px` : undefined,
-                    minWidth: columnWidths[key] ? `${columnWidths[key]}px` : undefined,
-                  }}
-                />
-              ))}
-              {showActionsColumn && (
-                <col style={{ width: `${ACTIONS_COL_WIDTH}px`, minWidth: `${ACTIONS_COL_WIDTH}px` }} />
-              )}
-            </colgroup>
-          )}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEndDnd}
+          autoScroll={false}
+        >
+          <Table className={cn(minTableWidthClassName, hasAnyWidth && 'table-fixed')}>
+            {hasAnyWidth && (
+              <colgroup>
+                {localVisibleColumnKeys.map((key) => (
+                  <col
+                    key={key}
+                    style={{
+                      width: columnWidths[key] ? `${columnWidths[key]}px` : undefined,
+                      minWidth: columnWidths[key] ? `${columnWidths[key]}px` : undefined,
+                    }}
+                  />
+                ))}
+                {showActionsColumn && (
+                  <col style={{ width: `${ACTIONS_COL_WIDTH}px`, minWidth: `${ACTIONS_COL_WIDTH}px` }} />
+                )}
+              </colgroup>
+            )}
 
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEndDnd}
-            autoScroll={false}
-          >
             <TableHeader>
 
               <TableRow ref={theadRowRef}>
@@ -515,97 +515,97 @@ export function DataTableGrid<TRow, TKey extends string>({
                 )}
               </TableRow>
             </TableHeader>
-          </DndContext>
 
-          <TableBody>
-            {isLoading &&
-              Array.from({ length: Math.min(pageSize, 10) }).map((_, i) => (
-                <TableRow key={`skeleton-${i}`}>
-                  {localVisibleColumnKeys.map((key) => (
-                    <TableCell key={key}>
-                      <Skeleton className="h-5 w-full max-w-[120px] bg-slate-200/60 dark:bg-white/10" />
-                    </TableCell>
-                  ))}
-                  {showActionsColumn && (
-                    <TableCell className="text-right">
-                      <Skeleton className="h-8 w-32 ml-auto bg-slate-200/60 dark:bg-white/10" />
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))}
-
-            {!isLoading && isError && (
-              <TableRow>
-                <TableCell colSpan={colSpan} className="text-center text-red-600 py-8">
-                  {errorText}
-                </TableCell>
-              </TableRow>
-            )}
-
-            {!isLoading && !isError && rows.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={colSpan} className="text-center text-muted-foreground py-8">
-                  {emptyText}
-                </TableCell>
-              </TableRow>
-            )}
-
-            {!isLoading &&
-              !isError &&
-              rows.map((row) => {
-                const customRowClass =
-                  typeof rowClassName === 'function' ? rowClassName(row) : rowClassName;
-                return (
-                  <TableRow
-                    key={rowKey(row)}
-                    className={customRowClass}
-                    onClick={
-                      onRowClick || onRowDoubleClick
-                        ? (e) => handleRowClick(row, e)
-                        : undefined
-                    }
-                    onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
-                  >
-                    {localVisibleColumnKeys.map((key) => {
-                      const column = columns.find((item) => item.key === key);
-                      const colWidth = columnWidths[key];
-                      return (
-                        <TableCell
-                          key={`${rowKey(row)}-${key}`}
-                          className={cn(column?.cellClassName, colWidth !== undefined && 'max-w-0')}
-                          style={
-                            colWidth !== undefined
-                              ? { width: `${colWidth}px`, maxWidth: `${colWidth}px`, overflow: 'hidden' }
-                              : undefined
-                          }
-                        >
-                          <div className={cn(
-                            'min-w-0',
-                            colWidth !== undefined && 'overflow-hidden truncate [&>div]:min-w-0 [&>div]:overflow-hidden [&_span]:truncate [&_span]:min-w-0'
-                          )}>
-                            {renderCell(row, key, colWidth)}
-                          </div>
-                        </TableCell>
-                      );
-                    })}
+            <TableBody>
+              {isLoading &&
+                Array.from({ length: Math.min(pageSize, 10) }).map((_, i) => (
+                  <TableRow key={`skeleton-${i}`}>
+                    {localVisibleColumnKeys.map((key) => (
+                      <TableCell key={key}>
+                        <Skeleton className="h-5 w-full max-w-[120px] bg-slate-200/60 dark:bg-white/10" />
+                      </TableCell>
+                    ))}
                     {showActionsColumn && (
-                      <TableCell
-                        className={cn(
-                          actionsCellClassName,
-                          iconOnlyActions &&
-                          '[&_button]:h-8 [&_button]:w-8 [&_button]:p-0 [&_button]:min-w-8 [&_button]:text-[0px] [&_button]:leading-none [&_button_svg]:h-4 [&_button_svg]:w-4 [&_button_svg]:mx-auto [&_button_svg]:shrink-0 [&_button_span]:hidden'
-                        )}
-                        onClick={(event) => event.stopPropagation()}
-                        data-no-drag-scroll="true"
-                      >
-                        {renderActionsCell?.(row)}
+                      <TableCell className="text-right">
+                        <Skeleton className="h-8 w-32 ml-auto bg-slate-200/60 dark:bg-white/10" />
                       </TableCell>
                     )}
                   </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
+                ))}
+
+              {!isLoading && isError && (
+                <TableRow>
+                  <TableCell colSpan={colSpan} className="text-center text-red-600 py-8">
+                    {errorText}
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {!isLoading && !isError && rows.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={colSpan} className="text-center text-muted-foreground py-8">
+                    {emptyText}
+                  </TableCell>
+                </TableRow>
+              )}
+
+              {!isLoading &&
+                !isError &&
+                rows.map((row) => {
+                  const customRowClass =
+                    typeof rowClassName === 'function' ? rowClassName(row) : rowClassName;
+                  return (
+                    <TableRow
+                      key={rowKey(row)}
+                      className={customRowClass}
+                      onClick={
+                        onRowClick || onRowDoubleClick
+                          ? (e) => handleRowClick(row, e)
+                          : undefined
+                      }
+                      onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
+                    >
+                      {localVisibleColumnKeys.map((key) => {
+                        const column = columns.find((item) => item.key === key);
+                        const colWidth = columnWidths[key];
+                        return (
+                          <TableCell
+                            key={`${rowKey(row)}-${key}`}
+                            className={cn(column?.cellClassName, colWidth !== undefined && 'max-w-0')}
+                            style={
+                              colWidth !== undefined
+                                ? { width: `${colWidth}px`, maxWidth: `${colWidth}px`, overflow: 'hidden' }
+                                : undefined
+                            }
+                          >
+                            <div className={cn(
+                              'min-w-0',
+                              colWidth !== undefined && 'overflow-hidden truncate [&>div]:min-w-0 [&>div]:overflow-hidden [&_span]:truncate [&_span]:min-w-0'
+                            )}>
+                              {renderCell(row, key, colWidth)}
+                            </div>
+                          </TableCell>
+                        );
+                      })}
+                      {showActionsColumn && (
+                        <TableCell
+                          className={cn(
+                            actionsCellClassName,
+                            iconOnlyActions &&
+                            '[&_button]:h-8 [&_button]:w-8 [&_button]:p-0 [&_button]:min-w-8 [&_button]:text-[0px] [&_button]:leading-none [&_button_svg]:h-4 [&_button_svg]:w-4 [&_button_svg]:mx-auto [&_button_svg]:shrink-0 [&_button_span]:hidden'
+                          )}
+                          onClick={(event) => event.stopPropagation()}
+                          data-no-drag-scroll="true"
+                        >
+                          {renderActionsCell?.(row)}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  );
+                })}
+            </TableBody>
+          </Table>
+        </DndContext>
       </div>
 
       <div className="mt-1 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/90 px-3 pb-6 pt-3 sm:px-4 dark:border-white/10">

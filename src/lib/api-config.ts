@@ -95,9 +95,12 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
   };
 
   try {
-    const response = await fetch(`${toBaseRelativePath(RUNTIME_CONFIG_FILE_NAME)}?v=${Date.now()}`, {
-      cache: 'no-store',
+    const response = await fetch(toBaseRelativePath(RUNTIME_CONFIG_FILE_NAME), {
+      cache: 'no-cache',
       credentials: 'same-origin',
+      headers: {
+        Accept: 'application/json',
+      },
     });
     if (!response.ok) {
       throw new Error(`${RUNTIME_CONFIG_FILE_NAME} HTTP ${response.status}`);
