@@ -1610,6 +1610,7 @@
     "button": "Satış Temsilcisi 360",
     "salesmanFilter": {
       "label": "Satışçı",
+      "all": "Tümü",
       "me": "Ben",
       "searchPlaceholder": "İsim veya e-posta ile ara…",
       "noResults": "Eşleşen satış temsilcisi yok."

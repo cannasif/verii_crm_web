@@ -1208,6 +1208,7 @@
     "button": "مندوب مبيعات 360",
     "salesmanFilter": {
       "label": "مندوب المبيعات",
+      "all": "الكل",
       "me": "أنا",
       "searchPlaceholder": "ابحث بالاسم أو البريد…",
       "noResults": "لا توجد نتائج."

@@ -1208,6 +1208,7 @@
     "button": "Representante de ventas 360",
     "salesmanFilter": {
       "label": "Vendedor",
+      "all": "Todos",
       "me": "Yo",
       "searchPlaceholder": "Buscar por nombre o correo…",
       "noResults": "Sin resultados."

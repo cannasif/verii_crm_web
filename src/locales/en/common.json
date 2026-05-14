@@ -1606,6 +1606,7 @@
     "button": "Sales Representative 360",
     "salesmanFilter": {
       "label": "Salesperson",
+      "all": "All",
       "me": "Me",
       "searchPlaceholder": "Search by name or email…",
       "noResults": "No matches."

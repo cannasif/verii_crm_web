@@ -39,7 +39,9 @@ export async function getSalesmenOverview(params: {
   if (currency != null && currency !== '') {
     search.set('currency', currency);
   }
-  const url = `/api/salesmen/${userId}/overview?${search.toString()}`;
+  const url = userId === 0
+    ? `/api/salesmen/overview?${search.toString()}`
+    : `/api/salesmen/${userId}/overview?${search.toString()}`;
   const headers: Record<string, string> = {};
   if (currency != null && currency !== '') {
     headers['X-Currency'] = currency;

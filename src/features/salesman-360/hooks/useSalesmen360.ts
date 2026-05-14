@@ -33,13 +33,13 @@ function getPeriodQueryKey(periodParams?: Salesmen360PeriodParams) {
   ];
 }
 
-export function useSalesmenOverviewQuery(userId: number, currency?: string, periodParams?: Salesmen360PeriodParams) {
+export function useSalesmenOverviewQuery(userId: number, currency?: string, periodParams?: Salesmen360PeriodParams, enabled = true) {
   return useQuery({
     queryKey: ['salesmen360', 'overview', userId, currency ?? 'ALL', ...getPeriodQueryKey(periodParams)],
     queryFn: ({ signal }) =>
       getSalesmenOverview({ userId, currency: currency && currency !== 'ALL' ? currency : undefined, periodParams, signal }),
     staleTime: OVERVIEW_STALE_MS,
-    enabled: userId > 0,
+    enabled: enabled && userId >= 0,
   });
 }
 

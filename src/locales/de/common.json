@@ -1212,6 +1212,7 @@
     "button": "Verkäufer 360",
     "salesmanFilter": {
       "label": "Verkäufer",
+      "all": "Alle",
       "me": "Ich",
       "searchPlaceholder": "Nach Name oder E-Mail suchen…",
       "noResults": "Keine Treffer."

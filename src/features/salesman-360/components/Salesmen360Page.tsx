@@ -74,6 +74,8 @@ function KpiCardSkeleton(): ReactElement {
 
 const CHART_COLORS = ['#ec4899', '#f59e0b', '#8b5cf6'];
 const SALESMAN_360_PERIOD_OPTIONS: Salesmen360PeriodKey[] = ['today', 'week', 'month', 'year'];
+const ALL_SALESMEN_ROUTE_VALUE = 'all';
+const ALL_SALESMEN_ID = 0;
 
 const SALESMEN_360_FILTER_OUTER =
   'group/filter flex min-h-11 w-fit max-w-full items-stretch overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm ring-1 ring-slate-950/[0.03] transition-[box-shadow,border-color] duration-200 hover:border-pink-200/80 hover:shadow-md hover:shadow-pink-500/[0.07] dark:border-white/10 dark:bg-linear-to-br dark:from-[#1E1627]/95 dark:to-[#130822]/98 dark:ring-white/[0.05] dark:hover:border-pink-400/30 dark:hover:shadow-pink-500/10';
@@ -103,6 +105,10 @@ const SALESMEN_360_FILTER_ICON_WRAP = {
 } as const;
 
 function buildSalespersonOptionLabel(item: Salesmen360VisibleUserDto, meLabel: string): string {
+  if (item.userId === ALL_SALESMEN_ID) {
+    return item.fullName?.trim() || 'Tümü';
+  }
+
   const fullName = item.fullName?.trim();
   const base =
     fullName && item.email
@@ -634,23 +640,41 @@ export function Salesmen360Page(): ReactElement {
   const { t, i18n } = useTranslation();
   const authUser = useAuthStore((s) => s.user);
   const rawUserId = params.userId ?? '';
-  const userId = rawUserId === 'me' ? (authUser?.id ?? 0) : Number(rawUserId || 0);
+  const isAllSalesmen = rawUserId === ALL_SALESMEN_ROUTE_VALUE;
+  const userId = isAllSalesmen ? ALL_SALESMEN_ID : rawUserId === 'me' ? (authUser?.id ?? 0) : Number(rawUserId || 0);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('ALL');
   const [selectedPeriod, setSelectedPeriod] = useState<Salesmen360PeriodKey>('month');
   const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview');
   const visibleSalesmenQuery = useVisibleSalesmenQuery();
   const currencyParam = selectedCurrency === 'ALL' ? undefined : selectedCurrency;
   const periodParams = useMemo(() => ({ period: selectedPeriod }), [selectedPeriod]);
-  const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam, periodParams);
+  const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam, periodParams, isAllSalesmen || userId > 0);
   const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } = useSalesmenAnalyticsSummaryQuery(userId, currencyParam, periodParams, activeTab === 'analytics');
   const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useSalesmenAnalyticsChartsQuery(userId, 12, currencyParam, periodParams, activeTab === 'analytics');
   const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(userId, 12);
   const executeActionMutation = useExecuteSalesmenActionMutation(userId);
   const visibleSalesmen = visibleSalesmenQuery.data ?? [];
-  const selectedSalesmanValue = userId > 0 ? String(userId) : undefined;
+  const allSalesmenOption = useMemo<Salesmen360VisibleUserDto>(
+    () => ({
+      userId: ALL_SALESMEN_ID,
+      fullName: t('salesman360.salesmanFilter.all'),
+      email: null,
+      isSelf: false,
+    }),
+    [t]
+  );
+  const salespersonOptions = useMemo(
+    () => (visibleSalesmen.length > 1 ? [allSalesmenOption, ...visibleSalesmen] : visibleSalesmen),
+    [allSalesmenOption, visibleSalesmen]
+  );
+  const selectedSalesmanValue = isAllSalesmen || userId > 0 ? String(userId) : undefined;
 
   useEffect(() => {
     if (visibleSalesmen.length === 0) {
+      return;
+    }
+
+    if (isAllSalesmen) {
       return;
     }
 
@@ -662,7 +686,13 @@ export function Salesmen360Page(): ReactElement {
     if (!visibleSalesmen.some((item) => item.userId === userId)) {
       navigate(`/salesmen-360/${visibleSalesmen[0].userId}`, { replace: true });
     }
-  }, [navigate, userId, visibleSalesmen]);
+  }, [isAllSalesmen, navigate, userId, visibleSalesmen]);
+
+  useEffect(() => {
+    if (isAllSalesmen && activeTab === 'analytics') {
+      setActiveTab('overview');
+    }
+  }, [activeTab, isAllSalesmen]);
 
   const currencyFormatter = useMemo(
     () =>
@@ -674,6 +704,10 @@ export function Salesmen360Page(): ReactElement {
   );
 
   const selectedSalesmanLabel = useMemo(() => {
+    if (isAllSalesmen) {
+      return t('salesman360.salesmanFilter.all');
+    }
+
     const selected = visibleSalesmen.find((item) => item.userId === userId);
     if (!selected) {
       return undefined;
@@ -685,7 +719,7 @@ export function Salesmen360Page(): ReactElement {
     }
 
     return fullName || selected.email || String(selected.userId);
-  }, [userId, visibleSalesmen]);
+  }, [isAllSalesmen, t, userId, visibleSalesmen]);
 
   const currenciesFromOverview = overview?.kpis?.totalsByCurrency ?? [];
   const currenciesFromSummary = summary?.totalsByCurrency ?? [];
@@ -715,7 +749,7 @@ export function Salesmen360Page(): ReactElement {
     ? new Date(summary.lastActivityDate).toLocaleDateString(i18n.language)
     : '-';
 
-  if (userId <= 0) {
+  if (userId <= 0 && !isAllSalesmen) {
     return (
       <div className="w-full px-6 py-10">
         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 dark:border-white/10 dark:bg-white/2 p-20 text-center flex flex-col items-center gap-4">
@@ -783,6 +817,22 @@ export function Salesmen360Page(): ReactElement {
   const kpis = overview.kpis;
   const subtitle = [overview.fullName ?? '', overview.email ?? ''].filter(Boolean).join(' · ') || '';
   const recommendedActions = overview.recommendedActions ?? [];
+  const navigateToQuotations = (): void => {
+    if (isAllSalesmen) {
+      navigate('/quotations');
+      return;
+    }
+
+    const selected = visibleSalesmen.find((item) => item.userId === userId);
+    const representativeName = selected?.fullName?.trim() || selected?.email?.trim();
+    if (!representativeName) {
+      navigate('/quotations');
+      return;
+    }
+
+    const search = new URLSearchParams({ representativeName });
+    navigate(`/quotations?${search.toString()}`);
+  };
 
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={0}>
@@ -810,10 +860,10 @@ export function Salesmen360Page(): ReactElement {
                   SALESMEN_360_FILTER_OUTER,
                   'min-w-0 w-full sm:w-auto sm:min-w-[min(20rem,calc(100vw-2rem))] sm:max-w-[22rem]'
                 )}
-                visibleSalesmen={visibleSalesmen}
+                visibleSalesmen={salespersonOptions}
                 selectedUserId={userId}
                 selectedLabel={selectedSalesmanLabel}
-                onSelectUserId={(id) => navigate(`/salesmen-360/${id}`)}
+                onSelectUserId={(id) => navigate(id === ALL_SALESMEN_ID ? '/salesmen-360/all' : `/salesmen-360/${id}`)}
                 triggerClassName={cn(SALESMEN_360_FILTER_TRIGGER, 'w-full min-w-0 sm:min-w-[11rem]')}
               />
             )}
@@ -882,9 +932,11 @@ export function Salesmen360Page(): ReactElement {
               <TabsTrigger value="overview" className="rounded-xl px-6 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-[#130822] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md transition-all">
                 {t('salesman360.tabs.overview')}
               </TabsTrigger>
-              <TabsTrigger value="analytics" className="rounded-xl px-6 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-[#130822] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md transition-all">
-                {t('salesman360.tabs.analytics')}
-              </TabsTrigger>
+              {!isAllSalesmen && (
+                <TabsTrigger value="analytics" className="rounded-xl px-6 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-[#130822] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md transition-all">
+                  {t('salesman360.tabs.analytics')}
+                </TabsTrigger>
+              )}
             </TabsList>
           </div>
 
@@ -901,7 +953,18 @@ export function Salesmen360Page(): ReactElement {
                   <p className="text-2xl font-black mt-2.5 text-slate-900 dark:text-white tabular-nums pl-10.5">{kpis.totalDemands ?? 0}</p>
                 </CardContent>
               </Card>
-              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden">
+              <Card
+                role="button"
+                tabIndex={0}
+                onClick={navigateToQuotations}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    navigateToQuotations();
+                  }
+                }}
+                className="group cursor-pointer rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden"
+              >
                 <CardContent className="pt-4 pb-3 px-4">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 shadow-sm transition-transform">
