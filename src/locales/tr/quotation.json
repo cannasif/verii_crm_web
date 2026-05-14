@@ -42,7 +42,9 @@
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
     "customerCode": "Cari Kodu",
     "validUntil": "Geçerlilik",
-    "revisionNo": "Revizyon No"
+    "revisionNo": "Revizyon No",
+    "erpIntegrated": "Entegrasyon oldu",
+    "erpNotIntegrated": "Entegrasyon olmadı"
   },
   "date": "Tarih",
   "offerNo": "Teklif No",

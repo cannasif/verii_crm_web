@@ -38,7 +38,9 @@
     "validUntil": "Geçerlilik",
     "currency": "Para Birimi",
     "grandTotal": "Genel Toplam",
-    "status": "Durum"
+    "status": "Durum",
+    "erpIntegrated": "Entegrasyon oldu",
+    "erpNotIntegrated": "Entegrasyon olmadı"
   },
   "loadError": "Veriler yüklenirken hata oluştu.",
   "detail": {

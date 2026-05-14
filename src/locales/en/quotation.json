@@ -41,7 +41,9 @@
     "detail": "Details",
     "customerCode": "Customer Code",
     "validUntil": "Valid Until",
-    "revisionNo": "Revision no."
+    "revisionNo": "Revision no.",
+    "erpIntegrated": "Integration completed",
+    "erpNotIntegrated": "Not integrated"
   },
   "detail": {
     "title": "Quotation details",

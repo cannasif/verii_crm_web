@@ -13,8 +13,8 @@ export function ApprovalStatusBadge({ status }: ApprovalStatusBadgeProps): React
 
   const statusConfig: Record<ApprovalStatus, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline'; className?: string }> = {
     [ApprovalStatusEnum.NotRequired]: {
-      label: t('status.notRequired'),
-      variant: 'secondary',
+      label: t('status.waiting'),
+      variant: 'default',
       className: undefined,
     },
     [ApprovalStatusEnum.Waiting]: {

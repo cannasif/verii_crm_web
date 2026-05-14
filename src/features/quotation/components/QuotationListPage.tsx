@@ -243,6 +243,26 @@ export function QuotationListPage(): ReactElement {
     []
   );
 
+  const getErpIntegrationLabel = useCallback(
+    (isIntegrated?: boolean | null): string =>
+      isIntegrated
+        ? t('list.erpIntegrated', { defaultValue: 'Entegrasyon oldu' })
+        : t('list.erpNotIntegrated', { defaultValue: 'Entegrasyon olmadı' }),
+    [t]
+  );
+
+  const getApprovalStatusLabel = useCallback(
+    (status: number | null | undefined): string => {
+      if (typeof status !== 'number' || status < 0 || status > 4) {
+        return '-';
+      }
+
+      const statusKey = status === 0 ? 'waiting' : ['notRequired', 'waiting', 'approved', 'rejected', 'closed'][status];
+      return t(`approval.status.${statusKey}`);
+    },
+    [t]
+  );
+
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
       currentPageRows.map((quotation) => ({
@@ -256,16 +276,13 @@ export function QuotationListPage(): ReactElement {
         ValidUntil: quotation.validUntil ? new Date(quotation.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(quotation),
         GrandTotal: getGrandTotalLabel(quotation),
-        IsERPIntegrated: quotation.isERPIntegrated ? '1' : '0',
+        IsERPIntegrated: getErpIntegrationLabel(quotation.isERPIntegrated),
         ERPIntegrationNumber: quotation.erpIntegrationNumber ?? '-',
         LastSyncDate: quotation.lastSyncDate ? new Date(quotation.lastSyncDate).toLocaleDateString(i18n.language) : '-',
         CountTriedBy: quotation.countTriedBy ?? 0,
-        Status:
-          typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 4
-            ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][quotation.status]}`)
-            : '-',
+        Status: getApprovalStatusLabel(quotation.status),
       })),
-    [currentPageRows, t, i18n.language, getCurrencyLabel, getGrandTotalLabel]
+    [currentPageRows, i18n.language, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel]
   );
 
   const exportColumns = useMemo(
@@ -302,17 +319,14 @@ export function QuotationListPage(): ReactElement {
         ValidUntil: quotation.validUntil ? new Date(quotation.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(quotation),
         GrandTotal: getGrandTotalLabel(quotation),
-        IsERPIntegrated: quotation.isERPIntegrated ? '1' : '0',
+        IsERPIntegrated: getErpIntegrationLabel(quotation.isERPIntegrated),
         ERPIntegrationNumber: quotation.erpIntegrationNumber ?? '-',
         LastSyncDate: quotation.lastSyncDate ? new Date(quotation.lastSyncDate).toLocaleDateString(i18n.language) : '-',
         CountTriedBy: quotation.countTriedBy ?? 0,
-        Status:
-          typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 4
-            ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][quotation.status]}`)
-            : '-',
+        Status: getApprovalStatusLabel(quotation.status),
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, t, i18n.language, getCurrencyLabel, getGrandTotalLabel]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, i18n.language, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel]);
 
   useEffect(() => {
     setPageNumber(1);
@@ -355,13 +369,14 @@ export function QuotationListPage(): ReactElement {
     if (key === 'Currency') return getCurrencyLabel(quotation);
     if (key === 'GrandTotal') return getGrandTotalLabel(quotation);
     if (key === 'IsERPIntegrated') {
+      const isIntegrated = quotation.isERPIntegrated === true;
       return (
-        <span className={`inline-flex min-w-8 justify-center rounded-full px-2 py-1 text-xs font-semibold ${
-          quotation.isERPIntegrated
+        <span className={`inline-flex min-w-36 justify-center rounded-full px-2.5 py-1 text-xs font-semibold ${
+          isIntegrated
             ? 'bg-emerald-100 text-emerald-700'
             : 'bg-slate-100 text-slate-600'
         }`}>
-          {quotation.isERPIntegrated ? '1' : '0'}
+          {getErpIntegrationLabel(isIntegrated)}
         </span>
       );
     }
@@ -536,7 +551,7 @@ export function QuotationListPage(): ReactElement {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">{t('common.all', { ns: 'common' })}</SelectItem>
-                      <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+                      <SelectItem value="0">{t('approval.status.waiting')}</SelectItem>
                       <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
                       <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
                       <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>

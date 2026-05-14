@@ -39,7 +39,9 @@
     "validUntil": "Geçerlilik",
     "currency": "Para Birimi",
     "grandTotal": "Genel Toplam",
-    "status": "Durum"
+    "status": "Durum",
+    "erpIntegrated": "Entegrasyon oldu",
+    "erpNotIntegrated": "Entegrasyon olmadı"
   },
   "detail": {
     "title": "Talep Detayı",

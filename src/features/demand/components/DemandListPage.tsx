@@ -223,6 +223,26 @@ export function DemandListPage(): ReactElement {
     return formatCurrency(numericGrandTotal, demand.currencyCode || demand.currency || 'TRY');
   }, []);
 
+  const getErpIntegrationLabel = useCallback(
+    (isIntegrated?: boolean | null): string =>
+      isIntegrated
+        ? t('list.erpIntegrated', { defaultValue: 'Entegrasyon oldu' })
+        : t('list.erpNotIntegrated', { defaultValue: 'Entegrasyon olmadı' }),
+    [t]
+  );
+
+  const getApprovalStatusLabel = useCallback(
+    (status: number | null | undefined): string => {
+      if (typeof status !== 'number' || status < 0 || status > 4) {
+        return '-';
+      }
+
+      const statusKey = status === 0 ? 'waiting' : ['notRequired', 'waiting', 'approved', 'rejected', 'closed'][status];
+      return t(`approval.status.${statusKey}`);
+    },
+    [t]
+  );
+
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
       currentPageRows.map((demand) => ({
@@ -236,16 +256,13 @@ export function DemandListPage(): ReactElement {
         ValidUntil: demand.validUntil ? new Date(demand.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(demand),
         GrandTotal: getGrandTotalLabel(demand),
-        IsERPIntegrated: demand.isERPIntegrated ? '1' : '0',
+        IsERPIntegrated: getErpIntegrationLabel(demand.isERPIntegrated),
         ERPIntegrationNumber: demand.erpIntegrationNumber ?? '-',
         LastSyncDate: demand.lastSyncDate ? new Date(demand.lastSyncDate).toLocaleDateString(i18n.language) : '-',
         CountTriedBy: demand.countTriedBy ?? 0,
-        Status:
-          typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4
-            ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][demand.status]}`)
-            : '-',
+        Status: getApprovalStatusLabel(demand.status),
       })),
-    [currentPageRows, getCurrencyLabel, getGrandTotalLabel, t, i18n.language]
+    [currentPageRows, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel, i18n.language]
   );
 
   const exportColumns = useMemo(
@@ -282,17 +299,14 @@ export function DemandListPage(): ReactElement {
         ValidUntil: demand.validUntil ? new Date(demand.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(demand),
         GrandTotal: getGrandTotalLabel(demand),
-        IsERPIntegrated: demand.isERPIntegrated ? '1' : '0',
+        IsERPIntegrated: getErpIntegrationLabel(demand.isERPIntegrated),
         ERPIntegrationNumber: demand.erpIntegrationNumber ?? '-',
         LastSyncDate: demand.lastSyncDate ? new Date(demand.lastSyncDate).toLocaleDateString(i18n.language) : '-',
         CountTriedBy: demand.countTriedBy ?? 0,
-        Status:
-          typeof demand.status === 'number' && demand.status >= 0 && demand.status <= 4
-            ? t(`approval.status.${['notRequired', 'waiting', 'approved', 'rejected', 'closed'][demand.status]}`)
-            : '-',
+        Status: getApprovalStatusLabel(demand.status),
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, getCurrencyLabel, getGrandTotalLabel, t, i18n.language]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel, i18n.language]);
 
   useEffect(() => {
     setPageNumber(1);
@@ -335,13 +349,14 @@ export function DemandListPage(): ReactElement {
     if (key === 'Currency') return getCurrencyLabel(demand);
     if (key === 'GrandTotal') return getGrandTotalLabel(demand);
     if (key === 'IsERPIntegrated') {
+      const isIntegrated = demand.isERPIntegrated === true;
       return (
-        <span className={`inline-flex min-w-8 justify-center rounded-full px-2 py-1 text-xs font-semibold ${
-          demand.isERPIntegrated
+        <span className={`inline-flex min-w-36 justify-center rounded-full px-2.5 py-1 text-xs font-semibold ${
+          isIntegrated
             ? 'bg-emerald-100 text-emerald-700'
             : 'bg-slate-100 text-slate-600'
         }`}>
-          {demand.isERPIntegrated ? '1' : '0'}
+          {getErpIntegrationLabel(isIntegrated)}
         </span>
       );
     }
@@ -529,7 +544,7 @@ export function DemandListPage(): ReactElement {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">{t('common.all')}</SelectItem>
-                        <SelectItem value="0">{t('approval.status.notRequired')}</SelectItem>
+                        <SelectItem value="0">{t('approval.status.waiting')}</SelectItem>
                         <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
                         <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
                         <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>

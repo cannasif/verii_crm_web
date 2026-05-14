@@ -39,7 +39,9 @@
     "validUntil": "Valid Until",
     "currency": "Currency",
     "grandTotal": "Grand Total",
-    "status": "Status"
+    "status": "Status",
+    "erpIntegrated": "Integration completed",
+    "erpNotIntegrated": "Not integrated"
   },
   "detail": {
     "title": "Demand Detail",
