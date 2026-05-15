@@ -127,6 +127,7 @@
     "columnSubject": "Konu",
     "columnDescription": "Açıklama",
     "columnCustomerId": "Müşteri No",
+    "columnAssignedUserName": "Atanan kullanıcı adı",
     "columnActivityTypeId": "Aktivite Tipi No",
     "columnPriority": "Öncelik",
     "columnDueDate": "Bitiş Tarihi",

@@ -11,6 +11,7 @@ export const ACTIVITY_FILTER_COLUMNS = [
   { value: 'Subject', type: 'string', labelKey: 'advancedFilter.columnSubject' },
   { value: 'Description', type: 'string', labelKey: 'advancedFilter.columnDescription' },
   { value: 'PotentialCustomerId', type: 'number', labelKey: 'advancedFilter.columnCustomerId' },
+  { value: 'AssignedUserName', type: 'string', labelKey: 'advancedFilter.columnAssignedUserName' },
   { value: 'ActivityTypeId', type: 'number', labelKey: 'advancedFilter.columnActivityTypeId' },
   { value: 'Priority', type: 'number', labelKey: 'advancedFilter.columnPriority' },
   { value: 'Status', type: 'number', labelKey: 'advancedFilter.columnStatus' },

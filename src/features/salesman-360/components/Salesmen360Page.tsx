@@ -817,21 +817,37 @@ export function Salesmen360Page(): ReactElement {
   const kpis = overview.kpis;
   const subtitle = [overview.fullName ?? '', overview.email ?? ''].filter(Boolean).join(' · ') || '';
   const recommendedActions = overview.recommendedActions ?? [];
-  const navigateToQuotations = (): void => {
+  const navigateWithRepresentativeNameQuery = (basePath: string): void => {
     if (isAllSalesmen) {
-      navigate('/quotations');
+      navigate(basePath);
       return;
     }
 
     const selected = visibleSalesmen.find((item) => item.userId === userId);
     const representativeName = selected?.fullName?.trim() || selected?.email?.trim();
     if (!representativeName) {
-      navigate('/quotations');
+      navigate(basePath);
       return;
     }
 
     const search = new URLSearchParams({ representativeName });
-    navigate(`/quotations?${search.toString()}`);
+    navigate(`${basePath}?${search.toString()}`);
+  };
+
+  const navigateToDemands = (): void => {
+    navigateWithRepresentativeNameQuery('/demands');
+  };
+
+  const navigateToQuotations = (): void => {
+    navigateWithRepresentativeNameQuery('/quotations');
+  };
+
+  const navigateToOrders = (): void => {
+    navigateWithRepresentativeNameQuery('/orders');
+  };
+
+  const navigateToActivities = (): void => {
+    navigateWithRepresentativeNameQuery('/activity-management');
   };
 
   return (
@@ -942,7 +958,18 @@ export function Salesmen360Page(): ReactElement {
 
           <TabsContent value="overview" className="space-y-6 outline-none">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden">
+              <Card
+                role="button"
+                tabIndex={0}
+                onClick={navigateToDemands}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    navigateToDemands();
+                  }
+                }}
+                className="group cursor-pointer rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden"
+              >
                 <CardContent className="pt-4 pb-3 px-4">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-pink-100 dark:bg-pink-500/10 border border-pink-200 dark:border-pink-500/20 shadow-sm transition-transform">
@@ -975,7 +1002,18 @@ export function Salesmen360Page(): ReactElement {
                   <p className="text-2xl font-black mt-2.5 text-slate-900 dark:text-white tabular-nums pl-10.5">{kpis.totalQuotations ?? 0}</p>
                 </CardContent>
               </Card>
-              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden">
+              <Card
+                role="button"
+                tabIndex={0}
+                onClick={navigateToOrders}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    navigateToOrders();
+                  }
+                }}
+                className="group cursor-pointer rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden"
+              >
                 <CardContent className="pt-4 pb-3 px-4">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 shadow-sm transition-transform">
@@ -986,7 +1024,18 @@ export function Salesmen360Page(): ReactElement {
                   <p className="text-2xl font-black mt-2.5 text-slate-900 dark:text-white tabular-nums pl-10.5">{kpis.totalOrders ?? 0}</p>
                 </CardContent>
               </Card>
-              <Card className="group rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden">
+              <Card
+                role="button"
+                tabIndex={0}
+                onClick={navigateToActivities}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    navigateToActivities();
+                  }
+                }}
+                className="group cursor-pointer rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm hover:shadow-md transition-all overflow-hidden"
+              >
                 <CardContent className="pt-4 pb-3 px-4">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 shadow-sm transition-transform">

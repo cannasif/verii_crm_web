@@ -164,6 +164,7 @@
     "columnSubject": "Asunto",
     "columnDescription": "Description",
     "columnCustomerId": "Número de cliente",
+    "columnAssignedUserName": "Nombre del usuario asignado",
     "columnActivityTypeId": "Tipo de actividad No",
     "columnPriority": "Prioridad",
     "columnDueDate": "Fecha de finalización",

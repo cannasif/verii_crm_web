@@ -164,6 +164,7 @@
     "columnSubject": "الموضوع",
     "columnDescription": "Description",
     "columnCustomerId": "رقم العميل",
+    "columnAssignedUserName": "اسم المستخدم المعين",
     "columnActivityTypeId": "نوع النشاط رقم",
     "columnPriority": "الأولوية",
     "columnDueDate": "تاريخ الانتهاء",

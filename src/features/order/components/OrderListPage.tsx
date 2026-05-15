@@ -1,6 +1,6 @@
 import { lazy, Suspense, type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, GitBranchPlus, Mail, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
@@ -107,6 +107,7 @@ function resolveLabel(
 export function OrderListPage(): ReactElement {
   const { t, i18n } = useTranslation(['order', 'common', 'approval', 'google-integration']);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
@@ -119,8 +120,23 @@ export function OrderListPage(): ReactElement {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResetKey, setSearchResetKey] = useState(0);
   const [approvalStatusFilter, setApprovalStatusFilter] = useState<string>('all');
-  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
-  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+  const initialFilterRows = useMemo<FilterRow[]>(() => {
+    const representativeName = searchParams.get('representativeName')?.trim();
+    if (!representativeName) {
+      return [];
+    }
+
+    return [
+      {
+        id: `representative-${representativeName}`,
+        column: 'RepresentativeName',
+        operator: 'Contains',
+        value: representativeName,
+      },
+    ];
+  }, []);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>(initialFilterRows);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>(initialFilterRows);
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
   const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderGetDto | null>(null);

@@ -114,6 +114,7 @@
     "columnSubject": "Subject",
     "columnDescription": "Description",
     "columnCustomerId": "Customer ID",
+    "columnAssignedUserName": "Assigned user name",
     "columnActivityTypeId": "Activity Type ID",
     "columnPriority": "Priority",
     "columnDueDate": "Due Date",

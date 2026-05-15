@@ -128,9 +128,26 @@ export function ActivityManagementPage(): ReactElement {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResetKey, setSearchResetKey] = useState(0);
-  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const initialRepresentativeFilterRows = useMemo<FilterRow[]>(() => {
+    const representativeName = searchParams.get('representativeName')?.trim();
+    if (!representativeName) {
+      return [];
+    }
+
+    return [
+      {
+        id: `representative-${representativeName}`,
+        column: 'AssignedUserName',
+        operator: 'Contains',
+        value: representativeName,
+      },
+    ];
+  }, []);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>(initialRepresentativeFilterRows);
   const [draftFilterLogic, setDraftFilterLogic] = useState<'and' | 'or'>('and');
-  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>([]);
+  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>(() =>
+    rowsToBackendFilters(initialRepresentativeFilterRows as ActivityFilterRow[])
+  );
   const [appliedFilterLogic, setAppliedFilterLogic] = useState<'and' | 'or'>('and');
 
   const queryClient = useQueryClient();
@@ -198,6 +215,7 @@ export function ActivityManagementPage(): ReactElement {
         { value: 'Subject', type: 'string' as const, labelKey: 'advancedFilter.columnSubject' },
         { value: 'Description', type: 'string' as const, labelKey: 'advancedFilter.columnDescription' },
         { value: 'PotentialCustomerId', type: 'number' as const, labelKey: 'advancedFilter.columnCustomerId' },
+        { value: 'AssignedUserName', type: 'string' as const, labelKey: 'advancedFilter.columnAssignedUserName' },
         { value: 'ActivityTypeId', type: 'number' as const, labelKey: 'advancedFilter.columnActivityTypeId' },
         { value: 'Priority', type: 'number' as const, labelKey: 'advancedFilter.columnPriority' },
         { value: 'Status', type: 'number' as const, labelKey: 'advancedFilter.columnStatus' },

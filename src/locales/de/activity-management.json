@@ -165,6 +165,7 @@
     "columnSubject": "Thema",
     "columnDescription": "Erläuterung",
     "columnCustomerId": "Kundennummer",
+    "columnAssignedUserName": "Name des zugewiesenen Benutzers",
     "columnActivityTypeId": "Aktivitätstyp-Nr",
     "columnPriority": "Priorität",
     "columnDueDate": "Enddatum",
