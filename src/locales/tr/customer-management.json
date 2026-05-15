@@ -40,8 +40,14 @@
       "updateError": "Müşteri güncellenemedi",
       "deleteSuccess": "Müşteri başarıyla silindi",
       "deleteError": "Müşteri silinemedi",
+      "erpCreateSuccess": "Müşteri Netsis cari kartı olarak oluşturuldu",
+      "erpCreateError": "ERP müşteri kaydı oluşturulamadı",
       "syncQueued": "Müşteri senkronizasyonu kuyruğa alındı. İş: {{jobId}}",
       "syncError": "Müşteri senkronizasyonu tetiklenemedi"
+    },
+    "erpCreate": {
+      "button": "ERP Müşterisi Oluştur",
+      "alreadyIntegrated": "ERP müşterisi oluşturulmuş"
     },
     "manualSync": "Manuel Senkronizasyon",
     "syncing": "Senkronizasyon çalışıyor",
@@ -206,7 +212,9 @@
     "updateSuccess": "Müşteri başarıyla güncellendi",
     "updateError": "Müşteri güncellenemedi",
     "deleteSuccess": "Müşteri başarıyla silindi",
-    "deleteError": "Müşteri silinemedi"
+    "deleteError": "Müşteri silinemedi",
+    "erpCreateSuccess": "Müşteri Netsis cari kartı olarak oluşturuldu",
+    "erpCreateError": "ERP müşteri kaydı oluşturulamadı"
   },
   "customer360": {
     "button": "Müşteri 360"

@@ -28,12 +28,16 @@ import {
   Calendar,
   User,
   Activity,
+  CloudUpload,
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { MANAGEMENT_DATA_GRID_CLASSNAME } from '@/lib/management-list-layout';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
+import { hasPermission } from '@/features/access-control/utils/hasPermission';
+import { useCreateErpCustomer } from '../hooks/useCreateErpCustomer';
 
 const CRM_NS = 'customer-management' as const;
 
@@ -240,8 +244,11 @@ export function CustomerTable({
 }: CustomerTableProps): ReactElement {
   const { t, i18n } = useTranslation(['customer-management', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions('customers.customer-management.view');
+  const { data: permissions } = useMyPermissionsQuery();
+  const canCreateErpCustomer = hasPermission(permissions, 'customers.erp-create');
   const navigate = useNavigate();
   const deleteCustomer = useDeleteCustomer();
+  const createErpCustomer = useCreateErpCustomer();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerDto | null>(null);
 
@@ -315,6 +322,21 @@ export function CustomerTable({
 
   const renderActionsCell = (customer: CustomerDto): ReactElement => (
     <div className="flex justify-end gap-2 opacity-100 transition-opacity">
+      {canCreateErpCustomer && !customer.isERPIntegrated && !customer.isIntegrated ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={createErpCustomer.isPending}
+          onClick={() => createErpCustomer.mutate(customer.id)}
+          title={t('customerManagement.erpCreate.button', {
+            ns: CRM_NS,
+            defaultValue: 'ERP Müşterisi Oluştur',
+          })}
+          className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+        >
+          <CloudUpload size={16} />
+        </Button>
+      ) : null}
       <Button
         variant="ghost"
         size="icon"

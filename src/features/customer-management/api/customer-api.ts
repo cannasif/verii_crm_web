@@ -82,6 +82,14 @@ export const customerApi = {
     throw new Error(response.message || 'Müşteri güncellenemedi');
   },
 
+  createErpCustomer: async (id: number): Promise<CustomerDto> => {
+    const response = await api.post<ApiResponse<CustomerDto>>(`/api/Customer/${id}/erp-customer`);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'ERP müşteri kaydı oluşturulamadı');
+  },
+
   delete: async (id: number): Promise<void> => {
     const response = await api.delete<ApiResponse<object>>(`/api/Customer/${id}`);
     if (!response.success) {

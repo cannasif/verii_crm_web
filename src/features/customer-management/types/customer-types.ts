@@ -4,6 +4,8 @@ export interface CustomerDto {
   id: number;
   customerCode?: string | null;
   isIntegrated?: boolean;
+  isERPIntegrated?: boolean;
+  erpIntegrationNumber?: string | null;
   name: string;
   taxNumber?: string;
   taxOffice?: string;

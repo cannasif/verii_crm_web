@@ -228,6 +228,7 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
 
 export function isLeafPermissionCode(code: string): boolean {
   if (code === 'dashboard.view') return true;
+  if (code === 'customers.erp-create') return true;
   return code.split('.').filter(Boolean).length >= 3;
 }
 
@@ -278,6 +279,7 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: s
   'sales.orders.view': { key: 'sidebar.orders', fallback: 'Siparisler' },
 
   'customers.customer-management.view': { key: 'sidebar.customerManagement', fallback: 'Musteri Yonetimi' },
+  'customers.erp-create': { fallback: 'ERP Müşteri Kaydı Oluşturma' },
   'customers.conflict-inbox.view': { key: 'sidebar.customersConflictInbox', fallback: 'Cakisma Gelen Kutusu' },
   'customers.erp-customers.view': { key: 'sidebar.erpCustomerManagement', fallback: 'ERP Musteri' },
   'customers.contact-management.view': { key: 'sidebar.contactManagement', fallback: 'Musteri Iletisimleri' },
@@ -485,12 +487,19 @@ export function getPermissionPlatform(_code: string, availableOnWeb: boolean, av
   if (availableOnMobile) return 'mobile';
   return 'web';
 }
+const EXTRA_PERMISSION_CODES = [
+  'customers.erp-create',
+] as const;
+
 export const PERMISSION_CODE_CATALOG: string[] = Array.from(
   new Set(
-    Object.values(ROUTE_PERMISSION_MAP)
-      .filter((code) => code && code !== 'admin-only')
-      .map((code) => code.trim())
-      .flatMap((code) => buildCrudPermissionCodes(code))
+    [
+      ...Object.values(ROUTE_PERMISSION_MAP)
+        .filter((code) => code && code !== 'admin-only')
+        .map((code) => code.trim())
+        .flatMap((code) => buildCrudPermissionCodes(code)),
+      ...EXTRA_PERMISSION_CODES,
+    ]
   )
 )
   .filter((code) => isLeafPermissionCode(code))
