@@ -72,6 +72,12 @@
     "empty": "No hay pasos añadidos",
     "unknownRoleGroup": "Sin Grupo de Roles",
     "stepDescription": "Orden de Aprobación: {{order}}",
+    "deleteDialog": {
+      "title": "Eliminar paso",
+      "description": "¿Está seguro de que desea eliminar este paso?",
+      "confirm": "Eliminar",
+      "cancel": "Cancelar"
+    },
     "form": {
       "addTitle": "Añadir Nuevo Paso",
       "editTitle": "Editar Paso",

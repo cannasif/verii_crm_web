@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -60,6 +60,7 @@ export function ApprovalFlowForm({
   isLoading = false,
 }: ApprovalFlowFormProps): ReactElement {
   const { t } = useTranslation();
+  const [stepEditorOpen, setStepEditorOpen] = useState(false);
 
   const form = useForm<ApprovalFlowFormSchema>({
     resolver: zodResolver(approvalFlowFormSchema),
@@ -88,6 +89,12 @@ export function ApprovalFlowForm({
       });
     }
   }, [approvalFlow, form]);
+
+  useEffect(() => {
+    if (!open) {
+      setStepEditorOpen(false);
+    }
+  }, [open]);
 
   const handleSubmit = async (data: ApprovalFlowFormSchema): Promise<void> => {
     await onSubmit(data);
@@ -135,8 +142,10 @@ export function ApprovalFlowForm({
             </div>
           </div>
           <button
+            type="button"
+            disabled={stepEditorOpen}
             onClick={() => onOpenChange(false)}
-            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:rotate-90 shadow-sm"
+            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:rotate-90 shadow-sm disabled:pointer-events-none disabled:opacity-40"
           >
             <X size={20} className="relative z-10" />
             <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -229,7 +238,10 @@ export function ApprovalFlowForm({
                     </span>
                     <div className="h-[1px] flex-1 bg-slate-100 dark:bg-white/5" />
                   </div>
-                  <ApprovalFlowStepList approvalFlowId={approvalFlow.id} />
+                  <ApprovalFlowStepList
+                    approvalFlowId={approvalFlow.id}
+                    onStepEditorOpenChange={setStepEditorOpen}
+                  />
                 </div>
               )}
             </form>
@@ -241,7 +253,7 @@ export function ApprovalFlowForm({
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
-            disabled={isLoading}
+            disabled={isLoading || stepEditorOpen}
             className="h-12 px-8 rounded-2xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 font-bold transition-all"
           >
             {t('common.cancel')}
@@ -249,7 +261,7 @@ export function ApprovalFlowForm({
           <Button
             type="submit"
             form="approval-flow-form"
-            disabled={isLoading || !isFormValid}
+            disabled={isLoading || !isFormValid || stepEditorOpen}
             className="h-12 px-10 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading ? (

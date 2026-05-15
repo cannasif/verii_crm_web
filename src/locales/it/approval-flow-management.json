@@ -72,6 +72,12 @@
     "empty": "Nessun passaggio aggiunto",
     "unknownRoleGroup": "Nessun gruppo ruoli",
     "stepDescription": "Ordine approvazione: {{order}}",
+    "deleteDialog": {
+      "title": "Elimina passaggio",
+      "description": "Sei sicuro di voler eliminare questo passaggio?",
+      "confirm": "Elimina",
+      "cancel": "Annulla"
+    },
     "form": {
       "addTitle": "Aggiungi nuovo passaggio",
       "editTitle": "Modifica passaggio",

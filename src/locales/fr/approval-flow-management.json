@@ -72,6 +72,12 @@
     "empty": "Aucune étape ajoutée",
     "unknownRoleGroup": "Aucun Groupe de Rôle",
     "stepDescription": "Ordre d'Approbation: {{order}}",
+    "deleteDialog": {
+      "title": "Supprimer l'étape",
+      "description": "Êtes-vous sûr de vouloir supprimer cette étape ?",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
+    },
     "form": {
       "addTitle": "Ajouter Nouvelle Étape",
       "editTitle": "Modifier Étape",

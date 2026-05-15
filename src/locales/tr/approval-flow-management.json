@@ -68,6 +68,12 @@
     "empty": "Henüz adım eklenmemiş",
     "unknownRoleGroup": "Rol Grubu Yok",
     "stepDescription": "Onay Sırası: {{order}}",
+    "deleteDialog": {
+      "title": "Adımı sil",
+      "description": "Bu adımı silmek istediğinizden emin misiniz?",
+      "confirm": "Sil",
+      "cancel": "İptal"
+    },
     "form": {
       "addTitle": "Yeni Adım Ekle",
       "editTitle": "Adım Düzenle",

@@ -72,6 +72,12 @@
     "empty": "لم تتم إضافة خطوات بعد",
     "unknownRoleGroup": "لا يوجد مجموعة أدوار",
     "stepDescription": "ترتيب الموافقة: {{order}}",
+    "deleteDialog": {
+      "title": "حذف الخطوة",
+      "description": "هل أنت متأكد من أنك تريد حذف هذه الخطوة؟",
+      "confirm": "حذف",
+      "cancel": "إلغاء"
+    },
     "form": {
       "addTitle": "إضافة خطوة جديدة",
       "editTitle": "تعديل الخطوة",

@@ -1,7 +1,16 @@
-import { type ReactElement, useState, useRef, useMemo } from 'react';
+import { type ReactElement, useState, useRef, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GripVertical, Plus, Trash2, Edit2, Layers } from 'lucide-react';
+import { GripVertical, Plus, Trash2, Edit2, Layers, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import {
   Dialog,
   DialogContent,
@@ -32,6 +41,7 @@ import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermi
 
 interface ApprovalFlowStepListProps {
   approvalFlowId: number;
+  onStepEditorOpenChange?: (open: boolean) => void;
 }
 
 const stepFormSchema = z.object({
@@ -65,12 +75,16 @@ const INPUT_STYLE = `
 
 const LABEL_STYLE = "text-[11px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-bold ml-1 mb-1.5 block";
 
-export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListProps): ReactElement {
-  const { t } = useTranslation();
+export function ApprovalFlowStepList({
+  approvalFlowId,
+  onStepEditorOpenChange,
+}: ApprovalFlowStepListProps): ReactElement {
+  const { t } = useTranslation(['approval-flow-management', 'common']);
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('approval.flow-management.view');
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [pendingDeleteStep, setPendingDeleteStep] = useState<ApprovalFlowStepGetDto | null>(null);
   const [editingStep, setEditingStep] = useState<ApprovalFlowStepGetDto | null>(null);
   const dragItemRef = useRef<number | null>(null);
 
@@ -106,6 +120,10 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
     },
   });
   const isFormValid = form.formState.isValid;
+
+  useEffect(() => {
+    onStepEditorOpenChange?.(formOpen || pendingDeleteStep !== null);
+  }, [formOpen, pendingDeleteStep, onStepEditorOpenChange]);
 
   const handleDragStart = (index: number): void => {
     dragItemRef.current = index;
@@ -179,9 +197,16 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
 
   const handleDeleteClick = (step: ApprovalFlowStepGetDto): void => {
     if (!canDelete) return;
-    if (confirm(t('approvalFlowStep.messages.deleteConfirm'))) {
-      deleteStep.mutate({ id: step.id, approvalFlowId: step.approvalFlowId });
-    }
+    setPendingDeleteStep(step);
+  };
+
+  const handleConfirmDelete = (): void => {
+    if (!pendingDeleteStep || deleteStep.isPending) return;
+    const target = pendingDeleteStep;
+    deleteStep.mutate(
+      { id: target.id, approvalFlowId: target.approvalFlowId },
+      { onSettled: () => setPendingDeleteStep(null) },
+    );
   };
 
   const handleFormSubmit = async (data: StepFormSchema): Promise<void> => {
@@ -221,8 +246,9 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
             </h3>
           </div>
           {canCreate ? (
-            <Button 
-              onClick={handleAddClick} 
+            <Button
+              type="button"
+              onClick={handleAddClick}
               size="sm"
               className="px-4 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-lg text-white text-xs font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white"
             >
@@ -287,6 +313,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                   <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     {canUpdate ? (
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         onClick={() => handleEditClick(step)}
@@ -297,6 +324,7 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
                     ) : null}
                     {canDelete ? (
                       <Button
+                        type="button"
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDeleteClick(step)}
@@ -337,7 +365,13 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
 
           <div className="p-6">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-5">
+              <form
+                onSubmit={(ev) => {
+                  ev.stopPropagation();
+                  form.handleSubmit(handleFormSubmit)(ev);
+                }}
+                className="space-y-5"
+              >
                 <FormField
                   control={form.control}
                   name="approvalRoleGroupId"
@@ -389,6 +423,47 @@ export function ApprovalFlowStepList({ approvalFlowId }: ApprovalFlowStepListPro
           </div>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={pendingDeleteStep !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPendingDeleteStep(null);
+          }
+        }}
+      >
+        <AlertDialogContent className="max-w-lg z-[60] border border-slate-200 dark:border-white/10 rounded-2xl bg-white dark:bg-[#130822] p-0 gap-0 overflow-hidden shadow-2xl shadow-slate-200/50 dark:shadow-black/50">
+          <AlertDialogHeader className="px-6 pt-6 pb-2 space-y-1 text-left sm:text-left border-b border-slate-100 dark:border-white/5">
+            <AlertDialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
+              {t('approvalFlowStep.deleteDialog.title')}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-sm text-slate-500 dark:text-slate-400 pt-2 pb-1">
+              {t('approvalFlowStep.deleteDialog.description')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex flex-row justify-end gap-3 px-6 py-4 bg-slate-50/80 dark:bg-white/5 border-t border-slate-100 dark:border-white/5 sm:space-x-0">
+            <AlertDialogCancel
+              disabled={deleteStep.isPending}
+              className="m-0 mt-0 sm:mt-0 h-10 px-5 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0c0516] text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 focus-visible:ring-offset-0"
+              type="button"
+            >
+              {t('approvalFlowStep.deleteDialog.cancel')}
+            </AlertDialogCancel>
+            <Button
+              type="button"
+              variant="destructive"
+              disabled={deleteStep.isPending}
+              className="m-0 h-10 px-6 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 font-semibold text-white border-0"
+              onClick={handleConfirmDelete}
+            >
+              {deleteStep.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+              ) : null}
+              {t('approvalFlowStep.deleteDialog.confirm')}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

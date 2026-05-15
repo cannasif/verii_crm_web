@@ -72,6 +72,12 @@
     "empty": "No steps added yet",
     "unknownRoleGroup": "Keine Rollengruppe",
     "stepDescription": "Genehmigungsreihenfolge: {{order}}",
+    "deleteDialog": {
+      "title": "Schritt löschen",
+      "description": "Möchten Sie diesen Schritt wirklich löschen?",
+      "confirm": "Löschen",
+      "cancel": "Abbrechen"
+    },
     "form": {
       "addTitle": "Hinzufügen Neu Step",
       "editTitle": "Schritt bearbeiten",
