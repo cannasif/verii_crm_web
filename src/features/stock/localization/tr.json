@@ -21,6 +21,8 @@
     "next": "Sonraki",
     "addFavorite": "Favoriye ekle",
     "removeFavorite": "Favoriden çıkar",
+    "createMirrorStock": "Mirror Stok Aç",
+    "createErpStock": "Netsis stok kaydı oluştur",
     "viewModeTable": "Liste",
     "viewModeGrid": "Izgara",
     "viewModeGroupLabel": "Görünüm"
@@ -127,7 +129,31 @@
     "error": "Bir hata oluştu",
     "favoriteAddSuccess": "Stok favorilere eklendi",
     "favoriteRemoveSuccess": "Stok favorilerden çıkarıldı",
-    "favoriteToggleError": "Favori durumu güncellenemedi"
+    "favoriteToggleError": "Favori durumu güncellenemedi",
+    "mirrorCreateSuccess": "Mirror stok başarıyla oluşturuldu",
+    "mirrorCreateError": "Mirror stok oluşturulamadı",
+    "erpCreateSuccess": "Stok Netsis'e başarıyla oluşturuldu",
+    "erpCreateError": "Netsis stok kaydı oluşturulamadı"
+  },
+  "mirrorCreate": {
+    "title": "Mirror Stok Aç",
+    "description": "ERP'de henüz açılmamış stoğu önce CRM mirror stoğu olarak oluşturun. Sonra listeden tek tuşla Netsis stok kartına dönüştürebilirsiniz.",
+    "erpStockCode": "Stok Kodu",
+    "stockName": "Stok Adı",
+    "unit": "Birim",
+    "ureticiKodu": "Üretici Kodu",
+    "branchCode": "Şube Kodu",
+    "groupTitle": "Katalog kırılımları",
+    "groupDescription": "Grup ve özel kodlar katalog/filtre yapısında kullanılacak şekilde opsiyonel girilebilir.",
+    "grupKodu": "Grup Kodu",
+    "grupAdi": "Grup Adı",
+    "kod1": "Kod 1",
+    "kod1Adi": "Kod 1 Adı",
+    "kod2": "Kod 2",
+    "kod2Adi": "Kod 2 Adı",
+    "kod3": "Kod 3",
+    "kod3Adi": "Kod 3 Adı",
+    "optional": "Opsiyonel"
   },
   "bulkImport": {
     "button": "Toplu görsel yükle",

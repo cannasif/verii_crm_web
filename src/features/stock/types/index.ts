@@ -19,6 +19,10 @@ export interface StockGetDto {
   kod5?: string;
   kod5Adi?: string;
   branchCode: number;
+  isERPIntegrated?: boolean;
+  erpIntegrationNumber?: string | null;
+  lastSyncDate?: string | null;
+  countTriedBy?: number | null;
   isFavorite?: boolean;
   favoriteId?: number | null;
   stockDetail?: StockDetailGetDto;

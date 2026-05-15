@@ -2,7 +2,7 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, Eye, Heart, LayoutGrid, List } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, CloudUpload, Eye, Heart, LayoutGrid, List } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
@@ -17,12 +17,14 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useStockList } from '../hooks/useStockList';
 import { useStockListWithImages } from '../hooks/useStockListWithImages';
 import { useToggleStockFavorite } from '../hooks/useToggleStockFavorite';
+import { useCreateErpStock } from '../hooks/useCreateErpStock';
 import { stockApi } from '../api/stock-api';
 import { STOCK_QUERY_KEYS } from '../utils/query-keys';
 import type { StockGetDto, StockGetWithMainImageDto } from '../types';
 import { StockGridCard } from './StockGridCard';
 import type { PagedFilter } from '@/types/api';
 import { StockBulkImageImportDialog } from './StockBulkImageImportDialog';
+import { StockMirrorCreateDialog } from './StockMirrorCreateDialog';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
@@ -32,6 +34,8 @@ import {
 } from '@/lib/management-list-layout';
 
 import { cn } from '@/lib/utils';
+import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
+import { hasPermission } from '@/features/access-control/utils/hasPermission';
 
 const PAGE_KEY = 'stock-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -171,6 +175,10 @@ export function StockListPage(): ReactElement {
   const stockGridQuery = useStockListWithImages(listQueryParams, { enabled: listLayout === 'grid' });
   const stockQuery = listLayout === 'table' ? stockTableQuery : stockGridQuery;
   const toggleStockFavorite = useToggleStockFavorite();
+  const createErpStock = useCreateErpStock();
+  const { data: permissions } = useMyPermissionsQuery();
+  const canCreateMirrorStock = hasPermission(permissions, 'stocks.mirror-create');
+  const canCreateErpStock = hasPermission(permissions, 'stocks.erp-create');
   const pagedData = stockQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;
@@ -335,7 +343,10 @@ export function StockListPage(): ReactElement {
             {t('list.description')}
           </p>
         </div>
-        <StockBulkImageImportDialog />
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          {canCreateMirrorStock ? <StockMirrorCreateDialog /> : null}
+          <StockBulkImageImportDialog />
+        </div>
       </div>
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
           <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
@@ -456,6 +467,22 @@ export function StockListPage(): ReactElement {
                     actionsHeaderLabel={t('list.actions')}
                     renderActionsCell={(stock) => (
                       <div className="flex justify-end gap-2 opacity-100 transition-opacity pr-4">
+                        {canCreateErpStock && !stock.isERPIntegrated ? (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+                            disabled={createErpStock.isPending}
+                            aria-label={t('list.createErpStock')}
+                            title={t('list.createErpStock')}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              createErpStock.mutate(stock.id);
+                            }}
+                          >
+                            <CloudUpload className="h-4 w-4" />
+                          </Button>
+                        ) : null}
                         <Button
                           variant="ghost"
                           size="icon"

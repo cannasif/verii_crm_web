@@ -229,6 +229,8 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
 export function isLeafPermissionCode(code: string): boolean {
   if (code === 'dashboard.view') return true;
   if (code === 'customers.erp-create') return true;
+  if (code === 'stocks.mirror-create') return true;
+  if (code === 'stocks.erp-create') return true;
   return code.split('.').filter(Boolean).length >= 3;
 }
 
@@ -293,6 +295,8 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: s
   'activity.activity-type-management.view': { key: 'sidebar.activityTypeManagement', fallback: 'Aktivite Tipleri' },
 
   'stock.stocks.view': { key: 'sidebar.stockManagement', fallback: 'Stok Yonetimi' },
+  'stocks.mirror-create': { fallback: 'Mirror Stok Açma' },
+  'stocks.erp-create': { fallback: 'ERP Stok Kaydı Oluşturma' },
 
   'pricing.product-pricing.view': { key: 'sidebar.productPricingManagement', fallback: 'Urun Fiyatlandirma' },
   'pricing.product-pricing-group-by.view': { key: 'sidebar.productPricingGroupByManagement', fallback: 'Fiyat Grubu Yonetimi' },
@@ -489,6 +493,8 @@ export function getPermissionPlatform(_code: string, availableOnWeb: boolean, av
 }
 const EXTRA_PERMISSION_CODES = [
   'customers.erp-create',
+  'stocks.mirror-create',
+  'stocks.erp-create',
 ] as const;
 
 export const PERMISSION_CODE_CATALOG: string[] = Array.from(

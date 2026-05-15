@@ -12,6 +12,7 @@ import type {
   StockFavoriteToggleResultDto,
   StockRelationDto,
   StockRelationCreateDto,
+  StockCreateDto,
 } from '../types';
 
 export const stockApi = {
@@ -89,6 +90,34 @@ export const stockApi = {
 
     if (!response.data) {
       throw new Error('Stok detayı verisi alınamadı');
+    }
+
+    return response.data;
+  },
+
+  createMirrorStock: async (data: StockCreateDto): Promise<StockGetDto> => {
+    const response = await api.post<ApiResponse<StockGetDto>>('/api/Stock', data);
+
+    if (!response.success) {
+      throw new Error(response.message || response.exceptionMessage || 'Mirror stok oluşturulamadı');
+    }
+
+    if (!response.data) {
+      throw new Error('Mirror stok cevabı alınamadı');
+    }
+
+    return response.data;
+  },
+
+  createErpStock: async (id: number): Promise<StockGetDto> => {
+    const response = await api.post<ApiResponse<StockGetDto>>(`/api/Stock/${id}/erp-stock`);
+
+    if (!response.success) {
+      throw new Error(response.message || response.exceptionMessage || 'Netsis stok kaydı oluşturulamadı');
+    }
+
+    if (!response.data) {
+      throw new Error('Netsis stok kaydı cevabı alınamadı');
     }
 
     return response.data;
