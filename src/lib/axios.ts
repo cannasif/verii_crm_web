@@ -416,6 +416,7 @@ api.interceptors.request.use((config) => {
   const originalMethod = (config.method ?? 'get').toLowerCase();
   if (originalMethod === 'put') {
     config.method = 'post';
+    config.headers['X-HTTP-Method-Override'] = 'PUT';
   } else if (originalMethod === 'delete') {
     config.method = 'post';
     config.url = appendPathSegment(config.url, 'delete');

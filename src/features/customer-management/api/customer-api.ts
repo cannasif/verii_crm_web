@@ -83,7 +83,7 @@ export const customerApi = {
   },
 
   createErpCustomer: async (id: number): Promise<CustomerDto> => {
-    const response = await api.post<ApiResponse<CustomerDto>>(`/api/Customer/${id}/erp-customer`);
+    const response = await api.post<ApiResponse<CustomerDto>>(`/api/Customer/${id}/erp-customer`, {});
     if (response.success && response.data) {
       return response.data;
     }

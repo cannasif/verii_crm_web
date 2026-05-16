@@ -133,7 +133,7 @@ export function CustomerForm({
   const selectedCityId = form.watch('cityId');
 
   useEffect(() => {
-    form.clearErrors(['taxNumber', 'tcknNumber', 'customerCode']);
+    form.clearErrors(['name', 'taxNumber', 'tcknNumber', 'customerCode', 'email', 'phone', 'phone2']);
 
     if (!conflictState) {
       return;
@@ -152,6 +152,22 @@ export function CustomerForm({
 
     if (conflictFields.has('CustomerCode')) {
       form.setError('customerCode', { type: 'server', message: fieldMessage });
+    }
+
+    if (conflictFields.has('CustomerName')) {
+      form.setError('name', { type: 'server', message: fieldMessage });
+    }
+
+    if (conflictFields.has('Email')) {
+      form.setError('email', { type: 'server', message: fieldMessage });
+    }
+
+    if (conflictFields.has('Phone1')) {
+      form.setError('phone', { type: 'server', message: fieldMessage });
+    }
+
+    if (conflictFields.has('Phone2')) {
+      form.setError('phone2', { type: 'server', message: fieldMessage });
     }
   }, [conflictState, form, t]);
 
@@ -225,6 +241,14 @@ export function CustomerForm({
         return t('customerManagement.form.tcknNumber');
       case 'CustomerCode':
         return t('customerManagement.form.customerCode');
+      case 'CustomerName':
+        return t('customerManagement.form.name');
+      case 'Email':
+        return t('customerManagement.form.email');
+      case 'Phone1':
+        return t('customerManagement.form.phone');
+      case 'Phone2':
+        return t('customerManagement.form.phone2');
       default:
         return field;
     }
