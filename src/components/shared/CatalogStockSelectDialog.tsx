@@ -47,6 +47,7 @@ import type {
   CatalogStockItemDto,
   ProductCatalogDto,
 } from '@/features/category-definitions/types/category-definition-types';
+import { matchesSearchTerm, normalizeSearchValue } from '@/lib/search';
 import { stockMatchesDraftSnapshot, type ProductSelectionResult } from './ProductSelectDialog';
 import { cn } from '@/lib/utils';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -98,6 +99,15 @@ function mapStockGetToCatalogItem(stock: StockGetDto): CatalogStockItemDto {
     favoriteId: null,
     imageUrl: primary?.filePath ?? null,
   };
+}
+
+function toCatalogStockApiSearch(raw: string): string | undefined {
+  const trimmed = raw.trim();
+  if (!trimmed) {
+    return undefined;
+  }
+  const normalized = normalizeSearchValue(trimmed);
+  return normalized.length > 0 ? normalized : trimmed;
 }
 
 function normalizeCampaignCurrency(currencyCode: string | number): string {
@@ -361,6 +371,10 @@ export function CatalogStockSelectDialog({
   const [expandedCatalogIds, setExpandedCatalogIds] = useState<Set<number>>(() => new Set());
   const [catalogPaths, setCatalogPaths] = useState<Record<number, CatalogCategoryNodeDto[]>>({});
   const debouncedStockSearch = useDebouncedValue(stockSearch, 300);
+  const catalogStockApiSearch = useMemo(
+    (): string | undefined => toCatalogStockApiSearch(debouncedStockSearch),
+    [debouncedStockSearch],
+  );
   const debouncedCategoryClientSearch = useDebouncedValue(categoryClientSearch, 320);
   const wasOpenRef = useRef(false);
   const categorySelectionRowRef = useRef<HTMLElement | null>(null);
@@ -481,13 +495,13 @@ export function CatalogStockSelectDialog({
       selectedLeafCategory?.catalogCategoryId,
       includeDescendants,
       pageNumber,
-      debouncedStockSearch,
+      catalogStockApiSearch,
     ],
     queryFn: () =>
       categoryDefinitionsApi.getCatalogCategoryStocks(selectedCatalog!.id, selectedLeafCategory!.catalogCategoryId, {
         pageNumber,
         pageSize: PAGE_SIZE,
-        search: debouncedStockSearch.trim() || undefined,
+        search: catalogStockApiSearch,
         includeDescendants,
       }),
     enabled:
@@ -535,15 +549,11 @@ export function CatalogStockSelectDialog({
   const campaignCatalogItems = campaignStocksQuery.data?.items ?? [];
   const campaignPricingByCodeLower = campaignStocksQuery.data?.pricingByCodeLower ?? {};
   const campaignSearchFilteredItems = useMemo((): CatalogStockItemDto[] => {
-    const q = debouncedStockSearch.trim().toLowerCase();
-    if (!q) {
+    if (!debouncedStockSearch.trim()) {
       return campaignCatalogItems;
     }
-    return campaignCatalogItems.filter(
-      (s) =>
-        s.erpStockCode.toLowerCase().includes(q) ||
-        s.stockName.toLowerCase().includes(q) ||
-        (s.grupKodu?.toLowerCase().includes(q) ?? false),
+    return campaignCatalogItems.filter((s) =>
+      matchesSearchTerm(debouncedStockSearch, [s.erpStockCode, s.stockName, s.grupKodu]),
     );
   }, [campaignCatalogItems, debouncedStockSearch]);
   const campaignDisplayItems = useMemo((): CatalogStockItemDto[] => {
@@ -558,13 +568,13 @@ export function CatalogStockSelectDialog({
       'catalog-stock-picker-favorites',
       favoriteCatalogId,
       pageNumber,
-      debouncedStockSearch,
+      catalogStockApiSearch,
     ] as const,
     queryFn: async (): Promise<FavoriteStocksQueryData> => {
       const response = await categoryDefinitionsApi.getCatalogFavorites(favoriteCatalogId!, {
         pageNumber,
         pageSize: PAGE_SIZE,
-        search: debouncedStockSearch.trim() || undefined,
+        search: catalogStockApiSearch,
       });
       const rawItems = response.data ?? [];
 

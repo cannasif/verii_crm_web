@@ -1,14 +1,11 @@
 import { categoryDefinitionsApi } from '@/features/category-definitions/api/category-definitions-api';
 import type { CatalogCategoryNodeDto } from '@/features/category-definitions/types/category-definition-types';
+import { normalizeSearchValue } from '@/lib/search';
 
 export const MAX_CATEGORY_CLIENT_SEARCH_RESULTS = 80;
 
-function normalizeCategorySearchText(value: string): string {
-  return value.trim().toLocaleLowerCase('tr-TR');
-}
-
 export function tokenizeCategorySearchQuery(raw: string): string[] {
-  return normalizeCategorySearchText(raw)
+  return normalizeSearchValue(raw)
     .split(/\s+/)
     .filter((t) => t.length > 0);
 }
@@ -20,8 +17,8 @@ export function categoryNodeMatchesSearchTokens(
   if (tokens.length === 0) {
     return false;
   }
-  const haystack = normalizeCategorySearchText(
-    [node.name, node.code, node.fullPath ?? ''].filter(Boolean).join(' \u0001 ')
+  const haystack = normalizeSearchValue(
+    [node.name, node.code, node.fullPath ?? ''].filter(Boolean).join(' ')
   );
   return tokens.every((token) => haystack.includes(token));
 }
