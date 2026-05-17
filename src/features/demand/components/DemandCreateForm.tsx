@@ -1,5 +1,5 @@
 import { type ReactElement, useState, useEffect, useMemo } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -73,8 +73,7 @@ export function DemandCreateForm(): ReactElement {
       },
     },
   });
-  const isFormValid = form.formState.isValid;
-
+  const { isValid: isFormValid } = useFormState({ control: form.control });
   const watchedCurrencyRaw = form.watch('demand.currency');
   const watchedCurrency =
     watchedCurrencyRaw === '' || watchedCurrencyRaw === null || watchedCurrencyRaw === undefined
@@ -89,10 +88,8 @@ export function DemandCreateForm(): ReactElement {
 
   const saveManualHintLines = useMemo(
     () =>
-      buildHeaderSaveRequiredHintLines(demandFormSlice, (key) =>
-        t(key, { ns: 'common' }),
-      ),
-    [demandFormSlice, t],
+      buildHeaderSaveRequiredHintLines(demandFormSlice, (key) => t(key, { ns: 'common' }), watchedCurrency),
+    [demandFormSlice, watchedCurrency, t],
   );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
 
@@ -437,7 +434,7 @@ export function DemandCreateForm(): ReactElement {
               <Button
                 type="submit"
                 disabled={createMutation.isPending || !isFormValid}
-                className="group w-full sm:w-auto sm:min-w-[140px] h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 disabled:opacity-50 disabled:hover:scale-100 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="group w-full sm:w-auto sm:min-w-[140px] h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 disabled:hover:scale-100"
               >
                 <Save className="mr-2 h-4 w-4" />
                 {createMutation.isPending

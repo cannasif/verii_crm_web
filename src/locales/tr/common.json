@@ -46,7 +46,8 @@
         "currency": "Para birimi",
         "paymentType": "Ödeme tipi",
         "offerType": "Teklif tipi",
-        "documentSerial": "Seri no"
+        "documentSerial": "Seri no",
+        "deliveryDate": "Teslimat tarihi"
       }
     },
     "offerType": {

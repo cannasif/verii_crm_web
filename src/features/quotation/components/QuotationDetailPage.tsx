@@ -1,5 +1,5 @@
 import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,8 @@ import { useCustomerOptions } from '@/features/customer-management/hooks/useCust
 import { useUIStore } from '@/stores/ui-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
+import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Layers, Loader2, FileCheck, FileText, Share2, FileDown, MessageCircle, Mail, Save, X } from 'lucide-react';
 import {
@@ -131,7 +133,7 @@ export function QuotationDetailPage(): ReactElement {
       },
     },
   });
-  const isFormValid = form.formState.isValid;
+  const { isValid: isFormValid } = useFormState({ control: form.control });
   const watchedCurrencyValue = form.watch('quotation.currency');
   const watchedOfferDate = form.watch('quotation.offerDate');
   const offerDateSyncInitializedRef = useRef(false);
@@ -373,6 +375,17 @@ export function QuotationDetailPage(): ReactElement {
   const watchedCustomerId = form.watch('quotation.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
+  const quotationFormSlice = form.watch('quotation');
+  const quotationSchemaPayload = useMemo(
+    () => ({ quotation: quotationFormSlice }),
+    [quotationFormSlice],
+  );
+
+  const saveManualHintLines = useMemo(
+    () =>
+      buildHeaderSaveRequiredHintLines(quotationFormSlice, (key) => t(key, { ns: 'common' }), watchedCurrency),
+    [quotationFormSlice, watchedCurrency, t],
+  );
 
   const customerCode = useMemo(() => {
     if (watchedErpCustomerCode) {
@@ -840,17 +853,25 @@ export function QuotationDetailPage(): ReactElement {
                 </DropdownMenu>
 
                 {!isReadOnly && (
-                  <Button
-                    type="submit"
-                    disabled={updateMutation.isPending || !isFormValid}
-                    className="group w-full sm:w-auto bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white sm:min-w-[140px]"
+                  <FormSubmitTooltipWrap
+                    schema={createQuotationSchema}
+                    value={quotationSchemaPayload}
+                    isValid={isFormValid}
+                    isPending={updateMutation.isPending}
+                    manualHintLines={saveManualHintLines}
                   >
-                    <Save className="mr-2 h-4 w-4" />
-                    {updateMutation.isPending
-                      ? t('saving')
-                      : t('update.saveButton', { defaultValue: 'Güncellemeyi Kaydet' })
-                    }
-                  </Button>
+                    <Button
+                      type="submit"
+                      disabled={updateMutation.isPending || !isFormValid}
+                      className="group w-full sm:w-auto bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white sm:min-w-[140px]"
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      {updateMutation.isPending
+                        ? t('saving')
+                        : t('update.saveButton', { defaultValue: 'Güncellemeyi Kaydet' })
+                      }
+                    </Button>
+                  </FormSubmitTooltipWrap>
                 )}
 
                 {quotation?.status === 0 && !isReadOnly && quotationStatus !== 4 && (

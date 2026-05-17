@@ -1,17 +1,16 @@
-import { type ReactElement, useMemo } from 'react';
+import { cloneElement, isValidElement, type ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { z } from 'zod';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { documentSaveButtonClassName } from '@/lib/document-save-button';
 import { getZodValidationMessages } from '@/lib/zod-validation-hint';
 import { cn } from '@/lib/utils';
 
 interface FormSubmitTooltipWrapProps {
   schema: z.ZodTypeAny;
-  /** Şema ile aynı şekil (ör. `{ quotation: … }`, `{ demand: … }`) */
   value: unknown;
   isValid: boolean;
   isPending: boolean;
-  /** Önce gösterilir: müşteri, para birimi, ödeme tipi, teklif tipi, seri no vb. */
   manualHintLines?: string[];
   children: ReactElement<{ disabled?: boolean; className?: string }>;
   triggerClassName?: string;
@@ -37,8 +36,18 @@ export function FormSubmitTooltipWrap({
     return getZodValidationMessages(schema, value);
   }, [isPending, isValid, schema, value, manualHintLines]);
 
+  const wrappedChild = useMemo(() => {
+    if (!isValidElement(children)) {
+      return children;
+    }
+    return cloneElement(children, {
+      disabled: disabled || children.props.disabled,
+      className: documentSaveButtonClassName(isValid && !isPending, children.props.className),
+    });
+  }, [children, disabled, isPending, isValid]);
+
   if (!disabled) {
-    return children;
+    return wrappedChild;
   }
 
   return (
@@ -46,13 +55,16 @@ export function FormSubmitTooltipWrap({
       <TooltipTrigger asChild>
         <span
           className={cn(
-            'inline-flex w-full sm:w-auto rounded-md outline-none',
-            !isPending ? 'cursor-help' : 'cursor-wait',
+            'inline-flex w-full sm:w-auto rounded-md outline-none cursor-not-allowed',
             triggerClassName,
           )}
           tabIndex={0}
+          onClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+          }}
         >
-          {children}
+          {wrappedChild}
         </span>
       </TooltipTrigger>
       <TooltipContent

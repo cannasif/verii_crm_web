@@ -1,5 +1,5 @@
 import { type ReactElement, useState, useEffect, useMemo } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -106,8 +106,7 @@ export function OrderCreateForm(): ReactElement {
       },
     },
   });
-  const isFormValid = form.formState.isValid;
-
+  const { isValid: isFormValid } = useFormState({ control: form.control });
   const watchedCurrencyRaw = form.watch('order.currency');
   const watchedCurrency =
     watchedCurrencyRaw === '' || watchedCurrencyRaw === null || watchedCurrencyRaw === undefined
@@ -122,10 +121,8 @@ export function OrderCreateForm(): ReactElement {
 
   const saveManualHintLines = useMemo(
     () =>
-      buildHeaderSaveRequiredHintLines(orderFormSlice, (key) =>
-        t(key, { ns: 'common' }),
-      ),
-    [orderFormSlice, t],
+      buildHeaderSaveRequiredHintLines(orderFormSlice, (key) => t(key, { ns: 'common' }), watchedCurrency),
+    [orderFormSlice, watchedCurrency, t],
   );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
 
@@ -467,7 +464,7 @@ export function OrderCreateForm(): ReactElement {
               <Button
                 type="submit"
                 disabled={createMutation.isPending || !isFormValid}
-                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
               >
                 <Save className="mr-2 h-4 w-4" />
                 {createMutation.isPending

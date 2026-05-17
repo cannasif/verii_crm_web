@@ -45,7 +45,8 @@
         "currency": "Currency",
         "paymentType": "Payment type",
         "offerType": "Offer type",
-        "documentSerial": "Document serial"
+        "documentSerial": "Document serial",
+        "deliveryDate": "Delivery date"
       }
     },
     "offerType": {
