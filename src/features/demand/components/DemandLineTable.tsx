@@ -58,6 +58,10 @@ import {
   type DemandQuickEditField,
 } from '../utils/apply-demand-line-quick-field-patch';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import {
+  buildDocumentLinePrerequisiteHintLines,
+  canDocumentLinePrerequisites,
+} from '@/lib/document-line-prerequisites';
 import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } from '@/lib/line-form-stock-markers';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 
@@ -258,7 +262,17 @@ export function DemandLineTable({
     return found?.code || 'TRY';
   }, [currency, currencyOptions]);
 
-  const isCurrencySelected = currency !== undefined && currency !== null && !Number.isNaN(currency);
+  const linePrerequisitesInput = useMemo(
+    () => ({
+      customerId,
+      erpCustomerCode,
+      representativeId,
+      currency,
+    }),
+    [customerId, erpCustomerCode, representativeId, currency],
+  );
+
+  const linePrerequisitesMet = canDocumentLinePrerequisites(linePrerequisitesInput);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
     if (!scrollRef.current) return;
@@ -285,7 +299,7 @@ export function DemandLineTable({
   const handleAddLine = (): void => {
     setQuickEdit(null);
     if (!linesEditable) return;
-    if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
+    if (!linePrerequisitesMet) {
       toast.error(t('error'), {
         description: t('lines.requiredFieldsMissing'),
       });
@@ -373,7 +387,7 @@ export function DemandLineTable({
   };
 
   const handleProductSelect = async (product: ProductSelectionResult): Promise<void> => {
-    if ((!customerId && !erpCustomerCode) || !representativeId || !isCurrencySelected) {
+    if (!linePrerequisitesMet) {
       toast.error(t('error'), {
         description: t('lines.requiredFieldsMissing'),
       });
@@ -745,23 +759,15 @@ export function DemandLineTable({
     setLines,
   ]);
 
-  const canAddLine = linesEditable && Boolean((customerId || erpCustomerCode) && representativeId && isCurrencySelected);
+  const canAddLine = linesEditable && linePrerequisitesMet;
 
   const headerSectionTitle = t('sections.header');
   const addLineDisableHints = useMemo(() => {
     if (canAddLine || !linesEditable) return [];
-    const items: string[] = [];
-    if (!customerId && !erpCustomerCode) {
-      items.push(t('disabledActionHints.needCustomer', { ns: 'common' }));
-    }
-    if (!representativeId) {
-      items.push(t('disabledActionHints.needRepresentative', { ns: 'common' }));
-    }
-    if (!isCurrencySelected) {
-      items.push(t('disabledActionHints.needCurrency', { ns: 'common' }));
-    }
-    return items;
-  }, [canAddLine, linesEditable, customerId, erpCustomerCode, representativeId, isCurrencySelected, t]);
+    return buildDocumentLinePrerequisiteHintLines(linePrerequisitesInput, (key) =>
+      t(key, { ns: 'common' }),
+    );
+  }, [canAddLine, linesEditable, linePrerequisitesInput, t]);
 
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
