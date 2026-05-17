@@ -165,6 +165,15 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   } else if (typeof body === "string" && body.startsWith("activityManagement.")) {
     const activityKey = body.replace(/^activityManagement\./, "")
     text = t(activityKey, { ns: "activity-management", defaultValue: t(body) })
+  } else if (typeof body === "string" && body.startsWith("form.")) {
+    text = t(body, { ns: "customer-management", defaultValue: body })
+  } else if (
+    typeof body === "string" &&
+    (error?.type === "server" || error?.type === "manual") &&
+    !body.startsWith("form.") &&
+    !body.startsWith("customerManagement.")
+  ) {
+    text = body
   } else {
     text = t(String(body))
   }

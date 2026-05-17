@@ -1,5 +1,51 @@
 import { z } from 'zod';
 
+function normalizeOptionalEntityIdInput(value: unknown): number | undefined {
+  if (value === null || value === undefined || value === '') {
+    return undefined;
+  }
+
+  const numeric = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return undefined;
+  }
+
+  return numeric;
+}
+
+function normalizeEmailInput(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  return value.trim();
+}
+
+function normalizeDigitsInput(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  return value.replace(/\D/g, '');
+}
+
+function normalizeDefaultShippingAddressIdInput(value: unknown): number | null {
+  if (value === null || value === undefined || value === '' || value === 0) {
+    return null;
+  }
+
+  const numeric = typeof value === 'number' ? value : Number(value);
+  if (!Number.isFinite(numeric) || numeric <= 0) {
+    return null;
+  }
+
+  return numeric;
+}
+
+const optionalEntityIdSchema = (messageKey: string) =>
+  z.preprocess(
+    normalizeOptionalEntityIdInput,
+    z.number().min(1, messageKey).optional()
+  );
+
 export interface CustomerDto {
   id: number;
   customerCode?: string | null;
@@ -127,102 +173,113 @@ export interface CustomerFormData {
 export const customerFormSchema = z.object({
   customerCode: z
     .string()
-    .max(100, 'customerManagement.form.customerCodeMaxLength')
+    .max(100, 'form.customerCodeMaxLength')
     .optional()
     .or(z.literal('')),
   name: z
     .string()
-    .min(1, 'customerManagement.form.nameRequired')
-    .max(250, 'customerManagement.form.nameMaxLength'),
-  taxNumber: z
-    .string()
-    .max(10, 'customerManagement.form.taxNumberMaxLength')
-    .optional()
-    .or(z.literal('')),
+    .min(1, 'form.nameRequired')
+    .max(250, 'form.nameMaxLength'),
+  taxNumber: z.preprocess(
+    normalizeDigitsInput,
+    z.union([
+      z.literal(''),
+      z.string().length(10, 'form.taxNumberExactLength'),
+    ])
+  ),
   taxOffice: z
     .string()
-    .max(100, 'customerManagement.form.taxOfficeMaxLength')
+    .max(100, 'form.taxOfficeMaxLength')
     .optional()
     .or(z.literal('')),
-  tcknNumber: z
-    .string()
-    .max(11, 'customerManagement.form.tcknNumberMaxLength')
-    .optional()
-    .or(z.literal('')),
+  tcknNumber: z.preprocess(
+    normalizeDigitsInput,
+    z.union([
+      z.literal(''),
+      z.string().length(11, 'form.tcknNumberExactLength'),
+    ])
+  ),
   address: z
     .string()
-    .max(500, 'customerManagement.form.addressMaxLength')
+    .max(500, 'form.addressMaxLength')
     .optional()
     .or(z.literal('')),
-  phone: z
-    .string()
-    .max(100, 'customerManagement.form.phoneMaxLength')
-    .optional()
-    .or(z.literal('')),
-  phone2: z
-    .string()
-    .max(100, 'customerManagement.form.phone2MaxLength')
-    .optional()
-    .or(z.literal('')),
-  email: z
-    .string()
-    .email('customerManagement.form.emailInvalid')
-    .max(100, 'customerManagement.form.emailMaxLength')
-    .optional()
-    .or(z.literal('')),
+  phone: z.preprocess(
+    normalizeDigitsInput,
+    z.union([
+      z.literal(''),
+      z.string().max(20, 'form.phoneMaxLength'),
+    ])
+  ),
+  phone2: z.preprocess(
+    normalizeDigitsInput,
+    z.union([
+      z.literal(''),
+      z.string().max(20, 'form.phone2MaxLength'),
+    ])
+  ),
+  email: z.preprocess(
+    normalizeEmailInput,
+    z.union([
+      z.literal(''),
+      z
+        .string()
+        .max(100, 'form.emailMaxLength')
+        .superRefine((value, context) => {
+          if (value.length < 3) {
+            return;
+          }
+          const isValidEmail = z.string().email().safeParse(value).success;
+          if (!isValidEmail) {
+            context.addIssue({
+              code: 'custom',
+              message: 'form.emailInvalid',
+            });
+          }
+        }),
+    ])
+  ),
   website: z
     .string()
-    .max(100, 'customerManagement.form.websiteMaxLength')
+    .max(100, 'form.websiteMaxLength')
     .optional()
     .or(z.literal('')),
   notes: z
     .string()
-    .max(250, 'customerManagement.form.notesMaxLength')
+    .max(250, 'form.notesMaxLength')
     .optional()
     .or(z.literal('')),
-  countryId: z
-    .number()
-    .min(1, 'customerManagement.form.countryRequired')
-    .optional(),
-  cityId: z
-    .number()
-    .min(1, 'customerManagement.form.cityRequired')
-    .optional(),
-  districtId: z
-    .number()
-    .min(1, 'customerManagement.form.districtRequired')
-    .optional(),
-  customerTypeId: z
-    .number()
-    .min(1, 'customerManagement.form.customerTypeRequired')
-    .optional(),
+  countryId: optionalEntityIdSchema('form.countryRequired'),
+  cityId: optionalEntityIdSchema('form.cityRequired'),
+  districtId: optionalEntityIdSchema('form.districtRequired'),
+  customerTypeId: optionalEntityIdSchema('form.customerTypeRequired'),
   salesRepCode: z
     .string()
-    .max(50, 'customerManagement.form.salesRepCodeMaxLength')
+    .max(50, 'form.salesRepCodeMaxLength')
     .optional()
     .or(z.literal('')),
   groupCode: z
     .string()
-    .max(50, 'customerManagement.form.groupCodeMaxLength')
+    .max(50, 'form.groupCodeMaxLength')
     .optional()
     .or(z.literal('')),
   creditLimit: z
     .number()
-    .min(0, 'customerManagement.form.creditLimit.min')
+    .min(0, 'form.creditLimit.min')
     .optional()
     .nullable(),
-  defaultShippingAddressId: z
-    .number()
-    .optional()
-    .nullable(),
+  defaultShippingAddressId: z.preprocess(
+    normalizeDefaultShippingAddressIdInput,
+    z.number().optional().nullable()
+  ),
   branchCode: z
     .number()
-    .int('customerManagement.form.branchCode.invalid')
-    .min(0, 'customerManagement.form.branchCode.required'),
+    .int('form.branchCode.invalid')
+    .min(0, 'form.branchCode.required'),
   businessUnitCode: z
     .number()
-    .int('customerManagement.form.businessUnitCode.invalid')
-    .min(0, 'customerManagement.form.businessUnitCode.required'),
+    .int('form.businessUnitCode.invalid')
+    .min(0, 'form.businessUnitCode.required'),
   isCompleted: z.boolean().optional(),
 });
 

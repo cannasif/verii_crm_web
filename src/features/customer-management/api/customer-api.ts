@@ -75,7 +75,10 @@ export const customerApi = {
   },
 
   update: async (id: number, data: UpdateCustomerDto): Promise<CustomerDto> => {
-    const response = await api.put<ApiResponse<CustomerDto>>(`/api/Customer/${id}`, sanitizeCustomerPayload(data));
+    const response = await api.post<ApiResponse<CustomerDto>>(
+      `/api/Customer/${id}`,
+      sanitizeCustomerPayload(data)
+    );
     if (response.success && response.data) {
       return response.data;
     }

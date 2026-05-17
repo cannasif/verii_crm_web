@@ -1,8 +1,7 @@
-import { type ReactElement, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { useForm, type FieldErrors, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -36,14 +35,24 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { customerFormSchema, type CustomerFormData, type CustomerDto } from '../types/customer-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import { useShippingAddressesByCustomer } from '@/features/shipping-address-management/hooks/useShippingAddressesByCustomer';
 import { useAuthStore } from '@/stores/auth-store';
-import type { CustomerDuplicateConflictPayload } from '../utils/customer-conflict';
 import {
-  AlertTriangle,
+  CONFLICT_API_FIELD_TO_FORM,
+  type CustomerDuplicateConflictPayload,
+} from '../utils/customer-conflict';
+import {
+  createEmptyCustomerFormData,
+  mapCustomerToFormData,
+} from '../utils/customer-form-values';
+import {
+  buildCustomerInputClassName,
+  sanitizeDigitsValue,
+  useFieldShake,
+} from '../utils/customer-form-ui';
+import {
   Building2,
   Hash,
   FileText,
@@ -81,6 +90,8 @@ const INPUT_STYLE = `
 const LABEL_STYLE =
   'text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide ml-1 mb-2 flex items-center gap-2';
 
+const CRM_NS = 'customer-management';
+
 export function CustomerForm({
   open,
   onOpenChange,
@@ -88,183 +99,158 @@ export function CustomerForm({
   customer,
   isLoading = false,
   conflictState = null,
-  onConflictDismiss,
+  onConflictDismiss: _onConflictDismiss,
 }: CustomerFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['customer-management', 'common']);
+  const tf = useCallback(
+    (key: string, options?: Record<string, unknown>): string =>
+      t(`form.${key}`, { ns: CRM_NS, ...options }),
+    [t]
+  );
   const branch = useAuthStore((state) => state.branch);
   const { data: shippingAddresses = [] } = useShippingAddressesByCustomer(customer?.id ?? 0);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const isCreateMode = !customer;
+  const { triggerShake, isShaking } = useFieldShake();
   const [countrySearchTerm, setCountrySearchTerm] = useState('');
   const [citySearchTerm, setCitySearchTerm] = useState('');
   const [districtSearchTerm, setDistrictSearchTerm] = useState('');
   const [customerTypeSearchTerm, setCustomerTypeSearchTerm] = useState('');
 
   const form = useForm<CustomerFormData>({
-    resolver: zodResolver(customerFormSchema),
+    resolver: zodResolver(customerFormSchema) as Resolver<CustomerFormData>,
     mode: 'onChange',
     reValidateMode: 'onChange',
-    defaultValues: {
-      name: '',
-      customerCode: '',
-      email: '',
-      phone: '',
-      phone2: '',
-      address: '',
-      taxNumber: '',
-      taxOffice: '',
-      tcknNumber: '',
-      website: '',
-      notes: '',
-      salesRepCode: '',
-      groupCode: '',
-      creditLimit: 0,
-      defaultShippingAddressId: null,
-      branchCode: branch?.code ? Number(branch.code) : 1,
-      businessUnitCode: 1,
-      countryId: undefined,
-      cityId: undefined,
-      districtId: undefined,
-      customerTypeId: undefined,
-      isCompleted: false,
-    },
+    defaultValues: createEmptyCustomerFormData(branch?.code),
   });
-  const isFormValid = form.formState.isValid;
 
   const selectedCountryId = form.watch('countryId');
   const selectedCityId = form.watch('cityId');
 
-  useEffect(() => {
-    form.clearErrors(['name', 'taxNumber', 'tcknNumber', 'customerCode', 'email', 'phone', 'phone2']);
+  const isNameMissing = useCallback((): boolean => {
+    return !form.getValues('name')?.trim();
+  }, [form]);
 
+  const blockUntilNameFilled = useCallback(
+    (fieldName?: keyof CustomerFormData): boolean => {
+      if (!isCreateMode || !isNameMissing()) {
+        return false;
+      }
+
+      form.setError('name', {
+        type: 'manual',
+        message: 'form.nameRequired',
+      });
+      triggerShake('name');
+      nameInputRef.current?.focus();
+
+      if (fieldName && fieldName !== 'name') {
+        triggerShake(fieldName);
+      }
+
+      return true;
+    },
+    [form, isCreateMode, isNameMissing, triggerShake]
+  );
+
+  const handleDigitsFieldChange = useCallback(
+    (
+      fieldName: 'taxNumber' | 'tcknNumber' | 'phone' | 'phone2',
+      rawValue: string,
+      maxLength: number,
+      overflowMessage: string,
+      onChange: (value: string) => void
+    ): void => {
+      const { next, overflowAttempt } = sanitizeDigitsValue(rawValue, maxLength);
+      onChange(next);
+
+      if (overflowAttempt) {
+        form.setError(fieldName, { type: 'manual', message: overflowMessage });
+        triggerShake(fieldName);
+        void form.trigger(fieldName);
+        return;
+      }
+
+      if (form.formState.errors[fieldName]?.type === 'manual') {
+        form.clearErrors(fieldName);
+        void form.trigger(fieldName);
+      }
+    },
+    [form, triggerShake]
+  );
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const nextValues = customer
+      ? mapCustomerToFormData(customer, branch?.code)
+      : createEmptyCustomerFormData(branch?.code);
+
+    form.reset(nextValues);
+    void form.trigger();
+
+    if (isCreateMode) {
+      window.setTimeout(() => nameInputRef.current?.focus(), 50);
+    }
+  }, [open, customer?.id, branch?.code, form, isCreateMode, customer]);
+
+  useEffect(() => {
     if (!conflictState) {
       return;
     }
 
-    const fieldMessage = t('customerManagement.form.conflictFieldError');
-    const conflictFields = new Set(conflictState.conflicts.map((conflict) => conflict.field));
+    let firstConflictField: keyof CustomerFormData | undefined;
 
-    if (conflictFields.has('TaxNumber')) {
-      form.setError('taxNumber', { type: 'server', message: fieldMessage });
-    }
+    conflictState.conflicts.forEach((conflict) => {
+      const formField = CONFLICT_API_FIELD_TO_FORM[conflict.field];
+      if (!formField) {
+        return;
+      }
 
-    if (conflictFields.has('TcknNumber')) {
-      form.setError('tcknNumber', { type: 'server', message: fieldMessage });
-    }
+      if (!firstConflictField) {
+        firstConflictField = formField;
+      }
 
-    if (conflictFields.has('CustomerCode')) {
-      form.setError('customerCode', { type: 'server', message: fieldMessage });
-    }
+      const conflictMessage = tf(`conflict.${conflict.field}`, {
+        defaultValue: tf('conflictFieldError'),
+        customerName: conflict.customerName,
+        customerId: conflict.customerId,
+      });
 
-    if (conflictFields.has('CustomerName')) {
-      form.setError('name', { type: 'server', message: fieldMessage });
-    }
+      form.setError(formField, { type: 'server', message: conflictMessage });
+      triggerShake(formField);
+    });
 
-    if (conflictFields.has('Email')) {
-      form.setError('email', { type: 'server', message: fieldMessage });
+    if (firstConflictField) {
+      form.setFocus(firstConflictField);
     }
-
-    if (conflictFields.has('Phone1')) {
-      form.setError('phone', { type: 'server', message: fieldMessage });
-    }
-
-    if (conflictFields.has('Phone2')) {
-      form.setError('phone2', { type: 'server', message: fieldMessage });
-    }
-  }, [conflictState, form, t]);
+  }, [conflictState, form, tf, triggerShake]);
 
   const countryDropdown = useCountryOptionsInfinite(countrySearchTerm, open);
   const cityDropdown = useCityOptionsInfinite(citySearchTerm, open, selectedCountryId ?? undefined);
   const districtDropdown = useDistrictOptionsInfinite(districtSearchTerm, open, selectedCityId ?? undefined);
   const customerTypeDropdown = useCustomerTypeOptionsInfinite(customerTypeSearchTerm, open);
 
-  useEffect(() => {
-    onConflictDismiss?.();
-
-    if (customer) {
-      form.reset({
-        name: customer.name || '',
-        customerCode: customer.customerCode ?? '',
-        email: customer.email ?? '',
-        phone: customer.phone ?? '',
-        phone2: customer.phone2 ?? '',
-        address: customer.address ?? '',
-        taxNumber: customer.taxNumber ?? '',
-        taxOffice: customer.taxOffice ?? '',
-        tcknNumber: customer.tcknNumber ?? '',
-        website: customer.website ?? '',
-        notes: customer.notes ?? '',
-        salesRepCode: customer.salesRepCode ?? '',
-        groupCode: customer.groupCode ?? '',
-        creditLimit: customer.creditLimit ?? 0,
-        defaultShippingAddressId: customer.defaultShippingAddressId ?? null,
-        branchCode: customer.branchCode ?? 0,
-        businessUnitCode: customer.businessUnitCode ?? 0,
-        countryId: customer.countryId ?? undefined,
-        cityId: customer.cityId ?? undefined,
-        districtId: customer.districtId ?? undefined,
-        customerTypeId: customer.customerTypeId ?? undefined,
-        isCompleted: false,
-      });
+  const handleSubmit = async (data: CustomerFormData): Promise<void> => {
+    if (blockUntilNameFilled()) {
       return;
     }
-
-    form.reset({
-      name: '',
-      customerCode: '',
-      email: '',
-      phone: '',
-      phone2: '',
-      address: '',
-      taxNumber: '',
-      taxOffice: '',
-      tcknNumber: '',
-      website: '',
-      notes: '',
-      salesRepCode: '',
-      groupCode: '',
-      creditLimit: 0,
-      defaultShippingAddressId: null,
-      branchCode: branch?.code ? Number(branch.code) : 1,
-      businessUnitCode: 1,
-      countryId: undefined,
-      cityId: undefined,
-      districtId: undefined,
-      customerTypeId: undefined,
-      isCompleted: false,
-    });
-  }, [branch?.code, customer, form, onConflictDismiss]);
-
-  const getConflictFieldLabel = (field: string): string => {
-    switch (field) {
-      case 'TaxNumber':
-        return t('customerManagement.form.taxNumber');
-      case 'TcknNumber':
-        return t('customerManagement.form.tcknNumber');
-      case 'CustomerCode':
-        return t('customerManagement.form.customerCode');
-      case 'CustomerName':
-        return t('customerManagement.form.name');
-      case 'Email':
-        return t('customerManagement.form.email');
-      case 'Phone1':
-        return t('customerManagement.form.phone');
-      case 'Phone2':
-        return t('customerManagement.form.phone2');
-      default:
-        return field;
-    }
-  };
-
-  const handleSubmit = async (data: CustomerFormData): Promise<void> => {
     await onSubmit(data);
     if (!isLoading) {
       onOpenChange(false);
     }
   };
 
-  const handleInvalidSubmit = (): void => {
-    toast.error('Hata', {
-      description: 'Zorunlu alanlar doldurulmadı.',
-    });
+  const handleInvalidSubmit = (errors: FieldErrors<CustomerFormData>): void => {
+    const fieldNames = Object.keys(errors) as (keyof CustomerFormData)[];
+    fieldNames.forEach((fieldName) => triggerShake(fieldName));
+
+    const firstField = fieldNames[0];
+    if (firstField) {
+      form.setFocus(firstField);
+    }
   };
 
   return (
@@ -278,13 +264,13 @@ export function CustomerForm({
             <div className="space-y-1">
               <DialogTitle className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
                 {customer
-                  ? t('customerManagement.form.editCustomer')
-                  : t('customerManagement.form.addCustomer')}
+                  ? tf('editCustomer')
+                  : tf('addCustomer')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
                 {customer
-                  ? t('customerManagement.form.editDescription')
-                  : t('customerManagement.form.addDescription')}
+                  ? tf('editDescription')
+                  : tf('addDescription')}
               </DialogDescription>
             </div>
           </div>
@@ -301,49 +287,56 @@ export function CustomerForm({
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
             <form id="customer-form" onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-6">
-              {conflictState && (
-                <Alert variant="destructive" className="border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-100">
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertTitle>{t('customerManagement.form.conflictTitle')}</AlertTitle>
-                  <AlertDescription>
-                    <p className="mb-3">{t('customerManagement.form.conflictDescription')}</p>
-                    <ul className="list-disc space-y-1 pl-5 text-sm">
-                      {conflictState.conflicts.map((conflict) => (
-                        <li key={`${conflict.customerId}-${conflict.field}-${conflict.value}`}>
-                          {t('customerManagement.form.conflictItem', {
-                            customerName: conflict.customerName,
-                            customerId: conflict.customerId,
-                            field: getConflictFieldLabel(conflict.field),
-                            value: conflict.value,
-                            branchCode: conflict.branchCode ?? '-',
-                          })}
-                        </li>
-                      ))}
-                    </ul>
-                  </AlertDescription>
-                </Alert>
-              )}
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <FormField control={form.control} name="name" render={({ field }) => (
+                <FormField control={form.control} name="name" render={({ field, fieldState }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
-                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'name')}><Building2 size={16} className="text-pink-500" />{t('customerManagement.form.name')}</FormLabel>
-                    <FormControl><Input {...field} className={INPUT_STYLE} placeholder={t('customerManagement.form.namePlaceholder')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'name')}><Building2 size={16} className="text-pink-500" />{tf('name')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        ref={(node) => {
+                          field.ref(node);
+                          nameInputRef.current = node;
+                        }}
+                        className={buildCustomerInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('name'))}
+                        placeholder={tf('namePlaceholder')}
+                        onKeyDown={(event) => {
+                          if (isCreateMode && isNameMissing() && event.key === 'Tab' && !event.shiftKey) {
+                            event.preventDefault();
+                            blockUntilNameFilled('name');
+                          }
+                        }}
+                        onChange={(event) => {
+                          field.onChange(event);
+                          if (event.target.value.trim()) {
+                            form.clearErrors('name');
+                          }
+                        }}
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
-                <FormField control={form.control} name="customerCode" render={({ field }) => (
+                <FormField control={form.control} name="customerCode" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.code')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.customerCodePlaceholder')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{tf('code')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ''}
+                        className={buildCustomerInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('customerCode'))}
+                        placeholder={tf('customerCodePlaceholder')}
+                        onFocus={() => blockUntilNameFilled('customerCode')}
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
                 <FormField control={form.control} name="customerTypeId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500" />{t('customerManagement.form.customerType')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500" />{tf('customerType')}</FormLabel>
                     <VoiceSearchCombobox
                       options={customerTypeDropdown.options}
                       value={field.value ? String(field.value) : ''}
@@ -353,7 +346,7 @@ export function CustomerForm({
                       hasNextPage={customerTypeDropdown.hasNextPage}
                       isLoading={customerTypeDropdown.isLoading}
                       isFetchingNextPage={customerTypeDropdown.isFetchingNextPage}
-                      placeholder={t('customerManagement.form.customerTypePlaceholder')}
+                      placeholder={tf('customerTypePlaceholder')}
                       searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
                     />
@@ -361,65 +354,173 @@ export function CustomerForm({
                   </FormItem>
                 )} />
 
-                <FormField control={form.control} name="taxNumber" render={({ field }) => (
+                <FormField control={form.control} name="taxNumber" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.taxNumber')}</FormLabel>
-                    <FormControl><Input {...field} maxLength={10} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.taxNumberPlaceholder')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{tf('taxNumber')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        inputMode="numeric"
+                        autoComplete="off"
+                        value={field.value || ''}
+                        className={buildCustomerInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('taxNumber'))}
+                        placeholder={tf('taxNumberPlaceholder')}
+                        onFocus={() => blockUntilNameFilled('taxNumber')}
+                        onChange={(event) =>
+                          handleDigitsFieldChange(
+                            'taxNumber',
+                            event.target.value,
+                            10,
+                            tf('taxNumberExactLength'),
+                            field.onChange
+                          )
+                        }
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
-                <FormField control={form.control} name="taxOffice" render={({ field }) => (
+                <FormField control={form.control} name="taxOffice" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.taxOffice')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.taxOfficePlaceholderExample')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{tf('taxOffice')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ''}
+                        className={buildCustomerInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('taxOffice'))}
+                        placeholder={tf('taxOfficePlaceholderExample')}
+                        onFocus={() => blockUntilNameFilled('taxOffice')}
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
-                <FormField control={form.control} name="tcknNumber" render={({ field }) => (
+                <FormField control={form.control} name="tcknNumber" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.tcknNumber')}</FormLabel>
-                    <FormControl><Input {...field} maxLength={11} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.tcknPlaceholderExample')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{tf('tcknNumber')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        inputMode="numeric"
+                        autoComplete="off"
+                        value={field.value || ''}
+                        className={buildCustomerInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('tcknNumber'))}
+                        placeholder={tf('tcknPlaceholderExample')}
+                        onFocus={() => blockUntilNameFilled('tcknNumber')}
+                        onChange={(event) =>
+                          handleDigitsFieldChange(
+                            'tcknNumber',
+                            event.target.value,
+                            11,
+                            tf('tcknNumberExactLength'),
+                            field.onChange
+                          )
+                        }
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
-                <FormField control={form.control} name="email" render={({ field }) => (
+                <FormField control={form.control} name="email" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Mail size={16} className="text-pink-500" />{t('customerManagement.form.email')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.emailPlaceholderExample')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><Mail size={16} className="text-pink-500" />{tf('email')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="email"
+                        autoComplete="email"
+                        value={field.value || ''}
+                        className={buildCustomerInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('email'))}
+                        placeholder={tf('emailPlaceholderExample')}
+                        onFocus={() => blockUntilNameFilled('email')}
+                        onChange={(event) => {
+                          field.onChange(event.target.value);
+                          if (form.formState.errors.email?.type === 'server') {
+                            form.clearErrors('email');
+                          }
+                        }}
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
-                <FormField control={form.control} name="website" render={({ field }) => (
+                <FormField control={form.control} name="website" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Globe size={16} className="text-pink-500" />{t('customerManagement.form.website')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.websitePlaceholderExample')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><Globe size={16} className="text-pink-500" />{tf('website')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ''}
+                        className={buildCustomerInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('website'))}
+                        placeholder={tf('websitePlaceholderExample')}
+                        onFocus={() => blockUntilNameFilled('website')}
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
-                <FormField control={form.control} name="phone" render={({ field }) => (
+                <FormField control={form.control} name="phone" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{t('customerManagement.form.phone')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.phonePlaceholderExample')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{tf('phone')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        inputMode="numeric"
+                        autoComplete="tel"
+                        value={field.value || ''}
+                        className={buildCustomerInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('phone'))}
+                        placeholder={tf('phonePlaceholderExample')}
+                        onFocus={() => blockUntilNameFilled('phone')}
+                        onChange={(event) =>
+                          handleDigitsFieldChange(
+                            'phone',
+                            event.target.value,
+                            20,
+                            tf('phoneMaxLength'),
+                            field.onChange
+                          )
+                        }
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
-                <FormField control={form.control} name="phone2" render={({ field }) => (
+                <FormField control={form.control} name="phone2" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{t('customerManagement.form.phone2')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.phone2PlaceholderExample')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{tf('phone2')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        inputMode="numeric"
+                        autoComplete="tel"
+                        value={field.value || ''}
+                        className={buildCustomerInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('phone2'))}
+                        placeholder={tf('phone2PlaceholderExample')}
+                        onFocus={() => blockUntilNameFilled('phone2')}
+                        onChange={(event) =>
+                          handleDigitsFieldChange(
+                            'phone2',
+                            event.target.value,
+                            20,
+                            tf('phone2MaxLength'),
+                            field.onChange
+                          )
+                        }
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
                 <FormField control={form.control} name="countryId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.country')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('country')}</FormLabel>
                     <VoiceSearchCombobox
                       options={countryDropdown.options}
                       value={field.value ? String(field.value) : ''}
@@ -433,7 +534,7 @@ export function CustomerForm({
                       hasNextPage={countryDropdown.hasNextPage}
                       isLoading={countryDropdown.isLoading}
                       isFetchingNextPage={countryDropdown.isFetchingNextPage}
-                      placeholder={t('customerManagement.form.countryPlaceholder')}
+                      placeholder={tf('countryPlaceholder')}
                       searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
                     />
@@ -443,7 +544,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="cityId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.city')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('city')}</FormLabel>
                     <VoiceSearchCombobox
                       options={cityDropdown.options}
                       value={field.value ? String(field.value) : ''}
@@ -456,7 +557,7 @@ export function CustomerForm({
                       hasNextPage={cityDropdown.hasNextPage}
                       isLoading={cityDropdown.isLoading}
                       isFetchingNextPage={cityDropdown.isFetchingNextPage}
-                      placeholder={t('customerManagement.form.cityPlaceholder')}
+                      placeholder={tf('cityPlaceholder')}
                       searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
                       disabled={!selectedCountryId}
@@ -467,7 +568,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="districtId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.district')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('district')}</FormLabel>
                     <VoiceSearchCombobox
                       options={districtDropdown.options}
                       value={field.value ? String(field.value) : ''}
@@ -477,7 +578,7 @@ export function CustomerForm({
                       hasNextPage={districtDropdown.hasNextPage}
                       isLoading={districtDropdown.isLoading}
                       isFetchingNextPage={districtDropdown.isFetchingNextPage}
-                      placeholder={t('customerManagement.form.districtPlaceholder')}
+                      placeholder={tf('districtPlaceholder')}
                       searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
                       disabled={!selectedCityId}
@@ -488,7 +589,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="creditLimit" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><CreditCard size={16} className="text-pink-500" />{t('customerManagement.form.creditLimit')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><CreditCard size={16} className="text-pink-500" />{tf('creditLimit')}</FormLabel>
                     <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(e.target.valueAsNumber || 0)} className={INPUT_STYLE} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -496,19 +597,19 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="groupCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{t('customerManagement.form.groupCode')}</FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={t('customerManagement.form.groupCodePlaceholder')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{tf('groupCode')}</FormLabel>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={tf('groupCodePlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
                 <FormField control={form.control} name="defaultShippingAddressId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.defaultShippingAddress')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('defaultShippingAddress')}</FormLabel>
                     <Select onValueChange={(value) => { const numericValue = Number(value); field.onChange(numericValue > 0 ? numericValue : null); }} value={field.value ? String(field.value) : ''} disabled={!customer?.id}>
-                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={t('customerManagement.form.selectDefaultShippingAddress')} /></SelectTrigger></FormControl>
+                      <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={tf('selectDefaultShippingAddress')} /></SelectTrigger></FormControl>
                       <SelectContent>
-                        <SelectItem value="0">{t('customerManagement.form.none')}</SelectItem>
+                        <SelectItem value="0">{tf('none')}</SelectItem>
                         {shippingAddresses.map((address) => <SelectItem key={address.id} value={String(address.id)}>{address.name || address.address}</SelectItem>)}
                       </SelectContent>
                     </Select>
@@ -518,16 +619,16 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="address" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{t('customerManagement.form.address')}</FormLabel>
-                    <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[100px] h-auto py-3 resize-none`} placeholder={t('customerManagement.form.addressPlaceholder')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('address')}</FormLabel>
+                    <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[100px] h-auto py-3 resize-none`} placeholder={tf('addressPlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
 
                 <FormField control={form.control} name="notes" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{t('customerManagement.form.notes')}</FormLabel>
-                    <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[90px] h-auto py-3 resize-none`} placeholder={t('customerManagement.form.notesPlaceholder')} /></FormControl>
+                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{tf('notes')}</FormLabel>
+                    <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[90px] h-auto py-3 resize-none`} placeholder={tf('notesPlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />
@@ -544,15 +645,15 @@ export function CustomerForm({
             disabled={isLoading}
             className="w-full sm:w-auto h-12 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold transition-all"
           >
-            {t('customerManagement.form.cancel')}
+            {tf('cancel')}
           </Button>
           <Button
             type="submit"
             form="customer-form"
-            disabled={isLoading || !isFormValid}
+            disabled={isLoading}
             className="w-full sm:w-auto h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-black rounded-xl shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
-            {isLoading ? t('customerManagement.form.saving') : t('customerManagement.form.save')}
+            {isLoading ? tf('saving') : tf('save')}
           </Button>
         </DialogFooter>
       </DialogContent>

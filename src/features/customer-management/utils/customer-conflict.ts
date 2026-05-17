@@ -1,4 +1,15 @@
 import { isAxiosError } from 'axios';
+import type { CustomerFormData } from '../types/customer-types';
+
+export const CONFLICT_API_FIELD_TO_FORM: Record<string, keyof CustomerFormData> = {
+  TaxNumber: 'taxNumber',
+  TcknNumber: 'tcknNumber',
+  CustomerCode: 'customerCode',
+  CustomerName: 'name',
+  Email: 'email',
+  Phone1: 'phone',
+  Phone2: 'phone2',
+};
 
 export interface CustomerDuplicateConflict {
   customerId: number;

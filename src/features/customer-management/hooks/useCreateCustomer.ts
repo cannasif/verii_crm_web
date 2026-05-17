@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { customerApi } from '../api/customer-api';
+import { extractCustomerConflictPayload } from '../utils/customer-conflict';
 import { queryKeys, CUSTOMER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import type { CreateCustomerDto } from '../types/customer-types';
 
@@ -22,8 +23,12 @@ export const useCreateCustomer = () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.stats() });
       toast.success(t('messages.createSuccess'));
     },
-    onError: (error: Error) => {
-      toast.error(error.message || t('messages.createError'));
+    onError: (error: unknown) => {
+      if (extractCustomerConflictPayload(error)) {
+        return;
+      }
+      const message = error instanceof Error ? error.message : t('messages.createError');
+      toast.error(message || t('messages.createError'));
     },
   });
 };
