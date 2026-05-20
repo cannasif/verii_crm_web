@@ -102,6 +102,7 @@
     "unknown": "Unknown"
   },
   "lines": {
+    "badgeCount": "LINE",
     "title": "Pricing Rule Lines",
     "add": "Add Line",
     "empty": "No lines added yet",
@@ -138,7 +139,7 @@
   },
   "card": {
     "customer": "Customer",
-    "lines": "line",
+    "lines": "LINES",
     "salesmen": "salesman",
     "vatIncluded": "VAT Included"
   },
@@ -185,7 +186,7 @@
         "stock": "Stock Info",
         "pricing": "Pricing Info"
       },
-      "badgeCount": "Line",
+      "badgeCount": "LINE",
       "createTitle": "Add Line",
       "editTitle": "Edit Line",
       "dialogDescription": "Enter pricing rule line information",

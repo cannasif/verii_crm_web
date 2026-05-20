@@ -8,11 +8,11 @@
     "empty": "Aucune règle de prix définie pour le moment"
   },
   "table": {
-    "ruleCode": "Code Règle",
-    "ruleName": "Nom Règle",
-    "ruleType": "Type Règle",
-    "validFrom": "Valide Du",
-    "validTo": "Valide Au",
+    "ruleCode": "Code de la Règle",
+    "ruleName": "Nom de la Règle",
+    "ruleType": "Type de Règle",
+    "validFrom": "Valide à Partir De",
+    "validTo": "Valide Jusqu'à",
     "customer": "Client",
     "currency": "Devise",
     "status": "Statut",
@@ -102,6 +102,7 @@
     "unknown": "Inconnu"
   },
   "lines": {
+    "badgeCount": "LIGNE",
     "title": "Lignes de Règle de Prix",
     "add": "Ajouter Ligne",
     "empty": "Aucune ligne ajoutée pour le moment",
@@ -138,7 +139,7 @@
   },
   "card": {
     "customer": "Client",
-    "lines": "lignes",
+    "lines": "LIGNES",
     "salesmen": "vendeurs",
     "vatIncluded": "TVA Incluse"
   },
@@ -185,7 +186,7 @@
         "stock": "Infos Stock",
         "pricing": "Infos Prix"
       },
-      "badgeCount": "Ligne",
+      "badgeCount": "LIGNE",
       "createTitle": "Ajouter Ligne",
       "editTitle": "Modifier Ligne",
       "dialogDescription": "Saisissez les informations de la ligne de règle de prix",

@@ -1300,6 +1300,7 @@
     "sync": "Senkronize Et",
     "success": "Senkronizasyon başarılı",
     "error": "Senkronizasyon başarısız",
+    "workspaceIdRequired": "Çalışma Alanı ID zorunludur",
     "totalRemote": "Uzak Toplam",
     "created": "Oluşturulan",
     "updated": "Güncellenen",

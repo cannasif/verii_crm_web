@@ -18,13 +18,13 @@
     "startDate": "تاريخ البدء",
     "endDate": "تاريخ الانتهاء",
     "actions": "إجراءات",
-    "ruleCode": "Rule Code",
-    "ruleName": "Rule Name",
-    "ruleType": "Rule Type",
-    "validFrom": "Valid From",
-    "validTo": "Valid To",
-    "customer": "Customer",
-    "currency": "Currency"
+    "ruleCode": "رمز القاعدة",
+    "ruleName": "اسم القاعدة",
+    "ruleType": "نوع القاعدة",
+    "validFrom": "صالح من",
+    "validTo": "صالح إلى",
+    "customer": "العميل",
+    "currency": "العملة"
   },
   "form": {
     "name": "اسم القاعدة",
@@ -128,6 +128,7 @@
     "unknown": "غير معروف"
   },
   "lines": {
+    "badgeCount": "صفوف",
     "title": "البنود",
     "add": "إضافة بند",
     "empty": "لا توجد بنود",
@@ -164,7 +165,7 @@
   },
   "card": {
     "customer": "العميل",
-    "lines": "البنود",
+    "lines": "صفوف",
     "salesmen": "المندوبون",
     "vatIncluded": "ضريبة القيمة المضافة مشمولة"
   },
@@ -211,7 +212,7 @@
         "stock": "معلومات المخزون",
         "pricing": "معلومات التسعير"
       },
-      "badgeCount": "بند",
+      "badgeCount": "صفوف",
       "createTitle": "إضافة بند",
       "editTitle": "تعديل بند",
       "dialogDescription": "أدخل معلومات بند قاعدة التسعير",

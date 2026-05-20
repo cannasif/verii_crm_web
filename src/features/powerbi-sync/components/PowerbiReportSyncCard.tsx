@@ -11,11 +11,21 @@ export function PowerbiReportSyncCard(): ReactElement {
   const { t } = useTranslation();
   const [workspaceId, setWorkspaceId] = useState('');
   const [lastResult, setLastResult] = useState<PowerBIReportSyncResultDto | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
   const mutation = usePowerbiReportSyncMutation();
 
   const handleSync = (): void => {
     setLastResult(null);
-    mutation.mutate(workspaceId.trim() || undefined, {
+    setLocalError(null);
+    mutation.reset();
+
+    const trimmedId = workspaceId.trim();
+    if (!trimmedId) {
+      setLocalError('powerbiSync.workspaceIdRequired');
+      return;
+    }
+
+    mutation.mutate(trimmedId, {
       onSuccess: (data) => {
         setLastResult(data);
       },
@@ -37,7 +47,10 @@ export function PowerbiReportSyncCard(): ReactElement {
             id="powerbi-sync-workspace"
             placeholder={t('powerbiSync.workspaceIdPlaceholder')}
             value={workspaceId}
-            onChange={(e) => setWorkspaceId(e.target.value)}
+            onChange={(e) => {
+              setWorkspaceId(e.target.value);
+              if (localError) setLocalError(null);
+            }}
             className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono text-sm"
           />
         </div>
@@ -63,9 +76,9 @@ export function PowerbiReportSyncCard(): ReactElement {
           )}
         </div>
 
-        {mutation.isError && (
+        {(localError || mutation.isError) && (
           <div className="flex items-start gap-3 rounded-2xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/5 px-4 py-3 text-sm text-red-600 dark:text-red-400 font-medium">
-            {mutation.error?.message ?? t('powerbiSync.error')}
+            {localError ? t(localError) : (mutation.error?.message ?? t('powerbiSync.error'))}
           </div>
         )}
 

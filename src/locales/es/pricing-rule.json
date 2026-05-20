@@ -18,13 +18,13 @@
     "startDate": "Fecha de Inicio",
     "endDate": "Fecha de Finalización",
     "actions": "Acciones",
-    "ruleCode": "Rule Code",
-    "ruleName": "Rule Name",
-    "ruleType": "Rule Type",
-    "validFrom": "Valid From",
-    "validTo": "Valid To",
-    "customer": "Customer",
-    "currency": "Currency"
+    "ruleCode": "Código de Regla",
+    "ruleName": "Nombre de Regla",
+    "ruleType": "Tipo de Regla",
+    "validFrom": "Válido Desde",
+    "validTo": "Válido Hasta",
+    "customer": "Cliente",
+    "currency": "Moneda"
   },
   "form": {
     "name": "Nombre de la Regla",
@@ -128,6 +128,7 @@
     "unknown": "Desconocido"
   },
   "lines": {
+    "badgeCount": "LÍNEA",
     "title": "Líneas",
     "add": "Agregar línea",
     "empty": "No hay líneas",
@@ -164,7 +165,7 @@
   },
   "card": {
     "customer": "Cliente",
-    "lines": "Líneas",
+    "lines": "LÍNEAS",
     "salesmen": "Vendedores",
     "vatIncluded": "IVA incluido"
   },
@@ -211,7 +212,7 @@
         "stock": "Info Stock",
         "pricing": "Info Precios"
       },
-      "badgeCount": "Línea",
+      "badgeCount": "LÍNEA",
       "createTitle": "Añadir Línea",
       "editTitle": "Editar Línea",
       "dialogDescription": "Introduzca la información de la línea de la regla de precios",

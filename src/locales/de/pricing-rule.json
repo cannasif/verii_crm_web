@@ -11,8 +11,8 @@
     "ruleCode": "Regelcode",
     "ruleName": "Regelname",
     "ruleType": "Regeltyp",
-    "validFrom": "Valid From",
-    "validTo": "Valid To",
+    "validFrom": "Gültig von",
+    "validTo": "Gültig bis",
     "customer": "Kunde",
     "currency": "Währung",
     "status": "Status",
@@ -102,6 +102,7 @@
     "unknown": "Unbekannt"
   },
   "lines": {
+    "badgeCount": "ZEILEN",
     "title": "Positionen",
     "add": "Hinzufügen Line",
     "empty": "Keine Positionen",
@@ -138,7 +139,7 @@
   },
   "card": {
     "customer": "Kunde",
-    "lines": "Positionen",
+    "lines": "ZEILEN",
     "salesmen": "Verkäufer",
     "vatIncluded": "MwSt. enthalten"
   },
@@ -185,7 +186,7 @@
         "stock": "Bestandsinformationen",
         "pricing": "Preisinformationen"
       },
-      "badgeCount": "Zeile",
+      "badgeCount": "ZEILE",
       "createTitle": "Zeile hinzufügen",
       "editTitle": "Zeile bearbeiten",
       "dialogDescription": "Geben Sie die Zeileninformationen für die Preisregel ein",

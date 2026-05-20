@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,18 +14,24 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+  DataTableActionBar,
+  DataTableGrid,
+  ManagementDataTableChrome,
+  type DataTableGridColumn,
+} from '@/components/shared';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+} from '@/lib/management-list-layout';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Pencil, Trash2, ArrowLeft, TableProperties, Sparkles, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, ArrowLeft, TableProperties, X, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { DocumentRuleType, type PdfTablePresetCreateDto, type PdfTablePresetDto } from '@/features/pdf-report';
 import { usePdfTablePresetList } from '../hooks/usePdfTablePresetList';
 import { useCreatePdfTablePreset } from '../hooks/useCreatePdfTablePreset';
@@ -53,13 +59,30 @@ interface PresetFormState {
   isActive: boolean;
 }
 
-const RULE_TYPE_LABELS: Record<DocumentRuleType, string> = {
-  [DocumentRuleType.Demand]: 'Demand',
-  [DocumentRuleType.Quotation]: 'Quotation',
-  [DocumentRuleType.Order]: 'Order',
-  [DocumentRuleType.FastQuotation]: 'Fast Quotation',
-  [DocumentRuleType.Activity]: 'Activity',
+const RULE_TYPE_LABEL_KEYS: Record<DocumentRuleType, string> = {
+  [DocumentRuleType.Demand]: 'reportDesigner.ruleType.demand',
+  [DocumentRuleType.Quotation]: 'reportDesigner.ruleType.quotation',
+  [DocumentRuleType.Order]: 'reportDesigner.ruleType.order',
+  [DocumentRuleType.FastQuotation]: 'reportDesigner.ruleType.fastQuotation',
+  [DocumentRuleType.Activity]: 'reportDesigner.ruleType.activity',
 };
+
+type PdfTablePresetColumnKey =
+  | 'id'
+  | 'name'
+  | 'key'
+  | 'ruleType'
+  | 'columnCount'
+  | 'isActive';
+
+const TABLE_COLUMNS: Array<{ key: PdfTablePresetColumnKey; labelKey: string; className?: string; sortable?: boolean }> = [
+  { key: 'id', labelKey: 'pdfReportDesigner.tablePresetManagement.id', className: 'w-[80px] font-mono text-slate-500', sortable: true },
+  { key: 'name', labelKey: 'pdfReportDesigner.tablePresetManagement.name', className: 'w-[250px]', sortable: true },
+  { key: 'key', labelKey: 'pdfReportDesigner.tablePresetManagement.key', className: 'w-[150px]', sortable: true },
+  { key: 'ruleType', labelKey: 'pdfReportDesigner.tablePresetManagement.documentType', className: 'w-[150px]', sortable: true },
+  { key: 'columnCount', labelKey: 'pdfReportDesigner.tablePresetManagement.columnCount', className: 'w-[100px] text-center', sortable: true },
+  { key: 'isActive', labelKey: 'pdfReportDesigner.tablePresetManagement.status', className: 'w-[120px]', sortable: true },
+] as const;
 
 function toFormState(preset?: PdfTablePresetDto | null): PresetFormState {
   if (!preset) {
@@ -84,6 +107,7 @@ function toFormState(preset?: PdfTablePresetDto | null): PresetFormState {
 }
 
 export function PdfTablePresetManagementPage(): ReactElement {
+  const { t } = useTranslation(['report-designer', 'common']);
   const { data, isLoading } = usePdfTablePresetList();
   const presets = data?.items ?? [];
   const createMutation = useCreatePdfTablePreset();
@@ -93,10 +117,59 @@ export function PdfTablePresetManagementPage(): ReactElement {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPreset, setEditingPreset] = useState<PdfTablePresetDto | null>(null);
   const [formState, setFormState] = useState<PresetFormState>(() => toFormState());
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState<PdfTablePresetColumnKey>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(() => TABLE_COLUMNS.map(c => c.key));
+  const [columnOrder, setColumnOrder] = useState<string[]>(() => TABLE_COLUMNS.map(c => c.key));
+
+  useEffect(() => {
+    setPageNumber(1);
+  }, [searchTerm]);
+
+  const columns = useMemo<DataTableGridColumn<PdfTablePresetColumnKey>[]>(
+    () =>
+      TABLE_COLUMNS.map((column) => ({
+        key: column.key,
+        label: t(column.labelKey),
+        cellClassName: column.className,
+        sortable: column.sortable,
+      })),
+    [t]
+  );
+
+  const filteredPresets = useMemo(() => {
+    if (!searchTerm.trim()) return presets;
+    const lower = searchTerm.toLowerCase();
+    return presets.filter(
+      (p) =>
+        p.name.toLowerCase().includes(lower) ||
+        p.key.toLowerCase().includes(lower) ||
+        (RULE_TYPE_LABEL_KEYS[p.ruleType] && t(RULE_TYPE_LABEL_KEYS[p.ruleType]).toLowerCase().includes(lower))
+    ).sort((a, b) => {
+      const getVal = (item: PdfTablePresetDto, key: PdfTablePresetColumnKey) => {
+        if (key === 'columnCount') return item.columns.length;
+        return item[key as keyof PdfTablePresetDto];
+      };
+      const aVal = getVal(a, sortBy);
+      const bVal = getVal(b, sortBy);
+      if (aVal === bVal) return 0;
+      const factor = sortDirection === 'asc' ? 1 : -1;
+      return (aVal ?? '') < (bVal ?? '') ? -1 * factor : 1 * factor;
+    });
+  }, [presets, searchTerm, t, sortBy, sortDirection]);
+
+  const renderSortIcon = (key: PdfTablePresetColumnKey) => {
+    if (sortBy !== key) return <ArrowUpDown className="ml-1 h-4 w-4 opacity-60" />;
+    return sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />;
+  };
 
   const dialogTitle = useMemo(
-    () => (editingPreset ? 'Table preset duzenle' : 'Table preset olustur'),
-    [editingPreset]
+    () => (editingPreset ? t('pdfReportDesigner.tablePresetManagement.editTitle') : t('pdfReportDesigner.tablePresetManagement.createTitle')),
+    [editingPreset, t]
   );
 
   const openCreate = (): void => {
@@ -127,16 +200,16 @@ export function PdfTablePresetManagementPage(): ReactElement {
 
       if (editingPreset) {
         await updateMutation.mutateAsync({ id: editingPreset.id, data: payload });
-        toast.success('Preset guncellendi');
+        toast.success(t('pdfReportDesigner.tablePresetManagement.successUpdate'));
       } else {
         await createMutation.mutateAsync(payload);
-        toast.success('Preset olusturuldu');
+        toast.success(t('pdfReportDesigner.tablePresetManagement.successCreate'));
       }
 
       setDialogOpen(false);
     } catch (error) {
-      toast.error('Preset kaydedilemedi', {
-        description: error instanceof Error ? error.message : 'JSON veya alanlar gecersiz',
+      toast.error(t('pdfReportDesigner.tablePresetManagement.errorSave'), {
+        description: error instanceof Error ? error.message : t('pdfReportDesigner.tablePresetManagement.invalidJson'),
       });
     }
   };
@@ -144,16 +217,16 @@ export function PdfTablePresetManagementPage(): ReactElement {
   const handleDelete = async (preset: PdfTablePresetDto): Promise<void> => {
     try {
       await deleteMutation.mutateAsync(preset.id);
-      toast.success('Preset silindi');
+      toast.success(t('pdfReportDesigner.tablePresetManagement.successDelete'));
     } catch (error) {
-      toast.error('Preset silinemedi', {
+      toast.error(t('pdfReportDesigner.tablePresetManagement.errorDelete'), {
         description: error instanceof Error ? error.message : undefined,
       });
     }
   };
 
   return (
-    <div className="flex flex-col gap-6 p-8 relative min-h-screen bg-stone-50/50 dark:bg-[#0f0a15]">
+    <div className="flex flex-col gap-6 p-2 relative ">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild className="size-9 rounded-xl hover:bg-white dark:hover:bg-white/5">
@@ -165,11 +238,11 @@ export function PdfTablePresetManagementPage(): ReactElement {
             <div className="flex items-center gap-2">
               <TableProperties className="size-5 text-pink-500" />
               <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Table Preset Library
+                {t('pdfReportDesigner.tablePresetManagement.title')}
               </h1>
             </div>
             <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
-              Builder tablolari icin server-side tekrar kullanilabilir preset kaynagi.
+              {t('pdfReportDesigner.tablePresetManagement.description')}
             </p>
           </div>
         </div>
@@ -178,94 +251,136 @@ export function PdfTablePresetManagementPage(): ReactElement {
           className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-5 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus className="size-4 mr-2" />
-          Yeni preset
+          {t('pdfReportDesigner.tablePresetManagement.newPreset')}
         </Button>
       </div>
 
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200/60 bg-white/70 shadow-xl ring-1 ring-slate-200/50 backdrop-blur-xl dark:border-white/10 dark:bg-white/5 dark:shadow-none dark:ring-0">
-        <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center p-20 gap-3">
-            <Sparkles className="size-8 text-pink-400 animate-pulse" />
-            <div className="text-sm font-medium text-slate-400">Yukleniyor...</div>
+      <div className={MANAGEMENT_LIST_CARD_CLASSNAME + ' rounded-xl overflow-hidden'}>
+        <div className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <div className="flex items-center justify-between mb-2">
+            <h2 className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME + ' font-bold'}>
+              {t('pdfReportDesigner.tablePresetManagement.title')}
+            </h2>
           </div>
-        ) : presets.length === 0 ? (
-          <div className="p-20 text-center">
-            <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-white/5">
-              <TableProperties className="size-6" />
-            </div>
-            <div className="text-sm font-bold text-slate-700 dark:text-slate-200">Henuz preset yok</div>
-            <div className="mt-1 text-xs text-slate-400">Yeni bir tablo sablonu olusturarak basla.</div>
-          </div>
-        ) : (
-          <div className="relative z-10 overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-b border-slate-200/60 bg-stone-50/50 hover:bg-stone-50/80 dark:border-white/10 dark:bg-white/5">
-                  <TableHead className="w-[80px] font-bold text-slate-600 dark:text-slate-400">ID</TableHead>
-                  <TableHead className="font-bold text-slate-600 dark:text-slate-400">Ad</TableHead>
-                  <TableHead className="font-bold text-slate-600 dark:text-slate-400">Key</TableHead>
-                  <TableHead className="font-bold text-slate-600 dark:text-slate-400">Belge tipi</TableHead>
-                  <TableHead className="font-bold text-slate-600 dark:text-slate-400 text-center">Sutun</TableHead>
-                  <TableHead className="font-bold text-slate-600 dark:text-slate-400">Durum</TableHead>
-                  <TableHead className="text-right font-bold text-slate-600 dark:text-slate-400">Islem</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {presets.map((preset) => (
-                  <TableRow key={preset.id} className="border-b border-slate-100/60 transition-colors hover:bg-slate-50/50 dark:border-white/5 dark:hover:bg-white/5">
-                    <TableCell className="font-mono text-xs text-slate-400">#{preset.id}</TableCell>
-                    <TableCell className="font-bold text-slate-700 dark:text-slate-200">{preset.name}</TableCell>
-                    <TableCell>
+          <DataTableActionBar
+            pageKey="pdf-table-presets"
+            columns={columns.map(c => ({ key: c.key as string, label: c.label }))}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={setColumnOrder}
+            searchValue={searchTerm}
+            onSearchChange={setSearchTerm}
+            searchPlaceholder={t('reportDesigner.list.searchPlaceholder')}
+            translationNamespace="report-designer"
+            exportFileName="pdf-table-presets"
+            exportColumns={columns.map(c => ({ key: c.key as string, label: c.label }))}
+            exportRows={filteredPresets as unknown as Record<string, unknown>[]}
+            filterColumns={[]}
+            onFilterLogicChange={() => { }}
+            onClearFilters={() => { }}
+            defaultFilterColumn="name"
+            draftFilterRows={[]}
+            onDraftFilterRowsChange={() => { }}
+            onApplyFilters={() => { }}
+          />
+        </div>
+        <div className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+            <ManagementDataTableChrome>
+              <DataTableGrid<PdfTablePresetDto, PdfTablePresetColumnKey>
+                centerColumnHeaders
+                columns={columns}
+                visibleColumnKeys={columnOrder.filter(k => visibleColumns.includes(k)) as PdfTablePresetColumnKey[]}
+                rows={filteredPresets.slice((pageNumber - 1) * pageSize, pageNumber * pageSize)}
+                rowKey={(row) => row.id}
+                sortBy={sortBy}
+                sortDirection={sortDirection}
+                onSort={(key) => {
+                  if (sortBy === key) {
+                    setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+                  } else {
+                    setSortBy(key);
+                    setSortDirection('asc');
+                  }
+                }}
+                renderSortIcon={renderSortIcon}
+                renderCell={(preset, key) => {
+                  if (key === 'id') return preset.id;
+                  if (key === 'name') return <span className="font-bold text-slate-700 dark:text-slate-200">{preset.name}</span>;
+                  if (key === 'key') {
+                    return (
                       <code className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] text-slate-600 dark:bg-white/10 dark:text-slate-400">
                         {preset.key}
                       </code>
-                    </TableCell>
-                    <TableCell>
+                    );
+                  }
+                  if (key === 'ruleType') {
+                    return (
                       <Badge variant="outline" className="bg-white/50 text-[10px] font-bold uppercase tracking-wider dark:bg-white/5">
-                        {RULE_TYPE_LABELS[preset.ruleType] ?? String(preset.ruleType)}
+                        {t(RULE_TYPE_LABEL_KEYS[preset.ruleType] ?? String(preset.ruleType))}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-center font-bold text-slate-500">
-                      {preset.columns.length}
-                    </TableCell>
-                    <TableCell>
-                      {preset.isActive ? (
-                        <Badge className="bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400">
-                          Aktif
-                        </Badge>
-                      ) : (
-                        <Badge variant="secondary" className="bg-slate-100 text-slate-400 dark:bg-white/5 dark:text-slate-500">
-                          Pasif
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="inline-flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openEdit(preset)}
-                          className="size-8 rounded-lg text-slate-400 hover:bg-white hover:text-pink-500 dark:hover:bg-white/5"
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleDelete(preset)}
-                          className="size-8 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    );
+                  }
+                  if (key === 'columnCount') return preset.columns.length;
+                  if (key === 'isActive') {
+                    return preset.isActive ? (
+                      <Badge className="bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400">
+                        {t('pdfReportDesigner.statusActive')}
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary" className="bg-slate-100 text-slate-400 dark:bg-white/5 dark:text-slate-500">
+                        {t('pdfReportDesigner.statusInactive')}
+                      </Badge>
+                    );
+                  }
+                  return '—';
+                }}
+                isLoading={isLoading}
+                emptyText={searchTerm ? t('common.noResults') : t('pdfReportDesigner.tablePresetManagement.noPresets')}
+                minTableWidthClassName="min-w-[800px]"
+                showActionsColumn
+                actionsHeaderLabel={t('common.actions')}
+                renderActionsCell={(preset) => (
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => openEdit(preset)}
+                      className="size-8 rounded-lg text-slate-400 hover:bg-white hover:text-pink-500 dark:hover:bg-white/5"
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleDelete(preset)}
+                      className="size-8 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10"
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
+                )}
+                pageSize={pageSize}
+                pageSizeOptions={[10, 20, 50]}
+                onPageSizeChange={setPageSize}
+                pageNumber={pageNumber}
+                totalPages={Math.ceil(filteredPresets.length / pageSize) || 1}
+                hasPreviousPage={pageNumber > 1}
+                hasNextPage={pageNumber < Math.ceil(filteredPresets.length / pageSize)}
+                onPreviousPage={() => setPageNumber(prev => Math.max(1, prev - 1))}
+                onNextPage={() => setPageNumber(prev => prev + 1)}
+                previousLabel={t('common.previous')}
+                nextLabel={t('common.next')}
+                paginationInfoText={t('common.paginationInfo', {
+                  start: Math.min(filteredPresets.length, (pageNumber - 1) * pageSize + 1),
+                  end: Math.min(filteredPresets.length, pageNumber * pageSize),
+                  total: filteredPresets.length,
+                })}
+              />
+            </ManagementDataTableChrome>
           </div>
-        )}
+        </div>
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -275,7 +390,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
           <div className="relative z-10">
             <DialogClose className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full border border-slate-200/60 bg-white/50 text-slate-400 transition-all duration-300 hover:bg-white hover:text-pink-500 hover:rotate-90 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-pink-400">
               <X className="size-4" />
-              <span className="sr-only">Kapat</span>
+              <span className="sr-only">{t('pdfReportDesigner.tablePresetManagement.close')}</span>
             </DialogClose>
 
             <DialogHeader className="px-6 pt-6">
@@ -286,7 +401,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                 <div>
                   <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{dialogTitle}</DialogTitle>
                   <DialogDescription className="text-xs font-medium text-slate-500">
-                    Kolonlari ve tablo ayarlari alanini JSON formatinda duzenleyin.
+                    {t('pdfReportDesigner.tablePresetManagement.dialogDescription')}
                   </DialogDescription>
                 </div>
               </div>
@@ -295,7 +410,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
             <div className="grid gap-4 p-6 overflow-y-auto max-h-[70vh]">
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-1.5">
-                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Ad</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t('pdfReportDesigner.tablePresetManagement.name')}</Label>
                   <Input
                     value={formState.name}
                     onChange={(e) => setFormState((s) => ({ ...s, name: e.target.value }))}
@@ -303,7 +418,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                   />
                 </div>
                 <div className="grid gap-1.5">
-                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Key</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t('pdfReportDesigner.tablePresetManagement.key')}</Label>
                   <Input
                     value={formState.key}
                     onChange={(e) => setFormState((s) => ({ ...s, key: e.target.value }))}
@@ -314,7 +429,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-1.5">
-                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Belge tipi</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t('pdfReportDesigner.tablePresetManagement.documentType')}</Label>
                   <Select
                     value={String(formState.ruleType)}
                     onValueChange={(value) => setFormState((s) => ({ ...s, ruleType: Number(value) as DocumentRuleType }))}
@@ -323,16 +438,16 @@ export function PdfTablePresetManagementPage(): ReactElement {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value={String(DocumentRuleType.Demand)}>Demand</SelectItem>
-                      <SelectItem value={String(DocumentRuleType.Quotation)}>Quotation</SelectItem>
-                      <SelectItem value={String(DocumentRuleType.Order)}>Order</SelectItem>
-                      <SelectItem value={String(DocumentRuleType.FastQuotation)}>Fast Quotation</SelectItem>
-                      <SelectItem value={String(DocumentRuleType.Activity)}>Activity</SelectItem>
+                      {Object.entries(RULE_TYPE_LABEL_KEYS).map(([value, labelKey]) => (
+                        <SelectItem key={value} value={value}>
+                          {t(labelKey)}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="grid gap-1.5">
-                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Durum</Label>
+                  <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t('pdfReportDesigner.tablePresetManagement.status')}</Label>
                   <Select
                     value={formState.isActive ? 'active' : 'inactive'}
                     onValueChange={(value) => setFormState((s) => ({ ...s, isActive: value === 'active' }))}
@@ -341,15 +456,15 @@ export function PdfTablePresetManagementPage(): ReactElement {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active">Aktif</SelectItem>
-                      <SelectItem value="inactive">Pasif</SelectItem>
+                      <SelectItem value="active">{t('pdfReportDesigner.statusActive')}</SelectItem>
+                      <SelectItem value="inactive">{t('pdfReportDesigner.statusInactive')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
 
               <div className="grid gap-1.5">
-                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Columns JSON</Label>
+                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t('pdfReportDesigner.tablePresetManagement.columnsJson')}</Label>
                 <Textarea
                   value={formState.columnsJson}
                   onChange={(e) => setFormState((s) => ({ ...s, columnsJson: e.target.value }))}
@@ -358,7 +473,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Table Options JSON</Label>
+                <Label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t('pdfReportDesigner.tablePresetManagement.optionsJson')}</Label>
                 <Textarea
                   value={formState.optionsJson}
                   onChange={(e) => setFormState((s) => ({ ...s, optionsJson: e.target.value }))}
@@ -374,14 +489,14 @@ export function PdfTablePresetManagementPage(): ReactElement {
                 onClick={() => setDialogOpen(false)}
                 className="h-10 border-slate-200 bg-transparent px-6 font-bold text-slate-600 transition-all hover:bg-white dark:border-white/10 dark:text-slate-400"
               >
-                Vazgec
+                {t('pdfReportDesigner.tablePresetManagement.cancel')}
               </Button>
               <Button
                 onClick={handleSubmit}
                 disabled={createMutation.isPending || updateMutation.isPending}
                 className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.02] hover:from-pink-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
-                Kaydet
+                {t('pdfReportDesigner.tablePresetManagement.save')}
               </Button>
             </DialogFooter>
           </div>

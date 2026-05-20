@@ -1296,6 +1296,7 @@
     "sync": "Sync",
     "success": "Sync completed successfully",
     "error": "Sync failed",
+    "workspaceIdRequired": "Workspace ID is required",
     "totalRemote": "Total Remote",
     "created": "Created",
     "updated": "Updated",

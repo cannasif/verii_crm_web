@@ -392,14 +392,6 @@ export function PdfReportDesignerListPage(): ReactElement {
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
             {t('pdfReportDesigner.listDescription')}
           </p>
-          <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-            <Badge variant="secondary" className="bg-white/50 text-slate-500 ring-1 ring-slate-200/60 backdrop-blur-xs dark:bg-white/5 dark:text-slate-400 dark:ring-white/10">
-              {summaryText}
-            </Badge>
-            <Badge variant="secondary" className="bg-pink-500/5 text-pink-600 ring-1 ring-pink-500/20 backdrop-blur-xs dark:bg-pink-500/10 dark:text-pink-400">
-              {t('pdfReportDesigner.detailLoadedOnDemand')}
-            </Badge>
-          </div>
         </div>
         <div className="flex items-center gap-3">
           <Button
@@ -409,7 +401,7 @@ export function PdfReportDesignerListPage(): ReactElement {
           >
             <Link to="/pdf-report-designer/table-presets" className="inline-flex items-center gap-2">
               <TableProperties className="size-4 opacity-70" />
-              Table Presets
+              {t('pdfReportDesigner.tablePresets')}
             </Link>
           </Button>
           {canCreate ? (

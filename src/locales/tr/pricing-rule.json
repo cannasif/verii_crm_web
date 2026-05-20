@@ -55,7 +55,7 @@
         "stock": "Stok Bilgileri",
         "pricing": "Fiyat Bilgileri"
       },
-      "badgeCount": "Satır",
+      "badgeCount": "SATIR",
       "createTitle": "Satır Ekle",
       "editTitle": "Satırı Düzenle",
       "dialogDescription": "Fiyat kuralı satır bilgilerini girin",
@@ -186,6 +186,7 @@
     "unknown": "Bilinmiyor"
   },
   "lines": {
+    "badgeCount": "SATIR",
     "title": "Fiyat Kuralı Satırları",
     "add": "Satır Ekle",
     "empty": "Henüz satır eklenmedi",

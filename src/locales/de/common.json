@@ -918,6 +918,7 @@
     "sync": "Synchronisieren",
     "success": "Synchronisation erfolgreich",
     "error": "Synchronisation fehlgeschlagen",
+    "workspaceIdRequired": "Workspace-ID ist erforderlich",
     "totalRemote": "Gesamt Remote",
     "created": "Erstellt",
     "updated": "Aktualisiert",
@@ -986,8 +987,8 @@
     "approvalFlowManagement": "Approval Flow Management",
     "reportBuilder": "Berichte",
     "pdfBuilder": "PDF-Builder",
-    "powerbiConfiguration": "Power BI Configuration",
-    "powerbiReportsView": "Power BI Reports (View)",
+    "powerbiConfiguration": "PowerBI-Konfiguration",
+    "powerbiReportsView": "PowerBI-Berichte (Anzeigen)",
     "mailSettings": "Mail Settings",
     "documentSerialTypeManagement": "Document Serial Type Management",
     "salesTypeManagement": "Vertriebstyp-Verwaltung",
@@ -4497,7 +4498,8 @@
       "updateSuccess": "Berichtsdefinition aktualisiert",
       "updateError": "Aktualisierung fehlgeschlagen",
       "deleteSuccess": "Berichtsdefinition gelöscht",
-      "deleteError": "Konnte nicht gelöscht werden"
+      "deleteError": "Konnte nicht gelöscht werden",
+      "clientSecretInfo": "Der Client-Geheimschlüssel wird aus Sicherheitsgründen nur aus der Server-Umgebungsvariable gelesen."
     },
     "userGroup": {
       "edit": "Matching bearbeiten",
@@ -4528,7 +4530,7 @@
     "workspaceId": "Arbeitsbereichs-ID (GUID)",
     "apiBaseUrl": "API-Basis-URL",
     "scope": "Umfang",
-    "clientSecretInfo": "ClientSecret wird aus Sicherheitsgründen nur aus der Serverumgebungsvariablen gelesen.",
+    "clientSecretInfo": "Der Client-Geheimschlüssel wird aus Sicherheitsgründen nur aus der Server-Umgebungsvariable gelesen.",
     "update": "Aktualisieren",
     "create": "Speichern",
     "delete": "Löschen",
