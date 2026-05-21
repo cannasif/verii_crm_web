@@ -2,7 +2,7 @@ import { lazy, Suspense, type ReactElement, useCallback, useEffect, useMemo, use
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, Mail, PencilLine, Plus } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
@@ -18,6 +18,8 @@ import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import {
   DataTableGrid,
   DataTableActionBar,
+  DocumentListRowActions,
+  ErpIntegrationPill,
   ManagementDataTableChrome,
   type DataTableGridColumn,
 } from '@/components/shared';
@@ -365,15 +367,11 @@ export function DemandListPage(): ReactElement {
     if (key === 'Currency') return getCurrencyLabel(demand);
     if (key === 'GrandTotal') return getGrandTotalLabel(demand);
     if (key === 'IsERPIntegrated') {
-      const isIntegrated = demand.isERPIntegrated === true;
       return (
-        <span className={`inline-flex min-w-36 justify-center rounded-full px-2.5 py-1 text-xs font-semibold ${
-          isIntegrated
-            ? 'bg-emerald-100 text-emerald-700'
-            : 'bg-slate-100 text-slate-600'
-        }`}>
-          {getErpIntegrationLabel(isIntegrated)}
-        </span>
+        <ErpIntegrationPill
+          integrated={demand.isERPIntegrated === true}
+          label={getErpIntegrationLabel(demand.isERPIntegrated === true)}
+        />
       );
     }
     if (key === 'ERPIntegrationNumber') return demand.erpIntegrationNumber || '-';
@@ -432,49 +430,20 @@ export function DemandListPage(): ReactElement {
   };
 
   const renderActionsCell = (demand: DemandGetDto): ReactElement => (
-    <div className="flex items-center justify-end gap-2 opacity-100 transition-opacity">
-      <Button
-        variant="ghost"
-        size="icon"
-        title={t('list.detail', { defaultValue: 'Detay' })}
-        onClick={() => navigate(`/demands/${demand.id}`)}
-        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
-      >
-        <Edit2 className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        title={t('google-integration:mailDialog.openButton')}
-        onClick={(event) => handleOpenMailDialog(event, demand)}
-        className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
-      >
-        <Mail className="h-4 w-4" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        title={t('outlook-integration:mailDialog.openButton')}
-        onClick={(event) => handleOpenOutlookMailDialog(event, demand)}
-        className="h-8 w-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10"
-      >
-        <Mail className="h-4 w-4" />
-      </Button>
-      {(demand.status === 0 || demand.status === 3) && (
-        <Button
-          variant="ghost"
-          size="icon"
-          title={t('list.revise')}
-          onClick={(event) => {
-            void handleRevision(event, demand.id);
-          }}
-          disabled={createRevisionMutation.isPending}
-          className="h-8 w-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10"
-        >
-          <PencilLine className={createRevisionMutation.isPending ? 'h-4 w-4 animate-pulse' : 'h-4 w-4'} />
-        </Button>
-      )}
-    </div>
+    <DocumentListRowActions
+      detailLabel={t('list.detail', { defaultValue: 'Detay' })}
+      gmailLabel={t('google-integration:mailDialog.openButton')}
+      outlookLabel={t('outlook-integration:mailDialog.openButton')}
+      reviseLabel={t('list.revise', { defaultValue: 'Revize Et' })}
+      onDetail={() => navigate(`/demands/${demand.id}`)}
+      onGmail={(event) => handleOpenMailDialog(event, demand)}
+      onOutlook={(event) => handleOpenOutlookMailDialog(event, demand)}
+      onRevise={(event) => {
+        void handleRevision(event, demand.id);
+      }}
+      isRevisePending={createRevisionMutation.isPending}
+      showRevise={demand.status === 0 || demand.status === 3}
+    />
   );
 
   return (
