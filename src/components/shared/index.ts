@@ -20,3 +20,8 @@ export type { ProductSelectionResult } from './ProductSelectDialog';
 export { NotesDialog } from './NotesDialog';
 export type { NoteLine } from './NotesDialog';
 export { DescriptionCell } from './DescriptionCell';
+export { DocumentDetailPageHeader } from './DocumentDetailPageHeader';
+export type { DocumentDetailPageHeaderProps } from './DocumentDetailPageHeader';
+export { DocumentListRowActions } from './DocumentListRowActions';
+export type { DocumentListRowActionsProps } from './DocumentListRowActions';
+export { ErpIntegrationPill } from './ErpIntegrationPill';

@@ -62,6 +62,7 @@ export interface DataTableActionBarProps {
   refresh?: DataTableRefreshConfig;
   searchDebounceMs?: number;
   leftSlot?: React.ReactNode;
+  additionalFilterActions?: React.ReactNode;
 }
 
 export function DataTableActionBar({
@@ -94,6 +95,7 @@ export function DataTableActionBar({
   refresh,
   searchDebounceMs = 700,
   leftSlot,
+  additionalFilterActions,
 }: DataTableActionBarProps): ReactElement {
   const { t } = useTranslation([translationNamespace, 'common']);
   const MISSING_TRANSLATION = 'Çeviri eksik';
@@ -292,6 +294,7 @@ export function DataTableActionBar({
           </PopoverContent>
         </Popover>
 
+        {additionalFilterActions}
 
         <ColumnPreferencesPopover
           pageKey={pageKey}
