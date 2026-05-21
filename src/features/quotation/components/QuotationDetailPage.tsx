@@ -17,6 +17,7 @@ import { useCustomerOptions } from '@/features/customer-management/hooks/useCust
 import { useUIStore } from '@/stores/ui-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -634,21 +635,21 @@ export function QuotationDetailPage(): ReactElement {
 
   return (
     <div className="w-full space-y-8 relative pb-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            {t('detail.title', { offerNo: quotation.offerNo || `#${quotation.id}` })}
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            {t('detail.subtitle')}
-            {quotation.revisionNo != null && quotation.revisionNo !== '' && (
-              <span className="block mt-1">
+      <DocumentDetailPageHeader
+        title={t('detail.title', { offerNo: quotation.offerNo || `#${quotation.id}` })}
+        subtitle={
+          <>
+            <p>{t('detail.subtitle')}</p>
+            {quotation.revisionNo != null && quotation.revisionNo !== '' ? (
+              <p className="mt-1">
                 {t('detail.revisionNo')}: {quotation.revisionNo}
-              </span>
-            )}
-          </p>
-        </div>
-      </div>
+              </p>
+            ) : null}
+          </>
+        }
+        onBack={() => navigate('/quotations')}
+        backLabel={t('backToQuotations')}
+      />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="h-auto gap-1 overflow-x-auto rounded-xl border border-zinc-300/95 bg-zinc-100 p-1 shadow-none scrollbar-hide justify-start dark:border-zinc-800 dark:bg-black/90 dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] w-full">

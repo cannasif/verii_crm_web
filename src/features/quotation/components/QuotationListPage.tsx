@@ -2,7 +2,7 @@ import { lazy, Suspense, type ReactElement, useCallback, useEffect, useMemo, use
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, GitBranchPlus, Mail, Plus } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
@@ -18,6 +18,8 @@ import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import {
   DataTableGrid,
   DataTableActionBar,
+  DocumentListRowActions,
+  ErpIntegrationPill,
   ManagementDataTableChrome,
   type DataTableGridColumn,
 } from '@/components/shared';
@@ -369,15 +371,11 @@ export function QuotationListPage(): ReactElement {
     if (key === 'Currency') return getCurrencyLabel(quotation);
     if (key === 'GrandTotal') return getGrandTotalLabel(quotation);
     if (key === 'IsERPIntegrated') {
-      const isIntegrated = quotation.isERPIntegrated === true;
       return (
-        <span className={`inline-flex min-w-36 justify-center rounded-full px-2.5 py-1 text-xs font-semibold ${
-          isIntegrated
-            ? 'bg-emerald-100 text-emerald-700'
-            : 'bg-slate-100 text-slate-600'
-        }`}>
-          {getErpIntegrationLabel(isIntegrated)}
-        </span>
+        <ErpIntegrationPill
+          integrated={quotation.isERPIntegrated === true}
+          label={getErpIntegrationLabel(quotation.isERPIntegrated === true)}
+        />
       );
     }
     if (key === 'ERPIntegrationNumber') return quotation.erpIntegrationNumber || '-';
@@ -437,35 +435,20 @@ export function QuotationListPage(): ReactElement {
   };
 
   const renderActionsCell = (quotation: QuotationGetDto): ReactElement => (
-    <div className="flex items-center justify-center gap-2">
-      <Button variant="outline" size="sm" onClick={() => navigate(`/quotations/${quotation.id}`)}>
-        <Edit2 className="h-4 w-4 mr-1" />
-        {t('list.detail', { defaultValue: 'Detay' })}
-      </Button>
-      <Button variant="outline" size="sm" onClick={(event) => handleOpenMailDialog(event, quotation)}>
-        <Mail className="h-4 w-4 mr-1" />
-        {t('list.sendGmail', { defaultValue: 'Gmail Gonder' })}
-      </Button>
-      <Button variant="outline" size="sm" onClick={(event) => handleOpenOutlookMailDialog(event, quotation)}>
-        <Mail className="h-4 w-4 mr-1" />
-        {t('list.sendOutlook', { defaultValue: 'Outlook Gonder' })}
-      </Button>
-      {(quotation.status === 0 || quotation.status === 3) && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={(event) => {
-            void handleRevision(event, quotation.id);
-          }}
-          disabled={createRevisionMutation.isPending}
-        >
-          <GitBranchPlus className="h-4 w-4 mr-1" />
-          {createRevisionMutation.isPending
-            ? t('loading')
-            : t('list.revise', { defaultValue: 'Revize Et' })}
-        </Button>
-      )}
-    </div>
+    <DocumentListRowActions
+      detailLabel={t('list.detail', { defaultValue: 'Detay' })}
+      gmailLabel={t('list.sendGmail', { defaultValue: 'Gmail Gönder' })}
+      outlookLabel={t('list.sendOutlook', { defaultValue: 'Outlook Gönder' })}
+      reviseLabel={t('list.revise', { defaultValue: 'Revize Et' })}
+      onDetail={() => navigate(`/quotations/${quotation.id}`)}
+      onGmail={(event) => handleOpenMailDialog(event, quotation)}
+      onOutlook={(event) => handleOpenOutlookMailDialog(event, quotation)}
+      onRevise={(event) => {
+        void handleRevision(event, quotation.id);
+      }}
+      isRevisePending={createRevisionMutation.isPending}
+      showRevise={quotation.status === 0 || quotation.status === 3}
+    />
   );
 
   return (
@@ -583,7 +566,6 @@ export function QuotationListPage(): ReactElement {
                     showActionsColumn
                     actionsHeaderLabel={t('list.actions')}
                     renderActionsCell={renderActionsCell}
-                    iconOnlyActions={false}
                     rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
                     onRowClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
                     onRowDoubleClick={(quotation: QuotationGetDto) => handleRowClick(quotation.id)}
