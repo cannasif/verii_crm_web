@@ -25,7 +25,9 @@
     "createErpStock": "Netsis stok kaydı oluştur",
     "viewModeTable": "Liste",
     "viewModeGrid": "Izgara",
-    "viewModeGroupLabel": "Görünüm"
+    "viewModeGroupLabel": "Görünüm",
+    "codeFilters": "Kod filtreleri",
+    "applyCodeFilters": "Uygula"
   },
   "detail": {
     "title": "Stok Detayı",

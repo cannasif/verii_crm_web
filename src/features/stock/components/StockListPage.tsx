@@ -1,7 +1,7 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, CloudUpload, Eye, Heart, LayoutGrid, List } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
@@ -25,6 +25,13 @@ import { StockGridCard } from './StockGridCard';
 import type { PagedFilter } from '@/types/api';
 import { StockBulkImageImportDialog } from './StockBulkImageImportDialog';
 import { StockMirrorCreateDialog } from './StockMirrorCreateDialog';
+import { StockListCodeFilterPopover } from './StockListCodeFilterPopover';
+import {
+  EMPTY_SPECIAL_CODE_SELECTIONS,
+  hasSpecialCodeSelection,
+  type CatalogSpecialCodeSelections,
+} from '@/components/shared/catalog-special-code-filter';
+import { fetchStockListWithCodeFilters } from '../utils/fetch-stock-list-with-code-filters';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
@@ -95,6 +102,10 @@ export function StockListPage(): ReactElement {
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
   const [filterLogic, setFilterLogic] = useState<'and' | 'or'>('and');
+  const [draftSpecialCodeSelections, setDraftSpecialCodeSelections] =
+    useState<CatalogSpecialCodeSelections>(EMPTY_SPECIAL_CODE_SELECTIONS);
+  const [appliedSpecialCodeSelections, setAppliedSpecialCodeSelections] =
+    useState<CatalogSpecialCodeSelections>(EMPTY_SPECIAL_CODE_SELECTIONS);
   const [listLayout, setListLayout] = useState<'table' | 'grid'>(readStoredListLayout);
 
   const persistListLayout = useCallback((mode: 'table' | 'grid'): void => {
@@ -156,8 +167,11 @@ export function StockListPage(): ReactElement {
   }, [defaultColumnKeys, user?.id]);
 
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
+  const hasCodeFilterSelection = hasSpecialCodeSelection(appliedSpecialCodeSelections);
   const filtersParam: { filters?: PagedFilter[]; filterLogic?: 'and' | 'or' } =
-    appliedFilters.length > 0 ? { filters: appliedFilters, filterLogic } : {};
+    appliedFilters.length > 0 && !hasCodeFilterSelection
+      ? { filters: appliedFilters, filterLogic }
+      : {};
 
   const listQueryParams = useMemo(
     () => ({
@@ -171,20 +185,93 @@ export function StockListPage(): ReactElement {
     [pageNumber, pageSize, searchTerm, sortBy, sortDirection, filtersParam]
   );
 
-  const stockTableQuery = useStockList(listQueryParams, { enabled: listLayout === 'table' });
-  const stockGridQuery = useStockListWithImages(listQueryParams, { enabled: listLayout === 'grid' });
-  const stockQuery = listLayout === 'table' ? stockTableQuery : stockGridQuery;
+  const stockTableQuery = useStockList(listQueryParams, {
+    enabled: listLayout === 'table' && !hasCodeFilterSelection,
+  });
+  const stockGridQuery = useStockListWithImages(listQueryParams, {
+    enabled: listLayout === 'grid' && !hasCodeFilterSelection,
+  });
+
+  const stockCodeFilterQuery = useQuery({
+    queryKey: [
+      STOCK_QUERY_KEYS.LIST,
+      'code-filters',
+      listLayout,
+      pageNumber,
+      pageSize,
+      searchTerm,
+      sortBy,
+      sortDirection,
+      appliedSpecialCodeSelections,
+      appliedFilters,
+      filterLogic,
+    ] as const,
+    queryFn: async (): Promise<{ data: StockGetDto[]; totalCount: number; hasNextPage: boolean; hasPreviousPage: boolean; totalPages: number }> => {
+      const fetchPage =
+        listLayout === 'grid'
+          ? stockApi.getListWithImages
+          : stockApi.getList;
+      const result = await fetchStockListWithCodeFilters(
+        appliedSpecialCodeSelections,
+        (params) =>
+          fetchPage({
+            pageNumber: params.pageNumber,
+            pageSize: params.pageSize,
+            search: params.search ?? '',
+            sortBy: params.sortBy ?? 'Id',
+            sortDirection: params.sortDirection ?? 'desc',
+            filterLogic: params.filterLogic ?? 'and',
+            filters: params.filters,
+          }),
+        {
+          pageNumber,
+          pageSize,
+          search: searchTerm || undefined,
+          additionalFilters: appliedFilters,
+        },
+      );
+      const totalPages = Math.max(1, Math.ceil(result.totalCount / pageSize));
+      return {
+        data: result.data,
+        totalCount: result.totalCount,
+        hasNextPage: pageNumber < totalPages,
+        hasPreviousPage: pageNumber > 1,
+        totalPages,
+      };
+    },
+    enabled: hasCodeFilterSelection,
+    staleTime: 30_000,
+  });
+
+  const stockQuery = hasCodeFilterSelection
+    ? stockCodeFilterQuery
+    : listLayout === 'table'
+      ? stockTableQuery
+      : stockGridQuery;
   const toggleStockFavorite = useToggleStockFavorite();
   const createErpStock = useCreateErpStock();
   const { data: permissions } = useMyPermissionsQuery();
   const canCreateMirrorStock = hasPermission(permissions, 'stocks.mirror-create');
   const canCreateErpStock = hasPermission(permissions, 'stocks.erp-create');
   const pagedData = stockQuery.data;
-  const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
-  const totalCount = pagedData?.totalCount ?? 0;
-  const hasNextPage = pagedData?.hasNextPage ?? false;
-  const hasPreviousPage = pagedData?.hasPreviousPage ?? pageNumber > 1;
-  const totalPages = pagedData?.totalPages ?? 1;
+  const currentPageRows = useMemo(() => {
+    if (hasCodeFilterSelection && stockCodeFilterQuery.data) {
+      return stockCodeFilterQuery.data.data;
+    }
+    return pagedData?.data ?? [];
+  }, [hasCodeFilterSelection, pagedData?.data, stockCodeFilterQuery.data]);
+  const totalCount = hasCodeFilterSelection
+    ? (stockCodeFilterQuery.data?.totalCount ?? 0)
+    : (pagedData?.totalCount ?? 0);
+  const hasNextPage = hasCodeFilterSelection
+    ? (stockCodeFilterQuery.data?.hasNextPage ?? false)
+    : (pagedData?.hasNextPage ?? false);
+  const hasPreviousPage = hasCodeFilterSelection
+    ? (stockCodeFilterQuery.data?.hasPreviousPage ?? pageNumber > 1)
+    : (pagedData?.hasPreviousPage ?? pageNumber > 1);
+  const totalPages = hasCodeFilterSelection
+    ? (stockCodeFilterQuery.data?.totalPages ?? 1)
+    : (pagedData?.totalPages ?? 1);
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
   const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
   const orderedVisibleColumns = columnOrder.filter((key) => visibleColumns.includes(key)) as StockColumnKey[];
@@ -220,17 +307,39 @@ export function StockListPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const list = await fetchAllPagedData({
-      fetchPage: (exportPageNumber, exportPageSize) =>
-        stockApi.getList({
-          pageNumber: exportPageNumber,
-          pageSize: exportPageSize,
-          search: searchTerm || undefined,
-          sortBy,
-          sortDirection,
-          ...filtersParam,
-        }),
-    });
+    const list = hasCodeFilterSelection
+      ? (
+          await fetchStockListWithCodeFilters(
+            appliedSpecialCodeSelections,
+            (params) =>
+              stockApi.getList({
+                pageNumber: params.pageNumber,
+                pageSize: params.pageSize,
+                search: params.search ?? '',
+                sortBy: params.sortBy ?? 'Id',
+                sortDirection: params.sortDirection ?? 'desc',
+                filterLogic: params.filterLogic ?? 'and',
+                filters: params.filters,
+              }),
+            {
+              pageNumber: 1,
+              pageSize: 2000,
+              search: searchTerm || undefined,
+              additionalFilters: appliedFilters,
+            },
+          )
+        ).data
+      : await fetchAllPagedData({
+          fetchPage: (exportPageNumber, exportPageSize) =>
+            stockApi.getList({
+              pageNumber: exportPageNumber,
+              pageSize: exportPageSize,
+              search: searchTerm || undefined,
+              sortBy,
+              sortDirection,
+              ...filtersParam,
+            }),
+        });
     return {
       columns: exportColumns,
       rows: list.map((stock: StockGetDto) => ({
@@ -240,11 +349,20 @@ export function StockListPage(): ReactElement {
         unit: stock.unit ?? '-',
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam]);
+  }, [
+    exportColumns,
+    searchTerm,
+    sortBy,
+    sortDirection,
+    filtersParam,
+    hasCodeFilterSelection,
+    appliedSpecialCodeSelections,
+    appliedFilters,
+  ]);
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, sortBy, sortDirection, appliedFilters, filterLogic, searchTerm]);
+  }, [pageSize, sortBy, sortDirection, appliedFilters, filterLogic, searchTerm, appliedSpecialCodeSelections]);
 
   const onSort = (column: StockColumnKey): void => {
     if (column === 'unit') return;
@@ -320,6 +438,7 @@ export function StockListPage(): ReactElement {
   const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEYS.LIST] });
     await queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEYS.LIST_WITH_IMAGES] });
+    await queryClient.invalidateQueries({ queryKey: ['stock-list-code-facet-pool'] });
   };
 
   const handleGridRefresh = async (): Promise<void> => {
@@ -328,8 +447,21 @@ export function StockListPage(): ReactElement {
     setDraftFilterRows([]);
     setAppliedFilterRows([]);
     setFilterLogic('and');
+    setDraftSpecialCodeSelections(EMPTY_SPECIAL_CODE_SELECTIONS);
+    setAppliedSpecialCodeSelections(EMPTY_SPECIAL_CODE_SELECTIONS);
     setPageNumber(1);
     await handleRefresh();
+  };
+
+  const handleApplySpecialCodeFilters = (): void => {
+    setAppliedSpecialCodeSelections(draftSpecialCodeSelections);
+    setPageNumber(1);
+  };
+
+  const handleClearSpecialCodeFilters = (): void => {
+    setDraftSpecialCodeSelections(EMPTY_SPECIAL_CODE_SELECTIONS);
+    setAppliedSpecialCodeSelections(EMPTY_SPECIAL_CODE_SELECTIONS);
+    setPageNumber(1);
   };
 
   return (
@@ -385,6 +517,15 @@ export function StockListPage(): ReactElement {
                 setFilterLogic('and');
                 setSearchResetKey((value) => value + 1);
               }}
+              additionalFilterActions={
+                <StockListCodeFilterPopover
+                  draftSelections={draftSpecialCodeSelections}
+                  onDraftSelectionsChange={setDraftSpecialCodeSelections}
+                  appliedSelections={appliedSpecialCodeSelections}
+                  onApply={handleApplySpecialCodeFilters}
+                  onClearApplied={handleClearSpecialCodeFilters}
+                />
+              }
               translationNamespace="stock"
               appliedFilterCount={appliedFilters.length}
               search={{

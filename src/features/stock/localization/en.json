@@ -23,7 +23,9 @@
     "removeFavorite": "Remove from favorites",
     "viewModeTable": "List",
     "viewModeGrid": "Grid",
-    "viewModeGroupLabel": "View"
+    "viewModeGroupLabel": "View",
+    "codeFilters": "Code filters",
+    "applyCodeFilters": "Apply"
   },
   "detail": {
     "title": "Stock details",
