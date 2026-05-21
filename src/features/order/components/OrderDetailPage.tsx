@@ -17,6 +17,7 @@ import { useCustomerOptions } from '@/features/customer-management/hooks/useCust
 import { useUIStore } from '@/stores/ui-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Layers, Loader2, FileCheck, FileText } from 'lucide-react';
 import { OrderApprovalFlowTab } from './OrderApprovalFlowTab';
@@ -468,21 +469,21 @@ export function OrderDetailPage(): ReactElement {
 
   return (
     <div className="w-full space-y-8 relative pb-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">
-            {t('order.detail.title', { offerNo: order.offerNo || `#${order.id}` })}
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            {t('order.detail.subtitle')}
-            {order.revisionNo != null && order.revisionNo !== '' && (
-              <span className="block mt-1">
+      <DocumentDetailPageHeader
+        title={t('order.detail.title', { offerNo: order.offerNo || `#${order.id}` })}
+        subtitle={
+          <>
+            <p>{t('order.detail.subtitle')}</p>
+            {order.revisionNo != null && order.revisionNo !== '' ? (
+              <p className="mt-1">
                 {t('order.detail.revisionNo')}: {order.revisionNo}
-              </span>
-            )}
-          </p>
-        </div>
-      </div>
+              </p>
+            ) : null}
+          </>
+        }
+        onBack={() => navigate('/orders')}
+        backLabel={t('order.backToOrders')}
+      />
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="h-auto gap-1 overflow-x-auto rounded-xl border border-zinc-300/95 bg-zinc-100 p-1 shadow-none scrollbar-hide justify-start dark:border-zinc-800 dark:bg-black/90 dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] w-full">

@@ -2,7 +2,7 @@ import { lazy, Suspense, type ReactElement, useCallback, useEffect, useMemo, use
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, GitBranchPlus, Mail, Plus } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
@@ -18,6 +18,8 @@ import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import {
   DataTableGrid,
   DataTableActionBar,
+  DocumentListRowActions,
+  ErpIntegrationPill,
   ManagementDataTableChrome,
   type DataTableGridColumn,
 } from '@/components/shared';
@@ -370,15 +372,11 @@ export function OrderListPage(): ReactElement {
     if (key === 'Currency') return getCurrencyLabel(order);
     if (key === 'GrandTotal') return getGrandTotalLabel(order);
     if (key === 'IsERPIntegrated') {
-      const isIntegrated = order.isERPIntegrated === true;
       return (
-        <span className={`inline-flex min-w-36 justify-center rounded-full px-2.5 py-1 text-xs font-semibold ${
-          isIntegrated
-            ? 'bg-emerald-100 text-emerald-700'
-            : 'bg-slate-100 text-slate-600'
-        }`}>
-          {getErpIntegrationLabel(isIntegrated)}
-        </span>
+        <ErpIntegrationPill
+          integrated={order.isERPIntegrated === true}
+          label={getErpIntegrationLabel(order.isERPIntegrated === true)}
+        />
       );
     }
     if (key === 'ERPIntegrationNumber') return order.erpIntegrationNumber || '-';
@@ -437,33 +435,20 @@ export function OrderListPage(): ReactElement {
   };
 
   const renderActionsCell = (order: OrderGetDto): ReactElement => (
-    <div className="flex items-center justify-center gap-2">
-      <Button variant="outline" size="sm" onClick={() => navigate(`/orders/${order.id}`)}>
-        <Edit2 className="h-4 w-4 mr-1" />
-        {t('list.detail', { defaultValue: 'Detay' })}
-      </Button>
-      <Button variant="outline" size="sm" onClick={(event) => handleOpenMailDialog(event, order)}>
-        <Mail className="h-4 w-4 mr-1" />
-        {t('google-integration:mailDialog.openButton')}
-      </Button>
-      <Button variant="outline" size="sm" onClick={(event) => handleOpenOutlookMailDialog(event, order)}>
-        <Mail className="h-4 w-4 mr-1" />
-        {t('outlook-integration:mailDialog.openButton')}
-      </Button>
-      {(order.status === 0 || order.status === 3) && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={(event) => {
-            void handleRevision(event, order.id);
-          }}
-          disabled={createRevisionMutation.isPending}
-        >
-          <GitBranchPlus className="h-4 w-4 mr-1" />
-          {createRevisionMutation.isPending ? t('loading') : t('list.revise')}
-        </Button>
-      )}
-    </div>
+    <DocumentListRowActions
+      detailLabel={t('list.detail', { defaultValue: 'Detay' })}
+      gmailLabel={t('google-integration:mailDialog.openButton')}
+      outlookLabel={t('outlook-integration:mailDialog.openButton')}
+      reviseLabel={t('list.revise', { defaultValue: 'Revize Et' })}
+      onDetail={() => navigate(`/orders/${order.id}`)}
+      onGmail={(event) => handleOpenMailDialog(event, order)}
+      onOutlook={(event) => handleOpenOutlookMailDialog(event, order)}
+      onRevise={(event) => {
+        void handleRevision(event, order.id);
+      }}
+      isRevisePending={createRevisionMutation.isPending}
+      showRevise={order.status === 0 || order.status === 3}
+    />
   );
 
   return (
