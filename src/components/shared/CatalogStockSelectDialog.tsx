@@ -14,6 +14,7 @@ import {
   FolderTree,
   LayoutGrid,
   List,
+  ListFilter,
   MinusCircle,
   Package,
   PlusCircle,
@@ -61,6 +62,20 @@ import {
 import type { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { formatSystemCurrency, getSystemCurrency } from '@/lib/system-settings';
 import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } from './RelatedStocksSelectionDialog';
+import { CatalogSpecialCodeFilterPanel } from './CatalogSpecialCodeFilterPanel';
+import {
+  CATALOG_SPECIAL_CODE_FACET_POOL_SIZE,
+  fetchCatalogSpecialCodeStocksPage,
+  clearSpecialCodeSelections,
+  EMPTY_SPECIAL_CODE_SELECTIONS,
+  CATALOG_FILTER_DIMENSIONS,
+  extractFilterDimensionOptions,
+  hasSpecialCodeSelection,
+  toggleSpecialCodeValue,
+  type CatalogFilterDimension,
+  type CatalogSpecialCodeOption,
+  type CatalogSpecialCodeSelections,
+} from './catalog-special-code-filter';
 
 interface CatalogStockSelectDialogProps {
   open: boolean;
@@ -242,7 +257,9 @@ type CatalogSessionPick = {
   result: ProductSelectionResult;
 };
 
-type CatalogStockBrowseMode = 'category' | 'campaign' | 'favorites';
+type CatalogStockBrowseMode = 'category' | 'specialCodes' | 'campaign' | 'favorites';
+
+type CatalogLeftPanelMode = 'catalog' | 'code';
 
 type HorizontalScrollRowProps = {
   syncKey?: string | number;
@@ -362,7 +379,11 @@ export function CatalogStockSelectDialog({
   const [hierarchyInfoOpen, setHierarchyInfoOpen] = useState(false);
   const [helperStripOpen, setHelperStripOpen] = useState(false);
   const [stockLayoutMode, setStockLayoutMode] = useState<'cards' | 'list'>('cards');
-  const [stockBrowseMode, setStockBrowseMode] = useState<CatalogStockBrowseMode>('category');
+  const [leftPanelMode, setLeftPanelMode] = useState<CatalogLeftPanelMode>('code');
+  const [stockBrowseMode, setStockBrowseMode] = useState<CatalogStockBrowseMode>('specialCodes');
+  const [specialCodeSelections, setSpecialCodeSelections] = useState<CatalogSpecialCodeSelections>(
+    () => ({ ...EMPTY_SPECIAL_CODE_SELECTIONS }),
+  );
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(true);
   const [mobileCategoryToolsOpen, setMobileCategoryToolsOpen] = useState(false);
   const [mobileStocksOpen, setMobileStocksOpen] = useState(true);
@@ -396,7 +417,9 @@ export function CatalogStockSelectDialog({
       setHierarchyInfoOpen(false);
       setHelperStripOpen(false);
       setStockLayoutMode('cards');
-      setStockBrowseMode('category');
+      setLeftPanelMode('code');
+      setStockBrowseMode('specialCodes');
+      setSpecialCodeSelections(clearSpecialCodeSelections());
       setMobileCategoriesOpen(true);
       setMobileCategoryToolsOpen(false);
       setMobileStocksOpen(true);
@@ -485,7 +508,13 @@ export function CatalogStockSelectDialog({
 
   useEffect(() => {
     setPageNumber(1);
-  }, [selectedLeafCategory?.catalogCategoryId, debouncedStockSearch, includeDescendants, stockBrowseMode]);
+  }, [
+    selectedLeafCategory?.catalogCategoryId,
+    debouncedStockSearch,
+    includeDescendants,
+    stockBrowseMode,
+    specialCodeSelections,
+  ]);
 
   const stocksQuery = useQuery({
     queryKey: [
@@ -626,24 +655,99 @@ export function CatalogStockSelectDialog({
   const favoriteTotalCount = favoriteStocksQuery.data?.totalCount ?? favoriteItems.length;
   const favoriteHasNextPage = pageNumber * PAGE_SIZE < favoriteTotalCount;
 
+  const specialCodeHasSelection = hasSpecialCodeSelection(specialCodeSelections);
+
+  const specialCodeFacetPoolQuery = useQuery({
+    queryKey: ['catalog-special-code-facet-pool'],
+    queryFn: async (): Promise<StockGetDto[]> => {
+      const response = await stockApi.getList({
+        pageNumber: 1,
+        pageSize: CATALOG_SPECIAL_CODE_FACET_POOL_SIZE,
+        search: '',
+        sortBy: 'Id',
+        sortDirection: 'desc',
+        filterLogic: 'and',
+        filters: [],
+      });
+      return response.data ?? [];
+    },
+    enabled: open && leftPanelMode === 'code',
+    staleTime: 120_000,
+    gcTime: 300_000,
+  });
+
+  const specialCodeOptionsByLevel = useMemo((): Record<CatalogFilterDimension, CatalogSpecialCodeOption[]> => {
+    const pool = specialCodeFacetPoolQuery.data ?? [];
+    const result = {} as Record<CatalogFilterDimension, CatalogSpecialCodeOption[]>;
+    for (const dimension of CATALOG_FILTER_DIMENSIONS) {
+      result[dimension] = extractFilterDimensionOptions(pool, dimension);
+    }
+    return result;
+  }, [specialCodeFacetPoolQuery.data]);
+
+  const specialCodeStocksQuery = useQuery({
+    queryKey: [
+      'catalog-special-code-stocks',
+      pageNumber,
+      catalogStockApiSearch,
+      specialCodeSelections,
+    ] as const,
+    queryFn: async (): Promise<{ data: CatalogStockItemDto[]; totalCount: number }> => {
+      const result = await fetchCatalogSpecialCodeStocksPage(
+        specialCodeSelections,
+        (params) =>
+          stockApi.getListWithImages({
+            pageNumber: params.pageNumber,
+            pageSize: params.pageSize,
+            search: params.search ?? '',
+            sortBy: params.sortBy ?? 'Id',
+            sortDirection: params.sortDirection ?? 'desc',
+            filterLogic: params.filterLogic ?? 'and',
+            filters: params.filters,
+          }),
+        {
+          pageNumber,
+          pageSize: PAGE_SIZE,
+          search: catalogStockApiSearch,
+        },
+      );
+      return {
+        data: result.data.map((row) => mapStockGetToCatalogItem(row)),
+        totalCount: result.totalCount,
+      };
+    },
+    enabled: open && leftPanelMode === 'code' && specialCodeHasSelection,
+    staleTime: 30_000,
+  });
+
+  const specialCodeStockItems = specialCodeStocksQuery.data?.data ?? [];
+  const specialCodeTotalCount = specialCodeStocksQuery.data?.totalCount ?? 0;
+  const specialCodeHasNextPage = pageNumber * PAGE_SIZE < specialCodeTotalCount;
+
   const activeStockRows: CatalogStockItemDto[] =
     stockBrowseMode === 'campaign'
       ? campaignDisplayItems
       : stockBrowseMode === 'favorites'
         ? favoriteItems
-        : stockItems;
+        : leftPanelMode === 'code' && stockBrowseMode === 'specialCodes'
+          ? specialCodeStockItems
+          : stockItems;
   const activeStockLoading =
     stockBrowseMode === 'campaign'
       ? campaignStocksQuery.isLoading
       : stockBrowseMode === 'favorites'
         ? favoriteStocksQuery.isLoading
-        : stocksQuery.isLoading;
+        : leftPanelMode === 'code' && stockBrowseMode === 'specialCodes'
+          ? specialCodeFacetPoolQuery.isLoading || specialCodeStocksQuery.isLoading
+          : stocksQuery.isLoading;
   const activeStockHasNextPage =
     stockBrowseMode === 'campaign'
       ? campaignHasNextPage
       : stockBrowseMode === 'favorites'
         ? favoriteHasNextPage
-        : hasNextPage;
+        : leftPanelMode === 'code' && stockBrowseMode === 'specialCodes'
+          ? specialCodeHasNextPage
+          : hasNextPage;
 
   const relationQueries = useQueries({
     queries: activeStockRows.map((stock) => ({
@@ -654,6 +758,7 @@ export function CatalogStockSelectDialog({
         activeStockRows.length > 0 &&
         (stockBrowseMode === 'campaign' ||
           stockBrowseMode === 'favorites' ||
+          (leftPanelMode === 'code' && specialCodeHasSelection) ||
           (stockBrowseMode === 'category' && selectedLeafCategory != null)),
       staleTime: 5 * 60 * 1000,
     })),
@@ -711,6 +816,7 @@ export function CatalogStockSelectDialog({
 
   const activateCategoryInCatalog = useCallback(
     (catalogId: number, category: CatalogCategoryNodeDto, branchPath?: CatalogCategoryNodeDto[]): void => {
+      setLeftPanelMode('catalog');
       setStockBrowseMode('category');
       setStockLayoutMode('cards');
       const catalog = catalogsQuery.data?.find((c) => c.id === catalogId);
@@ -765,6 +871,30 @@ export function CatalogStockSelectDialog({
   const toggleStockBrowseFavorites = (): void => {
     setStockLayoutMode('cards');
     setStockBrowseMode((m) => (m === 'favorites' ? 'category' : 'favorites'));
+  };
+
+  const handleLeftPanelModeChange = (mode: CatalogLeftPanelMode): void => {
+    setLeftPanelMode(mode);
+    setPageNumber(1);
+    setStockSearch('');
+    if (mode === 'code') {
+      setStockLayoutMode('cards');
+      setStockBrowseMode('specialCodes');
+      return;
+    }
+    if (stockBrowseMode === 'specialCodes') {
+      setStockBrowseMode('category');
+    }
+  };
+
+  const handleSpecialCodeToggle = (dimension: CatalogFilterDimension, value: string): void => {
+    setSpecialCodeSelections((prev) => toggleSpecialCodeValue(prev, dimension, value));
+    setPageNumber(1);
+  };
+
+  const handleSpecialCodeClear = (): void => {
+    setSpecialCodeSelections(clearSpecialCodeSelections());
+    setPageNumber(1);
   };
 
   const handleCatalogTrailSegmentClick = (catalogId: number, endIndexInclusive: number): void => {
@@ -851,6 +981,7 @@ export function CatalogStockSelectDialog({
     setExpandedCatalogIds(new Set());
     setStockBrowseMode('category');
     setStockLayoutMode('cards');
+    setSpecialCodeSelections(clearSpecialCodeSelections());
   };
 
   const canResetCategoryBranch =
@@ -860,7 +991,8 @@ export function CatalogStockSelectDialog({
     includeDescendants ||
     stockSearch.trim() !== '' ||
     pageNumber > 1 ||
-    stockBrowseMode !== 'category';
+    stockBrowseMode !== 'category' ||
+    specialCodeHasSelection;
 
   const toSelectionResult = (stock: CatalogStockItemDto): ProductSelectionResult => ({
     id: stock.stockId,
@@ -945,6 +1077,19 @@ export function CatalogStockSelectDialog({
     if (stockBrowseMode === 'favorites') {
       return t('catalogStockPicker.favoriteStocksChip');
     }
+    if (leftPanelMode === 'code' && stockBrowseMode === 'specialCodes') {
+      if (!specialCodeHasSelection) {
+        return t('catalogStockPicker.specialCodesEmptyTitle');
+      }
+      if (specialCodeStocksQuery.isLoading) {
+        return t('catalogStockPicker.loadingStocks');
+      }
+      return hasAnyPicksOrDraft
+        ? t('catalogStockPicker.selectionReadyTitle')
+        : specialCodeStockItems.length > 0
+          ? t('catalogStockPicker.stocksFoundTitle', { count: specialCodeTotalCount })
+          : t('catalogStockPicker.emptyStocksTitle');
+    }
     if (stockBrowseMode === 'campaign') {
       if (campaignStocksQuery.isLoading) {
         return t('catalogStockPicker.loadingStocks');
@@ -965,6 +1110,10 @@ export function CatalogStockSelectDialog({
         : t('catalogStockPicker.emptyStocksTitle');
   }, [
     stockBrowseMode,
+    specialCodeHasSelection,
+    specialCodeStocksQuery.isLoading,
+    specialCodeStockItems.length,
+    specialCodeTotalCount,
     campaignStocksQuery.isLoading,
     hasAnyPicksOrDraft,
     campaignSearchFilteredItems.length,
@@ -974,6 +1123,19 @@ export function CatalogStockSelectDialog({
   ]);
 
   const helperDescription = useMemo((): string => {
+    if (leftPanelMode === 'code' && stockBrowseMode === 'specialCodes') {
+      if (!specialCodeHasSelection) {
+        return t('catalogStockPicker.specialCodesPickHint');
+      }
+      if (specialCodeStocksQuery.isLoading) {
+        return t('catalogStockPicker.loadingStocks');
+      }
+      return hasAnyPicksOrDraft
+        ? t('catalogStockPicker.selectionReadyHint')
+        : specialCodeStockItems.length > 0
+          ? t('catalogStockPicker.rightPanelLeafHint')
+          : t('catalogStockPicker.emptyStocks');
+    }
     if (stockBrowseMode === 'favorites') {
       return t('catalogStockPicker.specialStockListPlaceholderHint');
     }
@@ -997,6 +1159,9 @@ export function CatalogStockSelectDialog({
         : t('catalogStockPicker.emptyStocks');
   }, [
     stockBrowseMode,
+    specialCodeHasSelection,
+    specialCodeStocksQuery.isLoading,
+    specialCodeStockItems.length,
     campaignStocksQuery.isLoading,
     hasAnyPicksOrDraft,
     campaignSearchFilteredItems.length,
@@ -1041,7 +1206,19 @@ export function CatalogStockSelectDialog({
   );
 
   const stockListScrollInner =
-    stockBrowseMode === 'category' && !selectedLeafCategory ? (
+    leftPanelMode === 'code' && stockBrowseMode === 'specialCodes' && !specialCodeHasSelection ? (
+    <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
+      <div className="max-w-md">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border border-pink-500/30 bg-pink-500/10 text-pink-500 shadow-[0_0_24px_rgba(236,72,153,0.22)] dark:text-pink-400">
+          <ListFilter className="h-6 w-6" />
+        </div>
+        <div className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+          {t('catalogStockPicker.specialCodesEmptyTitle')}
+        </div>
+        <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t('catalogStockPicker.specialCodesPickHint')}</div>
+      </div>
+    </div>
+  ) : stockBrowseMode === 'category' && !selectedLeafCategory ? (
     <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
       <div className="max-w-md">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border border-pink-500/30 bg-pink-500/10 text-pink-500 shadow-[0_0_24px_rgba(236,72,153,0.22)] dark:text-pink-400 dark:shadow-[0_0_28px_rgba(236,72,153,0.25)]">
@@ -1456,8 +1633,16 @@ export function CatalogStockSelectDialog({
               className="flex w-full items-center justify-between gap-2 border-b border-slate-300/90 bg-slate-50 px-3 py-2 text-left transition-colors hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07] lg:hidden"
             >
               <span className="flex min-w-0 items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                <FolderTree className="h-4 w-4 shrink-0 text-pink-500 dark:text-pink-400" />
-                <span className="truncate">{t('catalogStockPicker.mobileCategoriesAccordion')}</span>
+                {leftPanelMode === 'code' ? (
+                  <ListFilter className="h-4 w-4 shrink-0 text-pink-500 dark:text-pink-400" />
+                ) : (
+                  <FolderTree className="h-4 w-4 shrink-0 text-pink-500 dark:text-pink-400" />
+                )}
+                <span className="truncate">
+                  {leftPanelMode === 'code'
+                    ? t('catalogStockPicker.mobileSpecialCodesAccordion')
+                    : t('catalogStockPicker.mobileCategoriesAccordion')}
+                </span>
               </span>
               <ChevronDown
                 className={cn(
@@ -1474,7 +1659,60 @@ export function CatalogStockSelectDialog({
                 !mobileCategoriesOpen && 'max-lg:hidden lg:flex',
               )}
             >
-            <div className="shrink-0 border-b border-slate-300/90 bg-gradient-to-b from-white to-transparent px-3 py-1.5 shadow-[inset_0_-1px_0_rgba(148,163,184,0.06)] dark:border-white/10 dark:from-white/[0.03] dark:shadow-none sm:px-3.5 sm:py-2 xl:px-3 xl:pb-1.5 xl:pt-1">
+            <div className="shrink-0 border-b border-slate-300/90 bg-white/90 px-2.5 py-2 dark:border-white/10 dark:bg-zinc-950/80 sm:px-3">
+              <div
+                className="flex rounded-xl border border-slate-300/90 bg-slate-100/90 p-0.5 dark:border-white/10 dark:bg-white/[0.04]"
+                role="group"
+                aria-label={t('catalogStockPicker.leftPanelModeGroupLabel')}
+              >
+                <button
+                  type="button"
+                  onClick={() => handleLeftPanelModeChange('code')}
+                  aria-pressed={leftPanelMode === 'code'}
+                  className={cn(
+                    'flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-2 py-2 text-[10px] font-bold uppercase tracking-wide transition-all sm:text-[11px]',
+                    leftPanelMode === 'code'
+                      ? 'bg-gradient-to-r from-pink-600 to-fuchsia-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-pink-700 dark:text-slate-400 dark:hover:text-pink-300',
+                  )}
+                >
+                  <ListFilter className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  <span className="truncate">{t('catalogStockPicker.leftPanelModeCode')}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleLeftPanelModeChange('catalog')}
+                  aria-pressed={leftPanelMode === 'catalog'}
+                  className={cn(
+                    'flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-2 py-2 text-[10px] font-bold uppercase tracking-wide transition-all sm:text-[11px]',
+                    leftPanelMode === 'catalog'
+                      ? 'bg-gradient-to-r from-pink-600 to-fuchsia-600 text-white shadow-sm'
+                      : 'text-slate-600 hover:text-pink-700 dark:text-slate-400 dark:hover:text-pink-300',
+                  )}
+                >
+                  <FolderTree className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  <span className="truncate">{t('catalogStockPicker.leftPanelModeCatalog')}</span>
+                </button>
+              </div>
+            </div>
+
+            {leftPanelMode === 'code' ? (
+              <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden overscroll-contain bg-slate-100/55 px-2 py-2 [-webkit-overflow-scrolling:touch] dark:bg-zinc-950/40 sm:px-3 sm:py-2.5">
+                <CatalogSpecialCodeFilterPanel
+                  selections={specialCodeSelections}
+                  optionsByLevel={specialCodeOptionsByLevel}
+                  isLoadingOptions={specialCodeFacetPoolQuery.isLoading}
+                  onToggle={handleSpecialCodeToggle}
+                  onClear={handleSpecialCodeClear}
+                />
+              </div>
+            ) : (
+              <>
+            <div
+              className={cn(
+                'shrink-0 border-b border-slate-300/90 bg-gradient-to-b from-white to-transparent px-3 py-1.5 shadow-[inset_0_-1px_0_rgba(148,163,184,0.06)] dark:border-white/10 dark:from-white/[0.03] dark:shadow-none sm:px-3.5 sm:py-2 xl:px-3 xl:pb-1.5 xl:pt-1',
+              )}
+            >
               <button
                 type="button"
                 onClick={() => setMobileCategoryToolsOpen((v) => !v)}
@@ -1846,6 +2084,8 @@ export function CatalogStockSelectDialog({
                 </div>
               )}
             </div>
+              </>
+            )}
             </div>
           </div>
 
@@ -1995,7 +2235,10 @@ export function CatalogStockSelectDialog({
                       onChange={(event) => setStockSearch(event.target.value)}
                       placeholder={t('catalogStockPicker.searchPlaceholder')}
                       className="h-8 rounded-xl border border-slate-300/90 bg-white pl-8 text-sm text-slate-900 shadow-sm placeholder:text-slate-500 backdrop-blur-sm focus-visible:border-pink-400/60 focus-visible:ring-pink-500/20 dark:border-white/15 dark:bg-white/[0.06] dark:text-slate-100 dark:placeholder:text-slate-500 dark:shadow-none dark:focus-visible:border-pink-500/40 sm:h-9 sm:rounded-2xl sm:pl-10"
-                      disabled={stockBrowseMode === 'category' && !selectedLeafCategory}
+                      disabled={
+                        (stockBrowseMode === 'category' && !selectedLeafCategory) ||
+                        (leftPanelMode === 'code' && stockBrowseMode === 'specialCodes' && !specialCodeHasSelection)
+                      }
                     />
                   </div>
                 </div>
