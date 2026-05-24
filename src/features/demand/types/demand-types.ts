@@ -74,6 +74,7 @@ export interface CreateDemandDto {
 }
 
 export interface CreateDemandLineDto {
+  id?: string | number | null;
   demandId: number;
   productId?: number | null;
   productCode: string;
@@ -182,6 +183,7 @@ export interface DemandLineGetDto {
 }
 
 export interface DemandExchangeRateCreateDto {
+  id?: number | null;
   demandId: number;
   currency: string;
   exchangeRate: number;

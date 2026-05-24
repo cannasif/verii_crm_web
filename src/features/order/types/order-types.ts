@@ -74,6 +74,7 @@ export interface CreateOrderDto {
 }
 
 export interface CreateOrderLineDto {
+  id?: string | number | null;
   orderId: number;
   productId?: number | null;
   productCode: string;
@@ -182,6 +183,7 @@ export interface OrderLineGetDto {
 }
 
 export interface OrderExchangeRateCreateDto {
+  id?: number | null;
   orderId: number;
   currency: string;
   exchangeRate: number;

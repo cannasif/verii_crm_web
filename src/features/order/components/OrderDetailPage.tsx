@@ -40,6 +40,22 @@ import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-type
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { useCanEditOrder } from '../hooks/useCanEditOrder';
 
+function parsePersistedId(formId: string | number | undefined, prefix: string): number | null {
+  if (formId == null) return null;
+  if (typeof formId === 'number' && Number.isFinite(formId) && formId > 0) return formId;
+  const value = String(formId).trim();
+  const prefixed = value.match(new RegExp(`^${prefix}-(\\d+)(?:-|$)`));
+  if (prefixed) {
+    const parsed = parseInt(prefixed[1], 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+  if (/^\d+$/.test(value)) {
+    const parsed = parseInt(value, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+  return null;
+}
+
 export function OrderDetailPage(): ReactElement {
   const { t } = useTranslation();
   const { canUpdate } = useCrudPermissions('sales.orders.update');
@@ -284,8 +300,9 @@ export function OrderDetailPage(): ReactElement {
         const { relatedLines, ...cleanLineData } = lineData as OrderLineFormState & { relatedLines?: unknown[] };
         return {
           ...cleanLineData,
+          id: parsePersistedId(id, 'line'),
           orderId: orderId,
-          productId: 0,
+          productId: cleanLineData.productId ?? null,
           description: cleanLineData.description || null,
           description1: cleanLineData.description1 || null,
           description2: cleanLineData.description2 || null,
@@ -300,6 +317,7 @@ export function OrderDetailPage(): ReactElement {
         ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
             const currencyValue = rate.currency || (dovizTipi ? String(dovizTipi) : '');
             return {
+              id: parsePersistedId(id, 'rate'),
               ...rate,
               currency: currencyValue,
               orderId: orderId,
