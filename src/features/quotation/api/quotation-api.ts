@@ -468,8 +468,8 @@ export const quotationApi = {
 
   updateBulk: async (id: number, data: QuotationBulkCreateDto): Promise<ApiResponse<QuotationGetDto>> => {
     try {
-      const response = await api.put<ApiResponse<QuotationGetDto>>(
-        `/api/quotation/bulk-quotation/${id}`,
+      const response = await api.post<ApiResponse<QuotationGetDto>>(
+        `/api/quotation/bulk-quotation/update?id=${id}`,
         data
       );
       if (!response.success) {

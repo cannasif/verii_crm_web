@@ -446,8 +446,8 @@ export const orderApi = {
 
   updateBulk: async (id: number, data: OrderBulkCreateDto): Promise<ApiResponse<OrderGetDto>> => {
     try {
-      const response = await api.put<ApiResponse<OrderGetDto>>(
-        `/api/order/bulk-order/${id}`,
+      const response = await api.post<ApiResponse<OrderGetDto>>(
+        `/api/order/bulk-order/update?id=${id}`,
         data
       );
       return response;
