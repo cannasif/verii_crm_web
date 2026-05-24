@@ -5412,6 +5412,18 @@
   "profile": {
     "title": "Profil Bilgileri"
   },
+  "salesDraft": {
+    "title": "Yarım kalan işiniz var",
+    "description": "Bu kullanıcı ve şube için kaydedilmemiş bir {{documentName}} taslağı bulundu. Devam etmek ister misiniz?",
+    "updatedAt": "Son otomatik kayıt: {{date}}",
+    "restore": "Taslağı yükle",
+    "discard": "Sil ve yeni başla",
+    "documentNames": {
+      "demand": "talep",
+      "quotation": "teklif",
+      "order": "sipariş"
+    }
+  },
   "language_choice": "Dil Seçeneği",
   "appearance": "Görünüm Modu",
   "logout": "ÇIKIŞ YAP",

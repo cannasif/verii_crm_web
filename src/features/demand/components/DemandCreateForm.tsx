@@ -25,6 +25,8 @@ import { demandNotesDtoToNotesList } from '../utils/notes-mapper';
 import { demandApi } from '../api/demand-api';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { SalesDocumentDraftRestoreDialog } from '@/features/sales-drafts/SalesDocumentDraftRestoreDialog';
+import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentDraft';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -42,6 +44,7 @@ export function DemandCreateForm(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);
+  const branch = useAuthStore((state) => state.branch);
 
   const [lines, setLines] = useState<DemandLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<DemandExchangeRateFormState[]>([]);
@@ -84,7 +87,24 @@ export function DemandCreateForm(): ReactElement {
   const watchedRepresentativeId = form.watch('demand.representativeId');
   const watchedOfferDate = form.watch('demand.offerDate');
   const demandFormSlice = form.watch('demand');
+  const demandDraftFormValues = form.watch();
   const demandSchemaPayload = useMemo(() => ({ demand: demandFormSlice }), [demandFormSlice]);
+  const salesDraft = useSalesDocumentDraft({
+    documentType: 'demand',
+    rootKey: 'demand',
+    userId: user?.id,
+    branchCode: branch?.code ?? branch?.id,
+    form,
+    formValues: demandDraftFormValues,
+    lines,
+    exchangeRates,
+    notes: quotationNotes,
+    setLines,
+    setExchangeRates,
+    setNotes: setQuotationNotes,
+    createDefaultNotes: createEmptyQuotationNotes,
+    enabled: !createMutation.isPending,
+  });
 
   const saveManualHintLines = useMemo(
     () =>
@@ -228,6 +248,7 @@ export function DemandCreateForm(): ReactElement {
         toast.success(t('create.success'), {
           description: t('create.successMessage'),
         });
+        await salesDraft.clearDraft();
         navigate(`/demands/${result.data.id}`);
       } else {
         throw new Error(result.message || t('create.errorMessage'));
@@ -301,6 +322,16 @@ export function DemandCreateForm(): ReactElement {
   return (
     <div className="w-full max-w-[1600px] mx-auto relative pb-10 px-4 md:px-6">
       <FormProvider {...form}>
+        <SalesDocumentDraftRestoreDialog
+          open={salesDraft.restoreDialogOpen}
+          documentName={t('salesDraft.documentNames.demand', {
+            ns: 'common',
+            defaultValue: 'talep',
+          })}
+          updatedAt={salesDraft.pendingDraft?.updatedAt}
+          onRestore={salesDraft.restoreDraft}
+          onDiscard={salesDraft.discardDraft}
+        />
         <form onSubmit={handleFormSubmit} className="space-y-0">
 
           <DocumentCreatePageHeader

@@ -5339,6 +5339,18 @@
   "profile": {
     "title": "Profile Information"
   },
+  "salesDraft": {
+    "title": "You have unfinished work",
+    "description": "An unsaved {{documentName}} draft was found for this user and branch. Would you like to continue?",
+    "updatedAt": "Last autosave: {{date}}",
+    "restore": "Load draft",
+    "discard": "Delete and start fresh",
+    "documentNames": {
+      "demand": "demand",
+      "quotation": "quotation",
+      "order": "order"
+    }
+  },
   "userDiscountLimitManagement": {
     "table": {
       "id": "ID",

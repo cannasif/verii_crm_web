@@ -25,6 +25,8 @@ import { orderNotesDtoToNotesList } from '../utils/notes-mapper';
 import { orderApi } from '../api/order-api';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { SalesDocumentDraftRestoreDialog } from '@/features/sales-drafts/SalesDocumentDraftRestoreDialog';
+import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentDraft';
 import { useOrderCalculations } from '../hooks/useOrderCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -75,6 +77,7 @@ export function OrderCreateForm(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);
+  const branch = useAuthStore((state) => state.branch);
 
   const [lines, setLines] = useState<OrderLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<OrderExchangeRateFormState[]>([]);
@@ -117,7 +120,24 @@ export function OrderCreateForm(): ReactElement {
   const watchedRepresentativeId = form.watch('order.representativeId');
   const watchedOfferDate = form.watch('order.offerDate');
   const orderFormSlice = form.watch('order');
+  const orderDraftFormValues = form.watch();
   const orderSchemaPayload = useMemo(() => ({ order: orderFormSlice }), [orderFormSlice]);
+  const salesDraft = useSalesDocumentDraft({
+    documentType: 'order',
+    rootKey: 'order',
+    userId: user?.id,
+    branchCode: branch?.code ?? branch?.id,
+    form,
+    formValues: orderDraftFormValues,
+    lines,
+    exchangeRates,
+    notes: quotationNotes,
+    setLines,
+    setExchangeRates,
+    setNotes: setQuotationNotes,
+    createDefaultNotes: createEmptyQuotationNotes,
+    enabled: !createMutation.isPending,
+  });
 
   const saveManualHintLines = useMemo(
     () =>
@@ -261,6 +281,7 @@ export function OrderCreateForm(): ReactElement {
         toast.success(t('create.success'), {
           description: t('create.successMessage'),
         });
+        await salesDraft.clearDraft();
         navigate(`/orders/${result.data.id}`);
       } else {
         throw new Error(result.message || t('create.errorMessage'));
@@ -333,6 +354,16 @@ export function OrderCreateForm(): ReactElement {
   return (
     <div className="w-full max-w-[1600px] mx-auto relative pb-10 px-4 md:px-6">
       <FormProvider {...form}>
+        <SalesDocumentDraftRestoreDialog
+          open={salesDraft.restoreDialogOpen}
+          documentName={t('salesDraft.documentNames.order', {
+            ns: 'common',
+            defaultValue: 'sipariş',
+          })}
+          updatedAt={salesDraft.pendingDraft?.updatedAt}
+          onRestore={salesDraft.restoreDraft}
+          onDiscard={salesDraft.discardDraft}
+        />
         <form onSubmit={handleFormSubmit} className="space-y-0">
 
           <DocumentCreatePageHeader

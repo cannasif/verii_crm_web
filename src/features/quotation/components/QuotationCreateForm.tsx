@@ -32,6 +32,8 @@ import { quotationApi } from '../api/quotation-api';
 import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { SalesDocumentDraftRestoreDialog } from '@/features/sales-drafts/SalesDocumentDraftRestoreDialog';
+import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentDraft';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -87,6 +89,7 @@ export function QuotationCreateForm(): ReactElement {
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);
+  const branch = useAuthStore((state) => state.branch);
 
   const [lines, setLines] = useState<QuotationLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<QuotationExchangeRateFormState[]>([]);
@@ -131,10 +134,27 @@ export function QuotationCreateForm(): ReactElement {
   const watchedRepresentativeId = form.watch('quotation.representativeId');
   const watchedOfferDate = form.watch('quotation.offerDate');
   const quotationFormSlice = form.watch('quotation');
+  const quotationDraftFormValues = form.watch();
   const quotationSchemaPayload = useMemo(
     () => ({ quotation: quotationFormSlice }),
     [quotationFormSlice],
   );
+  const salesDraft = useSalesDocumentDraft({
+    documentType: 'quotation',
+    rootKey: 'quotation',
+    userId: user?.id,
+    branchCode: branch?.code ?? branch?.id,
+    form,
+    formValues: quotationDraftFormValues,
+    lines,
+    exchangeRates,
+    notes: quotationNotes,
+    setLines,
+    setExchangeRates,
+    setNotes: setQuotationNotes,
+    createDefaultNotes: createEmptyQuotationNotes,
+    enabled: !createMutation.isPending,
+  });
 
   const saveManualHintLines = useMemo(
     () =>
@@ -300,6 +320,7 @@ export function QuotationCreateForm(): ReactElement {
         toast.success(t('create.success'), {
           description: t('create.successMessage'),
         });
+        await salesDraft.clearDraft();
         navigate(`/quotations/${result.data.id}`);
       } else {
         throw new Error(result.message || t('create.errorMessage'));
@@ -548,6 +569,16 @@ export function QuotationCreateForm(): ReactElement {
   return (
     <div className="w-full max-w-[1600px] mx-auto relative pb-10 px-4 md:px-6">
       <FormProvider {...form}>
+        <SalesDocumentDraftRestoreDialog
+          open={salesDraft.restoreDialogOpen}
+          documentName={t('salesDraft.documentNames.quotation', {
+            ns: 'common',
+            defaultValue: 'teklif',
+          })}
+          updatedAt={salesDraft.pendingDraft?.updatedAt}
+          onRestore={salesDraft.restoreDraft}
+          onDiscard={salesDraft.discardDraft}
+        />
         <form onSubmit={handleFormSubmit} className="space-y-0">
 
           <DocumentCreatePageHeader
