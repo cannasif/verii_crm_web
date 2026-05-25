@@ -1,4 +1,5 @@
 import { type ReactElement, useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useQueries } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { LayoutGrid, List as ListIcon, X, AlertCircle, Filter } from 'lucide-react';
 import {
@@ -18,7 +19,7 @@ import { getImageUrl } from '@/features/stock/utils/image-url';
 import { stockApi } from '@/features/stock/api/stock-api';
 import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } from './RelatedStocksSelectionDialog';
 import { cn } from '@/lib/utils';
-import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto } from '@/features/stock/types';
+import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto, WarehouseStockBalanceDto } from '@/features/stock/types';
 import { useDropdownInfiniteSearch } from '@/hooks/useDropdownInfiniteSearch';
 import { dropdownApi } from '@/components/shared/dropdown/dropdown-api';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -100,6 +101,7 @@ interface StockCardProps {
   selected?: boolean;
   alreadyInDraft?: boolean;
   alreadyOnDocumentLine?: boolean;
+  warehouseBalances?: WarehouseStockBalanceDto[];
 }
 
 interface StockWithImageCardProps {
@@ -109,6 +111,53 @@ interface StockWithImageCardProps {
   selected?: boolean;
   alreadyInDraft?: boolean;
   alreadyOnDocumentLine?: boolean;
+  warehouseBalances?: WarehouseStockBalanceDto[];
+}
+
+function formatWarehouseBalance(value: number): string {
+  return new Intl.NumberFormat('tr-TR', {
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+function WarehouseBalanceSummary({
+  balances,
+  compact = false,
+}: {
+  balances?: WarehouseStockBalanceDto[];
+  compact?: boolean;
+}): ReactElement | null {
+  const { t } = useTranslation('common');
+  if (!balances || balances.length === 0) {
+    return null;
+  }
+
+  const total = balances.reduce((sum, item) => sum + (Number(item.balance) || 0), 0);
+  const preview = balances.slice(0, compact ? 2 : 3);
+  const hiddenCount = Math.max(0, balances.length - preview.length);
+
+  return (
+    <div className={cn('flex min-w-0 flex-wrap items-center gap-1', compact ? 'justify-end' : 'mt-1')}>
+      <span className="rounded-md border border-emerald-300/70 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/30 dark:text-emerald-300">
+        {t('productSelectDialog.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}: {formatWarehouseBalance(total)}
+      </span>
+      {preview.map((item) => (
+        <span
+          key={`${item.warehouseId}-${item.warehouseCode}`}
+          className="max-w-[92px] truncate rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] text-slate-600 dark:bg-white/10 dark:text-slate-300"
+          title={`${item.warehouseName || item.warehouseCode}: ${formatWarehouseBalance(item.balance)}`}
+        >
+          {item.warehouseName || item.warehouseCode}: {formatWarehouseBalance(item.balance)}
+        </span>
+      ))}
+      {hiddenCount > 0 ? (
+        <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-500 dark:bg-white/10 dark:text-slate-400">
+          +{hiddenCount}
+        </span>
+      ) : null}
+    </div>
+  );
 }
 
 function StockCard({
@@ -118,6 +167,7 @@ function StockCard({
   selected = false,
   alreadyInDraft = false,
   alreadyOnDocumentLine = false,
+  warehouseBalances,
 }: StockCardProps): ReactElement {
   const { t } = useTranslation('common');
   const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
@@ -223,6 +273,7 @@ function StockCard({
                 <span className="text-slate-500 dark:text-slate-400">{t('productSelectDialog.unit')}:</span>
                 <span className="truncate font-medium text-slate-700 dark:text-slate-300">{stock.unit || '-'}</span>
               </div>
+              <WarehouseBalanceSummary balances={warehouseBalances} />
             </div>
             {hasRelatedStocks && (
               <div className="mt-2">
@@ -333,6 +384,7 @@ function StockWithImageCard({
   selected = false,
   alreadyInDraft = false,
   alreadyOnDocumentLine = false,
+  warehouseBalances,
 }: StockWithImageCardProps): ReactElement {
   const { t } = useTranslation('common');
   const imageUrl = stock.mainImage ? getImageUrl(stock.mainImage.filePath) : null;
@@ -454,6 +506,7 @@ function StockWithImageCard({
                   <span className="text-slate-500 dark:text-slate-400">{t('productSelectDialog.unit')}:</span>
                   <span className="truncate font-medium text-slate-700 dark:text-slate-300">{stock.unit || '-'}</span>
                 </div>
+                <WarehouseBalanceSummary balances={warehouseBalances} />
               </div>
             </div>
             <div className="mt-0.5 shrink-0 text-slate-300 dark:text-slate-600 group-hover:text-pink-500 dark:group-hover:text-pink-400 transition-colors">
@@ -536,13 +589,14 @@ function StockListItem({
   selected = false,
   alreadyInDraft = false,
   alreadyOnDocumentLine = false,
+  warehouseBalances,
 }: StockCardProps): ReactElement {
   const { t } = useTranslation('common');
 
   return (
     <div
       className={cn(
-        'group grid h-14 grid-cols-[minmax(0,1fr)_120px_20px] items-center gap-2 px-3 text-xs',
+        'group grid min-h-16 grid-cols-[minmax(0,1fr)_170px_20px] items-center gap-2 px-3 py-2 text-xs',
         'cursor-pointer border-b border-slate-300 dark:border-white/15',
         selected
           ? 'bg-pink-100/90 dark:bg-pink-900/35 ring-1 ring-pink-400/90 dark:ring-pink-500/55 border-pink-300 dark:border-pink-600/40'
@@ -590,6 +644,7 @@ function StockListItem({
       </div>
       <div className="text-right text-xs text-slate-500 dark:text-slate-400">
         {t('productSelectDialog.unit')}: <span className="font-semibold text-slate-700 dark:text-slate-300">{stock.unit || '-'}</span>
+        <WarehouseBalanceSummary balances={warehouseBalances} compact />
       </div>
       <div className="text-slate-300 dark:text-slate-600 group-hover:text-pink-500 dark:group-hover:text-pink-400">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -606,6 +661,7 @@ function StockWithImageListItem({
   selected = false,
   alreadyInDraft = false,
   alreadyOnDocumentLine = false,
+  warehouseBalances,
 }: StockWithImageCardProps): ReactElement {
   const { t } = useTranslation('common');
   const imageUrl = stock.mainImage ? getImageUrl(stock.mainImage.filePath) : null;
@@ -613,7 +669,7 @@ function StockWithImageListItem({
   return (
     <div
       className={cn(
-        'group grid h-16 grid-cols-[42px_minmax(0,1fr)_120px_20px] items-center gap-2 px-3 text-xs',
+        'group grid min-h-16 grid-cols-[42px_minmax(0,1fr)_170px_20px] items-center gap-2 px-3 py-2 text-xs',
         'cursor-pointer border-b border-slate-300 dark:border-white/15',
         selected
           ? 'bg-pink-100/90 dark:bg-pink-900/35 ring-1 ring-pink-400/90 dark:ring-pink-500/55 border-pink-300 dark:border-pink-600/40'
@@ -675,6 +731,7 @@ function StockWithImageListItem({
       </div>
       <div className="text-right text-xs text-slate-500 dark:text-slate-400">
         {t('productSelectDialog.unit')}: <span className="font-semibold text-slate-700 dark:text-slate-300">{stock.unit || '-'}</span>
+        <WarehouseBalanceSummary balances={warehouseBalances} compact />
       </div>
       <div className="text-slate-300 dark:text-slate-600 group-hover:text-pink-500 dark:group-hover:text-pink-400">
         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -867,6 +924,26 @@ export function ProductSelectDialog({
   const visibleStocks = stocksDropdown.items;
 
   const visibleStocksWithImages = stocksWithImagesDropdown.items;
+  const visibleStockIds = useMemo(
+    () => Array.from(new Set([...visibleStocks, ...visibleStocksWithImages].map((stock) => stock.id).filter((id) => id > 0))),
+    [visibleStocks, visibleStocksWithImages]
+  );
+  const warehouseBalanceQueries = useQueries({
+    queries: visibleStockIds.map((stockId) => ({
+      queryKey: ['warehouse-stock-balances', 'by-stock', stockId],
+      queryFn: () => stockApi.getWarehouseBalancesByStockId(stockId),
+      enabled: open && stockId > 0,
+      staleTime: 60_000,
+      gcTime: 5 * 60_000,
+    })),
+  });
+  const warehouseBalancesByStockId = useMemo(() => {
+    const map = new Map<number, WarehouseStockBalanceDto[]>();
+    visibleStockIds.forEach((stockId, index) => {
+      map.set(stockId, warehouseBalanceQueries[index]?.data ?? []);
+    });
+    return map;
+  }, [visibleStockIds, warehouseBalanceQueries]);
 
   const handleStockSelect = async (stock: StockGetDto | StockGetWithMainImageDto): Promise<void> => {
     const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
@@ -1006,6 +1083,7 @@ export function ProductSelectDialog({
               selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
               alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
               alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
+              warehouseBalances={warehouseBalancesByStockId.get(stock.id)}
             />
           ))}
         </div>
@@ -1023,6 +1101,7 @@ export function ProductSelectDialog({
             selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
             alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
             alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
+            warehouseBalances={warehouseBalancesByStockId.get(stock.id)}
           />
         ))}
       </div>
@@ -1062,6 +1141,7 @@ export function ProductSelectDialog({
               selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
               alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
               alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
+              warehouseBalances={warehouseBalancesByStockId.get(stock.id)}
             />
           ))}
         </div>
@@ -1079,6 +1159,7 @@ export function ProductSelectDialog({
             selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
             alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
             alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
+            warehouseBalances={warehouseBalancesByStockId.get(stock.id)}
           />
         ))}
       </div>

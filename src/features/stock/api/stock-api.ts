@@ -13,6 +13,7 @@ import type {
   StockRelationDto,
   StockRelationCreateDto,
   StockCreateDto,
+  WarehouseStockBalanceDto,
 } from '../types';
 
 export const stockApi = {
@@ -263,6 +264,22 @@ export const stockApi = {
     }
 
     return response.data;
+  },
+
+  getWarehouseBalancesByStockId: async (stockId: number): Promise<WarehouseStockBalanceDto[]> => {
+    if (!stockId || stockId <= 0) {
+      return [];
+    }
+
+    const response = await api.get<ApiResponse<WarehouseStockBalanceDto[]>>(
+      `/api/warehouse-stock-balances/by-stock/${stockId}`,
+    );
+
+    if (!response.success) {
+      throw new Error(response.message || 'Depo stok bakiyeleri yüklenemedi');
+    }
+
+    return response.data ?? [];
   },
 
   createRelation: async (data: StockRelationCreateDto): Promise<StockRelationDto> => {

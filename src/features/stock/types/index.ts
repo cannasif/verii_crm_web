@@ -34,6 +34,19 @@ export interface StockGetDto {
   updatedBy?: number;
 }
 
+export interface WarehouseStockBalanceDto {
+  id: number;
+  stockId: number;
+  warehouseId: number;
+  erpStockCode: string;
+  stockName?: string | null;
+  warehouseCode: number;
+  warehouseName?: string | null;
+  branchCode: number;
+  balance: number;
+  lastSyncDate?: string | null;
+}
+
 export interface StockDetailGetDto {
   id: number;
   stockId: number;

@@ -53,7 +53,7 @@ import { stockMatchesDraftSnapshot, type ProductSelectionResult } from './Produc
 import { cn } from '@/lib/utils';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { stockApi } from '@/features/stock/api/stock-api';
-import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto } from '@/features/stock/types';
+import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto, WarehouseStockBalanceDto } from '@/features/stock/types';
 import { getImageUrl } from '@/features/stock/utils/image-url';
 import {
   fetchPricingRuleCampaignStockData,
@@ -235,6 +235,52 @@ function CatalogCampaignPricingRow({ line }: CatalogCampaignPricingRowProps): Re
             {t('catalogStockPicker.campaignDiscountBadge', { rates: ratesSummary })}
           </span>
         </div>
+      ) : null}
+    </div>
+  );
+}
+
+function formatWarehouseBalance(value: number): string {
+  return new Intl.NumberFormat('tr-TR', {
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}
+
+function CatalogWarehouseBalanceSummary({
+  balances,
+  compact = false,
+}: {
+  balances?: WarehouseStockBalanceDto[];
+  compact?: boolean;
+}): ReactElement | null {
+  const { t } = useTranslation('common');
+  if (!balances || balances.length === 0) {
+    return null;
+  }
+
+  const total = balances.reduce((sum, item) => sum + (Number(item.balance) || 0), 0);
+  const preview = balances.slice(0, compact ? 1 : 2);
+  const hiddenCount = Math.max(0, balances.length - preview.length);
+
+  return (
+    <div className={cn('flex min-w-0 flex-wrap items-center gap-1', compact ? 'justify-end' : 'mt-auto pt-1')}>
+      <span className="rounded-md border border-emerald-300/70 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/30 dark:text-emerald-300">
+        {t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}: {formatWarehouseBalance(total)}
+      </span>
+      {preview.map((item) => (
+        <span
+          key={`${item.warehouseId}-${item.warehouseCode}`}
+          className="max-w-[82px] truncate rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] text-slate-600 dark:bg-white/[0.06] dark:text-slate-300"
+          title={`${item.warehouseName || item.warehouseCode}: ${formatWarehouseBalance(item.balance)}`}
+        >
+          {item.warehouseName || item.warehouseCode}: {formatWarehouseBalance(item.balance)}
+        </span>
+      ))}
+      {hiddenCount > 0 ? (
+        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-500 dark:bg-white/[0.06] dark:text-slate-400">
+          +{hiddenCount}
+        </span>
       ) : null}
     </div>
   );
@@ -773,6 +819,27 @@ export function CatalogStockSelectDialog({
     return map;
   }, [activeStockRows, relationQueries]);
 
+  const activeStockIds = useMemo(
+    () => Array.from(new Set(activeStockRows.map((stock) => stock.stockId).filter((stockId) => stockId > 0))),
+    [activeStockRows],
+  );
+  const warehouseBalanceQueries = useQueries({
+    queries: activeStockIds.map((stockId) => ({
+      queryKey: ['warehouse-stock-balances', 'by-stock', stockId],
+      queryFn: () => stockApi.getWarehouseBalancesByStockId(stockId),
+      enabled: open && stockId > 0,
+      staleTime: 60_000,
+      gcTime: 5 * 60_000,
+    })),
+  });
+  const warehouseBalancesByStockId = useMemo(() => {
+    const map = new Map<number, WarehouseStockBalanceDto[]>();
+    activeStockIds.forEach((stockId, index) => {
+      map.set(stockId, warehouseBalanceQueries[index]?.data ?? []);
+    });
+    return map;
+  }, [activeStockIds, warehouseBalanceQueries]);
+
   const getSelectionKey = (value: { id?: number; code: string }): string =>
     value.id != null ? `id:${value.id}` : `code:${value.code}`;
 
@@ -1245,6 +1312,7 @@ export function CatalogStockSelectDialog({
                 <th className="px-2 py-1.5 sm:px-3 sm:py-2">{t('catalogStockPicker.listColName')}</th>
                 <th className="w-14 px-2 py-1.5 sm:py-2">{t('catalogStockPicker.unit')}</th>
                 <th className="w-24 px-2 py-1.5 sm:py-2">{t('catalogStockPicker.groupCode')}</th>
+                <th className="w-36 px-2 py-1.5 text-right sm:py-2">{t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}</th>
                 <th className="w-16 px-2 py-1.5 text-center sm:py-2">{t('catalogStockPicker.listColRelated')}</th>
                 <th className="w-28 px-2 py-1.5 text-right sm:py-2">{t('catalogStockPicker.listColAction')}</th>
               </tr>
@@ -1262,6 +1330,7 @@ export function CatalogStockSelectDialog({
                   catalogDocumentLinesList
                 );
                 const relCount = relationMap.get(stock.stockId)?.length ?? 0;
+                const warehouseBalances = warehouseBalancesByStockId.get(stock.stockId);
 
                 return (
                   <tr
@@ -1330,6 +1399,9 @@ export function CatalogStockSelectDialog({
                     </td>
                     <td className="px-2 py-1 align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs">{stock.unit || '—'}</td>
                     <td className="px-2 py-1 align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs">{stock.grupKodu || '—'}</td>
+                    <td className="px-2 py-1 align-middle text-right sm:py-1.5">
+                      <CatalogWarehouseBalanceSummary balances={warehouseBalances} compact />
+                    </td>
                     <td className="px-2 py-1 align-middle text-center sm:py-1.5">
                       {relCount > 0 ? (
                         <Badge
@@ -1394,6 +1466,7 @@ export function CatalogStockSelectDialog({
               const watermark = (stock.erpStockCode ?? '').slice(0, 2).toUpperCase() || '·';
               const relCount = relationMap.get(stock.stockId)?.length ?? 0;
               const imageUrl = stock.imageUrl?.trim() ? getImageUrl(stock.imageUrl) : null;
+              const warehouseBalances = warehouseBalancesByStockId.get(stock.stockId);
 
               return (
                 <button
@@ -1524,6 +1597,8 @@ export function CatalogStockSelectDialog({
                         line={campaignPricingByCodeLower[stock.erpStockCode.toLowerCase()]}
                       />
                     ) : null}
+
+                    <CatalogWarehouseBalanceSummary balances={warehouseBalances} />
 
                     {(stock.grupKodu || stock.kod1) ? (
                       <div className="mt-auto flex items-center gap-1 pt-0.5">
