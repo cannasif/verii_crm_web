@@ -36,7 +36,7 @@ export function VisibilityPoliciesPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
-  const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.permission-groups.view');
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.visibility-policies.view');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);

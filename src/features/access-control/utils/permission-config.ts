@@ -115,14 +115,14 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/settings/integrations/whatsapp/flow': 'settings.integrations.whatsapp.view',
   '/settings/integrations/whatsapp/drafts': 'settings.integrations.whatsapp.view',
   '/settings/integrations/whatsapp/logs': 'settings.integrations.whatsapp.view',
-  '/access-control/guide': 'access-control.permission-groups.view',
-  '/access-control/audit-logs': 'access-control.permission-groups.view',
+  '/access-control/guide': 'access-control.guide.view',
+  '/access-control/audit-logs': 'access-control.audit-logs.view',
   '/access-control/permission-definitions': 'access-control.permission-definitions.view',
   '/access-control/permission-groups': 'access-control.permission-groups.view',
   '/access-control/user-group-assignments': 'access-control.user-group-assignments.view',
-  '/access-control/visibility-policies': 'access-control.permission-groups.view',
+  '/access-control/visibility-policies': 'access-control.visibility-policies.view',
   '/access-control/user-visibility-assignments': 'access-control.user-visibility-assignments.view',
-  '/access-control/visibility-simulator': 'access-control.permission-groups.view',
+  '/access-control/visibility-simulator': 'access-control.visibility-simulator.view',
 };
 
 export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: string }> = [
@@ -216,14 +216,14 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/settings\/integrations\/google(\/|$)/, permission: 'settings.integrations.google.view' },
   { pattern: /^\/settings\/integrations\/outlook(\/|$)/, permission: 'settings.integrations.outlook.view' },
   { pattern: /^\/settings\/integrations\/whatsapp(\/|$)/, permission: 'settings.integrations.whatsapp.view' },
-  { pattern: /^\/access-control\/guide(\/|$)/, permission: 'access-control.permission-groups.view' },
-  { pattern: /^\/access-control\/audit-logs(\/|$)/, permission: 'access-control.permission-groups.view' },
+  { pattern: /^\/access-control\/guide(\/|$)/, permission: 'access-control.guide.view' },
+  { pattern: /^\/access-control\/audit-logs(\/|$)/, permission: 'access-control.audit-logs.view' },
   { pattern: /^\/access-control\/permission-definitions(\/|$)/, permission: 'access-control.permission-definitions.view' },
   { pattern: /^\/access-control\/permission-groups(\/|$)/, permission: 'access-control.permission-groups.view' },
   { pattern: /^\/access-control\/user-group-assignments(\/|$)/, permission: 'access-control.user-group-assignments.view' },
-  { pattern: /^\/access-control\/visibility-policies(\/|$)/, permission: 'access-control.permission-groups.view' },
+  { pattern: /^\/access-control\/visibility-policies(\/|$)/, permission: 'access-control.visibility-policies.view' },
   { pattern: /^\/access-control\/user-visibility-assignments(\/|$)/, permission: 'access-control.user-visibility-assignments.view' },
-  { pattern: /^\/access-control\/visibility-simulator(\/|$)/, permission: 'access-control.permission-groups.view' },
+  { pattern: /^\/access-control\/visibility-simulator(\/|$)/, permission: 'access-control.visibility-simulator.view' },
 ];
 
 export function isLeafPermissionCode(code: string): boolean {
@@ -262,7 +262,11 @@ export const ACCESS_CONTROL_ADMIN_PERMISSIONS = [
   'access-control.permission-definitions.view',
   'access-control.permission-groups.view',
   'access-control.user-group-assignments.view',
+  'access-control.visibility-policies.view',
   'access-control.user-visibility-assignments.view',
+  'access-control.visibility-simulator.view',
+  'access-control.audit-logs.view',
+  'access-control.guide.view',
 ] as const;
 
 export const RBAC_FALLBACK_PERMISSION = 'access-control.permission-definitions.view' as const;
@@ -350,7 +354,11 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: s
   'access-control.permission-definitions.view': { key: 'sidebar.permissionDefinitions', fallback: 'Yetki Tanimlari' },
   'access-control.permission-groups.view': { key: 'sidebar.permissionGroups', fallback: 'Yetki Gruplari' },
   'access-control.user-group-assignments.view': { key: 'sidebar.userGroupAssignments', fallback: 'Kullanici Grup Atamalari' },
+  'access-control.visibility-policies.view': { key: 'sidebar.visibilityPolicies', fallback: 'Gorunurluk Politikalari' },
   'access-control.user-visibility-assignments.view': { key: 'sidebar.userVisibilityAssignments', fallback: 'Kullanici Gorunurluk Atamalari' },
+  'access-control.visibility-simulator.view': { key: 'sidebar.visibilitySimulator', fallback: 'Gorunurluk Simulatoru' },
+  'access-control.audit-logs.view': { key: 'sidebar.auditLogs', fallback: 'Denetim Kayitlari' },
+  'access-control.guide.view': { key: 'sidebar.accessControlGuide', fallback: 'Erisim Kontrolu Rehberi' },
 };
 
 export function getPermissionDisplayMeta(code: string): { key?: string; fallback: string } | null {

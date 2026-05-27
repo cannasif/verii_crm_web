@@ -2,7 +2,6 @@ import i18n, { ensureNamespacesReady } from '@/lib/i18n';
 import { permissionDefinitionApi } from '../api/permissionDefinitionApi';
 import type { MyPermissionsDto, SyncPermissionDefinitionItemDto } from '../types/access-control.types';
 import {
-  ACCESS_CONTROL_ADMIN_PERMISSIONS,
   PERMISSION_CODE_CATALOG,
   getPermissionDisplayLabel,
   getPermissionDisplayMeta,
@@ -62,7 +61,7 @@ function setStoredSignature(userId: number, signature: string): void {
 function canManagePermissionDefinitions(permissions: MyPermissionsDto | null | undefined): boolean {
   if (!permissions) return false;
   if (permissions.isSystemAdmin) return true;
-  return ACCESS_CONTROL_ADMIN_PERMISSIONS.some((code) => permissions.permissionCodes.includes(code));
+  return permissions.permissionCodes.includes('access-control.permission-definitions.update');
 }
 
 async function buildSyncItems(): Promise<SyncPermissionDefinitionItemDto[]> {

@@ -33,6 +33,7 @@ import { useUpdateUser as useUpdateUserMutation } from '../hooks/useUpdateUser';
 import { userRowsToBackendFilters, USER_FILTER_COLUMNS } from '../types/user-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import type { PagedFilter } from '@/types/api';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 const PAGE_KEY = 'user-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -64,6 +65,10 @@ export function UserManagementPage(): ReactElement {
   const updateUser = useUpdateUserMutation();
   const updateUserStatus = useUpdateUser();
   const queryClient = useQueryClient();
+  const { canCreate, canUpdate } = useCrudPermissions('users.user-management.view');
+  const permissionGroupCrud = useCrudPermissions('access-control.permission-groups.view');
+  const assignmentCrud = useCrudPermissions('access-control.user-group-assignments.view');
+  const canManagePermissionGroups = permissionGroupCrud.canView && assignmentCrud.canUpdate;
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
   const baseColumns = useMemo(
@@ -204,17 +209,20 @@ export function UserManagementPage(): ReactElement {
   );
 
   const handleAddClick = (): void => {
+    if (!canCreate) return;
     setEditingUser(null);
     setFormOpen(true);
   };
 
   const handleEdit = (u: UserDto): void => {
+    if (!canUpdate) return;
     setEditingUser(u);
     setFormOpen(true);
   };
 
   const handleFormSubmit = async (data: UserFormSchema | UserUpdateFormSchema): Promise<void> => {
     if (editingUser) {
+      if (!canUpdate) return;
       const updateData: UpdateUserDto = {
         email: data.email,
         firstName: data.firstName || undefined,
@@ -223,13 +231,14 @@ export function UserManagementPage(): ReactElement {
         roleId: data.roleId && data.roleId > 0 ? data.roleId : undefined,
         managerUserId: data.managerUserId ?? null,
         isActive: data.isActive,
-        permissionGroupIds: data.permissionGroupIds,
+        permissionGroupIds: canManagePermissionGroups ? data.permissionGroupIds : undefined,
       };
       await updateUser.mutateAsync({
         id: editingUser.id,
         data: updateData,
       });
     } else {
+      if (!canCreate) return;
       const createFormData = data as UserFormSchema;
       const createData: CreateUserDto = {
         username: createFormData.username!,
@@ -241,7 +250,7 @@ export function UserManagementPage(): ReactElement {
         roleId: createFormData.roleId!,
         managerUserId: createFormData.managerUserId ?? null,
         isActive: createFormData.isActive,
-        permissionGroupIds: createFormData.permissionGroupIds,
+        permissionGroupIds: canManagePermissionGroups ? createFormData.permissionGroupIds : undefined,
       };
       await createUser.mutateAsync(createData);
     }
@@ -250,6 +259,7 @@ export function UserManagementPage(): ReactElement {
   };
 
   const handleStatusChange = async (user: UserDto, checked: boolean): Promise<void> => {
+    if (!canUpdate) return;
     await updateUserStatus.mutateAsync({
       id: user.id,
       data: { isActive: checked },
@@ -287,16 +297,18 @@ export function UserManagementPage(): ReactElement {
             {t('description')}
           </p>
         </div>
-        <Button
-          onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11
-          opacity-90 grayscale-[0] 
-          dark:opacity-100 dark:grayscale-0
-          "
-        >
-          <Plus size={18} className="mr-2" />
-          {t('addButton')}
-        </Button>
+        {canCreate && (
+          <Button
+            onClick={handleAddClick}
+            className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11
+            opacity-90 grayscale-[0]
+            dark:opacity-100 dark:grayscale-0
+            "
+          >
+            <Plus size={18} className="mr-2" />
+            {t('addButton')}
+          </Button>
+        )}
       </div>
 
       <UserStats />
@@ -353,7 +365,7 @@ export function UserManagementPage(): ReactElement {
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
             <UserTable
-              onEdit={handleEdit}
+              onEdit={canUpdate ? handleEdit : undefined}
               columns={columns}
               visibleColumnKeys={orderedVisibleColumns}
               rows={users}
@@ -365,7 +377,7 @@ export function UserManagementPage(): ReactElement {
                       <Switch
                         checked={row.isActive}
                         onCheckedChange={(checked) => handleStatusChange(row, checked)}
-                        disabled={updateUserStatus.isPending}
+                        disabled={!canUpdate || updateUserStatus.isPending}
                       />
                       <span className="text-sm text-muted-foreground">
                         {row.isActive ? t('table.active') : t('table.inactive')}
@@ -419,7 +431,7 @@ export function UserManagementPage(): ReactElement {
               errorText={t('messages.error', { defaultValue: 'Hata oluştu' })}
               emptyText={t('table.noData')}
               minTableWidthClassName="min-w-[900px] lg:min-w-[1100px]"
-              showActionsColumn
+              showActionsColumn={canUpdate}
               actionsHeaderLabel={t('common.actions')}
               rowClassName="group"
               pageSize={pageSize}
@@ -461,6 +473,7 @@ export function UserManagementPage(): ReactElement {
         onSubmit={handleFormSubmit}
         user={editingUser}
         isLoading={createUser.isPending || updateUser.isPending}
+        canManagePermissionGroups={canManagePermissionGroups}
       />
     </div>
   );

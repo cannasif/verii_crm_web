@@ -4,7 +4,8 @@ import { userPermissionGroupApi } from '@/features/access-control/api/userPermis
 const STALE_TIME_MS = 60_000;
 
 export function useUserPermissionGroupsForForm(
-  userId: number | null
+  userId: number | null,
+  enabled = true
 ): ReturnType<typeof useQuery<number[]>> {
   return useQuery({
     queryKey: ['users', userId, 'permission-groups'],
@@ -13,7 +14,7 @@ export function useUserPermissionGroupsForForm(
       const data = await userPermissionGroupApi.getByUserId(userId);
       return data.permissionGroupIds ?? [];
     },
-    enabled: userId != null && userId > 0,
+    enabled: enabled && userId != null && userId > 0,
     staleTime: STALE_TIME_MS,
   });
 }

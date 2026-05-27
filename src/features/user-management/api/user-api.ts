@@ -45,7 +45,6 @@ export const userApi = {
     const payload = {
       ...data,
       managerUserId: data.managerUserId ?? null,
-      permissionGroupIds: data.permissionGroupIds ?? [],
     };
     const response = await api.post<ApiResponse<UserDto>>('/api/User', payload);
     if (response.success && response.data) {

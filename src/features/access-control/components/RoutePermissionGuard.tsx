@@ -1,13 +1,12 @@
 import { type ReactElement } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import type { AxiosError } from 'axios';
 import { useMyPermissionsQuery } from '../hooks/useMyPermissionsQuery';
 import { canAccessPath } from '../utils/hasPermission';
 import { UnauthorizedPage } from './UnauthorizedPage';
 
 export function RoutePermissionGuard(): ReactElement {
   const location = useLocation();
-  const { data: permissions, isLoading, isError, error } = useMyPermissionsQuery();
+  const { data: permissions, isLoading, isError } = useMyPermissionsQuery();
 
   if (isLoading) {
     return (
@@ -18,11 +17,7 @@ export function RoutePermissionGuard(): ReactElement {
   }
 
   if (isError) {
-    const statusCode = (error as AxiosError | null)?.response?.status;
-    if (statusCode === 403) {
-      return <UnauthorizedPage />;
-    }
-    return <Outlet />;
+    return <UnauthorizedPage />;
   }
 
   if (!permissions) {

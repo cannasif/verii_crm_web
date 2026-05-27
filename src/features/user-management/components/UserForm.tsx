@@ -47,6 +47,7 @@ interface UserFormProps {
   onSubmit: (data: UserFormSchema | UserUpdateFormSchema) => void | Promise<void>;
   user?: UserDto | null;
   isLoading?: boolean;
+  canManagePermissionGroups?: boolean;
 }
 
 const INPUT_STYLE = `
@@ -70,6 +71,7 @@ export function UserForm({
   onSubmit,
   user,
   isLoading = false,
+  canManagePermissionGroups = false,
 }: UserFormProps): ReactElement {
   const { t } = useTranslation('user-management');
   const userId = user?.id ?? null;
@@ -88,7 +90,8 @@ export function UserForm({
   const managerOptionsQuery = useUserManagerOptionsQuery();
   const managerOptions = (managerOptionsQuery.data ?? []).filter((option) => option.value !== userId);
   const userPermissionGroupsQuery = useUserPermissionGroupsForForm(
-    userId
+    userId,
+    canManagePermissionGroups
   );
 
   const form = useForm<UserFormSchema | UserUpdateFormSchema>({
@@ -157,7 +160,7 @@ export function UserForm({
   ]);
 
   useEffect(() => {
-    if (!open || userId == null) {
+    if (!open || userId == null || !canManagePermissionGroups) {
       return;
     }
 
@@ -174,7 +177,7 @@ export function UserForm({
     if (!same) {
       form.setValue('permissionGroupIds', next, { shouldDirty: false, shouldTouch: false });
     }
-  }, [open, userId, userPermissionGroupsQuery.isLoading, userPermissionGroupsQuery.data, form]);
+  }, [open, userId, canManagePermissionGroups, userPermissionGroupsQuery.isLoading, userPermissionGroupsQuery.data, form]);
 
   useEffect(() => {
     if (!open || userId == null || roleOptions.length === 0) {
@@ -440,25 +443,27 @@ export function UserForm({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="permissionGroupIds"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className={LABEL_STYLE}>
-                      <Shield size={16} className="text-pink-500" /> {t('form.permissionGroups')}
-                    </FormLabel>
-                    <FormControl>
-                      <UserFormPermissionGroupSelect
-                        value={field.value ?? []}
-                        onChange={field.onChange}
-                        disabled={isLoading}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {canManagePermissionGroups && (
+                <FormField
+                  control={form.control}
+                  name="permissionGroupIds"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className={LABEL_STYLE}>
+                        <Shield size={16} className="text-pink-500" /> {t('form.permissionGroups')}
+                      </FormLabel>
+                      <FormControl>
+                        <UserFormPermissionGroupSelect
+                          value={field.value ?? []}
+                          onChange={field.onChange}
+                          disabled={isLoading}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}
