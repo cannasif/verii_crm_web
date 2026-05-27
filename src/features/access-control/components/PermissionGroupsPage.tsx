@@ -248,7 +248,7 @@ export function PermissionGroupsPage(): ReactElement {
           title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
         >
           <Trash2 size={16} className="mr-2" />
-          {t('common.delete', { defaultValue: t('common.delete.action') })}
+          {t('common.delete.action')}
         </Button>
       )}
     </div>

@@ -295,7 +295,7 @@ export function VisibilityPoliciesPage(): ReactElement {
                         disabled={deleteMutation.isPending}
                       >
                         <Trash2 size={16} className="mr-2" />
-                        {t('common.delete', { defaultValue: t('common.delete.action') })}
+                        {t('common.delete.action')}
                       </Button>
                     )}
                   </div>
