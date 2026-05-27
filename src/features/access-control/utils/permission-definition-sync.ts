@@ -2,6 +2,7 @@ import i18n, { ensureNamespacesReady } from '@/lib/i18n';
 import { permissionDefinitionApi } from '../api/permissionDefinitionApi';
 import type { MyPermissionsDto, SyncPermissionDefinitionItemDto } from '../types/access-control.types';
 import {
+  DEPRECATED_AUTO_PERMISSION_CODES,
   PERMISSION_CODE_CATALOG,
   getPermissionDisplayLabel,
   getPermissionDisplayMeta,
@@ -9,7 +10,7 @@ import {
 } from './permission-config';
 
 const AUTO_SYNC_STORAGE_KEY = 'permission-definition-auto-sync';
-const AUTO_SYNC_VERSION = 'v1';
+const AUTO_SYNC_VERSION = 'v2';
 const CANONICAL_PERMISSION_LANGUAGE = 'tr';
 
 let autoSyncPromise: Promise<void> | null = null;
@@ -67,13 +68,23 @@ function canManagePermissionDefinitions(permissions: MyPermissionsDto | null | u
 async function buildSyncItems(): Promise<SyncPermissionDefinitionItemDto[]> {
   await ensureNamespacesReady(getRequiredNamespaces(), CANONICAL_PERMISSION_LANGUAGE);
 
-  return PERMISSION_CODE_CATALOG.map((code) => ({
+  const activeItems = PERMISSION_CODE_CATALOG.map((code) => ({
     code,
     name: getPermissionDisplayLabel(code, translateInCanonicalLanguage),
     description: null,
     isActive: true,
     ...inferPermissionPlatforms(code),
   }));
+
+  const deprecatedItems = DEPRECATED_AUTO_PERMISSION_CODES.map((code) => ({
+    code,
+    name: getPermissionDisplayLabel(code, translateInCanonicalLanguage),
+    description: null,
+    isActive: false,
+    ...inferPermissionPlatforms(code),
+  }));
+
+  return [...activeItems, ...deprecatedItems];
 }
 
 export async function ensurePermissionDefinitionsSynced(args: {

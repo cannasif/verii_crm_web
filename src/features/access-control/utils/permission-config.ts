@@ -235,6 +235,16 @@ export function isLeafPermissionCode(code: string): boolean {
 }
 
 const CRUD_ACTIONS = ['view', 'create', 'update', 'delete'] as const;
+type CrudAction = (typeof CRUD_ACTIONS)[number];
+
+// Some access-control pages are operations, not CRUD resources.
+// Keep their selectable permissions aligned with the API endpoints they expose.
+const PERMISSION_ACTION_OVERRIDES: Record<string, readonly CrudAction[]> = {
+  'access-control.user-group-assignments': ['view', 'update'],
+  'access-control.visibility-simulator': ['view'],
+  'access-control.audit-logs': ['view'],
+  'access-control.guide': ['view'],
+};
 
 function isCrudAction(action: string): action is (typeof CRUD_ACTIONS)[number] {
   return (CRUD_ACTIONS as readonly string[]).includes(action);
@@ -255,7 +265,9 @@ function buildCrudPermissionCodes(code: string): string[] {
   const parts = code.split('.').filter(Boolean);
   if (parts.length < 3) return [code];
 
-  return CRUD_ACTIONS.map((action) => [...parts.slice(0, -1), action].join('.'));
+  const baseCode = parts.slice(0, -1).join('.');
+  const actions = PERMISSION_ACTION_OVERRIDES[baseCode] ?? CRUD_ACTIONS;
+  return actions.map((action) => `${baseCode}.${action}`);
 }
 
 export const ACCESS_CONTROL_ADMIN_PERMISSIONS = [
@@ -518,6 +530,16 @@ export const PERMISSION_CODE_CATALOG: string[] = Array.from(
 )
   .filter((code) => isLeafPermissionCode(code))
   .sort((a, b) => a.localeCompare(b));
+
+export const DEPRECATED_AUTO_PERMISSION_CODES: string[] = Array.from(
+  new Set(
+    Object.entries(PERMISSION_ACTION_OVERRIDES).flatMap(([baseCode, supportedActions]) =>
+      CRUD_ACTIONS
+        .filter((action) => !supportedActions.includes(action))
+        .map((action) => `${baseCode}.${action}`)
+    )
+  )
+).sort((a, b) => a.localeCompare(b));
 
 export function getRoutesForPermissionCode(code: string): string[] {
   const parts = code.split('.').filter(Boolean);
