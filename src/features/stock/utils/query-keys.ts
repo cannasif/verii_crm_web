@@ -5,6 +5,7 @@ export const STOCK_QUERY_KEYS = {
   DETAIL_BY_STOCK: 'stock.detail.byStock',
   IMAGES: 'stock.images',
   RELATIONS: 'stock.relations',
+  WAREHOUSE_BALANCES: 'warehouse-stock-balances',
 } as const;
 
 export const queryKeys = {
@@ -26,4 +27,6 @@ export const queryKeys = {
   detailByStock: (stockId: number) => [STOCK_QUERY_KEYS.DETAIL_BY_STOCK, stockId] as const,
   images: (stockId: number) => [STOCK_QUERY_KEYS.IMAGES, stockId] as const,
   relations: (stockId: number) => [STOCK_QUERY_KEYS.RELATIONS, stockId] as const,
+  warehouseBalances: (stockId: number) =>
+    [STOCK_QUERY_KEYS.WAREHOUSE_BALANCES, 'by-stock', stockId] as const,
 };

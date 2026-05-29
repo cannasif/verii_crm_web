@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StockGetWithMainImageDto } from '../types';
 import { getImageUrl } from '../utils/image-url';
+import { StockWarehouseBalanceBadge } from './StockWarehouseBalanceBadge';
 
 export type StockGridCardProps = {
   stock: StockGetWithMainImageDto;
@@ -144,6 +145,10 @@ export function StockGridCard({
         >
           {stock.stockName}
         </h3>
+
+        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+          <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} />
+        </div>
 
         {stock.grupKodu || stock.kod1 ? (
           <div className="mt-auto flex flex-wrap items-center gap-1 pt-0.5">

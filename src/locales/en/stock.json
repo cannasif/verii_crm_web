@@ -13,6 +13,9 @@
     "erpStockCode": "ERP Stock Code",
     "stockName": "Stock Name",
     "unit": "Unit",
+    "warehouseBalance": "Warehouse balance",
+    "warehouseBalanceTooltipBranch": "Branch {{branch}}",
+    "warehouseBalanceTooltipLastSync": "Last sync: {{date}}",
     "actions": "Actions",
     "viewDetail": "Detail",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
@@ -63,7 +66,20 @@
     "addRelation": "Bağlı Stok Ekle",
     "saving": "Kaydediliyor...",
     "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı",
-    "noCode": "Kod Yok"
+    "noCode": "No code",
+    "warehouseBalances": {
+      "title": "Warehouse balances",
+      "totalLabel": "Total balance",
+      "warehouseCount": "{{count}} warehouses",
+      "colWarehouse": "Warehouse",
+      "colBranch": "Branch",
+      "colBalance": "Balance",
+      "colLastSync": "Last sync",
+      "emptyTitle": "No warehouse balance records",
+      "emptyDesc": "No rows were found in the CRM warehouse stock balance mirror for this stock. ERP balance may exist, but it must be synced before it appears here.",
+      "loadErrorTitle": "Could not load balances",
+      "loadErrorDesc": "An error occurred while fetching warehouse stock balances."
+    }
   },
   "images": {
     "upload": "Drag and drop images here or click",

@@ -22,6 +22,7 @@ import { stockApi } from '../api/stock-api';
 import { STOCK_QUERY_KEYS } from '../utils/query-keys';
 import type { StockGetDto, StockGetWithMainImageDto } from '../types';
 import { StockGridCard } from './StockGridCard';
+import { StockWarehouseBalanceBadge } from './StockWarehouseBalanceBadge';
 import type { PagedFilter } from '@/types/api';
 import { StockBulkImageImportDialog } from './StockBulkImageImportDialog';
 import { StockMirrorCreateDialog } from './StockMirrorCreateDialog';
@@ -60,7 +61,7 @@ function readStoredListLayout(): 'table' | 'grid' {
   return 'table';
 }
 
-type StockColumnKey = 'Id' | 'ErpStockCode' | 'StockName' | 'unit';
+type StockColumnKey = 'Id' | 'ErpStockCode' | 'StockName' | 'unit' | 'WarehouseBalance';
 type SortDirection = 'asc' | 'desc';
 
 type StockColumnConfig = {
@@ -127,12 +128,12 @@ export function StockListPage(): ReactElement {
   );
 
   const columns = useMemo<DataTableGridColumn<StockColumnKey>[]>(
-    () =>
-      baseColumns.map((col) => ({
+    () => [
+      ...baseColumns.map((col) => ({
         ...col,
         headClassName: cn(
           'py-3 text-[11px] font-bold uppercase tracking-[0.1em] px-4',
-          col.key === 'unit' ? 'text-center w-[120px]' : ''
+          col.key === 'unit' ? 'text-center w-[120px]' : '',
         ),
         cellClassName: cn(
           'py-2.5 transition-all duration-300 px-4',
@@ -144,14 +145,25 @@ export function StockListPage(): ReactElement {
                 ? 'text-sm text-slate-600 dark:text-slate-300'
                 : col.key === 'unit'
                   ? 'text-center'
-                  : ''
+                  : '',
         ),
         sortable: col.key !== 'unit',
       })),
-    [baseColumns]
+      {
+        key: 'WarehouseBalance' as StockColumnKey,
+        label: resolveLabel(t, 'list.warehouseBalance', 'Depo bakiyesi'),
+        headClassName: 'py-3 text-[11px] font-bold uppercase tracking-[0.1em] px-4 text-center w-[120px]',
+        cellClassName: 'py-2.5 px-4 text-center',
+        sortable: false,
+      },
+    ],
+    [baseColumns, t],
   );
 
-  const defaultColumnKeys = useMemo(() => baseColumns.map((col) => col.key), [baseColumns]);
+  const defaultColumnKeys = useMemo(
+    () => [...baseColumns.map((col) => col.key), 'WarehouseBalance' as StockColumnKey],
+    [baseColumns],
+  );
   const [columnOrder, setColumnOrder] = useState<string[]>(defaultColumnKeys);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultColumnKeys);
 
@@ -162,8 +174,12 @@ export function StockListPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'Id');
+    const mergedVisibleKeys = [
+      ...prefs.visibleKeys,
+      ...defaultColumnKeys.filter((key) => !prefs.visibleKeys.includes(key)),
+    ];
     setColumnOrder(prefs.order);
-    setVisibleColumns(prefs.visibleKeys);
+    setVisibleColumns(mergedVisibleKeys);
   }, [defaultColumnKeys, user?.id]);
 
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
@@ -365,7 +381,7 @@ export function StockListPage(): ReactElement {
   }, [pageSize, sortBy, sortDirection, appliedFilters, filterLogic, searchTerm, appliedSpecialCodeSelections]);
 
   const onSort = (column: StockColumnKey): void => {
-    if (column === 'unit') return;
+    if (column === 'unit' || column === 'WarehouseBalance') return;
     if (sortBy === column) {
       setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
       return;
@@ -375,7 +391,7 @@ export function StockListPage(): ReactElement {
   };
 
   const renderSortIcon = (column: StockColumnKey): ReactElement => {
-    if (column === 'unit') return <></>;
+    if (column === 'unit' || column === 'WarehouseBalance') return <></>;
     if (sortBy !== column) {
       return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
     }
@@ -432,12 +448,20 @@ export function StockListPage(): ReactElement {
         </Badge>
       );
     }
+    if (key === 'WarehouseBalance') {
+      return (
+        <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
+          <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} />
+        </div>
+      );
+    }
     return '-';
   };
 
   const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEYS.LIST] });
     await queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEYS.LIST_WITH_IMAGES] });
+    await queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEYS.WAREHOUSE_BALANCES] });
     await queryClient.invalidateQueries({ queryKey: ['stock-list-code-facet-pool'] });
   };
 
@@ -603,7 +627,7 @@ export function StockListPage(): ReactElement {
                     loadingText={t('list.loading', { defaultValue: 'Yükleniyor...' })}
                     errorText={t('list.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
                     emptyText={t('list.noData', { defaultValue: 'Kayıt bulunamadı.' })}
-                    minTableWidthClassName="min-w-[900px]"
+                    minTableWidthClassName="min-w-[1020px]"
                     showActionsColumn
                     actionsHeaderLabel={t('list.actions')}
                     renderActionsCell={(stock) => (

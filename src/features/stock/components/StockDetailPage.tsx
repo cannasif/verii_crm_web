@@ -10,6 +10,7 @@ import { ArrowLeft, Box, Image as ImageIcon, Layers, Info, PackageOpen, ShieldCh
 import { cn } from '@/lib/utils';
 import { useStockDetail } from '../hooks/useStockDetail';
 import { StockBasicInfo } from './StockBasicInfo';
+import { StockWarehouseBalances } from './StockWarehouseBalances';
 import { clearPerfMarks, perfMark, perfMeasureOnNextPaint } from '@/lib/perf-metrics';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
@@ -169,6 +170,9 @@ export function StockDetailPage(): ReactElement {
                                         {t('detail.summary')}
                                     </h3>
                                     <StockBasicInfo stock={stock} />
+                                </div>
+                                <div className="bg-zinc-50/80 dark:bg-white/5 rounded-xl p-6 border border-zinc-100 dark:border-white/5">
+                                    <StockWarehouseBalances stockId={stockId} unit={stock.unit} />
                                 </div>
                                 <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/20 text-orange-800 dark:text-orange-200 text-sm">
                                     <p className="font-medium">{t('detail.tipTitle', { defaultValue: 'İpucu' })}</p>

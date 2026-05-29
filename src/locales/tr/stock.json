@@ -13,6 +13,9 @@
     "erpStockCode": "ERP Stok Kodu",
     "stockName": "Stok Adı",
     "unit": "Birim",
+    "warehouseBalance": "Depo bakiyesi",
+    "warehouseBalanceTooltipBranch": "Şube {{branch}}",
+    "warehouseBalanceTooltipLastSync": "Son senkron: {{date}}",
     "actions": "İşlemler",
     "viewDetail": "Detay",
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
@@ -63,7 +66,20 @@
     "tipTitle": "İpucu",
     "tipDescription": "Stok bilgilerini güncelledikten sonra kaydetmeyi unutmayın. ERP entegrasyonu varsa veriler bir sonraki senkronizasyonda güncellenecektir.",
     "relationHint": "Bu stoka ait alt veya üst ürün tanımlayın.",
-    "noCode": "Kod Yok"
+    "noCode": "Kod Yok",
+    "warehouseBalances": {
+      "title": "Depo Bakiyeleri",
+      "totalLabel": "Toplam bakiye",
+      "warehouseCount": "{{count}} depo",
+      "colWarehouse": "Depo",
+      "colBranch": "Şube",
+      "colBalance": "Bakiye",
+      "colLastSync": "Son senkron",
+      "emptyTitle": "Depo bakiyesi kaydı yok",
+      "emptyDesc": "Bu stok için CRM depo bakiye tablosunda (RII_WAREHOUSE_STOCK_BALANCE) kayıt bulunamadı. ERP'de bakiye olsa bile ekranda görünmesi için depo bakiye senkronizasyonunun çalışmış olması gerekir.",
+      "loadErrorTitle": "Bakiyeler yüklenemedi",
+      "loadErrorDesc": "Depo stok bakiyeleri alınırken bir hata oluştu."
+    }
   },
   "images": {
     "upload": "Görselleri buraya sürükleyin veya tıklayın",
