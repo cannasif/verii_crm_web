@@ -16,6 +16,8 @@ import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { LineFormStockSearchField } from '@/components/shared/LineFormStockSearchField';
 import { CatalogStockSelectDialog } from '@/components/shared/CatalogStockSelectDialog';
+import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
+import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex } from '@/lib/line-discount-display';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared/CustomerSelectDialog';
 import { PricingRuleInsightDialog } from '@/components/shared/PricingRuleInsightDialog';
@@ -261,10 +263,21 @@ export function QuotationLineForm({
     [t, discountRate1InputValue, discountRate2InputValue, discountRate3InputValue]
   );
 
+  const unitDiscountBreakdown = useMemo(
+    () =>
+      getLineUnitDiscountBreakdown(
+        formData.unitPrice ?? 0,
+        formData.discountRate1 ?? 0,
+        formData.discountRate2 ?? 0,
+        formData.discountRate3 ?? 0,
+      ),
+    [formData.unitPrice, formData.discountRate1, formData.discountRate2, formData.discountRate3],
+  );
+
   const getDiscountAmount = (field: DiscountField): number => {
-    if (field === 'discountRate1') return formData.discountAmount1 || 0;
-    if (field === 'discountRate2') return formData.discountAmount2 || 0;
-    return formData.discountAmount3 || 0;
+    if (field === 'discountRate1') return getUnitDiscountAmountForTierIndex(unitDiscountBreakdown, 0);
+    if (field === 'discountRate2') return getUnitDiscountAmountForTierIndex(unitDiscountBreakdown, 1);
+    return getUnitDiscountAmountForTierIndex(unitDiscountBreakdown, 2);
   };
 
   const mainStockData = useMemo(() => {
@@ -361,14 +374,6 @@ export function QuotationLineForm({
       };
     });
   }, [allDemirOptions, allVidaOptions, demirOptions, vidaOptions, formData.profilDefinitionId]);
-
-  useEffect(() => {
-    return () => {
-      if (formData.pendingImagePreviewUrl?.startsWith('blob:')) {
-        URL.revokeObjectURL(formData.pendingImagePreviewUrl);
-      }
-    };
-  }, [formData.pendingImagePreviewUrl]);
 
   useEffect(() => {
     const lineRelatedLines = (line as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines || [];
@@ -1312,6 +1317,18 @@ export function QuotationLineForm({
             />
             <div className="absolute right-3 top-3 text-xs font-bold text-slate-400 dark:text-slate-500">{t('lines.currencyTry')}</div>
           </div>
+          {isLineStockSelected && unitDiscountBreakdown.hasDiscount ? (
+            <LineDiscountedUnitPriceDisplay
+              unitPrice={formData.unitPrice ?? 0}
+              discountRate1={formData.discountRate1}
+              discountRate2={formData.discountRate2}
+              discountRate3={formData.discountRate3}
+              currencyCode={currencyCode}
+              align="center"
+              className="mt-2"
+              discountedClassName="text-sm font-bold text-emerald-600 dark:text-emerald-400"
+            />
+          ) : null}
         </div>
 
         <div className="space-y-2">
