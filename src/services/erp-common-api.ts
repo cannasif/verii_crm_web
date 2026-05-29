@@ -4,6 +4,109 @@ import type { ErpCustomer, ErpProject, ProjeDto, ErpWarehouse, ErpProduct, Branc
 
 let cachedProjectCodes: ProjeDto[] | null = null;
 
+function normalizeErpWarehouse(item: unknown): ErpWarehouse | null {
+  if (!item || typeof item !== 'object') {
+    return null;
+  }
+
+  const row = item as Record<string, unknown>;
+  const rawCode =
+    row.depoKodu ??
+    row.DepoKodu ??
+    row.warehouseCode ??
+    row.WarehouseCode ??
+    row.code ??
+    row.Code;
+  const rawName =
+    row.depoIsmi ??
+    row.DepoIsmi ??
+    row.warehouseName ??
+    row.WarehouseName ??
+    row.name ??
+    row.Name ??
+    '';
+  const depoKodu = typeof rawCode === 'number' ? rawCode : Number(rawCode);
+
+  if (!Number.isFinite(depoKodu)) {
+    return null;
+  }
+
+  return {
+    depoKodu,
+    depoIsmi: String(rawName ?? '').trim(),
+  };
+}
+
+function extractWarehouseRows(payload: unknown): ErpWarehouse[] {
+  if (Array.isArray(payload)) {
+    return payload
+      .map(normalizeErpWarehouse)
+      .filter((warehouse): warehouse is ErpWarehouse => warehouse != null);
+  }
+
+  if (!payload || typeof payload !== 'object') {
+    return [];
+  }
+
+  const envelope = payload as Record<string, unknown>;
+  if (Array.isArray(envelope.data)) {
+    return extractWarehouseRows(envelope.data);
+  }
+
+  const nestedData = envelope.data;
+  if (nestedData && typeof nestedData === 'object' && !Array.isArray(nestedData)) {
+    const paged = nestedData as Record<string, unknown>;
+    if (Array.isArray(paged.data)) {
+      return extractWarehouseRows(paged.data);
+    }
+  }
+
+  return [];
+}
+
+function dedupeWarehouses(warehouses: ErpWarehouse[]): ErpWarehouse[] {
+  const map = new Map<number, ErpWarehouse>();
+  warehouses.forEach((warehouse) => {
+    const existing = map.get(warehouse.depoKodu);
+    if (!existing || (!existing.depoIsmi && warehouse.depoIsmi)) {
+      map.set(warehouse.depoKodu, warehouse);
+    }
+  });
+  return [...map.values()].sort((a, b) => a.depoKodu - b.depoKodu);
+}
+
+async function fetchWarehousesFromNetsis(depoKodu?: number): Promise<ErpWarehouse[]> {
+  const query = depoKodu != null ? `?depoKodu=${depoKodu}` : '';
+  const response = await api.get(`/api/NetsisRead/getWarehouses${query}`);
+  const warehouses = dedupeWarehouses(extractWarehouseRows(response));
+
+  if (Array.isArray(response)) {
+    return warehouses;
+  }
+
+  const envelope = response as ApiResponse<unknown>;
+  if (envelope.success !== false) {
+    return warehouses;
+  }
+
+  throw new Error(envelope.message || 'Depolar yüklenemedi');
+}
+
+async function fetchWarehousesFromCrmQuery(): Promise<ErpWarehouse[]> {
+  const response = await api.post<ApiResponse<PagedResponse<unknown>>>('/api/Warehouse/query', {
+    pageNumber: 1,
+    pageSize: 500,
+    sortBy: 'Id',
+    sortDirection: 'asc',
+  });
+
+  if (!response.success) {
+    throw new Error(response.message || 'Depolar yüklenemedi');
+  }
+
+  return dedupeWarehouses(extractWarehouseRows(response.data));
+}
+
 export const erpCommonApi = {
   getCustomers: async (): Promise<ErpCustomer[]> => {
     const response = await api.get('/api/NetsisRead/getAllCustomers') as ApiResponse<ErpCustomer[]>;
@@ -83,14 +186,19 @@ export const erpCommonApi = {
   },
 
   getWarehouses: async (depoKodu?: number): Promise<ErpWarehouse[]> => {
-    const url = depoKodu 
-      ? `/api/Erp/getAllWarehouses?depoKodu=${depoKodu}`
-      : '/api/Erp/getAllWarehouses';
-    const response = await api.get(url) as ApiResponse<ErpWarehouse[]>;
-    if (response.success && response.data) {
-      return response.data;
+    try {
+      return await fetchWarehousesFromNetsis(depoKodu);
+    } catch (netsisError) {
+      if (depoKodu != null) {
+        throw netsisError instanceof Error ? netsisError : new Error('Depolar yüklenemedi');
+      }
+
+      try {
+        return await fetchWarehousesFromCrmQuery();
+      } catch {
+        throw netsisError instanceof Error ? netsisError : new Error('Depolar yüklenemedi');
+      }
     }
-    throw new Error(response.message || 'Depolar yüklenemedi');
   },
 
   getProducts: async (): Promise<ErpProduct[]> => {
