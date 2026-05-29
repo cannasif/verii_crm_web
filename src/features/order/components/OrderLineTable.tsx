@@ -20,6 +20,8 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { OrderLineForm } from './OrderLineForm';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
+import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
+import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { useOrderCalculations } from '../hooks/useOrderCalculations';
@@ -96,6 +98,15 @@ function parseLineId(formId: string | number | undefined): number | null {
 }
 
 function dtoToFormState(dto: OrderLineGetDto, index: number): OrderLineFormState {
+  const amounts = calculateLineTotalsAmounts(
+    dto.unitPrice,
+    dto.quantity,
+    dto.discountRate1,
+    dto.discountRate2,
+    dto.discountRate3,
+    dto.vatRate,
+  );
+
   return {
     id: dto.id && dto.id > 0 ? `line-${dto.id}-${index}` : `line-temp-${index}`,
     isEditing: false,
@@ -107,15 +118,9 @@ function dtoToFormState(dto: OrderLineGetDto, index: number): OrderLineFormState
     quantity: dto.quantity,
     unitPrice: dto.unitPrice,
     discountRate1: dto.discountRate1,
-    discountAmount1: dto.discountAmount1,
     discountRate2: dto.discountRate2,
-    discountAmount2: dto.discountAmount2,
     discountRate3: dto.discountRate3,
-    discountAmount3: dto.discountAmount3,
     vatRate: dto.vatRate,
-    vatAmount: dto.vatAmount,
-    lineTotal: dto.lineTotal,
-    lineGrandTotal: dto.lineGrandTotal,
     description: dto.description ?? null,
     description1: dto.description1 ?? null,
     description2: dto.description2 ?? null,
@@ -130,6 +135,7 @@ function dtoToFormState(dto: OrderLineGetDto, index: number): OrderLineFormState
     relatedProductKey: dto.relatedProductKey ?? null,
     isMainRelatedProduct: dto.isMainRelatedProduct ?? false,
     approvalStatus: dto.approvalStatus ?? 0,
+    ...amounts,
   };
 }
 
@@ -943,7 +949,14 @@ export function OrderLineTable({
                     const isRelatedProduct = line.relatedProductKey !== null && line.relatedProductKey !== undefined;
                     const isMainStock = line.isMainRelatedProduct === true;
                     const hasApprovalWarning = line.approvalStatus === 1;
-                    const lineImagePath = line.imagePath ?? undefined;
+                    const lineImagePreview = getImageUrl(line.imagePath ?? null) || undefined;
+                    const hasLineImage = Boolean(lineImagePreview);
+                    const unitDiscountBreakdown = getLineUnitDiscountBreakdown(
+                      line.unitPrice,
+                      line.discountRate1,
+                      line.discountRate2,
+                      line.discountRate3,
+                    );
 
                     return (
                       <tr
@@ -957,9 +970,9 @@ export function OrderLineTable({
                         {/* STOK BİLGİSİ */}
                         <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "pl-6")}>
                           <div className="flex gap-3">
-                            {lineImagePath ? (
+                            {hasLineImage ? (
                               <img
-                                src={getImageUrl(lineImagePath) ?? undefined}
+                                src={lineImagePreview}
                                 alt={line.productName || line.productCode || 'Line image'}
                                 loading="lazy"
                                 className="h-10 w-10 shrink-0 rounded-md border border-zinc-200 object-cover dark:border-zinc-700"
@@ -1103,7 +1116,7 @@ export function OrderLineTable({
                           ) : (
                             <span
                               className={cn(
-                                'font-mono text-zinc-700 dark:text-zinc-300 bg-zinc-100/60 dark:bg-zinc-800/60 px-2 py-1 rounded-lg text-sm',
+                                'inline-flex bg-zinc-100/60 dark:bg-zinc-800/60 px-2 py-1 rounded-lg text-sm',
                                 lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:ring-2 hover:ring-pink-500/25 rounded-lg'
                               )}
                               title={t('order.lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
@@ -1112,7 +1125,15 @@ export function OrderLineTable({
                                 beginQuickEdit(line, 'unitPrice');
                               }}
                             >
-                              {formatCurrency(line.unitPrice, currencyCode)}
+                              <LineDiscountedUnitPriceDisplay
+                                unitPrice={line.unitPrice}
+                                discountRate1={line.discountRate1}
+                                discountRate2={line.discountRate2}
+                                discountRate3={line.discountRate3}
+                                currencyCode={currencyCode}
+                                singlePriceClassName="font-mono text-zinc-700 dark:text-zinc-300"
+                                discountedClassName="text-sm font-semibold text-emerald-700 dark:text-emerald-300"
+                              />
                             </span>
                           )}
                         </td>
@@ -1178,12 +1199,16 @@ export function OrderLineTable({
 
                         {(
                           [
-                            { rate: line.discountRate1, amount: line.discountAmount1, field: 'discountRate1' as const },
-                            { rate: line.discountRate2, amount: line.discountAmount2, field: 'discountRate2' as const },
-                            { rate: line.discountRate3, amount: line.discountAmount3, field: 'discountRate3' as const },
+                            { rate: line.discountRate1, field: 'discountRate1' as const, tierIndex: 0 },
+                            { rate: line.discountRate2, field: 'discountRate2' as const, tierIndex: 1 },
+                            { rate: line.discountRate3, field: 'discountRate3' as const, tierIndex: 2 },
                           ] as const
                         ).map((discount) => {
-                          const hasDiscount = discount.rate > 0 || discount.amount > 0;
+                          const unitDiscountAmount = getUnitDiscountAmountForTierIndex(
+                            unitDiscountBreakdown,
+                            discount.tierIndex,
+                          );
+                          const hasDiscount = discount.rate > 0 || unitDiscountAmount > 0;
                           const isEditingDiscount =
                             quickEdit?.lineId === line.id && quickEdit.field === discount.field;
                           return (
@@ -1252,7 +1277,7 @@ export function OrderLineTable({
                                     %{discount.rate}
                                   </span>
                                   <span className="text-[10px] font-semibold leading-none text-rose-600 dark:text-rose-400">
-                                    -{formatCurrency(discount.amount || 0, currencyCode)}
+                                    -{formatCurrency(unitDiscountAmount, currencyCode)}
                                   </span>
                                 </div>
                               ) : (
