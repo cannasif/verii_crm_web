@@ -39,7 +39,7 @@ export interface QuotationPdfExportPreviewDialogLabels {
 export interface QuotationPdfExportPreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  buildPdfBlob: () => Promise<Blob>;
+  buildPdfBlob: (options: { draft: boolean }) => Promise<Blob>;
   fileName: string;
   labels: QuotationPdfExportPreviewDialogLabels;
   onShareWhatsapp: () => void;
@@ -87,7 +87,7 @@ export function QuotationPdfExportPreviewDialog({
 
     void (async (): Promise<void> => {
       try {
-        const blob = await buildPdfBlob();
+        const blob = await buildPdfBlob({ draft: true });
         if (loadIdRef.current !== id) return;
         setBlobUrl(URL.createObjectURL(blob));
       } catch {
@@ -101,22 +101,24 @@ export function QuotationPdfExportPreviewDialog({
     })();
   }, [open, buildPdfBlob, revokeBlobUrl]);
 
-  const handleDownload = (): void => {
-    if (!blobUrl) return;
+  const handleDownload = async (): Promise<void> => {
+    const blob = await buildPdfBlob({ draft: false });
+    const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
-    anchor.href = blobUrl;
+    anchor.href = url;
     anchor.download = fileName;
     anchor.rel = 'noopener';
     anchor.click();
+    URL.revokeObjectURL(url);
   };
 
-  const handleShareWhatsapp = (): void => {
-    handleDownload();
+  const handleShareWhatsapp = async (): Promise<void> => {
+    await handleDownload();
     onShareWhatsapp();
   };
 
-  const handleShareMail = (): void => {
-    handleDownload();
+  const handleShareMail = async (): Promise<void> => {
+    await handleDownload();
     onShareMail();
   };
 
@@ -273,7 +275,7 @@ export function QuotationPdfExportPreviewDialog({
               type="button"
               variant="outline"
               disabled={!blobUrl || loading || error}
-              onClick={handleDownload}
+              onClick={() => void handleDownload()}
               className={cn(
                 actionBtnClass,
                 'border-slate-200 bg-white text-slate-800',
@@ -289,7 +291,7 @@ export function QuotationPdfExportPreviewDialog({
               type="button"
               variant="outline"
               disabled={!blobUrl || loading || error}
-              onClick={handleShareWhatsapp}
+              onClick={() => void handleShareWhatsapp()}
               className={cn(
                 actionBtnClass,
                 'border-slate-200 bg-white text-slate-800 ring-1 ring-emerald-600/15',
@@ -305,7 +307,7 @@ export function QuotationPdfExportPreviewDialog({
               type="button"
               variant="outline"
               disabled={!blobUrl || loading || error}
-              onClick={handleShareMail}
+              onClick={() => void handleShareMail()}
               className={cn(
                 actionBtnClass,
                 'border-slate-200 bg-white text-slate-800 ring-1 ring-sky-600/15',

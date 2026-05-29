@@ -278,7 +278,21 @@
     "metaOfferNo": "Teklif No",
     "metaCustomer": "Müşteri",
     "notSpecified": "—",
-    "grandTotal": "Genel Toplam"
+    "grandTotal": "Genel Toplam",
+    "senderLabel": "Teklif Veren",
+    "recipientLabel": "Teklif Verilen",
+    "unitPriceNet": "Net Birim",
+    "lineDiscount": "İskonto",
+    "vatRate": "KDV %",
+    "priceDetail": "Fiyat Detayı",
+    "grossTotal": "Brüt Toplam",
+    "lineDiscountTotal": "Satır İskontosu",
+    "generalDiscount": "Genel İskonto",
+    "netSubtotal": "Net Ara Toplam",
+    "totalVat": "KDV",
+    "grandTotalWithVat": "Genel Toplam (KDV Dahil)",
+    "validityNote": "Bu teklif oluşturulduktan sonra 15 gün geçerlidir.",
+    "draftWatermark": "TASLAK"
   },
   "revision": {
     "success": "Revizyon kaydı oluşturuldu.",

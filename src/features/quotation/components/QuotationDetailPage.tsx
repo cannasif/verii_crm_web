@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
@@ -15,6 +15,7 @@ import { usePriceRuleOfQuotation } from '../hooks/usePriceRuleOfQuotation';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
 import { useUIStore } from '@/stores/ui-store';
+import { useAuthStore } from '@/stores/auth-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
@@ -28,8 +29,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { formatCurrency } from '../utils/format-currency';
 import { QuotationApprovalFlowTab } from './QuotationApprovalFlowTab';
+import {
+  buildQuotationPreviewPdfBlob,
+  type QuotationPreviewPdfLabels,
+} from '../utils/build-quotation-preview-pdf';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
@@ -41,6 +45,7 @@ import { QuotationHeaderForm } from './QuotationHeaderForm';
 import { QuotationLineTable } from './QuotationLineTable';
 import { QuotationSummaryCard } from './QuotationSummaryCard';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
+import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -82,7 +87,8 @@ function parsePersistedId(formId: string | number | undefined, prefix: string): 
 }
 
 export function QuotationDetailPage(): ReactElement {
-  const { t } = useTranslation(['quotation', 'common']);
+  const { t, i18n } = useTranslation(['quotation', 'common']);
+  const branch = useAuthStore((state) => state.branch);
   const { canUpdate } = useCrudPermissions('sales.quotations.update');
   const { id: paramId } = useParams<{ id: string }>();
   const location = useLocation();
@@ -235,6 +241,14 @@ export function QuotationDetailPage(): ReactElement {
       Number((line as { id?: number; Id?: number }).id ?? (line as { id?: number; Id?: number }).Id ?? 0);
     const formattedLines: QuotationLineFormState[] = linesData.map((line, index) => {
       const idNum = backendId(line);
+      const amounts = calculateLineTotalsAmounts(
+        line.unitPrice,
+        line.quantity,
+        line.discountRate1,
+        line.discountRate2,
+        line.discountRate3,
+        line.vatRate,
+      );
       return {
         id: idNum > 0 ? `line-${idNum}-${index}` : `line-temp-${index}`,
         isEditing: false,
@@ -244,15 +258,9 @@ export function QuotationDetailPage(): ReactElement {
         quantity: line.quantity,
         unitPrice: line.unitPrice,
         discountRate1: line.discountRate1,
-        discountAmount1: line.discountAmount1,
         discountRate2: line.discountRate2,
-        discountAmount2: line.discountAmount2,
         discountRate3: line.discountRate3,
-        discountAmount3: line.discountAmount3,
         vatRate: line.vatRate,
-        vatAmount: line.vatAmount,
-        lineTotal: line.lineTotal,
-        lineGrandTotal: line.lineGrandTotal,
         description: line.description || null,
         description1: line.description1 || null,
         description2: line.description2 || null,
@@ -263,6 +271,7 @@ export function QuotationDetailPage(): ReactElement {
         relatedProductKey: line.relatedProductKey || null,
         isMainRelatedProduct: line.isMainRelatedProduct || false,
         approvalStatus: line.approvalStatus,
+        ...amounts,
       };
     });
     setLines(formattedLines);
@@ -278,70 +287,6 @@ export function QuotationDetailPage(): ReactElement {
     const option = currencyOptions.find(opt => opt.value === currencyId);
     return option?.code || 'TRY';
   }, [watchedCurrencyValue, currencyOptions]);
-
-  const generatePDF = async () => {
-    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable'),
-    ]);
-    const doc = new JsPDF();
-    
-    doc.setFontSize(18);
-    doc.text(t('detail.title'), 14, 20);
-    doc.setFontSize(11);
-    doc.text(`${t('date')}: ${new Date().toLocaleDateString('tr-TR')}`, 14, 28);
-    doc.text(`${t('offerNo')}: ${quotation?.offerNo || ''}`, 14, 34);
-
-    const headers = [[
-      t('lines.productCode'),
-      t('lines.productName'),
-      t('lines.quantity'),
-      t('lines.unitPrice'),
-      t('lines.vatRate'),
-      t('lines.total')
-    ]];
-
-    const data = lines.map(line => [
-      line.productCode,
-      line.productName,
-      line.quantity,
-      formatCurrency(line.unitPrice, currencyCode),
-      `%${line.vatRate}`,
-      formatCurrency(line.lineTotal, currencyCode)
-    ]);
-
-    autoTable(doc, {
-      startY: 40,
-      head: headers,
-      body: data,
-      styles: { font: 'helvetica', fontStyle: 'normal' },
-      theme: 'grid',
-    });
-
-    return doc;
-  };
-
-  const handleExportPDF = async () => {
-    const doc = await generatePDF();
-    doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
-  };
-
-  const handleShareWhatsApp = async () => {
-    const doc = await generatePDF();
-    doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
-    const text = encodeURIComponent(t('share.whatsappMessage'));
-    window.open(`https://wa.me/?text=${text}`, '_blank');
-    toast.info(t('share.downloaded'));
-  };
-
-  const handleShareMail = async () => {
-    const doc = await generatePDF();
-    doc.save(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
-    const subject = encodeURIComponent(t('share.mailSubject'));
-    const body = encodeURIComponent(t('share.mailBody'));
-    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
-    toast.info(t('share.downloaded'));
-  };
 
   useEffect(() => {
     if (exchangeRatesData && exchangeRatesData.length > 0 && !exchangeRatesInitializedRef.current && currencyOptionsForExchangeRates.length > 0) {
@@ -398,6 +343,94 @@ export function QuotationDetailPage(): ReactElement {
     }
     return null;
   }, [watchedErpCustomerCode, watchedCustomerId, customerOptions]);
+
+  const buildPreviewPdfBlob = useCallback(async (): Promise<Blob> => {
+    const qc = quotationFormSlice;
+    const customerLabel =
+      quotation?.potentialCustomerName?.trim() ||
+      customerOptions.find((c) => c.id === qc.potentialCustomerId)?.name?.trim() ||
+      qc.erpCustomerCode?.trim() ||
+      t('pdfExportTemplate.notSpecified');
+
+    const labels: QuotationPreviewPdfLabels = {
+      documentTitle: t('pdfExportTemplate.documentTitle'),
+      senderLabel: t('pdfExportTemplate.senderLabel'),
+      recipientLabel: t('pdfExportTemplate.recipientLabel'),
+      metaDate: t('pdfExportTemplate.metaDate'),
+      metaOfferNo: t('pdfExportTemplate.metaOfferNo'),
+      notSpecified: t('pdfExportTemplate.notSpecified'),
+      productCode: t('lines.productCode'),
+      productName: t('lines.productName'),
+      quantity: t('lines.quantity'),
+      unitPrice: t('lines.unitPrice'),
+      unitPriceNet: t('pdfExportTemplate.unitPriceNet'),
+      lineDiscount: t('pdfExportTemplate.lineDiscount'),
+      vatRate: t('pdfExportTemplate.vatRate'),
+      lineTotal: t('lines.total'),
+      priceDetail: t('pdfExportTemplate.priceDetail'),
+      grossTotal: t('pdfExportTemplate.grossTotal'),
+      lineDiscountTotal: t('pdfExportTemplate.lineDiscountTotal'),
+      generalDiscount: t('pdfExportTemplate.generalDiscount'),
+      netSubtotal: t('pdfExportTemplate.netSubtotal'),
+      totalVat: t('pdfExportTemplate.totalVat'),
+      grandTotalWithVat: t('pdfExportTemplate.grandTotalWithVat'),
+      validityNote: t('pdfExportTemplate.validityNote'),
+      draftWatermark: t('pdfExportTemplate.draftWatermark'),
+    };
+
+    return buildQuotationPreviewPdfBlob({
+      lines,
+      currencyCode,
+      locale: i18n.language,
+      offerDate: qc.offerDate ?? quotation?.offerDate ?? null,
+      offerNo: qc.offerNo ?? quotation?.offerNo ?? null,
+      customerName: customerLabel,
+      branchName: branch?.name?.trim() || t('pdfExportTemplate.notSpecified'),
+      branchCode: branch?.code?.trim() || branch?.id?.trim() || null,
+      generalDiscountRate: qc.generalDiscountRate ?? quotation?.generalDiscountRate ?? null,
+      generalDiscountAmount: qc.generalDiscountAmount ?? quotation?.generalDiscountAmount ?? null,
+      labels,
+    });
+  }, [
+    quotationFormSlice,
+    quotation,
+    customerOptions,
+    t,
+    i18n.language,
+    lines,
+    currencyCode,
+    branch,
+  ]);
+
+  const downloadPreviewPdf = async (fileName: string): Promise<void> => {
+    const blob = await buildPreviewPdfBlob();
+    const anchor = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.rel = 'noopener';
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportPDF = async (): Promise<void> => {
+    await downloadPreviewPdf(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
+  };
+
+  const handleShareWhatsApp = async (): Promise<void> => {
+    await downloadPreviewPdf(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
+    const text = encodeURIComponent(t('share.whatsappMessage'));
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+    toast.info(t('share.downloaded'));
+  };
+
+  const handleShareMail = async (): Promise<void> => {
+    await downloadPreviewPdf(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
+    const subject = encodeURIComponent(t('share.mailSubject'));
+    const body = encodeURIComponent(t('share.mailBody'));
+    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
+    toast.info(t('share.downloaded'));
+  };
 
   const { data: pricingRulesData } = usePriceRuleOfQuotation(
     customerCode,

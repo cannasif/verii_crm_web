@@ -18,11 +18,6 @@ import { Save, X, Eye, FileText, Layers, Calculator } from 'lucide-react';
 import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
 import { QuotationPdfExportPreviewDialog } from './QuotationPdfExportPreviewDialog';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
-import { formatCurrency } from '../utils/format-currency';
-import {
-  QUOTATION_EXPORT_PDF_FONT,
-  registerQuotationExportPdfFont,
-} from '../utils/quotation-export-pdf-font';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto, QuotationNotesDto } from '../types/quotation-types';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
@@ -38,6 +33,10 @@ import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import type { QuotationGetDto, QuotationLineGetDto } from '../types/quotation-types';
+import {
+  buildQuotationPreviewPdfBlob,
+  type QuotationPreviewPdfLabels,
+} from '../utils/build-quotation-preview-pdf';
 
 const CREATE_SECTION_CARD_CLASSNAME =
   'rounded-2xl overflow-hidden border border-slate-400 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04),0_12px_28px_-22px_rgba(15,23,42,0.40)] ring-1 ring-slate-300/70 dark:border-white/16 dark:bg-[#120b1d]/82 dark:ring-white/12';
@@ -392,140 +391,61 @@ export function QuotationCreateForm(): ReactElement {
     return found?.code || 'TRY';
   }, [watchedCurrency, currencyOptions]);
 
-  const buildExportPdfBlob = useCallback(async (): Promise<Blob> => {
-    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable'),
-    ]);
-    const doc = new JsPDF();
-    const hasUtf8Font = await registerQuotationExportPdfFont(doc);
-    const bodyFont = hasUtf8Font ? QUOTATION_EXPORT_PDF_FONT : 'helvetica';
-    const M = 14;
-    const RW = 196;
-    const accentBlue: [number, number, number] = [23, 45, 96];
+  const buildExportPdfBlob = useCallback(async ({ draft }: { draft: boolean }): Promise<Blob> => {
     const qc = quotationFormSlice;
-
-    const offerDateStr = qc.offerDate
-      ? new Date(`${qc.offerDate}T12:00:00`).toLocaleDateString(i18n.language)
-      : new Date().toLocaleDateString(i18n.language);
-    const offerNoDisplay = qc.offerNo?.trim() || t('pdfExportTemplate.notSpecified');
     const customerLabel =
       customerOptions.find((c) => c.id === qc.potentialCustomerId)?.name?.trim() ||
       qc.erpCustomerCode?.trim() ||
       t('pdfExportTemplate.notSpecified');
-    const branchCodeDisplay = customerCode?.trim() || t('pdfExportTemplate.notSpecified');
 
-    doc.setFont(bodyFont, 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text(branchCodeDisplay, M, 16);
+    const labels: QuotationPreviewPdfLabels = {
+      documentTitle: t('pdfExportTemplate.documentTitle'),
+      senderLabel: t('pdfExportTemplate.senderLabel'),
+      recipientLabel: t('pdfExportTemplate.recipientLabel'),
+      metaDate: t('pdfExportTemplate.metaDate'),
+      metaOfferNo: t('pdfExportTemplate.metaOfferNo'),
+      notSpecified: t('pdfExportTemplate.notSpecified'),
+      productCode: t('lines.productCode'),
+      productName: t('lines.productName'),
+      quantity: t('lines.quantity'),
+      unitPrice: t('lines.unitPrice'),
+      unitPriceNet: t('pdfExportTemplate.unitPriceNet'),
+      lineDiscount: t('pdfExportTemplate.lineDiscount'),
+      vatRate: t('pdfExportTemplate.vatRate'),
+      lineTotal: t('lines.total'),
+      priceDetail: t('pdfExportTemplate.priceDetail'),
+      grossTotal: t('pdfExportTemplate.grossTotal'),
+      lineDiscountTotal: t('pdfExportTemplate.lineDiscountTotal'),
+      generalDiscount: t('pdfExportTemplate.generalDiscount'),
+      netSubtotal: t('pdfExportTemplate.netSubtotal'),
+      totalVat: t('pdfExportTemplate.totalVat'),
+      grandTotalWithVat: t('pdfExportTemplate.grandTotalWithVat'),
+      validityNote: t('pdfExportTemplate.validityNote'),
+      draftWatermark: t('pdfExportTemplate.draftWatermark'),
+    };
 
-    doc.setFontSize(18);
-    doc.setTextColor(accentBlue[0], accentBlue[1], accentBlue[2]);
-    doc.text(t('pdfExportTemplate.documentTitle'), RW, 16, { align: 'right' });
-
-    doc.setFontSize(9);
-    doc.setTextColor(75, 75, 75);
-    doc.setFont(bodyFont, 'normal');
-    doc.text(`${t('pdfExportTemplate.metaDate')}: ${offerDateStr}`, RW, 24, { align: 'right' });
-    doc.text(`${t('pdfExportTemplate.metaOfferNo')}: ${offerNoDisplay}`, RW, 29.5, { align: 'right' });
-
-    doc.setFontSize(9);
-    doc.setTextColor(40, 40, 40);
-    doc.text(`${t('pdfExportTemplate.metaCustomer')}: ${customerLabel}`, M, 26);
-
-    doc.setDrawColor(210, 210, 210);
-    doc.line(M, 33, RW, 33);
-
-    doc.setTextColor(0, 0, 0);
-
-    const headers = [[
-      t('lines.productCode'),
-      t('lines.productName'),
-      t('lines.quantity'),
-      t('lines.unitPrice'),
-      t('lines.vatRate'),
-      t('lines.total'),
-    ]];
-
-    const data = lines.map((line) => [
-      line.productCode ?? '',
-      line.productName ?? '',
-      String(line.quantity ?? ''),
-      formatCurrency(line.unitPrice, currencyCode),
-      `%${line.vatRate ?? 0}`,
-      formatCurrency(line.lineTotal, currencyCode),
-    ]);
-
-    autoTable(doc, {
-      startY: 38,
-      head: headers,
-      body: data,
-      styles: {
-        font: bodyFont,
-        fontStyle: 'normal',
-        fontSize: 8.5,
-        cellPadding: 2.8,
-        lineColor: [220, 220, 220],
-        lineWidth: 0.15,
-        textColor: [35, 35, 35],
-      },
-      headStyles: {
-        font: bodyFont,
-        fontStyle: 'bold',
-        fillColor: accentBlue,
-        textColor: 255,
-        halign: 'center',
-        valign: 'middle',
-      },
-      columnStyles: {
-        0: { cellWidth: 34, halign: 'left' },
-        1: { halign: 'left' },
-        2: { halign: 'center', cellWidth: 16 },
-        3: { halign: 'right', cellWidth: 28 },
-        4: { halign: 'center', cellWidth: 14 },
-        5: { halign: 'right', cellWidth: 30 },
-      },
-      alternateRowStyles: { fillColor: [245, 246, 250] },
-      theme: 'grid',
-      margin: { left: M, right: M },
+    return buildQuotationPreviewPdfBlob({
+      lines,
+      currencyCode,
+      locale: i18n.language,
+      offerDate: qc.offerDate,
+      offerNo: qc.offerNo,
+      customerName: customerLabel,
+      branchName: branch?.name?.trim() || t('pdfExportTemplate.notSpecified'),
+      branchCode: branch?.code?.trim() || branch?.id?.trim() || null,
+      generalDiscountRate: qc.generalDiscountRate,
+      generalDiscountAmount: qc.generalDiscountAmount,
+      labels,
+      draft,
     });
-
-    type DocWithTable = InstanceType<typeof JsPDF> & { lastAutoTable?: { finalY: number } };
-    const finalY = (doc as DocWithTable).lastAutoTable?.finalY ?? 38;
-    const grandTotal = lines.reduce((sum, line) => sum + (Number(line.lineTotal) || 0), 0);
-    const pageBottom = doc.internal.pageSize.getHeight() - 22;
-    const bandHeight = 9;
-    let bandTop = finalY + 8;
-    if (bandTop + bandHeight + 8 > pageBottom) {
-      doc.addPage();
-      if (hasUtf8Font) {
-        doc.setFont(QUOTATION_EXPORT_PDF_FONT, 'normal');
-      } else {
-        doc.setFont('helvetica', 'normal');
-      }
-      bandTop = 18;
-    }
-    const labelBaseline = bandTop + 6.4;
-    doc.setFillColor(236, 241, 248);
-    doc.roundedRect(M, bandTop, RW - M, bandHeight, 1.2, 1.2, 'F');
-    doc.setDrawColor(200, 210, 225);
-    doc.roundedRect(M, bandTop, RW - M, bandHeight, 1.2, 1.2, 'S');
-    doc.setFont(bodyFont, 'bold');
-    doc.setFontSize(10);
-    doc.setTextColor(accentBlue[0], accentBlue[1], accentBlue[2]);
-    doc.text(t('pdfExportTemplate.grandTotal'), M + 3, labelBaseline);
-    doc.text(formatCurrency(grandTotal, currencyCode), RW - 3, labelBaseline, { align: 'right' });
-
-    return doc.output('blob') as Blob;
   }, [
     lines,
     currencyCode,
     t,
     i18n.language,
     quotationFormSlice,
-    customerCode,
     customerOptions,
+    branch,
   ]);
 
   const openPdfExportPreview = (): void => {

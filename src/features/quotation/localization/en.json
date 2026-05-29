@@ -278,7 +278,21 @@
     "metaOfferNo": "Quotation no.",
     "metaCustomer": "Customer",
     "notSpecified": "—",
-    "grandTotal": "Grand total"
+    "grandTotal": "Grand total",
+    "senderLabel": "Offer from",
+    "recipientLabel": "Offer to",
+    "unitPriceNet": "Net unit",
+    "lineDiscount": "Discount",
+    "vatRate": "VAT %",
+    "priceDetail": "Price breakdown",
+    "grossTotal": "Gross total",
+    "lineDiscountTotal": "Line discounts",
+    "generalDiscount": "General discount",
+    "netSubtotal": "Net subtotal",
+    "totalVat": "VAT",
+    "grandTotalWithVat": "Grand total (incl. VAT)",
+    "validityNote": "This quotation is valid for 15 days from the date of issue.",
+    "draftWatermark": "DRAFT"
   },
   "revision": {
     "success": "Revision created.",
