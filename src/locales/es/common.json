@@ -3138,6 +3138,12 @@
       "error": "Se produjo un error al crear la revisión de la cotización."
     }
   },
+  "warehouseBalanceTooltip": {
+    "totalLabel": "Saldo total",
+    "warehouseCount": "{{count}} almacenes",
+    "branch": "Sucursal {{branch}}",
+    "lastSync": "Última sincronización: {{date}}"
+  },
   "productSelectDialog": {
     "stock": "EXISTENCIAS",
     "group": "Grupo",

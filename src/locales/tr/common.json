@@ -3545,6 +3545,25 @@
       "error": "Teklif revizyonu oluşturulurken bir hata oluştu"
     }
   },
+  "warehouseBalanceTooltip": {
+    "totalLabel": "Toplam bakiye",
+    "warehouseCount": "{{count}} depo",
+    "branch": "Şube {{branch}}",
+    "lastSync": "Son senkron: {{date}}"
+  },
+  "warehouseFilter": {
+    "title": "Depo filtresi",
+    "allWarehouses": "Tüm depolar",
+    "singleWarehouse": "Depo {{code}}",
+    "multipleWarehouses": "{{count}} depo seçili",
+    "clear": "Temizle",
+    "loading": "Depolar yükleniyor...",
+    "loadError": "Depo listesi yüklenemedi",
+    "empty": "Depo bulunamadı",
+    "hint": "Seçim yoksa tüm depoların toplam bakiyesi gösterilir. Depo seçince yalnızca o depolardaki stoklar listelenir; bakiye 0 ise kırmızı görünür.",
+    "tooltipFiltered": "Filtre: depo {{codes}}",
+    "listPending": "Depo filtresi uygulanıyor..."
+  },
   "productSelectDialog": {
     "stock": "STOK",
     "group": "Grup",

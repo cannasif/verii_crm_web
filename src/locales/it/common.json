@@ -3167,6 +3167,12 @@
       "error": "Si è verificato un errore durante la creazione della revisione del preventivo"
     }
   },
+  "warehouseBalanceTooltip": {
+    "totalLabel": "Saldo totale",
+    "warehouseCount": "{{count}} magazzini",
+    "branch": "Filiale {{branch}}",
+    "lastSync": "Ultima sincronizzazione: {{date}}"
+  },
   "productSelectDialog": {
     "stock": "AZIONE",
     "group": "Gruppo",

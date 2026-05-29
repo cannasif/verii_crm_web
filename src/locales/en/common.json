@@ -3526,6 +3526,25 @@
     "next": "Next",
     "back": "Back"
   },
+  "warehouseBalanceTooltip": {
+    "totalLabel": "Total balance",
+    "warehouseCount": "{{count}} warehouses",
+    "branch": "Branch {{branch}}",
+    "lastSync": "Last sync: {{date}}"
+  },
+  "warehouseFilter": {
+    "title": "Warehouse filter",
+    "allWarehouses": "All warehouses",
+    "singleWarehouse": "Warehouse {{code}}",
+    "multipleWarehouses": "{{count}} warehouses selected",
+    "clear": "Clear",
+    "loading": "Loading warehouses...",
+    "loadError": "Could not load warehouse list",
+    "empty": "No warehouses found",
+    "hint": "With no selection, total balance across all warehouses is shown. When warehouses are selected, only stocks in those warehouses are listed; zero balance appears in red.",
+    "tooltipFiltered": "Filter: warehouse {{codes}}",
+    "listPending": "Applying warehouse filter..."
+  },
   "productSelectDialog": {
     "stock": "STOCK",
     "group": "Group",

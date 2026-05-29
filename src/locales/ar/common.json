@@ -3138,6 +3138,12 @@
       "error": "حدث خطأ أثناء إنشاء مراجعة عرض الأسعار"
     }
   },
+  "warehouseBalanceTooltip": {
+    "totalLabel": "إجمالي الرصيد",
+    "warehouseCount": "{{count}} مستودعات",
+    "branch": "الفرع {{branch}}",
+    "lastSync": "آخر مزامنة: {{date}}"
+  },
   "productSelectDialog": {
     "stock": "مخزون",
     "group": "المجموعة",

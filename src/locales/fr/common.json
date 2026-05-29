@@ -3093,6 +3093,12 @@
       "error": "Une erreur s'est produite lors de la création de la révision du devis"
     }
   },
+  "warehouseBalanceTooltip": {
+    "totalLabel": "Solde total",
+    "warehouseCount": "{{count}} entrepôts",
+    "branch": "Agence {{branch}}",
+    "lastSync": "Dernière synchro : {{date}}"
+  },
   "productSelectDialog": {
     "stock": "ACTION",
     "group": "Groupe",

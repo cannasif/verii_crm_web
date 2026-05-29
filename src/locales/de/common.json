@@ -3097,6 +3097,12 @@
       "error": "Beim Erstellen der Angebotsrevision ist ein Fehler aufgetreten"
     }
   },
+  "warehouseBalanceTooltip": {
+    "totalLabel": "Gesamtbestand",
+    "warehouseCount": "{{count}} Lager",
+    "branch": "Filiale {{branch}}",
+    "lastSync": "Letzte Synchronisation: {{date}}"
+  },
   "productSelectDialog": {
     "stock": "AKTIE",
     "group": "Gruppe",
