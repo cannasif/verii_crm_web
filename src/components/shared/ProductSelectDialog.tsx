@@ -1,25 +1,22 @@
 import { type ReactElement, useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { useQueries } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { LayoutGrid, List as ListIcon, X, AlertCircle, Filter } from 'lucide-react';
+import { Check, LayoutGrid, List as ListIcon, Package, X, AlertCircle, Filter } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getImageUrl } from '@/features/stock/utils/image-url';
-import { stockApi } from '@/features/stock/api/stock-api';
+import { StockWarehouseBalanceBadge } from '@/features/stock/components/StockWarehouseBalanceBadge';
 import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } from './RelatedStocksSelectionDialog';
 import { cn } from '@/lib/utils';
-import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto, WarehouseStockBalanceDto } from '@/features/stock/types';
+import type { StockGetDto, StockGetWithMainImageDto } from '@/features/stock/types';
 import { useDropdownInfiniteSearch } from '@/hooks/useDropdownInfiniteSearch';
 import { dropdownApi } from '@/components/shared/dropdown/dropdown-api';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -94,649 +91,334 @@ interface ProductSelectDialogProps {
   existingLineStockMarkers?: ProductSelectionResult[];
 }
 
-interface StockCardProps {
-  stock: StockGetDto;
-  onClick: () => void;
-  onRelatedStockSelect?: (stock: StockGetDto) => void;
-  selected?: boolean;
-  alreadyInDraft?: boolean;
-  alreadyOnDocumentLine?: boolean;
-  warehouseBalances?: WarehouseStockBalanceDto[];
-}
-
-interface StockWithImageCardProps {
+interface ProductSelectStockItemProps {
   stock: StockGetWithMainImageDto;
   onClick: () => void;
-  onRelatedStockSelect?: (stock: StockGetDto) => void;
   selected?: boolean;
   alreadyInDraft?: boolean;
   alreadyOnDocumentLine?: boolean;
-  warehouseBalances?: WarehouseStockBalanceDto[];
 }
 
-function formatWarehouseBalance(value: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function WarehouseBalanceSummary({
-  balances,
-  compact = false,
-}: {
-  balances?: WarehouseStockBalanceDto[];
-  compact?: boolean;
-}): ReactElement | null {
-  const { t } = useTranslation('common');
-  if (!balances || balances.length === 0) {
-    return null;
+function resolveProductSelectStockImageUrl(stock: StockGetWithMainImageDto): string | null {
+  const mainPath = stock.mainImage?.filePath?.trim();
+  if (mainPath) {
+    return getImageUrl(mainPath);
   }
+  const primary = stock.stockImages?.find((img) => img.isPrimary) ?? stock.stockImages?.[0];
+  const fallbackPath = primary?.filePath?.trim();
+  return fallbackPath ? getImageUrl(fallbackPath) : null;
+}
 
-  const total = balances.reduce((sum, item) => sum + (Number(item.balance) || 0), 0);
-  const preview = balances.slice(0, compact ? 2 : 3);
-  const hiddenCount = Math.max(0, balances.length - preview.length);
+function ProductSelectCatalogStockCard({
+  stock,
+  onClick,
+  selected = false,
+  alreadyInDraft = false,
+  alreadyOnDocumentLine = false,
+}: ProductSelectStockItemProps): ReactElement {
+  const { t } = useTranslation('common');
+  const watermark = (stock.erpStockCode ?? '').slice(0, 2).toUpperCase() || '·';
+  const relCount = stock.parentRelations?.length ?? 0;
+  const imageUrl = resolveProductSelectStockImageUrl(stock);
 
   return (
-    <div className={cn('flex min-w-0 flex-wrap items-center gap-1', compact ? 'justify-end' : 'mt-1')}>
-      <span className="rounded-md border border-emerald-300/70 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/30 dark:text-emerald-300">
-        {t('productSelectDialog.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}: {formatWarehouseBalance(total)}
-      </span>
-      {preview.map((item) => (
-        <span
-          key={`${item.warehouseId}-${item.warehouseCode}`}
-          className="max-w-[92px] truncate rounded-md bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] text-slate-600 dark:bg-white/10 dark:text-slate-300"
-          title={`${item.warehouseName || item.warehouseCode}: ${formatWarehouseBalance(item.balance)}`}
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'group relative flex flex-col overflow-hidden rounded-xl border border-slate-300/90 bg-white text-left shadow-md shadow-slate-200/45 backdrop-blur-md transition-all duration-300 ease-out will-change-transform dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none',
+        'hover:-translate-y-0.5 hover:border-pink-400/60 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-pink-500/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]',
+        selected &&
+          'border-pink-400/70 bg-gradient-to-b from-pink-50/90 to-white shadow-[0_6px_22px_-6px_rgba(236,72,153,0.28)] ring-1 ring-pink-400/40 dark:from-pink-500/[0.08] dark:to-transparent dark:border-pink-500/55 dark:shadow-[0_0_22px_rgba(236,72,153,0.2)] dark:ring-pink-500/30',
+      )}
+    >
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-500/35 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        aria-hidden
+      />
+
+      {selected ? (
+        <div
+          className="pointer-events-none absolute right-1.5 top-1.5 z-20 flex h-6 w-6 items-center justify-center rounded-full border border-pink-400/80 bg-pink-500 shadow-[0_4px_14px_-2px_rgba(236,72,153,0.6)] ring-2 ring-white/90 backdrop-blur-md dark:ring-zinc-950/80"
+          aria-hidden
         >
-          {item.warehouseName || item.warehouseCode}: {formatWarehouseBalance(item.balance)}
-        </span>
-      ))}
-      {hiddenCount > 0 ? (
-        <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-500 dark:bg-white/10 dark:text-slate-400">
-          +{hiddenCount}
-        </span>
-      ) : null}
-    </div>
-  );
-}
-
-function StockCard({
-  stock,
-  onClick,
-  onRelatedStockSelect,
-  selected = false,
-  alreadyInDraft = false,
-  alreadyOnDocumentLine = false,
-  warehouseBalances,
-}: StockCardProps): ReactElement {
-  const { t } = useTranslation('common');
-  const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
-  const codePairs = [
-    { leftLabel: 'Kod1', leftValue: stock.kod1 || '-', rightLabel: 'Kod2', rightValue: stock.kod2 || '-' },
-    { leftLabel: 'Kod3', leftValue: stock.kod3 || '-', rightLabel: 'Kod4', rightValue: stock.kod4 || '-' },
-  ];
-  const chipCodes = [stock.kod5, stock.grupKodu].filter(Boolean) as string[];
-
-  const handleRelatedStockClick = async (e: React.MouseEvent, relatedStock: StockRelationDto): Promise<void> => {
-    e.stopPropagation();
-    if (onRelatedStockSelect) {
-      try {
-        const relatedStockData = await stockApi.getById(relatedStock.relatedStockId);
-        if (relatedStockData) {
-          onRelatedStockSelect(relatedStockData);
-        }
-      } catch (error) {
-        console.error('Related stock bilgisi alınamadı:', error);
-      }
-    }
-  };
-
-  return (
-    <Card
-      className={cn(
-        'group h-[202px] cursor-pointer transition-all duration-200',
-        'bg-white dark:bg-[#1a1025]/45 border-slate-300 dark:border-white/10',
-        selected
-          ? 'border-pink-400 ring-1 ring-pink-300 dark:ring-pink-500/40 shadow-sm'
-          : 'hover:border-pink-400/70 dark:hover:border-pink-500/50 hover:shadow-md hover:shadow-pink-500/10',
-        'active:scale-[0.98] touch-manipulation'
-      )}
-      onClick={onClick}
-    >
-      <CardContent className="flex h-full flex-col p-3.5">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex-1 min-w-0">
-            <div className="mb-1.5 flex flex-wrap items-center gap-2">
-              <span
-                className="max-w-[150px] truncate rounded border border-pink-200 bg-pink-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-pink-700 dark:border-pink-700/40 dark:bg-pink-900/30 dark:text-pink-300"
-                title={stock.erpStockCode}
-              >
-                {stock.erpStockCode}
-              </span>
-              {alreadyOnDocumentLine ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Badge
-                      variant="outline"
-                      className="h-5 shrink-0 border-indigo-300/80 bg-indigo-50 px-1.5 text-[9px] font-semibold text-indigo-900 dark:border-indigo-500/50 dark:bg-indigo-950/50 dark:text-indigo-100"
-                    >
-                      {t('catalogStockPicker.alreadyOnLineBadge')}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-xs text-xs">
-                    {t('catalogStockPicker.alreadyOnLineTooltip')}
-                  </TooltipContent>
-                </Tooltip>
-              ) : null}
-              {alreadyInDraft ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Badge
-                      variant="outline"
-                      className="h-5 shrink-0 border-amber-300/80 bg-amber-50 px-1.5 text-[9px] font-semibold text-amber-900 dark:border-amber-600/50 dark:bg-amber-950/40 dark:text-amber-100"
-                    >
-                      {t('catalogStockPicker.alreadyInDraftBadge')}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-xs text-xs">
-                    {t('catalogStockPicker.alreadyInDraftTooltip')}
-                  </TooltipContent>
-                </Tooltip>
-              ) : null}
-              {chipCodes.map((value) => (
-                <span
-                  key={value}
-                  className="max-w-[80px] truncate rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-white/10 dark:text-slate-300"
-                  title={value}
-                >
-                  {value}
-                </span>
-              ))}
-            </div>
-            <h3 className="mb-2 line-clamp-2 min-h-10 break-words text-sm font-semibold leading-tight text-slate-900 transition-colors group-hover:text-pink-600 dark:text-white dark:group-hover:text-pink-400">
-              {stock.stockName}
-            </h3>
-            <div className="space-y-1 text-xs">
-              {codePairs.map((pair) => (
-                <div key={pair.leftLabel} className="grid grid-cols-2 items-center gap-2">
-                  <div className="flex items-center gap-1 min-w-0">
-                    <span className="text-slate-500 dark:text-slate-400">{pair.leftLabel}:</span>
-                    <span className="truncate font-medium text-slate-700 dark:text-slate-300">{pair.leftValue}</span>
-                  </div>
-                  <div className="flex items-center gap-1 min-w-0">
-                    <span className="text-slate-500 dark:text-slate-400">{pair.rightLabel}:</span>
-                    <span className="truncate font-medium text-slate-700 dark:text-slate-300">{pair.rightValue}</span>
-                  </div>
-                </div>
-              ))}
-              <div className="grid grid-cols-[44px_minmax(0,1fr)] items-center gap-1">
-                <span className="text-slate-500 dark:text-slate-400">{t('productSelectDialog.unit')}:</span>
-                <span className="truncate font-medium text-slate-700 dark:text-slate-300">{stock.unit || '-'}</span>
-              </div>
-              <WarehouseBalanceSummary balances={warehouseBalances} />
-            </div>
-            {hasRelatedStocks && (
-              <div className="mt-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-8 text-xs border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 hover:text-pink-600 dark:hover:text-pink-400 transition-all rounded-lg"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="mr-1.5"
-                      >
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                      </svg>
-                      {t('productSelectDialog.relatedStocks')} 
-                      <span className="ml-1 px-1.5 py-0.5 bg-pink-100 dark:bg-pink-900/50 text-pink-700 dark:text-pink-300 rounded text-[10px] font-bold">
-                        {stock.parentRelations?.length || 0}
-                      </span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80" onClick={(e) => e.stopPropagation()}>
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-sm">
-                        {t('productSelectDialog.relatedStocks')}
-                      </h4>
-                      <div className="max-h-60 overflow-y-auto space-y-2">
-                        {stock.parentRelations?.map((relation) => (
-                          <div
-                            key={relation.id}
-                            className="flex items-center justify-between p-2 rounded-md border hover:bg-muted cursor-pointer"
-                            onClick={(e) => handleRelatedStockClick(e, relation)}
-                          >
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <div className="font-medium text-sm truncate">
-                                  {relation.relatedStockName || t('productSelectDialog.unknownStock')}
-                                </div>
-                                {relation.relatedStockCode && (
-                                  <span className="text-xs text-muted-foreground font-mono">
-                                    ({relation.relatedStockCode})
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {t('productSelectDialog.quantity')}: {relation.quantity}
-                                {relation.isMandatory && (
-                                  <span className="ml-2 text-orange-600 dark:text-orange-400">
-                                    ({t('productSelectDialog.mandatory')})
-                                  </span>
-                                )}
-                              </div>
-                              {relation.description && (
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  {relation.description}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            )}
-          </div>
-          <div className="shrink-0">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-muted-foreground"
-            >
-              <path d="m9 18 6-6-6-6" />
-            </svg>
-          </div>
+          <Check className="h-3 w-3 text-white" strokeWidth={3.5} />
         </div>
-      </CardContent>
-    </Card>
-  );
-}
+      ) : null}
 
-function StockWithImageCard({
-  stock,
-  onClick,
-  onRelatedStockSelect,
-  selected = false,
-  alreadyInDraft = false,
-  alreadyOnDocumentLine = false,
-  warehouseBalances,
-}: StockWithImageCardProps): ReactElement {
-  const { t } = useTranslation('common');
-  const imageUrl = stock.mainImage ? getImageUrl(stock.mainImage.filePath) : null;
-  const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
-  const codePairs = [
-    { leftLabel: 'Kod1', leftValue: stock.kod1 || '-', rightLabel: 'Kod2', rightValue: stock.kod2 || '-' },
-    { leftLabel: 'Kod3', leftValue: stock.kod3 || '-', rightLabel: 'Kod4', rightValue: stock.kod4 || '-' },
-  ];
-  const chipCodes = [stock.kod5, stock.grupKodu].filter(Boolean) as string[];
-
-  const handleRelatedStockClick = async (e: React.MouseEvent, relatedStock: StockRelationDto): Promise<void> => {
-    e.stopPropagation();
-    if (onRelatedStockSelect) {
-      try {
-        const relatedStockData = await stockApi.getById(relatedStock.relatedStockId);
-        if (relatedStockData) {
-          onRelatedStockSelect(relatedStockData);
-        }
-      } catch (error) {
-        console.error('Related stock bilgisi alınamadı:', error);
-      }
-    }
-  };
-
-  return (
-    <Card
-      className={cn(
-        'group h-[222px] cursor-pointer overflow-hidden transition-all duration-200 gap-0 py-0',
-        'bg-white dark:bg-[#1a1025]/45 border-slate-300 dark:border-white/10',
-        selected
-          ? 'border-pink-400 ring-1 ring-pink-300 dark:ring-pink-500/40 shadow-sm'
-          : 'hover:border-pink-400/70 dark:hover:border-pink-500/50 hover:shadow-md hover:shadow-pink-500/10',
-        'active:scale-[0.98] touch-manipulation overflow-hidden'
-      )}
-      onClick={onClick}
-    >
-      <CardContent className="h-full p-0">
-        <div className="relative h-[124px] w-full overflow-hidden bg-slate-100 dark:bg-white/5">
-          {imageUrl ? (
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-slate-100 via-white to-slate-200/70 dark:from-zinc-900 dark:via-slate-950 dark:to-zinc-900">
+        {imageUrl ? (
+          <>
             <img
               src={imageUrl}
-              alt={stock.mainImage?.altText || stock.stockName}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+              alt={stock.stockName}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-slate-100 to-slate-200 text-slate-300 dark:from-white/5 dark:to-white/10 dark:text-slate-600">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-            </div>
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
-          <div className="absolute left-2.5 top-2.5 flex max-w-[calc(100%-4rem)] flex-wrap items-center gap-1">
-            <span className="max-w-[150px] truncate rounded-md border border-pink-300/80 bg-pink-100/95 px-2 py-0.5 font-mono text-[11px] font-bold text-pink-800 shadow-sm dark:border-pink-700/60 dark:bg-pink-900/80 dark:text-pink-100">
-              {stock.erpStockCode}
+            <div
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(15,23,42,0.45),transparent_55%)] dark:bg-[linear-gradient(to_top,rgba(9,9,11,0.7),transparent_55%)]"
+              aria-hidden
+            />
+          </>
+        ) : (
+          <>
+            <div
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(236,72,153,0.14),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.09),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(236,72,153,0.18),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.12),transparent_50%)]"
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute inset-0 opacity-60 [background-image:linear-gradient(rgba(15,23,42,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.05)_1px,transparent_1px)] [background-size:18px_18px] dark:opacity-70 dark:[background-image:linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)]"
+              aria-hidden
+            />
+            <span
+              className="pointer-events-none absolute -bottom-2 left-1 select-none font-mono text-[clamp(2.25rem,7vw,4rem)] font-black uppercase leading-none tracking-tighter text-slate-900/[0.07] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-pink-500/20 dark:text-white/[0.06] dark:group-hover:text-pink-300/[0.14]"
+              aria-hidden
+            >
+              {watermark}
             </span>
-            {alreadyOnDocumentLine ? (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge
-                    variant="outline"
-                    className="h-5 shrink-0 border-indigo-400/90 bg-indigo-100/95 px-1.5 text-[9px] font-semibold text-indigo-950 shadow-sm dark:border-indigo-500/60 dark:bg-indigo-950/80 dark:text-indigo-50"
-                  >
-                    {t('catalogStockPicker.alreadyOnLineBadge')}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs text-xs">
-                  {t('catalogStockPicker.alreadyOnLineTooltip')}
-                </TooltipContent>
-              </Tooltip>
-            ) : null}
+            <Package
+              className="pointer-events-none absolute right-2 top-2 h-4 w-4 text-slate-400/70 transition-all duration-300 group-hover:text-pink-500/70 dark:text-white/15 dark:group-hover:text-pink-300/60"
+              aria-hidden
+            />
+            <div
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(241,245,249,0.9),transparent_55%)] dark:bg-[linear-gradient(to_top,rgba(9,9,11,0.85),transparent_50%)]"
+              aria-hidden
+            />
+          </>
+        )}
+        {(alreadyInDraft || alreadyOnDocumentLine || relCount > 0) ? (
+          <div className="absolute bottom-1.5 left-1.5 z-10 flex flex-wrap items-center gap-1">
             {alreadyInDraft ? (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Badge
-                    variant="outline"
-                    className="h-5 shrink-0 border-amber-400/90 bg-amber-100/95 px-1.5 text-[9px] font-semibold text-amber-950 shadow-sm dark:border-amber-500/60 dark:bg-amber-950/80 dark:text-amber-50"
-                  >
+                  <span className="rounded-full border border-amber-500/50 bg-amber-500 px-1.5 py-0 text-[8px] font-semibold uppercase tracking-wide text-white shadow-sm backdrop-blur-md dark:border-amber-400/50 dark:bg-amber-500/25 dark:text-amber-100">
                     {t('catalogStockPicker.alreadyInDraftBadge')}
-                  </Badge>
+                  </span>
                 </TooltipTrigger>
-                <TooltipContent side="bottom" className="max-w-xs text-xs">
+                <TooltipContent side="top" className="max-w-xs text-xs">
                   {t('catalogStockPicker.alreadyInDraftTooltip')}
                 </TooltipContent>
               </Tooltip>
             ) : null}
+            {alreadyOnDocumentLine ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="rounded-full border border-indigo-500/50 bg-indigo-500 px-1.5 py-0 text-[8px] font-semibold uppercase tracking-wide text-white shadow-sm backdrop-blur-md dark:border-indigo-400/50 dark:bg-indigo-500/25 dark:text-indigo-100">
+                    {t('catalogStockPicker.alreadyOnLineBadge')}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-xs">
+                  {t('catalogStockPicker.alreadyOnLineTooltip')}
+                </TooltipContent>
+              </Tooltip>
+            ) : null}
+            {relCount > 0 ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="inline-flex items-center gap-0.5 rounded-full border border-orange-500/50 bg-orange-500 px-1.5 py-0 font-mono text-[8px] font-semibold text-white shadow-sm backdrop-blur-md dark:border-orange-400/50 dark:bg-orange-500/25 dark:text-orange-100">
+                    ×{relCount}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs text-xs">
+                  {t('catalogStockPicker.relatedStocksHint')}
+                </TooltipContent>
+              </Tooltip>
+            ) : null}
           </div>
-          <div className="absolute right-2.5 top-2.5 flex gap-1">
-            {chipCodes.slice(0, 2).map((value) => (
-              <span
-                key={value}
-                className="max-w-[70px] truncate rounded bg-black/45 px-1.5 py-0.5 text-[10px] font-semibold text-white"
-                title={value}
-              >
-                {value}
+        ) : null}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col gap-1 p-2.5">
+        <div className="flex items-center justify-between gap-2">
+          <span className="truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-pink-600 dark:text-pink-300/90">
+            {stock.erpStockCode}
+          </span>
+          {stock.unit ? (
+            <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0 font-mono text-[9px] font-semibold uppercase tracking-wider text-slate-600 dark:bg-white/[0.06] dark:text-slate-300">
+              {stock.unit}
+            </span>
+          ) : null}
+        </div>
+
+        <h3 className="line-clamp-2 min-h-[2.2em] text-[12.5px] font-medium leading-snug tracking-tight text-slate-800 dark:text-slate-100">
+          {stock.stockName}
+        </h3>
+
+        <div className="mt-auto flex w-fit max-w-full pt-1">
+          <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} />
+        </div>
+
+        {(stock.grupKodu || stock.kod1) ? (
+          <div className="mt-auto flex items-center gap-1 pt-0.5">
+            {stock.grupKodu ? (
+              <span className="truncate rounded bg-pink-50 px-1.5 py-0.5 font-mono text-[9px] text-pink-700/90 dark:bg-pink-500/[0.08] dark:text-pink-200/90">
+                {stock.grupKodu}
               </span>
-            ))}
+            ) : null}
+            {stock.kod1 ? (
+              <span className="truncate rounded bg-slate-100/80 px-1.5 py-0.5 font-mono text-[9px] text-slate-500 dark:bg-white/[0.04] dark:text-slate-400">
+                {stock.kod1}
+              </span>
+            ) : null}
           </div>
-        </div>
-
-        <div className="p-2 pt-1.5">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0 flex-1">
-              <h3 className="mb-0.5 line-clamp-2 min-h-[24px] overflow-hidden text-[11px] font-semibold leading-[1.1] text-slate-900 transition-colors group-hover:text-pink-600 dark:text-white dark:group-hover:text-pink-400">
-                {stock.stockName}
-              </h3>
-              <div className="space-y-0 text-[11px] leading-snug">
-                {codePairs.map((pair) => (
-                  <div key={pair.leftLabel} className="grid grid-cols-2 items-center gap-1.5">
-                    <div className="flex min-w-0 items-center gap-1">
-                      <span className="text-slate-500 dark:text-slate-400">{pair.leftLabel}:</span>
-                      <span className="truncate font-medium text-slate-700 dark:text-slate-300">{pair.leftValue}</span>
-                    </div>
-                    <div className="flex min-w-0 items-center gap-1">
-                      <span className="text-slate-500 dark:text-slate-400">{pair.rightLabel}:</span>
-                      <span className="truncate font-medium text-slate-700 dark:text-slate-300">{pair.rightValue}</span>
-                    </div>
-                  </div>
-                ))}
-                <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-1">
-                  <span className="text-slate-500 dark:text-slate-400">{t('productSelectDialog.unit')}:</span>
-                  <span className="truncate font-medium text-slate-700 dark:text-slate-300">{stock.unit || '-'}</span>
-                </div>
-                <WarehouseBalanceSummary balances={warehouseBalances} />
-              </div>
-            </div>
-            <div className="mt-0.5 shrink-0 text-slate-300 dark:text-slate-600 group-hover:text-pink-500 dark:group-hover:text-pink-400 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
-            </div>
-          </div>
-          {hasRelatedStocks && (
-            <div className="mt-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-7 text-[11px] border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 hover:text-pink-600 dark:hover:text-pink-400 transition-all rounded-md"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {t('productSelectDialog.relatedStocks')}
-                    <span className="ml-1 rounded bg-pink-100 px-1.5 py-0.5 text-[10px] font-bold text-pink-700 dark:bg-pink-900/50 dark:text-pink-300">
-                      {stock.parentRelations?.length || 0}
-                    </span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80 p-0 overflow-hidden bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-white/20 dark:border-white/10" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex flex-col max-h-[300px]">
-                    <div className="p-3 border-b border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
-                      <h4 className="font-semibold text-sm text-slate-900 dark:text-white">
-                        {t('productSelectDialog.relatedStocks')}
-                      </h4>
-                    </div>
-                    <div className="overflow-y-auto p-2 space-y-2">
-                      {stock.parentRelations?.map((relation) => (
-                        <div
-                          key={relation.id}
-                          className="group/item flex items-center justify-between p-2 rounded-lg border border-transparent hover:border-pink-500/30 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 cursor-pointer transition-all"
-                          onClick={(e) => handleRelatedStockClick(e, relation)}
-                        >
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-1">
-                              <div className="font-medium text-sm truncate text-slate-700 dark:text-slate-200 group-hover/item:text-pink-700 dark:group-hover/item:text-pink-300 transition-colors">
-                                {relation.relatedStockName || t('productSelectDialog.unknownStock')}
-                              </div>
-                              {relation.relatedStockCode && (
-                                <span className="text-xs text-slate-400 font-mono">
-                                  ({relation.relatedStockCode})
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-xs text-slate-500 dark:text-slate-400">
-                              {t('productSelectDialog.quantity')}: <span className="font-medium text-slate-700 dark:text-slate-300">{relation.quantity}</span>
-                              {relation.isMandatory && (
-                                <span className="ml-2 text-orange-600 dark:text-orange-400 font-medium bg-orange-50 dark:bg-orange-900/20 px-1.5 py-0.5 rounded">
-                                  {t('productSelectDialog.mandatory')}
-                                </span>
-                              )}
-                            </div>
-                            {relation.description && (
-                              <div className="text-xs text-slate-400 mt-1 italic">
-                                {relation.description}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+        ) : null}
+      </div>
+    </button>
   );
 }
 
-function StockListItem({
-  stock,
-  onClick,
-  selected = false,
-  alreadyInDraft = false,
-  alreadyOnDocumentLine = false,
-  warehouseBalances,
-}: StockCardProps): ReactElement {
+type ProductSelectCatalogStockListProps = {
+  stocks: StockGetWithMainImageDto[];
+  getSelectionKey: (value: { id?: number; code: string }) => string;
+  selectedKeySet: Set<string>;
+  draftSnapshotList: ProductSelectionResult[];
+  documentLinesList: ProductSelectionResult[];
+  onStockClick: (stock: StockGetWithMainImageDto) => void;
+};
+
+function ProductSelectCatalogStockList({
+  stocks,
+  getSelectionKey,
+  selectedKeySet,
+  draftSnapshotList,
+  documentLinesList,
+  onStockClick,
+}: ProductSelectCatalogStockListProps): ReactElement {
   const { t } = useTranslation('common');
 
   return (
-    <div
-      className={cn(
-        'group grid min-h-16 grid-cols-[minmax(0,1fr)_170px_20px] items-center gap-2 px-3 py-2 text-xs',
-        'cursor-pointer border-b border-slate-300 dark:border-white/15',
-        selected
-          ? 'bg-pink-100/90 dark:bg-pink-900/35 ring-1 ring-pink-400/90 dark:ring-pink-500/55 border-pink-300 dark:border-pink-600/40'
-          : 'hover:bg-slate-50 dark:hover:bg-white/5 transition-colors'
-      )}
-      onClick={onClick}
-    >
-      <div className="flex min-w-0 items-center gap-2">
-        <span className="shrink-0 max-w-[130px] truncate rounded border border-pink-200 bg-pink-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-pink-700 dark:border-pink-700/40 dark:bg-pink-900/30 dark:text-pink-300" title={stock.erpStockCode}>
-          {stock.erpStockCode}
-        </span>
-        {alreadyOnDocumentLine ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge
-                variant="outline"
-                className="h-4 shrink-0 border-indigo-300/80 bg-indigo-50 px-1 text-[8px] font-semibold leading-none text-indigo-900 dark:border-indigo-600/50 dark:bg-indigo-950/40 dark:text-indigo-100"
-              >
-                {t('catalogStockPicker.alreadyOnLineBadge')}
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs text-xs">
-              {t('catalogStockPicker.alreadyOnLineTooltip')}
-            </TooltipContent>
-          </Tooltip>
-        ) : null}
-        {alreadyInDraft ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge
-                variant="outline"
-                className="h-4 shrink-0 border-amber-300/80 bg-amber-50 px-1 text-[8px] font-semibold leading-none text-amber-900 dark:border-amber-600/50 dark:bg-amber-950/40 dark:text-amber-100"
-              >
-                {t('catalogStockPicker.alreadyInDraftBadge')}
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs text-xs">
-              {t('catalogStockPicker.alreadyInDraftTooltip')}
-            </TooltipContent>
-          </Tooltip>
-        ) : null}
-        <span className="min-w-0 truncate text-sm font-semibold text-slate-900 dark:text-white" title={stock.stockName}>
-          {stock.stockName}
-        </span>
-      </div>
-      <div className="text-right text-xs text-slate-500 dark:text-slate-400">
-        {t('productSelectDialog.unit')}: <span className="font-semibold text-slate-700 dark:text-slate-300">{stock.unit || '-'}</span>
-        <WarehouseBalanceSummary balances={warehouseBalances} compact />
-      </div>
-      <div className="text-slate-300 dark:text-slate-600 group-hover:text-pink-500 dark:group-hover:text-pink-400">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m9 18 6-6-6-6" />
-        </svg>
-      </div>
-    </div>
-  );
-}
+    <div className="overflow-hidden rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none">
+      <div className="overflow-auto">
+        <table className="w-full min-w-[620px] table-fixed border-collapse text-sm sm:min-w-[720px]">
+          <thead>
+            <tr className="border-b border-slate-300/90 bg-slate-100/90 text-[10px] font-semibold uppercase tracking-wide text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 sm:text-[11px]">
+              <th className="w-[120px] border-r border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
+                {t('catalogStockPicker.listColCode')}
+              </th>
+              <th className="border-r border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
+                {t('catalogStockPicker.listColName')}
+              </th>
+              <th className="w-14 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                {t('catalogStockPicker.unit')}
+              </th>
+              <th className="w-24 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                {t('catalogStockPicker.groupCode')}
+              </th>
+              <th className="w-36 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                {t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}
+              </th>
+              <th className="w-16 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                {t('catalogStockPicker.listColRelated')}
+              </th>
+              <th className="w-28 px-2 py-1.5 text-center sm:py-2">{t('catalogStockPicker.listColAction')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {stocks.map((stock) => {
+              const selectionKey = getSelectionKey({ id: stock.id, code: stock.erpStockCode });
+              const selected = selectedKeySet.has(selectionKey);
+              const inOpeningDraft = stockMatchesDraftSnapshot(stock, draftSnapshotList);
+              const onDocumentLine = stockMatchesDraftSnapshot(stock, documentLinesList);
+              const relCount = stock.parentRelations?.length ?? 0;
 
-function StockWithImageListItem({
-  stock,
-  onClick,
-  selected = false,
-  alreadyInDraft = false,
-  alreadyOnDocumentLine = false,
-  warehouseBalances,
-}: StockWithImageCardProps): ReactElement {
-  const { t } = useTranslation('common');
-  const imageUrl = stock.mainImage ? getImageUrl(stock.mainImage.filePath) : null;
-
-  return (
-    <div
-      className={cn(
-        'group grid min-h-16 grid-cols-[42px_minmax(0,1fr)_170px_20px] items-center gap-2 px-3 py-2 text-xs',
-        'cursor-pointer border-b border-slate-300 dark:border-white/15',
-        selected
-          ? 'bg-pink-100/90 dark:bg-pink-900/35 ring-1 ring-pink-400/90 dark:ring-pink-500/55 border-pink-300 dark:border-pink-600/40'
-          : 'hover:bg-slate-50 dark:hover:bg-white/5 transition-colors'
-      )}
-      onClick={onClick}
-    >
-      <div className="h-10 w-10 rounded-md bg-slate-100 dark:bg-white/5 overflow-hidden border border-slate-200 dark:border-white/5">
-        {imageUrl ? (
-          <img
-            src={imageUrl}
-            alt={stock.mainImage?.altText || stock.stockName}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-slate-600">
-             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
-          </div>
-        )}
-      </div>
-
-      <div className="flex min-w-0 items-center gap-2">
-        <span className="shrink-0 max-w-[130px] truncate rounded border border-pink-200 bg-pink-100 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-pink-700 dark:border-pink-700/40 dark:bg-pink-900/30 dark:text-pink-300" title={stock.erpStockCode}>
-          {stock.erpStockCode}
-        </span>
-        {alreadyOnDocumentLine ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge
-                variant="outline"
-                className="h-4 shrink-0 border-indigo-300/80 bg-indigo-50 px-1 text-[8px] font-semibold leading-none text-indigo-900 dark:border-indigo-600/50 dark:bg-indigo-950/40 dark:text-indigo-100"
-              >
-                {t('catalogStockPicker.alreadyOnLineBadge')}
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs text-xs">
-              {t('catalogStockPicker.alreadyOnLineTooltip')}
-            </TooltipContent>
-          </Tooltip>
-        ) : null}
-        {alreadyInDraft ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Badge
-                variant="outline"
-                className="h-4 shrink-0 border-amber-300/80 bg-amber-50 px-1 text-[8px] font-semibold leading-none text-amber-900 dark:border-amber-600/50 dark:bg-amber-950/40 dark:text-amber-100"
-              >
-                {t('catalogStockPicker.alreadyInDraftBadge')}
-              </Badge>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="max-w-xs text-xs">
-              {t('catalogStockPicker.alreadyInDraftTooltip')}
-            </TooltipContent>
-          </Tooltip>
-        ) : null}
-        <span className="min-w-0 truncate text-sm font-semibold text-slate-900 dark:text-white" title={stock.stockName}>
-          {stock.stockName}
-        </span>
-      </div>
-      <div className="text-right text-xs text-slate-500 dark:text-slate-400">
-        {t('productSelectDialog.unit')}: <span className="font-semibold text-slate-700 dark:text-slate-300">{stock.unit || '-'}</span>
-        <WarehouseBalanceSummary balances={warehouseBalances} compact />
-      </div>
-      <div className="text-slate-300 dark:text-slate-600 group-hover:text-pink-500 dark:group-hover:text-pink-400">
-        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="m9 18 6-6-6-6" />
-        </svg>
+              return (
+                <tr
+                  key={stock.id}
+                  tabIndex={0}
+                  className={cn(
+                    'cursor-pointer border-b border-slate-200/90 transition-colors duration-200 hover:bg-pink-50/80 dark:border-white/5 dark:hover:bg-pink-500/[0.07]',
+                    selected && 'bg-pink-50 dark:bg-pink-500/10 ring-1 ring-inset ring-pink-500/25',
+                  )}
+                  onClick={() => onStockClick(stock)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onStockClick(stock);
+                    }
+                  }}
+                >
+                  <td className="border-r border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
+                    <div className="flex flex-wrap items-center justify-center gap-1">
+                      <span className="font-mono text-[11px] font-semibold tracking-wide text-pink-700 dark:text-pink-300 sm:text-xs">
+                        {stock.erpStockCode}
+                      </span>
+                      {inOpeningDraft ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className="h-4 border border-amber-400/40 bg-amber-50 px-1 text-[8px] font-semibold leading-none text-amber-800 dark:bg-amber-500/10 dark:text-amber-200"
+                            >
+                              {t('catalogStockPicker.alreadyInDraftBadge')}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs text-xs">
+                            {t('catalogStockPicker.alreadyInDraftTooltip')}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : null}
+                      {onDocumentLine ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge
+                              variant="outline"
+                              className="h-4 border border-indigo-400/40 bg-indigo-50 px-1 text-[8px] font-semibold leading-none text-indigo-800 dark:bg-indigo-500/10 dark:text-indigo-200"
+                            >
+                              {t('catalogStockPicker.alreadyOnLineBadge')}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-xs text-xs">
+                            {t('catalogStockPicker.alreadyOnLineTooltip')}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : null}
+                    </div>
+                  </td>
+                  <td className="border-r border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
+                    <div className="min-w-0 text-left">
+                      <span className="line-clamp-2 text-sm font-medium leading-relaxed tracking-tight text-slate-900 dark:text-slate-100">
+                        {stock.stockName}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="border-r border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
+                    {stock.unit || '—'}
+                  </td>
+                  <td className="border-r border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
+                    {stock.grupKodu || '—'}
+                  </td>
+                  <td className="border-r border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
+                    <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
+                      <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} />
+                    </div>
+                  </td>
+                  <td className="border-r border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
+                    {relCount > 0 ? (
+                      <Badge
+                        variant="outline"
+                        className="border border-cyan-400/40 bg-cyan-50 px-1.5 py-0 text-[10px] font-mono text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-300"
+                      >
+                        {relCount}
+                      </Badge>
+                    ) : (
+                      <span className="text-slate-400 dark:text-slate-500">—</span>
+                    )}
+                  </td>
+                  <td className="px-2 py-1 align-middle text-center sm:py-1.5">
+                    {selected ? (
+                      <span className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-pink-600 dark:text-pink-300">
+                        <Check className="h-3.5 w-3.5 drop-shadow-[0_0_10px_rgba(244,114,182,0.55)]" />
+                        {t('catalogStockPicker.selectedBadge')}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-slate-400 dark:text-slate-500">{t('catalogStockPicker.selectStockButton')}</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -755,7 +437,6 @@ export function ProductSelectDialog({
   const { t, i18n } = useTranslation('common');
   const [viewMode, setViewMode] = useState<'card' | 'list'>('list');
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTab, setActiveTab] = useState('stocks');
   const [isListening, setIsListening] = useState(false);
   const [filterPopoverOpen, setFilterPopoverOpen] = useState(false);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
@@ -892,25 +573,10 @@ export function ProductSelectDialog({
   const draftSnapshotList = initialDraftSnapshotRef.current;
   const documentLinesList = documentLinesSnapshotRef.current;
 
-  const stocksDropdown = useDropdownInfiniteSearch<StockGetDto>({
-    entityKey: 'stocks',
-    searchTerm: debouncedSearch,
-    enabled: open && activeTab === 'stocks',
-    minChars: DROPDOWN_MIN_CHARS,
-    // Keep request size high enough for seamless infinite scroll while list UI stays compact.
-    pageSize: DROPDOWN_PAGE_SIZE,
-    sortBy: 'Id',
-    sortDirection: 'desc',
-    extraQueryKey: [JSON.stringify(rawAppliedAdvancedFilters), appliedFilterLogic],
-    buildFilters: () => (hasAdvancedFilters ? rawAppliedAdvancedFilters : undefined),
-    filterLogic: appliedFilterLogic,
-    fetchPage: dropdownApi.getStockPage,
-  });
-
-  const stocksWithImagesDropdown = useDropdownInfiniteSearch<StockGetWithMainImageDto>({
+  const stocksDropdown = useDropdownInfiniteSearch<StockGetWithMainImageDto>({
     entityKey: 'stocks-with-images',
     searchTerm: debouncedSearch,
-    enabled: open && activeTab === 'stocksWithImages',
+    enabled: open,
     minChars: DROPDOWN_MIN_CHARS,
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
@@ -922,28 +588,6 @@ export function ProductSelectDialog({
   });
 
   const visibleStocks = stocksDropdown.items;
-
-  const visibleStocksWithImages = stocksWithImagesDropdown.items;
-  const visibleStockIds = useMemo(
-    () => Array.from(new Set([...visibleStocks, ...visibleStocksWithImages].map((stock) => stock.id).filter((id) => id > 0))),
-    [visibleStocks, visibleStocksWithImages]
-  );
-  const warehouseBalanceQueries = useQueries({
-    queries: visibleStockIds.map((stockId) => ({
-      queryKey: ['warehouse-stock-balances', 'by-stock', stockId],
-      queryFn: () => stockApi.getWarehouseBalancesByStockId(stockId),
-      enabled: open && stockId > 0,
-      staleTime: 60_000,
-      gcTime: 5 * 60_000,
-    })),
-  });
-  const warehouseBalancesByStockId = useMemo(() => {
-    const map = new Map<number, WarehouseStockBalanceDto[]>();
-    visibleStockIds.forEach((stockId, index) => {
-      map.set(stockId, warehouseBalanceQueries[index]?.data ?? []);
-    });
-    return map;
-  }, [visibleStockIds, warehouseBalanceQueries]);
 
   const handleStockSelect = async (stock: StockGetDto | StockGetWithMainImageDto): Promise<void> => {
     const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;
@@ -1032,8 +676,7 @@ export function ProductSelectDialog({
 
   const handleScroll = useCallback(
     (event: React.UIEvent<HTMLDivElement>): void => {
-      const activeDropdown = activeTab === 'stocks' ? stocksDropdown : stocksWithImagesDropdown;
-      if (!activeDropdown.hasNextPage || activeDropdown.isFetchingNextPage) {
+      if (!stocksDropdown.hasNextPage || stocksDropdown.isFetchingNextPage) {
         return;
       }
 
@@ -1044,10 +687,10 @@ export function ProductSelectDialog({
 
       const scrollProgress = (target.scrollTop + target.clientHeight) / target.scrollHeight;
       if (scrollProgress >= DROPDOWN_SCROLL_THRESHOLD) {
-        void activeDropdown.fetchNextPage();
+        void stocksDropdown.fetchNextPage();
       }
     },
-    [activeTab, stocksDropdown, stocksWithImagesDropdown]
+    [stocksDropdown]
   );
 
   const renderStocks = (): ReactElement => {
@@ -1073,95 +716,35 @@ export function ProductSelectDialog({
 
     if (viewMode === 'list') {
       return (
-        <div className="overflow-hidden rounded-lg border border-slate-300 bg-white dark:border-white/20 dark:bg-white/5">
+        <ProductSelectCatalogStockList
+          stocks={visibleStocks}
+          getSelectionKey={getSelectionKey}
+          selectedKeySet={visibleSelectedKeySet}
+          draftSnapshotList={draftSnapshotList}
+          documentLinesList={documentLinesList}
+          onStockClick={(stock) => void handleStockSelect(stock)}
+        />
+      );
+    }
+
+    return (
+      <div className="relative">
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.08),transparent_55%)]"
+          aria-hidden
+        />
+        <div className="relative grid grid-cols-1 gap-2.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
           {visibleStocks.map((stock) => (
-            <StockListItem
+            <ProductSelectCatalogStockCard
               key={stock.id}
               stock={stock}
-              onClick={() => handleStockSelect(stock)}
-              onRelatedStockSelect={handleStockSelect}
+              onClick={() => void handleStockSelect(stock)}
               selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
               alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
               alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
-              warehouseBalances={warehouseBalancesByStockId.get(stock.id)}
             />
           ))}
         </div>
-      );
-    }
-
-    return (
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
-        {visibleStocks.map((stock) => (
-          <StockCard
-            key={stock.id}
-            stock={stock}
-            onClick={() => handleStockSelect(stock)}
-            onRelatedStockSelect={handleStockSelect}
-            selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
-            alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
-            alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
-            warehouseBalances={warehouseBalancesByStockId.get(stock.id)}
-          />
-        ))}
-      </div>
-    );
-  };
-
-  const renderStocksWithImages = (): ReactElement => {
-    if (stocksWithImagesDropdown.isLoading) {
-      return (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-muted-foreground">
-            {t('productSelectDialog.loading')}
-          </div>
-        </div>
-      );
-    }
-
-    if (visibleStocksWithImages.length === 0) {
-      return (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-muted-foreground">
-            {searchQuery.trim() ? t('productSelectDialog.noResults') : t('productSelectDialog.noProducts')}
-          </div>
-        </div>
-      );
-    }
-
-    if (viewMode === 'list') {
-      return (
-        <div className="overflow-hidden rounded-lg border border-slate-300 bg-white dark:border-white/20 dark:bg-white/5">
-          {visibleStocksWithImages.map((stock) => (
-            <StockWithImageListItem
-              key={stock.id}
-              stock={stock}
-              onClick={() => handleStockSelect(stock)}
-              onRelatedStockSelect={handleStockSelect}
-              selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
-              alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
-              alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
-              warehouseBalances={warehouseBalancesByStockId.get(stock.id)}
-            />
-          ))}
-        </div>
-      );
-    }
-
-    return (
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3">
-        {visibleStocksWithImages.map((stock) => (
-          <StockWithImageCard
-            key={stock.id}
-            stock={stock}
-            onClick={() => handleStockSelect(stock)}
-            onRelatedStockSelect={handleStockSelect}
-            selected={visibleSelectedKeySet.has(getSelectionKey({ id: stock.id, code: stock.erpStockCode }))}
-            alreadyInDraft={stockMatchesDraftSnapshot(stock, draftSnapshotList)}
-            alreadyOnDocumentLine={stockMatchesDraftSnapshot(stock, documentLinesList)}
-            warehouseBalances={warehouseBalancesByStockId.get(stock.id)}
-          />
-        ))}
       </div>
     );
   };
@@ -1170,9 +753,13 @@ export function ProductSelectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="flex max-h-[min(86dvh,760px)] w-[calc(100vw-0.75rem)] max-w-[calc(100vw-0.75rem)] flex-col overflow-hidden border border-slate-100 bg-white p-0 text-slate-900 shadow-2xl dark:border-white/10 dark:bg-[#130822] dark:text-white sm:w-[min(920px,calc(100vw-2rem))] sm:max-w-[min(920px,calc(100vw-2rem))] md:w-[min(980px,calc(100vw-2.5rem))] md:max-w-[min(980px,calc(100vw-2.5rem))] lg:!w-[min(1040px,calc(100vw-3rem))] lg:!max-w-[min(1040px,calc(100vw-3rem))] xl:!w-[min(1120px,calc(100vw-4rem))] xl:!max-w-[min(1120px,calc(100vw-4rem))] 2xl:!w-[min(1180px,calc(100vw-5rem))] 2xl:!max-w-[min(1180px,calc(100vw-5rem))]"
+        className="!fixed !flex min-h-0 flex-col gap-0 !overflow-hidden border border-slate-300/95 bg-[linear-gradient(180deg,#ffffff,#f8fafc_40%,#f1f5f9)] p-0 text-slate-900 shadow-[0_0_50px_rgba(236,72,153,0.08),0_25px_80px_rgba(15,23,42,0.15)] ring-1 ring-slate-300/40 backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/85 dark:bg-none dark:text-slate-100 dark:shadow-[0_0_50px_rgba(236,72,153,0.1),0_25px_80px_rgba(0,0,0,0.45)] dark:ring-0 max-lg:!top-3 max-lg:!left-1/2 max-lg:!h-[calc(100svh-0.75rem)] max-lg:!max-h-[calc(100svh-0.75rem)] max-lg:!-translate-x-1/2 max-lg:!translate-y-0 max-lg:!w-[calc(100vw-0.5rem)] max-lg:!max-w-[calc(100vw-0.5rem)] lg:!top-1/2 lg:!left-1/2 lg:!h-[min(86dvh,760px)] lg:!max-h-[min(86dvh,760px)] lg:!-translate-x-1/2 lg:!-translate-y-1/2 lg:!w-[min(1040px,calc(100vw-3rem))] lg:!max-w-[min(1040px,calc(100vw-3rem))] xl:!w-[min(1120px,calc(100vw-4rem))] xl:!max-w-[min(1120px,calc(100vw-4rem))] 2xl:!w-[min(1180px,calc(100vw-5rem))] 2xl:!max-w-[min(1180px,calc(100vw-5rem))]"
       >
-        <DialogHeader className="px-3 py-2.5 sm:px-6 sm:py-3 flex-shrink-0 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+        <div
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(236,72,153,0.06),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.04),transparent_45%)] dark:bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(236,72,153,0.12),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.08),transparent_45%)]"
+          aria-hidden
+        />
+        <DialogHeader className="relative z-10 shrink-0 border-b border-slate-300/90 bg-white px-3 py-2.5 shadow-[inset_0_-1px_0_rgba(148,163,184,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-6 sm:py-3 flex flex-row items-center justify-between">
           <DialogTitle className="text-lg font-bold text-slate-900 dark:text-white">
             {t('productSelectDialog.title')}
           </DialogTitle>
@@ -1186,7 +773,7 @@ export function ProductSelectDialog({
           </Button>
         </DialogHeader>
 
-        <div className="px-3 py-2.5 sm:px-6 sm:py-3 flex-shrink-0 bg-slate-50/50 dark:bg-white/5 border-b border-slate-200/50 dark:border-white/5">
+        <div className="relative z-10 shrink-0 border-b border-slate-300/90 bg-white px-3 py-2.5 backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 sm:px-6 sm:py-3">
           <div className="flex flex-col lg:flex-row gap-3">
             <div className="relative flex-1 flex gap-2">
               <div className="relative flex-1 group">
@@ -1405,42 +992,20 @@ export function ProductSelectDialog({
           ) : null}
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0 px-3 pt-3 sm:px-6 sm:pt-4">
-          <TabsList className="w-full justify-start gap-2 bg-slate-100/80 dark:bg-white/5 p-1 mb-4 border border-slate-300 dark:border-white/20 rounded-xl h-auto">
-            <TabsTrigger 
-              value="stocks"
-              className="px-6 py-2 rounded-lg border border-transparent data-[state=active]:border-pink-300 dark:data-[state=active]:border-pink-500/50 data-[state=active]:bg-pink-100 dark:data-[state=active]:bg-pink-900/30 data-[state=active]:text-pink-700 dark:data-[state=active]:text-pink-300 font-semibold text-slate-700 dark:text-slate-300 transition-all"
-            >
-              {t('productSelectDialog.stocks')}
-            </TabsTrigger>
-            <TabsTrigger 
-              value="stocksWithImages"
-              className="px-6 py-2 rounded-lg border border-transparent data-[state=active]:border-pink-300 dark:data-[state=active]:border-pink-500/50 data-[state=active]:bg-pink-100 dark:data-[state=active]:bg-pink-900/30 data-[state=active]:text-pink-700 dark:data-[state=active]:text-pink-300 font-semibold text-slate-700 dark:text-slate-300 transition-all"
-            >
-              {t('productSelectDialog.stocksWithImages')}
-            </TabsTrigger>
-          </TabsList>
-
-          <div
-            ref={scrollContainerRef}
-            onScroll={handleScroll}
-            className="flex-1 min-h-0 max-h-[min(44vh,380px)] overflow-y-auto pb-4 sm:pb-6 custom-scrollbar sm:max-h-[min(52vh,500px)] lg:max-h-[min(58vh,560px)]"
-          >
-            <TabsContent value="stocks" className="mt-0">
-              {renderStocks()}
-            </TabsContent>
-            <TabsContent value="stocksWithImages" className="mt-0">
-              {renderStocksWithImages()}
-            </TabsContent>
-            {(activeTab === 'stocks' ? stocksDropdown.isFetchingNextPage : stocksWithImagesDropdown.isFetchingNextPage) ? (
-              <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
-                {t('productSelectDialog.loading')}
-              </div>
-            ) : null}
-          </div>
-        </Tabs>
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="relative z-10 min-h-0 flex-1 touch-pan-y overscroll-contain overflow-y-auto px-3 pb-4 pt-3 [-webkit-overflow-scrolling:touch] custom-scrollbar sm:px-6 sm:pb-6 sm:pt-4"
+        >
+          {renderStocks()}
+          {stocksDropdown.isFetchingNextPage ? (
+            <div className="flex items-center justify-center py-4 text-sm text-muted-foreground">
+              {t('productSelectDialog.loading')}
+            </div>
+          ) : null}
+        </div>
         {multiSelect ? (
-          <div className="flex items-center justify-end gap-2 border-t border-slate-200/60 dark:border-white/10 bg-slate-50/50 dark:bg-white/5 px-3 py-2.5 sm:px-6 sm:py-3">
+          <div className="relative z-10 flex shrink-0 items-center justify-end gap-2 border-t border-slate-300/90 bg-white px-3 py-2.5 dark:border-white/10 dark:bg-zinc-950/80 sm:px-6 sm:py-3">
             <Button
               type="button"
               variant="outline"

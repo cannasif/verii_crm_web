@@ -53,7 +53,8 @@ import { stockMatchesDraftSnapshot, type ProductSelectionResult } from './Produc
 import { cn } from '@/lib/utils';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { stockApi } from '@/features/stock/api/stock-api';
-import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto, WarehouseStockBalanceDto } from '@/features/stock/types';
+import { StockWarehouseBalanceBadge } from '@/features/stock/components/StockWarehouseBalanceBadge';
+import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto } from '@/features/stock/types';
 import { getImageUrl } from '@/features/stock/utils/image-url';
 import {
   fetchPricingRuleCampaignStockData,
@@ -235,52 +236,6 @@ function CatalogCampaignPricingRow({ line }: CatalogCampaignPricingRowProps): Re
             {t('catalogStockPicker.campaignDiscountBadge', { rates: ratesSummary })}
           </span>
         </div>
-      ) : null}
-    </div>
-  );
-}
-
-function formatWarehouseBalance(value: number): string {
-  return new Intl.NumberFormat('tr-TR', {
-    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(value);
-}
-
-function CatalogWarehouseBalanceSummary({
-  balances,
-  compact = false,
-}: {
-  balances?: WarehouseStockBalanceDto[];
-  compact?: boolean;
-}): ReactElement | null {
-  const { t } = useTranslation('common');
-  if (!balances || balances.length === 0) {
-    return null;
-  }
-
-  const total = balances.reduce((sum, item) => sum + (Number(item.balance) || 0), 0);
-  const preview = balances.slice(0, compact ? 1 : 2);
-  const hiddenCount = Math.max(0, balances.length - preview.length);
-
-  return (
-    <div className={cn('flex min-w-0 flex-wrap items-center gap-1', compact ? 'justify-end' : 'mt-auto pt-1')}>
-      <span className="rounded-md border border-emerald-300/70 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/30 dark:text-emerald-300">
-        {t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}: {formatWarehouseBalance(total)}
-      </span>
-      {preview.map((item) => (
-        <span
-          key={`${item.warehouseId}-${item.warehouseCode}`}
-          className="max-w-[82px] truncate rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[9px] text-slate-600 dark:bg-white/[0.06] dark:text-slate-300"
-          title={`${item.warehouseName || item.warehouseCode}: ${formatWarehouseBalance(item.balance)}`}
-        >
-          {item.warehouseName || item.warehouseCode}: {formatWarehouseBalance(item.balance)}
-        </span>
-      ))}
-      {hiddenCount > 0 ? (
-        <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[9px] font-semibold text-slate-500 dark:bg-white/[0.06] dark:text-slate-400">
-          +{hiddenCount}
-        </span>
       ) : null}
     </div>
   );
@@ -819,27 +774,6 @@ export function CatalogStockSelectDialog({
     return map;
   }, [activeStockRows, relationQueries]);
 
-  const activeStockIds = useMemo(
-    () => Array.from(new Set(activeStockRows.map((stock) => stock.stockId).filter((stockId) => stockId > 0))),
-    [activeStockRows],
-  );
-  const warehouseBalanceQueries = useQueries({
-    queries: activeStockIds.map((stockId) => ({
-      queryKey: ['warehouse-stock-balances', 'by-stock', stockId],
-      queryFn: () => stockApi.getWarehouseBalancesByStockId(stockId),
-      enabled: open && stockId > 0,
-      staleTime: 60_000,
-      gcTime: 5 * 60_000,
-    })),
-  });
-  const warehouseBalancesByStockId = useMemo(() => {
-    const map = new Map<number, WarehouseStockBalanceDto[]>();
-    activeStockIds.forEach((stockId, index) => {
-      map.set(stockId, warehouseBalanceQueries[index]?.data ?? []);
-    });
-    return map;
-  }, [activeStockIds, warehouseBalanceQueries]);
-
   const getSelectionKey = (value: { id?: number; code: string }): string =>
     value.id != null ? `id:${value.id}` : `code:${value.code}`;
 
@@ -1305,16 +1239,28 @@ export function CatalogStockSelectDialog({
     stockLayoutMode === 'list' ? (
       <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none max-lg:overflow-auto lg:overflow-hidden">
         <div className="min-h-0 flex-1 touch-pan-y overscroll-contain [-webkit-overflow-scrolling:touch] max-lg:overflow-auto lg:overflow-auto">
-          <table className="w-full min-w-[620px] table-fixed border-collapse text-left text-sm sm:min-w-[720px]">
+          <table className="w-full min-w-[620px] table-fixed border-collapse text-sm sm:min-w-[720px]">
             <thead>
               <tr className="border-b border-slate-300/90 bg-slate-100/90 text-[10px] font-semibold uppercase tracking-wide text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 sm:text-[11px]">
-                <th className="w-[120px] px-2 py-1.5 sm:px-3 sm:py-2">{t('catalogStockPicker.listColCode')}</th>
-                <th className="px-2 py-1.5 sm:px-3 sm:py-2">{t('catalogStockPicker.listColName')}</th>
-                <th className="w-14 px-2 py-1.5 sm:py-2">{t('catalogStockPicker.unit')}</th>
-                <th className="w-24 px-2 py-1.5 sm:py-2">{t('catalogStockPicker.groupCode')}</th>
-                <th className="w-36 px-2 py-1.5 text-right sm:py-2">{t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}</th>
-                <th className="w-16 px-2 py-1.5 text-center sm:py-2">{t('catalogStockPicker.listColRelated')}</th>
-                <th className="w-28 px-2 py-1.5 text-right sm:py-2">{t('catalogStockPicker.listColAction')}</th>
+                <th className="w-[120px] border-r border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
+                  {t('catalogStockPicker.listColCode')}
+                </th>
+                <th className="border-r border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
+                  {t('catalogStockPicker.listColName')}
+                </th>
+                <th className="w-14 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                  {t('catalogStockPicker.unit')}
+                </th>
+                <th className="w-24 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                  {t('catalogStockPicker.groupCode')}
+                </th>
+                <th className="w-36 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                  {t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}
+                </th>
+                <th className="w-16 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                  {t('catalogStockPicker.listColRelated')}
+                </th>
+                <th className="w-28 px-2 py-1.5 text-center sm:py-2">{t('catalogStockPicker.listColAction')}</th>
               </tr>
             </thead>
             <tbody>
@@ -1330,7 +1276,6 @@ export function CatalogStockSelectDialog({
                   catalogDocumentLinesList
                 );
                 const relCount = relationMap.get(stock.stockId)?.length ?? 0;
-                const warehouseBalances = warehouseBalancesByStockId.get(stock.stockId);
 
                 return (
                   <tr
@@ -1348,8 +1293,8 @@ export function CatalogStockSelectDialog({
                       }
                     }}
                   >
-                    <td className="px-2 py-1 align-middle sm:px-3 sm:py-1.5">
-                      <div className="flex flex-wrap items-center gap-1">
+                    <td className="border-r border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
+                      <div className="flex flex-wrap items-center justify-center gap-1">
                         <span className="font-mono text-[11px] font-semibold tracking-wide text-pink-700 dark:text-pink-300 sm:text-xs">
                           {stock.erpStockCode}
                         </span>
@@ -1385,8 +1330,8 @@ export function CatalogStockSelectDialog({
                         ) : null}
                       </div>
                     </td>
-                    <td className="px-2 py-1 align-middle sm:px-3 sm:py-1.5">
-                      <div className="min-w-0">
+                    <td className="border-r border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
+                      <div className="min-w-0 text-left">
                         <span className="line-clamp-2 text-sm font-medium leading-relaxed tracking-tight text-slate-900 dark:text-slate-100">
                           {stock.stockName}
                         </span>
@@ -1397,12 +1342,18 @@ export function CatalogStockSelectDialog({
                         ) : null}
                       </div>
                     </td>
-                    <td className="px-2 py-1 align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs">{stock.unit || '—'}</td>
-                    <td className="px-2 py-1 align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs">{stock.grupKodu || '—'}</td>
-                    <td className="px-2 py-1 align-middle text-right sm:py-1.5">
-                      <CatalogWarehouseBalanceSummary balances={warehouseBalances} compact />
+                    <td className="border-r border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
+                      {stock.unit || '—'}
                     </td>
-                    <td className="px-2 py-1 align-middle text-center sm:py-1.5">
+                    <td className="border-r border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
+                      {stock.grupKodu || '—'}
+                    </td>
+                    <td className="border-r border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
+                      <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
+                        <StockWarehouseBalanceBadge stockId={stock.stockId} unit={stock.unit} />
+                      </div>
+                    </td>
+                    <td className="border-r border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
                       {relCount > 0 ? (
                         <Badge
                           variant="outline"
@@ -1414,9 +1365,9 @@ export function CatalogStockSelectDialog({
                         <span className="text-slate-400 dark:text-slate-500">—</span>
                       )}
                     </td>
-                    <td className="px-2 py-1 align-middle text-right sm:py-1.5">
+                    <td className="px-2 py-1 align-middle text-center sm:py-1.5">
                       {selected ? (
-                        <span className="inline-flex items-center justify-end gap-1 text-xs font-semibold text-pink-600 dark:text-pink-300">
+                        <span className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-pink-600 dark:text-pink-300">
                           <Check className="h-3.5 w-3.5 drop-shadow-[0_0_10px_rgba(244,114,182,0.55)]" />
                           {t('catalogStockPicker.selectedBadge')}
                         </span>
@@ -1466,7 +1417,6 @@ export function CatalogStockSelectDialog({
               const watermark = (stock.erpStockCode ?? '').slice(0, 2).toUpperCase() || '·';
               const relCount = relationMap.get(stock.stockId)?.length ?? 0;
               const imageUrl = stock.imageUrl?.trim() ? getImageUrl(stock.imageUrl) : null;
-              const warehouseBalances = warehouseBalancesByStockId.get(stock.stockId);
 
               return (
                 <button
@@ -1598,7 +1548,9 @@ export function CatalogStockSelectDialog({
                       />
                     ) : null}
 
-                    <CatalogWarehouseBalanceSummary balances={warehouseBalances} />
+                    <div className="mt-auto flex w-fit max-w-full pt-1">
+                      <StockWarehouseBalanceBadge stockId={stock.stockId} unit={stock.unit} />
+                    </div>
 
                     {(stock.grupKodu || stock.kod1) ? (
                       <div className="mt-auto flex items-center gap-1 pt-0.5">
