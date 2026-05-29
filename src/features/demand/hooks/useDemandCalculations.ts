@@ -1,4 +1,5 @@
 import type { DemandLineFormState } from '../types/demand-types';
+import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 
 export interface CalculationTotals {
   subtotal: number;
@@ -25,31 +26,18 @@ function round2(value: number): number {
 
 export function useDemandCalculations(): UseDemandCalculationsReturn {
   const calculateLineTotals = (line: DemandLineFormState): DemandLineFormState => {
-    const baseAmount = line.quantity * line.unitPrice;
-    
-    let currentAmount = baseAmount;
-    
-    const discount1Amount = currentAmount * (line.discountRate1 / 100);
-    currentAmount = currentAmount - discount1Amount;
-    
-    const discount2Amount = currentAmount * (line.discountRate2 / 100);
-    currentAmount = currentAmount - discount2Amount;
-    
-    const discount3Amount = currentAmount * (line.discountRate3 / 100);
-    currentAmount = currentAmount - discount3Amount;
-    
-    const subtotal = Math.max(0, currentAmount);
-    const vatAmount = subtotal * (line.vatRate / 100);
-    const grandTotal = subtotal + vatAmount;
+    const amounts = calculateLineTotalsAmounts(
+      line.unitPrice,
+      line.quantity,
+      line.discountRate1,
+      line.discountRate2,
+      line.discountRate3,
+      line.vatRate,
+    );
 
     return {
       ...line,
-      discountAmount1: Math.max(0, discount1Amount),
-      discountAmount2: Math.max(0, discount2Amount),
-      discountAmount3: Math.max(0, discount3Amount),
-      lineTotal: subtotal,
-      vatAmount: Math.max(0, vatAmount),
-      lineGrandTotal: Math.max(0, grandTotal),
+      ...amounts,
     };
   };
 

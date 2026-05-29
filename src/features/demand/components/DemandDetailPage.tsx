@@ -33,6 +33,7 @@ import { DemandHeaderForm } from './DemandHeaderForm';
 import { DemandLineTable } from './DemandLineTable';
 import { DemandSummaryCard } from './DemandSummaryCard';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
+import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -176,35 +177,40 @@ export function DemandDetailPage(): ReactElement {
 
   useEffect(() => {
     if (linesData && linesData.length > 0 && !linesInitializedRef.current) {
-      const formattedLines: DemandLineFormState[] = linesData.map((line, index) => ({
-        id: line.id && line.id > 0 ? `line-${line.id}-${index}` : `line-temp-${index}`,
-        isEditing: false,
-        productCode: line.productCode || '',
-        productName: line.productName,
-        groupCode: line.groupCode || null,
-        quantity: line.quantity,
-        unitPrice: line.unitPrice,
-        discountRate1: line.discountRate1,
-        discountAmount1: line.discountAmount1,
-        discountRate2: line.discountRate2,
-        discountAmount2: line.discountAmount2,
-        discountRate3: line.discountRate3,
-        discountAmount3: line.discountAmount3,
-        vatRate: line.vatRate,
-        vatAmount: line.vatAmount,
-        lineTotal: line.lineTotal,
-        lineGrandTotal: line.lineGrandTotal,
-        description: line.description || null,
-        description1: line.description1 || null,
-        description2: line.description2 || null,
-        description3: line.description3 || null,
-        pricingRuleHeaderId: line.pricingRuleHeaderId || null,
-        imagePath: line.imagePath || null,
-        relatedStockId: line.relatedStockId || null,
-        relatedProductKey: line.relatedProductKey || null,
-        isMainRelatedProduct: line.isMainRelatedProduct || false,
-        approvalStatus: line.approvalStatus,
-      }));
+      const formattedLines: DemandLineFormState[] = linesData.map((line, index) => {
+        const amounts = calculateLineTotalsAmounts(
+          line.unitPrice,
+          line.quantity,
+          line.discountRate1,
+          line.discountRate2,
+          line.discountRate3,
+          line.vatRate,
+        );
+        return {
+          id: line.id && line.id > 0 ? `line-${line.id}-${index}` : `line-temp-${index}`,
+          isEditing: false,
+          productCode: line.productCode || '',
+          productName: line.productName,
+          groupCode: line.groupCode || null,
+          quantity: line.quantity,
+          unitPrice: line.unitPrice,
+          discountRate1: line.discountRate1,
+          discountRate2: line.discountRate2,
+          discountRate3: line.discountRate3,
+          vatRate: line.vatRate,
+          description: line.description || null,
+          description1: line.description1 || null,
+          description2: line.description2 || null,
+          description3: line.description3 || null,
+          pricingRuleHeaderId: line.pricingRuleHeaderId || null,
+          imagePath: line.imagePath || null,
+          relatedStockId: line.relatedStockId || null,
+          relatedProductKey: line.relatedProductKey || null,
+          isMainRelatedProduct: line.isMainRelatedProduct || false,
+          approvalStatus: line.approvalStatus,
+          ...amounts,
+        };
+      });
       setLines(formattedLines);
       linesInitializedRef.current = true;
     }
