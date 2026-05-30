@@ -22,6 +22,7 @@ import { OrderLineForm } from './OrderLineForm';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
+import { DescriptionCell } from '@/components/shared';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { useOrderCalculations } from '../hooks/useOrderCalculations';
@@ -254,11 +255,11 @@ export function OrderLineTable({
     glassCard:
       'relative overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm',
     tableHeadRow: 'bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800',
-    tableHead: 'h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider',
-    tableHeadRight: 'h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider text-right',
-    tableCell: 'p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800',
+    tableHead: 'h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider border-r border-zinc-200 dark:border-zinc-800 last:border-r-0',
+    tableHeadRight: 'h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider text-right border-r border-zinc-200 dark:border-zinc-800 last:border-r-0',
+    tableCell: 'p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-r border-zinc-200 dark:border-zinc-800 last:border-r-0',
     tableCellRight:
-      'p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800 text-right font-mono tabular-nums',
+      'p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-r border-zinc-200 dark:border-zinc-800 text-right font-mono tabular-nums last:border-r-0',
     tableRow: 'group transition-all duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/40',
     actionButton: 'h-8 w-8 p-0 rounded-lg hover:bg-white dark:hover:bg-zinc-700 hover:shadow-sm hover:scale-105 transition-all duration-200',
   };
@@ -929,10 +930,10 @@ export function OrderLineTable({
               onMouseUp={handleMouseUpOrLeave}
               onMouseLeave={handleMouseUpOrLeave}
             >
-              <table className="w-full caption-bottom text-sm min-w-[1600px] whitespace-nowrap">
+              <table className="w-auto caption-bottom text-sm min-w-[1380px] whitespace-nowrap">
                 <thead className="[&_tr]:border-b">
                   <tr className={cn("hover:bg-transparent border-b", styles.tableHeadRow)}>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "pl-6 min-w-[180px] md:min-w-[240px]")}>{t('order.lines.stock')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>{t('order.lines.stock')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('order.lines.unitPrice')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('order.lines.quantity')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('order.lines.discount1')}</th>
@@ -967,9 +968,8 @@ export function OrderLineTable({
                           hasApprovalWarning && "bg-amber-50/60 dark:bg-amber-950/20 border-l-4 border-l-amber-500"
                         )}
                       >
-                        {/* STOK BİLGİSİ */}
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "pl-6")}>
-                          <div className="flex gap-3">
+                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>
+                          <div className="flex gap-3 min-w-0 w-full overflow-hidden">
                             {hasLineImage ? (
                               <img
                                 src={lineImagePreview}
@@ -978,14 +978,18 @@ export function OrderLineTable({
                                 className="h-10 w-10 shrink-0 rounded-md border border-zinc-200 object-cover dark:border-zinc-700"
                               />
                             ) : null}
-                            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                            <div className="flex min-w-0 flex-1 flex-col gap-1.5 overflow-hidden">
                               <div className="font-bold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
                                 {line.productCode || '-'}
                               </div>
                               {line.productName && (
-                                <div className="text-xs font-medium text-zinc-500 line-clamp-1" title={line.productName}>
-                                  {line.productName}
-                                </div>
+                                <DescriptionCell
+                                  content={line.productName}
+                                  hideIcon
+                                  textClassName="text-xs font-medium text-zinc-500"
+                                  className="w-full"
+                                  popoverHeader={t('order.lines.stock')}
+                                />
                               )}
                               {line.unit && (
                                 <div className="text-[11px] font-semibold text-purple-600 dark:text-purple-300">
