@@ -683,6 +683,18 @@ export function QuotationLineForm({
     return finalPrice;
   };
 
+  const syncActiveBulkDraftImage = (
+    imageUpdate: Pick<QuotationLineFormState, 'imagePath' | 'pendingImageFile' | 'pendingImagePreviewUrl'>
+  ): void => {
+    setBulkDraftLines((prev) =>
+      prev.length > 0
+        ? prev.map((lineItem, index) =>
+            index === activeBulkIndex ? { ...lineItem, ...imageUpdate } : lineItem
+          )
+        : prev
+    );
+  };
+
   const handleImageSelect = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = event.target.files?.[0];
     event.target.value = '';
@@ -693,12 +705,13 @@ export function QuotationLineForm({
         URL.revokeObjectURL(formData.pendingImagePreviewUrl);
       }
       const previewUrl = URL.createObjectURL(file);
-      setFormData((prev) => ({
-        ...prev,
+      const imageUpdate = {
         imagePath: null,
         pendingImageFile: file,
         pendingImagePreviewUrl: previewUrl,
-      }));
+      };
+      setFormData((prev) => ({ ...prev, ...imageUpdate }));
+      syncActiveBulkDraftImage(imageUpdate);
       toast.success(t('common.saved', { ns: 'common' }));
       return;
     }
@@ -711,12 +724,13 @@ export function QuotationLineForm({
         quotationLineId: persistedLineId,
         productCode: imageUploadExtras?.productCode || formData.productCode || undefined,
       });
-      setFormData((prev) => ({
-        ...prev,
+      const imageUpdate = {
         imagePath: uploaded.relativeUrl,
         pendingImageFile: null,
         pendingImagePreviewUrl: null,
-      }));
+      };
+      setFormData((prev) => ({ ...prev, ...imageUpdate }));
+      syncActiveBulkDraftImage(imageUpdate);
       toast.success(t('common.saved', { ns: 'common' }));
     } catch (error) {
       const message = error instanceof Error ? error.message : t('common.imageUploadFailed', { ns: 'common' });
@@ -732,12 +746,13 @@ export function QuotationLineForm({
     if (formData.pendingImagePreviewUrl?.startsWith('blob:')) {
       URL.revokeObjectURL(formData.pendingImagePreviewUrl);
     }
-    setFormData((prev) => ({
-      ...prev,
+    const imageUpdate = {
       imagePath: null,
       pendingImageFile: null,
       pendingImagePreviewUrl: null,
-    }));
+    };
+    setFormData((prev) => ({ ...prev, ...imageUpdate }));
+    syncActiveBulkDraftImage(imageUpdate);
   };
 
   const handleProductSelect = async (product: ProductSelectionResult): Promise<void> => {
