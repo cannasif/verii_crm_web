@@ -2,7 +2,7 @@ import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } 
 import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCreateQuotationBulk } from '../hooks/useCreateQuotationBulk';
 import { usePriceRuleOfQuotation } from '../hooks/usePriceRuleOfQuotation';
@@ -83,9 +83,18 @@ async function finalizePendingQuotationImages(
   }
 }
 
+interface QuotationPrefillCustomerState {
+  prefillCustomer?: {
+    potentialCustomerId?: number | null;
+    erpCustomerCode?: string | null;
+    customerName?: string | null;
+  };
+}
+
 export function QuotationCreateForm(): ReactElement {
   const { t, i18n } = useTranslation(['quotation', 'common']);
   const navigate = useNavigate();
+  const location = useLocation();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);
   const branch = useAuthStore((state) => state.branch);
@@ -177,6 +186,26 @@ export function QuotationCreateForm(): ReactElement {
       });
     }
   }, [watchedOfferDate, form]);
+
+  const prefillAppliedRef = useRef(false);
+  useEffect(() => {
+    if (prefillAppliedRef.current) return;
+    const prefill = (location.state as QuotationPrefillCustomerState | null)?.prefillCustomer;
+    if (!prefill) return;
+    prefillAppliedRef.current = true;
+    if (prefill.potentialCustomerId && prefill.potentialCustomerId > 0) {
+      form.setValue('quotation.potentialCustomerId', prefill.potentialCustomerId, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+    if (prefill.erpCustomerCode) {
+      form.setValue('quotation.erpCustomerCode', prefill.erpCustomerCode, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }, [location.state, form]);
 
   const { calculateLineTotals } = useQuotationCalculations();
   const { data: erpRates = [] } = useExchangeRate();

@@ -1,8 +1,8 @@
-import { type ReactElement, useState, useEffect, useMemo } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
 import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useCreateOrderBulk } from '../hooks/useCreateOrderBulk';
 import { usePriceRuleOfOrder } from '../hooks/usePriceRuleOfOrder';
@@ -72,9 +72,18 @@ function extractOrderCreateErrorMessage(error: unknown, fallback: string): strin
   return error.message || fallback;
 }
 
+interface OrderPrefillCustomerState {
+  prefillCustomer?: {
+    potentialCustomerId?: number | null;
+    erpCustomerCode?: string | null;
+    customerName?: string | null;
+  };
+}
+
 export function OrderCreateForm(): ReactElement {
   const { t } = useTranslation(['order', 'common']);
   const navigate = useNavigate();
+  const location = useLocation();
   const { setPageTitle } = useUIStore();
   const user = useAuthStore((state) => state.user);
   const branch = useAuthStore((state) => state.branch);
@@ -110,6 +119,27 @@ export function OrderCreateForm(): ReactElement {
     },
   });
   const { isValid: isFormValid } = useFormState({ control: form.control });
+
+  const prefillAppliedRef = useRef(false);
+  useEffect(() => {
+    if (prefillAppliedRef.current) return;
+    const prefill = (location.state as OrderPrefillCustomerState | null)?.prefillCustomer;
+    if (!prefill) return;
+    prefillAppliedRef.current = true;
+    if (prefill.potentialCustomerId && prefill.potentialCustomerId > 0) {
+      form.setValue('order.potentialCustomerId', prefill.potentialCustomerId, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+    if (prefill.erpCustomerCode) {
+      form.setValue('order.erpCustomerCode', prefill.erpCustomerCode, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }, [location.state, form]);
+
   const watchedCurrencyRaw = form.watch('order.currency');
   const watchedCurrency =
     watchedCurrencyRaw === '' || watchedCurrencyRaw === null || watchedCurrencyRaw === undefined
