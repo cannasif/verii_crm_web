@@ -9,6 +9,9 @@
     "all": "Alle"
   },
   "tabs": {
+    "quotations": "Angebote",
+    "orders": "Bestellungen",
+    "activities": "Aktivitäten",
     "overview": "Übersicht",
     "analytics": "Analyse",
     "quickQuotations": "Schnellangebote",
@@ -59,7 +62,7 @@
   "sections": {
     "contacts": "Kontakte",
     "shippingAddresses": "Lieferadressen",
-    "recentDemands": "Letzte Angebote",
+    "recentDemands": "Letzte Anfragen",
     "recentQuotations": "Letzte Angebote",
     "recentOrders": "Letzte Bestellungen",
     "recentActivities": "Letzte Aktivitäten",
@@ -121,7 +124,25 @@
     "executeAction": "Aktion ausführen"
   },
   "button": "Kunde 360",
-  "status": {},
+  "status": {
+    "havenotstarted": "Nicht gestartet",
+    "notstarted": "Nicht gestartet",
+    "inprogress": "In Genehmigung",
+    "pending": "Ausstehend",
+    "waiting": "Wartend",
+    "approved": "Genehmigt",
+    "rejected": "Abgelehnt",
+    "completed": "Abgeschlossen",
+    "cancelled": "Storniert",
+    "canceled": "Storniert",
+    "draft": "Entwurf",
+    "converted": "Umgewandelt",
+    "sent": "Gesendet",
+    "active": "Aktiv",
+    "passive": "Passiv",
+    "closed": "Geschlossen",
+    "open": "Offen"
+  },
   "erpMovements": {
     "title": "ERP Hareket",
     "tableTitle": "Cari Hareketleri",
@@ -147,5 +168,56 @@
       "balance": "Bakiye",
       "closed": "Kapalı"
     }
+  },
+  "hero": {
+    "statusActive": "Aktiv",
+    "statusCrm": "CRM-Eintrag",
+    "since": "Seit {{year}}",
+    "whatsapp": "WhatsApp",
+    "call": "Anrufen",
+    "email": "E-Mail",
+    "quickQuote": "Schnellangebot",
+    "editCustomer": "Kunde bearbeiten",
+    "none": "Keine",
+    "emailLabel": "E-Mail",
+    "phoneLabel": "Telefon",
+    "websiteLabel": "Webseite",
+    "addressLabel": "Adresse",
+    "infoTitle": "Details",
+    "taxNumber": "Steuernr.",
+    "customerType": "Kundentyp",
+    "salesRep": "Vertriebsmitarbeiter",
+    "creditLimit": "Kreditlimit"
+  },
+  "related": {
+    "newQuotation": "Neues Angebot",
+    "newOrder": "Neue Bestellung",
+    "newActivity": "Neue Aktivität",
+    "error": "Liste konnte nicht geladen werden",
+    "emptyQuotations": "Keine Angebote für diesen Kunden",
+    "emptyOrders": "Keine Bestellungen für diesen Kunden",
+    "emptyActivities": "Keine Aktivitäten für diesen Kunden",
+    "columns": {
+      "offerNo": "Nr.",
+      "date": "Datum",
+      "representative": "Vertreter",
+      "total": "Summe",
+      "subject": "Betreff",
+      "type": "Typ",
+      "assignee": "Zuständig",
+      "status": "Status"
+    },
+    "activityStatus": {
+      "scheduled": "Geplant",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert"
+    }
+  },
+  "images": {
+    "upload": "Bild hochladen",
+    "delete": "Löschen",
+    "emptyHint": "Klicken oder ziehen, um ein Bild hinzuzufügen",
+    "deleteConfirmTitle": "Bild löschen",
+    "deleteConfirmDescription": "Möchten Sie dieses Bild wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
   }
 }

@@ -9,6 +9,9 @@
     "all": "Todos"
   },
   "tabs": {
+    "quotations": "Cotizaciones",
+    "orders": "Pedidos",
+    "activities": "Actividades",
     "overview": "Resumen",
     "analytics": "Análisis",
     "quickQuotations": "Cotizaciones Rápidas",
@@ -59,7 +62,7 @@
   "sections": {
     "contacts": "Contactos",
     "shippingAddresses": "Direcciones de Envío",
-    "recentDemands": "Cotizaciones Recientes",
+    "recentDemands": "Solicitudes Recientes",
     "recentQuotations": "Cotizaciones Recientes",
     "recentOrders": "Pedidos Recientes",
     "recentActivities": "Actividades Recientes",
@@ -121,7 +124,25 @@
     "executeAction": "Ejecutar acción"
   },
   "button": "Cliente 360",
-  "status": {},
+  "status": {
+    "havenotstarted": "No iniciado",
+    "notstarted": "No iniciado",
+    "inprogress": "En aprobación",
+    "pending": "Pendiente",
+    "waiting": "En espera",
+    "approved": "Aprobado",
+    "rejected": "Rechazado",
+    "completed": "Completado",
+    "cancelled": "Cancelado",
+    "canceled": "Cancelado",
+    "draft": "Borrador",
+    "converted": "Convertido",
+    "sent": "Enviado",
+    "active": "Activo",
+    "passive": "Pasivo",
+    "closed": "Cerrado",
+    "open": "Abierto"
+  },
   "erpMovements": {
     "title": "ERP Hareket",
     "tableTitle": "Cari Hareketleri",
@@ -147,5 +168,56 @@
       "balance": "Bakiye",
       "closed": "Kapalı"
     }
+  },
+  "hero": {
+    "statusActive": "Activo",
+    "statusCrm": "Registro CRM",
+    "since": "Desde {{year}}",
+    "whatsapp": "WhatsApp",
+    "call": "Llamar",
+    "email": "Correo",
+    "quickQuote": "Cotización rápida",
+    "editCustomer": "Editar cliente",
+    "none": "Ninguno",
+    "emailLabel": "Correo",
+    "phoneLabel": "Teléfono",
+    "websiteLabel": "Sitio web",
+    "addressLabel": "Dirección",
+    "infoTitle": "Detalles",
+    "taxNumber": "N.º fiscal",
+    "customerType": "Tipo de cliente",
+    "salesRep": "Comercial",
+    "creditLimit": "Límite de crédito"
+  },
+  "related": {
+    "newQuotation": "Nueva cotización",
+    "newOrder": "Nuevo pedido",
+    "newActivity": "Nueva actividad",
+    "error": "No se pudo cargar la lista",
+    "emptyQuotations": "No hay cotizaciones para este cliente",
+    "emptyOrders": "No hay pedidos para este cliente",
+    "emptyActivities": "No hay actividades para este cliente",
+    "columns": {
+      "offerNo": "N.º",
+      "date": "Fecha",
+      "representative": "Representante",
+      "total": "Total",
+      "subject": "Asunto",
+      "type": "Tipo",
+      "assignee": "Responsable",
+      "status": "Estado"
+    },
+    "activityStatus": {
+      "scheduled": "Programado",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    }
+  },
+  "images": {
+    "upload": "Subir imagen",
+    "delete": "Eliminar",
+    "emptyHint": "Haz clic o arrastra para añadir una imagen",
+    "deleteConfirmTitle": "Eliminar imagen",
+    "deleteConfirmDescription": "¿Seguro que deseas eliminar esta imagen? Esta acción no se puede deshacer."
   }
 }

@@ -9,6 +9,9 @@
     "all": "Tous"
   },
   "tabs": {
+    "quotations": "Devis",
+    "orders": "Commandes",
+    "activities": "Activités",
     "overview": "Aperçu",
     "analytics": "Analytique",
     "quickQuotations": "Devis Rapides",
@@ -59,7 +62,7 @@
   "sections": {
     "contacts": "Contacts",
     "shippingAddresses": "Adresses de Livraison",
-    "recentDemands": "Devis Récents",
+    "recentDemands": "Demandes Récentes",
     "recentQuotations": "Devis Récents",
     "recentOrders": "Commandes Récentes",
     "recentActivities": "Activités Récentes",
@@ -121,7 +124,25 @@
     "executeAction": "Exécuter l'action"
   },
   "button": "Client 360",
-  "status": {},
+  "status": {
+    "havenotstarted": "Non démarré",
+    "notstarted": "Non démarré",
+    "inprogress": "En approbation",
+    "pending": "En attente",
+    "waiting": "En attente",
+    "approved": "Approuvé",
+    "rejected": "Rejeté",
+    "completed": "Terminé",
+    "cancelled": "Annulé",
+    "canceled": "Annulé",
+    "draft": "Brouillon",
+    "converted": "Converti",
+    "sent": "Envoyé",
+    "active": "Actif",
+    "passive": "Passif",
+    "closed": "Fermé",
+    "open": "Ouvert"
+  },
   "erpMovements": {
     "title": "ERP Hareket",
     "tableTitle": "Cari Hareketleri",
@@ -147,5 +168,56 @@
       "balance": "Bakiye",
       "closed": "Kapalı"
     }
+  },
+  "hero": {
+    "statusActive": "Actif",
+    "statusCrm": "Fiche CRM",
+    "since": "Depuis {{year}}",
+    "whatsapp": "WhatsApp",
+    "call": "Appeler",
+    "email": "E-mail",
+    "quickQuote": "Devis rapide",
+    "editCustomer": "Modifier le client",
+    "none": "Aucun",
+    "emailLabel": "E-mail",
+    "phoneLabel": "Téléphone",
+    "websiteLabel": "Site web",
+    "addressLabel": "Adresse",
+    "infoTitle": "Détails",
+    "taxNumber": "N° fiscal",
+    "customerType": "Type de client",
+    "salesRep": "Commercial",
+    "creditLimit": "Limite de crédit"
+  },
+  "related": {
+    "newQuotation": "Nouveau devis",
+    "newOrder": "Nouvelle commande",
+    "newActivity": "Nouvelle activité",
+    "error": "Impossible de charger la liste",
+    "emptyQuotations": "Aucun devis pour ce client",
+    "emptyOrders": "Aucune commande pour ce client",
+    "emptyActivities": "Aucune activité pour ce client",
+    "columns": {
+      "offerNo": "N°",
+      "date": "Date",
+      "representative": "Représentant",
+      "total": "Total",
+      "subject": "Sujet",
+      "type": "Type",
+      "assignee": "Responsable",
+      "status": "Statut"
+    },
+    "activityStatus": {
+      "scheduled": "Planifié",
+      "completed": "Terminé",
+      "cancelled": "Annulé"
+    }
+  },
+  "images": {
+    "upload": "Téléverser une image",
+    "delete": "Supprimer",
+    "emptyHint": "Cliquez ou glissez pour ajouter une image",
+    "deleteConfirmTitle": "Supprimer l'image",
+    "deleteConfirmDescription": "Voulez-vous vraiment supprimer cette image ? Cette action est irréversible."
   }
 }

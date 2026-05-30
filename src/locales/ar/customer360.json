@@ -9,6 +9,9 @@
     "all": "الكل"
   },
   "tabs": {
+    "quotations": "عروض الأسعار",
+    "orders": "الطلبات",
+    "activities": "الأنشطة",
     "overview": "نظرة عامة",
     "analytics": "التحليلات",
     "quickQuotations": "عروض الأسعار السريعة",
@@ -59,7 +62,7 @@
   "sections": {
     "contacts": "جهات الاتصال",
     "shippingAddresses": "عناوين الشحن",
-    "recentDemands": "عروض الأسعار الأخيرة",
+    "recentDemands": "أحدث الطلبات الواردة",
     "recentQuotations": "عروض الأسعار الأخيرة",
     "recentOrders": "الطلبات الأخيرة",
     "recentActivities": "الأنشطة الأخيرة",
@@ -121,7 +124,25 @@
     "executeAction": "تنفيذ الإجراء"
   },
   "button": "عميل 360",
-  "status": {},
+  "status": {
+    "havenotstarted": "لم يبدأ",
+    "notstarted": "لم يبدأ",
+    "inprogress": "قيد الموافقة",
+    "pending": "قيد الانتظار",
+    "waiting": "في الانتظار",
+    "approved": "تمت الموافقة",
+    "rejected": "مرفوض",
+    "completed": "مكتمل",
+    "cancelled": "ملغى",
+    "canceled": "ملغى",
+    "draft": "مسودة",
+    "converted": "تم التحويل",
+    "sent": "تم الإرسال",
+    "active": "نشط",
+    "passive": "غير نشط",
+    "closed": "مغلق",
+    "open": "مفتوح"
+  },
   "erpMovements": {
     "title": "ERP Hareket",
     "tableTitle": "Cari Hareketleri",
@@ -147,5 +168,56 @@
       "balance": "Bakiye",
       "closed": "Kapalı"
     }
+  },
+  "hero": {
+    "statusActive": "نشط",
+    "statusCrm": "سجل CRM",
+    "since": "منذ {{year}}",
+    "whatsapp": "واتساب",
+    "call": "اتصال",
+    "email": "بريد",
+    "quickQuote": "عرض سعر سريع",
+    "editCustomer": "تعديل العميل",
+    "none": "لا يوجد",
+    "emailLabel": "البريد",
+    "phoneLabel": "الهاتف",
+    "websiteLabel": "الموقع",
+    "addressLabel": "العنوان",
+    "infoTitle": "التفاصيل",
+    "taxNumber": "الرقم الضريبي",
+    "customerType": "نوع العميل",
+    "salesRep": "مندوب المبيعات",
+    "creditLimit": "حد الائتمان"
+  },
+  "related": {
+    "newQuotation": "عرض سعر جديد",
+    "newOrder": "طلب جديد",
+    "newActivity": "نشاط جديد",
+    "error": "تعذّر تحميل القائمة",
+    "emptyQuotations": "لا توجد عروض أسعار لهذا العميل",
+    "emptyOrders": "لا توجد طلبات لهذا العميل",
+    "emptyActivities": "لا توجد أنشطة لهذا العميل",
+    "columns": {
+      "offerNo": "رقم",
+      "date": "التاريخ",
+      "representative": "المندوب",
+      "total": "الإجمالي",
+      "subject": "الموضوع",
+      "type": "النوع",
+      "assignee": "المسؤول",
+      "status": "الحالة"
+    },
+    "activityStatus": {
+      "scheduled": "مجدول",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    }
+  },
+  "images": {
+    "upload": "رفع صورة",
+    "delete": "حذف",
+    "emptyHint": "انقر أو اسحب لإضافة صورة",
+    "deleteConfirmTitle": "حذف الصورة",
+    "deleteConfirmDescription": "هل أنت متأكد من حذف هذه الصورة؟ لا يمكن التراجع عن هذا الإجراء."
   }
 }

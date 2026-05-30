@@ -120,6 +120,32 @@ export async function getCustomerImages(params: {
   return ensureData(response, 'Customer images could not be loaded');
 }
 
+export async function uploadCustomerImages(params: {
+  id: number;
+  files: File[];
+  descriptions?: string[];
+}): Promise<CustomerImageDto[]> {
+  const { id, files, descriptions } = params;
+  const formData = new FormData();
+  files.forEach((file) => formData.append('files', file));
+  descriptions?.forEach((description) => formData.append('resimAciklamalar', description));
+  const response = await api.post<ApiResponse<CustomerImageDto[] | null>>(
+    `/api/CustomerImage/upload/${id}`,
+    formData
+  );
+  return ensureData(response, 'Customer images could not be uploaded');
+}
+
+export async function deleteCustomerImage(params: {
+  imageId: number;
+}): Promise<void> {
+  const { imageId } = params;
+  const response = await api.delete<ApiResponse<object>>(`/api/CustomerImage/${imageId}`);
+  if (!response.success) {
+    throw new Error(response.message ?? response.exceptionMessage ?? 'Customer image could not be deleted');
+  }
+}
+
 export async function getCustomer360QuickQuotations(params: {
   id: number;
   signal?: AbortSignal;

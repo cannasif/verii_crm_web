@@ -9,6 +9,9 @@
     "all": "Tümü"
   },
   "tabs": {
+    "quotations": "Teklifler",
+    "orders": "Siparişler",
+    "activities": "Aktiviteler",
     "overview": "Özet",
     "analytics": "Çözümleme",
     "quickQuotations": "Hızlı Teklifler",
@@ -85,7 +88,7 @@
   "sections": {
     "contacts": "İletişimler",
     "shippingAddresses": "Sevk Adresleri",
-    "recentDemands": "Son Teklifler",
+    "recentDemands": "Son Talepler",
     "recentQuotations": "Son Teklifler",
     "recentOrders": "Son Siparişler",
     "recentActivities": "Son Aktiviteler",
@@ -146,6 +149,75 @@
     "recommendedActionsTitle": "Sistem tarafından önerilen aksiyonlar bu alanda listelenir.",
     "executeAction": "Aksiyonu uygula"
   },
+  "hero": {
+    "statusActive": "Aktif",
+    "statusCrm": "CRM Kaydı",
+    "since": "{{year}}'den beri",
+    "whatsapp": "WhatsApp",
+    "call": "Ara",
+    "email": "E-posta",
+    "quickQuote": "Hızlı Teklif",
+    "editCustomer": "Müşteriyi Düzenle",
+    "none": "Yok",
+    "emailLabel": "E-posta",
+    "phoneLabel": "Telefon",
+    "websiteLabel": "Web Sitesi",
+    "addressLabel": "Adres",
+    "infoTitle": "Bilgiler",
+    "taxNumber": "Vergi No",
+    "customerType": "Müşteri Tipi",
+    "salesRep": "Satış Temsilcisi",
+    "creditLimit": "Kredi Limiti"
+  },
+  "related": {
+    "newQuotation": "Yeni Teklif",
+    "newOrder": "Yeni Sipariş",
+    "newActivity": "Yeni Aktivite",
+    "error": "Liste yüklenemedi",
+    "emptyQuotations": "Bu müşteriye ait teklif bulunamadı",
+    "emptyOrders": "Bu müşteriye ait sipariş bulunamadı",
+    "emptyActivities": "Bu müşteriye ait aktivite bulunamadı",
+    "columns": {
+      "offerNo": "No",
+      "date": "Tarih",
+      "representative": "Temsilci",
+      "total": "Tutar",
+      "subject": "Konu",
+      "type": "Tip",
+      "assignee": "Sorumlu",
+      "status": "Durum"
+    },
+    "activityStatus": {
+      "scheduled": "Planlandı",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal"
+    }
+  },
+  "images": {
+    "upload": "Görsel Yükle",
+    "delete": "Sil",
+    "emptyHint": "Görsel eklemek için tıklayın veya sürükleyin",
+    "deleteConfirmTitle": "Görseli sil",
+    "deleteConfirmDescription": "Bu görseli silmek istediğinize emin misiniz? Bu işlem geri alınamaz."
+  },
   "button": "Müşteri 360",
-  "status": {}
+  "status": {
+    "havenotstarted": "Başlamadı",
+    "notstarted": "Başlamadı",
+    "inprogress": "Onay Sürecinde",
+    "pending": "Beklemede",
+    "waiting": "Bekliyor",
+    "approved": "Onaylandı",
+    "rejected": "Reddedildi",
+    "completed": "Tamamlandı",
+    "cancelled": "İptal Edildi",
+    "canceled": "İptal Edildi",
+    "draft": "Taslak",
+    "converted": "Teklife Döndü",
+    "sent": "Gönderildi",
+    "active": "Aktif",
+    "passive": "Pasif",
+    "closed": "Kapalı",
+    "open": "Açık"
+  }
 }

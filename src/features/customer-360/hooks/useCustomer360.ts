@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import {
   executeCustomer360RecommendedAction,
   getCustomerImages,
+  uploadCustomerImages,
+  deleteCustomerImage,
   getCustomer360Cohort,
   getCustomer360Overview,
   getCustomer360AnalyticsSummary,
@@ -71,6 +73,39 @@ export function useCustomerImagesQuery(id: number) {
     queryFn: ({ signal }) => getCustomerImages({ id, signal }),
     staleTime: IMAGES_STALE_MS,
     enabled: id > 0,
+  });
+}
+
+export function useUploadCustomerImagesMutation(id: number) {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: { files: File[]; descriptions?: string[] }) =>
+      uploadCustomerImages({ id, files: payload.files, descriptions: payload.descriptions }),
+    onSuccess: () => {
+      toast.success(t('common.success'));
+      queryClient.invalidateQueries({ queryKey: ['customer360', 'images', id] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('common.error'));
+    },
+  });
+}
+
+export function useDeleteCustomerImageMutation(id: number) {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (imageId: number) => deleteCustomerImage({ imageId }),
+    onSuccess: () => {
+      toast.success(t('common.success'));
+      queryClient.invalidateQueries({ queryKey: ['customer360', 'images', id] });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('common.error'));
+    },
   });
 }
 

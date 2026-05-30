@@ -9,6 +9,9 @@
     "all": "Tutti"
   },
   "tabs": {
+    "quotations": "Preventivi",
+    "orders": "Ordini",
+    "activities": "Attività",
     "overview": "Panoramica",
     "analytics": "Analisi",
     "quickQuotations": "Preventivi Rapidi",
@@ -59,7 +62,7 @@
   "sections": {
     "contacts": "Contatti",
     "shippingAddresses": "Indirizzi di Spedizione",
-    "recentDemands": "Preventivi Recenti",
+    "recentDemands": "Richieste Recenti",
     "recentQuotations": "Preventivi Recenti",
     "recentOrders": "Ordini Recenti",
     "recentActivities": "Attività Recenti",
@@ -121,7 +124,25 @@
     "executeAction": "Esegui azione"
   },
   "button": "Cliente 360",
-  "status": {},
+  "status": {
+    "havenotstarted": "Non avviato",
+    "notstarted": "Non avviato",
+    "inprogress": "In approvazione",
+    "pending": "In attesa",
+    "waiting": "In attesa",
+    "approved": "Approvato",
+    "rejected": "Rifiutato",
+    "completed": "Completato",
+    "cancelled": "Annullato",
+    "canceled": "Annullato",
+    "draft": "Bozza",
+    "converted": "Convertito",
+    "sent": "Inviato",
+    "active": "Attivo",
+    "passive": "Passivo",
+    "closed": "Chiuso",
+    "open": "Aperto"
+  },
   "erpMovements": {
     "title": "ERP Hareket",
     "tableTitle": "Cari Hareketleri",
@@ -147,5 +168,56 @@
       "balance": "Bakiye",
       "closed": "Kapalı"
     }
+  },
+  "hero": {
+    "statusActive": "Attivo",
+    "statusCrm": "Scheda CRM",
+    "since": "Dal {{year}}",
+    "whatsapp": "WhatsApp",
+    "call": "Chiama",
+    "email": "Email",
+    "quickQuote": "Preventivo rapido",
+    "editCustomer": "Modifica cliente",
+    "none": "Nessuno",
+    "emailLabel": "Email",
+    "phoneLabel": "Telefono",
+    "websiteLabel": "Sito web",
+    "addressLabel": "Indirizzo",
+    "infoTitle": "Dettagli",
+    "taxNumber": "P. IVA",
+    "customerType": "Tipo cliente",
+    "salesRep": "Commerciale",
+    "creditLimit": "Limite di credito"
+  },
+  "related": {
+    "newQuotation": "Nuovo preventivo",
+    "newOrder": "Nuovo ordine",
+    "newActivity": "Nuova attività",
+    "error": "Impossibile caricare l'elenco",
+    "emptyQuotations": "Nessun preventivo per questo cliente",
+    "emptyOrders": "Nessun ordine per questo cliente",
+    "emptyActivities": "Nessuna attività per questo cliente",
+    "columns": {
+      "offerNo": "N.",
+      "date": "Data",
+      "representative": "Referente",
+      "total": "Totale",
+      "subject": "Oggetto",
+      "type": "Tipo",
+      "assignee": "Responsabile",
+      "status": "Stato"
+    },
+    "activityStatus": {
+      "scheduled": "Pianificato",
+      "completed": "Completato",
+      "cancelled": "Annullato"
+    }
+  },
+  "images": {
+    "upload": "Carica immagine",
+    "delete": "Elimina",
+    "emptyHint": "Clicca o trascina per aggiungere un'immagine",
+    "deleteConfirmTitle": "Elimina immagine",
+    "deleteConfirmDescription": "Vuoi davvero eliminare questa immagine? L'azione è irreversibile."
   }
 }
