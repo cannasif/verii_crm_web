@@ -31,6 +31,7 @@ import {
   Truck,
   MessageSquareText,
   Shapes,
+  Image as ImageIcon,
 } from 'lucide-react';
 
 import { useQueryClient } from '@tanstack/react-query';
@@ -50,6 +51,7 @@ import type { PagedFilter } from '@/types/api';
 import { getActivityColumns } from './activity-columns';
 import { ActivityForm } from './ActivityForm';
 import { activityApi } from '../api/activity-api';
+import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
 import { useCreateActivity } from '../hooks/useCreateActivity';
 import { useDeleteActivity } from '../hooks/useDeleteActivity';
 import { useUpdateActivity } from '../hooks/useUpdateActivity';
@@ -392,16 +394,66 @@ export function ActivityManagementPage(): ReactElement {
     };
   };
 
-  const handleFormSubmit = async (data: ActivityFormSchema): Promise<void> => {
+  const handleFormSubmit = async (
+    data: ActivityFormSchema,
+    pendingImages?: { file: File; description: string }[],
+    pendingDeletedImageIds?: number[],
+    pendingUpdatedImageDescriptions?: Record<number, string>
+  ): Promise<void> => {
     if (editingActivity) {
       await updateActivity.mutateAsync({
         id: editingActivity.id,
         data: buildUpdatePayload(data, editingActivity.assignedUserId),
       });
+
+      const promises: Promise<any>[] = [];
+
+      if (pendingDeletedImageIds && pendingDeletedImageIds.length > 0) {
+        pendingDeletedImageIds.forEach(id => {
+          promises.push(activityImageApi.delete(id));
+        });
+      }
+
+      if (pendingUpdatedImageDescriptions && Object.keys(pendingUpdatedImageDescriptions).length > 0) {
+        const currentImages = await activityImageApi.getByActivityId(editingActivity.id);
+        Object.entries(pendingUpdatedImageDescriptions).forEach(([idStr, desc]) => {
+          const id = Number(idStr);
+          const currentImage = currentImages.find(img => img.id === id);
+          if (currentImage) {
+            promises.push(activityImageApi.update(id, {
+              activityId: editingActivity.id,
+              resimAciklama: desc,
+              resimUrl: currentImage.resimUrl
+            }));
+          }
+        });
+      }
+
+      if (pendingImages && pendingImages.length > 0) {
+        const files = pendingImages.map(img => img.file);
+        const descriptions = pendingImages.map(img => img.description);
+        promises.push(activityImageApi.upload(editingActivity.id, {
+          files,
+          resimAciklamalar: descriptions.some(d => d) ? descriptions : undefined,
+        }));
+      }
+
+      if (promises.length > 0) {
+        await Promise.all(promises);
+      }
     } else {
-      await createActivity.mutateAsync(
+      const createdActivity = await createActivity.mutateAsync(
         buildCreateActivityPayload(data, { assignedUserIdFallback: user?.id })
       );
+
+      if (createdActivity && pendingImages && pendingImages.length > 0) {
+        const files = pendingImages.map(img => img.file);
+        const descriptions = pendingImages.map(img => img.description);
+        await activityImageApi.upload(createdActivity.id, {
+          files,
+          resimAciklamalar: descriptions.some(d => d) ? descriptions : undefined,
+        });
+      }
     }
     setFormOpen(false);
     setEditingActivity(null);
@@ -448,6 +500,24 @@ export function ActivityManagementPage(): ReactElement {
   const renderCell = (activity: ActivityDto, key: string, colWidth?: number): ReactNode => {
     const value = activity[key as keyof ActivityDto];
 
+    if (key === 'id') {
+      const hasImages = Array.isArray(activity.images) && activity.images.length > 0;
+      return (
+        <div className="grid grid-cols-2 items-center w-full gap-1.5 px-1 font-medium">
+          <span className="text-right">{String(value ?? '-')}</span>
+          <div className="flex justify-start">
+            {hasImages && (
+              <span title={t('hasImages', { defaultValue: 'Resimli Aktivite' })}>
+                <ImageIcon
+                  size={18}
+                  className="text-pink-500 shrink-0"
+                />
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    }
     if (key === 'status') return <ActivityStatusBadge status={activity.status} />;
     if (key === 'priority') return <ActivityPriorityBadge priority={activity.priority} />;
     if (key === 'subject') {

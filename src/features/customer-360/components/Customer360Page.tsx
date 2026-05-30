@@ -40,6 +40,7 @@ import { formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
+import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
@@ -871,10 +872,22 @@ export function Customer360Page(): ReactElement {
   const quickActivityWindow = useMemo(() => getQuickActivityWindow(), []);
   const profile = data?.profile ?? { id: 0, name: '', customerCode: null };
   const handleQuickActivitySubmit = useCallback(
-    async (formData: ActivityFormSchema): Promise<void> => {
-      await createActivity.mutateAsync(
+    async (
+      formData: ActivityFormSchema,
+      pendingImages?: { file: File; description: string }[]
+    ): Promise<void> => {
+      const createdActivity = await createActivity.mutateAsync(
         buildCreateActivityPayload(formData, { assignedUserIdFallback: user?.id })
       );
+
+      if (createdActivity && pendingImages && pendingImages.length > 0) {
+        const files = pendingImages.map(img => img.file);
+        const descriptions = pendingImages.map(img => img.description);
+        await activityImageApi.upload(createdActivity.id, {
+          files,
+          resimAciklamalar: descriptions.some(d => d) ? descriptions : undefined,
+        });
+      }
       setQuickActivityOpen(false);
     },
     [createActivity, user?.id]

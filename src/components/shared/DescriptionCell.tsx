@@ -6,9 +6,22 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 interface DescriptionCellProps {
   content: string;
   colWidth?: number;
+  hideIcon?: boolean;
+  icon?: React.ReactNode;
+  popoverHeader?: string;
+  className?: string;
+  textClassName?: string;
 }
 
-export function DescriptionCell({ content, colWidth }: DescriptionCellProps) {
+export function DescriptionCell({
+  content,
+  colWidth,
+  hideIcon = false,
+  icon,
+  popoverHeader,
+  className,
+  textClassName,
+}: DescriptionCellProps) {
   const { t } = useTranslation('common');
   const textRef = useRef<HTMLSpanElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -26,9 +39,13 @@ export function DescriptionCell({ content, colWidth }: DescriptionCellProps) {
   if (!content) return <span className="text-muted-foreground">-</span>;
 
   return (
-    <div className="flex items-center gap-1.5 min-w-0 overflow-hidden w-full">
-      <FileText size={14} className="text-slate-400 shrink-0" />
-      <span ref={textRef} className="truncate min-w-0 flex-1 text-slate-600 dark:text-slate-300">
+    <div className={`flex items-center gap-1.5 min-w-0 overflow-hidden w-full ${className || ''}`}>
+      {!hideIcon && (icon || <FileText size={14} className="text-slate-400 shrink-0" />)}
+      <span
+        ref={textRef}
+        className={`min-w-0 flex-1 overflow-hidden whitespace-nowrap ${textClassName || 'text-slate-600 dark:text-slate-300'}`}
+        style={{ textOverflow: isOverflowing ? 'clip' : 'ellipsis' }}
+      >
         {content}
       </span>
       {isOverflowing && (
@@ -47,9 +64,9 @@ export function DescriptionCell({ content, colWidth }: DescriptionCellProps) {
           >
             <div className="space-y-2">
               <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-white/5">
-                <FileText size={14} className="text-pink-500" />
+                {icon || <FileText size={14} className="text-pink-500" />}
                 <span className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white">
-                  {t('common.descriptionDetail')}
+                  {popoverHeader || t('common.descriptionDetail')}
                 </span>
               </div>
               <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap max-h-[300px] overflow-y-auto">

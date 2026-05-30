@@ -52,6 +52,7 @@ import {
   sanitizeDigitsValue,
   useFieldShake,
 } from '../utils/customer-form-ui';
+import { calculateCustomerCompletion, getCompletionColorClasses } from '../utils/customer-completion';
 import {
   Building2,
   Hash,
@@ -127,30 +128,12 @@ export function CustomerForm({
   const selectedCountryId = form.watch('countryId');
   const selectedCityId = form.watch('cityId');
 
-  const isNameMissing = useCallback((): boolean => {
-    return !form.getValues('name')?.trim();
-  }, [form]);
-
   const blockUntilNameFilled = useCallback(
-    (fieldName?: keyof CustomerFormData): boolean => {
-      if (!isCreateMode || !isNameMissing()) {
-        return false;
-      }
+    (_fieldName?: keyof CustomerFormData): boolean => {
 
-      form.setError('name', {
-        type: 'manual',
-        message: 'form.nameRequired',
-      });
-      triggerShake('name');
-      nameInputRef.current?.focus();
-
-      if (fieldName && fieldName !== 'name') {
-        triggerShake(fieldName);
-      }
-
-      return true;
+      return false;
     },
-    [form, isCreateMode, isNameMissing, triggerShake]
+    []
   );
 
   const handleDigitsFieldChange = useCallback(
@@ -189,11 +172,7 @@ export function CustomerForm({
       : createEmptyCustomerFormData(branch?.code);
 
     form.reset(nextValues);
-    void form.trigger();
 
-    if (isCreateMode) {
-      window.setTimeout(() => nameInputRef.current?.focus(), 50);
-    }
   }, [open, customer?.id, branch?.code, form, isCreateMode, customer]);
 
   useEffect(() => {
@@ -253,35 +232,55 @@ export function CustomerForm({
     }
   };
 
+  const formValues = form.watch();
+
+  const completionPercentage = calculateCustomerCompletion(formValues);
+  const completionColors = getCompletionColorClasses(completionPercentage);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false} className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white !max-w-[900px] w-[95%] sm:w-full shadow-2xl sm:rounded-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
-        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-white/95 dark:bg-[#130822]/95">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg shadow-pink-500/20 shrink-0">
-              <Building2 size={24} className="text-white" />
+        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 flex flex-col gap-5 sticky top-0 z-10 backdrop-blur-md bg-white/95 dark:bg-[#130822]/95">
+          <div className="flex flex-row items-center justify-between w-full">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg shadow-pink-500/20 shrink-0">
+                <Building2 size={24} className="text-white" />
+              </div>
+              <div className="space-y-1">
+                <DialogTitle className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                  {customer
+                    ? tf('editCustomer')
+                    : tf('addCustomer')}
+                </DialogTitle>
+                <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
+                  {customer
+                    ? tf('editDescription')
+                    : tf('addDescription')}
+                </DialogDescription>
+              </div>
             </div>
-            <div className="space-y-1">
-              <DialogTitle className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
-                {customer
-                  ? tf('editCustomer')
-                  : tf('addCustomer')}
-              </DialogTitle>
-              <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
-                {customer
-                  ? tf('editDescription')
-                  : tf('addDescription')}
-              </DialogDescription>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onOpenChange(false)}
+              className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm shrink-0"
+            >
+              <X size={20} className="relative z-10" />
+            </Button>
+          </div>
+
+          <div className="w-full">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">
+              <span>{t('completion', { defaultValue: 'Doluluk Oranı' })}</span>
+              <span className={completionColors.text}>{completionPercentage}%</span>
+            </div>
+            <div className="h-2.5 sm:h-3 w-full bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden shadow-inner">
+              <div
+                className={`h-full transition-all duration-500 ease-out rounded-full ${completionColors.bg} ${completionColors.shadow}`}
+                style={{ width: `${completionPercentage}%` }}
+              />
             </div>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onOpenChange(false)}
-            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm shrink-0"
-          >
-            <X size={20} className="relative z-10" />
-          </Button>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
@@ -300,12 +299,6 @@ export function CustomerForm({
                         }}
                         className={buildCustomerInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('name'))}
                         placeholder={tf('namePlaceholder')}
-                        onKeyDown={(event) => {
-                          if (isCreateMode && isNameMissing() && event.key === 'Tab' && !event.shiftKey) {
-                            event.preventDefault();
-                            blockUntilNameFilled('name');
-                          }
-                        }}
                         onChange={(event) => {
                           field.onChange(event);
                           if (event.target.value.trim()) {

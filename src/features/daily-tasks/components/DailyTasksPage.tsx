@@ -37,6 +37,7 @@ import { useCreateActivity } from '@/features/activity-management/hooks/useCreat
 import { ActivityStatusBadge } from '@/features/activity-management/components/ActivityStatusBadge';
 import { ActivityPriorityBadge } from '@/features/activity-management/components/ActivityPriorityBadge';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
+import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import { buildUpdateActivityPayload } from '@/features/activity-management/utils/build-update-payload';
 import { toUpdateActivityDto } from '@/features/activity-management/utils/to-update-activity-dto';
@@ -738,16 +739,28 @@ export function DailyTasksPage(): ReactElement {
     setFormOpen(true);
   };
 
-  const handleFormSubmit = async (data: ActivityFormSchema) => {
+  const handleFormSubmit = async (
+    data: ActivityFormSchema,
+    pendingImages?: { file: File; description: string }[]
+  ) => {
     if (editingActivity) {
       await updateActivity.mutateAsync({
         id: editingActivity.id,
         data: buildUpdateActivityPayload(data, editingActivity.assignedUserId),
       });
     } else {
-      await createActivity.mutateAsync(
+      const createdActivity = await createActivity.mutateAsync(
         buildCreateActivityPayload(data, { assignedUserIdFallback: user?.id })
       );
+
+      if (createdActivity && pendingImages && pendingImages.length > 0) {
+        const files = pendingImages.map(img => img.file);
+        const descriptions = pendingImages.map(img => img.description);
+        await activityImageApi.upload(createdActivity.id, {
+          files,
+          resimAciklamalar: descriptions.some(d => d) ? descriptions : undefined,
+        });
+      }
     }
     setFormOpen(false);
     setEditingActivity(null);

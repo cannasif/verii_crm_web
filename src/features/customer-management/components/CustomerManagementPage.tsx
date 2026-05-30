@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Eye, EyeOff, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,6 +33,7 @@ import {
   clearTablePaginationState,
 } from '@/lib/table-pagination-persistence';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
+import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
@@ -93,6 +94,11 @@ export function CustomerManagementPage(): ReactElement {
   const [editingCustomer, setEditingCustomer] = useState<CustomerDto | null>(null);
   const [duplicateConflicts, setDuplicateConflicts] = useState<CustomerDuplicateConflictPayload | null>(null);
   const [quickActivityCustomer, setQuickActivityCustomer] = useState<CustomerDto | null>(null);
+  const [showStats, setShowStats] = useState(() => {
+    const userId = useAuthStore.getState().user?.id;
+    const stored = localStorage.getItem(`customer-management-show-stats-${userId || 'default'}`);
+    return stored !== null ? stored === 'true' : true;
+  });
 
   const [searchTerm, setSearchTerm] = useState(() => {
     const userId = useAuthStore.getState().user?.id;
@@ -171,6 +177,10 @@ export function CustomerManagementPage(): ReactElement {
   useEffect(() => {
     saveTablePaginationState(PAGE_KEY, user?.id, { pageNumber, pageSize, searchTerm, appliedFilterRows });
   }, [pageNumber, pageSize, searchTerm, appliedFilterRows, user?.id]);
+
+  useEffect(() => {
+    localStorage.setItem(`customer-management-show-stats-${user?.id || 'default'}`, String(showStats));
+  }, [showStats, user?.id]);
 
   const handleCustomerSort = useCallback(
     (k: CustomerColumnKey) => {
@@ -339,10 +349,22 @@ export function CustomerManagementPage(): ReactElement {
     setQuickActivityCustomer(customer);
   };
 
-  const handleQuickActivitySubmit = async (formData: ActivityFormSchema): Promise<void> => {
-    await createActivity.mutateAsync(
+  const handleQuickActivitySubmit = async (
+    formData: ActivityFormSchema,
+    pendingImages?: { file: File; description: string }[]
+  ): Promise<void> => {
+    const createdActivity = await createActivity.mutateAsync(
       buildCreateActivityPayload(formData, { assignedUserIdFallback: user?.id })
     );
+
+    if (createdActivity && pendingImages && pendingImages.length > 0) {
+      const files = pendingImages.map(img => img.file);
+      const descriptions = pendingImages.map(img => img.description);
+      await activityImageApi.upload(createdActivity.id, {
+        files,
+        resimAciklamalar: descriptions.some(d => d) ? descriptions : undefined,
+      });
+    }
     setQuickActivityCustomer(null);
   };
 
@@ -384,26 +406,40 @@ export function CustomerManagementPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
-            {t('menu', { ns: CRM_NS })}
-          </h1>
-          <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
-            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-            {t('description', { ns: CRM_NS })}
-          </p>
+      <div className="space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
+              {t('menu', { ns: CRM_NS })}
+            </h1>
+            <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
+              <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+              {t('description', { ns: CRM_NS })}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowStats((prev) => !prev)}
+              className="h-12 px-5 border-slate-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-2xl hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all duration-300 active:scale-[0.98]"
+            >
+              {showStats ? <EyeOff size={18} className="mr-2" /> : <Eye size={18} className="mr-2" />}
+              {showStats
+                ? t('hideStats', { ns: CRM_NS, defaultValue: 'İstatistikleri Gizle' })
+                : t('showStats', { ns: CRM_NS, defaultValue: 'İstatistikleri Göster' })}
+            </Button>
+            <Button
+              onClick={handleAddClick}
+              className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            >
+              <Plus size={20} className="mr-2 stroke-[3px]" />
+              {t('addButton', { ns: CRM_NS })}
+            </Button>
+          </div>
         </div>
-        <Button
-          onClick={handleAddClick}
-          className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
-        >
-          <Plus size={20} className="mr-2 stroke-[3px]" />
-          {t('addButton', { ns: CRM_NS })}
-        </Button>
-      </div>
 
-      <CustomerStats stats={customerStats} isLoading={isLoading} />
+        {showStats && <CustomerStats stats={customerStats} isLoading={isLoading} />}
+      </div>
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>

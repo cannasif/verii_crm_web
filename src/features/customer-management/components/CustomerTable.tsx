@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useDeleteCustomer } from '../hooks/useDeleteCustomer';
 import type { CustomerDto } from '../types/customer-types';
 import {
@@ -29,6 +30,8 @@ import {
   User,
   Activity,
   CloudUpload,
+  PieChart,
+  CheckCircle2,
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { toast } from 'sonner';
@@ -38,6 +41,7 @@ import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermi
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { hasPermission } from '@/features/access-control/utils/hasPermission';
 import { useCreateErpCustomer } from '../hooks/useCreateErpCustomer';
+import { calculateCustomerCompletion, getCompletionColorClasses } from '../utils/customer-completion';
 
 const CRM_NS = 'customer-management' as const;
 
@@ -102,7 +106,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerDto>[] => [
     type: 'text',
     headClassName: idColumnSurface,
     className: cn(
-      'text-center font-medium w-[48px] md:w-[60px]',
+      'text-center font-medium w-[64px] md:w-[76px]',
       'bg-slate-100/80 dark:bg-white/[0.04]',
       'border-r border-slate-200/90 dark:border-white/[0.08]'
     ),
@@ -295,6 +299,49 @@ export function CustomerTable({
         : row[key] == null
           ? '-'
           : String(row[key]);
+
+    if (key === 'id') {
+      const completionPercentage = calculateCustomerCompletion(row);
+      const isComplete = completionPercentage === 100;
+      const colors = getCompletionColorClasses(completionPercentage);
+      return (
+        <div className="grid grid-cols-2 items-center w-full gap-1.5 px-1">
+          <span className="text-right">{inner}</span>
+          <div className="flex justify-start">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button 
+                  onClick={(e) => e.stopPropagation()}
+                  title={t('completionPercentage', { ns: CRM_NS, defaultValue: 'Veri Doluluğu: %{{val}}', val: completionPercentage })}
+                  className={`flex items-center justify-center shrink-0 p-1 -m-1 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors ${colors.text} ${colors.hoverText}`}
+                >
+                  {isComplete ? <CheckCircle2 size={18} /> : <PieChart size={18} />}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-60 p-4 shadow-xl border-slate-100 dark:border-white/10 bg-white dark:bg-[#130822]" side="right" align="start">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    <span>{t('completion', { ns: CRM_NS, defaultValue: 'Doluluk Oranı' })}</span>
+                    <span className={colors.text}>{completionPercentage}%</span>
+                  </div>
+                  <div className="h-2 w-full bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden shadow-inner">
+                    <div 
+                      className={`h-full transition-all duration-500 ease-out rounded-full ${colors.bg} ${colors.shadow}`}
+                      style={{ width: `${completionPercentage}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
+                    {isComplete 
+                      ? t('completion.completeMsg', { ns: CRM_NS, defaultValue: 'Tüm temel bilgiler eksiksiz doldurulmuş.' }) 
+                      : t('completion.incompleteMsg', { ns: CRM_NS, defaultValue: 'Daha verimli bir takip için eksik bilgileri tamamlayın.' })}
+                  </p>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
+      );
+    }
 
     if (key === 'name') {
       return (

@@ -1,4 +1,4 @@
-import { type ReactElement, type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, type ReactNode, useEffect, useMemo, useState, useRef } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,12 @@ import { isZodFieldRequired } from '@/lib/zod-required';
 interface ActivityFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: ActivityFormSchema) => void | Promise<void>;
+  onSubmit: (
+    data: ActivityFormSchema,
+    pendingImages?: { file: File; description: string }[],
+    pendingDeletedImageIds?: number[],
+    pendingUpdatedImageDescriptions?: Record<number, string>
+  ) => void | Promise<void>;
   activity?: ActivityDto | null;
   isLoading?: boolean;
   initialDate?: string | null;
@@ -199,6 +204,13 @@ export function ActivityForm({
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
   const [selectedCustomerDisplayName, setSelectedCustomerDisplayName] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('details');
+  const [pendingImages, setPendingImages] = useState<{ id: string; file: File; description: string; previewUrl: string }[]>([]);
+  const [pendingDeletedImageIds, setPendingDeletedImageIds] = useState<number[]>([]);
+  const [pendingUpdatedImageDescriptions, setPendingUpdatedImageDescriptions] = useState<Record<number, string>>({});
+  const pendingImagesRef = useRef(pendingImages);
+  useEffect(() => {
+    pendingImagesRef.current = pendingImages;
+  }, [pendingImages]);
   const reminderChannelOptions = [
     { value: String(ReminderChannel.InApp), label: t('reminderChannelInApp') },
     { value: String(ReminderChannel.Email), label: t('reminderChannelEmail') },
@@ -303,9 +315,13 @@ export function ActivityForm({
         })),
       });
       setSelectedCustomerDisplayName(null);
+      pendingImagesRef.current.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+      setPendingImages([]);
       return;
     }
 
+    pendingImagesRef.current.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+    setPendingImages([]);
     form.reset({
       subject: '',
       description: '',
@@ -381,8 +397,16 @@ export function ActivityForm({
   }, [watchedIsAllDay, open, form]);
 
   const handleSubmit = async (data: ActivityFormSchema): Promise<void> => {
-    await onSubmit(data);
+    const imagesToUpload = pendingImages.map(img => ({
+      file: img.file,
+      description: img.description,
+    }));
+    await onSubmit(data, imagesToUpload, pendingDeletedImageIds, pendingUpdatedImageDescriptions);
     if (!isLoading) {
+      pendingImages.forEach((img) => URL.revokeObjectURL(img.previewUrl));
+      setPendingImages([]);
+      setPendingDeletedImageIds([]);
+      setPendingUpdatedImageDescriptions({});
       form.reset();
       onOpenChange(false);
     }
@@ -855,15 +879,25 @@ export function ActivityForm({
             <TabsContent value="images" className="mt-0">
               <ActivityImageTab
                 activityId={activity?.id}
-                onCreateActivity={async () => {
-                  const isValid = await form.trigger();
-                  if (!isValid) {
-                    throw new Error(t('validationError'));
-                  }
-                  const formData = form.getValues();
-                  await handleSubmit(formData);
-                  return activity?.id || 0;
+                deferMode={true}
+                pendingImages={pendingImages}
+                onAddPendingImages={(newImages) => setPendingImages((prev) => [...prev, ...newImages])}
+                onRemovePendingImage={(id) => {
+                  setPendingImages((prev) => {
+                    const target = prev.find((img) => img.id === id);
+                    if (target) URL.revokeObjectURL(target.previewUrl);
+                    return prev.filter((img) => img.id !== id);
+                  });
                 }}
+                onUpdatePendingImageDescription={(id, description) => {
+                  setPendingImages((prev) =>
+                    prev.map((img) => (img.id === id ? { ...img, description } : img))
+                  );
+                }}
+                deletedExistingIds={pendingDeletedImageIds}
+                onQueueDeleteExisting={(id) => setPendingDeletedImageIds((prev) => [...prev, id])}
+                updatedExistingDescriptions={pendingUpdatedImageDescriptions}
+                onQueueUpdateExisting={(id, description) => setPendingUpdatedImageDescriptions((prev) => ({ ...prev, [id]: description }))}
               />
             </TabsContent>
           </Tabs>

@@ -27,44 +27,84 @@ import { useUpdateActivityImage } from '../hooks/useUpdateActivityImage';
 import { useDeleteActivityImage } from '../hooks/useDeleteActivityImage';
 import { ActivityImageUploadDialog } from './ActivityImageUploadDialog';
 import { ActivityImageEditDialog } from './ActivityImageEditDialog';
-import type { ActivityImageDto, ActivityImageUpdateSchema } from '../types/activity-image-types';
+import type { ActivityImageUpdateSchema } from '../types/activity-image-types';
 
 interface ActivityImageTabProps {
   activityId: number | undefined;
   onCreateActivity?: () => Promise<number>;
+  pendingImages?: { id: string; file: File; description: string; previewUrl: string }[];
+  onAddPendingImages?: (images: { id: string; file: File; description: string; previewUrl: string }[]) => void;
+  onRemovePendingImage?: (id: string) => void;
+  onUpdatePendingImageDescription?: (id: string, description: string) => void;
+  deferMode?: boolean;
+  deletedExistingIds?: number[];
+  onQueueDeleteExisting?: (id: number) => void;
+  updatedExistingDescriptions?: Record<number, string>;
+  onQueueUpdateExisting?: (id: number, description: string) => void;
 }
 
-export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImageTabProps): ReactElement {
+export function ActivityImageTab({
+  activityId,
+  pendingImages,
+  onAddPendingImages,
+  onRemovePendingImage,
+  onUpdatePendingImageDescription,
+  deferMode,
+  deletedExistingIds = [],
+  onQueueDeleteExisting,
+  updatedExistingDescriptions = {},
+  onQueueUpdateExisting,
+}: ActivityImageTabProps): ReactElement {
   const { t } = useTranslation();
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingImage, setEditingImage] = useState<ActivityImageDto | null>(null);
+  const [editingImage, setEditingImage] = useState<{ id: string | number; resimUrl: string; resimAciklama?: string } | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [imageToDelete, setImageToDelete] = useState<ActivityImageDto | null>(null);
-  const [isCreatingActivity, setIsCreatingActivity] = useState(false);
+  const [imageToDelete, setImageToDelete] = useState<{ id: string | number; resimUrl: string; resimAciklama?: string } | null>(null);
 
+  const isPendingMode = !activityId || deferMode;
   const { data: images = [], isLoading } = useActivityImages(activityId);
-  const uploadMutation = useUploadActivityImages(activityId!);
-  const updateMutation = useUpdateActivityImage(activityId!);
-  const deleteMutation = useDeleteActivityImage(activityId!);
+  const uploadMutation = useUploadActivityImages(activityId || 0);
+  const updateMutation = useUpdateActivityImage(activityId || 0);
+  const deleteMutation = useDeleteActivityImage(activityId || 0);
 
-  const handleUploadClick = async (): Promise<void> => {
-    if (!activityId && onCreateActivity) {
-      setIsCreatingActivity(true);
-      try {
-        await onCreateActivity();
-      } catch {
-        setIsCreatingActivity(false);
-        return;
-      }
-      setIsCreatingActivity(false);
-    }
+  const displayImages: { id: string | number; activityId: number; resimUrl: string; resimAciklama?: string }[] = isPendingMode
+    ? [
+        ...images.filter(img => !deletedExistingIds.includes(Number(img.id))).map(img => ({
+          ...img,
+          resimAciklama: updatedExistingDescriptions[Number(img.id)] ?? img.resimAciklama
+        })),
+        ...(pendingImages || []).map((img) => ({
+          id: img.id,
+          activityId: activityId || 0,
+          resimUrl: img.previewUrl,
+          resimAciklama: img.description,
+        }))
+      ]
+    : images;
+
+  const handleUploadClick = (): void => {
     setIsUploadDialogOpen(true);
   };
 
   const handleUpload = async (files: File[], descriptions: string[]): Promise<void> => {
-    if (!activityId) return;
+    if (isPendingMode) {
+      const newImages = files.map((file, idx) => {
+        const id = `pending-${Date.now()}-${idx}-${Math.random().toString(36).substr(2, 9)}`;
+        const previewUrl = URL.createObjectURL(file);
+        return {
+          id,
+          file,
+          description: descriptions[idx] || '',
+          previewUrl,
+        };
+      });
+      onAddPendingImages?.(newImages);
+      setIsUploadDialogOpen(false);
+      return;
+    }
 
+    if (!activityId) return;
     await uploadMutation.mutateAsync({
       files,
       resimAciklamalar: descriptions.length > 0 ? descriptions : undefined,
@@ -73,16 +113,28 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
     setIsUploadDialogOpen(false);
   };
 
-  const handleEdit = (image: ActivityImageDto): void => {
+  const handleEdit = (image: { id: string | number; resimUrl: string; resimAciklama?: string }): void => {
     setEditingImage(image);
     setIsEditDialogOpen(true);
   };
 
   const handleEditSubmit = async (data: ActivityImageUpdateSchema): Promise<void> => {
-    if (!editingImage || !activityId) return;
+    if (!editingImage) return;
 
+    if (isPendingMode) {
+      if (typeof editingImage.id === 'string' && editingImage.id.startsWith('pending-')) {
+        onUpdatePendingImageDescription?.(editingImage.id, data.resimAciklama || '');
+      } else {
+        onQueueUpdateExisting?.(Number(editingImage.id), data.resimAciklama || '');
+      }
+      setIsEditDialogOpen(false);
+      setEditingImage(null);
+      return;
+    }
+
+    if (!activityId) return;
     await updateMutation.mutateAsync({
-      id: editingImage.id,
+      id: Number(editingImage.id),
       data: {
         activityId,
         resimAciklama: data.resimAciklama,
@@ -94,63 +146,36 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
     setEditingImage(null);
   };
 
-  const handleDelete = (image: ActivityImageDto): void => {
+  const handleDelete = (image: { id: string | number; resimUrl: string; resimAciklama?: string }): void => {
     setImageToDelete(image);
     setDeleteDialogOpen(true);
   };
 
   const confirmDelete = (): void => {
     if (imageToDelete) {
-      deleteMutation.mutate(imageToDelete.id);
+      if (isPendingMode) {
+        if (typeof imageToDelete.id === 'string' && imageToDelete.id.startsWith('pending-')) {
+          onRemovePendingImage?.(imageToDelete.id);
+        } else {
+          onQueueDeleteExisting?.(Number(imageToDelete.id));
+        }
+        setDeleteDialogOpen(false);
+        setImageToDelete(null);
+        return;
+      }
+      deleteMutation.mutate(Number(imageToDelete.id));
       setDeleteDialogOpen(false);
       setImageToDelete(null);
     }
   };
 
   const getFullImageUrl = (url: string): string => {
-    if (url.startsWith('http://') || url.startsWith('https://')) {
+    if (url.startsWith('blob:') || url.startsWith('data:') || url.startsWith('http://') || url.startsWith('https://')) {
       return url;
     }
     const baseUrl = getApiBaseUrl();
     return `${baseUrl}${url.startsWith('/') ? url : `/${url}`}`;
   };
-
-  if (!activityId) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 space-y-4">
-        <div className="h-16 w-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-          <ImageIcon className="h-8 w-8 text-slate-400" />
-        </div>
-        <div className="text-center space-y-2">
-          <p className="text-lg font-medium text-slate-700 dark:text-slate-300">
-            {t('activity-image:saveActivityFirst')}
-          </p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {t('activity-image:saveActivityFirstDescription')}
-          </p>
-        </div>
-        {onCreateActivity && (
-          <Button
-            onClick={handleUploadClick}
-            disabled={isCreatingActivity}
-            className="mt-4 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white opacity-60 grayscale-[0] dark:opacity-100 dark:grayscale-0"
-          >
-            {isCreatingActivity ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                {t('common.saving')}
-              </>
-            ) : (
-              <>
-                <Upload className="h-4 w-4 mr-2" />
-                {t('activity-image:saveAndUpload')}
-              </>
-            )}
-          </Button>
-        )}
-      </div>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -184,7 +209,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
         </Button>
       </div>
 
-      {images.length === 0 ? (
+      {displayImages.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl space-y-4">
           <div className="h-16 w-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
             <ImageIcon className="h-8 w-8 text-slate-400" />
@@ -223,7 +248,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
               </TableRow>
             </TableHeader>
             <TableBody>
-              {images.map((image) => (
+              {displayImages.map((image) => (
                 <TableRow key={image.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
                   <TableCell className="w-32">
                     <div className="h-20 w-20 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
@@ -298,7 +323,7 @@ export function ActivityImageTab({ activityId, onCreateActivity }: ActivityImage
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         onSubmit={handleEditSubmit}
-        image={editingImage}
+        image={editingImage as any}
         isLoading={updateMutation.isPending}
       />
 
