@@ -39,7 +39,9 @@
     "validUntil": "صالح حتى",
     "currency": "العملة",
     "grandTotal": "المجموع الكلي",
-    "status": "الحالة"
+    "status": "الحالة",
+    "erpIntegrated": "تم التكامل",
+    "erpNotIntegrated": "لم يتم التكامل"
   },
   "detail": {
     "title": "تفاصيل الطلب",
@@ -160,7 +162,27 @@
     "description1": "الوصف 1",
     "description2": "الوصف 2",
     "description3": "الوصف 3",
-    "descriptionPlaceholder": "أدخل الوصف..."
+    "descriptionPlaceholder": "أدخل الوصف...",
+    "unit": "الوحدة",
+    "descriptionFieldsTitle": "الملف الشخصي، التسليح، البرغي",
+    "descriptionField1Label": "الوصف 1",
+    "descriptionField2Label": "الوصف 2",
+    "descriptionField3Label": "الوصف 3",
+    "max200Chars": "حتى 200 حرف",
+    "discountNumbered1": "1. خصم",
+    "discountNumbered2": "2. خصم",
+    "discountNumbered3": "3. خصم",
+    "windoProfileLabel": "الملف الشخصي",
+    "windoRebarLabel": "التسليح",
+    "windoScrewLabel": "البرغي",
+    "selectWindoProfile": "اختر الملف الشخصي",
+    "selectWindoRebar": "اختر التسليح",
+    "selectWindoScrew": "اختر البرغي",
+    "searchWindoProfile": "بحث عن الملف الشخصي...",
+    "searchWindoRebar": "بحث عن التسليح...",
+    "searchWindoScrew": "بحث عن البرغي...",
+    "windoNoneSelected": "لا يوجد",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "أسعار الصرف",
@@ -265,7 +287,15 @@
     "startError": "Approval flow could not be started.",
     "rejectTitle": "Reject Demand",
     "rejectDescription": "Enter the rejection reason.",
-    "rejectReasonPlaceholder": "Rejection reason"
+    "rejectReasonPlaceholder": "Rejection reason",
+    "statusFilterLabel": "حالة الموافقة",
+    "status": {
+      "notRequired": "غير مطلوب",
+      "waiting": "قيد الانتظار",
+      "approved": "تمت الموافقة",
+      "rejected": "مرفوض",
+      "closed": "مغلق"
+    }
   },
   "approvalFlow": {
     "noData": "No approval step found.",

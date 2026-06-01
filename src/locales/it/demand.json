@@ -39,7 +39,9 @@
     "validUntil": "Valido fino a",
     "currency": "Valuta",
     "grandTotal": "Totale Generale",
-    "status": "Stato"
+    "status": "Stato",
+    "erpIntegrated": "Integrazione completata",
+    "erpNotIntegrated": "Non integrato"
   },
   "detail": {
     "title": "Dettaglio Richiesta",
@@ -160,7 +162,27 @@
     "description1": "Descrizione 1",
     "description2": "Descrizione 2",
     "description3": "Descrizione 3",
-    "descriptionPlaceholder": "Inserisci descrizione..."
+    "descriptionPlaceholder": "Inserisci descrizione...",
+    "unit": "Unità",
+    "descriptionFieldsTitle": "Profilo, armatura, vite",
+    "descriptionField1Label": "Descrizione 1",
+    "descriptionField2Label": "Descrizione 2",
+    "descriptionField3Label": "Descrizione 3",
+    "max200Chars": "Massimo 200 caratteri",
+    "discountNumbered1": "Sconto 1",
+    "discountNumbered2": "Sconto 2",
+    "discountNumbered3": "Sconto 3",
+    "windoProfileLabel": "Profilo",
+    "windoRebarLabel": "Armatura",
+    "windoScrewLabel": "Vite",
+    "selectWindoProfile": "Seleziona profilo",
+    "selectWindoRebar": "Seleziona armatura",
+    "selectWindoScrew": "Seleziona vite",
+    "searchWindoProfile": "Cerca profilo...",
+    "searchWindoRebar": "Cerca armatura...",
+    "searchWindoScrew": "Cerca vite...",
+    "windoNoneSelected": "Nessuna",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Tassi di Cambio",
@@ -265,7 +287,15 @@
     "startError": "Approval flow could not be started.",
     "rejectTitle": "Reject Demand",
     "rejectDescription": "Enter the rejection reason.",
-    "rejectReasonPlaceholder": "Rejection reason"
+    "rejectReasonPlaceholder": "Rejection reason",
+    "statusFilterLabel": "Stato approvazione",
+    "status": {
+      "notRequired": "Non richiesto",
+      "waiting": "In attesa",
+      "approved": "Approvato",
+      "rejected": "Respinto",
+      "closed": "Chiuso"
+    }
   },
   "approvalFlow": {
     "noData": "No approval step found.",

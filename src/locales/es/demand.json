@@ -39,7 +39,9 @@
     "validUntil": "Válido hasta",
     "currency": "Moneda",
     "grandTotal": "Total General",
-    "status": "Estado"
+    "status": "Estado",
+    "erpIntegrated": "Integración completada",
+    "erpNotIntegrated": "No integrado"
   },
   "detail": {
     "title": "Detalle de la Solicitud",
@@ -160,7 +162,27 @@
     "description1": "Descripción 1",
     "description2": "Descripción 2",
     "description3": "Descripción 3",
-    "descriptionPlaceholder": "Ingrese descripción..."
+    "descriptionPlaceholder": "Ingrese descripción...",
+    "unit": "Unidad",
+    "descriptionFieldsTitle": "Perfil, refuerzo, tornillo",
+    "descriptionField1Label": "Descripción 1",
+    "descriptionField2Label": "Descripción 2",
+    "descriptionField3Label": "Descripción 3",
+    "max200Chars": "Máximo 200 caracteres",
+    "discountNumbered1": "Descuento 1",
+    "discountNumbered2": "Descuento 2",
+    "discountNumbered3": "Descuento 3",
+    "windoProfileLabel": "Perfil",
+    "windoRebarLabel": "Armadura",
+    "windoScrewLabel": "Tornillo",
+    "selectWindoProfile": "Seleccionar perfil",
+    "selectWindoRebar": "Seleccionar armadura",
+    "selectWindoScrew": "Seleccionar tornillo",
+    "searchWindoProfile": "Buscar perfil...",
+    "searchWindoRebar": "Buscar armadura...",
+    "searchWindoScrew": "Buscar tornillo...",
+    "windoNoneSelected": "Ninguno",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Tipos de Cambio",
@@ -265,7 +287,15 @@
     "startError": "Approval flow could not be started.",
     "rejectTitle": "Reject Demand",
     "rejectDescription": "Enter the rejection reason.",
-    "rejectReasonPlaceholder": "Rejection reason"
+    "rejectReasonPlaceholder": "Rejection reason",
+    "statusFilterLabel": "Estado de aprobación",
+    "status": {
+      "notRequired": "No requerido",
+      "waiting": "Esperando",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "closed": "Cerrado"
+    }
   },
   "approvalFlow": {
     "noData": "No approval step found.",

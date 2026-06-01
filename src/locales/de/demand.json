@@ -39,7 +39,9 @@
     "validUntil": "Gültig bis",
     "currency": "Währung",
     "grandTotal": "Gesamtsumme",
-    "status": "Status"
+    "status": "Status",
+    "erpIntegrated": "Integration erfolgreich",
+    "erpNotIntegrated": "Nicht integriert"
   },
   "detail": {
     "title": "Anforderungsdetails",
@@ -160,7 +162,27 @@
     "description1": "Beschreibung 1",
     "description2": "Beschreibung 2",
     "description3": "Beschreibung 3",
-    "descriptionPlaceholder": "Beschreibung eingeben..."
+    "descriptionPlaceholder": "Beschreibung eingeben...",
+    "unit": "Einheit",
+    "descriptionFieldsTitle": "Profil, Armierung, Schraube",
+    "descriptionField1Label": "Beschreibung 1",
+    "descriptionField2Label": "Beschreibung 2",
+    "descriptionField3Label": "Beschreibung 3",
+    "max200Chars": "Maximal 200 Zeichen",
+    "discountNumbered1": "1. Rabatt",
+    "discountNumbered2": "2. Rabatt",
+    "discountNumbered3": "3. Rabatt",
+    "windoProfileLabel": "Profil",
+    "windoRebarLabel": "Armierung",
+    "windoScrewLabel": "Schraube",
+    "selectWindoProfile": "Profil auswählen",
+    "selectWindoRebar": "Armierung auswählen",
+    "selectWindoScrew": "Schraube auswählen",
+    "searchWindoProfile": "Profil suchen...",
+    "searchWindoRebar": "Armierung suchen...",
+    "searchWindoScrew": "Schraube suchen...",
+    "windoNoneSelected": "Keine Auswahl",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Wechselkurse",
@@ -265,7 +287,15 @@
     "startError": "Approval flow could not be started.",
     "rejectTitle": "Reject Demand",
     "rejectDescription": "Enter the rejection reason.",
-    "rejectReasonPlaceholder": "Rejection reason"
+    "rejectReasonPlaceholder": "Rejection reason",
+    "statusFilterLabel": "Genehmigungsstatus",
+    "status": {
+      "notRequired": "Nicht erforderlich",
+      "waiting": "Wartend",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt",
+      "closed": "Geschlossen"
+    }
   },
   "approvalFlow": {
     "noData": "No approval step found.",
