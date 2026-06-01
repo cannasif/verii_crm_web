@@ -66,7 +66,7 @@
     "location": "الموقع",
     "createdDate": "تاريخ الإنشاء",
     "actions": "إجراءات",
-    "title": "Sevk Adresi Listesi"
+    "title": "قائمة عناوين الشحن"
   },
   "loading": "جاري التحميل...",
   "previous": "السابق",
@@ -78,18 +78,15 @@
   "name": "اسم العنوان",
   "namePlaceholder": "أدخل اسم العنوان",
   "isDefault": "عنوان الشحن الافتراضي",
-  "isDefaultShort": "تقصير",
-  "defaultBadge": "تقصير",
+  "isDefaultShort": "افتراضي",
+  "defaultBadge": "افتراضي",
   "nameMaxLength": "يمكن أن يصل اسم العنوان إلى 150 حرفًا",
-  "description": "Sevk adreslerini yönetin ve düzenleyin",
+  "description": "إدارة وتحرير عناوين الشحن",
   "advancedFilter": {
-    "columnCustomerName": "Müşteri Adı",
-    "columnName": "Adres Adı",
-    "columnPostalCode": "Posta Kodu",
-    "columnPhone": "Telefon"
-  },
-  "shippingAddressManagement": {
-    "error": "حدث خطأ"
+    "columnCustomerName": "اسم العميل",
+    "columnName": "اسم العنوان",
+    "columnPostalCode": "الرمز البريدي",
+    "columnPhone": "الهاتف"
   },
   "error": "حدث خطأ"
 }

@@ -66,7 +66,7 @@
     "location": "Location",
     "createdDate": "Created Date",
     "actions": "Actions",
-    "title": "Sevk Adresi Listesi"
+    "title": "Shipping Address List"
   },
   "loading": "Loading...",
   "previous": "Previous",
@@ -81,15 +81,12 @@
   "isDefaultShort": "Default",
   "defaultBadge": "Default",
   "nameMaxLength": "Address name can be up to 150 characters",
-  "description": "Sevk adreslerini yönetin ve düzenleyin",
+  "description": "Manage and edit shipping addresses",
   "advancedFilter": {
-    "columnCustomerName": "Müşteri Adı",
-    "columnName": "Adres Adı",
-    "columnPostalCode": "Posta Kodu",
-    "columnPhone": "Telefon"
+    "columnCustomerName": "Customer Name",
+    "columnName": "Address Name",
+    "columnPostalCode": "Postal Code",
+    "columnPhone": "Phone"
   },
-  "shippingAddressManagement": {
-    "error": "Hata oluştu"
-  },
-  "error": "Hata oluştu"
+  "error": "An error occurred"
 }
