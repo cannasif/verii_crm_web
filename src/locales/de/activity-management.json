@@ -136,7 +136,6 @@
     "updatedDate": "Aktualisierungsdatum",
     "showing": "Zeige {{from}}-{{to}} von {{total}}",
     "page": "Seite {{current}} / {{total}}",
-    "erpLabel": "ERP: {{code}}",
     "title": "Aktivite Listesi"
   },
   "advancedFilter": {
@@ -169,6 +168,7 @@
     "columnActivityTypeId": "Aktivitätstyp-Nr",
     "columnPriority": "Priorität",
     "columnDueDate": "Enddatum",
+    "columnStatus": "Status",
     "columnIsCompleted": "vollendet",
     "filterButton": "Advanced Filter"
   },
@@ -181,27 +181,6 @@
     "visibleColumns": "Visible Columns",
     "moveUp": "Up",
     "moveDown": "Down"
-  },
-  "activityManagement": {
-    "reminderChannelInApp": "Uygulama İçi",
-    "reminderChannelEmail": "E-posta",
-    "error": "Aktivite kaydedilemedi",
-    "paymentType": "Ödeme",
-    "activityMeetingType": "Görüşme",
-    "activityTopicPurpose": "İlgilenilen Konular",
-    "activityShipping": "Teslimat",
-    "reminderPresetDays": "{{count}} gün",
-    "reminderPresetMinutes": "{{count}} dk",
-    "complete": "Tamamla",
-    "table": {
-      "title": "Aktivite Listesi"
-    },
-    "activityTypeRequired": "Aktivite tipi seçimi gereklidir",
-    "assignedUserRequired": "Atanan kullanıcı gereklidir",
-    "endDateRequired": "Bitiş tarihi gereklidir",
-    "listLoadError": "Aktivite listesi yüklenemedi",
-    "detailLoadError": "Aktivite detayı yüklenemedi",
-    "cancel": "Abbrechen"
   },
   "deleteActivity": "Aktiviteyi Sil",
   "deleteConfirmation": "Bu aktiviteyi silmek istediğinizden emin misiniz?",
