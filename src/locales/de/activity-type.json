@@ -1,19 +1,19 @@
 {
   "menu": "Aktivitätsartverwaltung",
-  "description": "Aktivitätsarten verwalten und bearbeiten",
-  "addButton": "Hinzufügen Neu Activity Type",
+  "description": "Aktivitätstypen verwalten und bearbeiten",
+  "addButton": "Neuen Aktivitätstyp hinzufügen",
   "loading": "Laden...",
   "noData": "Keine Daten gefunden",
   "actions": "Aktionen",
   "edit": "Bearbeiten",
-  "deleteButton": "Delete",
+  "deleteButton": "Löschen",
   "cancel": "Abbrechen",
   "save": "Speichern",
   "saving": "Speichern...",
-  "previous": "Previous",
+  "previous": "Zurück",
   "next": "Weiter",
   "form": {
-    "addTitle": "Hinzufügen Neu Activity Type",
+    "addTitle": "Neuen Aktivitätstyp hinzufügen",
     "editTitle": "Aktivitätsart bearbeiten",
     "addDescription": "Geben Sie die neuen Aktivitätsartinformationen ein",
     "editDescription": "Bearbeiten Sie die Aktivitätsartinformationen",
@@ -26,7 +26,7 @@
     "descriptionMaxLength": "Beschreibung darf maximal 500 Zeichen lang sein"
   },
   "table": {
-    "id": "AUSWEIS",
+    "id": "ID",
     "name": "Name der Aktivitätsart",
     "description": "Beschreibung",
     "createdDate": "Erstellungsdatum",
@@ -57,12 +57,6 @@
     "columnDescription": "Beschreibung",
     "columnCreatedBy": "Erstellt von"
   },
-  "activityType": {
-    "table": {
-      "title": "Aktivitätsart-Liste"
-    },
-    "error": "Ein Fehler ist aufgetreten"
-  },
-  "create": "Neue Aktivitätsart",
+  "create": "Neuer Aktivitätstyp",
   "error": "Ein Fehler ist aufgetreten"
 }

@@ -57,12 +57,6 @@
     "columnDescription": "Descrizione",
     "columnCreatedBy": "Creato da"
   },
-  "activityType": {
-    "table": {
-      "title": "Elenco tipi di attività"
-    },
-    "error": "Si è verificato un errore"
-  },
   "create": "Nuovo tipo di attività",
   "error": "Si è verificato un errore"
 }

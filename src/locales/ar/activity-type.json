@@ -57,12 +57,6 @@
     "columnDescription": "الوصف",
     "columnCreatedBy": "تم الإنشاء بواسطة"
   },
-  "activityType": {
-    "table": {
-      "title": "قائمة أنواع الأنشطة"
-    },
-    "error": "حدث خطأ"
-  },
   "create": "نوع نشاط جديد",
   "error": "حدث خطأ"
 }
