@@ -1,6 +1,6 @@
 {
   "title": "Verwandte Bestände auswählen",
-  "description": "Select the related stocks you want to Hinzufügen along with the main stock. Mandatory stocks are selected automatically.",
+  "description": "Wählen Sie die zugehörigen Bestände aus, die Sie zusammen mit dem Hauptbestand hinzufügen möchten. Verpflichtende Bestände werden automatisch ausgewählt.",
   "mandatoryStocks": "Obligatorische Bestände",
   "optionalStocks": "Optionale Bestände",
   "unknownStock": "Unbekannter Bestand",

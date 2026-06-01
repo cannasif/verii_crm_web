@@ -1,17 +1,7 @@
 {
   "title": "Seleziona stock correlati",
   "description": "Seleziona gli stock correlati da aggiungere insieme allo stock principale. Gli stock obbligatori sono selezionati automaticamente.",
-  "searchPlaceholder": "Cerca stock correlati...",
-  "select": "Seleziona",
   "cancel": "Annulla",
-  "table": {
-    "code": "Codice",
-    "name": "Nome",
-    "relationType": "Tipo di Relazione",
-    "quantity": "Quantità"
-  },
-  "noData": "Nessun stock correlato trovato",
-  "loading": "Caricamento...",
   "mandatoryStocks": "Stock obbligatori",
   "optionalStocks": "Stock opzionali",
   "unknownStock": "Stock sconosciuto",
