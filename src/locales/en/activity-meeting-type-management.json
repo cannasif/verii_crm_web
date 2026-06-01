@@ -3,7 +3,7 @@
   "description": "Manage and edit meeting definitions",
   "addButton": "Add New Meeting",
   "loading": "Loading...",
-  "noData": "No data found",
+  "noData": "No data",
   "actions": "Actions",
   "edit": "Edit",
   "deleteButton": "Delete",
@@ -18,6 +18,14 @@
     "columnCreatedBy": "Created By"
   },
   "activityType": {
+    "create": "Add New Meeting",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Actions",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "error": "An error occurred",
     "form": {
       "addTitle": "Add New Meeting",
       "editTitle": "Edit Meeting",
@@ -53,15 +61,7 @@
       "updateError": "Failed to update meeting",
       "deleteSuccess": "Meeting deleted successfully",
       "deleteError": "Failed to delete meeting"
-    },
-    "error": "Hata oluştu",
-    "create": "Yeni Görüşme Ekle",
-    "loading": "Yükleniyor...",
-    "noData": "Veri yok",
-    "actions": "İşlemler",
-    "cancel": "İptal",
-    "save": "Kaydet",
-    "saving": "Kaydediliyor..."
+    }
   },
   "deleteConfirm": {
     "confirmTitle": "Delete Meeting",
@@ -74,9 +74,9 @@
   "table": {
     "title": "Meeting List",
     "id": "ID",
-    "name": "Görüşme Adı",
-    "description": "Açıklama",
-    "createdDate": "Oluşturulma Tarihi",
-    "createdBy": "Oluşturan Kullanıcı"
+    "name": "Meeting Name",
+    "description": "Description",
+    "createdDate": "Created Date",
+    "createdBy": "Created By"
   }
 }

@@ -1,82 +1,82 @@
 {
-  "activityType": {
-    "table": {
-      "title": "Meeting List",
-      "id": "ID",
-      "name": "Görüşme Adı",
-      "description": "Açıklama",
-      "createdDate": "Creaulma Tarihi",
-      "createdBy": "Creaan Kullanıcı",
-      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
-    },
-    "error": "Si è verificato un errore",
-    "create": "Yeni Görüşme Ekle",
-    "loading": "Caricamento...",
-    "noData": "Veri yok",
-    "actions": "İşlemler",
-    "cancel": "Annulla",
-    "save": "Salva",
-    "saving": "Kaydediliyor...",
-    "form": {
-      "addTitle": "Yeni Görüşme Ekle",
-      "editTitle": "Görüşme Modifica",
-      "addDescription": "Yeni görüşme bilgilerini girin",
-      "editDescription": "Görüşme bilgilerini düzenleyin",
-      "name": "Görüşme Adı",
-      "namePlaceholder": "Görüşme adını girin",
-      "nameRequired": "Görüşme adı zorunludur",
-      "nameMaxLength": "Görüşme adı en fazla 100 karakter olabilir",
-      "description": "Açıklama",
-      "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
-      "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
-    },
-    "stats": {
-      "totalActivityTypes": "Toplam Görüşme",
-      "activeActivityTypes": "Aktif Görüşme",
-      "newThisMonth": "Bu Ay Yeni"
-    },
-    "messages": {
-      "createSuccess": "Görüşme başarıyla oluşturuldu",
-      "createError": "Görüşme oluşturulamadı",
-      "updateSuccess": "Görüşme başarıyla güncellendi",
-      "updateError": "Görüşme güncellenemedi",
-      "deleteSuccess": "Görüşme başarıyla silindi",
-      "deleteError": "Görüşme silinemedi"
-    }
-  },
-  "menu": "Görüşme Yönetimi",
-  "description": "Görüşme tanımlarını yönetin ve düzenleyin",
-  "addButton": "Yeni Görüşme Ekle",
+  "menu": "Gestione riunioni",
+  "description": "Gestisci e modifica le definizioni delle riunioni",
+  "addButton": "Aggiungi nuova riunione",
   "loading": "Caricamento...",
-  "noData": "Veri yok",
-  "actions": "İşlemler",
+  "noData": "Nessun dato",
+  "actions": "Azioni",
   "edit": "Modifica",
-  "deleteButton": "Sil",
+  "deleteButton": "Elimina",
   "cancel": "Annulla",
   "save": "Salva",
-  "saving": "Kaydediliyor...",
-  "previous": "Önceki",
-  "next": "Sonraki",
+  "saving": "Salvataggio in corso...",
+  "previous": "Precedente",
+  "next": "Successivo",
   "advancedFilter": {
-    "columnName": "Görüşme Adı",
-    "columnDescription": "Açıklama",
-    "columnCreatedBy": "Creaan"
+    "columnName": "Nome riunione",
+    "columnDescription": "Descrizione",
+    "columnCreatedBy": "Creato da"
+  },
+  "activityType": {
+    "create": "Aggiungi nuova riunione",
+    "loading": "Caricamento...",
+    "noData": "Nessun dato",
+    "actions": "Azioni",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "saving": "Salvataggio in corso...",
+    "error": "Si è verificato un errore",
+    "form": {
+      "addTitle": "Aggiungi nuova riunione",
+      "editTitle": "Modifica riunione",
+      "addDescription": "Inserisci i nuovi dati della riunione",
+      "editDescription": "Modifica le informazioni della riunione",
+      "name": "Nome riunione",
+      "namePlaceholder": "Inserisci il nome della riunione",
+      "nameRequired": "Il nome della riunione è obbligatorio",
+      "nameMaxLength": "Il nome della riunione può contenere al massimo 100 caratteri",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Inserisci la descrizione (facoltativa)",
+      "descriptionMaxLength": "La descrizione può contenere al massimo 500 caratteri"
+    },
+    "table": {
+      "title": "Elenco riunioni",
+      "id": "ID",
+      "name": "Nome riunione",
+      "description": "Descrizione",
+      "createdDate": "Data di creazione",
+      "createdBy": "Creato da",
+      "showing": "Visualizzazione {{from}}-{{to}} / {{total}}",
+      "page": "Pagina {{current}} / {{total}}"
+    },
+    "stats": {
+      "totalActivityTypes": "Totale riunioni",
+      "activeActivityTypes": "Riunioni attive",
+      "newThisMonth": "Nuove questo mese"
+    },
+    "messages": {
+      "createSuccess": "Riunione creata correttamente",
+      "createError": "Impossibile creare la riunione",
+      "updateSuccess": "Riunione aggiornata correttamente",
+      "updateError": "Impossibile aggiornare la riunione",
+      "deleteSuccess": "Riunione eliminata correttamente",
+      "deleteError": "Impossibile eliminare la riunione"
+    }
   },
   "deleteConfirm": {
-    "confirmTitle": "Görüşmeyi Sil",
-    "confirmMessage": "{{name}} kaydını silmek istediğinizden emin misiniz?"
+    "confirmTitle": "Elimina riunione",
+    "confirmMessage": "Sei sicuro di voler eliminare {{name}}?"
   },
   "messages": {
-    "deleteSuccess": "Görüşme başarıyla silindi",
-    "deleteError": "Görüşme silinemedi"
+    "deleteSuccess": "Riunione eliminata correttamente",
+    "deleteError": "Impossibile eliminare la riunione"
   },
   "table": {
-    "title": "Görüşme Listesi",
+    "title": "Elenco riunioni",
     "id": "ID",
-    "name": "Görüşme Adı",
-    "description": "Açıklama",
-    "createdDate": "Creaulma Tarihi",
-    "createdBy": "Creaan Kullanıcı"
+    "name": "Nome riunione",
+    "description": "Descrizione",
+    "createdDate": "Data di creazione",
+    "createdBy": "Creato da"
   }
 }

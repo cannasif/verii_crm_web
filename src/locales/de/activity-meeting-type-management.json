@@ -1,82 +1,82 @@
 {
-  "activityType": {
-    "table": {
-      "title": "Meeting List",
-      "id": "ID",
-      "name": "Görüşme Adı",
-      "description": "Açıklama",
-      "createdDate": "Erstellenulma Tarihi",
-      "createdBy": "Erstellenan Kullanıcı",
-      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
-    },
-    "error": "Fehler ist aufgetreten",
-    "create": "Yeni Görüşme Ekle",
-    "loading": "Wird geladen...",
-    "noData": "Veri yok",
-    "actions": "İşlemler",
-    "cancel": "Abbrechen",
-    "save": "Speichern",
-    "saving": "Kaydediliyor...",
-    "form": {
-      "addTitle": "Yeni Görüşme Ekle",
-      "editTitle": "Görüşme Bearbeiten",
-      "addDescription": "Yeni görüşme bilgilerini girin",
-      "editDescription": "Görüşme bilgilerini düzenleyin",
-      "name": "Görüşme Adı",
-      "namePlaceholder": "Görüşme adını girin",
-      "nameRequired": "Görüşme adı zorunludur",
-      "nameMaxLength": "Görüşme adı en fazla 100 karakter olabilir",
-      "description": "Açıklama",
-      "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
-      "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
-    },
-    "stats": {
-      "totalActivityTypes": "Toplam Görüşme",
-      "activeActivityTypes": "Aktif Görüşme",
-      "newThisMonth": "Bu Ay Yeni"
-    },
-    "messages": {
-      "createSuccess": "Görüşme başarıyla oluşturuldu",
-      "createError": "Görüşme oluşturulamadı",
-      "updateSuccess": "Görüşme başarıyla güncellendi",
-      "updateError": "Görüşme güncellenemedi",
-      "deleteSuccess": "Görüşme başarıyla silindi",
-      "deleteError": "Görüşme silinemedi"
-    }
-  },
-  "menu": "Görüşme Yönetimi",
-  "description": "Görüşme tanımlarını yönetin ve düzenleyin",
-  "addButton": "Yeni Görüşme Ekle",
-  "loading": "Wird geladen...",
-  "noData": "Veri yok",
-  "actions": "İşlemler",
+  "menu": "Besprechungsverwaltung",
+  "description": "Besprechungsdefinitionen verwalten und bearbeiten",
+  "addButton": "Neue Besprechung hinzufügen",
+  "loading": "Laden...",
+  "noData": "Keine Daten",
+  "actions": "Aktionen",
   "edit": "Bearbeiten",
-  "deleteButton": "Sil",
+  "deleteButton": "Löschen",
   "cancel": "Abbrechen",
   "save": "Speichern",
-  "saving": "Kaydediliyor...",
-  "previous": "Önceki",
-  "next": "Sonraki",
+  "saving": "Wird gespeichert...",
+  "previous": "Zurück",
+  "next": "Weiter",
   "advancedFilter": {
-    "columnName": "Görüşme Adı",
-    "columnDescription": "Açıklama",
-    "columnCreatedBy": "Erstellenan"
+    "columnName": "Besprechungsname",
+    "columnDescription": "Beschreibung",
+    "columnCreatedBy": "Erstellt von"
+  },
+  "activityType": {
+    "create": "Neue Besprechung hinzufügen",
+    "loading": "Laden...",
+    "noData": "Keine Daten",
+    "actions": "Aktionen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "saving": "Wird gespeichert...",
+    "error": "Ein Fehler ist aufgetreten",
+    "form": {
+      "addTitle": "Neue Besprechung hinzufügen",
+      "editTitle": "Besprechung bearbeiten",
+      "addDescription": "Geben Sie die neue Besprechungsinformation ein",
+      "editDescription": "Bearbeiten Sie die Besprechungsinformationen",
+      "name": "Besprechungsname",
+      "namePlaceholder": "Geben Sie den Besprechungsnamen ein",
+      "nameRequired": "Der Besprechungsname ist erforderlich",
+      "nameMaxLength": "Der Besprechungsname darf höchstens 100 Zeichen haben",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreibung eingeben (optional)",
+      "descriptionMaxLength": "Die Beschreibung darf höchstens 500 Zeichen haben"
+    },
+    "table": {
+      "title": "Besprechungsliste",
+      "id": "ID",
+      "name": "Besprechungsname",
+      "description": "Beschreibung",
+      "createdDate": "Erstellungsdatum",
+      "createdBy": "Erstellt von",
+      "showing": "Anzeige {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "stats": {
+      "totalActivityTypes": "Gesamtzahl der Besprechungen",
+      "activeActivityTypes": "Aktive Besprechungen",
+      "newThisMonth": "Neu in diesem Monat"
+    },
+    "messages": {
+      "createSuccess": "Besprechung erfolgreich erstellt",
+      "createError": "Besprechung konnte nicht erstellt werden",
+      "updateSuccess": "Besprechung erfolgreich aktualisiert",
+      "updateError": "Besprechung konnte nicht aktualisiert werden",
+      "deleteSuccess": "Besprechung erfolgreich gelöscht",
+      "deleteError": "Besprechung konnte nicht gelöscht werden"
+    }
   },
   "deleteConfirm": {
-    "confirmTitle": "Görüşmeyi Sil",
-    "confirmMessage": "{{name}} kaydını silmek istediğinizden emin misiniz?"
+    "confirmTitle": "Besprechung löschen",
+    "confirmMessage": "Möchten Sie {{name}} wirklich löschen?"
   },
   "messages": {
-    "deleteSuccess": "Görüşme başarıyla silindi",
-    "deleteError": "Görüşme silinemedi"
+    "deleteSuccess": "Besprechung erfolgreich gelöscht",
+    "deleteError": "Besprechung konnte nicht gelöscht werden"
   },
   "table": {
-    "title": "Görüşme Listesi",
+    "title": "Besprechungsliste",
     "id": "ID",
-    "name": "Görüşme Adı",
-    "description": "Açıklama",
-    "createdDate": "Erstellenulma Tarihi",
-    "createdBy": "Erstellenan Kullanıcı"
+    "name": "Besprechungsname",
+    "description": "Beschreibung",
+    "createdDate": "Erstellungsdatum",
+    "createdBy": "Erstellt von"
   }
 }
