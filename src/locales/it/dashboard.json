@@ -35,11 +35,8 @@
   },
   "quickStats": {
     "pendingTasks": "Attività in Sospeso",
-    "pendingTasksDescription": "12 attività da completare",
     "openQuotations": "Preventivi Aperti",
-    "openQuotationsDescription": "5 preventivi in attesa di approvazione",
     "criticalStock": "Scorte Critiche",
-    "criticalStockDescription": "3 prodotti sotto il livello critico",
     "checkTasks": "Controlla l'elenco delle attività",
     "reviewQuotations": "Scopri le offerte",
     "stockStatus": "Vedi lo stato delle scorte"

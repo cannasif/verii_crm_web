@@ -35,11 +35,8 @@
   },
   "quickStats": {
     "pendingTasks": "Tâches en attente",
-    "pendingTasksDescription": "12 tâches à compléter",
     "openQuotations": "Devis ouverts",
-    "openQuotationsDescription": "5 devis en attente d'approbation",
     "criticalStock": "Stock critique",
-    "criticalStockDescription": "3 produits sous le niveau critique",
     "checkTasks": "Consultez la liste des tâches",
     "reviewQuotations": "Consultez les offres",
     "stockStatus": "Voir l'état des stocks"

@@ -35,11 +35,8 @@
   },
   "quickStats": {
     "pendingTasks": "Ausstehende Aufgaben",
-    "pendingTasksDescription": "12 Aufgaben zu erledigen",
     "openQuotations": "Offene Angebote",
-    "openQuotationsDescription": "5 Angebote warten auf Genehmigung",
     "criticalStock": "Kritischer Bestand",
-    "criticalStockDescription": "3 Produkte unter kritischem Niveau",
     "checkTasks": "Überprüfen Sie die Aufgabenliste",
     "reviewQuotations": "Schauen Sie sich die Angebote an",
     "stockStatus": "Siehe Lagerstatus"

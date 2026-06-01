@@ -35,11 +35,8 @@
   },
   "quickStats": {
     "pendingTasks": "Tareas Pendientes",
-    "pendingTasksDescription": "12 tareas por completar",
     "openQuotations": "Cotizaciones Abiertas",
-    "openQuotationsDescription": "5 cotizaciones pendientes de aprobación",
     "criticalStock": "Stock Crítico",
-    "criticalStockDescription": "3 productos por debajo del nivel crítico",
     "checkTasks": "Consulta la lista de tareas",
     "reviewQuotations": "Consulta las ofertas",
     "stockStatus": "Ver estado del stock"

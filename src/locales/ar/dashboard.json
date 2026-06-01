@@ -47,11 +47,8 @@
   },
   "quickStats": {
     "pendingTasks": "المهام المعلقة",
-    "pendingTasksDescription": "12 مهمة للاكتمال",
     "openQuotations": "عروض الأسعار المفتوحة",
-    "openQuotationsDescription": "5 عروض أسعار بانتظار الموافقة",
     "criticalStock": "المخزون الحرج",
-    "criticalStockDescription": "3 منتجات أقل من المستوى الحرج",
     "checkTasks": "تحقق من قائمة المهام",
     "reviewQuotations": "تحقق من العروض",
     "stockStatus": "انظر حالة المخزون"
