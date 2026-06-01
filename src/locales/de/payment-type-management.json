@@ -1,49 +1,55 @@
 {
-  "title": "Zahlungsart-Verwaltung",
-  "description": "Beschreibung",
+  "title": "Zahlungsart Verwaltung",
+  "headerDescription": "Zahlungsarten verwalten und bearbeiten",
   "create": "Neue Zahlungsart",
   "edit": "Zahlungsart bearbeiten",
-  "editDescription": "Zahlungsart-Informationen bearbeiten",
-  "createDescription": "Enter Neu payment type information",
+  "editDescription": "Zahlungsartinformationen bearbeiten",
+  "createDescription": "Neue Zahlungsartinformationen eingeben",
   "delete": {
-    "confirmTitle": "Delete Payment Type",
-    "confirmMessage": "Are you sure you want to delete {{name}} payment type? This action cannot be undone.",
-    "success": "Payment type deleted successfully",
-    "error": "An error occurred while deleting payment type"
+    "confirmTitle": "Zahlungsart löschen",
+    "confirmMessage": "{{name}} Zahlungsart wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.",
+    "success": "Zahlungsart erfolgreich gelöscht",
+    "error": "Fehler beim Löschen der Zahlungsart"
   },
-  "deleteTitle": "Delete Payment Type",
+  "deleteTitle": "Zahlungsart löschen",
   "name": "Name",
-  "namePlaceholder": "Namen der Zahlungsart eingeben",
+  "namePlaceholder": "Zahlungsartname eingeben",
+  "description": "Beschreibung",
   "descriptionPlaceholder": "Beschreibung eingeben (optional)",
   "createdDate": "Erstellungsdatum",
   "updatedDate": "Aktualisierungsdatum",
   "actions": "Aktionen",
   "search": "Suchen",
   "refresh": "Aktualisieren",
-  "loading": "Wird geladen...",
-  "previous": "Previous",
+  "loading": "Laden...",
+  "previous": "Zurück",
   "next": "Weiter",
+  "advancedFilter": {
+    "columnName": "Name",
+    "columnDescription": "Beschreibung"
+  },
   "cancel": "Abbrechen",
   "save": "Speichern",
   "saving": "Wird gespeichert...",
   "noData": "Keine Daten gefunden",
-  "confirmDelete": "Are you sure you want to delete this payment type?",
+  "error": "Ein Fehler ist aufgetreten",
+  "confirmDelete": "Sind Sie sicher, dass Sie diesen Zahlungstypen löschen möchten?",
   "createSuccess": "Zahlungsart erfolgreich erstellt",
   "updateSuccess": "Zahlungsart erfolgreich aktualisiert",
-  "deleteSuccess": "Payment type deleted successfully",
+  "deleteSuccess": "Zahlungsart erfolgreich gelöscht",
   "createError": "Fehler beim Erstellen der Zahlungsart",
   "updateError": "Fehler beim Aktualisieren der Zahlungsart",
-  "deleteError": "An error occurred while deleting payment type",
+  "deleteError": "Fehler beim Löschen der Zahlungsart",
   "table": {
-    "id": "AUSWEIS",
+    "title": "Zahlungstypen",
+    "status": "Status",
+    "id": "ID",
     "name": "Name",
     "description": "Beschreibung",
     "createdDate": "Erstellungsdatum",
     "updatedDate": "Aktualisierungsdatum",
-    "showing": "Zeige {{from}}-{{to}} von {{total}}",
-    "page": "Seite {{current}} von {{total}}",
-    "title": "Ödeme Tipleri",
-    "status": "Durum"
+    "showing": "Anzeige {{from}}-{{to}} / {{total}}",
+    "page": "Seite {{current}} / {{total}}"
   },
   "form": {
     "name": {
@@ -54,10 +60,8 @@
       "maxLength": "Beschreibung darf maximal 500 Zeichen lang sein"
     }
   },
-  "headerDescription": "Zahlungstypen verwalten und bearbeiten",
-  "advancedFilter": {
-    "columnName": "Name",
-    "columnDescription": "Description"
-  },
-  "error": "Fehler ist aufgetreten"
+  "status": {
+    "inactive": "Inaktiv",
+    "active": "Aktiv"
+  }
 }

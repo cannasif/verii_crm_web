@@ -1,54 +1,21 @@
 {
   "title": "Gestione tipi di pagamento",
-  "description": "Descrizione",
+  "headerDescription": "Gestisci e modifica i tipi di pagamento",
   "create": "Nuovo tipo di pagamento",
   "edit": "Modifica tipo di pagamento",
-  "delete": {
-    "confirmTitle": "Delete Payment Type",
-    "confirmMessage": "Are you sure you want to delete {{name}} payment type? This action cannot be undone.",
-    "success": "Payment type deleted successfully",
-    "error": "An error occurred while deleting payment type"
-  },
-  "table": {
-    "id": "ID",
-    "name": "Nome",
-    "code": "Codice",
-    "description": "Descrizione",
-    "isActive": "Attivo",
-    "actions": "Azioni",
-    "createdDate": "Data di creazione",
-    "updatedDate": "Data di aggiornamento",
-    "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-    "page": "Pagina {{current}} / {{total}}",
-    "title": "Ödeme Tipleri",
-    "status": "Durum"
-  },
-  "form": {
-    "name": {
-      "required": "Il nome è obbligatorio",
-      "maxLength": "Il nome può avere al massimo 100 caratteri"
-    },
-    "code": "Codice",
-    "description": {
-      "maxLength": "La descrizione può avere al massimo 500 caratteri"
-    },
-    "isActive": "Attivo",
-    "nameRequired": "Il nome è obbligatorio",
-    "codeRequired": "Il codice è obbligatorio"
-  },
-  "messages": {
-    "createSuccess": "Tipo di pagamento creato con successo",
-    "updateSuccess": "Tipo di pagamento aggiornato con successo",
-    "deleteSuccess": "Tipo di pagamento eliminato con successo",
-    "confirmDelete": "Sei sicuro di voler eliminare questo tipo di pagamento?"
-  },
-  "headerDescription": "Gestisci e modifica i tipi di pagamento",
   "editDescription": "Modifica le informazioni del tipo di pagamento",
   "createDescription": "Inserisci le informazioni del nuovo tipo di pagamento",
+  "delete": {
+    "confirmTitle": "Elimina tipo di pagamento",
+    "confirmMessage": "Sei sicuro di voler eliminare {{name}}? Questa azione non può essere annullata.",
+    "success": "Tipo di pagamento eliminato correttamente",
+    "error": "Errore durante l'eliminazione del tipo di pagamento"
+  },
   "deleteTitle": "Elimina tipo di pagamento",
   "name": "Nome",
   "namePlaceholder": "Inserisci il nome del tipo di pagamento",
-  "descriptionPlaceholder": "Inserisci una descrizione (opzionale)",
+  "description": "Descrizione",
+  "descriptionPlaceholder": "Inserisci una descrizione (facoltativo)",
   "createdDate": "Data di creazione",
   "updatedDate": "Data di aggiornamento",
   "actions": "Azioni",
@@ -57,10 +24,15 @@
   "loading": "Caricamento...",
   "previous": "Precedente",
   "next": "Successivo",
+  "advancedFilter": {
+    "columnName": "Nome",
+    "columnDescription": "Descrizione"
+  },
   "cancel": "Annulla",
   "save": "Salva",
   "saving": "Salvataggio...",
   "noData": "Nessun dato trovato",
+  "error": "Si è verificato un errore",
   "confirmDelete": "Sei sicuro di voler eliminare questo tipo di pagamento?",
   "createSuccess": "Tipo di pagamento creato correttamente",
   "updateSuccess": "Tipo di pagamento aggiornato correttamente",
@@ -68,9 +40,28 @@
   "createError": "Errore durante la creazione del tipo di pagamento",
   "updateError": "Errore durante l'aggiornamento del tipo di pagamento",
   "deleteError": "Errore durante l'eliminazione del tipo di pagamento",
-  "advancedFilter": {
-    "columnName": "Name",
-    "columnDescription": "Description"
+  "table": {
+    "title": "Tipi di pagamento",
+    "status": "Stato",
+    "id": "ID",
+    "name": "Nome",
+    "description": "Descrizione",
+    "createdDate": "Data di creazione",
+    "updatedDate": "Data di aggiornamento",
+    "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+    "page": "Pagina {{current}} / {{total}}"
   },
-  "error": "Si è verificato un errore"
+  "form": {
+    "name": {
+      "required": "Il nome è obbligatorio",
+      "maxLength": "Il nome può avere al massimo 100 caratteri"
+    },
+    "description": {
+      "maxLength": "La descrizione può avere al massimo 500 caratteri"
+    }
+  },
+  "status": {
+    "inactive": "Inattivo",
+    "active": "Attivo"
+  }
 }
