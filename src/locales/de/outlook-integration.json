@@ -229,6 +229,11 @@
     "activityLogEnabled": "A CRM activity and log are automatically created after successful sending.",
     "clearDraft": "Clear draft",
     "readyToSend": "Ready to send",
-    "notReadyToSend": "Required fields are missing"
+    "notReadyToSend": "Required fields are missing",
+    "companyDefault": "Firma",
+    "companyEmails": "Firmen-E-Mails",
+    "contactEmails": "Kontakt-E-Mails",
+    "companyRecipientDirectory": "Firma und Kontakt-Empfängerverzeichnis",
+    "addAllTo": "Alle zu An hinzufügen"
   }
 }
