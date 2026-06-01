@@ -130,5 +130,11 @@
     "columnErpProductCode": "رمز منتج ERP",
     "columnErpGroupCode": "رمز مجموعة منتجات ERP",
     "columnCurrency": "العملة"
+  },
+  "common": {
+    "delete": "حذف"
+  },
+  "productPricingGroupByManagement": {
+    "selectCurrency": "الرجاء اختيار العملة"
   }
 }

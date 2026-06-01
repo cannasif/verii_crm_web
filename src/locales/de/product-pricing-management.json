@@ -130,5 +130,11 @@
     "columnErpProductCode": "ERP-Produktcode",
     "columnErpGroupCode": "ERP-Gruppencode",
     "columnCurrency": "Währung"
+  },
+  "common": {
+    "delete": "Delete"
+  },
+  "productPricingGroupByManagement": {
+    "selectCurrency": "Bitte Währung auswählen"
   }
 }
