@@ -158,6 +158,11 @@
     "addTo": "إضافة إلى إلى",
     "ccShort": "نسخة",
     "bccShort": "مخفي",
+    "companyDefault": "الشركة",
+    "companyEmails": "بريد الشركة",
+    "contactEmails": "بريد جهة الاتصال",
+    "companyRecipientDirectory": "دليل مستلمي الشركة وجهة الاتصال",
+    "addAllTo": "إضافة الكل إلى إلى",
     "noRecipientSuggestions": "لا توجد اقتراحات مستلمين بعد.",
     "tabs": {
       "compose": "تحرير",

@@ -158,6 +158,11 @@
     "addTo": "Aggiungi ad A",
     "ccShort": "CC",
     "bccShort": "CCN",
+    "companyDefault": "Azienda",
+    "companyEmails": "Email aziendali",
+    "contactEmails": "Email contatto",
+    "companyRecipientDirectory": "Elenco destinatari azienda e contatto",
+    "addAllTo": "Aggiungi tutto a A",
     "noRecipientSuggestions": "Nessun suggerimento destinatario ancora.",
     "tabs": {
       "compose": "Componi",

@@ -158,6 +158,11 @@
     "addTo": "Zu An hinzufügen",
     "ccShort": "CC",
     "bccShort": "BCC",
+    "companyDefault": "Firma",
+    "companyEmails": "Firmen-E-Mails",
+    "contactEmails": "Kontakt-E-Mails",
+    "companyRecipientDirectory": "Firma und Kontakt-Empfängerverzeichnis",
+    "addAllTo": "Alle zu An hinzufügen",
     "noRecipientSuggestions": "Noch keine Empfängervorschläge.",
     "tabs": {
       "compose": "Verfassen",

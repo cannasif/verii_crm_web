@@ -158,6 +158,11 @@
     "addTo": "Añadir a Para",
     "ccShort": "CC",
     "bccShort": "CCO",
+    "companyDefault": "Empresa",
+    "companyEmails": "Correos de la empresa",
+    "contactEmails": "Correos del contacto",
+    "companyRecipientDirectory": "Directorio de destinatarios de empresa y contacto",
+    "addAllTo": "Añadir todo a Para",
     "noRecipientSuggestions": "Aún no hay sugerencias de destinatarios.",
     "tabs": {
       "compose": "Redactar",
