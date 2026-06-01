@@ -23,6 +23,6 @@
     "city": "المدينة",
     "email": "البريد الإلكتروني"
   },
-  "potentialCustomers": "Potential",
-  "noPotentialCustomers": "No potential customers found"
+  "potentialCustomers": "العملاء المحتملون",
+  "noPotentialCustomers": "لم يتم العثور على العملاء المحتملين"
 }

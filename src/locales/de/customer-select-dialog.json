@@ -23,6 +23,6 @@
     "city": "Stadt",
     "email": "E-Mail"
   },
-  "potentialCustomers": "Potential",
-  "noPotentialCustomers": "No potential customers found"
+  "potentialCustomers": "Potenziell",
+  "noPotentialCustomers": "Keine potenziellen Kunden gefunden"
 }
