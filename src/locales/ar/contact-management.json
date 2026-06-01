@@ -78,8 +78,8 @@
     "action": "حذف",
     "confirmTitle": "حذف جهة الاتصال",
     "confirmMessage": "هل أنت متأكد أنك تريد حذف جهة الاتصال {{name}}؟",
-    "success": "İletişim başarıyla silindi",
-    "error": "İletişim silinemedi"
+    "success": "تم حذف جهة الاتصال بنجاح",
+    "error": "تعذر حذف جهة الاتصال"
   },
   "loading": "جاري التحميل...",
   "noData": "لا توجد بيانات",
@@ -108,19 +108,6 @@
     "columnCustomerName": "Customer",
     "columnTitleName": "Title"
   },
-  "contactManagement": {
-    "form": {
-      "mobilePlaceholderExample": "05XX...",
-      "phonePlaceholderExample": "0212...",
-      "emailPlaceholderExample": "ornek@email.com"
-    },
-    "error": "حدث خطأ",
-    "delete": {
-      "success": "İletişim başarıyla silindi",
-      "error": "İletişim silinemedi"
-    },
-    "quickActivity": "Hızlı Aktivite"
-  },
-  "quickActivity": "Hızlı Aktivite",
+  "quickActivity": "نشاط سريع",
   "error": "حدث خطأ"
 }

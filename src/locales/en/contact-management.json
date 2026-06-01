@@ -88,8 +88,8 @@
     "action": "Delete",
     "confirmTitle": "Delete Contact",
     "confirmMessage": "Are you sure you want to delete {{name}} contact?",
-    "success": "İletişim başarıyla silindi",
-    "error": "İletişim silinemedi"
+    "success": "Contact deleted successfully",
+    "error": "Could not delete contact"
   },
   "loading": "Loading...",
   "noData": "No data",
@@ -108,19 +108,6 @@
     "deleteSuccess": "Contact deleted successfully",
     "deleteError": "Contact could not be deleted"
   },
-  "contactManagement": {
-    "error": "Hata oluştu",
-    "delete": {
-      "success": "İletişim başarıyla silindi",
-      "error": "İletişim silinemedi"
-    },
-    "quickActivity": "Hızlı Aktivite",
-    "form": {
-      "mobilePlaceholderExample": "05XX...",
-      "phonePlaceholderExample": "0212...",
-      "emailPlaceholderExample": "ornek@email.com"
-    }
-  },
-  "quickActivity": "Hızlı Aktivite",
-  "error": "Hata oluştu"
+  "quickActivity": "Quick Activity",
+  "error": "An error occurred"
 }

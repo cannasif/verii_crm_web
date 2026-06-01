@@ -78,8 +78,8 @@
     "action": "Elimina",
     "confirmTitle": "Elimina Contatto",
     "confirmMessage": "Sei sicuro di voler eliminare il contatto {{name}}?",
-    "success": "İletişim başarıyla silindi",
-    "error": "İletişim silinemedi"
+    "success": "Contatto eliminato con successo",
+    "error": "Impossibile eliminare il contatto"
   },
   "loading": "Caricamento...",
   "noData": "Nessun dato",
@@ -108,19 +108,6 @@
     "columnCustomerName": "Customer",
     "columnTitleName": "Title"
   },
-  "contactManagement": {
-    "form": {
-      "mobilePlaceholderExample": "05XX...",
-      "phonePlaceholderExample": "0212...",
-      "emailPlaceholderExample": "ornek@email.com"
-    },
-    "error": "Si è verificato un errore",
-    "delete": {
-      "success": "İletişim başarıyla silindi",
-      "error": "İletişim silinemedi"
-    },
-    "quickActivity": "Hızlı Aktivite"
-  },
-  "quickActivity": "Hızlı Aktivite",
+  "quickActivity": "Attività rapida",
   "error": "Si è verificato un errore"
 }
