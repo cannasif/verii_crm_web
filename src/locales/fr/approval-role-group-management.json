@@ -1,64 +1,62 @@
 {
-  "menu": "Gestion des Groupes de Rôles d'Approbation",
+  "advancedFilter": {
+    "columnName": "Nom du groupe",
+    "columnCreatedBy": "Créé par"
+  },
+  "menu": "Gestion des groupes de rôles d'approbation",
   "description": "Gérer et modifier les groupes de rôles d'approbation",
-  "addButton": "Ajouter Nouveau Groupe",
+  "addButton": "Ajouter un groupe d'approbation",
   "refresh": "Actualiser",
   "searchPlaceholder": "Rechercher...",
   "loading": "Chargement...",
   "noData": "Aucune donnée trouvée",
   "noDataDescription": "Aucun enregistrement correspondant à vos critères de recherche n'a été trouvé ou aucun enregistrement n'a encore été ajouté.",
+  "approvalRoleGroup": {
+    "menu": "Onay Rol Grubu Yönetimi",
+    "description": "Onay rol gruplarını yönetin ve düzenleyin",
+    "addButton": "Yeni Grup Ekle",
+    "searchPlaceholder": "Ara...",
+    "noData": "Veri bulunamadı",
+    "table": {
+      "title": "Grup Listesi",
+      "id": "ID",
+      "name": "Grup Adı",
+      "createdDate": "Oluşturulma Tarihi",
+      "createdBy": "Oluşturan Kullanıcı",
+      "actions": "İşlemler",
+      "showing": "Toplam {{total}} kayıttan {{from}}-{{to}} arası gösteriliyor"
+    },
+    "delete": {
+      "title": "Confirmation de suppression",
+      "confirmMessage": "Voulez-vous vraiment supprimer le groupe {{name}} ?",
+      "success": "Le groupe a été supprimé avec succès",
+      "error": "Une erreur est survenue lors de la suppression du groupe"
+    }
+  },
   "table": {
-    "id": "IDENTIFIANT",
-    "name": "Nom du Groupe",
-    "createdDate": "Date de Création",
-    "createdBy": "Créé Par",
+    "id": "ID",
+    "name": "Nom du groupe",
+    "createdDate": "Date de création",
+    "createdBy": "Créé par",
     "actions": "Actions",
     "showing": "Affichage de {{from}} à {{to}} sur {{total}} enregistrements"
   },
   "delete": {
-    "confirmTitle": "Confirmation de Suppression",
-    "confirmMessage": "Cette action est irréversible. Voulez-vous continuer ?"
+    "confirmTitle": "Suppression",
+    "confirmMessage": "Cette action ne peut pas être annulée. Voulez-vous continuer ?"
   },
   "cancel": "Annuler",
   "save": "Enregistrer",
   "saving": "Enregistrement...",
   "deleteButton": "Supprimer",
   "form": {
-    "editTitle": "Modifier le Groupe de Rôles d'Approbation",
-    "addTitle": "Ajouter un Nouveau Groupe de Rôles d'Approbation",
+    "editTitle": "Modifier le groupe de rôles d'approbation",
+    "addTitle": "Ajouter un groupe de rôles d'approbation",
     "editDescription": "Modifier les informations du groupe de rôles d'approbation",
-    "addDescription": "Entrer les nouvelles informations du groupe de rôles d'approbation",
-    "name": "Nom du Groupe",
-    "namePlaceholder": "Entrer le nom du groupe",
-    "name.required": "Le nom du groupe est requis",
-    "name.maxLength": "Le nom du groupe peut contenir au maximum 100 caractères",
-    "nameRequired": "Group name is required",
-    "nameMaxLength": "Group name can be at most 100 characters"
-  },
-  "advancedFilter": {
-    "columnName": "Grup Adı",
-    "columnCreatedBy": "Créeran"
-  },
-  "approvalRoleGroup": {
-    "menu": "Onay Rol Grubu Yönetimi",
-    "description": "Onay rol gruplarını yönetin ve düzenleyin",
-    "addButton": "Yeni Grup Ekle",
-    "searchPlaceholder": "Rechercher...",
-    "noData": "Veri bulunamadı",
-    "table": {
-      "title": "Grup Listesi",
-      "id": "ID",
-      "name": "Grup Adı",
-      "createdDate": "Créerulma Tarihi",
-      "createdBy": "Créeran Kullanıcı",
-      "actions": "İşlemler",
-      "showing": "Toplam {{total}} kayıttan {{from}}-{{to}} arası gösteriliyor"
-    },
-    "delete": {
-      "title": "Silme Onayı",
-      "confirmMessage": "{{name}} grubunu silmek istediğinizden emin misiniz?",
-      "success": "Grup başarıyla silindi",
-      "error": "Grup silinirken bir hata oluştu"
-    }
+    "addDescription": "Ajouter un nouveau groupe de rôles d'approbation",
+    "name": "Nom du groupe",
+    "namePlaceholder": "Entrez le nom du groupe",
+    "nameRequired": "Le nom du groupe est obligatoire",
+    "nameMaxLength": "Le nom du groupe peut contenir au maximum 100 caractères"
   }
 }

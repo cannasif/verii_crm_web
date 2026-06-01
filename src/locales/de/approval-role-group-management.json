@@ -1,56 +1,28 @@
 {
+  "advancedFilter": {
+    "columnName": "Gruppenname",
+    "columnCreatedBy": "Erstellt von"
+  },
   "menu": "Genehmigungsrollengruppen-Verwaltung",
-  "description": "Verwalten und bearbeiten Sie Genehmigungsrollengruppen",
-  "addButton": "Hinzufügen Neu Group",
+  "description": "Genehmigungsrollengruppen verwalten und bearbeiten",
+  "addButton": "Neue Genehmigungsrolle hinzufügen",
   "refresh": "Aktualisieren",
   "searchPlaceholder": "Suchen...",
-  "loading": "Laden...",
+  "loading": "Lädt...",
   "noData": "Keine Daten gefunden",
-  "noDataDescription": "No records found matching your search criteria or no records added yet.",
-  "table": {
-    "id": "AUSWEIS",
-    "name": "Gruppenname",
-    "createdDate": "Erstellungsdatum",
-    "createdBy": "Erstellt von",
-    "actions": "Aktionen",
-    "showing": "Zeige {{from}}-{{to}} von {{total}} Einträgen"
-  },
-  "delete": {
-    "confirmTitle": "Delete Confirmation",
-    "confirmMessage": "This action cannot be undone. Do you want to continue?"
-  },
-  "cancel": "Abbrechen",
-  "save": "Speichern",
-  "saving": "Wird gespeichert...",
-  "deleteButton": "Delete",
-  "form": {
-    "editTitle": "Genehmigungsrollengruppe bearbeiten",
-    "addTitle": "Hinzufügen Neu Approval Role Group",
-    "editDescription": "Genehmigungsrollengruppen-Informationen bearbeiten",
-    "addDescription": "Neue Genehmigungsrollengruppen-Informationen eingeben",
-    "name": "Gruppenname",
-    "namePlaceholder": "Gruppenname eingeben",
-    "name.required": "Gruppenname ist erforderlich",
-    "name.maxLength": "Gruppenname darf höchstens 100 Zeichen lang sein",
-    "nameRequired": "Group name is required",
-    "nameMaxLength": "Group name can be at most 100 characters"
-  },
-  "advancedFilter": {
-    "columnName": "Grup Adı",
-    "columnCreatedBy": "Erstellenan"
-  },
+  "noDataDescription": "Es wurden keine Treffer zu Ihren Suchkriterien gefunden oder es wurden noch keine Datensätze hinzugefügt.",
   "approvalRoleGroup": {
     "menu": "Onay Rol Grubu Yönetimi",
     "description": "Onay rol gruplarını yönetin ve düzenleyin",
     "addButton": "Yeni Grup Ekle",
-    "searchPlaceholder": "Suchen...",
+    "searchPlaceholder": "Ara...",
     "noData": "Veri bulunamadı",
     "table": {
       "title": "Grup Listesi",
       "id": "ID",
       "name": "Grup Adı",
-      "createdDate": "Erstellenulma Tarihi",
-      "createdBy": "Erstellenan Kullanıcı",
+      "createdDate": "Oluşturulma Tarihi",
+      "createdBy": "Oluşturan Kullanıcı",
       "actions": "İşlemler",
       "showing": "Toplam {{total}} kayıttan {{from}}-{{to}} arası gösteriliyor"
     },
@@ -60,5 +32,31 @@
       "success": "Grup başarıyla silindi",
       "error": "Grup silinirken bir hata oluştu"
     }
+  },
+  "table": {
+    "id": "ID",
+    "name": "Gruppenname",
+    "createdDate": "Erstellungsdatum",
+    "createdBy": "Erstellt von",
+    "actions": "Aktionen",
+    "showing": "Anzeige von {{from}}-{{to}} von {{total}} Einträgen"
+  },
+  "delete": {
+    "confirmTitle": "Löschen bestätigen",
+    "confirmMessage": "Diese Aktion kann nicht rückgängig gemacht werden. Möchten Sie fortfahren?"
+  },
+  "cancel": "Abbrechen",
+  "save": "Speichern",
+  "saving": "Wird gespeichert...",
+  "deleteButton": "Löschen",
+  "form": {
+    "editTitle": "Genehmigungsrollengruppe bearbeiten",
+    "addTitle": "Neue Genehmigungsrollengruppe hinzufügen",
+    "editDescription": "Genehmigungsrollengruppen-Informationen bearbeiten",
+    "addDescription": "Neue Genehmigungsrollengruppe hinzufügen",
+    "name": "Gruppenname",
+    "namePlaceholder": "Gruppennamen eingeben",
+    "nameRequired": "Gruppenname ist erforderlich",
+    "nameMaxLength": "Gruppenname darf maximal 100 Zeichen lang sein"
   }
 }
