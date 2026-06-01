@@ -13,7 +13,7 @@
       "actions": "Actions",
       "showing": "Showing {{from}}-{{to}} / {{total}}",
       "page": "Page {{current}} / {{total}}",
-      "title": "Onay Akışları"
+      "title": "Approval Flows"
     },
     "form": {
       "addTitle": "Add New Approval Flow",
@@ -44,28 +44,28 @@
       "cancel": "Cancel",
       "confirmTitle": "Delete Approval Flow",
       "confirmMessage": "Are you sure you want to delete this approval flow?",
-      "title": "Onay Akışını Sil",
-      "confirm": "Bu onay akışını silmek istediğinizden emin misiniz?"
+      "title": "Delete Approval Flow",
+      "confirm": "Are you sure you want to delete this approval flow?"
     },
     "documentType": {
       "offer": "Offer",
       "request": "Request",
       "order": "Order",
-      "demand": "Talep",
-      "quotation": "Teklif"
+      "demand": "Demand",
+      "quotation": "Quotation"
     },
     "advancedFilter": {
-      "columnDocumentType": "Belge Tipi",
-      "columnDescription": "Açıklama",
-      "columnIsActive": "Aktif",
-      "columnCreatedBy": "Oluşturan"
+      "columnDocumentType": "Document Type",
+      "columnDescription": "Description",
+      "columnIsActive": "Active",
+      "columnCreatedBy": "Created By"
     },
     "messages": {
-      "deleteSuccess": "Onay akışı başarıyla silindi",
-      "deleteError": "Onay akışı silinirken hata oluştu"
+      "deleteSuccess": "Approval flow deleted successfully",
+      "deleteError": "An error occurred while deleting approval flow"
     },
     "steps": "Flow steps",
-    "error": "Hata oluştu"
+    "error": "An error occurred"
   },
   "approvalFlowStep": {
     "title": "Flow Steps",

@@ -13,7 +13,7 @@
       "actions": "Actions",
       "showing": "Affichage {{from}}-{{to}} / {{total}}",
       "page": "Page {{current}} / {{total}}",
-      "title": "Onay Akışları"
+      "title": "Flux d'approbation"
     },
     "form": {
       "addTitle": "Ajouter Nouveau Flux",
@@ -30,8 +30,8 @@
       "cancel": "Annuler",
       "save": "Enregistrer",
       "saving": "Enregistrement...",
-      "documentTypeRequired": "Document type selection is required",
-      "descriptionMaxLength": "Description can be at most 200 characters"
+      "documentTypeRequired": "La sélection du type de document est obligatoire",
+      "descriptionMaxLength": "La description peut contenir au maximum 200 caractères"
     },
     "loading": "Chargement...",
     "noData": "Pas de données",
@@ -44,27 +44,28 @@
       "cancel": "Annuler",
       "confirmTitle": "Supprimer le flux d'approbation",
       "confirmMessage": "Êtes-vous sûr de vouloir supprimer ce flux d'approbation ?",
-      "title": "Onay Akışını Sil",
-      "confirm": "Bu onay akışını silmek istediğinizden emin misiniz?"
+      "title": "Supprimer le flux d'approbation",
+      "confirm": "Êtes-vous sûr de vouloir supprimer ce flux d'approbation ?"
     },
     "documentType": {
       "offer": "Offre",
       "request": "Demande",
       "order": "Commande",
-      "demand": "Talep",
-      "quotation": "Teklif"
+      "demand": "Demande",
+      "quotation": "Devis"
     },
     "advancedFilter": {
-      "columnDocumentType": "Belge Tipi",
-      "columnDescription": "Açıklama",
-      "columnIsActive": "Aktif",
-      "columnCreatedBy": "Créeran"
+      "columnDocumentType": "Type de Document",
+      "columnDescription": "Description",
+      "columnIsActive": "Actif",
+      "columnCreatedBy": "Créé par"
     },
     "messages": {
-      "deleteSuccess": "Onay akışı başarıyla silindi",
-      "deleteError": "Onay akışı silinirken hata oluştu"
+      "deleteSuccess": "Le flux d'approbation a été supprimé avec succès",
+      "deleteError": "Erreur lors de la suppression du flux d'approbation"
     },
-    "error": "Une erreur est survenue"
+    "error": "Une erreur est survenue",
+    "steps": "Étapes du flux"
   },
   "approvalFlowStep": {
     "title": "Étapes du Flux",
@@ -86,13 +87,10 @@
       "approvalRoleGroup": "Groupe de Rôle",
       "selectRoleGroup": "Sélectionner un groupe de rôle",
       "noRoleGroupSelected": "Aucun groupe de rôle sélectionné",
-      "approvalRoleGroupId": {
-        "required": "La sélection du groupe de rôle est requise"
-      },
-      "approvalRoleGroupIdRequired": "Role group selection is required",
+      "approvalRoleGroupIdRequired": "La sélection du groupe de rôle est obligatoire",
       "cancel": "Annuler",
       "save": "Enregistrer",
-      "saving": "Saving..."
+      "saving": "Enregistrement..."
     },
     "messages": {
       "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cette étape ?"

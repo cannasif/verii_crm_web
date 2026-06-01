@@ -13,7 +13,7 @@
       "actions": "Aktionen",
       "showing": "Zeige {{from}}-{{to}} / {{total}}",
       "page": "Seite {{current}} / {{total}}",
-      "title": "Onay Akışları"
+      "title": "Genehmigungsflüsse"
     },
     "form": {
       "addTitle": "Hinzufügen Neu Approval Flow",
@@ -30,48 +30,49 @@
       "cancel": "Abbrechen",
       "save": "Speichern",
       "saving": "Speichern...",
-      "documentTypeRequired": "Document type selection is required",
-      "descriptionMaxLength": "Description can be at most 200 characters"
+      "documentTypeRequired": "Auswahl des Dokumententyps ist erforderlich",
+      "descriptionMaxLength": "Die Beschreibung darf höchstens 200 Zeichen lang sein"
     },
     "loading": "Wird geladen...",
     "noData": "Keine Daten",
     "active": "Aktiv",
     "inactive": "Inaktiv",
-    "previous": "Previous",
+    "previous": "Zurück",
     "next": "Weiter",
     "delete": {
-      "action": "Delete",
+      "action": "Löschen",
       "cancel": "Abbrechen",
-      "confirmTitle": "Delete Approval Flow",
-      "confirmMessage": "Are you sure you want to delete this approval flow?",
-      "title": "Onay Akışını Sil",
-      "confirm": "Bu onay akışını silmek istediğinizden emin misiniz?"
+      "confirmTitle": "Genehmigungsablauf löschen",
+      "confirmMessage": "Möchten Sie diesen Genehmigungsablauf wirklich löschen?",
+      "title": "Genehmigungsablauf löschen",
+      "confirm": "Möchten Sie diesen Genehmigungsablauf wirklich löschen?"
     },
     "documentType": {
       "offer": "Angebot",
       "request": "Anfrage",
       "order": "Bestellung",
-      "demand": "Talep",
-      "quotation": "Teklif"
+      "demand": "Anfrage",
+      "quotation": "Angebot"
     },
     "advancedFilter": {
-      "columnDocumentType": "Belge Tipi",
-      "columnDescription": "Açıklama",
-      "columnIsActive": "Aktif",
-      "columnCreatedBy": "Erstellenan"
+      "columnDocumentType": "Dokumententyp",
+      "columnDescription": "Beschreibung",
+      "columnIsActive": "Aktiv",
+      "columnCreatedBy": "Erstellt von"
     },
     "messages": {
-      "deleteSuccess": "Onay akışı başarıyla silindi",
-      "deleteError": "Onay akışı silinirken hata oluştu"
+      "deleteSuccess": "Der Genehmigungsablauf wurde erfolgreich gelöscht",
+      "deleteError": "Beim Löschen des Genehmigungsablaufs ist ein Fehler aufgetreten"
     },
-    "error": "Fehler ist aufgetreten"
+    "error": "Ein Fehler ist aufgetreten",
+    "steps": "Ablaufschritte"
   },
   "approvalFlowStep": {
     "title": "Ablaufschritte",
-    "addButton": "Hinzufügen Step",
-    "empty": "No steps added yet",
-    "unknownRoleGroup": "Keine Rollengruppe",
-    "stepDescription": "Genehmigungsreihenfolge: {{order}}",
+      "addButton": "Schritt hinzufügen",
+      "empty": "Noch keine Schritte hinzugefügt",
+      "unknownRoleGroup": "Keine Rollengruppe",
+      "stepDescription": "Genehmigungsreihenfolge: {{order}}",
     "deleteDialog": {
       "title": "Schritt löschen",
       "description": "Möchten Sie diesen Schritt wirklich löschen?",
@@ -81,21 +82,18 @@
     "form": {
       "addTitle": "Hinzufügen Neu Step",
       "editTitle": "Schritt bearbeiten",
-      "addDescription": "Hinzufügen Neu flow step",
+      "addDescription": "Neuen Schritt zum Fluss hinzufügen",
       "editDescription": "Ablaufschritt bearbeiten",
       "approvalRoleGroup": "Rollengruppe",
       "selectRoleGroup": "Rollengruppe auswählen",
       "noRoleGroupSelected": "Keine Rollengruppe ausgewählt",
-      "approvalRoleGroupId": {
-        "required": "Auswahl der Rollengruppe ist erforderlich"
-      },
       "cancel": "Abbrechen",
       "save": "Speichern",
       "saving": "Speichern...",
-      "approvalRoleGroupIdRequired": "Role group selection is required"
+      "approvalRoleGroupIdRequired": "Auswahl der Rollengruppe ist erforderlich"
     },
     "messages": {
-      "deleteConfirm": "Are you sure you want to delete this step?"
+      "deleteConfirm": "Möchten Sie diesen Schritt wirklich löschen?"
     }
   }
 }

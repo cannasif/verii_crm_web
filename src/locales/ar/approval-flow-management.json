@@ -13,7 +13,7 @@
       "actions": "إجراءات",
       "showing": "عرض {{from}}-{{to}} من {{total}}",
       "page": "صفحة {{current}} / {{total}}",
-      "title": "Onay Akışları"
+      "title": "تدفقات الموافقة"
     },
     "form": {
       "addTitle": "إضافة تدفق موافقة جديد",
@@ -44,27 +44,28 @@
       "cancel": "إلغاء",
       "confirmTitle": "حذف تدفق الموافقة",
       "confirmMessage": "هل أنت متأكد من أنك تريد حذف تدفق الموافقة هذا؟",
-      "title": "Onay Akışını Sil",
-      "confirm": "Bu onay akışını silmek istediğinizden emin misiniz?"
+      "title": "حذف تدفق الموافقة",
+      "confirm": "هل أنت متأكد من أنك تريد حذف هذا تدفق الموافقة؟"
     },
     "documentType": {
       "offer": "عرض",
       "request": "طلب",
       "order": "طلب شراء",
-      "demand": "Talep",
-      "quotation": "Teklif"
+      "demand": "طلب",
+      "quotation": "عرض"
     },
     "advancedFilter": {
-      "columnDocumentType": "Belge Tipi",
-      "columnDescription": "Açıklama",
-      "columnIsActive": "Aktif",
-      "columnCreatedBy": "إنشاءan"
+      "columnDocumentType": "نوع المستند",
+      "columnDescription": "الوصف",
+      "columnIsActive": "نشط",
+      "columnCreatedBy": "تم الإنشاء بواسطة"
     },
     "messages": {
-      "deleteSuccess": "Onay akışı başarıyla silindi",
-      "deleteError": "Onay akışı silinirken hata oluştu"
+      "deleteSuccess": "تم حذف تدفق الموافقة بنجاح",
+      "deleteError": "حدث خطأ أثناء حذف تدفق الموافقة"
     },
-    "error": "حدث خطأ"
+    "error": "حدث خطأ",
+    "steps": "خطوات التدفق"
   },
   "approvalFlowStep": {
     "title": "خطوات التدفق",

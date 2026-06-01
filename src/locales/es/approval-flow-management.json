@@ -13,7 +13,7 @@
       "actions": "Acciones",
       "showing": "Mostrando {{from}}-{{to}} de {{total}}",
       "page": "Página {{current}} / {{total}}",
-      "title": "Onay Akışları"
+      "title": "Flujos de Aprobación"
     },
     "form": {
       "addTitle": "Añadir Nuevo Flujo",
@@ -44,27 +44,28 @@
       "cancel": "Cancelar",
       "confirmTitle": "Eliminar Flujo",
       "confirmMessage": "¿Está seguro de que desea eliminar este flujo de aprobación?",
-      "title": "Onay Akışını Sil",
-      "confirm": "Bu onay akışını silmek istediğinizden emin misiniz?"
+      "title": "Eliminar Flujo",
+      "confirm": "¿Está seguro de que desea eliminar este flujo de aprobación?"
     },
     "documentType": {
       "offer": "Oferta",
       "request": "Solicitud",
       "order": "Pedido",
-      "demand": "Talep",
-      "quotation": "Teklif"
+      "demand": "Demanda",
+      "quotation": "Cotización"
     },
     "advancedFilter": {
-      "columnDocumentType": "Belge Tipi",
-      "columnDescription": "Açıklama",
-      "columnIsActive": "Aktif",
-      "columnCreatedBy": "Crearan"
+      "columnDocumentType": "Tipo de Documento",
+      "columnDescription": "Descripción",
+      "columnIsActive": "Activo",
+      "columnCreatedBy": "Creado por"
     },
     "messages": {
-      "deleteSuccess": "Onay akışı başarıyla silindi",
-      "deleteError": "Onay akışı silinirken hata oluştu"
+      "deleteSuccess": "El flujo de aprobación se eliminó correctamente",
+      "deleteError": "Error al eliminar el flujo de aprobación"
     },
-    "error": "Se produjo un error"
+    "error": "Se produjo un error",
+    "steps": "Pasos de flujo"
   },
   "approvalFlowStep": {
     "title": "Pasos del Flujo",
