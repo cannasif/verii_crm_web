@@ -1,11 +1,11 @@
 {
-  "menu": "Gestión de Distritos",
+  "menu": "Gestión de distritos",
   "description": "Gestionar y editar distritos",
-  "addButton": "Añadir Nuevo Distrito",
-  "listTitle": "Lista de Distritos",
-  "listDescription": "Puede gestionar todos los distritos registrados en el sistema aquí.",
+  "addButton": "Agregar nuevo distrito",
+  "listTitle": "Lista de distritos",
+  "listDescription": "Puede gestionar aquí todos los distritos registrados del sistema.",
   "loading": "Cargando...",
-  "noData": "Sin datos",
+  "noData": "No se encontraron datos",
   "actions": "Acciones",
   "previous": "Anterior",
   "next": "Siguiente",
@@ -13,67 +13,117 @@
   "delete": "Eliminar",
   "save": "Guardar",
   "saving": "Guardando...",
+  "countryManagement": {
+    "error": "Se produjo un error"
+  },
   "table": {
-    "id": "IDENTIFICACIÓN",
-    "name": "Nombre del Distrito",
+    "id": "ID",
+    "name": "Nombre del distrito",
     "erpCode": "Código ERP",
-    "cityName": "Nombre de la Ciudad",
-    "createdDate": "Fecha de Creación",
-    "createdBy": "Creado Por",
+    "city": "Ciudad",
+    "cityName": "Nombre de la ciudad",
+    "status": "Estado",
+    "title": "Lista de distritos",
+    "createdDate": "Fecha de creación",
+    "createdBy": "Creado por",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
     "page": "Página {{current}} / {{total}}"
   },
-  "deleteConfirm": {
-    "confirmTitle": "Eliminar Distrito",
-    "confirmMessage": "¿Está seguro de que desea eliminar el distrito {{name}}?"
+  "delete": {
+    "confirmTitle": "Eliminar distrito",
+    "confirmMessage": "¿Está seguro de que desea eliminar el distrito {{name}}?",
+    "success": "Distrito eliminado correctamente",
+    "error": "No se pudo eliminar el distrito",
+    "deleting": "Eliminando...",
+    "action": "Eliminar"
   },
   "form": {
-    "editDistrict": "Editar Distrito",
-    "addDistrict": "Añadir Nuevo Distrito",
-    "editDescription": "Editar información del distrito",
-    "addDescription": "Ingrese información del nuevo distrito",
-    "name": "Nombre del Distrito",
-    "namePlaceholder": "Ingrese nombre del distrito",
+    "editDistrict": "Editar distrito",
+    "addDistrict": "Agregar nuevo distrito",
+    "editDescription": "Editar la información del distrito",
+    "addDescription": "Ingrese la información del nuevo distrito",
+    "name": "Nombre del distrito",
+    "namePlaceholder": "Ingrese el nombre del distrito",
     "city": "Ciudad",
     "selectCity": "Seleccionar ciudad",
+    "searchCity": "Buscar ciudad...",
     "erpCode": "Código ERP",
-    "erpCodePlaceholder": "Ingrese código ERP (opcional)",
+    "erpCodePlaceholder": "Ingrese el código ERP (opcional)",
     "nameRequired": "El nombre del distrito es obligatorio",
-    "nameMaxLength": "El nombre del distrito no puede exceder los 100 caracteres",
-    "erpCodeMaxLength": "El código ERP no puede exceder los 10 caracteres",
-    "cityRequired": "La selección de ciudad es obligatoria"
+    "nameMaxLength": "El nombre del distrito no puede exceder 100 caracteres",
+    "erpCodeMaxLength": "El código ERP no puede exceder 10 caracteres",
+    "cityRequired": "La ciudad es obligatoria"
   },
   "stats": {
-    "totalDistricts": "Distritos Totales",
-    "activeDistricts": "Distritos Activos",
-    "newThisMonth": "Nuevos este Mes"
+    "totalDistricts": "Total de distritos",
+    "activeDistricts": "Distritos activos",
+    "newThisMonth": "Nuevos este mes"
+  },
+  "status": {
+    "inactive": "Inactivo",
+    "active": "Activo"
+  },
+  "messages": {
+    "createSuccess": "Distrito creado correctamente",
+    "createError": "No se pudo crear el distrito",
+    "updateSuccess": "Distrito actualizado correctamente",
+    "updateError": "No se pudo actualizar el distrito",
+    "deleteSuccess": "Distrito eliminado correctamente",
+    "deleteError": "No se pudo eliminar el distrito"
   },
   "districtManagement": {
-    "menu": "İlçe Yönetimi",
-    "description": "İlçeleri yönetin ve düzenleyin",
-    "addButton": "Yeni İlçe Ekle",
+    "menu": "Gestión de distritos",
+    "description": "Gestionar y editar distritos",
+    "addButton": "Agregar nuevo distrito",
     "loading": "Cargando...",
-    "noData": "Veri yok",
+    "noData": "No se encontraron datos",
     "table": {
       "id": "ID",
-      "name": "İlçe Adı",
-      "erpCode": "ERP Kodu",
-      "city": "Şehir",
-      "cityName": "Şehir Adı",
-      "status": "Durum",
-      "title": "İlçe Listesi"
+      "name": "Nombre del distrito",
+      "erpCode": "Código ERP",
+      "city": "Ciudad",
+      "cityName": "Nombre de la ciudad",
+      "status": "Estado",
+      "title": "Lista de distritos"
     },
     "delete": {
-      "confirmTitle": "İlçeyi Sil",
-      "confirmMessage": "{{name}} ilçesini silmek istediğinizden emin misiniz?",
-      "success": "İlçe başarıyla silindi",
-      "error": "İlçe silinirken hata oluştu"
+      "confirmTitle": "Eliminar distrito",
+      "confirmMessage": "¿Está seguro de que desea eliminar el distrito {{name}}?",
+      "success": "Distrito eliminado correctamente",
+      "error": "No se pudo eliminar el distrito"
     },
     "messages": {
-      "createSuccess": "İlçe başarıyla oluşturuldu",
-      "createError": "İlçe oluşturulamadı",
-      "updateSuccess": "İlçe başarıyla güncellendi",
-      "updateError": "İlçe güncellenemedi"
+      "createSuccess": "Distrito creado correctamente",
+      "createError": "No se pudo crear el distrito",
+      "updateSuccess": "Distrito actualizado correctamente",
+      "updateError": "No se pudo actualizar el distrito"
+    },
+    "stats": {
+      "totalDistricts": "Total de distritos",
+      "activeDistricts": "Distritos activos",
+      "newThisMonth": "Nuevos este mes"
+    },
+    "status": {
+      "inactive": "Inactivo",
+      "active": "Activo"
+    },
+    "error": "Se produjo un error",
+    "form": {
+      "editDistrict": "Editar distrito",
+      "addDistrict": "Agregar nuevo distrito",
+      "editDescription": "Editar la información del distrito",
+      "addDescription": "Ingrese la información del nuevo distrito",
+      "name": "Nombre del distrito",
+      "namePlaceholder": "Ingrese el nombre del distrito",
+      "city": "Ciudad",
+      "selectCity": "Seleccionar ciudad",
+      "searchCity": "Buscar ciudad...",
+      "erpCode": "Código ERP",
+      "erpCodePlaceholder": "Ingrese el código ERP (opcional)",
+      "nameRequired": "El nombre del distrito es obligatorio",
+      "nameMaxLength": "El nombre del distrito no puede exceder 100 caracteres",
+      "erpCodeMaxLength": "El código ERP no puede exceder 10 caracteres",
+      "cityRequired": "La ciudad es obligatoria"
     }
   }
 }

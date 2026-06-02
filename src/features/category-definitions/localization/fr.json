@@ -3,6 +3,10 @@
     "title": "Définitions des catégories",
     "description": "Gérez ici l’arborescence des catégories et les stocks liés aux catalogues B2B et B2C.",
     "guidedTitle": "Gérez la structure des catégories en 3 étapes claires",
+    "hierarchyBlueprintTitle": "Schéma de hiérarchie catégorie d’entreprise recommandé",
+    "hierarchyBlueprintDescription": "Si vous maintenez l’arborescence des catégories dans une structure fixe, l’expérience utilisateur est plus claire et la correspondance des produits est plus fiable.",
+    "hierarchyExampleLabel": "Parcours d’exemple",
+    "hierarchyExampleValue": "Téléphones > Téléphones à touches > iPhone > Série 17 > Liste de produits",
     "easyModeTitle": "Pas besoin de deviner quoi faire ici",
     "summaryGuideTitle": "Je vous indique la prochaine étape à suivre",
     "createCatalogTitle": "Créer un catalogue",
@@ -67,6 +71,7 @@
     "root": "Racine",
     "leaf": "Feuille",
     "branch": "Branche",
+    "treeLevelLabel": "Niveau {{level}}",
     "noCatalogs": "Aucun catalogue n’a encore été défini.",
     "noCategories": "Aucune catégorie à ce niveau.",
     "noStocks": "Aucun stock n’est lié à cette catégorie.",
@@ -92,7 +97,31 @@
       "branchTitle": "2. Les catégories branche servent à la navigation",
       "branchDescription": "Les catégories branche ne sont pas le point de sélection final. Utilisez-les pour orienter l’utilisateur vers le bon niveau inférieur.",
       "leafTitle": "3. Valider les stocks sur la catégorie feuille",
-      "leafDescription": "La liste des stocks liés prend tout son sens au niveau feuille : la validation finale doit s’y faire."
+      "leafDescription": "La liste des stocks liés prend tout son sens au niveau feuille : la validation finale doit s’y faire.",
+      "exampleTitle": "4. Gardez une hiérarchie entreprise stable",
+      "exampleDescription": "Structure recommandée : Catégorie principale > Sous-catégorie > Marque > Série > Produits. Toute l’équipe utilise ainsi la même logique et les résultats de recherche restent plus prévisibles."
+    },
+    "hierarchyStages": {
+      "root": {
+        "title": "Catégorie principale",
+        "description": "Représente le niveau métier le plus élevé. Exemple : Téléphones"
+      },
+      "subcategory": {
+        "title": "Sous-catégorie",
+        "description": "Détaille la famille de produits. Exemple : Téléphones à touches"
+      },
+      "brand": {
+        "title": "Marque",
+        "description": "Utilisé pour la séparation marque / fabricant. Exemple : iPhone"
+      },
+      "series": {
+        "title": "Série",
+        "description": "Conserve ici la séparation par famille de modèle. Exemple : Série 17"
+      },
+      "products": {
+        "title": "Produits",
+        "description": "Doit être le niveau feuille final ; l’affectation des stocks se fait ici."
+      }
     },
     "actions": {
       "newCatalog": "Nouveau catalogue",
@@ -111,6 +140,11 @@
       "previewingRules": "Génération de l’aperçu",
       "applyRules": "Appliquer les règles",
       "applyingRules": "Application des règles",
+      "importFromRiiStock": "Créer depuis RII_STOK",
+      "previewingStockHierarchy": "Lecture de la hiérarchie",
+      "refreshStockHierarchyPreview": "Actualiser l’aperçu",
+      "applyStockHierarchy": "Créer l’arbre du catalogue",
+      "applyingStockHierarchy": "Création de l’arbre du catalogue",
       "addFavorite": "Ajouter aux favoris",
       "removeFavorite": "Retirer des favoris",
       "addCategoryFavorite": "Ajouter la catégorie aux favoris",
@@ -145,11 +179,48 @@
       "rulePreviewError": "L’aperçu des règles n’a pas pu être chargé.",
       "ruleApplySuccess": "Règles appliquées avec succès.",
       "ruleApplyError": "Les règles n’ont pas pu être appliquées.",
+      "stockHierarchyPreviewError": "L’aperçu de la hiérarchie des stocks n’a pas pu être chargé.",
+      "stockHierarchyApplySuccess": "Arbre de catalogue créé depuis la hiérarchie RII_STOK.",
+      "stockHierarchyApplyError": "Le catalogue n’a pas pu être créé depuis la hiérarchie RII_STOK.",
       "favoriteAddSuccess": "Stock ajouté aux favoris.",
       "favoriteRemoveSuccess": "Stock retiré des favoris.",
       "favoriteToggleError": "Le statut favori n’a pas pu être mis à jour.",
       "categoryFavoriteAddSuccess": "Catégorie ajoutée aux favoris.",
       "categoryFavoriteRemoveSuccess": "Catégorie retirée des favoris."
+    },
+    "stockHierarchyImport": {
+      "title": "Créer un catalogue depuis la hiérarchie RII_STOK",
+      "description": "Transforme Groupe de code > Code1 > Code2 > Code3 en arbre de catalogue. À l’image des marketplaces, l’utilisateur descend d’un niveau à l’autre et consulte les stocks au niveau feuille.",
+      "options": {
+        "includeCode1": {
+          "title": "Inclure le niveau Code1",
+          "description": "Ouvre la première subdivision sous le groupe. Ex. : Essence / Diesel."
+        },
+        "includeCode2": {
+          "title": "Inclure le niveau Code2",
+          "description": "Ouvre la deuxième subdivision sous Code1. Ex. : Manuel / Automatique."
+        },
+        "includeCode3": {
+          "title": "Inclure le niveau Code3",
+          "description": "Ouvre la troisième subdivision sous Code2. Si vide, le niveau le plus profond disponible devient la feuille."
+        },
+        "assignStocks": {
+          "title": "Affecter les stocks à la feuille",
+          "description": "Lors de la création de l’arbre, affecte automatiquement chaque stock à son niveau feuille le plus profond."
+        }
+      },
+      "preview": {
+        "sourceStock": "Stock source",
+        "category": "Total catégories",
+        "newCategory": "Nouvelles catégories",
+        "newStockAssignment": "Nouvelles affectations de stock",
+        "group": "Groupe : {{count}}",
+        "code1": "Code1 : {{count}}",
+        "code2": "Code2 : {{count}}",
+        "code3": "Code3 : {{count}}",
+        "samples": "Chemins d’exemple générés",
+        "noSamples": "Aucun exemple de hiérarchie trouvé."
+      }
     },
     "rulePreviewSummaryTitle": "Résumé de l’aperçu des règles",
     "rulePreviewSummary": {
@@ -213,6 +284,8 @@
       "ruleValueTopMatchesTitle": "Valeurs les plus fréquentes dans le système",
       "ruleValueTopMatchesSubtitle": "Cliquez pour sélectionner rapidement",
       "ruleValueTopMatchesEmpty": "Aucune valeur mise en avant pour ce champ.",
+      "nodeTypeBranchHelp": "Une catégorie branche sert à la navigation et à la subdivision plus profonde. N’attribuez pas de produits directement à ce niveau.",
+      "nodeTypeLeafHelp": "La catégorie feuille est le niveau final de sélection. L’affectation des stocks et la liste des articles doivent se faire ici.",
       "priority": "Priorité"
     },
     "visualPreviewTitle": "Aperçu de la catégorie",

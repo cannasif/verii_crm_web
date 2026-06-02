@@ -315,6 +315,7 @@
       "tableColumns": "Tablo sütunları",
       "parent": "Bağlı kapsayıcı",
       "noteContent": "Not içeriği",
+      "image": "Görsel",
       "summary": "Özet alanı",
       "quotationTotalsOptions": "Toplam ayarları",
       "typography": "Tipografi",
@@ -481,5 +482,10 @@
       "contains": "İçeriyorsa uygula"
     }
   },
-  "dynamicFields": {}
+  "dynamicFields": {
+    "CustomerName": "Müşteri Adı",
+    "DocumentNo": "Belge No",
+    "Description": "Açıklama",
+    "CreatedDate": "Oluşturma Tarihi"
+  }
 }

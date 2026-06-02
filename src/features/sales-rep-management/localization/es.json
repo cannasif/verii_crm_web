@@ -1,0 +1,48 @@
+{
+  "menu": "Gestión de Códigos de Representante de Ventas",
+  "description": "Ver, agregar y eliminar códigos de representantes de ventas provenientes de ERP.",
+  "addButton": "Nuevo Representante de Ventas",
+  "searchPlaceholder": "Buscar por código, descripción o nombre del representante",
+  "empty": "No se encontraron registros de representante de ventas.",
+  "error": "No se pudieron cargar los registros de representantes de ventas.",
+  "deleteConfirmMessage": "¿Eliminar el registro con código {{code}} del representante de ventas?",
+  "table": {
+    "title": "Lista de representantes de ventas",
+    "branchCode": "Código de Sucursal",
+    "salesRepCode": "SalesRepCode",
+    "salesRepDescription": "Descripción",
+    "name": "Nombre",
+    "createdDate": "Fecha de creación"
+  },
+  "form": {
+    "addTitle": "Agregar Representante de Ventas",
+    "addDescription": "Crear manualmente un registro de código de representante de ventas.",
+    "branchCode": "Código de Sucursal",
+    "branchCodePlaceholder": "Ingrese el código de sucursal",
+    "salesRepCode": "SalesRepCode",
+    "salesRepCodePlaceholder": "Ingrese el código",
+    "salesRepDescription": "Descripción",
+    "salesRepDescriptionPlaceholder": "Ingrese la descripción",
+    "name": "Nombre",
+    "namePlaceholder": "Ingrese el nombre",
+    "validation": {
+      "branchCodeRequired": "El código de sucursal es obligatorio.",
+      "codeRequired": "El código de representante de ventas es obligatorio.",
+      "codeMaxLength": "El código de representante de ventas puede tener como máximo 8 caracteres.",
+      "descriptionMaxLength": "La descripción puede tener como máximo 30 caracteres.",
+      "nameMaxLength": "El nombre puede tener como máximo 35 caracteres."
+    }
+  },
+  "messages": {
+    "createSuccess": "Registro de representante de ventas creado.",
+    "createError": "No se pudo crear el registro de representante de ventas.",
+    "deleteSuccess": "Registro de representante de ventas eliminado.",
+    "deleteError": "No se pudo eliminar el registro de representante de ventas."
+  },
+  "advancedFilter": {
+    "columnBranchCode": "Código de Sucursal",
+    "columnSalesRepCode": "Código de Representante de Ventas",
+    "columnDescription": "Descripción",
+    "columnName": "Nombre"
+  }
+}

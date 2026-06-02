@@ -22,20 +22,20 @@
     }
   },
   "permissionDefinitions": {
-    "title": "Permission Definitions",
-    "description": "Manage permission codes used in the system",
-    "add": "Hinzufügen Definition",
+    "title": "Berechtigungsdefinitionen",
+    "description": "Verwalten Sie die im System verwendeten Berechtigungscodes.",
+    "add": "Berechtigung hinzufügen",
     "form": {
-      "editTitle": "Bearbeiten Permission Definition",
-      "addTitle": "Hinzufügen Permission Definition",
-      "editDescription": "Update permission definition details",
-      "addDescription": "Erstellen a Neu permission definition",
+      "editTitle": "Berechtigungsdefinition bearbeiten",
+      "addTitle": "Berechtigungsdefinition hinzufügen",
+      "editDescription": "Details der Berechtigungsdefinition aktualisieren",
+      "addDescription": "Neue Berechtigungsdefinition erstellen",
       "code": "Code",
       "name": "Name",
-      "namePlaceholder": "Display name",
-      "description": "Description",
-      "descriptionPlaceholder": "Optional description",
-      "isActive": "Active",
+      "namePlaceholder": "Anzeigename",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Optionale Beschreibung",
+      "isActive": "Aktiv",
       "codePlaceholder": "Code auswählen",
       "affectedRoutes": "Betroffene Seiten",
       "affectedRoutesNone": "Für diesen Code wurde keine passende Route gefunden",
@@ -45,71 +45,82 @@
     "table": {
       "code": "Code",
       "name": "Name",
-      "isActive": "Active",
-      "updatedDate": "Updated",
-      "showing": "{{from}}-{{to}} of {{total}}",
-      "title": "İzin Tanımları"
+      "isActive": "Aktiv",
+      "updatedDate": "Aktualisiert",
+      "showing": "{{from}}-{{to}} von {{total}}",
+      "title": "Berechtigungsdefinitionen"
     },
     "delete": {
-      "confirmTitle": "Delete Permission Definition",
-      "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      "confirmTitle": "Berechtigungsdefinition löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie \"{{name}}\" löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden."
     },
-    "syncFromRoutes": "Von Routen synchronisieren"
+    "syncFromRoutes": "Von Routen synchronisieren",
+    "syncSummaryTitle": "Routen-Synchronisierung"
   },
   "permissionGroups": {
-    "title": "Permission Groups",
-    "description": "Manage permission groups and their assignments",
-    "add": "Hinzufügen Group",
-    "selectAll": "Select all",
-    "noDefinitions": "No permission definitions available",
+    "title": "Berechtigungsgruppen",
+    "description": "Berechtigungsgruppen und Zuweisungen verwalten",
+    "add": "Gruppe hinzufügen",
+    "selectAll": "Alle auswählen",
+    "noDefinitions": "Keine Berechtigungsdefinitionen verfügbar",
     "form": {
-      "editTitle": "Bearbeiten Permission Group",
-      "addTitle": "Hinzufügen Permission Group",
-      "editDescription": "Update permission group details",
-      "addDescription": "Erstellen a Neu permission group",
+      "editTitle": "Berechtigungsgruppe bearbeiten",
+      "addTitle": "Berechtigungsgruppe hinzufügen",
+      "editDescription": "Details der Berechtigungsgruppe aktualisieren",
+      "addDescription": "Neue Berechtigungsgruppe erstellen",
       "name": "Name",
-      "namePlaceholder": "Group name",
-      "description": "Description",
-      "descriptionPlaceholder": "Optional description",
-      "isSystemAdmin": "System Admin",
-      "isActive": "Active",
-      "permissions": "Permissions"
+      "namePlaceholder": "Gruppenname",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Optionale Beschreibung",
+      "isSystemAdmin": "Systemadministrator",
+      "isActive": "Aktiv",
+      "permissions": "Berechtigungen"
     },
     "table": {
       "name": "Name",
-      "isSystemAdmin": "System Admin",
-      "isActive": "Active",
-      "permissionCount": "Permissions",
-      "showing": "{{from}}-{{to}} of {{total}}",
-      "title": "İzin Grupları"
+      "isSystemAdmin": "Systemadministrator",
+      "isActive": "Aktiv",
+      "permissionCount": "Berechtigungen",
+      "showing": "{{from}}-{{to}} von {{total}}",
+      "title": "Berechtigungsgruppen"
     },
-    "managePermissions": "Manage permissions",
+    "managePermissions": "Berechtigungen verwalten",
     "permissionsPanel": {
-      "title": "Bearbeiten Group Permissions",
-      "description": "Select permissions for this group",
-      "currentCodes": "Current permission codes"
+      "title": "Gruppenberechtigungen bearbeiten",
+      "description": "Wählen Sie Berechtigungen für diese Gruppe aus",
+      "currentCodes": "Aktuelle Berechtigungscodes",
+      "groupedRows": "Bildschirme",
+      "screen": "Ansicht",
+      "actionsMapped": "Aktionen",
+      "actions": {
+        "create": "Erstellen",
+        "read": "Lesen",
+        "update": "Aktualisieren",
+        "delete": "Löschen",
+        "other": "Sonstiges"
+      }
     },
     "delete": {
-      "confirmTitle": "Delete Permission Group",
-      "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      "confirmTitle": "Berechtigungsgruppe löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie \"{{name}}\" löschen möchten? Dieser Vorgang kann nicht rückgängig gemacht werden."
     },
     "search": "Suchen...",
-    "systemAdminLocked": "Sistem Admin grubu değiştirilemez"
+    "systemAdminLocked": "System-Admin-Gruppe kann nicht geändert werden"
   },
   "userGroupAssignments": {
-    "title": "User Group Assignments",
-    "description": "Assign permission groups to Benutzer",
-    "selectUser": "Select User",
-    "selectUserPlaceholder": "Search and select user...",
-    "selectUserHint": "Select a user to manage their permission group assignments",
-    "assignedGroups": "Assigned Permission Groups",
-    "noUsers": "No Benutzer found",
-    "noGroups": "No permission groups available",
-    "selectAll": "Select all"
+    "title": "Benutzergruppen-Zuweisung",
+    "description": "Berechtigungsgruppen Benutzern zuweisen",
+    "selectUser": "Benutzer auswählen",
+    "selectUserPlaceholder": "Suchen und Benutzer auswählen...",
+    "selectUserHint": "Wählen Sie einen Benutzer aus, um Berechtigungsgruppen zuzuordnen",
+    "assignedGroups": "Zugewiesene Berechtigungsgruppen",
+    "noUsers": "Keine Benutzer gefunden",
+    "noGroups": "Keine Berechtigungsgruppen verfügbar",
+    "selectAll": "Alle auswählen"
   },
   "common": {
-    "cancel": "Stornieren",
-    "saving": "Sparen...",
+    "cancel": "Abbrechen",
+    "saving": "Wird gespeichert...",
     "save": "Speichern und anwenden",
     "loading": "Laden...",
     "search": "Suchen...",

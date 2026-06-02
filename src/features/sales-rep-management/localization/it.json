@@ -1,0 +1,48 @@
+{
+  "menu": "Gestione codici rappresentante commerciale",
+  "description": "Visualizza, aggiungi ed elimina i codici rappresentante provenienti da ERP.",
+  "addButton": "Nuovo rappresentante commerciale",
+  "searchPlaceholder": "Cerca per codice, descrizione o nome del rappresentante",
+  "empty": "Nessun record rappresentante commerciale trovato.",
+  "error": "Impossibile caricare i record del rappresentante commerciale.",
+  "deleteConfirmMessage": "Eliminare il record rappresentante commerciale con codice {{code}}?",
+  "table": {
+    "title": "Elenco rappresentanti commerciali",
+    "branchCode": "Codice deposito",
+    "salesRepCode": "SalesRepCode",
+    "salesRepDescription": "Descrizione",
+    "name": "Nome",
+    "createdDate": "Data di creazione"
+  },
+  "form": {
+    "addTitle": "Aggiungi rappresentante commerciale",
+    "addDescription": "Crea manualmente un codice rappresentante commerciale.",
+    "branchCode": "Codice deposito",
+    "branchCodePlaceholder": "Inserisci codice deposito",
+    "salesRepCode": "SalesRepCode",
+    "salesRepCodePlaceholder": "Inserisci codice",
+    "salesRepDescription": "Descrizione",
+    "salesRepDescriptionPlaceholder": "Inserisci descrizione",
+    "name": "Nome",
+    "namePlaceholder": "Inserisci nome",
+    "validation": {
+      "branchCodeRequired": "Il codice deposito è obbligatorio.",
+      "codeRequired": "Il codice rappresentante commerciale è obbligatorio.",
+      "codeMaxLength": "Il codice rappresentante commerciale può avere al massimo 8 caratteri.",
+      "descriptionMaxLength": "La descrizione può contenere al massimo 30 caratteri.",
+      "nameMaxLength": "Il nome può contenere al massimo 35 caratteri."
+    }
+  },
+  "messages": {
+    "createSuccess": "Record rappresentante commerciale creato.",
+    "createError": "Impossibile creare il record del rappresentante commerciale.",
+    "deleteSuccess": "Record rappresentante commerciale eliminato.",
+    "deleteError": "Impossibile eliminare il record del rappresentante commerciale."
+  },
+  "advancedFilter": {
+    "columnBranchCode": "Codice deposito",
+    "columnSalesRepCode": "Codice rappresentante commerciale",
+    "columnDescription": "Descrizione",
+    "columnName": "Nome"
+  }
+}

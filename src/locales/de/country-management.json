@@ -1,132 +1,120 @@
 {
+  "countryManagement": {
+    "menu": "Länderverwaltung",
+    "description": "Länder verwalten und bearbeiten",
+    "addButton": "Land hinzufügen",
+    "searchPlaceholder": "Suchen...",
+    "loading": "Lädt...",
+    "error": "Ein Fehler ist aufgetreten",
+    "table": {
+      "id": "ID",
+      "name": "Ländername",
+      "code": "Code",
+      "erpCode": "ERP-Code",
+      "createdDate": "Erstellungsdatum",
+      "createdBy": "Erstellt von",
+      "noData": "Keine Daten gefunden",
+      "title": "Länderliste"
+    },
+    "delete": {
+      "confirmTitle": "Land löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie {{name}} löschen möchten?"
+    },
+    "messages": {
+      "deleteSuccess": "Land erfolgreich gelöscht",
+      "deleteError": "Land konnte nicht gelöscht werden",
+      "createSuccess": "Land erfolgreich erstellt",
+      "createError": "Land konnte nicht erstellt werden",
+      "updateSuccess": "Land erfolgreich aktualisiert",
+      "updateError": "Land konnte nicht aktualisiert werden"
+    },
+    "form": {
+      "addCountry": "Land hinzufügen",
+      "editCountry": "Land bearbeiten",
+      "addDescription": "Neue Länderinformationen eingeben",
+      "editDescription": "Länderinformationen bearbeiten",
+      "name": "Ländername",
+      "namePlaceholder": "Ländernamen eingeben",
+      "code": "Ländercode",
+      "codePlaceholder": "Ländercode eingeben (z. B. TR, US)",
+      "erpCode": "ERP-Code",
+      "erpCodePlaceholder": "ERP-Code eingeben (optional)",
+      "nameRequired": "Der Ländername ist erforderlich",
+      "nameMaxLength": "Der Ländername darf maximal 100 Zeichen haben",
+      "codeMinLength": "Der Ländercode muss mindestens 2 Zeichen haben",
+      "codeMaxLength": "Der Ländercode darf maximal 5 Zeichen haben",
+      "erpCodeMaxLength": "Der ERP-Code darf maximal 10 Zeichen haben",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "tabs": {
+        "header": "Allgemeine Informationen"
+      }
+    },
+    "stats": {
+      "totalCountries": "Gesamtländer",
+      "activeCountries": "Aktive Länder",
+      "newThisMonth": "Neu in diesem Monat"
+    }
+  },
   "menu": "Länderverwaltung",
   "description": "Länder verwalten und bearbeiten",
-  "addButton": "Hinzufügen Neu Country",
-  "search": "Suchen...",
-  "loading": "Laden...",
+  "addButton": "Land hinzufügen",
+  "searchPlaceholder": "Suchen...",
+  "loading": "Lädt...",
   "noData": "Keine Daten gefunden",
   "actions": "Aktionen",
-  "previous": "Previous",
+  "previous": "Zurück",
   "next": "Weiter",
-  "deleteConfirmTitle": "Delete Confirmation",
+  "deleteConfirmTitle": "Löschbestätigung",
   "cancel": "Abbrechen",
-  "deleting": "Deleting...",
+  "deleting": "Wird gelöscht...",
   "delete": {
-    "confirmTitle": "Delete Country",
-    "confirmMessage": "Are you sure you want to delete {{name}}?"
+    "confirmTitle": "Land löschen",
+    "confirmMessage": "Sind Sie sicher, dass Sie {{name}} löschen möchten?"
   },
-  "saving": "Speichern...",
+  "saving": "Wird gespeichert...",
   "save": "Speichern",
   "stats": {
     "totalCountries": "Gesamtländer",
     "activeCountries": "Aktive Länder",
-    "newThisMonth": "Diesen Monat neu"
+    "newThisMonth": "Neu in diesem Monat"
   },
   "table": {
-    "id": "AUSWEIS",
+    "id": "ID",
     "name": "Ländername",
     "code": "Code",
     "erpCode": "ERP-Code",
     "createdDate": "Erstellungsdatum",
     "createdBy": "Erstellt von",
-    "showing": "Zeige {{from}}-{{to}} von {{total}}",
+    "showing": "Zeige {{from}}-{{to}} / {{total}}",
     "page": "Seite {{current}} / {{total}}",
-    "noData": "Veri bulunamadı",
-    "title": "Ülke Listesi"
-  },
-  "form": {
-    "addCountry": "Hinzufügen Neu Country",
-    "editCountry": "Land bearbeiten",
-    "addDescription": "Geben Sie die neuen Länderinformationen ein",
-    "editDescription": "Bearbeiten Sie die Länderinformationen",
-    "name": "Ländername",
-    "namePlaceholder": "Geben Sie den Ländernamen ein",
-    "code": "Ländercode",
-    "codePlaceholder": "Geben Sie den Ländercode ein (z.B. TR, US)",
-    "erpCode": "ERP-Code",
-    "erpCodePlaceholder": "Geben Sie den ERP-Code ein (optional)",
-    "validation": {
-      "name": {
-        "required": "Ländername ist erforderlich",
-        "maxLength": "Ländername darf 100 Zeichen nicht überschreiten"
-      },
-      "code": {
-        "minLength": "Ländercode muss mindestens 2 Zeichen lang sein",
-        "maxLength": "Ländercode darf 5 Zeichen nicht überschreiten"
-      },
-      "erpCode": {
-        "maxLength": "ERP-Code darf 10 Zeichen nicht überschreiten"
-      }
-    },
-    "nameRequired": "Country name is required",
-    "nameMaxLength": "Country name cannot exceed 100 characters",
-    "codeMinLength": "Country code must be at least 2 characters",
-    "codeMaxLength": "Country code cannot exceed 5 characters",
-    "erpCodeMaxLength": "ERP code cannot exceed 10 characters"
-  },
-  "deleteConfirm": {
-    "confirmMessage": "Are you sure you want to delete {{name}}?"
-  },
-  "countryManagement": {
-    "menu": "Ülke Yönetimi",
-    "description": "Ülkeleri yönetin ve düzenleyin",
-    "addButton": "Yeni Ülke Ekle",
-    "searchPlaceholder": "Suchen...",
-    "loading": "Wird geladen...",
-    "error": "Fehler ist aufgetreten",
-    "table": {
-      "id": "ID",
-      "name": "Ülke Adı",
-      "code": "Kod",
-      "erpCode": "ERP Kodu",
-      "createdDate": "Erstellenulma Tarihi",
-      "createdBy": "Erstellenan",
-      "noData": "Veri bulunamadı",
-      "title": "Ülke Listesi"
-    },
-    "delete": {
-      "confirmTitle": "Ülke Sil",
-      "confirmMessage": "{{name}} ülkesini silmek istediğinizden emin misiniz?"
-    },
-    "messages": {
-      "deleteSuccess": "Ülke başarıyla silindi",
-      "deleteError": "Ülke silinemedi",
-      "createSuccess": "Ülke başarıyla oluşturuldu",
-      "createError": "Ülke oluşturulamadı",
-      "updateSuccess": "Ülke başarıyla güncellendi",
-      "updateError": "Ülke güncellenemedi"
-    },
-    "form": {
-      "addCountry": "Yeni Ülke Ekle",
-      "editCountry": "Ülke Bearbeiten",
-      "addDescription": "Yeni ülke bilgilerini girin",
-      "editDescription": "Ülke bilgilerini düzenleyin",
-      "name": "Ülke Adı",
-      "namePlaceholder": "Ülke adını girin",
-      "code": "Ülke Kodu",
-      "codePlaceholder": "Ülke kodunu girin (örn: TR, US)",
-      "erpCode": "ERP Kodu",
-      "erpCodePlaceholder": "ERP kodunu girin (opsiyonel)",
-      "nameRequired": "Ülke adı zorunludur",
-      "nameMaxLength": "Ülke adı en fazla 100 karakter olabilir",
-      "codeMinLength": "Ülke kodu en az 2 karakter olmalıdır",
-      "codeMaxLength": "Ülke kodu en fazla 5 karakter olabilir",
-      "erpCodeMaxLength": "ERP kodu en fazla 10 karakter olabilir",
-      "cancel": "Abbrechen",
-      "save": "Speichern",
-      "tabs": {
-        "header": "Genel Bilgiler"
-      }
-    },
-    "stats": {
-      "totalCountries": "Toplam Ülke",
-      "activeCountries": "Aktif Ülke",
-      "newThisMonth": "Bu Ay Yeni"
-    }
+    "noData": "Keine Daten gefunden",
+    "title": "Länderliste"
   },
   "advancedFilter": {
-    "columnName": "Ülke Adı",
-    "columnCode": "Ülke Kodu",
-    "columnErpCode": "ERP Kodu"
-  }
+    "columnName": "Ländername",
+    "columnCode": "Ländercode",
+    "columnErpCode": "ERP-Code"
+  },
+  "form": {
+    "addCountry": "Land hinzufügen",
+    "editCountry": "Land bearbeiten",
+    "addDescription": "Neue Länderinformationen eingeben",
+    "editDescription": "Länderinformationen bearbeiten",
+    "name": "Ländername",
+    "namePlaceholder": "Ländernamen eingeben",
+    "code": "Ländercode",
+    "codePlaceholder": "Ländercode eingeben (z. B. TR, US)",
+    "erpCode": "ERP-Code",
+    "erpCodePlaceholder": "ERP-Code eingeben (optional)",
+    "nameRequired": "Der Ländername ist erforderlich",
+    "nameMaxLength": "Der Ländername darf maximal 100 Zeichen haben",
+    "codeMinLength": "Der Ländercode muss mindestens 2 Zeichen haben",
+    "codeMaxLength": "Der Ländercode darf maximal 5 Zeichen haben",
+    "erpCodeMaxLength": "Der ERP-Code darf maximal 10 Zeichen haben"
+  },
+  "deleteConfirm": {
+    "confirmMessage": "Sind Sie sicher, dass Sie {{name}} löschen möchten?"
+  },
+  "search": "Suchen..."
 }

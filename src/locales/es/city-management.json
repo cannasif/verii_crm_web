@@ -1,29 +1,59 @@
 {
   "menu": "Gestión de Ciudades",
   "description": "Gestionar y organizar ciudades",
-  "addButton": "Añadir Nueva Ciudad",
+  "addButton": "Añadir Ciudad Nueva",
   "searchPlaceholder": "Buscar...",
   "loading": "Cargando...",
   "noData": "No se encontraron datos",
   "stats": {
     "totalCities": "Ciudades Totales",
     "activeCities": "Ciudades Activas",
-    "newThisMonth": "Nuevas este Mes"
+    "newThisMonth": "Nuevas este mes"
   },
   "table": {
-    "id": "IDENTIFICACIÓN",
+    "title": "Lista de Ciudades",
+    "id": "ID",
     "name": "Nombre de la Ciudad",
     "erpCode": "Código ERP",
     "countryName": "Nombre del País",
     "createdDate": "Fecha de Creación",
     "createdBy": "Creado Por",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-    "page": "Página {{current}} / {{total}}",
-    "title": "Şehir Listesi"
+    "page": "Página {{current}} / {{total}}"
+  },
+  "cityManagement": {
+    "table": {
+      "title": "Lista de Ciudades",
+      "id": "ID",
+      "name": "Nombre de la Ciudad",
+      "erpCode": "Código ERP",
+      "countryName": "Nombre del País",
+      "createdDate": "Fecha de Creación",
+      "createdBy": "Creado Por"
+    },
+    "error": "Se produjo un error",
+    "form": {
+      "tabs": {
+        "header": "Información General"
+      }
+    },
+    "menu": "Gestión de Ciudades",
+    "description": "Gestionar y organizar ciudades",
+    "addButton": "Añadir Ciudad Nueva",
+    "searchPlaceholder": "Búsqueda rápida...",
+    "loading": "Cargando...",
+    "noData": "No se encontraron datos",
+    "actions": "Acciones",
+    "delete": {
+      "success": "La ciudad se eliminó correctamente",
+      "error": "Se produjo un error al eliminar la ciudad",
+      "confirmTitle": "Eliminar Ciudad",
+      "confirmMessage": "¿Está seguro de que desea eliminar {{name}}?"
+    }
   },
   "form": {
     "editCity": "Editar Ciudad",
-    "addCity": "Añadir Nueva Ciudad",
+    "addCity": "Añadir Ciudad Nueva",
     "editDescription": "Editar detalles de la ciudad",
     "addDescription": "Ingrese detalles de la nueva ciudad",
     "name": "Nombre de la Ciudad",
@@ -43,20 +73,11 @@
   "actions": "Acciones",
   "delete": {
     "button": "Eliminar",
+    "success": "La ciudad se eliminó correctamente",
+    "error": "Se produjo un error al eliminar la ciudad",
     "confirmTitle": "Eliminar Ciudad",
     "confirmMessage": "¿Está seguro de que desea eliminar {{name}}?"
   },
   "previous": "Anterior",
-  "next": "Siguiente",
-  "cityManagement": {
-    "form": {
-      "tabs": {
-        "header": "Genel Bilgiler"
-      }
-    },
-    "table": {
-      "title": "Şehir Listesi"
-    },
-    "error": "Se produjo un error"
-  }
+  "next": "Siguiente"
 }

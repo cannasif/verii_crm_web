@@ -314,6 +314,7 @@
       "tableSetup": "Table setup",
       "tableColumns": "Table columns",
       "parent": "Parent container",
+      "image": "Image",
       "noteContent": "Note content",
       "summary": "Summary",
       "quotationTotalsOptions": "Totals options",

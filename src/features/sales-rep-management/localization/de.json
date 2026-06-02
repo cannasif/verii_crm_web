@@ -1,0 +1,48 @@
+{
+  "menu": "Verwaltung der Verkaufsvertreter-Codes",
+  "description": "Anzeigen, Hinzufügen und Löschen von aus dem ERP synchronisierten Verkaufrepräsentantencodes.",
+  "addButton": "Neue Verkaufsperson",
+  "searchPlaceholder": "Nach Verkaufspersonencode, Beschreibung oder Name suchen",
+  "empty": "Keine Verkaufspersonendatensätze gefunden.",
+  "error": "Verkaufspersonendatensätze konnten nicht geladen werden.",
+  "deleteConfirmMessage": "{{code}}-Code Datensatz der Verkaufsperson löschen?",
+  "table": {
+    "title": "Liste der Verkaufspersonen",
+    "branchCode": "Filialcode",
+    "salesRepCode": "SalesRepCode",
+    "salesRepDescription": "Beschreibung",
+    "name": "Name",
+    "createdDate": "Erstellungsdatum"
+  },
+  "form": {
+    "addTitle": "Verkaufsperson hinzufügen",
+    "addDescription": "Einen Verkaufspersonencode-Datensatz manuell erstellen.",
+    "branchCode": "Filialcode",
+    "branchCodePlaceholder": "Filialcode eingeben",
+    "salesRepCode": "SalesRepCode",
+    "salesRepCodePlaceholder": "Code eingeben",
+    "salesRepDescription": "Beschreibung",
+    "salesRepDescriptionPlaceholder": "Beschreibung eingeben",
+    "name": "Name",
+    "namePlaceholder": "Name eingeben",
+    "validation": {
+      "branchCodeRequired": "Filialcode ist erforderlich.",
+      "codeRequired": "Verkaufspersonencode ist erforderlich.",
+      "codeMaxLength": "Der Verkaufspersonencode darf maximal 8 Zeichen lang sein.",
+      "descriptionMaxLength": "Die Beschreibung darf maximal 30 Zeichen lang sein.",
+      "nameMaxLength": "Der Name darf maximal 35 Zeichen lang sein."
+    }
+  },
+  "messages": {
+    "createSuccess": "Verkaufspersonendatensatz erstellt.",
+    "createError": "Verkaufspersonendatensatz konnte nicht erstellt werden.",
+    "deleteSuccess": "Verkaufspersonendatensatz gelöscht.",
+    "deleteError": "Verkaufspersonendatensatz konnte nicht gelöscht werden."
+  },
+  "advancedFilter": {
+    "columnBranchCode": "Filialcode",
+    "columnSalesRepCode": "Verkaufspersonencode",
+    "columnDescription": "Beschreibung",
+    "columnName": "Name"
+  }
+}

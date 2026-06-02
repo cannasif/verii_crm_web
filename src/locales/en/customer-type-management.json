@@ -61,16 +61,5 @@
     "deleteSuccess": "Customer type deleted successfully",
     "deleteError": "Customer type could not be deleted"
   },
-  "customerTypeManagement": {
-    "table": {
-      "title": "Customer Type List"
-    },
-    "error": "An error occurred",
-    "delete": {
-      "success": "Customer type deleted successfully",
-      "error": "Customer type could not be deleted",
-      "action": "Delete"
-    }
-  },
   "error": "An error occurred"
 }

@@ -142,7 +142,8 @@
     "description1": "Text 1",
     "description2": "Text 2",
     "description3": "Text 3",
-    "descriptionPlaceholder": "Beschreibung eingeben..."
+    "descriptionPlaceholder": "Beschreibung eingeben...",
+    "doubleClickToEdit": "Zum Bearbeiten doppelklicken"
   },
   "exchangeRates": {
     "title": "Wechselkurse",

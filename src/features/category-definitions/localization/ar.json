@@ -3,6 +3,10 @@
     "title": "تعريفات الفئات",
     "description": "ابدأ من هنا بإدارة شجرة الفئات والمخزونات المرتبطة بالفئات لكتالوجات B2B وB2C.",
     "guidedTitle": "إدارة هيكل الفئات في ثلاث خطوات واضحة",
+    "hierarchyBlueprintTitle": "القالب المقترح لبنية الفئات المؤسسية",
+    "hierarchyBlueprintDescription": "إذا تم تثبيت شجرة الفئات بهيكل ثابت، تصبح تجربة المستخدم أوضح وتصبح مطابقة المنتجات أكثر موثوقية.",
+    "hierarchyExampleLabel": "مثال على التدفق",
+    "hierarchyExampleValue": "الهواتف > الهواتف ذات الأزرار > آيفون > سلسلة 17 > قائمة المنتجات",
     "easyModeTitle": "لا حاجة للتخمين بشأن ما يجب فعله هنا",
     "summaryGuideTitle": "سأوضح لك الخطوة الصحيحة التالية",
     "createCatalogTitle": "إنشاء كتالوج جديد",
@@ -67,6 +71,7 @@
     "root": "جذر",
     "leaf": "ورقة",
     "branch": "فرع",
+    "treeLevelLabel": "المستوى {{level}}",
     "noCatalogs": "لم يُعرّف أي كتالوج بعد.",
     "noCategories": "لم تُعثر على فئات في هذا المستوى.",
     "noStocks": "لا مخزونات مرتبطة بهذه الفئة.",
@@ -92,7 +97,31 @@
       "branchTitle": "2. فئات الفرع للتنقل",
       "branchDescription": "فئات الفرع ليست نقطة الاختيار النهائية. استخدمها لتوجيه المستخدمين إلى المستوى الأدنى الصحيح.",
       "leafTitle": "3. تحقق من المخزون على الفئة الورقية",
-      "leafDescription": "تصبح قائمة المخزون المرتبط ذات معنى عند المستوى الورقي، لذا يجب أن تتم المراجعة النهائية هناك."
+      "leafDescription": "تصبح قائمة المخزون المرتبط ذات معنى عند المستوى الورقي، لذا يجب أن تتم المراجعة النهائية هناك.",
+      "exampleTitle": "4. حافظ على هرمية مؤسسية ثابتة",
+      "exampleDescription": "البنية المقترحة: الفئة الرئيسية > الفئة الفرعية > العلامة التجارية > السلسلة > المنتجات. هذا يساعد الفريق على استخدام نفس المنطق وتكون نتائج البحث أكثر قابلية للتنبؤ."
+    },
+    "hierarchyStages": {
+      "root": {
+        "title": "الفئة الرئيسية",
+        "description": "تمثل أعلى مستوى في العمل. مثال: الهواتف"
+      },
+      "subcategory": {
+        "title": "الفئة الفرعية",
+        "description": "تقسم مجموعة المنتجات إلى أقسام أوضح. مثال: الهواتف ذات الأزرار"
+      },
+      "brand": {
+        "title": "العلامة التجارية",
+        "description": "تُستخدم لتحديد العلامة التجارية أو جهة التصنيع. مثال: iPhone"
+      },
+      "series": {
+        "title": "السلسلة",
+        "description": "يحفظ هنا تقسيم العائلة أو السلسلة. مثال: سلسلة 17"
+      },
+      "products": {
+        "title": "المنتجات",
+        "description": "ينبغي أن يكون هذا هو المستوى النهائي، ويتم الربط هنا."
+      }
     },
     "actions": {
       "newCatalog": "كتالوج جديد",
@@ -111,6 +140,11 @@
       "previewingRules": "جاري بناء المعاينة",
       "applyRules": "تطبيق القواعد",
       "applyingRules": "جاري تطبيق القواعد",
+      "importFromRiiStock": "بناء من RII_STOK",
+      "previewingStockHierarchy": "قراءة الهرمية",
+      "refreshStockHierarchyPreview": "تحديث المعاينة",
+      "applyStockHierarchy": "بناء شجرة الكتالوج",
+      "applyingStockHierarchy": "جاري بناء شجرة الكتالوج",
       "addFavorite": "إضافة إلى المفضلة",
       "removeFavorite": "إزالة من المفضلة",
       "addCategoryFavorite": "إضافة الفئة إلى المفضلة",
@@ -145,11 +179,48 @@
       "rulePreviewError": "تعذر تحميل معاينة القواعد.",
       "ruleApplySuccess": "تم تطبيق القواعد بنجاح.",
       "ruleApplyError": "تعذر تطبيق القواعد.",
+      "stockHierarchyPreviewError": "تعذر تحميل معاينة هرميّة المخزون.",
+      "stockHierarchyApplySuccess": "تم إنشاء شجرة الكتالوج من هيكلة RII_STOK.",
+      "stockHierarchyApplyError": "تعذر إنشاء شجرة الكتالوج من هيكلة RII_STOK.",
       "favoriteAddSuccess": "تمت إضافة المخزون إلى المفضلة.",
       "favoriteRemoveSuccess": "تمت إزالة المخزون من المفضلة.",
       "favoriteToggleError": "تعذر تحديث حالة المفضلة.",
       "categoryFavoriteAddSuccess": "تمت إضافة الفئة إلى المفضلة.",
       "categoryFavoriteRemoveSuccess": "تمت إزالة الفئة من المفضلة."
+    },
+    "stockHierarchyImport": {
+      "title": "إنشاء كتالوج من هيكلة RII_STOK",
+      "description": "تحويل ترتيب: رمز المجموعة > الكود1 > الكود2 > الكود3 إلى شجرة كتالوج. كما في منصات السوق، يمر المستخدم تدريجياً عبر المستويات ويرى المخزون في المستوى النهائي.",
+      "options": {
+        "includeCode1": {
+          "title": "تضمين مستوى الكود1",
+          "description": "يفتح أول تصنيف تحت رمز المجموعة."
+        },
+        "includeCode2": {
+          "title": "تضمين مستوى الكود2",
+          "description": "يفتح التصنيف الثاني تحت الكود1."
+        },
+        "includeCode3": {
+          "title": "تضمين مستوى الكود3",
+          "description": "يفتح التصنيف الثالث تحت الكود2. إذا كانت القيمة فارغة، فإن أعمق مستوى موجود يصبح المستوى الورقي."
+        },
+        "assignStocks": {
+          "title": "ربط المخزون بالمستوى الورقي",
+          "description": "يربط المخزون تلقائيًا أعمق فئة تم إنشاؤها."
+        }
+      },
+      "preview": {
+        "sourceStock": "المخزون المقروء",
+        "category": "إجمالي الفئات",
+        "newCategory": "الفئات الجديدة",
+        "newStockAssignment": "روابط المخزون الجديدة",
+        "group": "المجموعة: {{count}}",
+        "code1": "الكود1: {{count}}",
+        "code2": "الكود2: {{count}}",
+        "code3": "الكود3: {{count}}",
+        "samples": "مسارات التوليد التجريبية",
+        "noSamples": "لم يتم العثور على هيكلة نموذجية."
+      }
     },
     "rulePreviewSummaryTitle": "ملخص معاينة القواعد",
     "rulePreviewSummary": {
@@ -189,6 +260,8 @@
       "categoryCode": "رمز الفئة",
       "categoryCodePlaceholder": "مثال: GLASS_SYSTEMS",
       "nodeType": "نوع الفئة",
+      "nodeTypeBranchHelp": "فئة الفرع مخصصة للتنقل والتدرج إلى مستويات أدق. لا تربط المنتجات مباشرة في هذا المستوى.",
+      "nodeTypeLeafHelp": "فئة الورقة هي نقطة الاختيار النهائية. يجب أن تكون مطابقة المخزون وقائمة المنتجات هنا.",
       "visualPreset": "السمة المرئية",
       "visualPresetPlaceholder": "ابحث واختر سمة",
       "visualPresetSearchPlaceholder": "بحث عن سمة...",

@@ -25,5 +25,10 @@
   "TaxNumber": "Tax number",
   "TcknNumber": "TCKN number",
   "CustomerCode": "Customer code",
-  "tableTitle": "Mükerrer Müşteri Adayları"
+  "tableTitle": "Duplicate Customer Candidates",
+  "common": {
+    "table": {
+      "showing": "Showing {{from}}-{{to}} / {{total}}"
+    }
+  }
 }

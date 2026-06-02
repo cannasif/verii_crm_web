@@ -11,6 +11,7 @@
     "newThisMonth": "New This Month"
   },
   "table": {
+    "title": "City List",
     "id": "ID",
     "name": "City Name",
     "erpCode": "ERP Code",
@@ -18,8 +19,37 @@
     "createdDate": "Created Date",
     "createdBy": "Created By",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
-    "page": "Page {{current}} / {{total}}",
-    "title": "Şehir Listesi"
+    "page": "Page {{current}} / {{total}}"
+  },
+  "cityManagement": {
+    "table": {
+      "title": "City List",
+      "id": "ID",
+      "name": "City Name",
+      "erpCode": "ERP Code",
+      "countryName": "Country Name",
+      "createdDate": "Created Date",
+      "createdBy": "Created By"
+    },
+    "error": "An error occurred",
+    "form": {
+      "tabs": {
+        "header": "General Information"
+      }
+    },
+    "menu": "City Management",
+    "description": "Manage and organize cities",
+    "addButton": "Add New City",
+    "searchPlaceholder": "Quick Search...",
+    "loading": "Loading...",
+    "noData": "No data found",
+    "actions": "Actions",
+    "delete": {
+      "success": "City successfully deleted",
+      "error": "An error occurred while deleting the city",
+      "confirmTitle": "Delete City",
+      "confirmMessage": "Are you sure you want to delete {{name}}?"
+    }
   },
   "form": {
     "editCity": "Edit City",
@@ -43,20 +73,11 @@
   "actions": "Actions",
   "delete": {
     "button": "Delete",
+    "success": "City successfully deleted",
+    "error": "An error occurred while deleting the city",
     "confirmTitle": "Delete City",
     "confirmMessage": "Are you sure you want to delete {{name}}?"
   },
   "previous": "Previous",
-  "next": "Next",
-  "cityManagement": {
-    "form": {
-      "tabs": {
-        "header": "Genel Bilgiler"
-      }
-    },
-    "table": {
-      "title": "Şehir Listesi"
-    },
-    "error": "Hata oluştu"
-  }
+  "next": "Next"
 }

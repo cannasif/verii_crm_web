@@ -1,0 +1,44 @@
+{
+  "menu": "Gestione associazione rappresentante commerciale",
+  "description": "Visualizza, aggiungi ed elimina le associazioni utente per i codici rappresentante commerciale.",
+  "addButton": "Nuova associazione",
+  "searchPlaceholder": "Cerca per codice rappresentante, utente o email",
+  "empty": "Nessuna associazione rappresentante commerciale trovata.",
+  "error": "Impossibile caricare le associazioni del rappresentante commerciale.",
+  "deleteConfirmMessage": "Eliminare l'associazione tra {{salesRep}} e {{user}}?",
+  "table": {
+    "title": "Elenco associazioni rappresentante commerciale",
+    "salesRepCode": "SalesRepCode",
+    "salesRepName": "Nome del rappresentante commerciale",
+    "userFullName": "Utente",
+    "username": "Nome utente",
+    "userEmail": "Email",
+    "createdDate": "Data di creazione"
+  },
+  "form": {
+    "addTitle": "Aggiungi associazione rappresentante commerciale",
+    "addDescription": "Associare un codice rappresentante commerciale a un utente.",
+    "salesRep": "Rappresentante commerciale",
+    "salesRepPlaceholder": "Seleziona rappresentante commerciale",
+    "salesRepSearchPlaceholder": "Cerca rappresentante commerciale",
+    "user": "Utente",
+    "userPlaceholder": "Seleziona utente",
+    "userSearchPlaceholder": "Cerca utente",
+    "validation": {
+      "salesRepRequired": "La selezione del rappresentante commerciale è obbligatoria.",
+      "userRequired": "La selezione dell'utente è obbligatoria."
+    }
+  },
+  "messages": {
+    "createSuccess": "Associazione rappresentante commerciale creata.",
+    "createError": "Impossibile creare l'associazione del rappresentante commerciale.",
+    "deleteSuccess": "Associazione rappresentante commerciale eliminata.",
+    "deleteError": "Impossibile eliminare l'associazione del rappresentante commerciale."
+  },
+  "advancedFilter": {
+    "columnSalesRepCode": "Codice rappresentante commerciale",
+    "columnSalesRepName": "Nome del rappresentante commerciale",
+    "columnUsername": "Nome utente",
+    "columnEmail": "Email"
+  }
+}

@@ -19,6 +19,16 @@
       "groups": "El usuario recibe los permisos combinados de todos los grupos seleccionados.",
       "save": "Las asignaciones se aplican de inmediato en las siguientes comprobaciones de autorización. Puede ser necesario actualizar la sesión.",
       "systemAdminNote": "Si el usuario pertenece a un grupo de administrador del sistema, se omiten los permisos detallados."
+    },
+    "userVisibilityAssignment": {
+      "user": "Seleccione el usuario cuya visibilidad de entidad desea administrar.",
+      "policy": "Seleccione una política de visibilidad activa por entidad o déjela vacía."
+    },
+    "visibilityPolicy": {
+      "code": "Use un código único para reconocer la política en asignaciones y auditoría.",
+      "name": "Nombre visible que verán los administradores al gestionar la política.",
+      "includeSelf": "Cuando está activo, los propios registros del usuario permanecen visibles dentro de este alcance.",
+      "isActive": "Las políticas inactivas no se usan en nuevas asignaciones ni decisiones de acceso."
     }
   },
   "permissionDefinitions": {
@@ -36,6 +46,10 @@
       "affectedRoutesNone": "No hay ninguna ruta coincidente para este código",
       "name": "Nombre",
       "namePlaceholder": "Nombre visible",
+      "availableOnWeb": "Disponible en web",
+      "availableOnWebHint": "Este permiso puede usarse en la aplicación web para menús, páginas y acciones.",
+      "availableOnMobile": "Disponible en móvil",
+      "availableOnMobileHint": "Este permiso puede usarse en la aplicación móvil para menús, pantallas y acciones.",
       "description": "Descripción",
       "descriptionPlaceholder": "Descripción opcional",
       "isActive": "Activo",
@@ -46,9 +60,15 @@
       "title": "Definiciones de permisos",
       "code": "Código",
       "name": "Nombre",
+      "platform": "Plataforma",
       "isActive": "Activo",
       "updatedDate": "Actualizado",
       "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "platform": {
+      "web": "Web",
+      "mobile": "Móvil",
+      "both": "Web + Móvil"
     },
     "delete": {
       "confirmTitle": "Eliminar definición de permiso",
@@ -88,7 +108,17 @@
     "permissionsPanel": {
       "title": "Editar permisos del grupo",
       "description": "Seleccione los permisos de este grupo",
-      "currentCodes": "Códigos de permiso actuales"
+      "currentCodes": "Códigos de permiso actuales",
+      "screen": "Pantalla / área de permisos",
+      "groupedRows": "Áreas de permisos",
+      "actionsMapped": "Permisos",
+      "actions": {
+        "create": "Crear",
+        "read": "Leer",
+        "update": "Actualizar",
+        "delete": "Eliminar",
+        "other": "Otros"
+      }
     },
     "delete": {
       "confirmTitle": "Eliminar grupo de permisos",
@@ -96,7 +126,7 @@
     },
     "search": "Buscar..."
   },
-  "userGroupAssignments": {
+    "userGroupAssignments": {
     "title": "Asignaciones de usuario a grupos",
     "description": "Asignar grupos de permisos a usuarios",
     "selectUser": "Seleccionar usuario",
@@ -106,6 +136,180 @@
     "noUsers": "No se encontraron usuarios",
     "noGroups": "No hay grupos de permisos disponibles",
     "selectAll": "Seleccionar todo"
+    },
+  "userVisibilityAssignments": {
+    "title": "Asignaciones de visibilidad de usuario",
+    "description": "Gestionar asignaciones de política de visibilidad por usuario y entidad",
+    "selectUser": "Seleccionar usuario",
+    "selectedUser": "Usuario seleccionado",
+    "selectUserPlaceholder": "Buscar y seleccionar usuario...",
+    "selectUserHint": "Seleccione un usuario para gestionar sus asignaciones de visibilidad",
+    "assignedPolicies": "Políticas asignadas",
+    "status": "Estado",
+    "ready": "Actualizado",
+    "unassigned": "Sin asignar",
+    "cardDescription": "Elija la política de visibilidad que se aplicará a los registros de {{entity}} para este usuario.",
+    "selectPolicyPlaceholder": "Seleccionar política",
+    "noPolicy": "Sin política"
+  },
+  "visibilityPolicies": {
+    "title": "Políticas de visibilidad",
+    "description": "Administrar las políticas que definen quién puede ver qué registros",
+    "add": "Agregar política",
+    "search": "Buscar políticas...",
+    "table": {
+      "title": "Lista de políticas de visibilidad",
+      "code": "Código",
+      "name": "Nombre",
+      "entityType": "Entidad",
+      "scopeType": "Alcance",
+      "includeSelf": "Incluir propio usuario",
+      "isActive": "Activo",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "stats": {
+      "total": "Total de políticas",
+      "active": "Políticas activas",
+      "entities": "Tipos de entidad"
+    },
+    "form": {
+      "addTitle": "Agregar política de visibilidad",
+      "editTitle": "Editar política de visibilidad",
+      "addDescription": "Crear una nueva política de visibilidad",
+      "editDescription": "Actualizar la política de visibilidad seleccionada",
+      "code": "Código",
+      "codePlaceholder": "example.quotation.team",
+      "name": "Nombre",
+      "namePlaceholder": "Visibilidad de cotización por equipo",
+      "entityType": "Entidad",
+      "entityTypePlaceholder": "Seleccionar entidad",
+      "scopeType": "Alcance",
+      "scopeTypePlaceholder": "Seleccionar alcance",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Descripción corta opcional",
+      "includeSelf": "Incluir sus propios registros",
+      "isActive": "Activo",
+      "summaryTitle": "Resumen de política",
+      "summary": "El alcance {{scope}} se aplica para registros de {{entity}}."
+    },
+    "scope": {
+      "self": "Solo propio",
+      "managerHierarchy": "Jerarquía de gerente",
+      "permissionGroup": "Grupo de permisos",
+      "company": "Toda la compañía"
+    },
+    "entity": {
+      "activity": "Actividad",
+      "quotation": "Cotización",
+      "demand": "Demanda",
+      "order": "Pedido",
+      "salesman360": "KPI de vendedor"
+    }
+  },
+  "visibilitySimulator": {
+    "title": "Simulador de visibilidad",
+    "description": "Pruebe qué registros y sobrescrituras de aprobación visibles existen para el usuario y entidad seleccionados.",
+    "selectUser": "Usuario",
+    "helpUser": "Seleccione el usuario cuya visibilidad desea simular.",
+    "selectUserPlaceholder": "Seleccionar usuario...",
+    "selectEntity": "Entidad",
+    "helpEntity": "Seleccione el módulo para el cual simular la visibilidad de registros.",
+    "selectEntityPlaceholder": "Seleccionar entidad",
+    "recordId": "ID de registro",
+    "recordIdPlaceholder": "Ej. 125",
+    "helpRecordId": "Ingrese un ID de registro para simular si las acciones ver, actualizar, eliminar y aprobar están permitidas.",
+    "selectedUser": "Usuario seleccionado",
+    "entity": "Entidad",
+    "visibleUsers": "Usuarios visibles",
+    "approvalOverrides": "Registros de sobrescritura de aprobación",
+    "visibleUsersTitle": "Usuarios dentro de alcance",
+    "policyDefined": "Política definida",
+    "noPolicy": "Sin política",
+    "companyWide": "Acceso a toda la compañía",
+    "policyActive": "Se aplica una política de visibilidad activa",
+    "includeSelf": "incluye propio",
+    "awaitingSelection": "Seleccione primero un usuario y una entidad",
+    "overrideTitle": "Registros de sobrescritura de aprobación activos",
+    "noOverrides": "No se encontraron sobrescrituras de aprobación activas",
+    "overrideRecord": "Registro #{{id}}",
+    "auditTitle": "Auditoría de sobrescritura de aprobación",
+    "noAudit": "No se encontraron entradas de auditoría de sobrescritura",
+    "auditActionId": "Acción de aprobación",
+    "auditRequestId": "Solicitud de aprobación",
+    "auditFlow": "Flujo",
+    "auditApprover": "Aprobador",
+    "auditStepValue": "Paso {{step}} / actual {{currentStep}}",
+    "actionPanelTitle": "Simulación de acciones por registro",
+    "noRecordSimulation": "Al ingresar un ID de registro, se mostrará el resultado de ver/actualizar/eliminar/aprobar.",
+    "actionAllowed": "Permitido",
+    "actionDenied": "Denegado",
+    "action": {
+      "view": "Ver",
+      "update": "Actualizar",
+      "delete": "Eliminar",
+      "approve": "Aprobar"
+    }
+  },
+  "auditLogs": {
+    "title": "Registros de auditoría",
+    "description": "Seguimiento de quién realizó acciones críticas, con qué traza y con qué resultado.",
+    "search": "Buscar auditoría...",
+    "filters": {
+      "result": "Resultado",
+      "actionType": "Acción",
+      "entityType": "Entidad",
+      "entityId": "ID de registro",
+      "performedByUserEmail": "Realizado por",
+      "source": "Fuente",
+      "branchCode": "Sucursal",
+      "requestPath": "Ruta de solicitud",
+      "requestMethod": "Método",
+      "createdDate": "Fecha"
+    },
+    "clearTraceFilter": "Limpiar filtro de traza",
+    "viewDetail": "Detalle",
+    "filterTrace": "Filtrar por traza",
+    "loadError": "No se pudieron cargar los registros de auditoría",
+    "stats": {
+      "total": "Total de registros",
+      "errors": "Resultados con error",
+      "traces": "Trazas activas"
+    },
+    "table": {
+      "title": "Lista de auditoría",
+      "createdDate": "Fecha",
+      "traceId": "Trace-ID",
+      "actionType": "Acción",
+      "entityType": "Entidad",
+      "entityId": "ID de registro",
+      "result": "Resultado",
+      "source": "Fuente",
+      "performedBy": "Realizado por",
+      "branchCode": "Sucursal",
+      "requestPath": "Ruta de solicitud",
+      "requestMethod": "Método",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "detail": {
+      "title": "Detalle de auditoría",
+      "description": "Ver el contexto de solicitud y el resumen de cambios del registro seleccionado.",
+      "contextTitle": "Contexto de acción",
+      "requestTitle": "Resumen de solicitud",
+      "reason": "Motivo",
+      "failureReason": "Detalle del error",
+      "changedFieldsTitle": "Campos modificados",
+      "noChangedFields": "No hay cambios de campo para este registro.",
+      "oldValuesTitle": "Valores anteriores",
+      "newValuesTitle": "Valores nuevos"
+    },
+    "traceDrillDown": {
+      "traceId": "Traza seleccionada",
+      "startedAt": "Iniciado el",
+      "completedAt": "Completado el",
+      "entities": "Entidades afectadas",
+      "timelineTitle": "Resumen de secuencia de traza",
+      "openTrace": "Abrir esta traza"
+    }
   },
   "common": {
     "cancel": "Cancelar",
@@ -128,6 +332,9 @@
     "permissionDefinitions": "Definiciones de permisos",
     "permissionGroups": "Grupos de permisos",
     "userGroupAssignments": "Asignaciones usuario–grupo",
+    "visibilityPolicies": "Políticas de visibilidad",
+    "userVisibilityAssignments": "Asignaciones de visibilidad de usuario",
+    "auditLogs": "Registros de auditoría",
     "accessControlGuide": "Guía de control de acceso"
   },
   "guide": {

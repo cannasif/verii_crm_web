@@ -11,6 +11,7 @@
     "newThisMonth": "جديد هذا الشهر"
   },
   "table": {
+    "title": "قائمة المدن",
     "id": "المعرف",
     "name": "اسم المدينة",
     "erpCode": "كود ERP",
@@ -18,8 +19,37 @@
     "createdDate": "تاريخ الإنشاء",
     "createdBy": "تم الإنشاء بواسطة",
     "showing": "عرض {{from}}-{{to}} / {{total}}",
-    "page": "صفحة {{current}} / {{total}}",
-    "title": "Şehir Listesi"
+    "page": "صفحة {{current}} / {{total}}"
+  },
+  "cityManagement": {
+    "table": {
+      "title": "قائمة المدن",
+      "id": "المعرف",
+      "name": "اسم المدينة",
+      "erpCode": "كود ERP",
+      "countryName": "اسم الدولة",
+      "createdDate": "تاريخ الإنشاء",
+      "createdBy": "تم الإنشاء بواسطة"
+    },
+    "error": "حدث خطأ",
+    "form": {
+      "tabs": {
+        "header": "المعلومات العامة"
+      }
+    },
+    "menu": "إدارة المدن",
+    "description": "إدارة وتنظيم المدن",
+    "addButton": "إضافة مدينة جديدة",
+    "searchPlaceholder": "بحث سريع...",
+    "loading": "جار التحميل...",
+    "noData": "لا توجد بيانات",
+    "actions": "الإجراءات",
+    "delete": {
+      "success": "تم حذف المدينة بنجاح",
+      "error": "حدث خطأ أثناء حذف المدينة",
+      "confirmTitle": "حذف المدينة",
+      "confirmMessage": "هل أنت متأكد أنك تريد حذف {{name}}؟"
+    }
   },
   "form": {
     "editCity": "تعديل المدينة",
@@ -43,20 +73,11 @@
   "actions": "إجراءات",
   "delete": {
     "button": "حذف",
+    "success": "تم حذف المدينة بنجاح",
+    "error": "حدث خطأ أثناء حذف المدينة",
     "confirmTitle": "حذف المدينة",
-    "confirmMessage": "هل أنت متأكد من حذف {{name}}؟"
+    "confirmMessage": "هل أنت متأكد أنك تريد حذف {{name}}؟"
   },
   "previous": "السابق",
-  "next": "التالي",
-  "cityManagement": {
-    "form": {
-      "tabs": {
-        "header": "Genel Bilgiler"
-      }
-    },
-    "table": {
-      "title": "Şehir Listesi"
-    },
-    "error": "حدث خطأ"
-  }
+  "next": "التالي"
 }

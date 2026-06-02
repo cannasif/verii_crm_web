@@ -3,6 +3,10 @@
     "title": "Kategoriedefinitionen",
     "description": "Hier können Sie den Kategoriebaum und die verknüpften Lagerartikel für B2B- und B2C-Kataloge verwalten.",
     "guidedTitle": "Verwalten Sie die Kategoriestruktur in 3 klaren Schritten",
+    "hierarchyBlueprintTitle": "Empfohlenes Schema für Unternehmenskategoriehierarchie",
+    "hierarchyBlueprintDescription": "Wenn Sie den Kategoriebaum in einer festen Struktur halten, ist das Nutzererlebnis klarer und die Produktzuordnung zuverlässiger.",
+    "hierarchyExampleLabel": "Beispielablauf",
+    "hierarchyExampleValue": "Telefon > Knopftelefone > iPhone > Serie 17 > Produktliste",
     "easyModeTitle": "Sie müssen hier nicht raten, was als Nächstes zu tun ist",
     "summaryGuideTitle": "Ich zeige Ihnen direkt den richtigen nächsten Schritt",
     "createCatalogTitle": "Neuen Katalog erstellen",
@@ -70,6 +74,7 @@
     "root": "Wurzel",
     "leaf": "Blatt",
     "branch": "Zweig",
+    "treeLevelLabel": "Ebene {{level}}",
     "noCatalogs": "Es wurden noch keine Kataloge definiert.",
     "noCategories": "Auf dieser Ebene wurden keine Kategorien gefunden.",
     "noStocks": "Mit dieser Kategorie sind keine Artikel verknüpft.",
@@ -97,7 +102,31 @@
       "branchTitle": "2. Zweigkategorien dienen der Navigation",
       "branchDescription": "Zweigkategorien sind nicht der letzte Auswahlpunkt. Sie führen den Benutzer zur richtigen Unterebene.",
       "leafTitle": "3. Prüfen Sie Artikel auf der Blattkategorie",
-      "leafDescription": "Die verknüpfte Artikelliste wird auf der Blattkategorie am aussagekräftigsten. Dort sollte die finale Prüfung erfolgen."
+      "leafDescription": "Die verknüpfte Artikelliste wird auf der Blattkategorie am aussagekräftigsten. Dort sollte die finale Prüfung erfolgen.",
+      "exampleTitle": "4. Halten Sie die Unternehmenshierarchie konsistent",
+      "exampleDescription": "Empfohlene Struktur: Hauptkategorie > Unterkategorie > Marke > Serie > Produkte. So nutzt das Team dieselbe Logik bei der Benennung und Suchergebnisse bleiben vorhersehbarer."
+    },
+    "hierarchyStages": {
+      "root": {
+        "title": "Hauptkategorie",
+        "description": "Stellt den obersten Geschäftsbereich dar. Beispiel: Telefon"
+      },
+      "subcategory": {
+        "title": "Unterkategorie",
+        "description": "Teilt die Produktfamilie in eine klarere Gruppe. Beispiel: Knopftelefone"
+      },
+      "brand": {
+        "title": "Marke",
+        "description": "Nutzen Sie diese Ebene für Marke oder Hersteller. Beispiel: iPhone"
+      },
+      "series": {
+        "title": "Serie",
+        "description": "Hier halten Sie Modellfamilien oder Serien-Differenzierungen. Beispiel: Serie 17"
+      },
+      "products": {
+        "title": "Produkte",
+        "description": "Dies sollte die endgültige Blattebene sein; hier erfolgt die Produktzuordnung."
+      }
     },
     "actions": {
       "newCatalog": "Neuer Katalog",
@@ -118,6 +147,11 @@
       "previewingRules": "Vorschau wird erstellt",
       "applyRules": "Regeln anwenden",
       "applyingRules": "Regeln werden angewendet",
+      "importFromRiiStock": "Aus RII_STOK aufbauen",
+      "previewingStockHierarchy": "Hierarchie wird gelesen",
+      "refreshStockHierarchyPreview": "Vorschau aktualisieren",
+      "applyStockHierarchy": "Katalogbaum aufbauen",
+      "applyingStockHierarchy": "Katalogbaum wird aufgebaut",
       "addCategoryFavorite": "Kategorie zu Favoriten hinzufügen",
       "removeCategoryFavorite": "Kategorie aus Favoriten entfernen"
     },
@@ -153,8 +187,45 @@
       "rulePreviewError": "Regelvorschau konnte nicht geladen werden.",
       "ruleApplySuccess": "Regeln wurden erfolgreich angewendet.",
       "ruleApplyError": "Regeln konnten nicht angewendet werden.",
+      "stockHierarchyPreviewError": "Vorschau der Bestandshierarchie konnte nicht geladen werden.",
+      "stockHierarchyApplySuccess": "Katalogbaum wurde aus der RII_STOK-Hierarchie erstellt.",
+      "stockHierarchyApplyError": "Der Katalogbaum konnte nicht aus der RII_STOK-Hierarchie erstellt werden.",
       "categoryFavoriteAddSuccess": "Kategorie wurde zu Favoriten hinzugefügt.",
       "categoryFavoriteRemoveSuccess": "Kategorie wurde aus Favoriten entfernt."
+    },
+    "stockHierarchyImport": {
+      "title": "Katalog aus RII_STOK-Hierarchie erstellen",
+      "description": "Konvertiert Gruppenkategorie > Code1 > Code2 > Code3 in einen Katalogbaum. Genau wie bei Marktplätzen können Nutzer Schritt für Schritt in die Tiefe gehen und sehen den Bestand nur auf der Endebene.",
+      "options": {
+        "includeCode1": {
+          "title": "Code1-Ebene einbeziehen",
+          "description": "Erstellt die erste Unterteilung unter der Gruppe"
+        },
+        "includeCode2": {
+          "title": "Code2-Ebene einbeziehen",
+          "description": "Erstellt die zweite Unterteilung unter Code1"
+        },
+        "includeCode3": {
+          "title": "Code3-Ebene einbeziehen",
+          "description": "Erstellt die dritte Unterteilung unter Code2. Wenn leer, wird die tiefste vorhandene Ebene zur Blattebene."
+        },
+        "assignStocks": {
+          "title": "Bestände auf Blattebene zuordnen",
+          "description": "Ordnet jeden Bestand automatisch seiner tiefstgenerierten Kategorie zu."
+        }
+      },
+      "preview": {
+        "sourceStock": "Quell-Bestände",
+        "category": "Kategorien gesamt",
+        "newCategory": "Neue Kategorien",
+        "newStockAssignment": "Neue Bestandszuordnungen",
+        "group": "Gruppe: {{count}}",
+        "code1": "Code1: {{count}}",
+        "code2": "Code2: {{count}}",
+        "code3": "Code3: {{count}}",
+        "samples": "Beispielhafte generierte Pfade",
+        "noSamples": "Keine Beispielhierarchie gefunden."
+      }
     },
     "rulePreviewSummaryTitle": "Zusammenfassung der Regelvorschau",
     "rulePreviewSummary": {
@@ -194,6 +265,8 @@
       "categoryCode": "Kategoricode",
       "categoryCodePlaceholder": "Z. B. GLASS_SYSTEMS",
       "nodeType": "Kategorietyp",
+      "nodeTypeBranchHelp": "Eine Zweigkategorie dient der Navigation und tieferen Unterteilung. Ordnen Sie auf dieser Ebene keine Produkte direkt zu.",
+      "nodeTypeLeafHelp": "Eine Blattkategorie ist die endgültige Auswahlebene. Bestandszuordnung und Artikelliste sollten hier erfolgen.",
       "visualPreset": "Visuelles Thema",
       "visualPresetPlaceholder": "Thema suchen und auswählen",
       "visualPresetSearchPlaceholder": "Thema suchen...",

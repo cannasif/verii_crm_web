@@ -25,5 +25,10 @@
   "TaxNumber": "número de impuesto",
   "TcknNumber": "Número de identificación TR",
   "CustomerCode": "código de cliente",
-  "tableTitle": "Mükerrer Müşteri Adayları"
+  "tableTitle": "Candidatos de clientes duplicados",
+  "common": {
+    "table": {
+      "showing": "Mostrando {{from}}-{{to}} / {{total}}"
+    }
+  }
 }

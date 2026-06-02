@@ -19,6 +19,16 @@
       "groups": "Der Benutzer erhält die zusammengeführten Berechtigungen aller ausgewählten Gruppen.",
       "save": "Zuweisungen gelten unmittelbar für die nächsten Autorisierungsprüfungen. Eine Sitzungsaktualisierung kann nötig sein.",
       "systemAdminNote": "Hat der Benutzer eine Systemadministrator-Gruppe, werden detaillierte Berechtigungen übersprungen."
+    },
+    "userVisibilityAssignment": {
+      "user": "Wählen Sie den Benutzer aus, dessen Einheiten-Sichtbarkeit Sie verwalten möchten.",
+      "policy": "Wählen Sie für jede Entität eine aktive Sichtbarkeitsrichtlinie aus oder lassen Sie es leer."
+    },
+    "visibilityPolicy": {
+      "code": "Verwenden Sie einen eindeutigen Code, damit die Richtlinie in Zuweisungs- und Prüfabläufen eindeutig erkennbar ist.",
+      "name": "Anzeigename, der Administratoren beim Verwalten der Richtlinie sehen.",
+      "includeSelf": "Wenn aktiviert, bleiben die eigenen Datensätze des Benutzers im Gültigkeitsbereich sichtbar.",
+      "isActive": "Inaktive Richtlinien bleiben von neuen Zuweisungen und Zugriffsentscheidungen ausgeschlossen."
     }
   },
   "permissionDefinitions": {
@@ -36,6 +46,10 @@
       "affectedRoutesNone": "Keine passende Route für diesen Code gefunden",
       "name": "Name",
       "namePlaceholder": "Anzeigename",
+      "availableOnWeb": "Im Web verfügbar",
+      "availableOnWebHint": "Diese Berechtigung kann in der Web-Anwendung für Menüs, Seiten und Aktionen genutzt werden.",
+      "availableOnMobile": "Im Mobile verfügbar",
+      "availableOnMobileHint": "Diese Berechtigung kann in der Mobile-Anwendung für Menüs, Bildschirme und Aktionen genutzt werden.",
       "description": "Beschreibung",
       "descriptionPlaceholder": "Optionale Beschreibung",
       "isActive": "Aktiv",
@@ -46,9 +60,15 @@
       "title": "Berechtigungsdefinitionen",
       "code": "Code",
       "name": "Name",
+      "platform": "Plattform",
       "isActive": "Aktiv",
       "updatedDate": "Aktualisiert",
       "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "platform": {
+      "web": "Web",
+      "mobile": "Mobil",
+      "both": "Web + Mobil"
     },
     "delete": {
       "confirmTitle": "Berechtigungsdefinition löschen",
@@ -88,7 +108,17 @@
     "permissionsPanel": {
       "title": "Gruppenberechtigungen bearbeiten",
       "description": "Berechtigungen für diese Gruppe auswählen",
-      "currentCodes": "Aktuelle Berechtigungscodes"
+      "currentCodes": "Aktuelle Berechtigungscodes",
+      "screen": "Bildschirm / Berechtigungsbereich",
+      "groupedRows": "Berechtigungsbereiche",
+      "actionsMapped": "Berechtigungen",
+      "actions": {
+        "create": "Erstellen",
+        "read": "Lesen",
+        "update": "Aktualisieren",
+        "delete": "Löschen",
+        "other": "Sonstiges"
+      }
     },
     "delete": {
       "confirmTitle": "Berechtigungsgruppe löschen",
@@ -106,6 +136,119 @@
     "noUsers": "Keine Benutzer gefunden",
     "noGroups": "Keine Berechtigungsgruppen verfügbar",
     "selectAll": "Alle auswählen"
+  },
+  "userVisibilityAssignments": {
+    "title": "Benutzersichtbarkeitszuweisungen",
+    "description": "Verwalten Sie Sichtbarkeitsrichtlinien pro Benutzer und Entität",
+    "selectUser": "Benutzer auswählen",
+    "selectedUser": "Ausgewählter Benutzer",
+    "selectUserPlaceholder": "Benutzer suchen und auswählen...",
+    "selectUserHint": "Wählen Sie einen Benutzer aus, um Sichtbarkeitszuweisungen zu verwalten",
+    "assignedPolicies": "Zugewiesene Richtlinien",
+    "status": "Status",
+    "ready": "Aktuell",
+    "unassigned": "Nicht zugewiesen",
+    "cardDescription": "{{entity}}-Datensätze dieses Benutzers werden mit der folgenden Sichtbarkeitsrichtlinie verwaltet.",
+    "selectPolicyPlaceholder": "Richtlinie auswählen",
+    "noPolicy": "Keine Richtlinie"
+  },
+  "visibilityPolicies": {
+    "title": "Sichtbarkeitsrichtlinien",
+    "description": "Verwalten von Richtliniensätzen, die definieren, wer welche Datensätze sehen kann",
+    "add": "Richtlinie hinzufügen",
+    "search": "Richtlinien suchen...",
+    "table": {
+      "title": "Liste der Sichtbarkeitsrichtlinien",
+      "code": "Code",
+      "name": "Name",
+      "entityType": "Entität",
+      "scopeType": "Gültigkeitsbereich",
+      "includeSelf": "Eigene einschließen",
+      "isActive": "Aktiv",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "stats": {
+      "total": "Gesamt Richtlinien",
+      "active": "Aktive Richtlinien",
+      "entities": "Entitätstypen"
+    },
+    "form": {
+      "addTitle": "Sichtbarkeitsrichtlinie hinzufügen",
+      "editTitle": "Sichtbarkeitsrichtlinie bearbeiten",
+      "addDescription": "Neue Sichtbarkeitsrichtlinie erstellen",
+      "editDescription": "Ausgewählte Sichtbarkeitsrichtlinie bearbeiten",
+      "code": "Code",
+      "codePlaceholder": "example.quotation.team",
+      "name": "Name",
+      "namePlaceholder": "Team-Quotierungssichtbarkeit",
+      "entityType": "Entität",
+      "entityTypePlaceholder": "Entität auswählen",
+      "scopeType": "Gültigkeitsbereich",
+      "scopeTypePlaceholder": "Gültigkeitsbereich auswählen",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Optionale Kurzbeschreibung",
+      "includeSelf": "Eigene Datensätze einschließen",
+      "isActive": "Aktiv",
+      "summaryTitle": "Richtlinienzusammenfassung",
+      "summary": "Der {{scope}}-Gültigkeitsbereich gilt für {{entity}} Datensätze."
+    },
+    "scope": {
+      "self": "Nur eigene",
+      "managerHierarchy": "Management-Hierarchie",
+      "permissionGroup": "Berechtigungsgruppe",
+      "company": "Unternehmensweit"
+    },
+    "entity": {
+      "activity": "Aktivität",
+      "quotation": "Angebot",
+      "demand": "Anfrage",
+      "order": "Auftrag",
+      "salesman360": "Vertriebs-KPI"
+    }
+  },
+  "visibilitySimulator": {
+    "title": "Sichtbarkeitssimulator",
+    "description": "Teste, welche Datensätze eines Benutzers und aktive Genehmigungs-Overrides für die ausgewählte Entität sichtbar sind.",
+    "selectUser": "Benutzer",
+    "helpUser": "Wählen Sie den Benutzer aus, dessen Sichtbarkeit simuliert werden soll.",
+    "selectUserPlaceholder": "Benutzer auswählen...",
+    "selectEntity": "Entität",
+    "helpEntity": "Wählen Sie das Modul aus, dessen Sichtbarkeit simuliert werden soll.",
+    "selectEntityPlaceholder": "Entität auswählen",
+    "recordId": "Datensatz-ID",
+    "recordIdPlaceholder": "z. B. 125",
+    "helpRecordId": "Geben Sie eine Datensatz-ID ein, um die Sichtbarkeit für view, update, delete und approve zu prüfen.",
+    "selectedUser": "Ausgewählter Benutzer",
+    "entity": "Entität",
+    "visibleUsers": "Sichtbare Benutzer",
+    "approvalOverrides": "Genehmigungsüberschreibungsdatensätze",
+    "visibleUsersTitle": "Benutzer im Gültigkeitsbereich",
+    "policyDefined": "Richtlinie definiert",
+    "noPolicy": "Keine Richtlinie",
+    "companyWide": "Unternehmensweiter Zugriff",
+    "policyActive": "Eine aktive Sichtbarkeitsrichtlinie ist aktiv",
+    "includeSelf": "Eigene einbeziehen",
+    "awaitingSelection": "Wählen Sie zuerst einen Benutzer und eine Entität.",
+    "overrideTitle": "Aktive Genehmigungsüberschreibungsdatensätze",
+    "noOverrides": "Keine aktiven Genehmigungsüberschreibungsdatensätze gefunden.",
+    "overrideRecord": "Datensatz #{{id}}",
+    "auditTitle": "Genehmigungsüberschreibungsprotokoll",
+    "noAudit": "Keine aktiven Genehmigungsüberschreibungsprotokolle gefunden.",
+    "auditActionId": "Genehmigungsaktion",
+    "auditRequestId": "Genehmigungsanfrage",
+    "auditFlow": "Ablauf",
+    "auditApprover": "Genehmiger",
+    "auditStepValue": "Schritt {{step}} / aktiv {{currentStep}}",
+    "actionPanelTitle": "Simulation von Datensatzaktionen",
+    "noRecordSimulation": "Nach Eingabe einer Datensatz-ID werden view / update / delete / approve Ergebnisse angezeigt.",
+    "actionAllowed": "Erlaubt",
+    "actionDenied": "Verweigert",
+    "action": {
+      "view": "Anzeigen",
+      "update": "Aktualisieren",
+      "delete": "Löschen",
+      "approve": "Genehmigen"
+    }
   },
   "common": {
     "cancel": "Abbrechen",
@@ -128,7 +271,71 @@
     "permissionDefinitions": "Berechtigungsdefinitionen",
     "permissionGroups": "Berechtigungsgruppen",
     "userGroupAssignments": "Benutzer-Gruppenzuweisungen",
+    "visibilityPolicies": "Sichtbarkeitsrichtlinien",
+    "userVisibilityAssignments": "Benutzersichtbarkeitszuweisungen",
+    "auditLogs": "Audit-Protokolle",
     "accessControlGuide": "Leitfaden zur Zugriffskontrolle"
+  },
+  "auditLogs": {
+    "title": "Audit-Protokolle",
+    "description": "Nachvollziehen, wer kritische Aktionen ausgeführt hat, unter welchem Trace und mit welchem Ergebnis.",
+    "search": "Audit-Protokolle suchen...",
+    "filters": {
+      "result": "Ergebnis",
+      "actionType": "Aktion",
+      "entityType": "Entität",
+      "entityId": "Datensatz-ID",
+      "performedByUserEmail": "Ausgeführt von",
+      "source": "Quelle",
+      "branchCode": "Filiale",
+      "requestPath": "Anfrage-Pfad",
+      "requestMethod": "Methode",
+      "createdDate": "Datum"
+    },
+    "clearTraceFilter": "Trace-Filter löschen",
+    "viewDetail": "Details",
+    "filterTrace": "Trace filtern",
+    "loadError": "Audit-Protokolle konnten nicht geladen werden",
+    "stats": {
+      "total": "Gesamtprotokolle",
+      "errors": "Fehlerhafte Ergebnisse",
+      "traces": "Aktive Traces"
+    },
+    "table": {
+      "title": "Liste der Audit-Protokolle",
+      "createdDate": "Datum",
+      "traceId": "Trace-ID",
+      "actionType": "Aktion",
+      "entityType": "Entität",
+      "entityId": "Datensatz-ID",
+      "result": "Ergebnis",
+      "source": "Quelle",
+      "performedBy": "Ausgeführt von",
+      "branchCode": "Filiale",
+      "requestPath": "Anfrage-Pfad",
+      "requestMethod": "Methode",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "detail": {
+      "title": "Audit-Protokolldetail",
+      "description": "Kontext der Anfrage und Änderungszusammenfassung des gewählten Datensatzes anzeigen.",
+      "contextTitle": "Aktionskontext",
+      "requestTitle": "Anfragenzusammenfassung",
+      "reason": "Grund",
+      "failureReason": "Fehlerinformation",
+      "changedFieldsTitle": "Geänderte Felder",
+      "noChangedFields": "Keine Feldänderungen für diesen Datensatz verfügbar.",
+      "oldValuesTitle": "Alte Werte",
+      "newValuesTitle": "Neue Werte"
+    },
+    "traceDrillDown": {
+      "traceId": "Ausgewählte Trace",
+      "startedAt": "Gestartet am",
+      "completedAt": "Abgeschlossen am",
+      "entities": "Betroffene Entitäten",
+      "timelineTitle": "Trace-Ablaufübersicht",
+      "openTrace": "Diese Trace öffnen"
+    }
   },
   "guide": {
     "title": "Access Control Guide",

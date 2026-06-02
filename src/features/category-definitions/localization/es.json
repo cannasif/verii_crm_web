@@ -3,6 +3,10 @@
     "title": "Definiciones de categorías",
     "description": "Empiece aquí a gestionar el árbol de categorías y los stocks vinculados a categorías para catálogos B2B y B2C.",
     "guidedTitle": "Gestione la estructura de categorías en 3 pasos claros",
+    "hierarchyBlueprintTitle": "Esquema jerárquico de categorías corporativas recomendado",
+    "hierarchyBlueprintDescription": "Si mantiene el árbol de categorías en una estructura fija, la experiencia del usuario será más clara y la asignación de productos será más consistente.",
+    "hierarchyExampleLabel": "Flujo de ejemplo",
+    "hierarchyExampleValue": "Teléfonos > Teléfonos con botones > iPhone > Serie 17 > Lista de productos",
     "easyModeTitle": "No tiene que adivinar qué hacer aquí",
     "summaryGuideTitle": "Le mostraré el siguiente paso correcto",
     "createCatalogTitle": "Crear catálogo nuevo",
@@ -67,6 +71,7 @@
     "root": "Raíz",
     "leaf": "Hoja",
     "branch": "Rama",
+    "treeLevelLabel": "Nivel {{level}}",
     "noCatalogs": "Aún no se han definido catálogos.",
     "noCategories": "No se han encontrado categorías en este nivel.",
     "noStocks": "No hay stocks vinculados a esta categoría.",
@@ -92,7 +97,31 @@
       "branchTitle": "2. Las categorías rama sirven para navegar",
       "branchDescription": "Las categorías rama no son el punto de selección final. Úselas para llevar al usuario al nivel inferior correcto.",
       "leafTitle": "3. Valide los stocks en la categoría hoja",
-      "leafDescription": "La lista de stocks vinculados cobra sentido en el nivel hoja, por lo que la revisión final debe hacerse ahí."
+      "leafDescription": "La lista de stocks vinculados cobra sentido en el nivel hoja, por lo que la revisión final debe hacerse ahí.",
+      "exampleTitle": "4. Mantenga estable la jerarquía corporativa",
+      "exampleDescription": "Estructura recomendada: Categoría principal > Subcategoría > Marca > Serie > Productos. Así todo el equipo utiliza la misma lógica y los resultados de búsqueda se vuelven más predecibles."
+    },
+    "hierarchyStages": {
+      "root": {
+        "title": "Categoría principal",
+        "description": "Representa el nivel de negocio superior. Ejemplo: Teléfonos"
+      },
+      "subcategory": {
+        "title": "Subcategoría",
+        "description": "Separa familias de productos. Ejemplo: Teléfonos con botones"
+      },
+      "brand": {
+        "title": "Marca",
+        "description": "Utilícela para separación por marca o fabricante. Ejemplo: iPhone"
+      },
+      "series": {
+        "title": "Serie",
+        "description": "Mantenga aquí la separación por familias de modelo. Ejemplo: Serie 17"
+      },
+      "products": {
+        "title": "Productos",
+        "description": "Debe ser la categoría hoja final; aquí se realiza la asignación de artículos."
+      }
     },
     "actions": {
       "newCatalog": "Catálogo nuevo",
@@ -111,6 +140,11 @@
       "previewingRules": "Generando vista previa",
       "applyRules": "Aplicar reglas",
       "applyingRules": "Aplicando reglas",
+      "importFromRiiStock": "Crear desde RII_STOK",
+      "previewingStockHierarchy": "Leyendo jerarquía",
+      "refreshStockHierarchyPreview": "Actualizar vista previa",
+      "applyStockHierarchy": "Crear árbol del catálogo",
+      "applyingStockHierarchy": "Creando árbol del catálogo",
       "addFavorite": "Agregar a favoritos",
       "removeFavorite": "Quitar de favoritos",
       "addCategoryFavorite": "Agregar categoría a favoritos",
@@ -145,11 +179,48 @@
       "rulePreviewError": "No se ha podido cargar la vista previa de reglas.",
       "ruleApplySuccess": "Reglas aplicadas correctamente.",
       "ruleApplyError": "No se han podido aplicar las reglas.",
+      "stockHierarchyPreviewError": "No se pudo obtener la vista previa de la jerarquía de stock.",
+      "stockHierarchyApplySuccess": "Se creó el árbol del catálogo desde la jerarquía de RII_STOK.",
+      "stockHierarchyApplyError": "No se pudo crear el árbol del catálogo desde la jerarquía de RII_STOK.",
       "favoriteAddSuccess": "Stock agregado a favoritos.",
       "favoriteRemoveSuccess": "Stock eliminado de favoritos.",
       "favoriteToggleError": "No se ha podido actualizar el estado de favorito.",
       "categoryFavoriteAddSuccess": "Categoría agregada a favoritos.",
       "categoryFavoriteRemoveSuccess": "Categoría eliminada de favoritos."
+    },
+    "stockHierarchyImport": {
+      "title": "Crear catálogo desde jerarquía de RII_STOK",
+      "description": "Convierte Grupo de código > Código 1 > Código 2 > Código 3 en un árbol de catálogo. Al igual que en marketplaces, el usuario avanza por niveles y visualiza los stocks en la hoja final.",
+      "options": {
+        "includeCode1": {
+          "title": "Incluir nivel de Código 1",
+          "description": "Abre la primera subdivisión bajo el grupo. Ej.: Gasolina / Diésel."
+        },
+        "includeCode2": {
+          "title": "Incluir nivel de Código 2",
+          "description": "Abre la segunda subdivisión bajo Código 1. Ej.: Manual / Automático."
+        },
+        "includeCode3": {
+          "title": "Incluir nivel de Código 3",
+          "description": "Abre la tercera subdivisión bajo Código 2. Si no hay valor, la última capa disponible se usa como hoja."
+        },
+        "assignStocks": {
+          "title": "Asignar stocks a la hoja",
+          "description": "Al crear el árbol del catálogo, asigna los stocks automáticamente a su nivel final más profundo."
+        }
+      },
+      "preview": {
+        "sourceStock": "Stocks leídos",
+        "category": "Total de categorías",
+        "newCategory": "Categorías nuevas",
+        "newStockAssignment": "Nuevas asignaciones de stock",
+        "group": "Grupo: {{count}}",
+        "code1": "Código 1: {{count}}",
+        "code2": "Código 2: {{count}}",
+        "code3": "Código 3: {{count}}",
+        "samples": "Rutas de ejemplo que se crearán",
+        "noSamples": "No se encontraron jerarquías de ejemplo."
+      }
     },
     "rulePreviewSummaryTitle": "Resumen de la vista previa de reglas",
     "rulePreviewSummary": {
@@ -213,6 +284,8 @@
       "ruleValueTopMatchesTitle": "Valores más frecuentes en el sistema",
       "ruleValueTopMatchesSubtitle": "Pulse para seleccionar rápidamente",
       "ruleValueTopMatchesEmpty": "No se han encontrado valores destacados para este campo.",
+      "nodeTypeBranchHelp": "Una categoría rama sirve para navegación y desglose más profundo. No asigne productos directamente en este nivel.",
+      "nodeTypeLeafHelp": "La categoría hoja es el nivel final de selección; la asignación de stock y la lista de artículos deben hacerse aquí.",
       "priority": "Prioridad"
     },
     "visualPreviewTitle": "Vista previa de la categoría",

@@ -1,21 +1,78 @@
 {
+  "countryManagement": {
+    "menu": "إدارة الدول",
+    "description": "إدارة وتعديل الدول",
+    "addButton": "إضافة دولة",
+    "searchPlaceholder": "بحث...",
+    "loading": "جارٍ التحميل...",
+    "error": "حدث خطأ",
+    "table": {
+      "id": "المعرف",
+      "name": "اسم الدولة",
+      "code": "الكود",
+      "erpCode": "كود ERP",
+      "createdDate": "تاريخ الإنشاء",
+      "createdBy": "تم الإنشاء بواسطة",
+      "noData": "لا توجد بيانات",
+      "title": "قائمة الدول"
+    },
+    "delete": {
+      "confirmTitle": "حذف الدولة",
+      "confirmMessage": "هل أنت متأكد أنك تريد حذف {{name}}؟"
+    },
+    "messages": {
+      "deleteSuccess": "تم حذف الدولة بنجاح",
+      "deleteError": "تعذر حذف الدولة",
+      "createSuccess": "تم إنشاء الدولة بنجاح",
+      "createError": "تعذر إنشاء الدولة",
+      "updateSuccess": "تم تحديث الدولة بنجاح",
+      "updateError": "تعذر تحديث الدولة"
+    },
+    "form": {
+      "addCountry": "إضافة دولة",
+      "editCountry": "تعديل الدولة",
+      "addDescription": "أدخل معلومات الدولة الجديدة",
+      "editDescription": "تعديل معلومات الدولة",
+      "name": "اسم الدولة",
+      "namePlaceholder": "أدخل اسم الدولة",
+      "code": "كود الدولة",
+      "codePlaceholder": "أدخل كود الدولة (مثل: TR, US)",
+      "erpCode": "كود ERP",
+      "erpCodePlaceholder": "أدخل كود ERP (اختياري)",
+      "nameRequired": "اسم الدولة مطلوب",
+      "nameMaxLength": "لا يمكن أن يتجاوز اسم الدولة 100 حرف",
+      "codeMinLength": "يجب أن يكون كود الدولة 2 أحرف على الأقل",
+      "codeMaxLength": "لا يمكن أن يتجاوز كود الدولة 5 أحرف",
+      "erpCodeMaxLength": "لا يمكن أن يتجاوز كود ERP 10 أحرف",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "tabs": {
+        "header": "المعلومات العامة"
+      }
+    },
+    "stats": {
+      "totalCountries": "إجمالي الدول",
+      "activeCountries": "الدول النشطة",
+      "newThisMonth": "جديد هذا الشهر"
+    }
+  },
   "menu": "إدارة الدول",
   "description": "إدارة وتعديل الدول",
-  "addButton": "إضافة دولة جديدة",
-  "search": "بحث...",
-  "loading": "جار التحميل...",
+  "addButton": "إضافة دولة",
+  "searchPlaceholder": "بحث...",
+  "loading": "جارٍ التحميل...",
   "noData": "لا توجد بيانات",
   "actions": "إجراءات",
   "previous": "السابق",
   "next": "التالي",
   "deleteConfirmTitle": "تأكيد الحذف",
   "cancel": "إلغاء",
-  "deleting": "جار الحذف...",
+  "deleting": "جارٍ الحذف...",
   "delete": {
-    "confirmTitle": "Delete Country",
-    "confirmMessage": "Are you sure you want to delete {{name}}?"
+    "confirmTitle": "حذف الدولة",
+    "confirmMessage": "هل أنت متأكد أنك تريد حذف {{name}}؟"
   },
-  "saving": "جار الحفظ...",
+  "saving": "جارٍ الحفظ...",
   "save": "حفظ",
   "stats": {
     "totalCountries": "إجمالي الدول",
@@ -31,89 +88,33 @@
     "createdBy": "تم الإنشاء بواسطة",
     "showing": "عرض {{from}}-{{to}} / {{total}}",
     "page": "صفحة {{current}} / {{total}}",
-    "noData": "Veri bulunamadı",
-    "title": "Ülke Listesi"
+    "noData": "لا توجد بيانات",
+    "title": "قائمة الدول"
+  },
+  "advancedFilter": {
+    "columnName": "اسم الدولة",
+    "columnCode": "كود الدولة",
+    "columnErpCode": "كود ERP"
   },
   "form": {
-    "addCountry": "إضافة دولة جديدة",
+    "addCountry": "إضافة دولة",
     "editCountry": "تعديل الدولة",
-    "addDescription": "إدخال معلومات دولة جديدة",
+    "addDescription": "أدخل معلومات الدولة الجديدة",
     "editDescription": "تعديل معلومات الدولة",
     "name": "اسم الدولة",
     "namePlaceholder": "أدخل اسم الدولة",
     "code": "كود الدولة",
-    "codePlaceholder": "أدخل كود الدولة (مثال: TR, US)",
+    "codePlaceholder": "أدخل كود الدولة (مثل: TR, US)",
     "erpCode": "كود ERP",
     "erpCodePlaceholder": "أدخل كود ERP (اختياري)",
     "nameRequired": "اسم الدولة مطلوب",
-    "nameMaxLength": "اسم الدولة لا يمكن أن يتجاوز 100 حرف",
-    "codeMinLength": "كود الدولة يجب أن يكون حرفين على الأقل",
-    "codeMaxLength": "كود الدولة لا يمكن أن يتجاوز 5 أحرف",
-    "erpCodeMaxLength": "كود ERP لا يمكن أن يتجاوز 10 أحرف"
+    "nameMaxLength": "لا يمكن أن يتجاوز اسم الدولة 100 حرف",
+    "codeMinLength": "يجب أن يكون كود الدولة 2 أحرف على الأقل",
+    "codeMaxLength": "لا يمكن أن يتجاوز كود الدولة 5 أحرف",
+    "erpCodeMaxLength": "لا يمكن أن يتجاوز كود ERP 10 أحرف"
   },
   "deleteConfirm": {
-    "confirmMessage": "هل أنت متأكد من حذف {{name}}؟"
+    "confirmMessage": "هل أنت متأكد أنك تريد حذف {{name}}؟"
   },
-  "countryManagement": {
-    "menu": "Ülke Yönetimi",
-    "description": "Ülkeleri yönetin ve düzenleyin",
-    "addButton": "Yeni Ülke Ekle",
-    "searchPlaceholder": "بحث...",
-    "loading": "جارٍ التحميل...",
-    "error": "حدث خطأ",
-    "table": {
-      "id": "ID",
-      "name": "Ülke Adı",
-      "code": "Kod",
-      "erpCode": "ERP Kodu",
-      "createdDate": "إنشاءulma Tarihi",
-      "createdBy": "إنشاءan",
-      "noData": "Veri bulunamadı",
-      "title": "Ülke Listesi"
-    },
-    "delete": {
-      "confirmTitle": "Ülke Sil",
-      "confirmMessage": "{{name}} ülkesini silmek istediğinizden emin misiniz?"
-    },
-    "messages": {
-      "deleteSuccess": "Ülke başarıyla silindi",
-      "deleteError": "Ülke silinemedi",
-      "createSuccess": "Ülke başarıyla oluşturuldu",
-      "createError": "Ülke oluşturulamadı",
-      "updateSuccess": "Ülke başarıyla güncellendi",
-      "updateError": "Ülke güncellenemedi"
-    },
-    "form": {
-      "addCountry": "Yeni Ülke Ekle",
-      "editCountry": "Ülke تعديل",
-      "addDescription": "Yeni ülke bilgilerini girin",
-      "editDescription": "Ülke bilgilerini düzenleyin",
-      "name": "Ülke Adı",
-      "namePlaceholder": "Ülke adını girin",
-      "code": "Ülke Kodu",
-      "codePlaceholder": "Ülke kodunu girin (örn: TR, US)",
-      "erpCode": "ERP Kodu",
-      "erpCodePlaceholder": "ERP kodunu girin (opsiyonel)",
-      "nameRequired": "Ülke adı zorunludur",
-      "nameMaxLength": "Ülke adı en fazla 100 karakter olabilir",
-      "codeMinLength": "Ülke kodu en az 2 karakter olmalıdır",
-      "codeMaxLength": "Ülke kodu en fazla 5 karakter olabilir",
-      "erpCodeMaxLength": "ERP kodu en fazla 10 karakter olabilir",
-      "cancel": "إلغاء",
-      "save": "حفظ",
-      "tabs": {
-        "header": "Genel Bilgiler"
-      }
-    },
-    "stats": {
-      "totalCountries": "Toplam Ülke",
-      "activeCountries": "Aktif Ülke",
-      "newThisMonth": "Bu Ay Yeni"
-    }
-  },
-  "advancedFilter": {
-    "columnName": "Ülke Adı",
-    "columnCode": "Ülke Kodu",
-    "columnErpCode": "ERP Kodu"
-  }
+  "search": "بحث..."
 }

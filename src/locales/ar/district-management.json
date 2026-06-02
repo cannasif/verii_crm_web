@@ -3,77 +3,127 @@
   "description": "إدارة وتعديل المناطق",
   "addButton": "إضافة منطقة جديدة",
   "listTitle": "قائمة المناطق",
-  "listDescription": "يمكنك إدارة جميع المناطق المسجلة في النظام هنا.",
-  "loading": "جار التحميل...",
+  "listDescription": "يمكنك إدارة جميع المناطق المسجلة في النظام من هنا.",
+  "loading": "جارٍ التحميل...",
   "noData": "لا توجد بيانات",
-  "actions": "إجراءات",
+  "actions": "الإجراءات",
   "previous": "السابق",
   "next": "التالي",
   "cancel": "إلغاء",
   "delete": "حذف",
   "save": "حفظ",
-  "saving": "جار الحفظ...",
+  "saving": "جارٍ الحفظ...",
+  "countryManagement": {
+    "error": "حدث خطأ"
+  },
   "table": {
     "id": "المعرف",
     "name": "اسم المنطقة",
-    "erpCode": "كود ERP",
+    "erpCode": "رمز ERP",
+    "city": "المدينة",
     "cityName": "اسم المدينة",
+    "status": "الحالة",
+    "title": "قائمة المناطق",
     "createdDate": "تاريخ الإنشاء",
     "createdBy": "تم الإنشاء بواسطة",
-    "showing": "عرض {{from}}-{{to}} / {{total}}",
-    "page": "صفحة {{current}} / {{total}}"
+    "showing": "عرض {{from}}-{{to}} من {{total}}",
+    "page": "الصفحة {{current}} من {{total}}"
   },
-  "deleteConfirm": {
+  "delete": {
     "confirmTitle": "حذف المنطقة",
-    "confirmMessage": "هل أنت متأكد من حذف المنطقة {{name}}؟"
+    "confirmMessage": "هل أنت متأكد من حذف المنطقة {{name}}؟",
+    "success": "تم حذف المنطقة بنجاح",
+    "error": "تعذر حذف المنطقة",
+    "deleting": "جارٍ الحذف...",
+    "action": "حذف"
   },
   "form": {
     "editDistrict": "تعديل المنطقة",
     "addDistrict": "إضافة منطقة جديدة",
     "editDescription": "تعديل معلومات المنطقة",
-    "addDescription": "إدخال معلومات منطقة جديدة",
+    "addDescription": "أدخل معلومات المنطقة الجديدة",
     "name": "اسم المنطقة",
     "namePlaceholder": "أدخل اسم المنطقة",
     "city": "المدينة",
     "selectCity": "اختر المدينة",
-    "erpCode": "كود ERP",
-    "erpCodePlaceholder": "أدخل كود ERP (اختياري)",
+    "searchCity": "ابحث عن مدينة...",
+    "erpCode": "رمز ERP",
+    "erpCodePlaceholder": "أدخل رمز ERP (اختياري)",
     "nameRequired": "اسم المنطقة مطلوب",
-    "nameMaxLength": "اسم المنطقة لا يمكن أن يتجاوز 100 حرف",
-    "erpCodeMaxLength": "كود ERP لا يمكن أن يتجاوز 10 أحرف",
-    "cityRequired": "اختيار المدينة مطلوب"
+    "nameMaxLength": "لا يمكن أن يتجاوز اسم المنطقة 100 حرف",
+    "erpCodeMaxLength": "لا يمكن أن يتجاوز رمز ERP 10 أحرف",
+    "cityRequired": "المدينة مطلوبة"
   },
   "stats": {
     "totalDistricts": "إجمالي المناطق",
     "activeDistricts": "المناطق النشطة",
     "newThisMonth": "جديد هذا الشهر"
   },
+  "status": {
+    "inactive": "غير نشط",
+    "active": "نشط"
+  },
+  "messages": {
+    "createSuccess": "تم إنشاء المنطقة بنجاح",
+    "createError": "تعذر إنشاء المنطقة",
+    "updateSuccess": "تم تحديث المنطقة بنجاح",
+    "updateError": "تعذر تحديث المنطقة",
+    "deleteSuccess": "تم حذف المنطقة بنجاح",
+    "deleteError": "تعذر حذف المنطقة"
+  },
   "districtManagement": {
-    "menu": "İlçe Yönetimi",
-    "description": "İlçeleri yönetin ve düzenleyin",
-    "addButton": "Yeni İlçe Ekle",
+    "menu": "إدارة المناطق",
+    "description": "إدارة وتعديل المناطق",
+    "addButton": "إضافة منطقة جديدة",
     "loading": "جارٍ التحميل...",
-    "noData": "Veri yok",
+    "noData": "لا توجد بيانات",
     "table": {
-      "id": "ID",
-      "name": "İlçe Adı",
-      "erpCode": "ERP Kodu",
-      "city": "Şehir",
-      "cityName": "Şehir Adı",
-      "status": "Durum",
-      "title": "İlçe Listesi"
+      "id": "المعرف",
+      "name": "اسم المنطقة",
+      "erpCode": "رمز ERP",
+      "city": "المدينة",
+      "cityName": "اسم المدينة",
+      "status": "الحالة",
+      "title": "قائمة المناطق"
     },
     "delete": {
-      "confirmTitle": "İlçeyi Sil",
-      "confirmMessage": "{{name}} ilçesini silmek istediğinizden emin misiniz?",
-      "success": "İlçe başarıyla silindi",
-      "error": "İlçe silinirken hata oluştu"
+      "confirmTitle": "حذف المنطقة",
+      "confirmMessage": "هل أنت متأكد من حذف المنطقة {{name}}؟",
+      "success": "تم حذف المنطقة بنجاح",
+      "error": "تعذر حذف المنطقة"
     },
     "messages": {
-      "createSuccess": "İlçe başarıyla oluşturuldu",
-      "createError": "İlçe oluşturulamadı",
-      "updateSuccess": "İlçe başarıyla güncellendi",
-      "updateError": "İlçe güncellenemedi"
+      "createSuccess": "تم إنشاء المنطقة بنجاح",
+      "createError": "تعذر إنشاء المنطقة",
+      "updateSuccess": "تم تحديث المنطقة بنجاح",
+      "updateError": "تعذر تحديث المنطقة"
+    },
+    "stats": {
+      "totalDistricts": "إجمالي المناطق",
+      "activeDistricts": "المناطق النشطة",
+      "newThisMonth": "جديد هذا الشهر"
+    },
+    "status": {
+      "inactive": "غير نشط",
+      "active": "نشط"
+    },
+    "error": "حدث خطأ",
+    "form": {
+      "editDistrict": "تعديل المنطقة",
+      "addDistrict": "إضافة منطقة جديدة",
+      "editDescription": "تعديل معلومات المنطقة",
+      "addDescription": "أدخل معلومات المنطقة الجديدة",
+      "name": "اسم المنطقة",
+      "namePlaceholder": "أدخل اسم المنطقة",
+      "city": "المدينة",
+      "selectCity": "اختر المدينة",
+      "searchCity": "ابحث عن مدينة...",
+      "erpCode": "رمز ERP",
+      "erpCodePlaceholder": "أدخل رمز ERP (اختياري)",
+      "nameRequired": "اسم المنطقة مطلوب",
+      "nameMaxLength": "لا يمكن أن يتجاوز اسم المنطقة 100 حرف",
+      "erpCodeMaxLength": "لا يمكن أن يتجاوز رمز ERP 10 أحرف",
+      "cityRequired": "المدينة مطلوبة"
     }
   }
 }

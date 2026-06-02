@@ -172,7 +172,8 @@
     "descriptionFieldsTitle": "حقول الوصف",
     "descriptionField1Label": "المواصفات",
     "descriptionField2Label": "حديد",
-    "descriptionField3Label": "برغي"
+    "descriptionField3Label": "برغي",
+    "doubleClickToEdit": "انقر نقرًا مزدوجًا للتعديل"
   },
   "exchangeRates": {
     "title": "أسعار الصرف",
@@ -277,7 +278,21 @@
     "metaOfferNo": "رقم العرض",
     "metaCustomer": "العميل",
     "notSpecified": "—",
-    "grandTotal": "الإجمالي"
+    "grandTotal": "الإجمالي",
+    "senderLabel": "صادر من",
+    "recipientLabel": "صادر إلى",
+    "unitPriceNet": "سعر الوحدة الصافي",
+    "lineDiscount": "خصم السطر",
+    "vatRate": "معدل ضريبة القيمة المضافة",
+    "priceDetail": "تفصيل السعر",
+    "grossTotal": "المجموع الإجمالي",
+    "lineDiscountTotal": "إجمالي خصم السطور",
+    "generalDiscount": "الخصم العام",
+    "netSubtotal": "الإجمالي الفرعي الصافي",
+    "totalVat": "إجمالي الضريبة",
+    "grandTotalWithVat": "الإجمالي العام (شامل الضريبة)",
+    "validityNote": "هذا العرض صالح لمدة 15 يومًا من تاريخ الإصدار.",
+    "draftWatermark": "مسودة"
   },
   "revision": {
     "success": "تم إنشاء سجل المراجعة.",

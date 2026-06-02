@@ -142,7 +142,8 @@
     "description1": "Descrizione 1",
     "description2": "Descrizione 2",
     "description3": "Descrizione 3",
-    "descriptionPlaceholder": "Descrizione..."
+    "descriptionPlaceholder": "Descrizione...",
+    "doubleClickToEdit": "Fare doppio clic per modificare"
   },
   "exchangeRates": {
     "title": "Cambi",

@@ -1,37 +1,37 @@
 {
-  "menu": "Dokumentenserien-Typ-Verwaltung",
-  "description": "Verwalten Sie Dokumentenserien-Typen.",
+  "menu": "Verwaltung der Dokumentenserien-Typen",
+  "description": "Verwalten und bearbeiten Sie Dokumentenserien-Typen",
   "search": "Suchen...",
   "refresh": "Aktualisieren",
-  "addButton": "Hinzufügen Neu Document Serial Type",
+  "addButton": "Neuen Dokumentenserientyp hinzufügen",
   "loading": "Laden...",
   "noData": "Keine Daten",
   "actions": "Aktionen",
   "cancel": "Abbrechen",
   "save": "Speichern",
   "saving": "Speichern...",
-  "delete": "Delete",
-  "deleting": "Deleting...",
-  "deleteConfirmTitle": "Delete Confirmation",
-  "deleteConfirmDescription": "Are you sure you want to delete this record? This action cannot be undone.",
+  "delete": "Löschen",
+  "deleting": "Wird gelöscht...",
+  "deleteConfirmTitle": "Löschbestätigung",
+  "deleteConfirmDescription": "Möchten Sie diesen Datensatz wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.",
   "table": {
-    "id": "AUSWEIS",
+    "title": "Liste der Dokumentenserientypen",
+    "id": "ID",
     "ruleType": "Regeltyp",
     "customerType": "Kundentyp",
     "salesRep": "Vertriebsmitarbeiter",
     "serialPrefix": "Serienpräfix",
     "serialLength": "Serienlänge",
-    "createdDate": "Erstellungsdatum",
-    "title": "Dosya Tip Listesi"
+    "createdDate": "Erstellungsdatum"
   },
   "form": {
-    "addTitle": "Hinzufügen Neu Document Serial Type",
+    "addTitle": "Neuen Dokumentenserientyp hinzufügen",
     "editTitle": "Dateityp bearbeiten",
-    "addDescription": "Geben Sie die neuen Dateityp-Informationen ein",
-    "editDescription": "Bearbeiten Sie die Dateityp-Informationen",
+    "addDescription": "Neue Informationen zum Dokumentenserientyp eingeben",
+    "editDescription": "Informationen zum Dokumententyp bearbeiten",
     "ruleType": "Regeltyp",
     "ruleType.required": "Regeltyp ist erforderlich",
-    "selectRuleType": "Wählen Sie einen Regeltyp",
+    "selectRuleType": "Regeltyp auswählen",
     "customerType": "Kundentyp",
     "selectCustomerType": "Wählen Sie einen Kundentyp (optional)",
     "noCustomerTypeSelected": "Kein Kundentyp ausgewählt",
@@ -58,9 +58,15 @@
   },
   "totalRecords": "Gesamt {{count}} Einträge",
   "advancedFilter": {
-    "columnSerialPrefix": "Serial Prefix",
-    "columnCustomerTypeName": "Customer Type",
-    "columnSalesRepFullName": "Sales Rep",
-    "columnRuleType": "Rule Type"
-  }
+    "columnSerialPrefix": "Serienpräfix",
+    "columnCustomerTypeName": "Kundentyp",
+    "columnSalesRepFullName": "Vertriebsmitarbeiter",
+    "columnRuleType": "Regeltyp"
+  },
+  "common": {
+    "delete": "Löschen"
+  },
+  "error": "Datensatz konnte nicht gespeichert werden.",
+  "previous": "Zurück",
+  "next": "Weiter"
 }

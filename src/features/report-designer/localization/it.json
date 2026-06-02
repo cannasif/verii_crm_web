@@ -24,7 +24,9 @@
       "subtitle": "Trascina gli elementi sulla pagina per posizionarli.",
       "basicBlocks": "Blocchi di base",
       "searchPlaceholder": "Cerca campo…",
-      "noSearchResults": "Nessun risultato"
+      "noSearchResults": "Nessun risultato",
+      "headerFields": "Campi intestazione",
+      "lineFields": "Campi riga"
     },
     "sections": {
       "page": "Pagina intera",
@@ -79,7 +81,7 @@
       "action": "Azione"
     },
     "form": {
-      "editTemplate": "Modifica modello",
+    "editTemplate": "Modifica modello",
       "newTemplate": "Nuovo modello di report",
       "documentType": "Tipo documento",
       "title": "Titolo",
@@ -234,15 +236,21 @@
     "enterDocumentId": "Inserisci l’ID documento (preventivo / ordine / richiesta).",
     "documentId": "ID documento",
     "generating": "Generazione in corso…",
+    "templateLoadFailed": "Impossibile caricare i dettagli del modello",
     "noTemplates": "Nessun modello ancora. Usa «Crea nuovo» per aggiungerne uno.",
     "listDescription": "L'elenco carica solo le intestazioni dei modelli. I dati di progettazione completi vengono caricati su richiesta per la modifica, la copia e la generazione di PDF.",
     "searchPlaceholder": "Cerca per titolo",
+    "detailLoadedOnDemand": "I dettagli si caricano al clic",
+    "detailHint": "Il design completo si apre nella schermata di modifica",
     "filterAllDocumentTypes": "Tutti i tipi di documento",
     "filterAllStatuses": "Tutti gli stati",
     "statusActive": "Attivo",
     "statusInactive": "Inattivo",
+    "listSummary": "Mostrando {{from}}-{{to}} di {{total}} modelli",
     "updatedDate": "Data di aggiornamento",
-    "editTemplate": "Modifica modello",
+    "pageSizeLabel": "Dimensione pagina",
+    "pageLabel": "Pagina {{current}} / {{total}}",
+      "editTemplate": "Modifica modello",
     "newTemplate": "Nuovo modello di report",
     "titlePlaceholder": "Inserisci il titolo del report",
     "setDefaultTemplate": "Imposta come modello predefinito",

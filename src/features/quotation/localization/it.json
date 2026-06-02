@@ -172,7 +172,8 @@
     "descriptionFieldsTitle": "Campi descrizione",
     "descriptionField1Label": "Profilo",
     "descriptionField2Label": "Ferro",
-    "descriptionField3Label": "Vite"
+    "descriptionField3Label": "Vite",
+    "doubleClickToEdit": "Fare doppio clic per modificare"
   },
   "exchangeRates": {
     "title": "Tassi di cambio",
@@ -277,7 +278,21 @@
     "metaOfferNo": "N. preventivo",
     "metaCustomer": "Cliente",
     "notSpecified": "—",
-    "grandTotal": "Totale generale"
+    "grandTotal": "Totale generale",
+    "senderLabel": "Preventivo da",
+    "recipientLabel": "Preventivo per",
+    "unitPriceNet": "Prezzo unitario netto",
+    "lineDiscount": "Sconto riga",
+    "vatRate": "Aliquota IVA",
+    "priceDetail": "Dettaglio prezzo",
+    "grossTotal": "Totale lordo",
+    "lineDiscountTotal": "Sconto totale delle righe",
+    "generalDiscount": "Sconto generale",
+    "netSubtotal": "Subtotale netto",
+    "totalVat": "IVA totale",
+    "grandTotalWithVat": "Totale generale (IVA inclusa)",
+    "validityNote": "Questo preventivo è valido per 15 giorni dalla data di emissione.",
+    "draftWatermark": "BOZZA"
   },
   "revision": {
     "success": "Record di revisione creato.",

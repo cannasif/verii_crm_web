@@ -51,7 +51,7 @@ export const documentSerialTypeApi = {
   },
 
   update: async (id: number, data: UpdateDocumentSerialTypeDto): Promise<DocumentSerialTypeDto> => {
-    const response = await api.post<ApiResponse<DocumentSerialTypeDto>>(`/api/DocumentSerialType/${id}`, data);
+    const response = await api.put<ApiResponse<DocumentSerialTypeDto>>(`/api/DocumentSerialType/${id}`, data);
     if (response.success && response.data) {
       return response.data;
     }

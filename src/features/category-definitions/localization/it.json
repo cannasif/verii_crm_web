@@ -3,6 +3,10 @@
     "title": "Definizioni categoria",
     "description": "Da qui gestisci l'albero delle categorie e gli articoli collegati alle categorie per i cataloghi B2B e B2C.",
     "guidedTitle": "Gestisci la struttura delle categorie in 3 passaggi chiari",
+    "hierarchyBlueprintTitle": "Blueprint di categoria consigliata",
+    "hierarchyBlueprintDescription": "Con una struttura fissa dell'albero categorie, l'esperienza utente migliora e la corrispondenza tra prodotti diventa più affidabile.",
+    "hierarchyExampleLabel": "Flusso di esempio",
+    "hierarchyExampleValue": "Cellulari > Feature Phones > iPhone > Serie 17 > Elenco prodotti",
     "easyModeTitle": "Non serve indovinare cosa fare qui",
     "summaryGuideTitle": "Ti mostro il prossimo passo corretto",
     "createCatalogTitle": "Crea nuovo catalogo",
@@ -67,6 +71,7 @@
     "root": "Radice",
     "leaf": "Foglia",
     "branch": "Ramo",
+    "treeLevelLabel": "Livello {{level}}",
     "noCatalogs": "Non è ancora stato definito alcun catalogo.",
     "noCategories": "Non sono state trovate categorie a questo livello.",
     "noStocks": "Nessun articolo è collegato a questa categoria.",
@@ -92,7 +97,31 @@
       "branchTitle": "2. Le categorie ramo servono alla navigazione",
       "branchDescription": "Le categorie ramo non sono il punto di scelta finale. Servono a guidare l'utente verso il livello corretto.",
       "leafTitle": "3. Verifica gli articoli sulla categoria foglia",
-      "leafDescription": "L'elenco degli articoli collegati ha senso a livello foglia: la verifica finale va fatta lì."
+      "leafDescription": "L'elenco degli articoli collegati ha senso a livello foglia: la verifica finale va fatta lì.",
+      "exampleTitle": "4. Mantieni coerente la gerarchia aziendale",
+      "exampleDescription": "Struttura consigliata: Categoria principale > Sottocategoria > Marca > Serie > Prodotti. Aiuta il team a usare una logica comune e rende più prevedibili i risultati di ricerca."
+    },
+    "hierarchyStages": {
+      "root": {
+        "title": "Categoria principale",
+        "description": "Rappresenta l'area di business principale. Esempio: Telefonia"
+      },
+      "subcategory": {
+        "title": "Sottocategoria",
+        "description": "Separa meglio la famiglia prodotto. Esempio: Feature Phones"
+      },
+      "brand": {
+        "title": "Marca",
+        "description": "Usa questo livello per il breakdown di marca o produttore. Esempio: iPhone"
+      },
+      "series": {
+        "title": "Serie",
+        "description": "Qui mantieni la distinzione per famiglia/modello. Esempio: Serie 17"
+      },
+      "products": {
+        "title": "Prodotti",
+        "description": "Questo deve essere il livello finale a foglia; qui vanno effettuate le associazioni stock."
+      }
     },
     "actions": {
       "newCatalog": "Nuovo catalogo",
@@ -111,6 +140,11 @@
       "previewingRules": "Generazione anteprima",
       "applyRules": "Applica regole",
       "applyingRules": "Applicazione regole",
+      "importFromRiiStock": "Crea da RII_STOK",
+      "previewingStockHierarchy": "Lettura gerarchia",
+      "refreshStockHierarchyPreview": "Aggiorna anteprima",
+      "applyStockHierarchy": "Crea albero catalogo",
+      "applyingStockHierarchy": "Creazione albero catalogo",
       "addFavorite": "Aggiungi ai preferiti",
       "removeFavorite": "Rimuovi dai preferiti",
       "addCategoryFavorite": "Aggiungi categoria ai preferiti",
@@ -145,11 +179,48 @@
       "rulePreviewError": "Impossibile caricare l'anteprima delle regole.",
       "ruleApplySuccess": "Regole applicate correttamente.",
       "ruleApplyError": "Impossibile applicare le regole.",
+      "stockHierarchyPreviewError": "L'anteprima gerarchia stock non può essere caricata.",
+      "stockHierarchyApplySuccess": "Albero catalogo generato dalla gerarchia RII_STOK.",
+      "stockHierarchyApplyError": "Impossibile generare l'albero catalogo dalla gerarchia RII_STOK.",
       "favoriteAddSuccess": "Articolo aggiunto ai preferiti.",
       "favoriteRemoveSuccess": "Articolo rimosso dai preferiti.",
       "favoriteToggleError": "Impossibile aggiornare lo stato preferito.",
       "categoryFavoriteAddSuccess": "Categoria aggiunta ai preferiti.",
       "categoryFavoriteRemoveSuccess": "Categoria rimossa dai preferiti."
+    },
+    "stockHierarchyImport": {
+      "title": "Crea catalogo da gerarchia RII_STOK",
+      "description": "Converte Gruppo Codice > Codice1 > Codice2 > Codice3 in un albero catalogo. Come in marketplace tipo Trendyol/Sahibinden, l'utente scende livello per livello e visualizza gli stock al livello finale.",
+      "options": {
+        "includeCode1": {
+          "title": "Includi livello Codice1",
+          "description": "Crea la prima suddivisione sotto il Gruppo Codice. Es: Benzina / Diesel."
+        },
+        "includeCode2": {
+          "title": "Includi livello Codice2",
+          "description": "Crea la seconda suddivisione sotto Codice1. Es: Manuale / Automatico."
+        },
+        "includeCode3": {
+          "title": "Includi livello Codice3",
+          "description": "Crea la terza suddivisione sotto Codice2. Se vuota, il livello disponibile più profondo diventa la foglia."
+        },
+        "assignStocks": {
+          "title": "Assegna stock al livello foglia",
+          "description": "Durante la creazione dell'albero catalogo, collega automaticamente ogni stock al livello foglia più profondo generato."
+        }
+      },
+      "preview": {
+        "sourceStock": "Stock letti",
+        "category": "Totale categorie",
+        "newCategory": "Nuove categorie",
+        "newStockAssignment": "Nuovi collegamenti stock",
+        "group": "Gruppo: {{count}}",
+        "code1": "Codice1: {{count}}",
+        "code2": "Codice2: {{count}}",
+        "code3": "Codice3: {{count}}",
+        "samples": "Percorsi di esempio da generare",
+        "noSamples": "Nessuna gerarchia di esempio trovata."
+      }
     },
     "rulePreviewSummaryTitle": "Riepilogo anteprima regole",
     "rulePreviewSummary": {
@@ -189,6 +260,8 @@
       "categoryCode": "Codice categoria",
       "categoryCodePlaceholder": "Es. GLASS_SYSTEMS",
       "nodeType": "Tipo di categoria",
+      "nodeTypeBranchHelp": "Le categorie ramo servono alla navigazione e all'apertura dei livelli inferiori. In questo livello non collegare stock direttamente.",
+      "nodeTypeLeafHelp": "La categoria foglia è il punto finale di selezione. Qui devono essere mantenute le associazioni degli stock e l'elenco prodotti.",
       "visualPreset": "Tema visivo",
       "visualPresetPlaceholder": "Cerca e scegli un tema",
       "visualPresetSearchPlaceholder": "Cerca tema...",

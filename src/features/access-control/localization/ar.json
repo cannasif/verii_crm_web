@@ -19,6 +19,16 @@
       "groups": "يحصل المستخدم على صلاحيات مجمّعة من جميع المجموعات المحددة.",
       "save": "تُطبَّق الإسنادات فوراً على فحوصات التفويض التالية. قد يحتاج المستخدم إلى تحديث الجلسة.",
       "systemAdminNote": "إذا كان المستخدم ضمن مجموعة مسؤول نظام، تُتخطى الصلاحيات التفصيلية."
+    },
+    "userVisibilityAssignment": {
+      "user": "اختر المستخدم الذي تريد إدارة رؤية الكيان الخاص به.",
+      "policy": "اختر سياسة رؤية نشطة لكل كيان أو اتركها فارغة."
+    },
+    "visibilityPolicy": {
+      "code": "استخدم رمزًا فريدًا لتمييز السياسة في سير التعيين والتدقيق.",
+      "name": "الاسم المعروض الذي يراه المسؤولون أثناء إدارة السياسة.",
+      "includeSelf": "عند التمكين، تبقى سجلات المستخدم الخاصة به ظاهرة ضمن هذا النطاق.",
+      "isActive": "السياسات غير النشطة لا تدخل في تعيينات وقرارات وصول جديدة."
     }
   },
   "permissionDefinitions": {
@@ -36,6 +46,10 @@
       "affectedRoutesNone": "لا يوجد مسار مطابق لهذا الرمز",
       "name": "الاسم",
       "namePlaceholder": "الاسم الظاهر",
+      "availableOnWeb": "متاح على الويب",
+      "availableOnWebHint": "يمكن استخدام هذه الصلاحية في تطبيق الويب للقوائم والصفحات والإجراءات.",
+      "availableOnMobile": "متاح على الجوال",
+      "availableOnMobileHint": "يمكن استخدام هذه الصلاحية في تطبيق الجوال للقوائم والشاشات والإجراءات.",
       "description": "الوصف",
       "descriptionPlaceholder": "وصف اختياري",
       "isActive": "نشط",
@@ -46,9 +60,15 @@
       "title": "تعريفات الصلاحيات",
       "code": "الرمز",
       "name": "الاسم",
+      "platform": "المنصة",
       "isActive": "نشط",
       "updatedDate": "تاريخ التحديث",
       "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "platform": {
+      "web": "ويب",
+      "mobile": "الجوال",
+      "both": "ويب + جوال"
     },
     "delete": {
       "confirmTitle": "حذف تعريف الصلاحية",
@@ -88,7 +108,17 @@
     "permissionsPanel": {
       "title": "تعديل صلاحيات المجموعة",
       "description": "حدد الصلاحيات لهذه المجموعة",
-      "currentCodes": "رموز الصلاحيات الحالية"
+      "currentCodes": "رموز الصلاحيات الحالية",
+      "screen": "الشاشة / مجال الصلاحيات",
+      "groupedRows": "مناطق الصلاحيات",
+      "actionsMapped": "الصلاحيات",
+      "actions": {
+        "create": "إنشاء",
+        "read": "قراءة",
+        "update": "تحديث",
+        "delete": "حذف",
+        "other": "أخرى"
+      }
     },
     "delete": {
       "confirmTitle": "حذف مجموعة الصلاحيات",
@@ -106,6 +136,180 @@
     "noUsers": "لم يُعثر على مستخدمين",
     "noGroups": "لا توجد مجموعات صلاحيات متاحة",
     "selectAll": "تحديد الكل"
+  },
+  "userVisibilityAssignments": {
+    "title": "إسنادات رؤية المستخدم",
+    "description": "إدارة سياسات رؤية الكيان حسب المستخدم",
+    "selectUser": "اختيار مستخدم",
+    "selectedUser": "المستخدم المختار",
+    "selectUserPlaceholder": "ابحث واختر مستخدماً...",
+    "selectUserHint": "اختر مستخدماً لإدارة إسنادات الرؤية",
+    "assignedPolicies": "السياسات المخصصة",
+    "status": "الحالة",
+    "ready": "محدث",
+    "unassigned": "غير مخصص",
+    "cardDescription": "اختر سياسة الرؤية المطبقة على سجلات {{entity}} لهذا المستخدم.",
+    "selectPolicyPlaceholder": "اختيار سياسة",
+    "noPolicy": "لا توجد سياسة"
+  },
+  "visibilityPolicies": {
+    "title": "سياسات الرؤية",
+    "description": "إدارة مجموعات السياسات التي تحدد من يمكنه رؤية أي السجلات",
+    "add": "إضافة سياسة",
+    "search": "بحث عن السياسات...",
+    "table": {
+      "title": "قائمة سياسات الرؤية",
+      "code": "الرمز",
+      "name": "الاسم",
+      "entityType": "الكيان",
+      "scopeType": "النطاق",
+      "includeSelf": "تضمين الذات",
+      "isActive": "نشط",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "stats": {
+      "total": "إجمالي السياسات",
+      "active": "السياسات النشطة",
+      "entities": "أنواع الكيان"
+    },
+    "form": {
+      "addTitle": "إضافة سياسة رؤية",
+      "editTitle": "تعديل سياسة رؤية",
+      "addDescription": "إنشاء تعريف جديد لسياسة الرؤية",
+      "editDescription": "تحديث سياسة الرؤية المحددة",
+      "code": "الرمز",
+      "codePlaceholder": "example.quotation.team",
+      "name": "الاسم",
+      "namePlaceholder": "رؤية عرض أسعار الفريق",
+      "entityType": "الكيان",
+      "entityTypePlaceholder": "اختر الكيان",
+      "scopeType": "النطاق",
+      "scopeTypePlaceholder": "اختر النطاق",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف قصير اختياري",
+      "includeSelf": "تضمين سجلات المستخدم نفسها",
+      "isActive": "نشط",
+      "summaryTitle": "ملخص السياسة",
+      "summary": "سيتم تطبيق نطاق {{scope}} على سجلات {{entity}}."
+    },
+    "scope": {
+      "self": "الذات فقط",
+      "managerHierarchy": "هيكل المدير",
+      "permissionGroup": "مجموعة الصلاحيات",
+      "company": "على مستوى الشركة"
+    },
+    "entity": {
+      "activity": "النشاط",
+      "quotation": "عرض السعر",
+      "demand": "الطلب",
+      "order": "الطلب",
+      "salesman360": "مؤشر أداء المندوب"
+    }
+  },
+  "visibilitySimulator": {
+    "title": "محاكي الرؤية",
+    "description": "اختبر أي سجلات وسجلات تجاوز الموافقات المرئية للمستخدم المحدد ونوع الكيان المختار.",
+    "selectUser": "المستخدم",
+    "helpUser": "حدد المستخدم الذي تريد محاكاة الرؤية الخاصة به.",
+    "selectUserPlaceholder": "اختر مستخدماً...",
+    "selectEntity": "الكيان",
+    "helpEntity": "حدد الوحدة التي تريد محاكاة رؤية السجلات لها.",
+    "selectEntityPlaceholder": "اختر كيان",
+    "recordId": "معرف السجل",
+    "recordIdPlaceholder": "مثل 125",
+    "helpRecordId": "أدخل معرف سجل لعرض ما إذا كانت إجراءات العرض والتحديث والحذف والموافقة مسموحة.",
+    "selectedUser": "المستخدم المختار",
+    "entity": "الكيان",
+    "visibleUsers": "المستخدمون المرئيون",
+    "approvalOverrides": "سجلات تجاوز الموافقة",
+    "visibleUsersTitle": "المستخدمون ضمن النطاق",
+    "policyDefined": "سياسة معرفة",
+    "noPolicy": "لا توجد سياسة",
+    "companyWide": "وصول على مستوى الشركة",
+    "policyActive": "تم تطبيق سياسة رؤية نشطة",
+    "includeSelf": "يتضمن الذات",
+    "awaitingSelection": "اختر مستخدمًا وكيانًا أولاً",
+    "overrideTitle": "سجلات تجاوز الموافقة النشطة",
+    "noOverrides": "لا توجد سجلات تجاوز موافقة نشطة",
+    "overrideRecord": "السجل #{{id}}",
+    "auditTitle": "تدقيق تجاوز الموافقة",
+    "noAudit": "لم يتم العثور على إدخالات تدقيق لتجاوز الموافقة النشطة",
+    "auditActionId": "إجراء الموافقة",
+    "auditRequestId": "طلب الموافقة",
+    "auditFlow": "التدفق",
+    "auditApprover": "الموافق",
+    "auditStepValue": "الخطوة {{step}} / الحالية {{currentStep}}",
+    "actionPanelTitle": "محاكاة إجراء السجل",
+    "noRecordSimulation": "بعد إدخال معرف سجل، يظهر نتيجة العرض/التحديث/الحذف/الموافقة.",
+    "actionAllowed": "مسموح",
+    "actionDenied": "مرفوض",
+    "action": {
+      "view": "عرض",
+      "update": "تحديث",
+      "delete": "حذف",
+      "approve": "موافقة"
+    }
+  },
+  "auditLogs": {
+    "title": "سجلات التدقيق",
+    "description": "تتبع من نفذ الإجراءات الحرجة، وأي تتبع استخدم، وكيف كانت النتيجة.",
+    "search": "بحث في سجلات التدقيق...",
+    "filters": {
+      "result": "النتيجة",
+      "actionType": "الإجراء",
+      "entityType": "الكيان",
+      "entityId": "معرف السجل",
+      "performedByUserEmail": "تم التنفيذ بواسطة",
+      "source": "المصدر",
+      "branchCode": "الفرع",
+      "requestPath": "مسار الطلب",
+      "requestMethod": "الطريقة",
+      "createdDate": "التاريخ"
+    },
+    "clearTraceFilter": "مسح مرشح التتبع",
+    "viewDetail": "التفاصيل",
+    "filterTrace": "تصفية التتبع",
+    "loadError": "تعذر تحميل سجلات التدقيق",
+    "stats": {
+      "total": "إجمالي السجلات",
+      "errors": "النتائج الفاشلة",
+      "traces": "التتبع النشط"
+    },
+    "table": {
+      "title": "قائمة سجلات التدقيق",
+      "createdDate": "التاريخ",
+      "traceId": "معرف التتبع",
+      "actionType": "الإجراء",
+      "entityType": "الكيان",
+      "entityId": "معرف السجل",
+      "result": "النتيجة",
+      "source": "المصدر",
+      "performedBy": "تم التنفيذ بواسطة",
+      "branchCode": "الفرع",
+      "requestPath": "مسار الطلب",
+      "requestMethod": "الطريقة",
+      "showing": "{{from}}-{{to}} / {{total}}"
+    },
+    "detail": {
+      "title": "تفاصيل سجل التدقيق",
+      "description": "اطلع على سياق الطلب وملخص التغييرات للسجل المحدد.",
+      "contextTitle": "سياق الإجراء",
+      "requestTitle": "ملخص الطلب",
+      "reason": "السبب",
+      "failureReason": "تفاصيل الفشل",
+      "changedFieldsTitle": "الحقول المتغيرة",
+      "noChangedFields": "لا توجد اختلافات حقول لهذا السجل.",
+      "oldValuesTitle": "القيم السابقة",
+      "newValuesTitle": "القيم الجديدة"
+    },
+    "traceDrillDown": {
+      "traceId": "التتبع المختار",
+      "startedAt": "بدأ في",
+      "completedAt": "انتهى في",
+      "entities": "الكيانات المتأثرة",
+      "timelineTitle": "ملخص مسار التتبع",
+      "openTrace": "فتح هذا التتبع"
+    }
   },
   "common": {
     "cancel": "إلغاء",
@@ -128,6 +332,9 @@
     "permissionDefinitions": "تعريفات الصلاحيات",
     "permissionGroups": "مجموعات الصلاحيات",
     "userGroupAssignments": "إسناد المستخدمين للمجموعات",
+    "visibilityPolicies": "سياسات الرؤية",
+    "userVisibilityAssignments": "إسنادات رؤية المستخدم",
+    "auditLogs": "سجلات التدقيق",
     "accessControlGuide": "دليل التحكم في الوصول"
   },
   "guide": {

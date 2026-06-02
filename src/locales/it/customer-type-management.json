@@ -58,19 +58,8 @@
     "deleteError": "Impossibile eliminare il tipo cliente"
   },
   "advancedFilter": {
-    "columnName": "Customer Type Name",
-    "columnDescription": "Description"
-  },
-  "customerTypeManagement": {
-    "table": {
-      "title": "Elenco tipi cliente"
-    },
-    "error": "Si è verificato un errore",
-    "delete": {
-      "success": "Tipo cliente eliminato con successo",
-      "error": "Impossibile eliminare il tipo cliente",
-      "action": "Elimina"
-    }
+    "columnName": "Nome del tipo cliente",
+    "columnDescription": "Descrizione"
   },
   "error": "Si è verificato un errore"
 }

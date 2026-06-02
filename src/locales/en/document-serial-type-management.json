@@ -14,16 +14,15 @@
   "deleting": "Deleting...",
   "deleteConfirmTitle": "Delete Confirmation",
   "deleteConfirmDescription": "Are you sure you want to delete this record? This action cannot be undone.",
-  "totalRecords": "Total {{count}} records",
   "table": {
+    "title": "Document Serial Type List",
     "id": "ID",
     "ruleType": "Rule Type",
     "customerType": "Customer Type",
     "salesRep": "Sales Representative",
     "serialPrefix": "Serial Prefix",
     "serialLength": "Serial Length",
-    "createdDate": "Created Date",
-    "title": "Dosya Tip Listesi"
+    "createdDate": "Created Date"
   },
   "form": {
     "addTitle": "Add New Document Serial Type",
@@ -57,10 +56,17 @@
     "serialIncrement.min": "Serial increment must be at least 1",
     "serialIncrementPlaceholder": "Enter serial increment value"
   },
+  "totalRecords": "Total {{count}} records",
   "advancedFilter": {
     "columnSerialPrefix": "Serial Prefix",
     "columnCustomerTypeName": "Customer Type",
-    "columnSalesRepFullName": "Sales Rep",
+    "columnSalesRepFullName": "Sales Representative",
     "columnRuleType": "Rule Type"
-  }
+  },
+  "common": {
+    "delete": "Delete"
+  },
+  "error": "Record could not be saved.",
+  "previous": "Previous",
+  "next": "Next"
 }

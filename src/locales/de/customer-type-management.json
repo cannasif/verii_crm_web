@@ -57,16 +57,9 @@
     "deleteSuccess": "Kundentyp erfolgreich gelöscht",
     "deleteError": "Kundentyp konnte nicht gelöscht werden"
   },
-  "customerTypeManagement": {
-    "table": {
-      "title": "Kundentyp-Liste"
-    },
-    "error": "Ein Fehler ist aufgetreten",
-    "delete": {
-      "success": "Kundentyp erfolgreich gelöscht",
-      "error": "Kundentyp konnte nicht gelöscht werden",
-      "action": "Löschen"
-    }
-  },
-  "error": "Ein Fehler ist aufgetreten"
+  "error": "Ein Fehler ist aufgetreten",
+  "advancedFilter": {
+    "columnName": "Kunden-Typ-Name",
+    "columnDescription": "Beschreibung"
+  }
 }

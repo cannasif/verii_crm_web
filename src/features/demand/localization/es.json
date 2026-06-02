@@ -142,7 +142,8 @@
     "description1": "Descripción 1",
     "description2": "Descripción 2",
     "description3": "Descripción 3",
-    "descriptionPlaceholder": "Descripción..."
+    "descriptionPlaceholder": "Descripción...",
+    "doubleClickToEdit": "Haz doble clic para editar"
   },
   "exchangeRates": {
     "title": "Tipos de cambio",

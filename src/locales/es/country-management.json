@@ -1,50 +1,112 @@
 {
+  "countryManagement": {
+    "menu": "Gestión de Países",
+    "description": "Gestionar y editar países",
+    "addButton": "Agregar País",
+    "searchPlaceholder": "Buscar...",
+    "loading": "Cargando...",
+    "error": "Se produjo un error",
+    "table": {
+      "id": "ID",
+      "name": "Nombre del país",
+      "code": "Código",
+      "erpCode": "Código ERP",
+      "createdDate": "Fecha de creación",
+      "createdBy": "Creado por",
+      "noData": "No se encontraron datos",
+      "title": "Lista de países"
+    },
+    "delete": {
+      "confirmTitle": "Eliminar País",
+      "confirmMessage": "¿Está seguro de que desea eliminar {{name}}?"
+    },
+    "messages": {
+      "deleteSuccess": "País eliminado con éxito",
+      "deleteError": "No se pudo eliminar el país",
+      "createSuccess": "País creado con éxito",
+      "createError": "No se pudo crear el país",
+      "updateSuccess": "País actualizado con éxito",
+      "updateError": "No se pudo actualizar el país"
+    },
+    "form": {
+      "addCountry": "Agregar País",
+      "editCountry": "Editar País",
+      "addDescription": "Ingrese información del nuevo país",
+      "editDescription": "Editar información del país",
+      "name": "Nombre del país",
+      "namePlaceholder": "Ingrese el nombre del país",
+      "code": "Código del país",
+      "codePlaceholder": "Ingrese el código del país (ej. TR, US)",
+      "erpCode": "Código ERP",
+      "erpCodePlaceholder": "Ingrese el código ERP (opcional)",
+      "nameRequired": "El nombre del país es obligatorio",
+      "nameMaxLength": "El nombre del país no puede exceder los 100 caracteres",
+      "codeMinLength": "El código del país debe tener al menos 2 caracteres",
+      "codeMaxLength": "El código del país no puede exceder los 5 caracteres",
+      "erpCodeMaxLength": "El código ERP no puede exceder los 10 caracteres",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "tabs": {
+        "header": "Información general"
+      }
+    },
+    "stats": {
+      "totalCountries": "Países totales",
+      "activeCountries": "Países activos",
+      "newThisMonth": "Nuevos este mes"
+    }
+  },
   "menu": "Gestión de Países",
   "description": "Gestionar y editar países",
-  "addButton": "Añadir Nuevo País",
-  "search": "Buscar...",
+  "addButton": "Agregar País",
+  "searchPlaceholder": "Buscar...",
   "loading": "Cargando...",
   "noData": "No se encontraron datos",
   "actions": "Acciones",
   "previous": "Anterior",
   "next": "Siguiente",
-  "deleteConfirmTitle": "Confirmación de Eliminación",
+  "deleteConfirmTitle": "Confirmación de eliminación",
   "cancel": "Cancelar",
   "deleting": "Eliminando...",
   "delete": {
-    "confirmTitle": "Delete Country",
-    "confirmMessage": "Are you sure you want to delete {{name}}?"
+    "confirmTitle": "Eliminar País",
+    "confirmMessage": "¿Está seguro de que desea eliminar {{name}}?"
   },
   "saving": "Guardando...",
   "save": "Guardar",
   "stats": {
-    "totalCountries": "Países Totales",
-    "activeCountries": "Países Activos",
-    "newThisMonth": "Nuevos este Mes"
+    "totalCountries": "Países totales",
+    "activeCountries": "Países activos",
+    "newThisMonth": "Nuevos este mes"
   },
   "table": {
-    "id": "IDENTIFICACIÓN",
-    "name": "Nombre del País",
+    "id": "ID",
+    "name": "Nombre del país",
     "code": "Código",
     "erpCode": "Código ERP",
-    "createdDate": "Fecha de Creación",
-    "createdBy": "Creado Por",
+    "createdDate": "Fecha de creación",
+    "createdBy": "Creado por",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
     "page": "Página {{current}} / {{total}}",
-    "noData": "Veri bulunamadı",
-    "title": "Ülke Listesi"
+    "noData": "No se encontraron datos",
+    "title": "Lista de países"
+  },
+  "advancedFilter": {
+    "columnName": "Nombre del país",
+    "columnCode": "Código del país",
+    "columnErpCode": "Código ERP"
   },
   "form": {
-    "addCountry": "Añadir Nuevo País",
+    "addCountry": "Agregar País",
     "editCountry": "Editar País",
     "addDescription": "Ingrese información del nuevo país",
     "editDescription": "Editar información del país",
-    "name": "Nombre del País",
-    "namePlaceholder": "Ingrese nombre del país",
-    "code": "Código del País",
-    "codePlaceholder": "Ingrese código del país (ej. ES, US)",
+    "name": "Nombre del país",
+    "namePlaceholder": "Ingrese el nombre del país",
+    "code": "Código del país",
+    "codePlaceholder": "Ingrese el código del país (ej. TR, US)",
     "erpCode": "Código ERP",
-    "erpCodePlaceholder": "Ingrese código ERP (opcional)",
+    "erpCodePlaceholder": "Ingrese el código ERP (opcional)",
     "nameRequired": "El nombre del país es obligatorio",
     "nameMaxLength": "El nombre del país no puede exceder los 100 caracteres",
     "codeMinLength": "El código del país debe tener al menos 2 caracteres",
@@ -54,66 +116,5 @@
   "deleteConfirm": {
     "confirmMessage": "¿Está seguro de que desea eliminar {{name}}?"
   },
-  "countryManagement": {
-    "menu": "Ülke Yönetimi",
-    "description": "Ülkeleri yönetin ve düzenleyin",
-    "addButton": "Yeni Ülke Ekle",
-    "searchPlaceholder": "Buscar...",
-    "loading": "Cargando...",
-    "error": "Se produjo un error",
-    "table": {
-      "id": "ID",
-      "name": "Ülke Adı",
-      "code": "Kod",
-      "erpCode": "ERP Kodu",
-      "createdDate": "Crearulma Tarihi",
-      "createdBy": "Crearan",
-      "noData": "Veri bulunamadı",
-      "title": "Ülke Listesi"
-    },
-    "delete": {
-      "confirmTitle": "Ülke Sil",
-      "confirmMessage": "{{name}} ülkesini silmek istediğinizden emin misiniz?"
-    },
-    "messages": {
-      "deleteSuccess": "Ülke başarıyla silindi",
-      "deleteError": "Ülke silinemedi",
-      "createSuccess": "Ülke başarıyla oluşturuldu",
-      "createError": "Ülke oluşturulamadı",
-      "updateSuccess": "Ülke başarıyla güncellendi",
-      "updateError": "Ülke güncellenemedi"
-    },
-    "form": {
-      "addCountry": "Yeni Ülke Ekle",
-      "editCountry": "Ülke Editar",
-      "addDescription": "Yeni ülke bilgilerini girin",
-      "editDescription": "Ülke bilgilerini düzenleyin",
-      "name": "Ülke Adı",
-      "namePlaceholder": "Ülke adını girin",
-      "code": "Ülke Kodu",
-      "codePlaceholder": "Ülke kodunu girin (örn: TR, US)",
-      "erpCode": "ERP Kodu",
-      "erpCodePlaceholder": "ERP kodunu girin (opsiyonel)",
-      "nameRequired": "Ülke adı zorunludur",
-      "nameMaxLength": "Ülke adı en fazla 100 karakter olabilir",
-      "codeMinLength": "Ülke kodu en az 2 karakter olmalıdır",
-      "codeMaxLength": "Ülke kodu en fazla 5 karakter olabilir",
-      "erpCodeMaxLength": "ERP kodu en fazla 10 karakter olabilir",
-      "cancel": "Cancelar",
-      "save": "Guardar",
-      "tabs": {
-        "header": "Genel Bilgiler"
-      }
-    },
-    "stats": {
-      "totalCountries": "Toplam Ülke",
-      "activeCountries": "Aktif Ülke",
-      "newThisMonth": "Bu Ay Yeni"
-    }
-  },
-  "advancedFilter": {
-    "columnName": "Ülke Adı",
-    "columnCode": "Ülke Kodu",
-    "columnErpCode": "ERP Kodu"
-  }
+  "search": "Buscar..."
 }

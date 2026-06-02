@@ -172,7 +172,8 @@
     "descriptionFieldsTitle": "Champs de description",
     "descriptionField1Label": "Profil",
     "descriptionField2Label": "Fer",
-    "descriptionField3Label": "Vis"
+    "descriptionField3Label": "Vis",
+    "doubleClickToEdit": "Double-cliquez pour modifier"
   },
   "exchangeRates": {
     "title": "Taux de change",
@@ -277,7 +278,21 @@
     "metaOfferNo": "N° de devis",
     "metaCustomer": "Client",
     "notSpecified": "—",
-    "grandTotal": "Total général"
+    "grandTotal": "Total général",
+    "senderLabel": "Offre de",
+    "recipientLabel": "Offre à",
+    "unitPriceNet": "Prix unitaire net",
+    "lineDiscount": "Remise ligne",
+    "vatRate": "Taux de TVA",
+    "priceDetail": "Détail des prix",
+    "grossTotal": "Total brut",
+    "lineDiscountTotal": "Total des remises",
+    "generalDiscount": "Remise globale",
+    "netSubtotal": "Sous-total net",
+    "totalVat": "TVA totale",
+    "grandTotalWithVat": "Total général (TTC)",
+    "validityNote": "Ce devis est valable pendant 15 jours à partir de la date d'émission.",
+    "draftWatermark": "BROUILLON"
   },
   "revision": {
     "success": "Enregistrement de révision créé.",

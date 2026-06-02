@@ -1,0 +1,48 @@
+{
+  "menu": "إدارة رموز مندوب المبيعات",
+  "description": "عرض وإضافة وحذف رموز مندوبي المبيعات المستوردة من ERP.",
+  "addButton": "مندوب مبيعات جديد",
+  "searchPlaceholder": "ابحث برمز المندوب أو الوصف أو الاسم",
+  "empty": "لم يتم العثور على سجلات مندوبي المبيعات.",
+  "error": "تعذر تحميل سجلات مندوبي المبيعات.",
+  "deleteConfirmMessage": "حذف سجل مندوب المبيعات بالرمز {{code}}؟",
+  "table": {
+    "title": "قائمة مندوبي المبيعات",
+    "branchCode": "رمز الفرع",
+    "salesRepCode": "SalesRepCode",
+    "salesRepDescription": "الوصف",
+    "name": "الاسم",
+    "createdDate": "تاريخ الإنشاء"
+  },
+  "form": {
+    "addTitle": "إضافة مندوب مبيعات",
+    "addDescription": "إنشاء سجل رمز مندوب المبيعات يدويًا.",
+    "branchCode": "رمز الفرع",
+    "branchCodePlaceholder": "أدخل رمز الفرع",
+    "salesRepCode": "SalesRepCode",
+    "salesRepCodePlaceholder": "أدخل الرمز",
+    "salesRepDescription": "الوصف",
+    "salesRepDescriptionPlaceholder": "أدخل الوصف",
+    "name": "الاسم",
+    "namePlaceholder": "أدخل الاسم",
+    "validation": {
+      "branchCodeRequired": "رمز الفرع مطلوب.",
+      "codeRequired": "رمز مندوب المبيعات مطلوب.",
+      "codeMaxLength": "يجب أن لا يتجاوز رمز مندوب المبيعات 8 أحرف.",
+      "descriptionMaxLength": "يمكن أن لا يتجاوز الوصف 30 حرفًا.",
+      "nameMaxLength": "يمكن أن لا يتجاوز الاسم 35 حرفًا."
+    }
+  },
+  "messages": {
+    "createSuccess": "تم إنشاء سجل مندوب المبيعات.",
+    "createError": "تعذر إنشاء سجل مندوب المبيعات.",
+    "deleteSuccess": "تم حذف سجل مندوب المبيعات.",
+    "deleteError": "تعذر حذف سجل مندوب المبيعات."
+  },
+  "advancedFilter": {
+    "columnBranchCode": "رمز الفرع",
+    "columnSalesRepCode": "رمز مندوب المبيعات",
+    "columnDescription": "الوصف",
+    "columnName": "الاسم"
+  }
+}

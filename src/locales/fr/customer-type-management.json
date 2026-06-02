@@ -58,19 +58,8 @@
     "deleteError": "Échec de la suppression du type de client"
   },
   "advancedFilter": {
-    "columnName": "Customer Type Name",
+    "columnName": "Nom du type de client",
     "columnDescription": "Description"
-  },
-  "customerTypeManagement": {
-    "table": {
-      "title": "Liste des types de clients"
-    },
-    "error": "Une erreur est survenue",
-    "delete": {
-      "success": "Le type de client a été supprimé avec succès",
-      "error": "Le type de client n'a pas pu être supprimé",
-      "action": "Supprimer"
-    }
   },
   "error": "Une erreur est survenue"
 }

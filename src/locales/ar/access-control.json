@@ -22,20 +22,20 @@
     }
   },
   "permissionDefinitions": {
-    "title": "Permission Definitions",
-    "description": "Manage permission codes used in the system",
-    "add": "إضافة Definition",
+    "title": "تعريفات الأذونات",
+    "description": "إدارة رموز الأذونات المستخدمة في النظام",
+    "add": "إضافة تعريف",
     "form": {
-      "editTitle": "تعديل Permission Definition",
-      "addTitle": "إضافة Permission Definition",
-      "editDescription": "Update permission definition details",
-      "addDescription": "إنشاء a جديد permission definition",
-      "code": "Code",
-      "name": "Name",
-      "namePlaceholder": "Display name",
-      "description": "Description",
-      "descriptionPlaceholder": "Optional description",
-      "isActive": "Active",
+      "editTitle": "تعديل تعريف الإذن",
+      "addTitle": "إضافة تعريف الإذن",
+      "editDescription": "تحديث تفاصيل تعريف الإذن",
+      "addDescription": "إنشاء تعريف إذن جديد",
+      "code": "الرمز",
+      "name": "الاسم",
+      "namePlaceholder": "اسم العرض",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف اختياري",
+      "isActive": "مفعل",
       "codePlaceholder": "اختر الرمز",
       "affectedRoutes": "الصفحات المتضررة",
       "affectedRoutesNone": "لم يتم العثور على مسار مطابق لهذا الرمز",
@@ -43,73 +43,84 @@
       "codeEmpty": "لم يتم العثور على نتائج"
     },
     "table": {
-      "code": "Code",
-      "name": "Name",
-      "isActive": "Active",
-      "updatedDate": "Updated",
-      "showing": "{{from}}-{{to}} of {{total}}",
-      "title": "İzin Tanımları"
+      "code": "الرمز",
+      "name": "الاسم",
+      "isActive": "مفعل",
+      "updatedDate": "تم التحديث",
+      "showing": "{{from}}-{{to}} من {{total}}",
+      "title": "تعريفات الأذونات"
     },
     "delete": {
-      "confirmTitle": "Delete Permission Definition",
-      "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      "confirmTitle": "حذف تعريف الإذن",
+      "confirmMessage": "هل أنت متأكد أنك تريد حذف \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء."
     },
-    "syncFromRoutes": "المزامنة من الطرق"
+    "syncFromRoutes": "المزامنة من المسارات",
+    "syncSummaryTitle": "ملخص مزامنة المسارات"
   },
   "permissionGroups": {
-    "title": "Permission Groups",
-    "description": "Manage permission groups and their assignments",
-    "add": "إضافة Group",
-    "selectAll": "Select all",
-    "noDefinitions": "No permission definitions available",
+    "title": "مجموعات الأذونات",
+    "description": "إدارة مجموعات الأذونات وتعيينات المستخدمين",
+    "add": "إضافة مجموعة",
+    "selectAll": "تحديد الكل",
+    "noDefinitions": "لا توجد تعريفات أذونات متاحة",
     "form": {
-      "editTitle": "تعديل Permission Group",
-      "addTitle": "إضافة Permission Group",
-      "editDescription": "Update permission group details",
-      "addDescription": "إنشاء a جديد permission group",
-      "name": "Name",
-      "namePlaceholder": "Group name",
-      "description": "Description",
-      "descriptionPlaceholder": "Optional description",
-      "isSystemAdmin": "System Admin",
-      "isActive": "Active",
-      "permissions": "Permissions"
+      "editTitle": "تعديل مجموعة الإذن",
+      "addTitle": "إضافة مجموعة إذن",
+      "editDescription": "تحديث تفاصيل مجموعة الإذن",
+      "addDescription": "إنشاء مجموعة إذن جديدة",
+      "name": "الاسم",
+      "namePlaceholder": "اسم المجموعة",
+      "description": "الوصف",
+      "descriptionPlaceholder": "وصف اختياري",
+      "isSystemAdmin": "مدير النظام",
+      "isActive": "مفعل",
+      "permissions": "الأذونات"
     },
     "table": {
-      "name": "Name",
-      "isSystemAdmin": "System Admin",
-      "isActive": "Active",
-      "permissionCount": "Permissions",
-      "showing": "{{from}}-{{to}} of {{total}}",
-      "title": "İzin Grupları"
+      "name": "الاسم",
+      "isSystemAdmin": "مدير النظام",
+      "isActive": "مفعل",
+      "permissionCount": "الأذونات",
+      "showing": "{{from}}-{{to}} من {{total}}",
+      "title": "مجموعات الأذونات"
     },
-    "managePermissions": "Manage permissions",
+    "managePermissions": "إدارة الأذونات",
     "permissionsPanel": {
-      "title": "تعديل Group Permissions",
-      "description": "Select permissions for this group",
-      "currentCodes": "Current permission codes"
+      "title": "تعديل أذونات المجموعة",
+      "description": "اختر الأذونات لهذه المجموعة",
+      "currentCodes": "أكواد الأذونات الحالية",
+      "groupedRows": "الشاشات",
+      "screen": "الشاشة",
+      "actionsMapped": "الإجراءات",
+      "actions": {
+        "create": "إنشاء",
+        "read": "عرض",
+        "update": "تحديث",
+        "delete": "حذف",
+        "other": "أخرى"
+      }
     },
     "delete": {
-      "confirmTitle": "Delete Permission Group",
-      "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      "confirmTitle": "حذف مجموعة الإذن",
+      "confirmMessage": "هل أنت متأكد أنك تريد حذف \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء."
     },
     "search": "بحث...",
-    "systemAdminLocked": "Sistem Admin grubu değiştirilemez"
+    "systemAdminLocked": "لا يمكن تعديل مجموعة مسؤول النظام"
   },
   "userGroupAssignments": {
-    "title": "User Group Assignments",
-    "description": "Assign permission groups to المستخدمون",
-    "selectUser": "Select User",
-    "selectUserPlaceholder": "Search and select user...",
-    "selectUserHint": "Select a user to manage their permission group assignments",
-    "assignedGroups": "Assigned Permission Groups",
-    "noUsers": "No المستخدمون found",
-    "noGroups": "No permission groups available",
-    "selectAll": "Select all"
+    "title": "تعيين مجموعات المستخدمين",
+    "description": "تعيين مجموعات الأذونات للمستخدمين",
+    "selectUser": "اختر المستخدم",
+    "selectUserPlaceholder": "ابحث واختر المستخدم...",
+    "selectUserHint": "اختر مستخدماً لإدارة تعيينات مجموعة الأذونات الخاصة به",
+    "assignedGroups": "مجموعات الأذونات المعينة",
+    "noUsers": "لا يوجد مستخدمون",
+    "noGroups": "لا توجد مجموعات أذونات متاحة",
+    "selectAll": "تحديد الكل"
   },
   "common": {
     "cancel": "إلغاء",
-    "saving": "تسجيل...",
+    "saving": "جارٍ الحفظ...",
     "save": "حفظ وتطبيق",
     "loading": "تحميل...",
     "search": "بحث...",
@@ -125,8 +136,8 @@
   },
   "sidebar": {
     "accessControl": "التحكم في الوصول",
-    "permissionDefinitions": "Permission Definitions",
-    "permissionGroups": "Permission Groups",
-    "userGroupAssignments": "User Group Assignments"
+    "permissionDefinitions": "تعريفات الأذونات",
+    "permissionGroups": "مجموعات الأذونات",
+    "userGroupAssignments": "تعيينات مجموعات المستخدمين"
   }
 }

@@ -22,20 +22,20 @@
     }
   },
   "permissionDefinitions": {
-    "title": "Permission Definitions",
-    "description": "Manage permission codes used in the system",
-    "add": "Aggiungi Definition",
+    "title": "Definizioni di autorizzazione",
+    "description": "Gestisci i codici autorizzazione usati dal sistema",
+    "add": "Aggiungi definizione",
     "form": {
-      "editTitle": "Modifica Permission Definition",
-      "addTitle": "Aggiungi Permission Definition",
-      "editDescription": "Update permission definition details",
-      "addDescription": "Crea a Nuovo permission definition",
-      "code": "Code",
-      "name": "Name",
-      "namePlaceholder": "Display name",
-      "description": "Description",
-      "descriptionPlaceholder": "Optional description",
-      "isActive": "Active",
+      "editTitle": "Modifica definizione autorizzazione",
+      "addTitle": "Aggiungi definizione autorizzazione",
+      "editDescription": "Aggiorna i dettagli della definizione autorizzazione",
+      "addDescription": "Crea una nuova definizione autorizzazione",
+      "code": "Codice",
+      "name": "Nome",
+      "namePlaceholder": "Nome visualizzato",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Descrizione facoltativa",
+      "isActive": "Attivo",
       "codePlaceholder": "Scegli il codice",
       "affectedRoutes": "Pagine interessate",
       "affectedRoutesNone": "Nessun percorso corrispondente trovato per questo codice",
@@ -43,69 +43,80 @@
       "codeEmpty": "Nessun risultato trovato"
     },
     "table": {
-      "code": "Code",
-      "name": "Name",
-      "isActive": "Active",
-      "updatedDate": "Updated",
-      "showing": "{{from}}-{{to}} of {{total}}",
-      "title": "İzin Tanımları"
+      "code": "Codice",
+      "name": "Nome",
+      "isActive": "Attivo",
+      "updatedDate": "Aggiornato",
+      "showing": "{{from}}-{{to}} di {{total}}",
+      "title": "Definizioni di autorizzazione"
     },
     "delete": {
-      "confirmTitle": "Delete Permission Definition",
-      "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      "confirmTitle": "Elimina definizione autorizzazione",
+      "confirmMessage": "Sei sicuro di voler eliminare \"{{name}}\"? Questa azione non può essere annullata."
     },
-    "syncFromRoutes": "Sincronizzazione dai percorsi"
+    "syncFromRoutes": "Sincronizza dai percorsi",
+    "syncSummaryTitle": "Riepilogo sincronizzazione percorsi"
   },
   "permissionGroups": {
-    "title": "Permission Groups",
-    "description": "Manage permission groups and their assignments",
-    "add": "Aggiungi Group",
-    "selectAll": "Select all",
-    "noDefinitions": "No permission definitions available",
+    "title": "Gruppi autorizzazioni",
+    "description": "Gestisci i gruppi di autorizzazione e le relative assegnazioni",
+    "add": "Aggiungi gruppo",
+    "selectAll": "Seleziona tutto",
+    "noDefinitions": "Nessuna definizione autorizzazione disponibile",
     "form": {
-      "editTitle": "Modifica Permission Group",
-      "addTitle": "Aggiungi Permission Group",
-      "editDescription": "Update permission group details",
-      "addDescription": "Crea a Nuovo permission group",
-      "name": "Name",
-      "namePlaceholder": "Group name",
-      "description": "Description",
-      "descriptionPlaceholder": "Optional description",
-      "isSystemAdmin": "System Admin",
-      "isActive": "Active",
-      "permissions": "Permissions"
+      "editTitle": "Modifica gruppo autorizzazioni",
+      "addTitle": "Aggiungi gruppo autorizzazioni",
+      "editDescription": "Aggiorna i dettagli del gruppo autorizzazione",
+      "addDescription": "Crea un nuovo gruppo autorizzazione",
+      "name": "Nome",
+      "namePlaceholder": "Nome gruppo",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Descrizione facoltativa",
+      "isSystemAdmin": "Amministratore di sistema",
+      "isActive": "Attivo",
+      "permissions": "Autorizzazioni"
     },
     "table": {
-      "name": "Name",
-      "isSystemAdmin": "System Admin",
-      "isActive": "Active",
-      "permissionCount": "Permissions",
-      "showing": "{{from}}-{{to}} of {{total}}",
-      "title": "İzin Grupları"
+      "name": "Nome",
+      "isSystemAdmin": "Amministratore di sistema",
+      "isActive": "Attivo",
+      "permissionCount": "Autorizzazioni",
+      "showing": "{{from}}-{{to}} di {{total}}",
+      "title": "Gruppi autorizzazioni"
     },
-    "managePermissions": "Manage permissions",
+    "managePermissions": "Gestisci autorizzazioni",
     "permissionsPanel": {
-      "title": "Modifica Group Permissions",
-      "description": "Select permissions for this group",
-      "currentCodes": "Current permission codes"
+      "title": "Modifica autorizzazioni del gruppo",
+      "description": "Seleziona autorizzazioni per questo gruppo",
+      "currentCodes": "Codici autorizzazione correnti",
+      "groupedRows": "Schermate",
+      "screen": "Schermata",
+      "actionsMapped": "Azioni",
+      "actions": {
+        "create": "Crea",
+        "read": "Visualizza",
+        "update": "Aggiorna",
+        "delete": "Elimina",
+        "other": "Altro"
+      }
     },
     "delete": {
-      "confirmTitle": "Delete Permission Group",
-      "confirmMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone."
+      "confirmTitle": "Elimina gruppo autorizzazione",
+      "confirmMessage": "Sei sicuro di voler eliminare \"{{name}}\"? Questa azione non può essere annullata."
     },
     "search": "Cerca...",
-    "systemAdminLocked": "Sistem Admin grubu değiştirilemez"
+    "systemAdminLocked": "Il gruppo amministratore di sistema non può essere modificato"
   },
   "userGroupAssignments": {
-    "title": "User Group Assignments",
-    "description": "Assign permission groups to Utenti",
-    "selectUser": "Select User",
-    "selectUserPlaceholder": "Search and select user...",
-    "selectUserHint": "Select a user to manage their permission group assignments",
-    "assignedGroups": "Assigned Permission Groups",
-    "noUsers": "No Utenti found",
-    "noGroups": "No permission groups available",
-    "selectAll": "Select all"
+    "title": "Assegnazioni gruppi utente",
+    "description": "Assegna i gruppi autorizzazione agli utenti",
+    "selectUser": "Seleziona utente",
+    "selectUserPlaceholder": "Cerca e seleziona utente...",
+    "selectUserHint": "Seleziona un utente per gestire le sue assegnazioni di gruppo",
+    "assignedGroups": "Gruppi autorizzazione assegnati",
+    "noUsers": "Nessun utente trovato",
+    "noGroups": "Nessun gruppo autorizzazione disponibile",
+    "selectAll": "Seleziona tutto"
   },
   "common": {
     "cancel": "Annulla",
@@ -114,19 +125,19 @@
     "loading": "Caricamento...",
     "search": "Cerca...",
     "noData": "Nessun dato",
-    "actions": "Transazioni",
+    "actions": "Azioni",
     "yes": "SÌ",
     "no": "No",
     "edit": "Modificare",
     "delete": "Eliminare",
-    "previous": "Ex",
+    "previous": "Precedente",
     "next": "Prossimo",
     "processing": "Elaborazione..."
   },
   "sidebar": {
     "accessControl": "Controllo Accessi",
-    "permissionDefinitions": "Permission Definitions",
-    "permissionGroups": "Permission Groups",
-    "userGroupAssignments": "User Group Assignments"
+    "permissionDefinitions": "Definizioni di autorizzazione",
+    "permissionGroups": "Gruppi autorizzazioni",
+    "userGroupAssignments": "Assegnazioni gruppi utente"
   }
 }

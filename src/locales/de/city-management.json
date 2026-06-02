@@ -1,7 +1,7 @@
 {
   "menu": "Stadtverwaltung",
   "description": "Städte verwalten und organisieren",
-  "addButton": "Hinzufügen Neu City",
+  "addButton": "Neue Stadt hinzufügen",
   "searchPlaceholder": "Suchen...",
   "loading": "Laden...",
   "noData": "Keine Daten gefunden",
@@ -11,19 +11,49 @@
     "newThisMonth": "Neu diesen Monat"
   },
   "table": {
-    "id": "AUSWEIS",
+    "title": "Stadtliste",
+    "id": "ID",
     "name": "Stadtname",
     "erpCode": "ERP-Code",
     "countryName": "Ländername",
     "createdDate": "Erstellungsdatum",
     "createdBy": "Erstellt von",
     "showing": "Zeige {{from}}-{{to}} / {{total}}",
-    "page": "Seite {{current}} / {{total}}",
-    "title": "Şehir Listesi"
+    "page": "Seite {{current}} / {{total}}"
+  },
+  "cityManagement": {
+    "table": {
+      "title": "Stadtliste",
+      "id": "ID",
+      "name": "Stadtname",
+      "erpCode": "ERP-Code",
+      "countryName": "Ländername",
+      "createdDate": "Erstellungsdatum",
+      "createdBy": "Erstellt von"
+    },
+    "error": "Ein Fehler ist aufgetreten",
+    "form": {
+      "tabs": {
+        "header": "Allgemeine Informationen"
+      }
+    },
+    "menu": "Stadtverwaltung",
+    "description": "Städte verwalten und organisieren",
+    "addButton": "Neue Stadt hinzufügen",
+    "searchPlaceholder": "Schnell suchen...",
+    "loading": "Laden...",
+    "noData": "Keine Daten gefunden",
+    "actions": "Aktionen",
+    "delete": {
+      "success": "Die Stadt wurde erfolgreich gelöscht",
+      "error": "Beim Löschen der Stadt ist ein Fehler aufgetreten",
+      "confirmTitle": "Stadt löschen",
+      "confirmMessage": "Möchten Sie {{name}} wirklich löschen?"
+    }
   },
   "form": {
     "editCity": "Stadt bearbeiten",
-    "addCity": "Hinzufügen Neu City",
+    "addCity": "Neue Stadt hinzufügen",
     "editDescription": "Stadtdetails bearbeiten",
     "addDescription": "Neue Stadtdetails eingeben",
     "name": "Stadtname",
@@ -34,29 +64,20 @@
     "erpCodePlaceholder": "ERP-Code eingeben (optional)",
     "cancel": "Abbrechen",
     "save": "Speichern",
-    "saving": "Speichern...",
-    "nameRequired": "City name is required",
-    "nameMaxLength": "City name can be at most 100 characters",
-    "erpCodeMaxLength": "ERP code can be at most 10 characters",
-    "countryRequired": "Country selection is required"
+    "saving": "Wird gespeichert...",
+    "nameRequired": "Der Stadtname ist erforderlich",
+    "nameMaxLength": "Der Stadtname darf maximal 100 Zeichen haben",
+    "erpCodeMaxLength": "ERP-Code darf maximal 10 Zeichen haben",
+    "countryRequired": "Landauswahl ist erforderlich"
   },
   "actions": "Aktionen",
   "delete": {
-    "button": "Delete",
-    "confirmTitle": "Delete City",
-    "confirmMessage": "Are you sure you want to delete {{name}}?"
+    "button": "Löschen",
+    "success": "Die Stadt wurde erfolgreich gelöscht",
+    "error": "Beim Löschen der Stadt ist ein Fehler aufgetreten",
+    "confirmTitle": "Stadt löschen",
+    "confirmMessage": "Möchten Sie {{name}} wirklich löschen?"
   },
-  "previous": "Previous",
-  "next": "Weiter",
-  "cityManagement": {
-    "form": {
-      "tabs": {
-        "header": "Genel Bilgiler"
-      }
-    },
-    "table": {
-      "title": "Şehir Listesi"
-    },
-    "error": "Fehler ist aufgetreten"
-  }
+  "previous": "Vorherige",
+  "next": "Nächste"
 }

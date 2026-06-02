@@ -58,19 +58,8 @@
     "deleteError": "تعذر حذف نوع العميل"
   },
   "advancedFilter": {
-    "columnName": "Customer Type Name",
-    "columnDescription": "Description"
-  },
-  "customerTypeManagement": {
-    "table": {
-      "title": "قائمة أنواع العملاء"
-    },
-    "error": "حدث خطأ",
-    "delete": {
-      "success": "تم حذف نوع العميل بنجاح",
-      "error": "تعذر حذف نوع العميل",
-      "action": "حذف"
-    }
+    "columnName": "اسم نوع العميل",
+    "columnDescription": "الوصف"
   },
   "error": "حدث خطأ"
 }

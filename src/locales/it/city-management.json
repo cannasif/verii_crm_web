@@ -11,6 +11,7 @@
     "newThisMonth": "Nuove questo Mese"
   },
   "table": {
+    "title": "Elenco Città",
     "id": "ID",
     "name": "Nome Città",
     "erpCode": "Codice ERP",
@@ -18,8 +19,37 @@
     "createdDate": "Data Creazione",
     "createdBy": "Creato Da",
     "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-    "page": "Pagina {{current}} / {{total}}",
-    "title": "Şehir Listesi"
+    "page": "Pagina {{current}} / {{total}}"
+  },
+  "cityManagement": {
+    "table": {
+      "title": "Elenco Città",
+      "id": "ID",
+      "name": "Nome Città",
+      "erpCode": "Codice ERP",
+      "countryName": "Nome Paese",
+      "createdDate": "Data Creazione",
+      "createdBy": "Creato Da"
+    },
+    "error": "Si è verificato un errore",
+    "form": {
+      "tabs": {
+        "header": "Informazioni generali"
+      }
+    },
+    "menu": "Gestione Città",
+    "description": "Gestisci e organizza le città",
+    "addButton": "Aggiungi Nuova Città",
+    "searchPlaceholder": "Ricerca rapida...",
+    "loading": "Caricamento...",
+    "noData": "Nessun dato trovato",
+    "actions": "Azioni",
+    "delete": {
+      "success": "Città eliminata con successo",
+      "error": "Errore durante l'eliminazione della città",
+      "confirmTitle": "Elimina Città",
+      "confirmMessage": "Sei sicuro di voler eliminare {{name}}?"
+    }
   },
   "form": {
     "editCity": "Modifica Città",
@@ -43,20 +73,11 @@
   "actions": "Azioni",
   "delete": {
     "button": "Elimina",
+    "success": "Città eliminata con successo",
+    "error": "Errore durante l'eliminazione della città",
     "confirmTitle": "Elimina Città",
     "confirmMessage": "Sei sicuro di voler eliminare {{name}}?"
   },
   "previous": "Precedente",
-  "next": "Successivo",
-  "cityManagement": {
-    "form": {
-      "tabs": {
-        "header": "Genel Bilgiler"
-      }
-    },
-    "table": {
-      "title": "Şehir Listesi"
-    },
-    "error": "Si è verificato un errore"
-  }
+  "next": "Successivo"
 }

@@ -25,5 +25,10 @@
   "TaxNumber": "Steuernummer",
   "TcknNumber": "TR-ID-Nummer",
   "CustomerCode": "Kundencode",
-  "tableTitle": "Mükerrer Müşteri Adayları"
+  "tableTitle": "Doppelte Kundenkandidaten",
+  "common": {
+    "table": {
+      "showing": "Zeigt {{from}}-{{to}} / {{total}}"
+    }
+  }
 }

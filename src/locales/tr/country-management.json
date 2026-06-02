@@ -68,7 +68,10 @@
   "deleteConfirmTitle": "Silme Onayı",
   "cancel": "İptal",
   "deleting": "Siliniyor...",
-  "delete": "Sil",
+  "delete": {
+    "confirmTitle": "Ülke Sil",
+    "confirmMessage": "{{name}} ülkesini silmek istediğinizden emin misiniz?"
+  },
   "saving": "Kaydediliyor...",
   "save": "Kaydet",
   "stats": {
@@ -113,8 +116,5 @@
   "deleteConfirm": {
     "confirmMessage": "{{name}} ülkesini silmek istediğinizden emin misiniz?"
   },
-  "delete": {
-    "confirmTitle": "Ülke Sil",
-    "confirmMessage": "{{name}} ülkesini silmek istediğinizden emin misiniz?"
-  }
+  "searchPlaceholder": "Ara..."
 }

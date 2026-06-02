@@ -142,7 +142,8 @@
     "description1": "وصف 1",
     "description2": "وصف 2",
     "description3": "وصف 3",
-    "descriptionPlaceholder": "وصف..."
+    "descriptionPlaceholder": "وصف...",
+    "doubleClickToEdit": "انقر نقرتين للتحرير"
   },
   "exchangeRates": {
     "title": "أسعار الصرف",

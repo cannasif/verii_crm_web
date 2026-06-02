@@ -25,5 +25,10 @@
   "TaxNumber": "الرقم الضريبي",
   "TcknNumber": "رقم هوية TR",
   "CustomerCode": "رمز العميل",
-  "tableTitle": "Mükerrer Müşteri Adayları"
+  "tableTitle": "مرشحو عملاء مكررين",
+  "common": {
+    "table": {
+      "showing": "عرض {{from}}-{{to}} / {{total}}"
+    }
+  }
 }

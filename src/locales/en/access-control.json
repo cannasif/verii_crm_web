@@ -43,12 +43,12 @@
       "codeEmpty": "No results found"
     },
     "table": {
+      "title": "Permission Definitions",
       "code": "Code",
       "name": "Name",
       "isActive": "Active",
       "updatedDate": "Updated",
-      "showing": "{{from}}-{{to}} of {{total}}",
-      "title": "Permission Definitions"
+      "showing": "{{from}}-{{to}} of {{total}}"
     },
     "delete": {
       "confirmTitle": "Delete Permission Definition",
@@ -120,17 +120,17 @@
   },
   "common": {
     "cancel": "Cancel",
-    "saving": "Recording...",
+    "saving": "Saving...",
     "save": "Save and Apply",
     "loading": "Loading...",
     "search": "Search...",
     "noData": "No data",
-    "actions": "Transactions",
+    "actions": "Actions",
     "yes": "Yes",
     "no": "No",
     "edit": "Edit",
     "delete": "Delete",
-    "previous": "Former",
+    "previous": "Previous",
     "next": "Next",
     "processing": "Processing..."
   },

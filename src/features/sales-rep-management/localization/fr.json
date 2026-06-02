@@ -1,0 +1,48 @@
+{
+  "menu": "Gestion des codes de représentant commercial",
+  "description": "Afficher, ajouter et supprimer les codes de représentants commerciaux synchronisés depuis l'ERP.",
+  "addButton": "Nouveau représentant commercial",
+  "searchPlaceholder": "Rechercher par code, description ou nom de représentant",
+  "empty": "Aucun enregistrement de représentant commercial trouvé.",
+  "error": "Impossible de charger les représentants commerciaux.",
+  "deleteConfirmMessage": "Supprimer l'enregistrement du représentant commercial avec le code {{code}} ?",
+  "table": {
+    "title": "Liste des représentants commerciaux",
+    "branchCode": "Code de dépôt",
+    "salesRepCode": "SalesRepCode",
+    "salesRepDescription": "Description",
+    "name": "Nom",
+    "createdDate": "Date de création"
+  },
+  "form": {
+    "addTitle": "Ajouter un représentant commercial",
+    "addDescription": "Créer manuellement un code de représentant commercial.",
+    "branchCode": "Code de dépôt",
+    "branchCodePlaceholder": "Entrez le code de dépôt",
+    "salesRepCode": "SalesRepCode",
+    "salesRepCodePlaceholder": "Entrez le code",
+    "salesRepDescription": "Description",
+    "salesRepDescriptionPlaceholder": "Entrez la description",
+    "name": "Nom",
+    "namePlaceholder": "Entrez le nom",
+    "validation": {
+      "branchCodeRequired": "Le code de dépôt est obligatoire.",
+      "codeRequired": "Le code du représentant commercial est obligatoire.",
+      "codeMaxLength": "Le code du représentant commercial ne doit pas dépasser 8 caractères.",
+      "descriptionMaxLength": "La description ne doit pas dépasser 30 caractères.",
+      "nameMaxLength": "Le nom ne doit pas dépasser 35 caractères."
+    }
+  },
+  "messages": {
+    "createSuccess": "Enregistrement du représentant commercial créé.",
+    "createError": "Impossible de créer l'enregistrement du représentant commercial.",
+    "deleteSuccess": "Enregistrement du représentant commercial supprimé.",
+    "deleteError": "Impossible de supprimer l'enregistrement du représentant commercial."
+  },
+  "advancedFilter": {
+    "columnBranchCode": "Code de dépôt",
+    "columnSalesRepCode": "Code du représentant commercial",
+    "columnDescription": "Description",
+    "columnName": "Nom"
+  }
+}

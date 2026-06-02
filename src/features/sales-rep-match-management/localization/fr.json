@@ -1,0 +1,44 @@
+{
+  "menu": "Gestion des correspondances des représentants commerciaux",
+  "description": "Afficher, ajouter et supprimer les correspondances utilisateur pour les codes de représentant commercial.",
+  "addButton": "Nouvelle correspondance",
+  "searchPlaceholder": "Rechercher par code représentant, utilisateur ou email",
+  "empty": "Aucune correspondance de représentant commercial trouvée.",
+  "error": "Impossible de charger les correspondances de représentant commercial.",
+  "deleteConfirmMessage": "Supprimer la correspondance entre {{salesRep}} et {{user}} ?",
+  "table": {
+    "title": "Liste des correspondances des représentants commerciaux",
+    "salesRepCode": "SalesRepCode",
+    "salesRepName": "Nom du représentant commercial",
+    "userFullName": "Utilisateur",
+    "username": "Nom d'utilisateur",
+    "userEmail": "E-mail",
+    "createdDate": "Date de création"
+  },
+  "form": {
+    "addTitle": "Ajouter une correspondance de représentant commercial",
+    "addDescription": "Associer un code de représentant commercial à un utilisateur.",
+    "salesRep": "Représentant commercial",
+    "salesRepPlaceholder": "Sélectionner un représentant commercial",
+    "salesRepSearchPlaceholder": "Rechercher un représentant commercial",
+    "user": "Utilisateur",
+    "userPlaceholder": "Sélectionner un utilisateur",
+    "userSearchPlaceholder": "Rechercher un utilisateur",
+    "validation": {
+      "salesRepRequired": "La sélection du représentant commercial est obligatoire.",
+      "userRequired": "La sélection de l'utilisateur est obligatoire."
+    }
+  },
+  "messages": {
+    "createSuccess": "Correspondance de représentant commercial créée.",
+    "createError": "Impossible de créer la correspondance du représentant commercial.",
+    "deleteSuccess": "Correspondance de représentant commercial supprimée.",
+    "deleteError": "Impossible de supprimer la correspondance du représentant commercial."
+  },
+  "advancedFilter": {
+    "columnSalesRepCode": "Code du représentant commercial",
+    "columnSalesRepName": "Nom du représentant commercial",
+    "columnUsername": "Nom d'utilisateur",
+    "columnEmail": "E-mail"
+  }
+}

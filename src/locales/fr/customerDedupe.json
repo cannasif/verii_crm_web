@@ -25,5 +25,10 @@
   "TaxNumber": "numéro fiscal",
   "TcknNumber": "Numéro d'identification TR",
   "CustomerCode": "Code client",
-  "tableTitle": "Mükerrer Müşteri Adayları"
+  "tableTitle": "Candidats clients en double",
+  "common": {
+    "table": {
+      "showing": "Affichage {{from}}-{{to}} / {{total}}"
+    }
+  }
 }

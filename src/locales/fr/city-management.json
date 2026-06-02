@@ -1,7 +1,7 @@
 {
   "menu": "Gestion des villes",
   "description": "Gérer et organiser les villes",
-  "addButton": "Ajouter une nouvelle ville",
+  "addButton": "Ajouter une Nouvelle Ville",
   "searchPlaceholder": "Rechercher...",
   "loading": "Chargement...",
   "noData": "Aucune donnée trouvée",
@@ -11,19 +11,49 @@
     "newThisMonth": "Nouveau ce mois-ci"
   },
   "table": {
-    "id": "IDENTIFIANT",
+    "title": "Liste des villes",
+    "id": "ID",
     "name": "Nom de la ville",
     "erpCode": "Code ERP",
     "countryName": "Nom du pays",
     "createdDate": "Date de création",
     "createdBy": "Créé par",
     "showing": "Affichage {{from}}-{{to}} / {{total}}",
-    "page": "Page {{current}} / {{total}}",
-    "title": "Şehir Listesi"
+    "page": "Page {{current}} / {{total}}"
+  },
+  "cityManagement": {
+    "table": {
+      "title": "Liste des villes",
+      "id": "ID",
+      "name": "Nom de la ville",
+      "erpCode": "Code ERP",
+      "countryName": "Nom du pays",
+      "createdDate": "Date de création",
+      "createdBy": "Créé par"
+    },
+    "error": "Une erreur s'est produite",
+    "form": {
+      "tabs": {
+        "header": "Informations générales"
+      }
+    },
+    "menu": "Gestion des villes",
+    "description": "Gérer et organiser les villes",
+    "addButton": "Ajouter une Nouvelle Ville",
+    "searchPlaceholder": "Recherche rapide...",
+    "loading": "Chargement...",
+    "noData": "Aucune donnée trouvée",
+    "actions": "Actions",
+    "delete": {
+      "success": "Ville supprimée avec succès",
+      "error": "Une erreur s'est produite lors de la suppression de la ville",
+      "confirmTitle": "Supprimer la ville",
+      "confirmMessage": "Êtes-vous sûr de vouloir supprimer {{name}} ?"
+    }
   },
   "form": {
     "editCity": "Modifier la ville",
-    "addCity": "Ajouter une nouvelle ville",
+    "addCity": "Ajouter une Nouvelle Ville",
     "editDescription": "Modifier les détails de la ville",
     "addDescription": "Entrer les détails de la nouvelle ville",
     "name": "Nom de la ville",
@@ -35,28 +65,19 @@
     "cancel": "Annuler",
     "save": "Enregistrer",
     "saving": "Enregistrement...",
-    "nameRequired": "City name is required",
-    "nameMaxLength": "City name can be at most 100 characters",
-    "erpCodeMaxLength": "ERP code can be at most 10 characters",
-    "countryRequired": "Country selection is required"
+    "nameRequired": "Le nom de la ville est obligatoire",
+    "nameMaxLength": "Le nom de la ville peut avoir au maximum 100 caractères",
+    "erpCodeMaxLength": "Le code ERP peut avoir au maximum 10 caractères",
+    "countryRequired": "La sélection du pays est obligatoire"
   },
   "actions": "Actions",
   "delete": {
     "button": "Supprimer",
+    "success": "Ville supprimée avec succès",
+    "error": "Une erreur s'est produite lors de la suppression de la ville",
     "confirmTitle": "Supprimer la ville",
     "confirmMessage": "Êtes-vous sûr de vouloir supprimer {{name}} ?"
   },
   "previous": "Précédent",
-  "next": "Suivant",
-  "cityManagement": {
-    "form": {
-      "tabs": {
-        "header": "Genel Bilgiler"
-      }
-    },
-    "table": {
-      "title": "Şehir Listesi"
-    },
-    "error": "Une erreur est survenue"
-  }
+  "next": "Suivant"
 }

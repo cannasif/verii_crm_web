@@ -1,0 +1,44 @@
+{
+  "menu": "Gestión de asignación de representantes de ventas",
+  "description": "Ver, agregar y eliminar asignaciones de usuarios para códigos de representantes de ventas.",
+  "addButton": "Nueva asignación",
+  "searchPlaceholder": "Buscar por código de representante, usuario o correo electrónico",
+  "empty": "No se encontraron asignaciones de representante de ventas.",
+  "error": "No se pudieron cargar las asignaciones del representante de ventas.",
+  "deleteConfirmMessage": "¿Eliminar la asignación entre {{salesRep}} y {{user}}?",
+  "table": {
+    "title": "Lista de asignaciones de representantes de ventas",
+    "salesRepCode": "SalesRepCode",
+    "salesRepName": "Nombre del representante de ventas",
+    "userFullName": "Usuario",
+    "username": "Nombre de usuario",
+    "userEmail": "Correo electrónico",
+    "createdDate": "Fecha de creación"
+  },
+  "form": {
+    "addTitle": "Agregar asignación de representante de ventas",
+    "addDescription": "Asignar un registro de representante de ventas a un usuario.",
+    "salesRep": "Representante de ventas",
+    "salesRepPlaceholder": "Seleccione representante de ventas",
+    "salesRepSearchPlaceholder": "Buscar representante de ventas",
+    "user": "Usuario",
+    "userPlaceholder": "Seleccione usuario",
+    "userSearchPlaceholder": "Buscar usuario",
+    "validation": {
+      "salesRepRequired": "La selección del representante de ventas es obligatoria.",
+      "userRequired": "La selección del usuario es obligatoria."
+    }
+  },
+  "messages": {
+    "createSuccess": "Asignación de representante de ventas creada.",
+    "createError": "No se pudo crear la asignación de representante de ventas.",
+    "deleteSuccess": "Asignación de representante de ventas eliminada.",
+    "deleteError": "No se pudo eliminar la asignación de representante de ventas."
+  },
+  "advancedFilter": {
+    "columnSalesRepCode": "Código de representante de ventas",
+    "columnSalesRepName": "Nombre del representante de ventas",
+    "columnUsername": "Nombre de usuario",
+    "columnEmail": "Correo electrónico"
+  }
+}

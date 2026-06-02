@@ -172,7 +172,8 @@
     "descriptionFieldsTitle": "Beschreibungsfelder",
     "descriptionField1Label": "Profil",
     "descriptionField2Label": "Eisen",
-    "descriptionField3Label": "Schraube"
+    "descriptionField3Label": "Schraube",
+    "doubleClickToEdit": "Zum Bearbeiten doppelklicken"
   },
   "exchangeRates": {
     "title": "Wechselkurse",
@@ -277,7 +278,21 @@
     "metaOfferNo": "Angebots-Nr.",
     "metaCustomer": "Kunde",
     "notSpecified": "—",
-    "grandTotal": "Gesamtsumme"
+    "grandTotal": "Gesamtsumme",
+    "senderLabel": "Angebot von",
+    "recipientLabel": "Angebot an",
+    "unitPriceNet": "Nettopreis pro Einheit",
+    "lineDiscount": "Positionsrabatt",
+    "vatRate": "MwSt.-Satz",
+    "priceDetail": "Preisdetails",
+    "grossTotal": "Bruttobetrag",
+    "lineDiscountTotal": "Gesamter Zeilenrabatt",
+    "generalDiscount": "Gesamtrabatt",
+    "netSubtotal": "Netto-Zwischensumme",
+    "totalVat": "MwSt.",
+    "grandTotalWithVat": "Gesamtsumme (inkl. MwSt.)",
+    "validityNote": "Diese Vorlage ist gültig für 15 Tage ab Ausstellungsdatum.",
+    "draftWatermark": "ENTWURF"
   },
   "revision": {
     "success": "Revisionsdatensatz erstellt.",

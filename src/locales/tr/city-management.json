@@ -73,6 +73,8 @@
   "actions": "İşlemler",
   "delete": {
     "button": "Sil",
+    "success": "Şehir başarıyla silindi",
+    "error": "Şehir silinirken bir hata oluştu",
     "confirmTitle": "Şehri Sil",
     "confirmMessage": "{{name}} şehrini silmek istediğinizden emin misiniz?"
   },

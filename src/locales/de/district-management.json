@@ -1,83 +1,129 @@
 {
-  "menu": "Bezirksverwaltung",
+  "menu": "Bezirk verwalten",
   "description": "Bezirke verwalten und bearbeiten",
-  "addButton": "Hinzufügen Neu District",
+  "addButton": "Neuen Bezirk hinzufügen",
   "listTitle": "Bezirksliste",
-  "listDescription": "You can manage all registered districts in the system here.",
-  "loading": "Laden...",
-  "noData": "Keine Daten",
+  "listDescription": "Hier können Sie alle im System registrierten Bezirke verwalten.",
+  "loading": "Wird geladen...",
+  "noData": "Keine Daten gefunden",
   "actions": "Aktionen",
-  "previous": "Previous",
+  "previous": "Zurück",
   "next": "Weiter",
   "cancel": "Abbrechen",
   "delete": "Löschen",
   "save": "Speichern",
   "saving": "Wird gespeichert...",
+  "countryManagement": {
+    "error": "Ein Fehler ist aufgetreten"
+  },
   "table": {
-    "id": "AUSWEIS",
+    "id": "ID",
     "name": "Bezirksname",
     "erpCode": "ERP-Code",
+    "city": "Stadt",
     "cityName": "Stadtname",
+    "status": "Status",
+    "title": "Bezirksliste",
     "createdDate": "Erstellungsdatum",
     "createdBy": "Erstellt von",
-    "showing": "Zeige {{from}}-{{to}} von {{total}}",
-    "page": "Seite {{current}} von {{total}}"
+    "showing": "Angezeigt {{from}}-{{to}} / {{total}}",
+    "page": "Seite {{current}} / {{total}}"
+  },
+  "delete": {
+    "confirmTitle": "Bezirk löschen",
+    "confirmMessage": "Sind Sie sicher, dass Sie den Bezirk {{name}} löschen möchten?",
+    "success": "Bezirk erfolgreich gelöscht",
+    "error": "Bezirk konnte nicht gelöscht werden",
+    "deleting": "Wird gelöscht...",
+    "action": "Löschen"
   },
   "form": {
     "editDistrict": "Bezirk bearbeiten",
-    "addDistrict": "Hinzufügen Neu District",
-    "editDescription": "Bezirksinformationen bearbeiten",
+    "addDistrict": "Neuen Bezirk hinzufügen",
+    "editDescription": "Bezirkinformationen bearbeiten",
     "addDescription": "Neue Bezirksinformationen eingeben",
     "name": "Bezirksname",
     "namePlaceholder": "Bezirksnamen eingeben",
     "city": "Stadt",
     "selectCity": "Stadt auswählen",
+    "searchCity": "Stadt suchen...",
     "erpCode": "ERP-Code",
     "erpCodePlaceholder": "ERP-Code eingeben (optional)",
-    "name.required": "Bezirksname ist erforderlich",
-    "name.maxLength": "Bezirksname darf maximal 100 Zeichen lang sein",
-    "erpCode.maxLength": "ERP-Code darf maximal 10 Zeichen lang sein",
-    "city.required": "Stadtauswahl ist erforderlich",
-    "nameRequired": "District name is required",
-    "nameMaxLength": "District name cannot exceed 100 characters",
-    "erpCodeMaxLength": "ERP code cannot exceed 10 characters",
-    "cityRequired": "City selection is required"
-  },
-  "deleteConfirm": {
-    "confirmTitle": "Delete District",
-    "confirmMessage": "Are you sure you want to delete district {{name}}?"
+    "nameRequired": "Bezirksname ist erforderlich",
+    "nameMaxLength": "Bezirksname darf maximal 100 Zeichen haben",
+    "erpCodeMaxLength": "ERP-Code darf maximal 10 Zeichen haben",
+    "cityRequired": "Stadt ist erforderlich"
   },
   "stats": {
-    "totalDistricts": "GESAMTBEZIRKE",
-    "activeDistricts": "AKTIVE BEZIRKE",
-    "newThisMonth": "NEU DIESEN MONAT"
+    "totalDistricts": "Gesamt Bezirke",
+    "activeDistricts": "Aktive Bezirke",
+    "newThisMonth": "Neu in diesem Monat"
+  },
+  "status": {
+    "inactive": "Inaktiv",
+    "active": "Aktiv"
+  },
+  "messages": {
+    "createSuccess": "Bezirk erfolgreich erstellt",
+    "createError": "Bezirk konnte nicht erstellt werden",
+    "updateSuccess": "Bezirk erfolgreich aktualisiert",
+    "updateError": "Bezirk konnte nicht aktualisiert werden",
+    "deleteSuccess": "Bezirk erfolgreich gelöscht",
+    "deleteError": "Bezirk konnte nicht gelöscht werden"
   },
   "districtManagement": {
-    "menu": "İlçe Yönetimi",
-    "description": "İlçeleri yönetin ve düzenleyin",
-    "addButton": "Yeni İlçe Ekle",
+    "menu": "Bezirk verwalten",
+    "description": "Bezirke verwalten und bearbeiten",
+    "addButton": "Neuen Bezirk hinzufügen",
     "loading": "Wird geladen...",
-    "noData": "Veri yok",
+    "noData": "Keine Daten gefunden",
     "table": {
       "id": "ID",
-      "name": "İlçe Adı",
-      "erpCode": "ERP Kodu",
-      "city": "Şehir",
-      "cityName": "Şehir Adı",
-      "status": "Durum",
-      "title": "İlçe Listesi"
+      "name": "Bezirksname",
+      "erpCode": "ERP-Code",
+      "city": "Stadt",
+      "cityName": "Stadtname",
+      "status": "Status",
+      "title": "Bezirksliste"
     },
     "delete": {
-      "confirmTitle": "İlçeyi Sil",
-      "confirmMessage": "{{name}} ilçesini silmek istediğinizden emin misiniz?",
-      "success": "İlçe başarıyla silindi",
-      "error": "İlçe silinirken hata oluştu"
+      "confirmTitle": "Bezirk löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie den Bezirk {{name}} löschen möchten?",
+      "success": "Bezirk erfolgreich gelöscht",
+      "error": "Bezirk konnte nicht gelöscht werden"
     },
     "messages": {
-      "createSuccess": "İlçe başarıyla oluşturuldu",
-      "createError": "İlçe oluşturulamadı",
-      "updateSuccess": "İlçe başarıyla güncellendi",
-      "updateError": "İlçe güncellenemedi"
+      "createSuccess": "Bezirk erfolgreich erstellt",
+      "createError": "Bezirk konnte nicht erstellt werden",
+      "updateSuccess": "Bezirk erfolgreich aktualisiert",
+      "updateError": "Bezirk konnte nicht aktualisiert werden"
+    },
+    "stats": {
+      "totalDistricts": "Gesamt Bezirke",
+      "activeDistricts": "Aktive Bezirke",
+      "newThisMonth": "Neu in diesem Monat"
+    },
+    "status": {
+      "inactive": "Inaktiv",
+      "active": "Aktiv"
+    },
+    "error": "Ein Fehler ist aufgetreten",
+    "form": {
+      "editDistrict": "Bezirk bearbeiten",
+      "addDistrict": "Neuen Bezirk hinzufügen",
+      "editDescription": "Bezirkinformationen bearbeiten",
+      "addDescription": "Neue Bezirksinformationen eingeben",
+      "name": "Bezirksname",
+      "namePlaceholder": "Bezirksnamen eingeben",
+      "city": "Stadt",
+      "selectCity": "Stadt auswählen",
+      "searchCity": "Stadt suchen...",
+      "erpCode": "ERP-Code",
+      "erpCodePlaceholder": "ERP-Code eingeben (optional)",
+      "nameRequired": "Bezirksname ist erforderlich",
+      "nameMaxLength": "Bezirksname darf maximal 100 Zeichen haben",
+      "erpCodeMaxLength": "ERP-Code darf maximal 10 Zeichen haben",
+      "cityRequired": "Stadt ist erforderlich"
     }
   }
 }

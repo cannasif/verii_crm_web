@@ -1,0 +1,44 @@
+{
+  "menu": "إدارة مطابقة مندوب المبيعات",
+  "description": "عرض وإضافة وحذف مطابقة المستخدمين لرموز مندوبي المبيعات.",
+  "addButton": "مطابقة جديدة",
+  "searchPlaceholder": "ابحث برمز المندوب، المستخدم أو البريد الإلكتروني",
+  "empty": "لا توجد مطابقات لمندوبي المبيعات.",
+  "error": "تعذر تحميل مطابقتات مندوبي المبيعات.",
+  "deleteConfirmMessage": "حذف المطابقة بين {{salesRep}} و {{user}}؟",
+  "table": {
+    "title": "قائمة مطابقة مندوبي المبيعات",
+    "salesRepCode": "SalesRepCode",
+    "salesRepName": "اسم مندوب المبيعات",
+    "userFullName": "المستخدم",
+    "username": "اسم المستخدم",
+    "userEmail": "البريد الإلكتروني",
+    "createdDate": "تاريخ الإنشاء"
+  },
+  "form": {
+    "addTitle": "إضافة مطابقة مندوب المبيعات",
+    "addDescription": "ربط سجل مندوب المبيعات بمستخدم.",
+    "salesRep": "مندوب المبيعات",
+    "salesRepPlaceholder": "اختر مندوب المبيعات",
+    "salesRepSearchPlaceholder": "ابحث عن مندوب المبيعات",
+    "user": "المستخدم",
+    "userPlaceholder": "اختر المستخدم",
+    "userSearchPlaceholder": "ابحث عن المستخدم",
+    "validation": {
+      "salesRepRequired": "اختيار مندوب المبيعات مطلوب.",
+      "userRequired": "اختيار المستخدم مطلوب."
+    }
+  },
+  "messages": {
+    "createSuccess": "تم إنشاء مطابقة مندوب المبيعات.",
+    "createError": "تعذر إنشاء مطابقة مندوب المبيعات.",
+    "deleteSuccess": "تم حذف مطابقة مندوب المبيعات.",
+    "deleteError": "تعذر حذف مطابقة مندوب المبيعات."
+  },
+  "advancedFilter": {
+    "columnSalesRepCode": "رمز مندوب المبيعات",
+    "columnSalesRepName": "اسم مندوب المبيعات",
+    "columnUsername": "اسم المستخدم",
+    "columnEmail": "البريد الإلكتروني"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "menu": "Verwaltung der Zuordnung von Verkaufsvertretern",
+  "description": "Anzeigen, Hinzufügen und Löschen von Benutzermappings für Verkaufspersonencodes.",
+  "addButton": "Neue Zuordnung",
+  "searchPlaceholder": "Nach Verkaufspersonencode, Benutzer oder E-Mail suchen",
+  "empty": "Keine Zuordnungen für Verkaufspersonen gefunden.",
+  "error": "Zuordnungen für Verkaufspersonen konnten nicht geladen werden.",
+  "deleteConfirmMessage": "Zuordnung zwischen {{salesRep}} und {{user}} löschen?",
+  "table": {
+    "title": "Liste der Verkaufspersonen-Zuordnungen",
+    "salesRepCode": "SalesRepCode",
+    "salesRepName": "Name des Verkaufspersonens",
+    "userFullName": "Benutzer",
+    "username": "Benutzername",
+    "userEmail": "E-Mail",
+    "createdDate": "Erstellungsdatum"
+  },
+  "form": {
+    "addTitle": "Zuordnung für Verkaufsperson hinzufügen",
+    "addDescription": "Einen Verkaufspersonen-Datensatz einem Benutzer zuordnen.",
+    "salesRep": "Verkaufsperson",
+    "salesRepPlaceholder": "Verkaufsperson auswählen",
+    "salesRepSearchPlaceholder": "Verkaufsperson suchen",
+    "user": "Benutzer",
+    "userPlaceholder": "Benutzer auswählen",
+    "userSearchPlaceholder": "Benutzer suchen",
+    "validation": {
+      "salesRepRequired": "Die Auswahl der Verkaufsperson ist erforderlich.",
+      "userRequired": "Die Benutzerauswahl ist erforderlich."
+    }
+  },
+  "messages": {
+    "createSuccess": "Zuordnung der Verkaufsperson erstellt.",
+    "createError": "Zuordnung der Verkaufsperson konnte nicht erstellt werden.",
+    "deleteSuccess": "Zuordnung der Verkaufsperson gelöscht.",
+    "deleteError": "Zuordnung der Verkaufsperson konnte nicht gelöscht werden."
+  },
+  "advancedFilter": {
+    "columnSalesRepCode": "Verkaufspersonencode",
+    "columnSalesRepName": "Name der Verkaufsperson",
+    "columnUsername": "Benutzername",
+    "columnEmail": "E-Mail"
+  }
+}

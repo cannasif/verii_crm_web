@@ -172,7 +172,8 @@
     "descriptionFieldsTitle": "Campos de descripción",
     "descriptionField1Label": "Perfil",
     "descriptionField2Label": "Hierro",
-    "descriptionField3Label": "Tornillo"
+    "descriptionField3Label": "Tornillo",
+    "doubleClickToEdit": "Doble clic para editar"
   },
   "exchangeRates": {
     "title": "Tipos de cambio",
@@ -277,7 +278,21 @@
     "metaOfferNo": "Nº presupuesto",
     "metaCustomer": "Cliente",
     "notSpecified": "—",
-    "grandTotal": "Total general"
+    "grandTotal": "Total general",
+    "senderLabel": "Oferta de",
+    "recipientLabel": "Oferta para",
+    "unitPriceNet": "Precio unitario neto",
+    "lineDiscount": "Descuento de línea",
+    "vatRate": "Tipo de IVA",
+    "priceDetail": "Detalle del precio",
+    "grossTotal": "Total bruto",
+    "lineDiscountTotal": "Descuento total de líneas",
+    "generalDiscount": "Descuento general",
+    "netSubtotal": "Subtotal neto",
+    "totalVat": "IVA total",
+    "grandTotalWithVat": "Total general (IVA incluido)",
+    "validityNote": "Esta oferta es válida por 15 días desde la fecha de emisión.",
+    "draftWatermark": "BORRADOR"
   },
   "revision": {
     "success": "Registro de revisión creado.",

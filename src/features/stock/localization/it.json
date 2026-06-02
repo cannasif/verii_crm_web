@@ -23,7 +23,11 @@
     "removeFavorite": "Rimuovi dai preferiti",
     "viewModeTable": "Elenco",
     "viewModeGrid": "Griglia",
-    "viewModeGroupLabel": "Vista"
+    "viewModeGroupLabel": "Vista",
+    "createMirrorStock": "Mirror Stok Aç",
+    "createErpStock": "Netsis stok kaydı oluştur",
+    "codeFilters": "Code filters",
+    "applyCodeFilters": "Apply"
   },
   "detail": {
     "title": "Dettaglio articolo",
@@ -127,6 +131,48 @@
     "error": "Si è verificato un errore",
     "favoriteAddSuccess": "Stock aggiunto ai preferiti",
     "favoriteRemoveSuccess": "Stock rimosso dai preferiti",
-    "favoriteToggleError": "Impossibile aggiornare il preferito"
+    "favoriteToggleError": "Impossibile aggiornare il preferito",
+    "mirrorCreateSuccess": "Mirror stok başarıyla oluşturuldu",
+    "mirrorCreateError": "Mirror stok oluşturulamadı",
+    "erpCreateSuccess": "Stok Netsis'e başarıyla oluşturuldu",
+    "erpCreateError": "Netsis stok kaydı oluşturulamadı"
+  },
+  "mirrorCreate": {
+    "title": "Mirror Stok Aç",
+    "description": "ERP'de henüz açılmamış stoğu önce CRM mirror stoğu olarak oluşturun. Sonra listeden tek tuşla Netsis stok kartına dönüştürebilirsiniz.",
+    "erpStockCode": "Stok Kodu",
+    "stockName": "Stok Adı",
+    "unit": "Birim",
+    "ureticiKodu": "Üretici Kodu",
+    "branchCode": "Şube Kodu",
+    "groupTitle": "Katalog kırılımları",
+    "groupDescription": "Grup ve özel kodlar katalog/filtre yapısında kullanılacak şekilde opsiyonel girilebilir.",
+    "grupKodu": "Grup Kodu",
+    "grupAdi": "Grup Adı",
+    "kod1": "Kod 1",
+    "kod1Adi": "Kod 1 Adı",
+    "kod2": "Kod 2",
+    "kod2Adi": "Kod 2 Adı",
+    "kod3": "Kod 3",
+    "kod3Adi": "Kod 3 Adı",
+    "optional": "Opsiyonel"
+  },
+  "bulkImport": {
+    "button": "Bulk image upload",
+    "title": "Bulk stock image upload",
+    "description": "Upload one ZIP. The system reads the ERP stock code from the ZIP folder structure and adds the images to the matched stock in the background, just like a manual upload.",
+    "structureTitle": "ZIP structure",
+    "selectArchive": "Select ZIP archive",
+    "notesTitle": "How it works",
+    "rule1": "Folders inside the ZIP should be grouped by ERP stock code.",
+    "rule2": "Supported examples: STK-001/image1.jpg, STK-001/1/image2.png, Resimler/STK-001/image3.jpg",
+    "rule3": "If the stock code is found, the images are added to that stock as if they were uploaded manually; if not, only that file is skipped.",
+    "rule4": "Large archives are processed as a Hangfire background job. This field expects a ZIP archive.",
+    "fileRequired": "Select a ZIP file first.",
+    "submitting": "Queueing...",
+    "submit": "Upload ZIP and queue import",
+    "queued": "Bulk image import queued. Job: {{jobId}}",
+    "uploadHint": "Drag and drop the ZIP file here or choose a file",
+    "uploadLimit": "Maximum 500 MB (processed in the background)"
   }
 }
