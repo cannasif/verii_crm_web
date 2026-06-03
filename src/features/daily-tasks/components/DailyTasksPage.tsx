@@ -423,6 +423,10 @@ export function DailyTasksPage(): ReactElement {
     return `${year}-${month}-${day}`;
   };
 
+  const toDayStartDateTime = (dateKey: string): string => `${dateKey}T00:00:00`;
+  const toDayEndDateTime = (dateKey: string): string => `${dateKey}T23:59:59`;
+  const toDateKeyFromRangeValue = (value: string): string => value.slice(0, 10);
+
   const normalizeToMonday = (date: Date): Date => {
     const next = new Date(date);
     const day = next.getDay();
@@ -470,9 +474,10 @@ export function DailyTasksPage(): ReactElement {
     return { startDate: formatDateKey(start), endDate: formatDateKey(end) };
   };
 
-  const getListDayDateRange = (): { startDate: string; endDate: string } => {
-    return { startDate: listSelectedDate, endDate: listSelectedDate };
-  };
+  const getListDayDateRange = (): { startDate: string; endDate: string } => ({
+    startDate: toDayStartDateTime(listSelectedDate),
+    endDate: toDayEndDateTime(listSelectedDate),
+  });
 
   const calendarDateRange = getCalendarDateRange();
   const weeklyDateRange = getWeeklyDateRange();
@@ -531,7 +536,7 @@ export function DailyTasksPage(): ReactElement {
     if (kpiScopeMode === 'all') return {};
     if (kpiScopeMode === 'daily') {
       if (!kpiDay) return {};
-      return { startDate: kpiDay, endDate: kpiDay };
+      return { startDate: toDayStartDateTime(kpiDay), endDate: toDayEndDateTime(kpiDay) };
     }
     if (kpiScopeMode === 'weekly') {
       const start = new Date(kpiWeekStart);
@@ -550,10 +555,22 @@ export function DailyTasksPage(): ReactElement {
       return { startDate: toDateKey(start), endDate: toDateKey(end) };
     }
     if (!kpiCustomStart && !kpiCustomEnd) return {};
-    if (kpiCustomStart && !kpiCustomEnd) return { startDate: kpiCustomStart };
-    if (!kpiCustomStart && kpiCustomEnd) return { endDate: kpiCustomEnd };
-    if (kpiCustomStart <= kpiCustomEnd) return { startDate: kpiCustomStart, endDate: kpiCustomEnd };
-    return { startDate: kpiCustomEnd, endDate: kpiCustomStart };
+    if (kpiCustomStart && !kpiCustomEnd) {
+      return { startDate: toDayStartDateTime(kpiCustomStart) };
+    }
+    if (!kpiCustomStart && kpiCustomEnd) {
+      return { endDate: toDayEndDateTime(kpiCustomEnd) };
+    }
+    if (kpiCustomStart <= kpiCustomEnd) {
+      return {
+        startDate: toDayStartDateTime(kpiCustomStart),
+        endDate: toDayEndDateTime(kpiCustomEnd),
+      };
+    }
+    return {
+      startDate: toDayStartDateTime(kpiCustomEnd),
+      endDate: toDayEndDateTime(kpiCustomStart),
+    };
   }, [kpiScopeMode, kpiDay, kpiWeekStart, kpiMonth, kpiCustomStart, kpiCustomEnd]);
 
   const kpiFilters = useMemo(() => {
@@ -626,8 +643,10 @@ export function DailyTasksPage(): ReactElement {
     let filtered = activities;
     if (statusFilter !== 'all') filtered = filtered.filter((activity) => String(activity.status) === statusFilter);
 
-    const rangeStart = parseDateKey(activeDateRange.startDate).getTime();
-    const rangeEnd = parseDateKey(activeDateRange.endDate).getTime() + (24 * 60 * 60 * 1000 - 1);
+    const rangeStart = parseDateKey(toDateKeyFromRangeValue(activeDateRange.startDate)).getTime();
+    const rangeEnd =
+      parseDateKey(toDateKeyFromRangeValue(activeDateRange.endDate)).getTime() +
+      (24 * 60 * 60 * 1000 - 1);
 
     filtered = filtered.filter((activity) => {
       const rawDate = activity.activityDate ?? activity.startDateTime;
@@ -726,7 +745,7 @@ export function DailyTasksPage(): ReactElement {
   };
   const handleNewTask = () => {
     setEditingActivity(null);
-    setSelectedDate(null);
+    setSelectedDate(activeTab === 'list' ? listSelectedDate : null);
     setSlotStart(null);
     setSlotEnd(null);
     setFormOpen(true);
