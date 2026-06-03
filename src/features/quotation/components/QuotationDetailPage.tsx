@@ -14,6 +14,8 @@ import { useUpdateQuotationNotesList } from '../hooks/useUpdateQuotationNotesLis
 import { usePriceRuleOfQuotation } from '../hooks/usePriceRuleOfQuotation';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
+import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
+import { resolveQuotationCustomerLabelForPdf } from '@/lib/resolve-quotation-customer-label';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -321,6 +323,10 @@ export function QuotationDetailPage(): ReactElement {
   const watchedCustomerId = form.watch('quotation.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
+  const { data: selectedCustomer } = useCustomer(
+    watchedCustomerId ?? 0,
+    Boolean(watchedCustomerId && watchedCustomerId > 0)
+  );
   const quotationFormSlice = form.watch('quotation');
   const quotationSchemaPayload = useMemo(
     () => ({ quotation: quotationFormSlice }),
@@ -347,10 +353,13 @@ export function QuotationDetailPage(): ReactElement {
   const buildPreviewPdfBlob = useCallback(async (): Promise<Blob> => {
     const qc = quotationFormSlice;
     const customerLabel =
-      quotation?.potentialCustomerName?.trim() ||
-      customerOptions.find((c) => c.id === qc.potentialCustomerId)?.name?.trim() ||
-      qc.erpCustomerCode?.trim() ||
-      t('pdfExportTemplate.notSpecified');
+      (await resolveQuotationCustomerLabelForPdf({
+        potentialCustomerId: qc.potentialCustomerId,
+        erpCustomerCode: qc.erpCustomerCode,
+        potentialCustomerName: quotation?.potentialCustomerName,
+        customerFromApi: selectedCustomer,
+        customerOptions,
+      })) || t('pdfExportTemplate.notSpecified');
 
     const labels: QuotationPreviewPdfLabels = {
       documentTitle: t('pdfExportTemplate.documentTitle'),
@@ -395,6 +404,7 @@ export function QuotationDetailPage(): ReactElement {
     quotationFormSlice,
     quotation,
     customerOptions,
+    selectedCustomer,
     t,
     i18n.language,
     lines,

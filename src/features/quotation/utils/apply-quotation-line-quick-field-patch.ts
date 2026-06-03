@@ -7,7 +7,8 @@ import type {
   UserDiscountLimitDto,
   ApprovalStatus,
 } from '../types/quotation-types';
-import { findExchangeRateByDovizTipi } from './price-conversion';
+import { findMatchingPricingRuleLine } from '@/lib/pricing-rule-line-match';
+import { convertPriceForDocumentCurrency } from '@/lib/line-unit-price-currency';
 
 export type QuotationQuickEditField =
   | 'quantity'
@@ -31,33 +32,6 @@ function groupMatches(limitCode?: string | null, stockCode?: string | null): boo
   if (!limitNormalized || !stockNormalized) return false;
   if (limitNormalized === stockNormalized) return true;
   return toGroupRoot(limitNormalized) === toGroupRoot(stockNormalized);
-}
-
-function convertPriceWithCurrency(
-  price: number,
-  sourceCurrencyCode: string,
-  targetCurrency: number,
-  currencyOptions: CurrencyOption[],
-  exchangeRates: QuotationExchangeRateFormState[],
-  erpRates: KurDto[]
-): number {
-  if (!sourceCurrencyCode) return price;
-
-  const sourceCurrencyOption = currencyOptions.find(
-    (opt) => opt.code === sourceCurrencyCode || opt.dovizIsmi === sourceCurrencyCode
-  );
-  const sourceDovizTipi = sourceCurrencyOption?.dovizTipi;
-
-  if (!sourceDovizTipi) return price;
-  if (sourceDovizTipi === targetCurrency) return price;
-
-  const sourceRate = findExchangeRateByDovizTipi(sourceDovizTipi, exchangeRates, erpRates);
-  const targetRate = findExchangeRateByDovizTipi(targetCurrency, exchangeRates, erpRates);
-
-  if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) return price;
-
-  const priceInTL = price * sourceRate;
-  return priceInTL / targetRate;
 }
 
 function applyDiscountApproval(
@@ -117,20 +91,13 @@ export function applyQuotationLineQuickFieldPatch(
 
   if (field === 'quantity' && line.productCode) {
     const newQuantity = value;
-    const matchingPricingRule = pricingRules
-      .filter((rule) => normalizeGroupCode(rule.stokCode) === normalizeGroupCode(line.productCode))
-      .filter((rule) => {
-        const minQuantity = rule.minQuantity ?? 0;
-        const maxQuantity = rule.maxQuantity ?? Infinity;
-        return newQuantity >= minQuantity && newQuantity <= maxQuantity;
-      })
-      .sort((left, right) => (right.minQuantity ?? 0) - (left.minQuantity ?? 0))[0];
+    const matchingPricingRule = findMatchingPricingRuleLine(pricingRules, line.productCode, newQuantity);
 
     if (matchingPricingRule) {
       if (matchingPricingRule.fixedUnitPrice !== null && matchingPricingRule.fixedUnitPrice !== undefined) {
-        const convertedPrice = convertPriceWithCurrency(
+        const convertedPrice = convertPriceForDocumentCurrency(
           matchingPricingRule.fixedUnitPrice,
-          matchingPricingRule.currencyCode ?? '',
+          matchingPricingRule.currencyCode,
           currency,
           currencyOptions,
           exchangeRates,

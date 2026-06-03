@@ -243,6 +243,7 @@ export function OrderLineTable({
   const { handleProductSelect: handleProductSelectHook, handleProductSelectWithRelatedStocks } = useProductSelection({
     currency,
     exchangeRates,
+    pricingRules,
   });
 
   const existingDocumentLineMarkers = useMemo(() => linesToDocumentStockMarkers(lines), [lines]);

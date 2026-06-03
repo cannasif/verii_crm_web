@@ -6,15 +6,23 @@ import { stockApi } from '@/features/stock/api/stock-api';
 import { useOrderCalculations } from './useOrderCalculations';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
-import type { OrderLineFormState, OrderExchangeRateFormState } from '../types/order-types';
+import type {
+  OrderLineFormState,
+  OrderExchangeRateFormState,
+  PricingRuleLineGetDto,
+} from '../types/order-types';
 import type { ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { createClientId } from '@/lib/create-client-id';
 import { getRelatedQuantityPerMainUnit } from '@/lib/related-stock-quantity';
-import { convertProductPriceToDocumentCurrency } from '@/lib/line-unit-price-currency';
+import {
+  convertProductLinePriceForDocument,
+  type PricingRulePriceLineLike,
+} from '@/lib/line-unit-price-currency';
 
 interface UseProductSelectionParams {
   currency: number;
   exchangeRates: OrderExchangeRateFormState[];
+  pricingRules?: PricingRuleLineGetDto[];
 }
 
 interface UseProductSelectionReturn {
@@ -22,7 +30,11 @@ interface UseProductSelectionReturn {
   handleProductSelectWithRelatedStocks: (product: ProductSelectionResult, relatedStockIds: number[]) => Promise<OrderLineFormState[]>;
 }
 
-export function useProductSelection({ currency, exchangeRates }: UseProductSelectionParams): UseProductSelectionReturn {
+export function useProductSelection({
+  currency,
+  exchangeRates,
+  pricingRules = [],
+}: UseProductSelectionParams): UseProductSelectionReturn {
   const { calculateLineTotals } = useOrderCalculations();
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
@@ -60,18 +72,24 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
     []
   );
 
-  const convertListPrice = useCallback(
-    (listPrice: number, sourceCurrency: string | null | undefined): number => {
-      const { price, zeroRate } = convertProductPriceToDocumentCurrency(
-        listPrice,
-        sourceCurrency,
-        currency,
+  const convertPriceData = useCallback(
+    (
+      priceData: { listPrice?: number | null; currency?: string | null; discount1?: number | null; discount2?: number | null; discount3?: number | null },
+      productCode: string,
+      quantity: number
+    ) => {
+      const converted = convertProductLinePriceForDocument({
+        priceData,
+        productCode,
+        quantity,
+        documentDovizTipi: currency,
         currencyOptions,
         exchangeRates,
-        erpRates
-      );
+        erpRates,
+        pricingRules: pricingRules as PricingRulePriceLineLike[],
+      });
 
-      if (zeroRate) {
+      if (converted.zeroRate) {
         toast.error(t('order.update.error'), {
           description: t('order.exchangeRates.zeroRateError', {
             defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
@@ -80,9 +98,9 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         throw new Error('ZERO_RATE');
       }
 
-      return price;
+      return converted;
     },
-    [currency, currencyOptions, erpRates, exchangeRates, t]
+    [currency, currencyOptions, erpRates, exchangeRates, pricingRules, t]
   );
 
   const handleProductSelectWithRelatedStocks = useCallback(
@@ -180,7 +198,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
             continue;
           }
 
-          const convertedPrice = convertListPrice(priceData.listPrice ?? 0, priceData.currency);
+          const converted = convertPriceData(priceData, productCode, lineQty);
 
           const line: OrderLineFormState = {
             id: `temp-${Date.now()}-${i}`,
@@ -190,12 +208,12 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
             unit: isMainProduct ? (product.unit ?? null) : null,
             groupCode: priceData.groupCode || request.groupCode || null,
             quantity: lineQty,
-            unitPrice: convertedPrice,
-            discountRate1: priceData.discount1 ?? 0,
+            unitPrice: converted.unitPrice,
+            discountRate1: converted.discountRate1,
             discountAmount1: 0,
-            discountRate2: priceData.discount2 ?? 0,
+            discountRate2: converted.discountRate2,
             discountAmount2: 0,
-            discountRate3: priceData.discount3 ?? 0,
+            discountRate3: converted.discountRate3,
             discountAmount3: 0,
             vatRate,
             vatAmount: 0,
@@ -205,7 +223,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
             description1: null,
             description2: null,
             description3: null,
-            pricingRuleHeaderId: null,
+            pricingRuleHeaderId: converted.pricingRuleHeaderId,
             relatedStockId,
             relatedProductKey,
             isMainRelatedProduct: isMainProduct,
@@ -224,7 +242,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         return [calculateLineTotals(baseLine)];
       }
     },
-    [convertListPrice, createEmptyLine, calculateLineTotals]
+    [convertPriceData, createEmptyLine, calculateLineTotals]
   );
 
   const handleProductSelect = useCallback(
@@ -254,15 +272,16 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
           return calculateLineTotals(baseLine);
         }
 
-        const convertedPrice = convertListPrice(selectedPrice.listPrice ?? 0, selectedPrice.currency);
+        const converted = convertPriceData(selectedPrice, product.code, 1);
 
         const updatedLine: OrderLineFormState = {
           ...baseLine,
           groupCode: selectedPrice.groupCode || product.groupCode || null,
-          unitPrice: convertedPrice,
-          discountRate1: selectedPrice.discount1 ?? 0,
-          discountRate2: selectedPrice.discount2 ?? 0,
-          discountRate3: selectedPrice.discount3 ?? 0,
+          unitPrice: converted.unitPrice,
+          discountRate1: converted.discountRate1,
+          discountRate2: converted.discountRate2,
+          discountRate3: converted.discountRate3,
+          pricingRuleHeaderId: converted.pricingRuleHeaderId,
         };
 
         return calculateLineTotals(updatedLine);
@@ -273,7 +292,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         return calculateLineTotals(baseLine);
       }
     },
-    [convertListPrice, createEmptyLine, calculateLineTotals, handleProductSelectWithRelatedStocks]
+    [convertPriceData, createEmptyLine, calculateLineTotals, handleProductSelectWithRelatedStocks]
   );
 
   return {

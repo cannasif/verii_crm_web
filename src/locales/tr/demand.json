@@ -328,7 +328,10 @@
     "approvedBy": "Onaylayan",
     "actionDate": "İşlem Tarihi",
     "status": "Durum",
-    "waiting": "Bekliyor"
+    "waiting": "Bekliyor",
+    "rejectTitle": "Talebi Reddet",
+    "rejectDescription": "Reddetme gerekçesini girin.",
+    "rejectReasonPlaceholder": "Reddetme nedeni"
   },
   "quotation": {
     "notes": {

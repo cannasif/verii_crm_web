@@ -20,9 +20,8 @@ import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscount
 import { LineFormUnitPriceInput } from '@/components/shared/LineFormUnitPriceInput';
 import { useLineUnitPriceInput } from '@/hooks/useLineUnitPriceInput';
 import {
-  convertPriceBetweenDovizTipi,
-  resolveDovizTipiFromCurrencyValue,
-  resolveDocumentDovizTipi,
+  convertPriceForDocumentCurrency,
+  convertProductLinePriceForDocument,
 } from '@/lib/line-unit-price-currency';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex } from '@/lib/line-discount-display';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
@@ -30,7 +29,6 @@ import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components
 import { PricingRuleInsightDialog } from '@/components/shared/PricingRuleInsightDialog';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { formatCurrency } from '../utils/format-currency';
-import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { quotationApi } from '../api/quotation-api';
 import { quotationLineRequiredSchema, type QuotationLineFormState, type QuotationExchangeRateFormState, type PricingRuleLineGetDto, type UserDiscountLimitDto, type ApprovalStatus } from '../types/quotation-types';
 import { pdfReportTemplateApi } from '@/features/pdf-report';
@@ -147,6 +145,7 @@ export function QuotationLineForm({
   const { handleProductSelect: handleProductSelectHook, handleProductSelectWithRelatedStocks } = useProductSelection({
     currency,
     exchangeRates,
+    pricingRules,
   });
 
   const handleCompanySelect = (result: CustomerSelectionResult) => {
@@ -432,40 +431,20 @@ export function QuotationLineForm({
             let mainDiscountRate3 = line.discountRate3;
 
             if (mainPrice) {
-              const sourceCurrencyFromApi = mainPrice.currency || '';
-              let sourceDovizTipi: number | null = null;
-              if (sourceCurrencyFromApi) {
-                const numericCurrency = parseInt(sourceCurrencyFromApi, 10);
-                if (!isNaN(numericCurrency)) {
-                  sourceDovizTipi = numericCurrency;
-                } else {
-                  const sourceCurrencyOption = currencyOptions.find(
-                    (opt) => opt.code === sourceCurrencyFromApi || opt.dovizIsmi === sourceCurrencyFromApi
-                  );
-                  sourceDovizTipi = sourceCurrencyOption?.dovizTipi || null;
-                }
-              }
-
-              if (sourceDovizTipi) {
-                const sourceRate = findExchangeRateByDovizTipi(sourceDovizTipi, exchangeRates, erpRates);
-                const targetRate = findExchangeRateByDovizTipi(currency, exchangeRates, erpRates);
-
-                if (sourceRate && sourceRate > 0 && targetRate && targetRate > 0) {
-                  if (sourceDovizTipi !== currency) {
-                    mainUnitPrice = (mainPrice.listPrice ?? 0) * sourceRate / targetRate;
-                  } else {
-                    mainUnitPrice = mainPrice.listPrice ?? 0;
-                  }
-                } else {
-                  mainUnitPrice = mainPrice.listPrice ?? 0;
-                }
-              } else {
-                mainUnitPrice = mainPrice.listPrice ?? 0;
-              }
-
-              mainDiscountRate1 = mainPrice.discount1 ?? 0;
-              mainDiscountRate2 = mainPrice.discount2 ?? 0;
-              mainDiscountRate3 = mainPrice.discount3 ?? 0;
+              const converted = convertProductLinePriceForDocument({
+                priceData: mainPrice,
+                productCode: line.productCode,
+                quantity: line.quantity,
+                documentDovizTipi: currency,
+                currencyOptions,
+                exchangeRates,
+                erpRates,
+                pricingRules,
+              });
+              mainUnitPrice = converted.unitPrice;
+              mainDiscountRate1 = converted.discountRate1;
+              mainDiscountRate2 = converted.discountRate2;
+              mainDiscountRate3 = converted.discountRate3;
             }
 
             const mainStockData: TemporaryStockData = {
@@ -506,40 +485,20 @@ export function QuotationLineForm({
                 let relatedDiscountRate3 = relatedLine.discountRate3;
 
                 if (relatedPrice) {
-                  const sourceCurrencyFromApi = relatedPrice.currency || '';
-                  let sourceDovizTipi: number | null = null;
-                  if (sourceCurrencyFromApi) {
-                    const numericCurrency = parseInt(sourceCurrencyFromApi, 10);
-                    if (!isNaN(numericCurrency)) {
-                      sourceDovizTipi = numericCurrency;
-                    } else {
-                      const sourceCurrencyOption = currencyOptions.find(
-                        (opt) => opt.code === sourceCurrencyFromApi || opt.dovizIsmi === sourceCurrencyFromApi
-                      );
-                      sourceDovizTipi = sourceCurrencyOption?.dovizTipi || null;
-                    }
-                  }
-
-                  if (sourceDovizTipi) {
-                    const sourceRate = findExchangeRateByDovizTipi(sourceDovizTipi, exchangeRates, erpRates);
-                    const targetRate = findExchangeRateByDovizTipi(currency, exchangeRates, erpRates);
-
-                    if (sourceRate && sourceRate > 0 && targetRate && targetRate > 0) {
-                      if (sourceDovizTipi !== currency) {
-                        relatedUnitPrice = (relatedPrice.listPrice ?? 0) * sourceRate / targetRate;
-                      } else {
-                        relatedUnitPrice = relatedPrice.listPrice ?? 0;
-                      }
-                    } else {
-                      relatedUnitPrice = relatedPrice.listPrice ?? 0;
-                    }
-                  } else {
-                    relatedUnitPrice = relatedPrice.listPrice ?? 0;
-                  }
-
-                  relatedDiscountRate1 = relatedPrice.discount1 ?? 0;
-                  relatedDiscountRate2 = relatedPrice.discount2 ?? 0;
-                  relatedDiscountRate3 = relatedPrice.discount3 ?? 0;
+                  const converted = convertProductLinePriceForDocument({
+                    priceData: relatedPrice,
+                    productCode: relatedLine.productCode,
+                    quantity: relatedLine.quantity,
+                    documentDovizTipi: currency,
+                    currencyOptions,
+                    exchangeRates,
+                    erpRates,
+                    pricingRules,
+                  });
+                  relatedUnitPrice = converted.unitPrice;
+                  relatedDiscountRate1 = converted.discountRate1;
+                  relatedDiscountRate2 = converted.discountRate2;
+                  relatedDiscountRate3 = converted.discountRate3;
                 }
 
                 return {
@@ -638,7 +597,7 @@ export function QuotationLineForm({
     };
 
     void loadTemporaryStockData();
-  }, [line, currency, currencyOptions, exchangeRates, erpRates, lastLoadedProductCode, temporaryStockData]);
+  }, [line, currency, currencyOptions, exchangeRates, erpRates, lastLoadedProductCode, temporaryStockData, pricingRules]);
 
   useEffect(() => {
     if (
@@ -662,29 +621,14 @@ export function QuotationLineForm({
     sourceCurrencyCode: string,
     targetCurrency: number
   ): number => {
-    const sourceDovizTipi = resolveDovizTipiFromCurrencyValue(
-      sourceCurrencyCode,
-      currencyOptions,
-      erpRates
-    );
-    if (!sourceDovizTipi) {
-      return price;
-    }
-
-    const targetDovizTipi = resolveDocumentDovizTipi(targetCurrency, currencyOptions);
-    if (sourceDovizTipi === targetDovizTipi) {
-      return price;
-    }
-
-    const converted = convertPriceBetweenDovizTipi(
+    return convertPriceForDocumentCurrency(
       price,
-      sourceDovizTipi,
-      targetDovizTipi,
+      sourceCurrencyCode,
+      targetCurrency,
+      currencyOptions,
       exchangeRates,
       erpRates
     );
-
-    return converted ?? price;
   };
 
   const syncActiveBulkDraftImage = (

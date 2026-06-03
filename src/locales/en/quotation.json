@@ -336,6 +336,9 @@
     "status": "Status",
     "stepOrder": "Step",
     "approvedBy": "Approved by",
-    "actionDate": "Action date"
+    "actionDate": "Action date",
+    "rejectTitle": "Reject quotation",
+    "rejectDescription": "Enter the reason for rejecting this quotation.",
+    "rejectReasonPlaceholder": "Rejection reason"
   }
 }

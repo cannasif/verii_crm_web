@@ -288,6 +288,7 @@ export function QuotationLineTable({
   const { handleProductSelect: handleProductSelectHook, handleProductSelectWithRelatedStocks } = useProductSelection({
     currency,
     exchangeRates,
+    pricingRules,
   });
 
   const existingDocumentLineMarkers = useMemo(() => linesToDocumentStockMarkers(lines), [lines]);

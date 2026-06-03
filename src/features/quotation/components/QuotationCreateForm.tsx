@@ -8,6 +8,8 @@ import { useCreateQuotationBulk } from '../hooks/useCreateQuotationBulk';
 import { usePriceRuleOfQuotation } from '../hooks/usePriceRuleOfQuotation';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
+import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
+import { resolveQuotationCustomerLabelForPdf } from '@/lib/resolve-quotation-customer-label';
 import { QuotationHeaderForm } from './QuotationHeaderForm';
 import { QuotationLineTable } from './QuotationLineTable';
 import { QuotationSummaryCard } from './QuotationSummaryCard';
@@ -170,6 +172,10 @@ export function QuotationCreateForm(): ReactElement {
     [quotationFormSlice, watchedCurrency, t],
   );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
+  const { data: selectedCustomer } = useCustomer(
+    watchedCustomerId ?? 0,
+    Boolean(watchedCustomerId && watchedCustomerId > 0)
+  );
   const offerDateSyncInitializedRef = useRef(false);
 
   useEffect(() => {
@@ -423,9 +429,12 @@ export function QuotationCreateForm(): ReactElement {
   const buildExportPdfBlob = useCallback(async ({ draft }: { draft: boolean }): Promise<Blob> => {
     const qc = quotationFormSlice;
     const customerLabel =
-      customerOptions.find((c) => c.id === qc.potentialCustomerId)?.name?.trim() ||
-      qc.erpCustomerCode?.trim() ||
-      t('pdfExportTemplate.notSpecified');
+      (await resolveQuotationCustomerLabelForPdf({
+        potentialCustomerId: qc.potentialCustomerId,
+        erpCustomerCode: qc.erpCustomerCode,
+        customerFromApi: selectedCustomer,
+        customerOptions,
+      })) || t('pdfExportTemplate.notSpecified');
 
     const labels: QuotationPreviewPdfLabels = {
       documentTitle: t('pdfExportTemplate.documentTitle'),
@@ -474,6 +483,7 @@ export function QuotationCreateForm(): ReactElement {
     i18n.language,
     quotationFormSlice,
     customerOptions,
+    selectedCustomer,
     branch,
   ]);
 
