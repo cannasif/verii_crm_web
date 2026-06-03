@@ -2,5 +2,44 @@
   "lines": {
     "doubleClickToEdit": "Zum Bearbeiten doppelklicken",
     "unit": "Einheit"
+  },
+  "erpOrder": {
+    "title": "ERP-Bestellliste",
+    "description": "Netsis-Bestellköpfe und Positionen anzeigen, die für den angemeldeten Benutzer sichtbar sind.",
+    "currentUserScope": "Bereich des angemeldeten Benutzers",
+    "searchPlaceholder": "Bestellnummer, Kunde, Vertreter oder Datum suchen...",
+    "loading": "ERP-Bestellungen werden geladen...",
+    "loadError": "ERP-Bestellungen konnten nicht geladen werden.",
+    "noData": "Keine ERP-Bestellungen gefunden.",
+    "detailAction": "Details",
+    "detailTitle": "Details zur Bestellung {{orderNo}}",
+    "unknownCustomer": "Kein Kundenname",
+    "lineCount": "{{count}} Positionen",
+    "linesLoading": "Bestellpositionen werden geladen...",
+    "lineLoadError": "Bestellpositionen konnten nicht geladen werden.",
+    "noLines": "Für diese Bestellung wurden keine Positionen gefunden.",
+    "table": {
+      "title": "Bestellkopfinformationen",
+      "branchCode": "Filiale",
+      "orderNo": "Bestellnr.",
+      "customerCode": "Kundencode",
+      "customerName": "Kundenname",
+      "date": "Datum",
+      "deliveryDate": "Lieferdatum",
+      "grossTotal": "Bruttobetrag",
+      "vat": "MwSt.",
+      "grandTotal": "Gesamtsumme",
+      "salesRepCode": "Vertreter"
+    },
+    "lines": {
+      "rowNo": "Zeile",
+      "stockCode": "Artikelcode",
+      "stockName": "Artikelname",
+      "quantity": "Menge",
+      "unit": "Einheit",
+      "netPrice": "Nettopreis",
+      "vatRate": "MwSt.-Satz",
+      "warehouseCode": "Lager"
+    }
   }
 }

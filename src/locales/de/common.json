@@ -1004,6 +1004,7 @@
     "orderCreateWizard": "Neue Bestellung erstellen",
     "waitingApprovalOrders": "Bestellungen müssen noch genehmigt werden",
     "orderList": "Bestellliste",
+    "erpOrderList": "ERP-Bestellliste",
     "productAndStock": "Produkte & Lagerbestand",
     "reportsList": "Liste",
     "reportsCreate": "Neu erstellen",

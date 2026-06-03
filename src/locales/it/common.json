@@ -1003,6 +1003,7 @@
     "orderCreateWizard": "Crea Nuovo Preventivo",
     "waitingApprovalOrders": "Ordini in attesa di approvazione",
     "orderList": "Elenco ordini",
+    "erpOrderList": "Elenco ordini ERP",
     "reportsList": "Elenco",
     "reportsCreate": "Crea nuovo",
     "pdfReportsList": "Elenco PDF",

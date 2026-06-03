@@ -1416,6 +1416,7 @@
     "orderCreateWizard": "Create New Order",
     "waitingApprovalOrders": "Orders Pending Approval",
     "orderList": "Order List",
+    "erpOrderList": "ERP Order List",
     "reportsList": "List",
     "reportsCreate": "Create New",
     "pdfReportsList": "PDF List",

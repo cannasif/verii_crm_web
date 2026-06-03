@@ -76,6 +76,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
               { title: t('sidebar.orderCreateWizard'), href: '/orders/create' },
               { title: t('sidebar.waitingApprovalOrders'), href: '/orders/waiting-approvals' },
               { title: t('sidebar.orderList'), href: '/orders' },
+              { title: t('sidebar.erpOrderList'), href: '/orders/erp' },
             ],
           },
         ],

@@ -1003,6 +1003,7 @@
     "orderCreateWizard": "Crear Nueva Cotización",
     "waitingApprovalOrders": "Pedidos pendientes de aprobación",
     "orderList": "Lista de pedidos",
+    "erpOrderList": "Lista de pedidos ERP",
     "reportsList": "Lista",
     "reportsCreate": "Crear nuevo",
     "pdfReportsList": "Lista PDF",

@@ -28,6 +28,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/orders': 'sales.orders.view',
   '/orders/create': 'sales.orders.create',
   '/orders/waiting-approvals': 'sales.orders.view',
+  '/orders/erp': 'sales.erp-orders.view',
   '/orders/:id': 'sales.orders.update',
 
   '/customer-management': 'customers.customer-management.view',
@@ -138,6 +139,7 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/quotations(\/|$)/, permission: 'sales.quotations.view' },
   { pattern: /^\/orders\/create(\/|$)/, permission: 'sales.orders.create' },
   { pattern: /^\/orders\/waiting-approvals(\/|$)/, permission: 'sales.orders.view' },
+  { pattern: /^\/orders\/erp(\/|$)/, permission: 'sales.erp-orders.view' },
   { pattern: /^\/orders\/[^/]+(\/|$)/, permission: 'sales.orders.update' },
   { pattern: /^\/orders(\/|$)/, permission: 'sales.orders.view' },
 
@@ -240,6 +242,7 @@ type CrudAction = (typeof CRUD_ACTIONS)[number];
 // Some access-control pages are operations, not CRUD resources.
 // Keep their selectable permissions aligned with the API endpoints they expose.
 const PERMISSION_ACTION_OVERRIDES: Record<string, readonly CrudAction[]> = {
+  'sales.erp-orders': ['view'],
   'access-control.user-group-assignments': ['view', 'update'],
   'access-control.visibility-simulator': ['view'],
   'access-control.audit-logs': ['view'],
@@ -295,6 +298,7 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: s
   'sales.demands.view': { key: 'sidebar.demands', fallback: 'Talepler' },
   'sales.quotations.view': { key: 'sidebar.proposals', fallback: 'Teklifler' },
   'sales.orders.view': { key: 'sidebar.orders', fallback: 'Siparisler' },
+  'sales.erp-orders.view': { key: 'sidebar.erpOrderList', fallback: 'ERP Siparis Listesi' },
 
   'customers.customer-management.view': { key: 'sidebar.customerManagement', fallback: 'Musteri Yonetimi' },
   'customers.erp-create': { fallback: 'ERP Müşteri Kaydı Oluşturma' },

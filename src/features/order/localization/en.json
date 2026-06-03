@@ -2,5 +2,44 @@
   "lines": {
     "doubleClickToEdit": "Double-click to edit",
     "unit": "Unit"
+  },
+  "erpOrder": {
+    "title": "ERP Order List",
+    "description": "Review Netsis order headers and lines visible for the logged-in user.",
+    "currentUserScope": "Logged-in user scope",
+    "searchPlaceholder": "Search order no, customer, sales rep or date...",
+    "loading": "Loading ERP orders...",
+    "loadError": "ERP orders could not be loaded.",
+    "noData": "No ERP orders found.",
+    "detailAction": "Details",
+    "detailTitle": "Order {{orderNo}} details",
+    "unknownCustomer": "No customer name",
+    "lineCount": "{{count}} lines",
+    "linesLoading": "Loading order lines...",
+    "lineLoadError": "Order lines could not be loaded.",
+    "noLines": "No lines found for this order.",
+    "table": {
+      "title": "Order Header Information",
+      "branchCode": "Branch",
+      "orderNo": "Order No",
+      "customerCode": "Customer Code",
+      "customerName": "Customer Name",
+      "date": "Date",
+      "deliveryDate": "Delivery Date",
+      "grossTotal": "Gross Total",
+      "vat": "VAT",
+      "grandTotal": "Grand Total",
+      "salesRepCode": "Sales Rep"
+    },
+    "lines": {
+      "rowNo": "Row",
+      "stockCode": "Stock Code",
+      "stockName": "Stock Name",
+      "quantity": "Quantity",
+      "unit": "Unit",
+      "netPrice": "Net Price",
+      "vatRate": "VAT Rate",
+      "warehouseCode": "Warehouse"
+    }
   }
 }
