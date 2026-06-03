@@ -233,6 +233,7 @@
     "columnTaxNumber": "Tax Number",
     "columnCityName": "City"
   },
+  "completion": "Completion Rate",
   "customer360": {
     "button": "Customer 360"
   }

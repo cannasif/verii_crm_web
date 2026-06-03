@@ -207,6 +207,7 @@
     "columnTaxNumber": "الرقم الضريبي",
     "columnCityName": "المدينة"
   },
+  "completion": "معدل الاكتمال",
   "customer360": {
     "button": "العميل 360"
   }

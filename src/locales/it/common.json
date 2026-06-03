@@ -4795,6 +4795,18 @@
   "profile": {
     "title": "Informazioni sul profilo"
   },
+  "salesDraft": {
+    "title": "Hai un lavoro incompiuto",
+    "description": "È stata trovata una bozza non salvata di {{documentName}} per questo utente e filiale. Vuoi continuare?",
+    "updatedAt": "Ultimo salvataggio automatico: {{date}}",
+    "restore": "Carica bozza",
+    "discard": "Elimina e ricomincia",
+    "documentNames": {
+      "demand": "richiesta",
+      "quotation": "preventivo",
+      "order": "ordine"
+    }
+  },
   "language_choice": "Opzione lingua",
   "appearance": "Modalità di visualizzazione",
   "logout": "DISCONNETTERSI",

@@ -61,7 +61,7 @@ export function PricingRuleLineForm({
   onSave,
   onCancel,
 }: PricingRuleLineFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('pricing-rule');
   const { data: exchangeRates = [], isLoading: isLoadingRates } = useExchangeRate();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [currencyPopoverOpen, setCurrencyPopoverOpen] = useState(false);

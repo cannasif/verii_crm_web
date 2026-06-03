@@ -18,7 +18,7 @@
     "mailLogs": "E-Mail-Verlauf",
     "images": "Bilder",
     "imagesDefaultDescription": "Visitenkartenbild",
-    "erpMovements": "ERP Hareket"
+    "erpMovements": "ERP-Bewegungen"
   },
   "quickQuotations": {
     "empty": "Keine Schnellangebote für diesen Kunden gefunden",
@@ -144,29 +144,29 @@
     "open": "Offen"
   },
   "erpMovements": {
-    "title": "ERP Hareket",
-    "tableTitle": "Cari Hareketleri",
-    "error": "ERP hareket verileri yüklenemedi",
+    "title": "ERP-Bewegungen",
+    "tableTitle": "Kontobewegungen",
+    "error": "ERP-Bewegungsdaten konnten nicht geladen werden",
     "columns": {
-      "date": "Tarih",
-      "dueDate": "Vade Tarihi",
-      "documentNo": "Belge No",
-      "description": "Açıklama",
-      "currency": "Para Birimi",
-      "debit": "Borç",
-      "credit": "Alacak",
-      "tlBalanceByDate": "Tarih Sıralı TL Bakiye",
-      "tlBalanceByDueDate": "Vade Sıralı TL Bakiye",
-      "fxDebit": "Döviz Borç",
-      "fxCredit": "Döviz Alacak",
-      "fxBalanceByDate": "Tarih Sıralı Döviz Bakiye",
-      "fxBalanceByDueDate": "Vade Sıralı Döviz Bakiye"
+      "date": "Datum",
+      "dueDate": "Fälligkeitsdatum",
+      "documentNo": "Beleg-Nr.",
+      "description": "Beschreibung",
+      "currency": "Währung",
+      "debit": "Soll",
+      "credit": "Haben",
+      "tlBalanceByDate": "TRY-Saldo nach Datum",
+      "tlBalanceByDueDate": "TRY-Saldo nach Fälligkeit",
+      "fxDebit": "Fremdwährung Soll",
+      "fxCredit": "Fremdwährung Haben",
+      "fxBalanceByDate": "FW-Saldo nach Datum",
+      "fxBalanceByDueDate": "FW-Saldo nach Fälligkeit"
     },
     "summary": {
-      "totalDebit": "Toplam Borç",
-      "totalCredit": "Toplam Alacak",
-      "balance": "Bakiye",
-      "closed": "Kapalı"
+      "totalDebit": "Gesamtsoll",
+      "totalCredit": "Gesamthaben",
+      "balance": "Saldo",
+      "closed": "Geschlossen"
     }
   },
   "hero": {

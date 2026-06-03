@@ -208,6 +208,7 @@
     "columnTaxNumber": "Steuernummer",
     "columnCityName": "Stadt"
   },
+  "completion": "Vollständigkeitsrate",
   "customer360": {
     "button": "Kunde 360"
   }

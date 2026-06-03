@@ -23,6 +23,7 @@ import {
   convertPriceForDocumentCurrency,
   convertProductLinePriceForDocument,
 } from '@/lib/line-unit-price-currency';
+import { findMatchingPricingRuleLine } from '@/lib/pricing-rule-line-match';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex } from '@/lib/line-discount-display';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared/CustomerSelectDialog';
@@ -616,21 +617,6 @@ export function QuotationLineForm({
     }
   }, [formData.discountRate1, formData.discountRate2, formData.discountRate3]);
 
-  const convertPriceWithCurrency = (
-    price: number,
-    sourceCurrencyCode: string,
-    targetCurrency: number
-  ): number => {
-    return convertPriceForDocumentCurrency(
-      price,
-      sourceCurrencyCode,
-      targetCurrency,
-      currencyOptions,
-      exchangeRates,
-      erpRates
-    );
-  };
-
   const syncActiveBulkDraftImage = (
     imageUpdate: Pick<QuotationLineFormState, 'imagePath' | 'pendingImageFile' | 'pendingImagePreviewUrl'>
   ): void => {
@@ -936,21 +922,25 @@ export function QuotationLineForm({
     if (field === 'quantity' && formData.productCode) {
       const newQuantity = value as number;
       const mainStockData = temporaryStockData.find((data) => data.productCode === formData.productCode);
-      const matchingPricingRule = pricingRules
-        .filter((rule) => normalizeGroupCode(rule.stokCode) === normalizeGroupCode(formData.productCode))
-        .filter((rule) => {
-          const minQuantity = rule.minQuantity ?? 0;
-          const maxQuantity = rule.maxQuantity ?? Infinity;
-          return newQuantity >= minQuantity && newQuantity <= maxQuantity;
-        })
-        .sort((left, right) => (right.minQuantity ?? 0) - (left.minQuantity ?? 0))[0];
+      const matchingPricingRule = findMatchingPricingRuleLine(
+        pricingRules,
+        formData.productCode,
+        newQuantity
+      );
 
       if (matchingPricingRule) {
         if (matchingPricingRule.fixedUnitPrice !== null && matchingPricingRule.fixedUnitPrice !== undefined) {
-          const convertedPrice = convertPriceWithCurrency(
+          const convertedPrice = convertPriceForDocumentCurrency(
             matchingPricingRule.fixedUnitPrice,
             matchingPricingRule.currencyCode,
-            currency
+            currency,
+            currencyOptions,
+            exchangeRates,
+            erpRates,
+            {
+              pricingRuleCurrencyCode: matchingPricingRule.currencyCode,
+              hasPricingRuleFixedPrice: true,
+            }
           );
 
           calculated = {

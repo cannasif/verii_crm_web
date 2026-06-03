@@ -237,6 +237,7 @@
     "erpCreateSuccess": "Müşteri Netsis cari kartı olarak oluşturuldu",
     "erpCreateError": "ERP müşteri kaydı oluşturulamadı"
   },
+  "completion": "Doluluk Oranı",
   "customer360": {
     "button": "Müşteri 360"
   }

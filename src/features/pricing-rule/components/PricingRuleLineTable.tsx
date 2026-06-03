@@ -38,7 +38,7 @@ interface PricingRuleLineTableProps {
 export function PricingRuleLineTable({
   header,
 }: PricingRuleLineTableProps): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('pricing-rule');
   const { control } = useFormContext<PricingRuleFormSchema>();
   const { fields, append, remove, update } = useFieldArray({
     control,

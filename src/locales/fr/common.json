@@ -4721,6 +4721,18 @@
   "profile": {
     "title": "Informations sur le profil"
   },
+  "salesDraft": {
+    "title": "Vous avez un travail inachevé",
+    "description": "Un brouillon de {{documentName}} non enregistré a été trouvé pour cet utilisateur et cette succursale. Voulez-vous continuer ?",
+    "updatedAt": "Dernière sauvegarde automatique : {{date}}",
+    "restore": "Charger le brouillon",
+    "discard": "Supprimer et recommencer",
+    "documentNames": {
+      "demand": "demande",
+      "quotation": "devis",
+      "order": "commande"
+    }
+  },
   "language_choice": "Option de langue",
   "appearance": "Mode d'affichage",
   "logout": "DÉCONNEXION",

@@ -31,6 +31,17 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { WaitingApprovalsSidebar } from './WaitingApprovalsSidebar';
 import type { ApprovalActionGetDto } from '../types/order-types';
 
+function getApprovalStatusTranslation(status: number | undefined, t: any): string {
+  switch (status) {
+    case 0: return t('order.approval.status.notRequired');
+    case 1: return t('order.approval.status.waiting');
+    case 2: return t('order.approval.status.approved');
+    case 3: return t('order.approval.status.rejected');
+    case 4: return t('order.approval.status.closed');
+    default: return t('order.approval.status.waiting');
+  }
+}
+
 export function WaitingApprovalsPage(): ReactElement {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -155,7 +166,7 @@ export function WaitingApprovalsPage(): ReactElement {
                         <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                           {t('order.waitingApprovals.actionDate')}
                         </TableHead>
-                        <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                        <TableHead className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 text-center">
                           {t('order.waitingApprovals.status')}
                         </TableHead>
                         <TableHead className="text-right text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -201,6 +212,7 @@ export function WaitingApprovalsPage(): ReactElement {
                             {formatDate(approval.actionDate)}
                           </TableCell>
                           <TableCell
+                            className="text-center"
                             onClick={() => handleRowClick(approval.approvalRequestId)}
                           >
                             <Badge
@@ -209,7 +221,7 @@ export function WaitingApprovalsPage(): ReactElement {
                                 : 'rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400 font-bold'
                               }
                             >
-                              {approval.statusName || t('order.waitingApprovals.waiting')}
+                              {getApprovalStatusTranslation(approval.status, t)}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">
