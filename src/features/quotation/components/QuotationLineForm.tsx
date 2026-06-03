@@ -17,6 +17,13 @@ import { ProductSelectDialog, type ProductSelectionResult } from '@/components/s
 import { LineFormStockSearchField } from '@/components/shared/LineFormStockSearchField';
 import { CatalogStockSelectDialog } from '@/components/shared/CatalogStockSelectDialog';
 import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
+import { LineFormUnitPriceInput } from '@/components/shared/LineFormUnitPriceInput';
+import { useLineUnitPriceInput } from '@/hooks/useLineUnitPriceInput';
+import {
+  convertPriceBetweenDovizTipi,
+  resolveDovizTipiFromCurrencyValue,
+  resolveDocumentDovizTipi,
+} from '@/lib/line-unit-price-currency';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex } from '@/lib/line-discount-display';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared/CustomerSelectDialog';
@@ -31,13 +38,6 @@ import type { UploadPdfAssetOptions } from '@/features/pdf-report/api/pdf-report
 import { getImageUrl } from '@/lib/image-url';
 import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info, X, LayoutGrid, ImagePlus, Trash2, CirclePlus } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
-import { getSystemDecimalPlaces } from '@/lib/system-settings';
-import {
-  formatMonetaryTrDraftFromNumber,
-  normalizeMonetaryTrOnBlur,
-  parseMonetaryTrDraft,
-  sanitizeMonetaryTrTyping,
-} from '@/lib/monetary-input-tr';
 import {
   formatQuantityInputDraftFromNumber,
   normalizeQuantityTrOnBlur,
@@ -173,6 +173,17 @@ export function QuotationLineForm({
   const [activeBulkIndex, setActiveBulkIndex] = useState(0);
   const [temporaryStockData, setTemporaryStockData] = useState<TemporaryStockData[]>([]);
   const [lastLoadedProductCode, setLastLoadedProductCode] = useState<string | null>(null);
+  const handleFieldChangeRef = useRef<(field: keyof QuotationLineFormState, value: unknown) => void>(() => {});
+  const unitPriceInput = useLineUnitPriceInput({
+    documentCurrencyDovizTipi: currency,
+    documentUnitPrice: formData.unitPrice ?? 0,
+    currencyOptions,
+    exchangeRates,
+    erpRates,
+    onDocumentUnitPriceChange: (price) => {
+      handleFieldChangeRef.current('unitPrice', price);
+    },
+  });
   const [quantityInputValue, setQuantityInputValue] = useState<string>(() =>
     formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit),
   );
@@ -180,9 +191,6 @@ export function QuotationLineForm({
   const [discountRate1InputValue, setDiscountRate1InputValue] = useState<string>(String(line.discountRate1 || ''));
   const [discountRate2InputValue, setDiscountRate2InputValue] = useState<string>(String(line.discountRate2 || ''));
   const [discountRate3InputValue, setDiscountRate3InputValue] = useState<string>(String(line.discountRate3 || ''));
-  const [unitPriceInputValue, setUnitPriceInputValue] = useState<string>(() =>
-    formatMonetaryTrDraftFromNumber(line.unitPrice ?? 0),
-  );
   const prevDiscountRatesRef = useRef({ discountRate1: line.discountRate1, discountRate2: line.discountRate2, discountRate3: line.discountRate3 });
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -320,7 +328,8 @@ export function QuotationLineForm({
   useEffect(() => {
     setFormData(line);
     setQuantityInputValue(formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit));
-    setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(line.unitPrice ?? 0));
+    unitPriceInput.resetInputCurrencyToDocument();
+    unitPriceInput.syncUnitPriceFromDocument(line.unitPrice ?? 0);
     setVatRateInputValue(String(line.vatRate || ''));
     setDiscountRate1InputValue(String(line.discountRate1 || ''));
     setDiscountRate2InputValue(String(line.discountRate2 || ''));
@@ -334,7 +343,7 @@ export function QuotationLineForm({
   }, [line]);
 
   useEffect(() => {
-    setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(formData.unitPrice ?? 0));
+    unitPriceInput.syncUnitPriceFromDocument(formData.unitPrice ?? 0);
     setQuantityInputValue(formatQuantityInputDraftFromNumber(formData.quantity ?? 0, formData.unit));
   }, [formData.productCode, line.id]);
 
@@ -653,34 +662,29 @@ export function QuotationLineForm({
     sourceCurrencyCode: string,
     targetCurrency: number
   ): number => {
-    if (!sourceCurrencyCode) {
-      return price;
-    }
-
-    const sourceCurrencyOption = currencyOptions.find(
-      (opt) => opt.code === sourceCurrencyCode || opt.dovizIsmi === sourceCurrencyCode
+    const sourceDovizTipi = resolveDovizTipiFromCurrencyValue(
+      sourceCurrencyCode,
+      currencyOptions,
+      erpRates
     );
-    const sourceDovizTipi = sourceCurrencyOption?.dovizTipi;
-
     if (!sourceDovizTipi) {
       return price;
     }
 
-    if (sourceDovizTipi === targetCurrency) {
+    const targetDovizTipi = resolveDocumentDovizTipi(targetCurrency, currencyOptions);
+    if (sourceDovizTipi === targetDovizTipi) {
       return price;
     }
 
-    const sourceRate = findExchangeRateByDovizTipi(sourceDovizTipi, exchangeRates, erpRates);
-    const targetRate = findExchangeRateByDovizTipi(targetCurrency, exchangeRates, erpRates);
+    const converted = convertPriceBetweenDovizTipi(
+      price,
+      sourceDovizTipi,
+      targetDovizTipi,
+      exchangeRates,
+      erpRates
+    );
 
-    if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
-      return price;
-    }
-
-    const priceInTL = price * sourceRate;
-    const finalPrice = priceInTL / targetRate;
-
-    return finalPrice;
+    return converted ?? price;
   };
 
   const syncActiveBulkDraftImage = (
@@ -769,7 +773,8 @@ export function QuotationLineForm({
         };
         setFormData(mainLine);
         setQuantityInputValue(formatQuantityInputDraftFromNumber(mainLine.quantity ?? 0, mainLine.unit));
-        setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(mainLine.unitPrice ?? 0));
+        unitPriceInput.resetInputCurrencyToDocument();
+        unitPriceInput.syncUnitPriceFromDocument(mainLine.unitPrice ?? 0);
         const relatedLinesData = allLines.slice(1).map((relatedLine, index) => {
           const relatedStockIdFromArray = product.relatedStockIds?.[index];
           if (relatedStockIdFromArray) {
@@ -821,7 +826,8 @@ export function QuotationLineForm({
 
       setFormData(updatedFormData);
       setQuantityInputValue(formatQuantityInputDraftFromNumber(updatedFormData.quantity ?? 0, updatedFormData.unit));
-      setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(updatedFormData.unitPrice ?? 0));
+      unitPriceInput.resetInputCurrencyToDocument();
+      unitPriceInput.syncUnitPriceFromDocument(updatedFormData.unitPrice ?? 0);
       setRelatedLines([]);
 
       const targetCurrencyCode = currencyOptions.find((opt) => opt.dovizTipi === currency)?.code || 'TRY';
@@ -883,7 +889,8 @@ export function QuotationLineForm({
     if (firstLine) {
       setFormData(firstLine);
       setQuantityInputValue(formatQuantityInputDraftFromNumber(firstLine.quantity ?? 0, firstLine.unit));
-      setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(firstLine.unitPrice ?? 0));
+      unitPriceInput.resetInputCurrencyToDocument();
+      unitPriceInput.syncUnitPriceFromDocument(firstLine.unitPrice ?? 0);
       setVatRateInputValue(String(firstLine.vatRate || ''));
       setDiscountRate1InputValue(String(firstLine.discountRate1 || ''));
       setDiscountRate2InputValue(String(firstLine.discountRate2 || ''));
@@ -909,7 +916,8 @@ export function QuotationLineForm({
         const merged = { ...firstLine, id: formData.id };
         setFormData(merged);
         setQuantityInputValue(formatQuantityInputDraftFromNumber(merged.quantity ?? 0, merged.unit));
-        setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(merged.unitPrice ?? 0));
+        unitPriceInput.resetInputCurrencyToDocument();
+        unitPriceInput.syncUnitPriceFromDocument(merged.unitPrice ?? 0);
         const nested = (firstLine as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines ?? [];
         setRelatedLines(nested);
       }
@@ -924,7 +932,7 @@ export function QuotationLineForm({
     setActiveBulkIndex(index);
     setFormData(selected);
     setQuantityInputValue(formatQuantityInputDraftFromNumber(selected.quantity ?? 0, selected.unit));
-    setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(selected.unitPrice ?? 0));
+    unitPriceInput.syncUnitPriceFromDocument(selected.unitPrice ?? 0);
     setVatRateInputValue(String(selected.vatRate || ''));
     setDiscountRate1InputValue(String(selected.discountRate1 || ''));
     setDiscountRate2InputValue(String(selected.discountRate2 || ''));
@@ -942,7 +950,8 @@ export function QuotationLineForm({
       setActiveBulkIndex(0);
       setFormData(line);
       setQuantityInputValue(formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit));
-      setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(line.unitPrice ?? 0));
+      unitPriceInput.resetInputCurrencyToDocument();
+      unitPriceInput.syncUnitPriceFromDocument(line.unitPrice ?? 0);
       setVatRateInputValue(String(line.vatRate || ''));
       setDiscountRate1InputValue(String(line.discountRate1 || ''));
       setDiscountRate2InputValue(String(line.discountRate2 || ''));
@@ -963,7 +972,7 @@ export function QuotationLineForm({
     if (selected) {
       setFormData(selected);
       setQuantityInputValue(formatQuantityInputDraftFromNumber(selected.quantity ?? 0, selected.unit));
-      setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(selected.unitPrice ?? 0));
+      unitPriceInput.syncUnitPriceFromDocument(selected.unitPrice ?? 0);
       setVatRateInputValue(String(selected.vatRate || ''));
       setDiscountRate1InputValue(String(selected.discountRate1 || ''));
       setDiscountRate2InputValue(String(selected.discountRate2 || ''));
@@ -1079,7 +1088,7 @@ export function QuotationLineForm({
     }
 
     if (field !== 'unitPrice' && calculated.unitPrice !== prevUnitPrice) {
-      setUnitPriceInputValue(formatMonetaryTrDraftFromNumber(calculated.unitPrice ?? 0));
+      unitPriceInput.syncUnitPriceFromDocument(calculated.unitPrice ?? 0);
     }
 
     if (field !== 'quantity' && calculated.quantity !== prevQuantity) {
@@ -1117,6 +1126,8 @@ export function QuotationLineForm({
     }
 
   };
+
+  handleFieldChangeRef.current = handleFieldChange;
 
   const handleSave = (): void => {
     if (onSaveMultiple && relatedLines.length > 0) {
@@ -1305,33 +1316,18 @@ export function QuotationLineForm({
             <Coins className="h-4 w-4 text-emerald-500" />
             {t('lines.unitPrice')}
           </label>
-          <div className="relative">
-            <Input
-              type="text"
-              inputMode="decimal"
-              autoComplete="off"
-              disabled={!isLineStockSelected}
-              value={unitPriceInputValue}
-              onChange={(e) => {
-                const maxFrac = getSystemDecimalPlaces();
-                const next = sanitizeMonetaryTrTyping(e.target.value, maxFrac);
-                setUnitPriceInputValue(next);
-                const parsed = parseMonetaryTrDraft(next);
-                if (parsed === null) {
-                  handleFieldChange('unitPrice', 0);
-                  return;
-                }
-                handleFieldChange('unitPrice', parsed);
-              }}
-              onBlur={() => {
-                const { display, numeric } = normalizeMonetaryTrOnBlur(unitPriceInputValue);
-                setUnitPriceInputValue(display);
-                handleFieldChange('unitPrice', numeric);
-              }}
-              className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-mono font-extrabold text-center pr-10 shadow-sm ${pinkFocusClass}`}
-            />
-            <div className="absolute right-3 top-3 text-xs font-bold text-slate-400 dark:text-slate-500">{t('lines.currencyTry')}</div>
-          </div>
+          <LineFormUnitPriceInput
+            disabled={!isLineStockSelected}
+            value={unitPriceInput.unitPriceInputValue}
+            inputClassName={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-mono font-extrabold text-center shadow-sm ${pinkFocusClass}`}
+            currencyLabel={unitPriceInput.unitPriceInputCurrencyLabel}
+            selectedCurrencyDovizTipi={unitPriceInput.unitPriceInputCurrencyDovizTipi}
+            currencyDialogOpen={unitPriceInput.currencyDialogOpen}
+            onCurrencyDialogOpenChange={unitPriceInput.setCurrencyDialogOpen}
+            onChange={unitPriceInput.handleUnitPriceInputChange}
+            onBlur={unitPriceInput.handleUnitPriceInputBlur}
+            onCurrencySelect={unitPriceInput.handleInputCurrencySelect}
+          />
           {isLineStockSelected && unitDiscountBreakdown.hasDiscount ? (
             <LineDiscountedUnitPriceDisplay
               unitPrice={formData.unitPrice ?? 0}

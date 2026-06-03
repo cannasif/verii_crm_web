@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { demandApi } from '../api/demand-api';
 import { stockApi } from '@/features/stock/api/stock-api';
 import { useDemandCalculations } from './useDemandCalculations';
@@ -8,29 +8,9 @@ import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import type { DemandLineFormState, DemandExchangeRateFormState } from '../types/demand-types';
 import type { ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
-import type { KurDto } from '@/services/erp-types';
 import { createClientId } from '@/lib/create-client-id';
 import { getRelatedQuantityPerMainUnit } from '@/lib/related-stock-quantity';
-
-function findExchangeRateByDovizTipi(
-  dovizTipi: number,
-  exchangeRates: DemandExchangeRateFormState[],
-  erpRates?: KurDto[]
-): number | null {
-  const exchangeRate = exchangeRates.find((er) => er.dovizTipi === dovizTipi);
-  if (exchangeRate?.exchangeRate && exchangeRate.exchangeRate > 0) {
-    return exchangeRate.exchangeRate;
-  }
-
-  if (erpRates && erpRates.length > 0) {
-    const erpRate = erpRates.find((er) => er.dovizTipi === dovizTipi);
-    if (erpRate?.kurDegeri && erpRate.kurDegeri > 0) {
-      return erpRate.kurDegeri;
-    }
-  }
-
-  return null;
-}
+import { convertProductPriceToDocumentCurrency } from '@/lib/line-unit-price-currency';
 
 interface UseProductSelectionParams {
   currency: number;
@@ -43,10 +23,10 @@ interface UseProductSelectionReturn {
 }
 
 export function useProductSelection({ currency, exchangeRates }: UseProductSelectionParams): UseProductSelectionReturn {
-  const { t } = useTranslation(['demand', 'common']);
   const { calculateLineTotals } = useDemandCalculations();
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
+  const { t } = useTranslation(['demand', 'common']);
 
   const createEmptyLine = useCallback(
     (product: ProductSelectionResult): DemandLineFormState => {
@@ -80,6 +60,29 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
     []
   );
 
+  const convertListPrice = useCallback(
+    (listPrice: number, sourceCurrency: string | null | undefined): number => {
+      const { price, zeroRate } = convertProductPriceToDocumentCurrency(
+        listPrice,
+        sourceCurrency,
+        currency,
+        currencyOptions,
+        exchangeRates,
+        erpRates
+      );
+
+      if (zeroRate) {
+        toast.error(t('update.error', 'Hata'), {
+          description: t('exchangeRates.zeroRateError', 'Lütfen devam edebilmek için kur değeri girin.'),
+        });
+        throw new Error('ZERO_RATE');
+      }
+
+      return price;
+    },
+    [currency, currencyOptions, erpRates, exchangeRates, t]
+  );
+
   const handleProductSelectWithRelatedStocks = useCallback(
     async (product: ProductSelectionResult, relatedStockIds: number[]): Promise<DemandLineFormState[]> => {
       const requests: Array<{ productCode: string; groupCode: string }> = [
@@ -88,7 +91,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
           groupCode: product.groupCode || '',
         },
       ];
-      
+
       for (const relatedStockId of relatedStockIds) {
         try {
           const relatedStock = await stockApi.getById(relatedStockId);
@@ -114,7 +117,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
           const request = requests[i];
           const productCode = request.productCode;
           const isMainProduct = i === 0;
-          
+
           let productName = isMainProduct ? product.name : '';
           const vatRate = product.vatRate || 20;
           const relatedStockId: number | null = mainStockId;
@@ -122,7 +125,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
           let relatedStockIdFromArray: number | undefined;
           if (!isMainProduct) {
             relatedStockIdFromArray = relatedStockIds[i - 1];
-            
+
             try {
               const relatedStock = relatedStockIdFromArray != null ? await stockApi.getById(relatedStockIdFromArray) : null;
               if (relatedStock) {
@@ -140,7 +143,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
               : 1;
 
           const priceData = prices.find((p) => p.productCode === productCode);
-          
+
           if (!priceData) {
             const emptyLine = {
               id: `temp-${Date.now()}-${i}`,
@@ -175,34 +178,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
             continue;
           }
 
-          const sourceCurrencyFromApi = priceData.currency || '';
-          let sourceDovizTipi: number | null = null;
-          if (sourceCurrencyFromApi) {
-            const numericCurrency = parseInt(sourceCurrencyFromApi, 10);
-            if (!isNaN(numericCurrency)) {
-              sourceDovizTipi = numericCurrency;
-            } else {
-              const sourceCurrencyOption = currencyOptions.find((opt) => opt.code === sourceCurrencyFromApi || opt.dovizIsmi === sourceCurrencyFromApi);
-              sourceDovizTipi = sourceCurrencyOption?.dovizTipi || null;
-            }
-          }
-
-          let convertedPrice = priceData.listPrice ?? 0;
-          if (sourceDovizTipi) {
-            const sourceRate = findExchangeRateByDovizTipi(sourceDovizTipi, exchangeRates, erpRates);
-            const targetRate = findExchangeRateByDovizTipi(currency, exchangeRates, erpRates);
-
-            if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
-              toast.error(t('update.error', 'Hata'), {
-                description: t('exchangeRates.zeroRateError', 'Lutfen devam edebilmek icin kur degeri girin.'),
-              });
-              throw new Error('ZERO_RATE');
-            }
-
-            if (sourceDovizTipi !== currency) {
-              convertedPrice = (priceData.listPrice ?? 0) * sourceRate / targetRate;
-            }
-          }
+          const convertedPrice = convertListPrice(priceData.listPrice ?? 0, priceData.currency);
 
           const line: DemandLineFormState = {
             id: `temp-${Date.now()}-${i}`,
@@ -246,7 +222,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         return [calculateLineTotals(baseLine)];
       }
     },
-    [currency, exchangeRates, currencyOptions, erpRates, createEmptyLine, calculateLineTotals]
+    [convertListPrice, createEmptyLine, calculateLineTotals]
   );
 
   const handleProductSelect = useCallback(
@@ -276,45 +252,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
           return calculateLineTotals(baseLine);
         }
 
-        const sourceCurrencyFromApi = selectedPrice.currency || '';
-
-        let sourceDovizTipi: number | null = null;
-        if (sourceCurrencyFromApi) {
-          const numericCurrency = parseInt(sourceCurrencyFromApi, 10);
-          if (!isNaN(numericCurrency)) {
-            sourceDovizTipi = numericCurrency;
-          } else {
-            const sourceCurrencyOption = currencyOptions.find((opt) => opt.code === sourceCurrencyFromApi || opt.dovizIsmi === sourceCurrencyFromApi);
-            sourceDovizTipi = sourceCurrencyOption?.dovizTipi || null;
-          }
-        }
-
-        if (!sourceDovizTipi) {
-          const updatedLine: DemandLineFormState = {
-            ...baseLine,
-            groupCode: selectedPrice.groupCode || product.groupCode || null,
-            unitPrice: selectedPrice.listPrice ?? 0,
-            discountRate1: selectedPrice.discount1 ?? 0,
-            discountRate2: selectedPrice.discount2 ?? 0,
-            discountRate3: selectedPrice.discount3 ?? 0,
-          };
-          return calculateLineTotals(updatedLine);
-        }
-
-        const sourceRate = findExchangeRateByDovizTipi(sourceDovizTipi, exchangeRates, erpRates);
-        const targetRate = findExchangeRateByDovizTipi(currency, exchangeRates, erpRates);
-
-        if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
-          toast.error(t('update.error', 'Hata'), {
-            description: t('exchangeRates.zeroRateError', 'Lütfen devam edebilmek için kur değeri girin.'),
-          });
-          throw new Error('ZERO_RATE');
-        }
-
-        let convertedPrice = selectedPrice.listPrice ?? 0;
-        if (sourceDovizTipi !== currency) {
-          convertedPrice = (selectedPrice.listPrice ?? 0) * sourceRate / targetRate;
-        }
+        const convertedPrice = convertListPrice(selectedPrice.listPrice ?? 0, selectedPrice.currency);
 
         const updatedLine: DemandLineFormState = {
           ...baseLine,
@@ -325,8 +263,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
           discountRate3: selectedPrice.discount3 ?? 0,
         };
 
-        const calculatedLine = calculateLineTotals(updatedLine);
-        return calculatedLine;
+        return calculateLineTotals(updatedLine);
       } catch (error) {
         if (error instanceof Error && error.message === 'ZERO_RATE') {
           throw error;
@@ -334,15 +271,7 @@ export function useProductSelection({ currency, exchangeRates }: UseProductSelec
         return calculateLineTotals(baseLine);
       }
     },
-    [
-      currency,
-      exchangeRates,
-      currencyOptions,
-      erpRates,
-      createEmptyLine,
-      calculateLineTotals,
-      handleProductSelectWithRelatedStocks,
-    ]
+    [convertListPrice, createEmptyLine, calculateLineTotals, handleProductSelectWithRelatedStocks]
   );
 
   return {
