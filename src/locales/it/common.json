@@ -4143,6 +4143,16 @@
     "PageTitle": "Impostazioni di sistema",
     "PageDescription": "Gestisci il formato numerico e l'ambito clienti.",
     "SavedSuccessfully": "Impostazioni di sistema salvate correttamente.",
+    "ErpConnection": {
+      "Title": "Test connessione Netsis Rest",
+      "Description": "Controlla la connessione REST Netsis, il login/token e il rinnovo del token da questa schermata.",
+      "TestButton": "Testa connessione Netsis Rest",
+      "Testing": "Test connessione...",
+      "TestSucceeded": "Connessione Netsis Rest riuscita.",
+      "TestFailed": "Impossibile testare la connessione Netsis Rest.",
+      "BranchCode": "Filiale",
+      "Source": "Origine"
+    },
     "Fields": {
       "DefaultLanguage": "Lingua predefinita",
       "DefaultCurrencyCode": "Valuta predefinita",

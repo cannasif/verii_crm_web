@@ -4169,6 +4169,16 @@
     "PageTitle": "Systemeinstellungen",
     "PageDescription": "Zahlenformat und Kundenkreis verwalten.",
     "SavedSuccessfully": "Systemeinstellungen wurden gespeichert.",
+    "ErpConnection": {
+      "Title": "Netsis Rest-Verbindungstest",
+      "Description": "Prüfen Sie Netsis REST-Verbindung, Login/Token-Abruf und Token-Erneuerung auf diesem Bildschirm.",
+      "TestButton": "Netsis Rest-Verbindung testen",
+      "Testing": "Verbindung wird getestet...",
+      "TestSucceeded": "Netsis Rest-Verbindung erfolgreich.",
+      "TestFailed": "Netsis Rest-Verbindung konnte nicht getestet werden.",
+      "BranchCode": "Filiale",
+      "Source": "Quelle"
+    },
     "Fields": {
       "DefaultLanguage": "Standardsprache",
       "DefaultCurrencyCode": "Standardwährung",

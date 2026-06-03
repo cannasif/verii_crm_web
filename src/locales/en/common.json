@@ -4684,6 +4684,16 @@
     "PageTitle": "System Settings",
     "PageDescription": "Manage number formatting and customer scope settings.",
     "SavedSuccessfully": "System settings saved successfully.",
+    "ErpConnection": {
+      "Title": "Netsis Rest connection test",
+      "Description": "Check Netsis REST connectivity, login/token acquisition, and token refresh from this screen.",
+      "TestButton": "Test Netsis Rest connection",
+      "Testing": "Testing connection...",
+      "TestSucceeded": "Netsis Rest connection succeeded.",
+      "TestFailed": "Netsis Rest connection could not be tested.",
+      "BranchCode": "Branch",
+      "Source": "Source"
+    },
     "Fields": {
       "DefaultLanguage": "Default language",
       "DefaultCurrencyCode": "Default currency",

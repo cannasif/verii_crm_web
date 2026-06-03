@@ -4114,6 +4114,16 @@
     "PageTitle": "إعدادات النظام",
     "PageDescription": "إدارة تنسيق الأرقام ونطاق العملاء.",
     "SavedSuccessfully": "تم حفظ إعدادات النظام بنجاح.",
+    "ErpConnection": {
+      "Title": "اختبار اتصال Netsis Rest",
+      "Description": "تحقق من اتصال Netsis REST وتسجيل الدخول/الحصول على الرمز وتجديد الرمز من هذه الشاشة.",
+      "TestButton": "اختبار اتصال Netsis Rest",
+      "Testing": "جارٍ اختبار الاتصال...",
+      "TestSucceeded": "تم اتصال Netsis Rest بنجاح.",
+      "TestFailed": "تعذر اختبار اتصال Netsis Rest.",
+      "BranchCode": "الفرع",
+      "Source": "المصدر"
+    },
     "Fields": {
       "DefaultLanguage": "اللغة الافتراضية",
       "DefaultCurrencyCode": "العملة الافتراضية",

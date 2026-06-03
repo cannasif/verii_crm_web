@@ -1,6 +1,9 @@
 import { type ReactElement, useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
+import { toast } from 'sonner';
+import { systemSettingsApi } from '../api/systemSettingsApi';
 import { SystemSettingsForm } from '../components/SystemSettingsForm';
 import { useSystemSettingsQuery } from '../hooks/useSystemSettingsQuery';
 import { useUpdateSystemSettingsMutation } from '../hooks/useUpdateSystemSettingsMutation';
@@ -11,6 +14,15 @@ export function SystemSettingsPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const { data, isLoading } = useSystemSettingsQuery();
   const updateMutation = useUpdateSystemSettingsMutation();
+  const erpConnectionMutation = useMutation({
+    mutationFn: () => systemSettingsApi.testErpConnection(),
+    onSuccess: (response) => {
+      toast.success(response.message || t('systemSettings.ErpConnection.TestSucceeded'));
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('systemSettings.ErpConnection.TestFailed'));
+    },
+  });
 
   useEffect(() => {
     setPageTitle(t('systemSettings.PageTitle'));
@@ -40,6 +52,10 @@ export function SystemSettingsPage(): ReactElement {
         data={data}
         isLoading={isLoading}
         isSubmitting={updateMutation.isPending}
+        erpConnectionTest={erpConnectionMutation.data}
+        isTestingErpConnection={erpConnectionMutation.isPending}
+        erpConnectionError={erpConnectionMutation.error?.message}
+        onTestErpConnection={() => erpConnectionMutation.mutateAsync()}
         onSubmit={handleSubmit}
       />
     </div>

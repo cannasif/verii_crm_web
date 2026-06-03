@@ -4,7 +4,8 @@ import { type Resolver, type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { CheckCircle2, Loader2, PlugZap, XCircle } from 'lucide-react';
+import type { ApiResponse } from '@/types/api';
 import {
   Form,
   FormControl,
@@ -24,6 +25,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import {
   systemSettingsFormSchema,
+  type ErpConnectionTestResultDto,
   type SystemSettingsDto,
   type SystemSettingsFormSchema,
 } from '../types/systemSettings';
@@ -79,6 +81,10 @@ interface SystemSettingsFormProps {
   data: SystemSettingsDto | undefined;
   isLoading: boolean;
   isSubmitting: boolean;
+  erpConnectionTest?: ApiResponse<ErpConnectionTestResultDto>;
+  isTestingErpConnection: boolean;
+  erpConnectionError?: string;
+  onTestErpConnection: () => void | Promise<unknown>;
   onSubmit: (data: SystemSettingsFormSchema) => void | Promise<void>;
 }
 
@@ -86,6 +92,10 @@ export function SystemSettingsForm({
   data,
   isLoading,
   isSubmitting,
+  erpConnectionTest,
+  isTestingErpConnection,
+  erpConnectionError,
+  onTestErpConnection,
   onSubmit,
 }: SystemSettingsFormProps): ReactElement {
   const { t } = useTranslation();
@@ -185,6 +195,12 @@ export function SystemSettingsForm({
   };
 
   const handleSubmit: SubmitHandler<SystemSettingsFormSchema> = (values) => onSubmit(values);
+  const erpConnectionSucceeded = erpConnectionTest?.success === true;
+  const erpConnectionMessage = erpConnectionSucceeded
+    ? erpConnectionTest.message || t('systemSettings.ErpConnection.TestSucceeded')
+    : erpConnectionError;
+  const erpTokenSource = erpConnectionTest?.data?.source;
+  const erpBranchCode = erpConnectionTest?.data?.branchCode;
 
   if (isLoading) {
     return (
@@ -208,6 +224,59 @@ export function SystemSettingsForm({
         <Card className={headerCardStyle}>
 
           <CardContent className="grid gap-4 md:grid-cols-2">
+            <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex min-w-0 items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-100 text-pink-700 dark:bg-pink-500/10 dark:text-pink-300">
+                    <PlugZap className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0 space-y-1">
+                    <p className="text-sm font-semibold">{t('systemSettings.ErpConnection.Title')}</p>
+                    <p className="text-muted-foreground text-sm">{t('systemSettings.ErpConnection.Description')}</p>
+                    {erpConnectionMessage ? (
+                      <div className="mt-2 flex items-start gap-2 text-sm">
+                        {erpConnectionSucceeded ? (
+                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                        ) : (
+                          <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
+                        )}
+                        <div className={erpConnectionSucceeded ? 'text-emerald-700 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'}>
+                          <p>{erpConnectionMessage}</p>
+                          {erpConnectionSucceeded && (erpBranchCode || erpTokenSource) ? (
+                            <p className="text-muted-foreground mt-1">
+                              {[
+                                erpBranchCode ? `${t('systemSettings.ErpConnection.BranchCode')}: ${erpBranchCode}` : null,
+                                erpTokenSource ? `${t('systemSettings.ErpConnection.Source')}: ${erpTokenSource}` : null,
+                              ].filter(Boolean).join(' · ')}
+                            </p>
+                          ) : null}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={isTestingErpConnection}
+                  onClick={() => void onTestErpConnection()}
+                  className="shrink-0 rounded-xl"
+                >
+                  {isTestingErpConnection ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t('systemSettings.ErpConnection.Testing')}
+                    </>
+                  ) : (
+                    <>
+                      <PlugZap className="mr-2 h-4 w-4" />
+                      {t('systemSettings.ErpConnection.TestButton')}
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+
             <FormField
               control={form.control}
               name="numberFormat"

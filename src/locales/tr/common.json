@@ -4740,6 +4740,16 @@
     "PageTitle": "Sistem Ayarları",
     "PageDescription": "Sayı biçimi ve müşteri kapsamı ayarlarını yönetin.",
     "SavedSuccessfully": "Sistem ayarları başarıyla kaydedildi.",
+    "ErpConnection": {
+      "Title": "Netsis Rest bağlantı testi",
+      "Description": "Netsis REST bağlantısını, login/token alma ve yenileme akışını bu ekrandan kontrol edin.",
+      "TestButton": "Netsis Rest bağlantısını test et",
+      "Testing": "Bağlantı test ediliyor...",
+      "TestSucceeded": "Netsis Rest bağlantısı başarılı.",
+      "TestFailed": "Netsis Rest bağlantısı test edilemedi.",
+      "BranchCode": "Şube",
+      "Source": "Kaynak"
+    },
     "Fields": {
       "DefaultLanguage": "Varsayılan dil",
       "DefaultCurrencyCode": "Varsayılan para birimi",

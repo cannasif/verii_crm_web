@@ -4069,6 +4069,16 @@
     "PageTitle": "Paramètres système",
     "PageDescription": "Gérez le format des nombres et la portée des clients.",
     "SavedSuccessfully": "Les paramètres système ont été enregistrés.",
+    "ErpConnection": {
+      "Title": "Test de connexion Netsis Rest",
+      "Description": "Contrôlez la connexion REST Netsis, l'obtention du token et son renouvellement depuis cet écran.",
+      "TestButton": "Tester la connexion Netsis Rest",
+      "Testing": "Test de connexion...",
+      "TestSucceeded": "Connexion Netsis Rest réussie.",
+      "TestFailed": "La connexion Netsis Rest n'a pas pu être testée.",
+      "BranchCode": "Succursale",
+      "Source": "Source"
+    },
     "Fields": {
       "DefaultLanguage": "Langue par défaut",
       "DefaultCurrencyCode": "Devise par défaut",
