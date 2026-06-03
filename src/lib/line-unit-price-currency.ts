@@ -1,5 +1,9 @@
 import type { KurDto } from '@/services/erp-types';
 import type { CurrencyOption } from '@/services/hooks/useCurrencyOptions';
+import {
+  findMatchingPricingRuleLine,
+  type PricingRuleLineMatchLike,
+} from '@/lib/pricing-rule-line-match';
 
 /** Product pricing defaults to TRY when API omits currency. */
 export const DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI = 1;
@@ -149,4 +153,93 @@ export function convertProductPriceToDocumentCurrency(
   }
 
   return { price: converted, zeroRate: false };
+}
+
+export function convertPriceForDocumentCurrency(
+  listPrice: number,
+  sourceCurrencyValue: string | number | null | undefined,
+  documentDovizTipi: number,
+  currencyOptions: CurrencyOption[],
+  exchangeRates: DocumentExchangeRate[],
+  erpRates?: KurDto[]
+): number {
+  return convertProductPriceToDocumentCurrency(
+    listPrice,
+    sourceCurrencyValue,
+    documentDovizTipi,
+    currencyOptions,
+    exchangeRates,
+    erpRates
+  ).price;
+}
+
+export interface PricingRulePriceLineLike extends PricingRuleLineMatchLike {
+  fixedUnitPrice?: number | null;
+  currencyCode?: string;
+  discountRate1?: number;
+  discountRate2?: number;
+  discountRate3?: number;
+  pricingRuleHeaderId?: number;
+}
+
+export interface PriceOfProductLike {
+  listPrice?: number | null;
+  currency?: string | null;
+  discount1?: number | null;
+  discount2?: number | null;
+  discount3?: number | null;
+}
+
+export interface ConvertedProductLinePrice {
+  unitPrice: number;
+  discountRate1: number;
+  discountRate2: number;
+  discountRate3: number;
+  pricingRuleHeaderId: number | null;
+  zeroRate: boolean;
+}
+
+export function convertProductLinePriceForDocument(params: {
+  priceData: PriceOfProductLike;
+  productCode: string;
+  quantity: number;
+  documentDovizTipi: number;
+  currencyOptions: CurrencyOption[];
+  exchangeRates: DocumentExchangeRate[];
+  erpRates?: KurDto[];
+  pricingRules?: PricingRulePriceLineLike[];
+}): ConvertedProductLinePrice {
+  const {
+    priceData,
+    productCode,
+    quantity,
+    documentDovizTipi,
+    currencyOptions,
+    exchangeRates,
+    erpRates,
+    pricingRules = [],
+  } = params;
+
+  const matchingRule = findMatchingPricingRuleLine(pricingRules, productCode, quantity);
+  const rawListPrice =
+    matchingRule?.fixedUnitPrice != null ? matchingRule.fixedUnitPrice : (priceData.listPrice ?? 0);
+  const sourceCurrency = matchingRule?.currencyCode ?? priceData.currency;
+
+  const { price, zeroRate } = convertProductPriceToDocumentCurrency(
+    rawListPrice ?? 0,
+    sourceCurrency,
+    documentDovizTipi,
+    currencyOptions,
+    exchangeRates,
+    erpRates
+  );
+
+  return {
+    unitPrice: price,
+    discountRate1: matchingRule?.discountRate1 ?? priceData.discount1 ?? 0,
+    discountRate2: matchingRule?.discountRate2 ?? priceData.discount2 ?? 0,
+    discountRate3: matchingRule?.discountRate3 ?? priceData.discount3 ?? 0,
+    pricingRuleHeaderId: matchingRule?.pricingRuleHeaderId ?? null,
+    zeroRate,
+  };
 }
