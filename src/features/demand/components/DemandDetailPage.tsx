@@ -36,6 +36,7 @@ import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
+import { resolveWatchedDocumentCurrency } from '@/lib/line-unit-price-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
@@ -218,7 +219,7 @@ export function DemandDetailPage(): ReactElement {
 
   const { calculateLineTotals } = useDemandCalculations();
   const { data: erpRates = [] } = useExchangeRate();
-  const { currencyOptions: currencyOptionsForExchangeRates } = useCurrencyOptions();
+  const { currencyOptions: currencyOptionsForExchangeRates, currencyOptions } = useCurrencyOptions();
 
   useEffect(() => {
     if (exchangeRatesData && exchangeRatesData.length > 0 && !exchangeRatesInitializedRef.current && currencyOptionsForExchangeRates.length > 0) {
@@ -242,7 +243,11 @@ export function DemandDetailPage(): ReactElement {
     }
   }, [exchangeRatesData, currencyOptionsForExchangeRates]);
 
-  const watchedCurrency = Number(form.watch('demand.currency') ?? '2');
+  const watchedCurrencyValue = form.watch('demand.currency');
+  const watchedCurrency = useMemo(
+    () => resolveWatchedDocumentCurrency(watchedCurrencyValue, currencyOptions, erpRates),
+    [watchedCurrencyValue, currencyOptions, erpRates]
+  );
   const watchedCustomerId = form.watch('demand.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedRepresentativeId = form.watch('demand.representativeId');

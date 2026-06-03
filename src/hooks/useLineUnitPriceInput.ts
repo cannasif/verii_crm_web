@@ -50,8 +50,8 @@ export function useLineUnitPriceInput({
 }: UseLineUnitPriceInputParams): UseLineUnitPriceInputReturn {
   const { t } = useTranslation(['quotation', 'demand', 'order', 'common']);
   const resolvedDocumentCurrency = useMemo(
-    () => resolveDocumentDovizTipi(documentCurrencyDovizTipi, currencyOptions),
-    [documentCurrencyDovizTipi, currencyOptions]
+    () => resolveDocumentDovizTipi(documentCurrencyDovizTipi, currencyOptions, erpRates),
+    [documentCurrencyDovizTipi, currencyOptions, erpRates]
   );
 
   const [inputCurrencyDovizTipi, setInputCurrencyDovizTipi] = useState(resolvedDocumentCurrency);
@@ -72,11 +72,12 @@ export function useLineUnitPriceInput({
         resolvedDocumentCurrency,
         inputCurrency,
         exchangeRates,
-        erpRates
+        erpRates,
+        currencyOptions
       );
       return converted ?? documentPrice;
     },
-    [resolvedDocumentCurrency, exchangeRates, erpRates]
+    [resolvedDocumentCurrency, exchangeRates, erpRates, currencyOptions]
   );
 
   const toDocumentPrice = useCallback(
@@ -86,10 +87,11 @@ export function useLineUnitPriceInput({
         inputCurrency,
         resolvedDocumentCurrency,
         exchangeRates,
-        erpRates
+        erpRates,
+        currencyOptions
       );
     },
-    [resolvedDocumentCurrency, exchangeRates, erpRates]
+    [resolvedDocumentCurrency, exchangeRates, erpRates, currencyOptions]
   );
 
   const syncUnitPriceFromDocument = useCallback(
@@ -109,7 +111,7 @@ export function useLineUnitPriceInput({
     setInputValue(
       formatMonetaryTrDraftFromNumber(toInputDisplay(documentUnitPrice ?? 0, resolvedDocumentCurrency))
     );
-  }, [resolvedDocumentCurrency]);
+  }, [resolvedDocumentCurrency, documentCurrencyDovizTipi, documentUnitPrice, toInputDisplay]);
 
   const zeroRateMessage = t('exchangeRates.zeroRateError', {
     ns: 'quotation',
@@ -176,7 +178,8 @@ export function useLineUnitPriceInput({
               resolvedDocumentCurrency,
               dovizTipi,
               exchangeRates,
-              erpRates
+              erpRates,
+              currencyOptions
             );
 
       if (display == null) {
@@ -195,6 +198,7 @@ export function useLineUnitPriceInput({
       documentUnitPrice,
       erpRates,
       exchangeRates,
+      currencyOptions,
       inputCurrencyDovizTipi,
       resolvedDocumentCurrency,
       zeroRateMessage,

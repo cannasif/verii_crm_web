@@ -16,6 +16,7 @@ import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimi
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
 import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
 import { resolveQuotationCustomerLabelForPdf } from '@/lib/resolve-quotation-customer-label';
+import { resolveWatchedDocumentCurrency } from '@/lib/line-unit-price-currency';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -319,7 +320,10 @@ export function QuotationDetailPage(): ReactElement {
     }
   }, [exchangeRatesData, currencyOptionsForExchangeRates]);
 
-  const watchedCurrency = Number(form.watch('quotation.currency') ?? '2');
+  const watchedCurrency = useMemo(
+    () => resolveWatchedDocumentCurrency(watchedCurrencyValue, currencyOptions, erpRates),
+    [watchedCurrencyValue, currencyOptions, erpRates]
+  );
   const watchedCustomerId = form.watch('quotation.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedRepresentativeId = form.watch('quotation.representativeId');

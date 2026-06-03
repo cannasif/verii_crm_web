@@ -5,8 +5,89 @@ import {
   type PricingRuleLineMatchLike,
 } from '@/lib/pricing-rule-line-match';
 
-/** Product pricing defaults to TRY when API omits currency. */
+/** Legacy fallback when local currency cannot be resolved from ERP options. */
 export const DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI = 1;
+
+const LOCAL_CURRENCY_LABELS = ['TL', 'TRY', 'TÜRK LİRASI', 'TURK LIRASI'];
+
+function isLocalCurrencyLabel(name: string | null | undefined): boolean {
+  if (!name) {
+    return false;
+  }
+  const upper = name.trim().toUpperCase();
+  return LOCAL_CURRENCY_LABELS.some(
+    (label) => upper === label || upper.includes('LIRA') || upper.includes('LİRA')
+  );
+}
+
+export function parseWatchedDocumentCurrency(
+  raw: string | number | null | undefined
+): number {
+  if (raw === '' || raw === null || raw === undefined) {
+    return Number.NaN;
+  }
+  const parsed = typeof raw === 'number' ? raw : Number(String(raw).trim());
+  return Number.isFinite(parsed) ? parsed : Number.NaN;
+}
+
+export function resolveWatchedDocumentCurrency(
+  raw: string | number | null | undefined,
+  currencyOptions: CurrencyOption[],
+  erpRates?: KurDto[]
+): number {
+  const parsed = parseWatchedDocumentCurrency(raw);
+  if (Number.isFinite(parsed)) {
+    return parsed;
+  }
+  return resolveDocumentDovizTipi(Number.NaN, currencyOptions, erpRates);
+}
+
+/** Resolves TL/TRY dovizTipi from ERP options (often 0, sometimes 1). */
+export function resolveLocalCurrencyDovizTipi(
+  currencyOptions: CurrencyOption[],
+  erpRates?: KurDto[]
+): number {
+  const fromOptions = currencyOptions.find(
+    (opt) => isLocalCurrencyLabel(opt.dovizIsmi) || isLocalCurrencyLabel(opt.code)
+  );
+  if (fromOptions) {
+    return fromOptions.dovizTipi;
+  }
+
+  const fromErp = erpRates?.find((rate) => isLocalCurrencyLabel(rate.dovizIsmi));
+  if (fromErp != null) {
+    return fromErp.dovizTipi;
+  }
+
+  const zeroOption = currencyOptions.find((opt) => opt.dovizTipi === 0);
+  if (zeroOption) {
+    return 0;
+  }
+
+  const legacyTryOption = currencyOptions.find(
+    (opt) => opt.dovizTipi === DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI
+  );
+  if (legacyTryOption) {
+    return legacyTryOption.dovizTipi;
+  }
+
+  return currencyOptions[0]?.dovizTipi ?? DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI;
+}
+
+function isLocalCurrencyDovizTipi(
+  dovizTipi: number,
+  currencyOptions: CurrencyOption[],
+  erpRates?: KurDto[]
+): boolean {
+  if (dovizTipi === resolveLocalCurrencyDovizTipi(currencyOptions, erpRates)) {
+    return true;
+  }
+  if (dovizTipi === 0) {
+    return true;
+  }
+  const option = currencyOptions.find((opt) => opt.dovizTipi === dovizTipi);
+  return isLocalCurrencyLabel(option?.dovizIsmi ?? option?.code);
+}
 
 export interface DocumentExchangeRate {
   dovizTipi?: number;
@@ -53,7 +134,8 @@ export function resolveDovizTipiFromCurrencyValue(
 export function findExchangeRateByDovizTipiGeneric(
   dovizTipi: number,
   exchangeRates: DocumentExchangeRate[],
-  erpRates?: KurDto[]
+  erpRates?: KurDto[],
+  currencyOptions: CurrencyOption[] = []
 ): number | null {
   const exchangeRate = exchangeRates.find((er) => er.dovizTipi === dovizTipi);
   if (exchangeRate) {
@@ -70,7 +152,7 @@ export function findExchangeRateByDovizTipiGeneric(
     }
   }
 
-  if (dovizTipi === DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI) {
+  if (isLocalCurrencyDovizTipi(dovizTipi, currencyOptions, erpRates)) {
     return 1;
   }
 
@@ -94,7 +176,8 @@ export function resolveProductPricingSourceDovizTipi(params: {
     erpRates,
   } = params;
 
-  const documentResolved = resolveDocumentDovizTipi(documentDovizTipi, currencyOptions);
+  const documentResolved = resolveDocumentDovizTipi(documentDovizTipi, currencyOptions, erpRates);
+  const localCurrency = resolveLocalCurrencyDovizTipi(currencyOptions, erpRates);
 
   if (pricingRuleCurrencyCode != null && String(pricingRuleCurrencyCode).trim() !== '') {
     const fromRule = resolveDovizTipiFromCurrencyValue(
@@ -108,21 +191,18 @@ export function resolveProductPricingSourceDovizTipi(params: {
   }
 
   if (hasPricingRuleFixedPrice) {
-    return DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI;
+    return localCurrency;
   }
 
   const fromApi = resolveDovizTipiFromCurrencyValue(apiCurrency, currencyOptions, erpRates);
   if (fromApi != null) {
-    if (
-      fromApi === documentResolved &&
-      documentResolved !== DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI
-    ) {
-      return DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI;
+    if (fromApi === documentResolved && documentResolved !== localCurrency) {
+      return localCurrency;
     }
     return fromApi;
   }
 
-  return DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI;
+  return localCurrency;
 }
 
 export function convertPriceBetweenDovizTipi(
@@ -130,7 +210,8 @@ export function convertPriceBetweenDovizTipi(
   sourceDovizTipi: number,
   targetDovizTipi: number,
   exchangeRates: DocumentExchangeRate[],
-  erpRates?: KurDto[]
+  erpRates?: KurDto[],
+  currencyOptions: CurrencyOption[] = []
 ): number | null {
   if (!Number.isFinite(price)) {
     return 0;
@@ -140,8 +221,18 @@ export function convertPriceBetweenDovizTipi(
     return price;
   }
 
-  const sourceRate = findExchangeRateByDovizTipiGeneric(sourceDovizTipi, exchangeRates, erpRates);
-  const targetRate = findExchangeRateByDovizTipiGeneric(targetDovizTipi, exchangeRates, erpRates);
+  const sourceRate = findExchangeRateByDovizTipiGeneric(
+    sourceDovizTipi,
+    exchangeRates,
+    erpRates,
+    currencyOptions
+  );
+  const targetRate = findExchangeRateByDovizTipiGeneric(
+    targetDovizTipi,
+    exchangeRates,
+    erpRates,
+    currencyOptions
+  );
 
   if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
     return null;
@@ -160,13 +251,19 @@ export function getCurrencyLabelForDovizTipi(
 
 export function resolveDocumentDovizTipi(
   documentCurrency: number,
-  currencyOptions: CurrencyOption[]
+  currencyOptions: CurrencyOption[],
+  erpRates?: KurDto[]
 ): number {
-  if (Number.isFinite(documentCurrency) && documentCurrency > 0) {
-    return documentCurrency;
+  if (Number.isFinite(documentCurrency) && documentCurrency >= 0) {
+    if (currencyOptions.length === 0) {
+      return documentCurrency;
+    }
+    const match = currencyOptions.find((opt) => opt.dovizTipi === documentCurrency);
+    if (match) {
+      return documentCurrency;
+    }
   }
-  const tryOption = currencyOptions.find((opt) => opt.dovizTipi === DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI);
-  return tryOption?.dovizTipi ?? DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI;
+  return resolveLocalCurrencyDovizTipi(currencyOptions, erpRates);
 }
 
 export function convertProductPriceToDocumentCurrency(
@@ -181,7 +278,7 @@ export function convertProductPriceToDocumentCurrency(
     hasPricingRuleFixedPrice?: boolean;
   }
 ): { price: number; zeroRate: boolean } {
-  const resolvedDocument = resolveDocumentDovizTipi(documentDovizTipi, currencyOptions);
+  const resolvedDocument = resolveDocumentDovizTipi(documentDovizTipi, currencyOptions, erpRates);
   const sourceDovizTipi = resolveProductPricingSourceDovizTipi({
     pricingRuleCurrencyCode: options?.pricingRuleCurrencyCode,
     apiCurrency: sourceCurrencyValue,
@@ -200,7 +297,8 @@ export function convertProductPriceToDocumentCurrency(
     sourceDovizTipi,
     resolvedDocument,
     exchangeRates,
-    erpRates
+    erpRates,
+    currencyOptions
   );
 
   if (converted == null) {

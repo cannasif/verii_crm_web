@@ -326,6 +326,11 @@ export function DemandLineForm({
   };
 
   useEffect(() => {
+    unitPriceInput.resetInputCurrencyToDocument();
+    unitPriceInput.syncUnitPriceFromDocument(formData.unitPrice ?? 0);
+  }, [currency]);
+
+  useEffect(() => {
     setFormData(line);
     setQuantityInputValue(formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit));
     unitPriceInput.resetInputCurrencyToDocument();

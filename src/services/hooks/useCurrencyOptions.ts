@@ -32,8 +32,10 @@ export const useCurrencyOptions = (tarih?: Date, fiyatTipi: number = 1) => {
         };
       })
       .sort((a, b) => {
-        if (a.dovizTipi === 1) return -1;
-        if (b.dovizTipi === 1) return 1;
+        const aIsLocal = a.dovizTipi === 0 || a.dovizIsmi?.toUpperCase() === 'TL' || a.dovizIsmi?.toUpperCase() === 'TRY';
+        const bIsLocal = b.dovizTipi === 0 || b.dovizIsmi?.toUpperCase() === 'TL' || b.dovizIsmi?.toUpperCase() === 'TRY';
+        if (aIsLocal) return -1;
+        if (bIsLocal) return 1;
         return a.dovizTipi - b.dovizTipi;
       });
   }, [exchangeRates]);
