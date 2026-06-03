@@ -48,6 +48,8 @@ import { contactApi } from '@/features/contact-management/api/contact-api';
 import { useAuthStore } from '@/stores/auth-store';
 import type { PagedFilter } from '@/types/api';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared';
+import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
+import { buildActivitySaveRequiredHintLines } from '@/lib/activity-save-required-hints';
 import { Search, Calendar, FileText, List, CheckSquare, Building2, User, AlertCircle, X, Bell, Plus, Trash2, Image } from 'lucide-react';
 import { ActivityImageTab } from '@/features/activity-image-management';
 import { isZodFieldRequired } from '@/lib/zod-required';
@@ -70,6 +72,8 @@ interface ActivityFormProps {
   initialErpCustomerCode?: string | null;
   initialContactId?: number | null;
   initialCustomerDisplayName?: string | null;
+  /** Müşteri 360 / hızlı aktivite: ön doldurulan müşteri dropdown listesinde olmasa da korunur */
+  preservePrefilledCustomer?: boolean;
 }
 
 const INPUT_STYLE = `
@@ -186,8 +190,9 @@ export function ActivityForm({
   initialErpCustomerCode,
   initialContactId,
   initialCustomerDisplayName,
+  preservePrefilledCustomer = false,
 }: ActivityFormProps): ReactElement {
-  const { t } = useTranslation(['activity-management', 'common']);
+  const { t, i18n } = useTranslation(['activity-management', 'common']);
   const { user } = useAuthStore();
   const [activityTypeSearchTerm, setActivityTypeSearchTerm] = useState('');
   const [assignedUserSearchTerm, setAssignedUserSearchTerm] = useState('');
@@ -244,6 +249,7 @@ export function ActivityForm({
     },
   });
   const watchedAssignedUserId = form.watch('assignedUserId');
+  const prevAssignedUserIdRef = useRef<number | null | undefined>(watchedAssignedUserId);
   const {
     data: customerOptions = [],
     isFetched: hasCustomerOptionsLoaded,
@@ -256,6 +262,14 @@ export function ActivityForm({
 
   const isFormValid = form.formState.isValid;
   const isSubmitting = isLoading;
+  const watchedFormValues = form.watch();
+  const saveHintLines = useMemo(
+    () =>
+      buildActivitySaveRequiredHintLines(watchedFormValues, (key) =>
+        t(key, { ns: 'activity-management', defaultValue: key })
+      ),
+    [watchedFormValues, t, i18n.language],
+  );
 
   const watchedCustomerId = form.watch('potentialCustomerId');
   const watchedReminders = form.watch('reminders') || [];
@@ -315,6 +329,7 @@ export function ActivityForm({
         })),
       });
       setSelectedCustomerDisplayName(null);
+      prevAssignedUserIdRef.current = activity.assignedUserId;
       pendingImagesRef.current.forEach((img) => URL.revokeObjectURL(img.previewUrl));
       setPendingImages([]);
       return;
@@ -343,6 +358,7 @@ export function ActivityForm({
       reminders: [],
     });
     setSelectedCustomerDisplayName(initialCustomerDisplayName ?? null);
+    prevAssignedUserIdRef.current = user?.id ?? 0;
   }, [
     activity,
     defaultStartDateTime,
@@ -361,8 +377,20 @@ export function ActivityForm({
     if (!watchedCustomerId) form.setValue('contactId', undefined);
   }, [watchedCustomerId, form]);
 
+  // Müşteriyi yalnızca atanan kullanıcı değişince doğrula (teklif formu ile aynı).
+  // Dialogdan potansiyel seçildiğinde customerOptions (1000 kayıt) listesinde olmasa da silinmesin.
   useEffect(() => {
+    if (preservePrefilledCustomer) return;
     if (!hasCustomerOptionsLoaded) return;
+
+    const previousAssignedUserId = prevAssignedUserIdRef.current ?? null;
+    const currentAssignedUserId = watchedAssignedUserId ?? null;
+
+    if (previousAssignedUserId === currentAssignedUserId) {
+      return;
+    }
+
+    prevAssignedUserIdRef.current = watchedAssignedUserId;
 
     const watchedErpCustomerCode = form.getValues('erpCustomerCode');
     if (!watchedCustomerId && !watchedErpCustomerCode) return;
@@ -381,7 +409,14 @@ export function ActivityForm({
     form.setValue('erpCustomerCode', '', { shouldDirty: true, shouldValidate: true });
     form.setValue('contactId', undefined, { shouldDirty: true, shouldValidate: true });
     setSelectedCustomerDisplayName(null);
-  }, [customerOptions, form, hasCustomerOptionsLoaded, watchedCustomerId]);
+  }, [
+    customerOptions,
+    form,
+    hasCustomerOptionsLoaded,
+    preservePrefilledCustomer,
+    watchedAssignedUserId,
+    watchedCustomerId,
+  ]);
 
   useEffect(() => {
     if (!open) return;
@@ -868,9 +903,22 @@ export function ActivityForm({
                     <Button type="button" variant="outline" onClick={() => onOpenChange(false)} className="h-11 px-5 rounded-lg font-medium">
                       {t('cancel', { ns: 'common' })}
                     </Button>
-                    <Button type="submit" disabled={isSubmitting || !isFormValid} className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0">
-                      {isSubmitting ? t('saving', { ns: 'common' }) : activity ? t('update', { ns: 'common' }) : t('save', { ns: 'common' })}
-                    </Button>
+                    <FormSubmitTooltipWrap
+                      schema={activityFormSchema}
+                      value={watchedFormValues}
+                      isValid={isFormValid}
+                      isPending={isSubmitting}
+                      manualHintLines={saveHintLines}
+                      triggerClassName="w-full sm:w-auto"
+                    >
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting || !isFormValid}
+                        className="h-11 w-full px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md sm:w-auto"
+                      >
+                        {isSubmitting ? t('saving', { ns: 'common' }) : activity ? t('update', { ns: 'common' }) : t('save', { ns: 'common' })}
+                      </Button>
+                    </FormSubmitTooltipWrap>
                   </div>
                 </form>
               </Form>

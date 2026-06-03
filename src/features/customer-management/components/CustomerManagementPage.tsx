@@ -592,6 +592,7 @@ export function CustomerManagementPage(): ReactElement {
           initialPotentialCustomerId={quickActivityCustomer.id}
           initialErpCustomerCode={quickActivityCustomer.customerCode ?? undefined}
           initialCustomerDisplayName={quickActivityCustomer.name ?? undefined}
+          preservePrefilledCustomer
         />
       ) : null}
     </div>

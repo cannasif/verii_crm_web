@@ -51,7 +51,7 @@ import type { PagedFilter } from '@/types/api';
 import { getActivityColumns } from './activity-columns';
 import { ActivityForm } from './ActivityForm';
 import { activityApi } from '../api/activity-api';
-import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
+import { persistActivityFormImages } from '../utils/persist-activity-form-images';
 import { useCreateActivity } from '../hooks/useCreateActivity';
 import { useDeleteActivity } from '../hooks/useDeleteActivity';
 import { useUpdateActivity } from '../hooks/useUpdateActivity';
@@ -173,6 +173,33 @@ export function ActivityManagementPage(): ReactElement {
       setEditingActivity(null);
       setSearchParams({}, { replace: true });
     }
+  }, [searchParams, setSearchParams]);
+
+  useEffect(() => {
+    const raw = searchParams.get('activityId');
+    if (!raw) return;
+    const activityId = Number(raw);
+    if (!Number.isInteger(activityId) || activityId <= 0) return;
+
+    let cancelled = false;
+    void (async () => {
+      try {
+        const activity = await activityApi.getById(activityId);
+        if (cancelled) return;
+        setEditingActivity(activity);
+        setFormOpen(true);
+      } catch {
+        // ignore invalid deep link
+      } finally {
+        if (!cancelled) {
+          setSearchParams({}, { replace: true });
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [searchParams, setSearchParams]);
 
   useEffect(() => {
@@ -406,53 +433,18 @@ export function ActivityManagementPage(): ReactElement {
         data: buildUpdatePayload(data, editingActivity.assignedUserId),
       });
 
-      const promises: Promise<any>[] = [];
-
-      if (pendingDeletedImageIds && pendingDeletedImageIds.length > 0) {
-        pendingDeletedImageIds.forEach(id => {
-          promises.push(activityImageApi.delete(id));
-        });
-      }
-
-      if (pendingUpdatedImageDescriptions && Object.keys(pendingUpdatedImageDescriptions).length > 0) {
-        const currentImages = await activityImageApi.getByActivityId(editingActivity.id);
-        Object.entries(pendingUpdatedImageDescriptions).forEach(([idStr, desc]) => {
-          const id = Number(idStr);
-          const currentImage = currentImages.find(img => img.id === id);
-          if (currentImage) {
-            promises.push(activityImageApi.update(id, {
-              activityId: editingActivity.id,
-              resimAciklama: desc,
-              resimUrl: currentImage.resimUrl
-            }));
-          }
-        });
-      }
-
-      if (pendingImages && pendingImages.length > 0) {
-        const files = pendingImages.map(img => img.file);
-        const descriptions = pendingImages.map(img => img.description);
-        promises.push(activityImageApi.upload(editingActivity.id, {
-          files,
-          resimAciklamalar: descriptions.some(d => d) ? descriptions : undefined,
-        }));
-      }
-
-      if (promises.length > 0) {
-        await Promise.all(promises);
-      }
+      await persistActivityFormImages(editingActivity.id, {
+        pendingImages,
+        pendingDeletedImageIds,
+        pendingUpdatedImageDescriptions,
+      });
     } else {
       const createdActivity = await createActivity.mutateAsync(
         buildCreateActivityPayload(data, { assignedUserIdFallback: user?.id })
       );
 
-      if (createdActivity && pendingImages && pendingImages.length > 0) {
-        const files = pendingImages.map(img => img.file);
-        const descriptions = pendingImages.map(img => img.description);
-        await activityImageApi.upload(createdActivity.id, {
-          files,
-          resimAciklamalar: descriptions.some(d => d) ? descriptions : undefined,
-        });
+      if (createdActivity) {
+        await persistActivityFormImages(createdActivity.id, { pendingImages });
       }
     }
     setFormOpen(false);
@@ -522,7 +514,23 @@ export function ActivityManagementPage(): ReactElement {
     if (key === 'priority') return <ActivityPriorityBadge priority={activity.priority} />;
     if (key === 'subject') {
       const content = String(value ?? '');
-      return <DescriptionCell content={content} colWidth={colWidth} />;
+      if (!canUpdate) {
+        return <DescriptionCell content={content} colWidth={colWidth} />;
+      }
+      return (
+        <div
+          data-no-drag-scroll="true"
+          className="min-w-0 cursor-pointer select-none"
+          title={t('doubleClickToEdit', { defaultValue: 'Düzenlemek için çift tıklayın' })}
+          onDoubleClick={(event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            handleEdit(activity);
+          }}
+        >
+          <DescriptionCell content={content} colWidth={colWidth} />
+        </div>
+      );
     }
     if (key === 'startDateTime') {
       const dateValue =
@@ -800,6 +808,13 @@ export function ActivityManagementPage(): ReactElement {
                 showActionsColumn
                 actionsHeaderLabel={t('actions', { ns: 'common' })}
                 renderActionsCell={renderActionsCell}
+                onRowDoubleClick={
+                  canUpdate
+                    ? (row) => {
+                        handleEdit(row);
+                      }
+                    : undefined
+                }
                 rowClassName={(row) => {
                   const status = row.status;
                   const isCompleted = status === 1 || status === 'Completed';
