@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
+import { mapPricingRuleLinesFromApi } from '@/lib/map-pricing-rule-line-from-api';
 import type {
   QuotationBulkCreateDto,
   QuotationGetDto,
@@ -180,7 +181,7 @@ export const quotationApi = {
       throw new Error('API\'den beklenmeyen veri formatı döndü');
     }
 
-    return response.data;
+    return mapPricingRuleLinesFromApi(response.data);
   },
 
   getUserDiscountLimitsBySalespersonId: async (salespersonId: number): Promise<UserDiscountLimitDto[]> => {

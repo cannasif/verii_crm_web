@@ -101,7 +101,11 @@ export function applyOrderLineQuickFieldPatch(
           currency,
           currencyOptions,
           exchangeRates,
-          erpRates
+          erpRates,
+          {
+            pricingRuleCurrencyCode: matchingPricingRule.currencyCode,
+            hasPricingRuleFixedPrice: true,
+          }
         );
         next = {
           ...next,

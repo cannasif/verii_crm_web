@@ -70,7 +70,59 @@ export function findExchangeRateByDovizTipiGeneric(
     }
   }
 
+  if (dovizTipi === DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI) {
+    return 1;
+  }
+
   return null;
+}
+
+export function resolveProductPricingSourceDovizTipi(params: {
+  pricingRuleCurrencyCode?: string | number | null;
+  apiCurrency?: string | number | null;
+  hasPricingRuleFixedPrice?: boolean;
+  documentDovizTipi: number;
+  currencyOptions: CurrencyOption[];
+  erpRates?: KurDto[];
+}): number {
+  const {
+    pricingRuleCurrencyCode,
+    apiCurrency,
+    hasPricingRuleFixedPrice = false,
+    documentDovizTipi,
+    currencyOptions,
+    erpRates,
+  } = params;
+
+  const documentResolved = resolveDocumentDovizTipi(documentDovizTipi, currencyOptions);
+
+  if (pricingRuleCurrencyCode != null && String(pricingRuleCurrencyCode).trim() !== '') {
+    const fromRule = resolveDovizTipiFromCurrencyValue(
+      pricingRuleCurrencyCode,
+      currencyOptions,
+      erpRates
+    );
+    if (fromRule != null) {
+      return fromRule;
+    }
+  }
+
+  if (hasPricingRuleFixedPrice) {
+    return DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI;
+  }
+
+  const fromApi = resolveDovizTipiFromCurrencyValue(apiCurrency, currencyOptions, erpRates);
+  if (fromApi != null) {
+    if (
+      fromApi === documentResolved &&
+      documentResolved !== DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI
+    ) {
+      return DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI;
+    }
+    return fromApi;
+  }
+
+  return DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI;
 }
 
 export function convertPriceBetweenDovizTipi(
@@ -123,18 +175,21 @@ export function convertProductPriceToDocumentCurrency(
   documentDovizTipi: number,
   currencyOptions: CurrencyOption[],
   exchangeRates: DocumentExchangeRate[],
-  erpRates?: KurDto[]
+  erpRates?: KurDto[],
+  options?: {
+    pricingRuleCurrencyCode?: string | number | null;
+    hasPricingRuleFixedPrice?: boolean;
+  }
 ): { price: number; zeroRate: boolean } {
   const resolvedDocument = resolveDocumentDovizTipi(documentDovizTipi, currencyOptions);
-  let sourceDovizTipi = resolveDovizTipiFromCurrencyValue(
-    sourceCurrencyValue,
+  const sourceDovizTipi = resolveProductPricingSourceDovizTipi({
+    pricingRuleCurrencyCode: options?.pricingRuleCurrencyCode,
+    apiCurrency: sourceCurrencyValue,
+    hasPricingRuleFixedPrice: options?.hasPricingRuleFixedPrice,
+    documentDovizTipi,
     currencyOptions,
-    erpRates
-  );
-
-  if (sourceDovizTipi == null) {
-    sourceDovizTipi = DEFAULT_PRICING_CURRENCY_DOVIZ_TIPI;
-  }
+    erpRates,
+  });
 
   if (sourceDovizTipi === resolvedDocument) {
     return { price: listPrice ?? 0, zeroRate: false };
@@ -161,7 +216,11 @@ export function convertPriceForDocumentCurrency(
   documentDovizTipi: number,
   currencyOptions: CurrencyOption[],
   exchangeRates: DocumentExchangeRate[],
-  erpRates?: KurDto[]
+  erpRates?: KurDto[],
+  options?: {
+    pricingRuleCurrencyCode?: string | number | null;
+    hasPricingRuleFixedPrice?: boolean;
+  }
 ): number {
   return convertProductPriceToDocumentCurrency(
     listPrice,
@@ -169,7 +228,8 @@ export function convertPriceForDocumentCurrency(
     documentDovizTipi,
     currencyOptions,
     exchangeRates,
-    erpRates
+    erpRates,
+    options
   ).price;
 }
 
@@ -221,17 +281,23 @@ export function convertProductLinePriceForDocument(params: {
   } = params;
 
   const matchingRule = findMatchingPricingRuleLine(pricingRules, productCode, quantity);
-  const rawListPrice =
-    matchingRule?.fixedUnitPrice != null ? matchingRule.fixedUnitPrice : (priceData.listPrice ?? 0);
-  const sourceCurrency = matchingRule?.currencyCode ?? priceData.currency;
+  const hasPricingRuleFixedPrice =
+    matchingRule?.fixedUnitPrice != null && matchingRule?.fixedUnitPrice !== undefined;
+  const rawListPrice = hasPricingRuleFixedPrice
+    ? matchingRule!.fixedUnitPrice!
+    : (priceData.listPrice ?? 0);
 
   const { price, zeroRate } = convertProductPriceToDocumentCurrency(
     rawListPrice ?? 0,
-    sourceCurrency,
+    priceData.currency,
     documentDovizTipi,
     currencyOptions,
     exchangeRates,
-    erpRates
+    erpRates,
+    {
+      pricingRuleCurrencyCode: matchingRule?.currencyCode,
+      hasPricingRuleFixedPrice,
+    }
   );
 
   return {
