@@ -1,7 +1,7 @@
 'use client';
 
 import { type ReactElement, type Ref, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQueries, useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
@@ -252,6 +252,7 @@ type FavoriteStocksQueryData = {
 };
 
 const PAGE_SIZE = 24;
+const EMPTY_CATALOG_STOCK_ROWS: CatalogStockItemDto[] = [];
 
 type CatalogSessionPick = {
   pickId: string;
@@ -517,6 +518,8 @@ export function CatalogStockSelectDialog({
     specialCodeSelections,
   ]);
 
+  const loadedStockCount = pageNumber * PAGE_SIZE;
+
   const stocksQuery = useQuery({
     queryKey: [
       'catalog-stock-picker-stocks',
@@ -529,8 +532,8 @@ export function CatalogStockSelectDialog({
     ],
     queryFn: () =>
       categoryDefinitionsApi.getCatalogCategoryStocks(selectedCatalog!.id, selectedLeafCategory!.catalogCategoryId, {
-        pageNumber,
-        pageSize: PAGE_SIZE,
+        pageNumber: 1,
+        pageSize: loadedStockCount,
         search: catalogStockApiSearch,
         includeDescendants,
       }),
@@ -539,11 +542,12 @@ export function CatalogStockSelectDialog({
       stockBrowseMode === 'category' &&
       selectedCatalog != null &&
       selectedLeafCategory != null,
+    placeholderData: keepPreviousData,
   });
 
-  const stockItems = stocksQuery.data?.data ?? [];
+  const stockItems = stocksQuery.data?.data ?? EMPTY_CATALOG_STOCK_ROWS;
   const totalCount = stocksQuery.data?.totalCount ?? stockItems.length;
-  const hasNextPage = pageNumber * PAGE_SIZE < totalCount;
+  const hasNextPage = loadedStockCount < totalCount;
 
   const campaignStocksQuery = useQuery({
     queryKey: [
@@ -587,10 +591,9 @@ export function CatalogStockSelectDialog({
     );
   }, [campaignCatalogItems, debouncedStockSearch]);
   const campaignDisplayItems = useMemo((): CatalogStockItemDto[] => {
-    const start = (pageNumber - 1) * PAGE_SIZE;
-    return campaignSearchFilteredItems.slice(start, start + PAGE_SIZE);
-  }, [campaignSearchFilteredItems, pageNumber]);
-  const campaignHasNextPage = pageNumber * PAGE_SIZE < campaignSearchFilteredItems.length;
+    return campaignSearchFilteredItems.slice(0, loadedStockCount);
+  }, [campaignSearchFilteredItems, loadedStockCount]);
+  const campaignHasNextPage = loadedStockCount < campaignSearchFilteredItems.length;
   const favoriteCatalogId = selectedCatalog?.id ?? catalogsQuery.data?.[0]?.id ?? null;
 
   const favoriteStocksQuery = useQuery({
@@ -602,8 +605,8 @@ export function CatalogStockSelectDialog({
     ] as const,
     queryFn: async (): Promise<FavoriteStocksQueryData> => {
       const response = await categoryDefinitionsApi.getCatalogFavorites(favoriteCatalogId!, {
-        pageNumber,
-        pageSize: PAGE_SIZE,
+        pageNumber: 1,
+        pageSize: loadedStockCount,
         search: catalogStockApiSearch,
       });
       const rawItems = response.data ?? [];
@@ -650,11 +653,12 @@ export function CatalogStockSelectDialog({
     },
     enabled: open && stockBrowseMode === 'favorites' && favoriteCatalogId != null,
     staleTime: 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 
-  const favoriteItems = favoriteStocksQuery.data?.items ?? [];
+  const favoriteItems = favoriteStocksQuery.data?.items ?? EMPTY_CATALOG_STOCK_ROWS;
   const favoriteTotalCount = favoriteStocksQuery.data?.totalCount ?? favoriteItems.length;
-  const favoriteHasNextPage = pageNumber * PAGE_SIZE < favoriteTotalCount;
+  const favoriteHasNextPage = loadedStockCount < favoriteTotalCount;
 
   const specialCodeHasSelection = hasSpecialCodeSelection(specialCodeSelections);
 
@@ -707,8 +711,8 @@ export function CatalogStockSelectDialog({
             filters: params.filters,
           }),
         {
-          pageNumber,
-          pageSize: PAGE_SIZE,
+          pageNumber: 1,
+          pageSize: loadedStockCount,
           search: catalogStockApiSearch,
         },
       );
@@ -719,11 +723,12 @@ export function CatalogStockSelectDialog({
     },
     enabled: open && leftPanelMode === 'code' && specialCodeHasSelection,
     staleTime: 30_000,
+    placeholderData: keepPreviousData,
   });
 
-  const specialCodeStockItems = specialCodeStocksQuery.data?.data ?? [];
+  const specialCodeStockItems = specialCodeStocksQuery.data?.data ?? EMPTY_CATALOG_STOCK_ROWS;
   const specialCodeTotalCount = specialCodeStocksQuery.data?.totalCount ?? 0;
-  const specialCodeHasNextPage = pageNumber * PAGE_SIZE < specialCodeTotalCount;
+  const specialCodeHasNextPage = loadedStockCount < specialCodeTotalCount;
 
   const activeStockRows: CatalogStockItemDto[] =
     stockBrowseMode === 'campaign'
@@ -737,10 +742,18 @@ export function CatalogStockSelectDialog({
     stockBrowseMode === 'campaign'
       ? campaignStocksQuery.isLoading
       : stockBrowseMode === 'favorites'
-        ? favoriteStocksQuery.isLoading
+        ? favoriteStocksQuery.isPending && favoriteItems.length === 0
         : leftPanelMode === 'code' && stockBrowseMode === 'specialCodes'
-          ? specialCodeFacetPoolQuery.isLoading || specialCodeStocksQuery.isLoading
-          : stocksQuery.isLoading;
+          ? specialCodeStocksQuery.isPending && specialCodeStockItems.length === 0
+          : stocksQuery.isPending && stockItems.length === 0;
+  const activeStockFetchingMore =
+    stockBrowseMode === 'campaign'
+      ? false
+      : stockBrowseMode === 'favorites'
+        ? favoriteStocksQuery.isFetching && pageNumber > 1
+        : leftPanelMode === 'code' && stockBrowseMode === 'specialCodes'
+          ? specialCodeStocksQuery.isFetching && pageNumber > 1
+          : stocksQuery.isFetching && pageNumber > 1;
   const activeStockHasNextPage =
     stockBrowseMode === 'campaign'
       ? campaignHasNextPage
@@ -864,14 +877,17 @@ export function CatalogStockSelectDialog({
     activateCategoryInCatalog(catalogId, category);
   };
 
+  const resolveDefaultStockBrowseMode = (): CatalogStockBrowseMode =>
+    leftPanelMode === 'code' ? 'specialCodes' : 'category';
+
   const toggleStockBrowseCampaign = (): void => {
     setStockLayoutMode('cards');
-    setStockBrowseMode((m) => (m === 'campaign' ? 'category' : 'campaign'));
+    setStockBrowseMode((mode) => (mode === 'campaign' ? resolveDefaultStockBrowseMode() : 'campaign'));
   };
 
   const toggleStockBrowseFavorites = (): void => {
     setStockLayoutMode('cards');
-    setStockBrowseMode((m) => (m === 'favorites' ? 'category' : 'favorites'));
+    setStockBrowseMode((mode) => (mode === 'favorites' ? resolveDefaultStockBrowseMode() : 'favorites'));
   };
 
   const handleLeftPanelModeChange = (mode: CatalogLeftPanelMode): void => {
@@ -1237,8 +1253,8 @@ export function CatalogStockSelectDialog({
     </div>
   ) : activeStockRows.length ? (
     stockLayoutMode === 'list' ? (
-      <div className="flex min-h-0 flex-1 flex-col rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none max-lg:overflow-auto lg:overflow-hidden">
-        <div className="min-h-0 flex-1 touch-pan-y overscroll-contain [-webkit-overflow-scrolling:touch] max-lg:overflow-auto lg:overflow-auto">
+      <div className="flex w-full flex-col rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none">
+        <div className="w-full">
           <table className="w-full min-w-[620px] table-fixed border-collapse text-sm sm:min-w-[720px]">
             <thead>
               <tr className="border-b border-slate-300/90 bg-slate-100/90 text-[10px] font-semibold uppercase tracking-wide text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 sm:text-[11px]">
@@ -1387,21 +1403,29 @@ export function CatalogStockSelectDialog({
               type="button"
               variant="outline"
               size="sm"
+              disabled={activeStockFetchingMore}
               className="h-9 w-full rounded-xl border border-slate-300/90 bg-white text-xs text-slate-800 shadow-sm backdrop-blur-sm hover:border-pink-400/55 hover:bg-pink-50 hover:text-pink-600 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-pink-500/40 dark:hover:bg-pink-500/10 dark:hover:text-pink-100"
               onClick={() => setPageNumber((prev) => prev + 1)}
             >
-              {t('catalogStockPicker.loadMore')}
+              {activeStockFetchingMore ? (
+                <>
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  {t('catalogStockPicker.loadingStocks')}
+                </>
+              ) : (
+                t('catalogStockPicker.loadMore')
+              )}
             </Button>
           </div>
         ) : null}
       </div>
     ) : (
-      <div className="relative flex min-h-0 flex-1 flex-col max-lg:overflow-visible lg:overflow-hidden">
+      <div className="relative flex w-full flex-col">
         <div
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.08),transparent_55%)]"
           aria-hidden
         />
-        <div className="relative min-h-0 flex-1 touch-pan-y overscroll-contain px-1 pt-1.5 [-webkit-overflow-scrolling:touch] max-lg:overflow-visible lg:overflow-y-auto">
+        <div className="relative px-1 pt-1.5">
           <div className="grid grid-cols-1 gap-2.5 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
             {activeStockRows.map((stock) => {
               const selectionKey = getSelectionKey({ id: stock.stockId, code: stock.erpStockCode });
@@ -1578,10 +1602,18 @@ export function CatalogStockSelectDialog({
               type="button"
               variant="outline"
               size="sm"
+              disabled={activeStockFetchingMore}
               className="h-9 w-full rounded-xl border border-slate-300/90 bg-white text-xs text-slate-800 shadow-sm backdrop-blur-sm hover:border-pink-400/55 hover:bg-pink-50 hover:text-pink-600 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-pink-500/40 dark:hover:bg-pink-500/10 dark:hover:text-pink-100"
               onClick={() => setPageNumber((prev) => prev + 1)}
             >
-              {t('catalogStockPicker.loadMore')}
+              {activeStockFetchingMore ? (
+                <>
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  {t('catalogStockPicker.loadingStocks')}
+                </>
+              ) : (
+                t('catalogStockPicker.loadMore')
+              )}
             </Button>
           </div>
         ) : null}
