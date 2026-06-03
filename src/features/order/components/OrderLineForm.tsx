@@ -372,11 +372,11 @@ export function OrderLineForm({
       const nextDemirId =
         currentDemir?.profilDefinitionId === prev.profilDefinitionId
           ? prev.demirDefinitionId
-          : (demirOptions[0]?.id ?? null);
+          : null;
       const nextVidaId =
         currentVida?.profilDefinitionId === prev.profilDefinitionId
           ? prev.vidaDefinitionId
-          : (vidaOptions[0]?.id ?? null);
+          : null;
 
       if (nextDemirId === prev.demirDefinitionId && nextVidaId === prev.vidaDefinitionId) {
         return prev;
