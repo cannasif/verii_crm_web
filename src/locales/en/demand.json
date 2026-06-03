@@ -328,7 +328,10 @@
     "approvedBy": "Approved By",
     "actionDate": "Action Date",
     "status": "Status",
-    "waiting": "Waiting"
+    "waiting": "Waiting",
+    "rejectTitle": "Reject demand",
+    "rejectDescription": "Enter the reason for rejecting this demand.",
+    "rejectReasonPlaceholder": "Rejection reason"
   },
   "quotation": {
     "notes": {

@@ -289,10 +289,12 @@ export function WaitingApprovalsPage(): ReactElement {
                                 onClick={(e) => handleApprove(e, approval)}
                                 disabled={approveAction.isPending || rejectAction.isPending}
                                 className="h-8 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20"
-                                title={t('approval.approve')}
+                                title={t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' })}
                               >
                                 <Check className="h-4 w-4 sm:mr-1.5" />
-                                <span className="hidden sm:inline font-bold">{t('approval.approve')}</span>
+                                <span className="hidden sm:inline font-bold">
+                                  {t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' })}
+                                </span>
                               </Button>
                               <Button
                                 variant="ghost"
@@ -300,10 +302,12 @@ export function WaitingApprovalsPage(): ReactElement {
                                 onClick={(e) => handleRejectClick(e, approval)}
                                 disabled={approveAction.isPending || rejectAction.isPending}
                                 className="h-8 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
-                                title={t('approval.reject')}
+                                title={t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' })}
                               >
                                 <X className="h-4 w-4 sm:mr-1.5" />
-                                <span className="hidden sm:inline font-bold">{t('approval.reject')}</span>
+                                <span className="hidden sm:inline font-bold">
+                                  {t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' })}
+                                </span>
                               </Button>
                             </div>
                           </TableCell>
@@ -329,10 +333,10 @@ export function WaitingApprovalsPage(): ReactElement {
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('approval.rejectTitle')}
+                {t('waitingApprovals.rejectTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('approval.rejectDescription')}
+                {t('waitingApprovals.rejectDescription')}
               </DialogDescription>
             </div>
           </DialogHeader>
@@ -343,7 +347,7 @@ export function WaitingApprovalsPage(): ReactElement {
                 Ret Gerekçesi
               </label>
               <Textarea
-                placeholder={t('approval.rejectReasonPlaceholder')}
+                placeholder={t('waitingApprovals.rejectReasonPlaceholder')}
                 value={rejectReason}
                 onChange={(e) => setRejectReason(e.target.value)}
                 maxLength={500}
@@ -387,7 +391,7 @@ export function WaitingApprovalsPage(): ReactElement {
               ) : (
                 <span className="flex items-center gap-2">
                   <X className="h-4 w-4" />
-                  {t('approval.reject')}
+                  {t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' })}
                 </span>
               )}
             </Button>

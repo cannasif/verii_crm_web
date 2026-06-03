@@ -301,7 +301,10 @@
     "status": "Durum",
     "stepOrder": "Adım Sırası",
     "approvedBy": "Onaylayan",
-    "actionDate": "İşlem Tarihi"
+    "actionDate": "İşlem Tarihi",
+    "rejectTitle": "Teklifi Reddet",
+    "rejectDescription": "Teklifi reddetme nedeninizi girin.",
+    "rejectReasonPlaceholder": "Red nedeni"
   },
   "offerType": {
     "domestic": "Yurtiçi",

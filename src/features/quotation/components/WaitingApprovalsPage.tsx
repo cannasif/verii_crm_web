@@ -332,30 +332,30 @@ export function WaitingApprovalsPage(): ReactElement {
   const renderActionsCell = (approval: ApprovalActionGetDto): ReactElement => (
     <div className="flex justify-center gap-2">
       <Button
-        variant="default"
+        variant="ghost"
         size="sm"
         onClick={(event) => {
           event.stopPropagation();
           handleApprove(approval);
         }}
         disabled={approveAction.isPending || rejectAction.isPending}
-        className="gap-1"
+        className="h-8 gap-1.5 rounded-lg border-0 bg-emerald-50 px-3 font-medium text-emerald-700 shadow-none transition-colors hover:bg-emerald-100 hover:text-emerald-800 disabled:opacity-50 dark:bg-emerald-500/15 dark:text-emerald-400 dark:hover:bg-emerald-500/25 dark:hover:text-emerald-300"
       >
         <Check className="h-4 w-4" />
-        {t('approval.approve')}
+        {t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' })}
       </Button>
       <Button
-        variant="destructive"
+        variant="ghost"
         size="sm"
         onClick={(event) => {
           event.stopPropagation();
           handleRejectClick(approval);
         }}
         disabled={approveAction.isPending || rejectAction.isPending}
-        className="gap-1"
+        className="h-8 gap-1.5 rounded-lg border border-red-200/70 bg-red-50/90 px-3 font-medium text-red-600 shadow-none transition-colors hover:bg-red-100 hover:text-red-700 disabled:opacity-50 dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 dark:hover:text-red-300"
       >
         <X className="h-4 w-4" />
-        {t('approval.reject')}
+        {t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' })}
       </Button>
     </div>
   );
@@ -493,12 +493,12 @@ export function WaitingApprovalsPage(): ReactElement {
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('approval.rejectTitle')}</DialogTitle>
-            <DialogDescription>{t('approval.rejectDescription')}</DialogDescription>
+            <DialogTitle>{t('waitingApprovals.rejectTitle')}</DialogTitle>
+            <DialogDescription>{t('waitingApprovals.rejectDescription')}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <Textarea
-              placeholder={t('approval.rejectReasonPlaceholder')}
+              placeholder={t('waitingApprovals.rejectReasonPlaceholder')}
               value={rejectReason}
               onChange={(event) => setRejectReason(event.target.value)}
               maxLength={500}
@@ -522,7 +522,9 @@ export function WaitingApprovalsPage(): ReactElement {
               onClick={handleRejectConfirm}
               disabled={rejectAction.isPending}
             >
-              {rejectAction.isPending ? t('loading') : t('approval.reject')}
+              {rejectAction.isPending
+                ? t('loading')
+                : t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' })}
             </Button>
           </DialogFooter>
         </DialogContent>
