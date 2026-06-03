@@ -18,7 +18,7 @@
     "mailLogs": "Historique des E-mails",
     "images": "Images",
     "imagesDefaultDescription": "Image de carte de visite",
-    "erpMovements": "ERP Hareket"
+    "erpMovements": "Mouvements ERP"
   },
   "quickQuotations": {
     "empty": "Aucun devis rapide trouvé pour ce client",
@@ -144,29 +144,29 @@
     "open": "Ouvert"
   },
   "erpMovements": {
-    "title": "ERP Hareket",
-    "tableTitle": "Cari Hareketleri",
-    "error": "ERP hareket verileri yüklenemedi",
+    "title": "Mouvements ERP",
+    "tableTitle": "Mouvements de Compte",
+    "error": "Impossible de charger les données de mouvement ERP",
     "columns": {
-      "date": "Tarih",
-      "dueDate": "Vade Tarihi",
-      "documentNo": "Belge No",
-      "description": "Açıklama",
-      "currency": "Para Birimi",
-      "debit": "Borç",
-      "credit": "Alacak",
-      "tlBalanceByDate": "Tarih Sıralı TL Bakiye",
-      "tlBalanceByDueDate": "Vade Sıralı TL Bakiye",
-      "fxDebit": "Döviz Borç",
-      "fxCredit": "Döviz Alacak",
-      "fxBalanceByDate": "Tarih Sıralı Döviz Bakiye",
-      "fxBalanceByDueDate": "Vade Sıralı Döviz Bakiye"
+      "date": "Date",
+      "dueDate": "Date d'échéance",
+      "documentNo": "N° Document",
+      "description": "Description",
+      "currency": "Devise",
+      "debit": "Débit",
+      "credit": "Crédit",
+      "tlBalanceByDate": "Solde TRY par Date",
+      "tlBalanceByDueDate": "Solde TRY par Échéance",
+      "fxDebit": "Débit Devise",
+      "fxCredit": "Crédit Devise",
+      "fxBalanceByDate": "Solde Devise par Date",
+      "fxBalanceByDueDate": "Solde Devise par Échéance"
     },
     "summary": {
-      "totalDebit": "Toplam Borç",
-      "totalCredit": "Toplam Alacak",
-      "balance": "Bakiye",
-      "closed": "Kapalı"
+      "totalDebit": "Débit Total",
+      "totalCredit": "Crédit Total",
+      "balance": "Solde",
+      "closed": "Fermé"
     }
   },
   "hero": {

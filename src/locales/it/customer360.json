@@ -18,7 +18,7 @@
     "mailLogs": "Cronologia Email",
     "images": "Immagini",
     "imagesDefaultDescription": "Immagine biglietto da visita",
-    "erpMovements": "ERP Hareket"
+    "erpMovements": "Movimenti ERP"
   },
   "quickQuotations": {
     "empty": "Nessun preventivo rapido trovato per questo cliente",
@@ -144,29 +144,29 @@
     "open": "Aperto"
   },
   "erpMovements": {
-    "title": "ERP Hareket",
-    "tableTitle": "Cari Hareketleri",
-    "error": "ERP hareket verileri yüklenemedi",
+    "title": "Movimenti ERP",
+    "tableTitle": "Movimenti di Conto",
+    "error": "Impossibile caricare i dati dei movimenti ERP",
     "columns": {
-      "date": "Tarih",
-      "dueDate": "Vade Tarihi",
-      "documentNo": "Belge No",
-      "description": "Açıklama",
-      "currency": "Para Birimi",
-      "debit": "Borç",
-      "credit": "Alacak",
-      "tlBalanceByDate": "Tarih Sıralı TL Bakiye",
-      "tlBalanceByDueDate": "Vade Sıralı TL Bakiye",
-      "fxDebit": "Döviz Borç",
-      "fxCredit": "Döviz Alacak",
-      "fxBalanceByDate": "Tarih Sıralı Döviz Bakiye",
-      "fxBalanceByDueDate": "Vade Sıralı Döviz Bakiye"
+      "date": "Data",
+      "dueDate": "Data di Scadenza",
+      "documentNo": "N. Documento",
+      "description": "Descrizione",
+      "currency": "Valuta",
+      "debit": "Addebito",
+      "credit": "Accredito",
+      "tlBalanceByDate": "Saldo TRY per Data",
+      "tlBalanceByDueDate": "Saldo TRY per Scadenza",
+      "fxDebit": "Addebito Valuta",
+      "fxCredit": "Accredito Valuta",
+      "fxBalanceByDate": "Saldo Valuta per Data",
+      "fxBalanceByDueDate": "Saldo Valuta per Scadenza"
     },
     "summary": {
-      "totalDebit": "Toplam Borç",
-      "totalCredit": "Toplam Alacak",
-      "balance": "Bakiye",
-      "closed": "Kapalı"
+      "totalDebit": "Addebito Totale",
+      "totalCredit": "Accredito Totale",
+      "balance": "Saldo",
+      "closed": "Chiuso"
     }
   },
   "hero": {

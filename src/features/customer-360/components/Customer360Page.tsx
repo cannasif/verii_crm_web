@@ -849,7 +849,7 @@ function ErpMovementsTabContent({
         </CardHeader>
         <CardContent className="pb-5 pt-0">
           {movements.length === 0 ? (
-            <p className="py-6 text-sm text-muted-foreground">{t('common.noData')}</p>
+            <p className="py-6 text-sm text-muted-foreground">{t('noData', { ns: 'common' })}</p>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-border/70 bg-muted/20">
               <Table className="min-w-[1500px] text-[13px] leading-snug">
@@ -1536,10 +1536,10 @@ export function Customer360Page(): ReactElement {
             size="sm"
             onClick={() => navigate('/customer-management', { state: { from360: true } })}
             className="h-9 gap-1.5 rounded-xl px-2.5 text-muted-foreground hover:text-foreground"
-            title={t('common.back')}
+            title={t('back', { ns: 'common' })}
           >
             <ArrowLeft className="h-4 w-4" />
-            {t('common.back')}
+            {t('back', { ns: 'common' })}
           </Button>
           <span className="text-sm font-medium text-muted-foreground">{tc('title')}</span>
         </div>
@@ -2056,7 +2056,7 @@ export function Customer360Page(): ReactElement {
             </DialogHeader>
             <div className="flex justify-end gap-2">
               <Button type="button" variant="outline" onClick={() => setPendingDeleteImageId(null)}>
-                {t('common.cancel')}
+                {t('cancel', { ns: 'common' })}
               </Button>
               <Button
                 type="button"

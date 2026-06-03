@@ -4756,6 +4756,18 @@
   "profile": {
     "title": "معلومات الملف الشخصي"
   },
+  "salesDraft": {
+    "title": "لديك عمل غير مكتمل",
+    "description": "تم العثور على مسودة {{documentName}} غير محفوظة لهذا المستخدم والفرع. هل ترغب في المتابعة؟",
+    "updatedAt": "آخر حفظ تلقائي: {{date}}",
+    "restore": "تحميل المسودة",
+    "discard": "حذف والبدء من جديد",
+    "documentNames": {
+      "demand": "طلب",
+      "quotation": "عرض سعر",
+      "order": "طلب شراء"
+    }
+  },
   "language_choice": "خيار اللغة",
   "appearance": "وضع العرض",
   "logout": "تسجيل الخروج",
