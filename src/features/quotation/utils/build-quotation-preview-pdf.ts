@@ -1,4 +1,5 @@
 import type { jsPDF } from 'jspdf';
+import { getLineUnitDiscountBreakdown } from '@/lib/line-discount-display';
 import { formatCurrency } from './format-currency';
 import {
   QUOTATION_EXPORT_PDF_FONT,
@@ -103,25 +104,15 @@ function formatQuantityCell(line: QuotationPreviewPdfLine): string {
   return unit ? `${qty} ${unit}` : qty;
 }
 
-function formatLineDiscountSummary(
-  line: QuotationPreviewPdfLine,
-  discountLabel: string,
-): string {
-  const rates = [line.discountRate1, line.discountRate2, line.discountRate3];
-  const lines: string[] = [];
-  rates.forEach((rate, index) => {
-    if ((rate ?? 0) > 0) {
-      lines.push(`${discountLabel} ${index + 1}: %${rate}`);
-    }
-  });
-  if (lines.length === 0) {
-    return '—';
-  }
-  return lines.join('\n');
-}
-
 function formatUnitPriceCell(line: QuotationPreviewPdfLine, currencyCode: string): string {
-  return formatCurrency(line.unitPrice, currencyCode);
+  const breakdown = getLineUnitDiscountBreakdown(
+    line.unitPrice ?? 0,
+    line.discountRate1 ?? 0,
+    line.discountRate2 ?? 0,
+    line.discountRate3 ?? 0,
+  );
+  const displayPrice = breakdown.hasDiscount ? breakdown.discountedUnitPrice : line.unitPrice;
+  return formatCurrency(displayPrice, currencyCode);
 }
 
 function computeDocumentTotals(
@@ -321,11 +312,8 @@ function drawFooter(
   totals: ReturnType<typeof computeDocumentTotals>,
 ): void {
   const detailRows: Array<[string, number, boolean]> = [
-    [params.labels.grossTotal, totals.grossTotal, false],
+    [params.labels.grossTotal, totals.netTotal, false],
   ];
-  if (totals.lineDiscountTotal > 0) {
-    detailRows.push([params.labels.lineDiscountTotal, totals.lineDiscountTotal, true]);
-  }
   if (totals.generalDiscountAmount > 0) {
     detailRows.push([params.labels.generalDiscount, totals.generalDiscountAmount, true]);
   }
@@ -452,7 +440,8 @@ export async function buildQuotationPreviewPdfBlob(
 
   const offerDateStr = formatDateLabel(params.offerDate, params.locale, params.labels.notSpecified);
   const offerNoDisplay = params.offerNo?.trim() || params.labels.notSpecified;
-  const showDiscountColumn = params.lines.some((line) => lineHasDiscount(line));
+  const anyLineDiscount = params.lines.some((line) => lineHasDiscount(line));
+  const unitPriceColumnLabel = anyLineDiscount ? params.labels.unitPriceNet : params.labels.unitPrice;
 
   const tableStartY = drawHeader(doc, bodyFont, params, offerDateStr, offerNoDisplay);
 
@@ -460,42 +449,25 @@ export async function buildQuotationPreviewPdfBlob(
     params.labels.productCode,
     params.labels.productName,
     params.labels.quantity,
-    params.labels.unitPrice,
+    unitPriceColumnLabel,
+    params.labels.lineTotal,
   ];
-  if (showDiscountColumn) {
-    headRow.push(params.labels.lineDiscount);
-  }
-  headRow.push(params.labels.vatRate, params.labels.lineTotal);
 
-  const bodyRows = params.lines.map((line) => {
-    const row = [
-      line.productCode ?? '',
-      line.productName ?? '',
-      formatQuantityCell(line),
-      formatUnitPriceCell(line, params.currencyCode),
-    ];
-    if (showDiscountColumn) {
-      row.push(formatLineDiscountSummary(line, params.labels.lineDiscount));
-    }
-    row.push(`%${line.vatRate ?? 0}`, formatCurrency(line.lineTotal, params.currencyCode));
-    return row;
-  });
+  const bodyRows = params.lines.map((line) => [
+    line.productCode ?? '',
+    line.productName ?? '',
+    formatQuantityCell(line),
+    formatUnitPriceCell(line, params.currencyCode),
+    formatCurrency(line.lineTotal, params.currencyCode),
+  ]);
 
-  const columnStyles: Record<number, { cellWidth?: number; halign?: 'left' | 'center' | 'right' }> =
-    {
-      0: { cellWidth: 30, halign: 'left' },
-      1: { halign: 'left' },
-      2: { cellWidth: 16, halign: 'center' },
-      3: { cellWidth: 24, halign: 'right' },
-    };
-
-  let colIndex = 4;
-  if (showDiscountColumn) {
-    columnStyles[colIndex] = { cellWidth: 30, halign: 'left' };
-    colIndex += 1;
-  }
-  columnStyles[colIndex] = { cellWidth: 16, halign: 'center' };
-  columnStyles[colIndex + 1] = { cellWidth: 26, halign: 'right' };
+  const columnStyles: Record<number, { cellWidth?: number; halign?: 'left' | 'center' | 'right' }> = {
+    0: { cellWidth: 32, halign: 'left' },
+    1: { halign: 'left' },
+    2: { cellWidth: 18, halign: 'center' },
+    3: { cellWidth: 28, halign: 'right' },
+    4: { cellWidth: 30, halign: 'right' },
+  };
 
   autoTable(doc, {
     startY: tableStartY,
