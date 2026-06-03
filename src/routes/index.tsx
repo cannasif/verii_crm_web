@@ -59,6 +59,7 @@ const DemandListPage = lazyImport(() => import('@/features/demand'), 'DemandList
 const DemandWaitingApprovalsPage = lazyImport(() => import('@/features/demand'), 'WaitingApprovalsPage');
 const OrderCreateForm = lazyImport(() => import('@/features/order'), 'OrderCreateForm');
 const OrderDetailPage = lazyImport(() => import('@/features/order'), 'OrderDetailPage');
+const ErpOrderListPage = lazyImport(() => import('@/features/order'), 'ErpOrderListPage');
 const OrderListPage = lazyImport(() => import('@/features/order'), 'OrderListPage');
 const OrderWaitingApprovalsPage = lazyImport(() => import('@/features/order'), 'WaitingApprovalsPage');
 const PricingRuleManagementPage = lazyImport(() => import('@/features/pricing-rule'), 'PricingRuleManagementPage');
@@ -186,8 +187,9 @@ export function createAppRouter() {
         { path: 'demands/waiting-approvals', element: <DemandWaitingApprovalsPage /> },
         { path: 'orders', element: <OrderListPage /> },
         { path: 'orders/create', element: <OrderCreateForm /> },
-        { path: 'orders/:id', element: <OrderDetailPage /> },
+        { path: 'orders/erp', element: <ErpOrderListPage /> },
         { path: 'orders/waiting-approvals', element: <OrderWaitingApprovalsPage /> },
+        { path: 'orders/:id', element: <OrderDetailPage /> },
         { path: 'pricing-rules', element: <PricingRuleManagementPage /> },
         { path: 'stocks', element: <StockListPage /> },
         { path: 'stocks/:id', element: <StockDetailPage /> },

@@ -1004,6 +1004,7 @@
     "orderCreateWizard": "Neue Bestellung erstellen",
     "waitingApprovalOrders": "Bestellungen müssen noch genehmigt werden",
     "orderList": "Bestellliste",
+    "erpOrderList": "ERP-Bestellliste",
     "productAndStock": "Produkte & Lagerbestand",
     "reportsList": "Liste",
     "reportsCreate": "Neu erstellen",
@@ -4810,6 +4811,18 @@
   },
   "profile": {
     "title": "Profilinformationen"
+  },
+  "salesDraft": {
+    "title": "Sie haben unfertige Arbeit",
+    "description": "Es wurde ein ungespeicherter Entwurf von {{documentName}} für diesen Benutzer und diese Filiale gefunden. Möchten Sie fortfahren?",
+    "updatedAt": "Letzte automatische Speicherung: {{date}}",
+    "restore": "Entwurf laden",
+    "discard": "Löschen und neu starten",
+    "documentNames": {
+      "demand": "Anfrage",
+      "quotation": "Angebot",
+      "order": "Bestellung"
+    }
   },
   "language_choice": "Sprachoption",
   "appearance": "Ansichtsmodus",

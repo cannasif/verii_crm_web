@@ -1003,6 +1003,7 @@
     "orderCreateWizard": "Crear Nueva Cotización",
     "waitingApprovalOrders": "Pedidos pendientes de aprobación",
     "orderList": "Lista de pedidos",
+    "erpOrderList": "Lista de pedidos ERP",
     "reportsList": "Lista",
     "reportsCreate": "Crear nuevo",
     "pdfReportsList": "Lista PDF",
@@ -4755,6 +4756,18 @@
   },
   "profile": {
     "title": "Información de perfil"
+  },
+  "salesDraft": {
+    "title": "Tienes trabajo sin terminar",
+    "description": "Se encontró un borrador de {{documentName}} sin guardar para este usuario y sucursal. ¿Quieres continuar?",
+    "updatedAt": "Último guardado automático: {{date}}",
+    "restore": "Cargar borrador",
+    "discard": "Eliminar y empezar de nuevo",
+    "documentNames": {
+      "demand": "demanda",
+      "quotation": "cotización",
+      "order": "pedido"
+    }
   },
   "language_choice": "Opción de idioma",
   "appearance": "Modo de visualización",

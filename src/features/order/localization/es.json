@@ -2,5 +2,44 @@
   "lines": {
     "doubleClickToEdit": "Doble clic para editar",
     "unit": "Unidad"
+  },
+  "erpOrder": {
+    "title": "Lista de pedidos ERP",
+    "description": "Revise los encabezados y líneas de pedidos Netsis visibles para el usuario conectado.",
+    "currentUserScope": "Ámbito del usuario conectado",
+    "searchPlaceholder": "Buscar pedido, cliente, vendedor o fecha...",
+    "loading": "Cargando pedidos ERP...",
+    "loadError": "No se pudieron cargar los pedidos ERP.",
+    "noData": "No se encontraron pedidos ERP.",
+    "detailAction": "Detalle",
+    "detailTitle": "Detalle del pedido {{orderNo}}",
+    "unknownCustomer": "Sin nombre de cliente",
+    "lineCount": "{{count}} líneas",
+    "linesLoading": "Cargando líneas del pedido...",
+    "lineLoadError": "No se pudieron cargar las líneas del pedido.",
+    "noLines": "No hay líneas para este pedido.",
+    "table": {
+      "title": "Información de encabezado del pedido",
+      "branchCode": "Sucursal",
+      "orderNo": "N.º pedido",
+      "customerCode": "Código cliente",
+      "customerName": "Nombre cliente",
+      "date": "Fecha",
+      "deliveryDate": "Fecha entrega",
+      "grossTotal": "Total bruto",
+      "vat": "IVA",
+      "grandTotal": "Total general",
+      "salesRepCode": "Vendedor"
+    },
+    "lines": {
+      "rowNo": "Fila",
+      "stockCode": "Código stock",
+      "stockName": "Nombre stock",
+      "quantity": "Cantidad",
+      "unit": "Unidad",
+      "netPrice": "Precio neto",
+      "vatRate": "Tasa IVA",
+      "warehouseCode": "Almacén"
+    }
   }
 }

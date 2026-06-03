@@ -2,5 +2,44 @@
   "lines": {
     "doubleClickToEdit": "Double-cliquez pour modifier",
     "unit": "Unité"
+  },
+  "erpOrder": {
+    "title": "Liste des commandes ERP",
+    "description": "Consultez les en-têtes et lignes de commandes Netsis visibles pour l'utilisateur connecté.",
+    "currentUserScope": "Périmètre de l'utilisateur connecté",
+    "searchPlaceholder": "Rechercher par commande, client, commercial ou date...",
+    "loading": "Chargement des commandes ERP...",
+    "loadError": "Impossible de charger les commandes ERP.",
+    "noData": "Aucune commande ERP trouvée.",
+    "detailAction": "Détails",
+    "detailTitle": "Détails de la commande {{orderNo}}",
+    "unknownCustomer": "Nom client absent",
+    "lineCount": "{{count}} lignes",
+    "linesLoading": "Chargement des lignes de commande...",
+    "lineLoadError": "Impossible de charger les lignes de commande.",
+    "noLines": "Aucune ligne trouvée pour cette commande.",
+    "table": {
+      "title": "Informations d'en-tête de commande",
+      "branchCode": "Agence",
+      "orderNo": "N° commande",
+      "customerCode": "Code client",
+      "customerName": "Nom client",
+      "date": "Date",
+      "deliveryDate": "Date de livraison",
+      "grossTotal": "Total brut",
+      "vat": "TVA",
+      "grandTotal": "Total général",
+      "salesRepCode": "Commercial"
+    },
+    "lines": {
+      "rowNo": "Ligne",
+      "stockCode": "Code stock",
+      "stockName": "Nom du stock",
+      "quantity": "Quantité",
+      "unit": "Unité",
+      "netPrice": "Prix net",
+      "vatRate": "Taux TVA",
+      "warehouseCode": "Dépôt"
+    }
   }
 }

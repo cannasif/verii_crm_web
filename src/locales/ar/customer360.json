@@ -18,7 +18,7 @@
     "mailLogs": "سجل البريد",
     "images": "الصور",
     "imagesDefaultDescription": "صورة البطاقة الشخصية",
-    "erpMovements": "ERP Hareket"
+    "erpMovements": "حركات ERP"
   },
   "quickQuotations": {
     "empty": "لم يتم العثور على عروض أسعار سريعة لهذا العميل",
@@ -144,29 +144,29 @@
     "open": "مفتوح"
   },
   "erpMovements": {
-    "title": "ERP Hareket",
-    "tableTitle": "Cari Hareketleri",
-    "error": "ERP hareket verileri yüklenemedi",
+    "title": "حركات ERP",
+    "tableTitle": "حركات الحساب الجاري",
+    "error": "تعذر تحميل بيانات حركات ERP",
     "columns": {
-      "date": "Tarih",
-      "dueDate": "Vade Tarihi",
-      "documentNo": "Belge No",
-      "description": "Açıklama",
-      "currency": "Para Birimi",
-      "debit": "Borç",
-      "credit": "Alacak",
-      "tlBalanceByDate": "Tarih Sıralı TL Bakiye",
-      "tlBalanceByDueDate": "Vade Sıralı TL Bakiye",
-      "fxDebit": "Döviz Borç",
-      "fxCredit": "Döviz Alacak",
-      "fxBalanceByDate": "Tarih Sıralı Döviz Bakiye",
-      "fxBalanceByDueDate": "Vade Sıralı Döviz Bakiye"
+      "date": "التاريخ",
+      "dueDate": "تاريخ الاستحقاق",
+      "documentNo": "رقم المستند",
+      "description": "الوصف",
+      "currency": "العملة",
+      "debit": "مدين",
+      "credit": "دائن",
+      "tlBalanceByDate": "الرصيد بالليرة التركية حسب التاريخ",
+      "tlBalanceByDueDate": "الرصيد بالليرة التركية حسب تاريخ الاستحقاق",
+      "fxDebit": "مدين بالعملة الأجنبية",
+      "fxCredit": "دائن بالعملة الأجنبية",
+      "fxBalanceByDate": "رصيد العملة الأجنبية حسب التاريخ",
+      "fxBalanceByDueDate": "رصيد العملة الأجنبية حسب تاريخ الاستحقاق"
     },
     "summary": {
-      "totalDebit": "Toplam Borç",
-      "totalCredit": "Toplam Alacak",
-      "balance": "Bakiye",
-      "closed": "Kapalı"
+      "totalDebit": "إجمالي المدين",
+      "totalCredit": "إجمالي الدائن",
+      "balance": "الرصيد",
+      "closed": "مغلق"
     }
   },
   "hero": {

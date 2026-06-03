@@ -2,5 +2,44 @@
   "lines": {
     "doubleClickToEdit": "Doppio clic per modificare",
     "unit": "Unità"
+  },
+  "erpOrder": {
+    "title": "Elenco ordini ERP",
+    "description": "Visualizza testate e righe degli ordini Netsis visibili per l'utente connesso.",
+    "currentUserScope": "Ambito utente connesso",
+    "searchPlaceholder": "Cerca numero ordine, cliente, venditore o data...",
+    "loading": "Caricamento ordini ERP...",
+    "loadError": "Impossibile caricare gli ordini ERP.",
+    "noData": "Nessun ordine ERP trovato.",
+    "detailAction": "Dettaglio",
+    "detailTitle": "Dettaglio ordine {{orderNo}}",
+    "unknownCustomer": "Nome cliente assente",
+    "lineCount": "{{count}} righe",
+    "linesLoading": "Caricamento righe ordine...",
+    "lineLoadError": "Impossibile caricare le righe ordine.",
+    "noLines": "Nessuna riga trovata per questo ordine.",
+    "table": {
+      "title": "Informazioni testata ordine",
+      "branchCode": "Filiale",
+      "orderNo": "N. ordine",
+      "customerCode": "Codice cliente",
+      "customerName": "Nome cliente",
+      "date": "Data",
+      "deliveryDate": "Data consegna",
+      "grossTotal": "Totale lordo",
+      "vat": "IVA",
+      "grandTotal": "Totale generale",
+      "salesRepCode": "Venditore"
+    },
+    "lines": {
+      "rowNo": "Riga",
+      "stockCode": "Codice stock",
+      "stockName": "Nome stock",
+      "quantity": "Quantità",
+      "unit": "Unità",
+      "netPrice": "Prezzo netto",
+      "vatRate": "Aliquota IVA",
+      "warehouseCode": "Magazzino"
+    }
   }
 }

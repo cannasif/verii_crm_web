@@ -207,6 +207,7 @@
     "columnTaxNumber": "Codice fiscale",
     "columnCityName": "Città"
   },
+  "completion": "Tasso di completamento",
   "customer360": {
     "button": "Cliente 360"
   }

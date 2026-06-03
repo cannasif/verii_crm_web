@@ -2,5 +2,44 @@
   "lines": {
     "doubleClickToEdit": "Düzenlemek için çift tıklayın",
     "unit": "Birim"
+  },
+  "erpOrder": {
+    "title": "ERP Sipariş Listesi",
+    "description": "Netsis üzerinde login kullanıcınıza bağlı görünen sipariş üst kayıtlarını ve kalemlerini izleyin.",
+    "currentUserScope": "Login kullanıcı kapsamı",
+    "searchPlaceholder": "Sipariş no, cari, plasiyer veya tarih ara...",
+    "loading": "ERP siparişleri yükleniyor...",
+    "loadError": "ERP siparişleri yüklenemedi.",
+    "noData": "ERP siparişi bulunamadı.",
+    "detailAction": "Detay",
+    "detailTitle": "{{orderNo}} sipariş detayı",
+    "unknownCustomer": "Cari adı yok",
+    "lineCount": "{{count}} kalem",
+    "linesLoading": "Sipariş kalemleri yükleniyor...",
+    "lineLoadError": "Sipariş kalemleri yüklenemedi.",
+    "noLines": "Bu sipariş için kalem bulunamadı.",
+    "table": {
+      "title": "Sipariş Üst Bilgileri",
+      "branchCode": "Şube",
+      "orderNo": "Sipariş No",
+      "customerCode": "Cari Kodu",
+      "customerName": "Cari Adı",
+      "date": "Tarih",
+      "deliveryDate": "Teslim Tarihi",
+      "grossTotal": "Brüt Tutar",
+      "vat": "KDV",
+      "grandTotal": "Genel Toplam",
+      "salesRepCode": "Plasiyer"
+    },
+    "lines": {
+      "rowNo": "Sıra",
+      "stockCode": "Stok Kodu",
+      "stockName": "Stok Adı",
+      "quantity": "Miktar",
+      "unit": "Birim",
+      "netPrice": "Net Fiyat",
+      "vatRate": "KDV Oranı",
+      "warehouseCode": "Depo"
+    }
   }
 }

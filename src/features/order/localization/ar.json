@@ -2,5 +2,44 @@
   "lines": {
     "doubleClickToEdit": "انقر مرتين للتحرير",
     "unit": "الوحدة"
+  },
+  "erpOrder": {
+    "title": "قائمة طلبات ERP",
+    "description": "اعرض رؤوس وبنود طلبات Netsis المتاحة للمستخدم المسجل.",
+    "currentUserScope": "نطاق المستخدم المسجل",
+    "searchPlaceholder": "ابحث برقم الطلب أو العميل أو المندوب أو التاريخ...",
+    "loading": "جاري تحميل طلبات ERP...",
+    "loadError": "تعذر تحميل طلبات ERP.",
+    "noData": "لا توجد طلبات ERP.",
+    "detailAction": "التفاصيل",
+    "detailTitle": "تفاصيل الطلب {{orderNo}}",
+    "unknownCustomer": "لا يوجد اسم عميل",
+    "lineCount": "{{count}} بنود",
+    "linesLoading": "جاري تحميل بنود الطلب...",
+    "lineLoadError": "تعذر تحميل بنود الطلب.",
+    "noLines": "لا توجد بنود لهذا الطلب.",
+    "table": {
+      "title": "معلومات رأس الطلب",
+      "branchCode": "الفرع",
+      "orderNo": "رقم الطلب",
+      "customerCode": "كود العميل",
+      "customerName": "اسم العميل",
+      "date": "التاريخ",
+      "deliveryDate": "تاريخ التسليم",
+      "grossTotal": "الإجمالي قبل الضريبة",
+      "vat": "الضريبة",
+      "grandTotal": "الإجمالي العام",
+      "salesRepCode": "المندوب"
+    },
+    "lines": {
+      "rowNo": "السطر",
+      "stockCode": "كود المخزون",
+      "stockName": "اسم المخزون",
+      "quantity": "الكمية",
+      "unit": "الوحدة",
+      "netPrice": "السعر الصافي",
+      "vatRate": "نسبة الضريبة",
+      "warehouseCode": "المستودع"
+    }
   }
 }

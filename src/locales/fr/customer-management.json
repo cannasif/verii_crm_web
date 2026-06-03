@@ -207,6 +207,7 @@
     "columnTaxNumber": "Numéro fiscal",
     "columnCityName": "Ville"
   },
+  "completion": "Taux de complétion",
   "customer360": {
     "button": "Client 360"
   }
