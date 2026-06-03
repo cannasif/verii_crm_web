@@ -8,10 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
-import type { PagedFilter } from '@/types/api';
 import { useQuotationList } from '@/features/quotation/hooks/useQuotationList';
 import { useOrderList } from '@/features/order/hooks/useOrderList';
-import { useActivities } from '@/features/activity-management/hooks/useActivities';
+import { useCustomerActivities } from '../hooks/useCustomerActivities';
+import { buildCustomerDocumentFilters } from '../utils/customer-document-filters';
 
 const PAGE_SIZE = 20;
 
@@ -19,16 +19,6 @@ interface CustomerRelatedTabProps {
   customerId: number;
   customerCode?: string | null;
   customerName?: string | null;
-}
-
-function buildDocumentFilters(customerCode?: string | null, customerName?: string | null): PagedFilter[] {
-  if (customerCode && customerCode.trim()) {
-    return [{ column: 'ErpCustomerCode', operator: 'Equals', value: customerCode.trim() }];
-  }
-  if (customerName && customerName.trim()) {
-    return [{ column: 'PotentialCustomerName', operator: 'Equals', value: customerName.trim() }];
-  }
-  return [];
 }
 
 function formatAmount(language: string, amount?: number | null, display?: string | null, currency?: string | null): string {
@@ -172,7 +162,7 @@ export function CustomerQuotationsTab({ customerId, customerCode, customerName }
   const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
   const navigate = useNavigate();
   const [pageNumber, setPageNumber] = useState(1);
-  const filters = useMemo(() => buildDocumentFilters(customerCode, customerName), [customerCode, customerName]);
+  const filters = useMemo(() => buildCustomerDocumentFilters(customerCode, customerName), [customerCode, customerName]);
   const { data, isLoading, isError } = useQuotationList({
     pageNumber,
     pageSize: PAGE_SIZE,
@@ -250,7 +240,7 @@ export function CustomerOrdersTab({ customerId, customerCode, customerName }: Cu
   const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
   const navigate = useNavigate();
   const [pageNumber, setPageNumber] = useState(1);
-  const filters = useMemo(() => buildDocumentFilters(customerCode, customerName), [customerCode, customerName]);
+  const filters = useMemo(() => buildCustomerDocumentFilters(customerCode, customerName), [customerCode, customerName]);
   const { data, isLoading, isError } = useOrderList({
     pageNumber,
     pageSize: PAGE_SIZE,
@@ -330,21 +320,25 @@ function activityStatusMeta(status: unknown): { key: string; className: string }
   return { key: 'related.activityStatus.scheduled', className: 'bg-sky-500/15 text-sky-600 dark:text-sky-400' };
 }
 
-export function CustomerActivitiesTab({ customerId }: CustomerRelatedTabProps): ReactElement {
+export function CustomerActivitiesTab({
+  customerId,
+  customerCode,
+  customerName,
+  onNewActivity,
+  onOpenActivity,
+}: CustomerRelatedTabProps & {
+  onNewActivity: () => void;
+  onOpenActivity: (activityId: number) => void;
+}): ReactElement {
   const { t, i18n } = useTranslation(['customer360', 'common']);
   const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
-  const navigate = useNavigate();
   const [pageNumber, setPageNumber] = useState(1);
-  const filters = useMemo<PagedFilter[]>(
-    () => [{ column: 'PotentialCustomerId', operator: 'Equals', value: String(customerId) }],
-    [customerId]
-  );
-  const { data, isLoading, isError } = useActivities({
+  const { data, isLoading, isError } = useCustomerActivities({
+    customerId,
+    customerCode,
+    customerName,
     pageNumber,
     pageSize: PAGE_SIZE,
-    sortBy: 'StartDateTime',
-    sortDirection: 'desc',
-    filters,
   });
   const rows = data?.data ?? [];
   const totalPages = data?.totalPages ?? 1;
@@ -355,7 +349,7 @@ export function CustomerActivitiesTab({ customerId }: CustomerRelatedTabProps): 
       title={tc('tabs.activities')}
       count={data?.totalCount}
       createLabel={tc('related.newActivity')}
-      onCreate={() => navigate('/activity-management')}
+      onCreate={onNewActivity}
     >
       <ListStates
         isLoading={isLoading}
@@ -383,7 +377,7 @@ export function CustomerActivitiesTab({ customerId }: CustomerRelatedTabProps): 
                   <TableRow
                     key={row.id}
                     className={rowClass}
-                    onClick={() => navigate(`/activity-management?activityId=${row.id}`)}
+                    onClick={() => onOpenActivity(row.id)}
                   >
                     <TableCell className={cn(cellClass, 'font-medium')}>{row.subject || `#${row.id}`}</TableCell>
                     <TableCell className={cn(cellClass, 'text-muted-foreground')}>{row.activityType?.name || '-'}</TableCell>

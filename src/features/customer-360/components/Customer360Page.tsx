@@ -93,8 +93,13 @@ import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
+import { useUpdateActivity } from '@/features/activity-management/hooks/useUpdateActivity';
+import { useActivity } from '@/features/activity-management/hooks/useActivity';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
+import { buildUpdateActivityPayload } from '@/features/activity-management/utils/build-update-payload';
+import { persistActivityFormImages } from '@/features/activity-management/utils/persist-activity-form-images';
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
 import type {
   CohortRetentionDto,
@@ -1293,11 +1298,15 @@ export function Customer360Page(): ReactElement {
   const [currency, setCurrency] = useState<string>(ALL_CURRENCY);
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [quickActivityOpen, setQuickActivityOpen] = useState(false);
+  const [editingActivityId, setEditingActivityId] = useState<number | null>(null);
   const [editCustomerOpen, setEditCustomerOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [pendingDeleteImageId, setPendingDeleteImageId] = useState<number | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+  const queryClient = useQueryClient();
   const createActivity = useCreateActivity();
+  const updateActivity = useUpdateActivity();
+  const { data: editingActivity, isFetching: isEditingActivityLoading } = useActivity(editingActivityId ?? 0);
   const updateCustomer = useUpdateCustomer();
   const uploadImagesMutation = useUploadCustomerImagesMutation(id);
   const deleteImageMutation = useDeleteCustomerImageMutation(id);
@@ -1355,6 +1364,29 @@ export function Customer360Page(): ReactElement {
       setQuickActivityOpen(false);
     },
     [createActivity, user?.id]
+  );
+
+  const handleEditActivitySubmit = useCallback(
+    async (
+      formData: ActivityFormSchema,
+      pendingImages?: { file: File; description: string }[],
+      pendingDeletedImageIds?: number[],
+      pendingUpdatedImageDescriptions?: Record<number, string>
+    ): Promise<void> => {
+      if (!editingActivity) return;
+      await updateActivity.mutateAsync({
+        id: editingActivity.id,
+        data: buildUpdateActivityPayload(formData, editingActivity.assignedUserId),
+      });
+      await persistActivityFormImages(editingActivity.id, {
+        pendingImages,
+        pendingDeletedImageIds,
+        pendingUpdatedImageDescriptions,
+      });
+      await queryClient.invalidateQueries({ queryKey: ['customer360'], exact: false });
+      setEditingActivityId(null);
+    },
+    [editingActivity, queryClient, updateActivity]
   );
 
   const handleQuickQuote = useCallback(() => {
@@ -1715,6 +1747,8 @@ export function Customer360Page(): ReactElement {
             customerId={id}
             customerCode={customerDetail?.customerCode ?? profile.customerCode}
             customerName={customerDetail?.name ?? profile.name}
+            onNewActivity={() => setQuickActivityOpen(true)}
+            onOpenActivity={setEditingActivityId}
           />
         </TabsContent>
 
@@ -1951,9 +1985,20 @@ export function Customer360Page(): ReactElement {
           isLoading={createActivity.isPending}
           initialStartDateTime={quickActivityWindow.start}
           initialEndDateTime={quickActivityWindow.end}
-          initialPotentialCustomerId={profile.id || undefined}
-          initialErpCustomerCode={profile.customerCode ?? undefined}
-          initialCustomerDisplayName={profile.name ?? undefined}
+          initialPotentialCustomerId={customerDetail?.id ?? (profile.id || undefined)}
+          initialErpCustomerCode={customerDetail?.customerCode ?? profile.customerCode ?? undefined}
+          initialCustomerDisplayName={customerDetail?.name ?? profile.name ?? undefined}
+          preservePrefilledCustomer
+        />
+
+        <ActivityForm
+          open={editingActivityId != null}
+          onOpenChange={(open) => {
+            if (!open) setEditingActivityId(null);
+          }}
+          onSubmit={handleEditActivitySubmit}
+          activity={editingActivity ?? null}
+          isLoading={updateActivity.isPending || (editingActivityId != null && isEditingActivityLoading)}
         />
 
         {customerDetail && (
