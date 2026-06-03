@@ -12,8 +12,9 @@ export const useUpdateQuotationBulk = (): UseMutationResult<ApiResponse<Quotatio
 
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: QuotationBulkCreateDto }) => quotationApi.updateBulk(id, data),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.quotations() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.quotation(variables.id) });
       toast.success(t('update.success'));
     },
     onError: (error: Error) => {

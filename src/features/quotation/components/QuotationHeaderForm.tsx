@@ -159,7 +159,7 @@ export function QuotationHeaderForm({
     isFetched: hasCustomerOptionsLoaded,
   } = useCustomerOptions(watchedRepresentativeId);
   
-  const shouldFetchCustomer = Boolean(watchedCustomerId && !watchedErpCustomerCode);
+  const shouldFetchCustomer = Boolean(watchedCustomerId && watchedCustomerId > 0);
   const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
   const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
   
