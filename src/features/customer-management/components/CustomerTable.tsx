@@ -104,9 +104,9 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerDto>[] => [
     key: 'id',
     label: tc(t, 'customerManagement.table.id'),
     type: 'text',
-    headClassName: idColumnSurface,
+    headClassName: cn(idColumnSurface, 'min-w-[92px] md:min-w-[104px]'),
     className: cn(
-      'text-center font-medium w-[64px] md:w-[76px]',
+      'text-center font-medium min-w-[92px] w-[92px] md:min-w-[104px] md:w-[104px]',
       'bg-slate-100/80 dark:bg-white/[0.04]',
       'border-r border-slate-200/90 dark:border-white/[0.08]'
     ),
@@ -305,17 +305,21 @@ export function CustomerTable({
       const isComplete = completionPercentage === 100;
       const colors = getCompletionColorClasses(completionPercentage);
       return (
-        <div className="grid grid-cols-2 items-center w-full gap-1.5 px-1">
-          <span className="text-right">{inner}</span>
-          <div className="flex justify-start">
+        <div className="flex items-center justify-center gap-1.5 w-full min-w-0 px-0.5">
+          <span className="min-w-0 flex-1 truncate text-right tabular-nums leading-none">{inner}</span>
+          <div className="flex shrink-0 items-center">
             <Popover>
               <PopoverTrigger asChild>
-                <button 
+                <button
+                  type="button"
+                  data-skip-row-double-click
+                  data-no-drag-scroll="true"
                   onClick={(e) => e.stopPropagation()}
+                  onDoubleClick={(e) => e.stopPropagation()}
                   title={t('completionPercentage', { ns: CRM_NS, defaultValue: 'Veri Doluluğu: %{{val}}', val: completionPercentage })}
-                  className={`flex items-center justify-center shrink-0 p-1 -m-1 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors ${colors.text} ${colors.hoverText}`}
+                  className={`flex h-7 w-7 items-center justify-center shrink-0 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors ${colors.text} ${colors.hoverText}`}
                 >
-                  {isComplete ? <CheckCircle2 size={18} /> : <PieChart size={18} />}
+                  {isComplete ? <CheckCircle2 size={16} /> : <PieChart size={16} />}
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-60 p-4 shadow-xl border-slate-100 dark:border-white/10 bg-white dark:bg-[#130822]" side="right" align="start">

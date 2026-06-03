@@ -52,7 +52,11 @@ export function DescriptionCell({
         <Popover>
           <PopoverTrigger asChild>
             <button
+              type="button"
+              data-skip-row-double-click="true"
+              data-no-drag-scroll="true"
               onClick={(e) => e.stopPropagation()}
+              onDoubleClick={(e) => e.stopPropagation()}
               className="p-1 h-6 w-6 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 hover:text-pink-500 transition-colors shrink-0"
             >
               <MoreHorizontal size={14} />
