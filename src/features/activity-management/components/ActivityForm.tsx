@@ -50,6 +50,7 @@ import type { PagedFilter } from '@/types/api';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { buildActivitySaveRequiredHintLines } from '@/lib/activity-save-required-hints';
+import { resolveActivityCustomerDisplayName } from '@/lib/activity-customer-display';
 import { Search, Calendar, FileText, List, CheckSquare, Building2, User, AlertCircle, X, Bell, Plus, Trash2, Image } from 'lucide-react';
 import { ActivityImageTab } from '@/features/activity-image-management';
 import { isZodFieldRequired } from '@/lib/zod-required';
@@ -328,7 +329,7 @@ export function ActivityForm({
           channel: reminder.channel,
         })),
       });
-      setSelectedCustomerDisplayName(null);
+      setSelectedCustomerDisplayName(resolveActivityCustomerDisplayName(activity));
       prevAssignedUserIdRef.current = activity.assignedUserId;
       pendingImagesRef.current.forEach((img) => URL.revokeObjectURL(img.previewUrl));
       setPendingImages([]);
@@ -648,14 +649,16 @@ export function ActivityForm({
                       name="potentialCustomerId"
                       render={({ field }) => {
                         const watchedErpCode = form.watch('erpCustomerCode');
+                        const linkedCustomerLabel = resolveActivityCustomerDisplayName(activity);
+                        const fallbackCustomerLabel = selectedCustomerDisplayName ?? linkedCustomerLabel;
                         const selectedCustomer = customerOptions.find((customer) => customer.id === field.value);
                         const displayValue = selectedCustomer
                           ? selectedCustomer.name || selectedCustomer.customerCode || String(field.value)
-                          : field.value && selectedCustomerDisplayName
-                            ? selectedCustomerDisplayName
+                          : field.value && fallbackCustomerLabel
+                            ? fallbackCustomerLabel
                             : watchedErpCode
-                              ? selectedCustomerDisplayName
-                                ? `${selectedCustomerDisplayName} (${t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })})`
+                              ? fallbackCustomerLabel
+                                ? `${fallbackCustomerLabel} (${t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })})`
                                 : t('activity-management:erpLabel', { code: watchedErpCode, defaultValue: `ERP: ${watchedErpCode}` })
                               : '';
 

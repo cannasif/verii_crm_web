@@ -107,6 +107,7 @@ export interface ActivityDto {
     fullName?: string;
   };
   potentialCustomerId?: number;
+  potentialCustomerName?: string | null;
   potentialCustomer?: {
     id: number;
     name: string;

@@ -2,38 +2,18 @@ import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { activityApi } from '@/features/activity-management/api/activity-api';
 import type { ActivityDto } from '@/features/activity-management/types/activity-types';
-import type { PagedResponse } from '@/types/api';
+import type { PagedFilter, PagedResponse } from '@/types/api';
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
-import { buildCustomerDocumentFilters } from '../utils/customer-document-filters';
+import {
+  activityBelongsToCustomer,
+  buildCustomerActivityFilters,
+  didServerIgnoreActivityCustomerFilter,
+} from '../utils/activity-customer-scope';
 
 function sortByStartDesc(rows: ActivityDto[]): ActivityDto[] {
   return [...rows].sort(
     (a, b) => new Date(b.startDateTime).getTime() - new Date(a.startDateTime).getTime()
   );
-}
-
-function activityBelongsToCustomer(
-  activity: ActivityDto,
-  customerId: number,
-  customerCode?: string | null,
-  customerName?: string | null
-): boolean {
-  if (customerId > 0 && activity.potentialCustomerId === customerId) {
-    return true;
-  }
-  const code = customerCode?.trim();
-  if (code) {
-    if (activity.erpCustomerCode?.trim() === code) return true;
-    if (activity.potentialCustomer?.customerCode?.trim() === code) return true;
-  }
-  const name = customerName?.trim();
-  if (name) {
-    const linkedName = activity.potentialCustomer?.name?.trim();
-    if (linkedName && linkedName.localeCompare(name, undefined, { sensitivity: 'accent' }) === 0) {
-      return true;
-    }
-  }
-  return false;
 }
 
 function paginateActivities(
@@ -62,11 +42,11 @@ async function fetchActivitiesClientSide(params: {
   customerId: number;
   customerCode?: string | null;
   customerName?: string | null;
-  documentFilters: ReturnType<typeof buildCustomerDocumentFilters>;
+  activityFilters: PagedFilter[];
   pageNumber: number;
   pageSize: number;
 }): Promise<PagedResponse<ActivityDto>> {
-  const { customerId, customerCode, customerName, documentFilters, pageNumber, pageSize } = params;
+  const { customerId, customerCode, customerName, activityFilters, pageNumber, pageSize } = params;
 
   const fetchPage = async (page: number, size: number) => {
     try {
@@ -75,7 +55,7 @@ async function fetchActivitiesClientSide(params: {
         pageSize: size,
         sortBy: 'StartDateTime',
         sortDirection: 'desc',
-        filters: documentFilters.length > 0 ? documentFilters : undefined,
+        filters: activityFilters.length > 0 ? activityFilters : undefined,
       });
     } catch {
       return activityApi.getList({
@@ -104,9 +84,9 @@ export function useCustomerActivities(params: {
 }) {
   const { customerId, customerCode, customerName, pageNumber, pageSize } = params;
 
-  const documentFilters = useMemo(
-    () => buildCustomerDocumentFilters(customerCode, customerName),
-    [customerCode, customerName]
+  const activityFilters = useMemo(
+    () => buildCustomerActivityFilters(customerId, customerCode, customerName),
+    [customerCode, customerId, customerName]
   );
 
   return useQuery({
@@ -118,21 +98,38 @@ export function useCustomerActivities(params: {
       customerName ?? '',
       pageNumber,
       pageSize,
-      documentFilters,
+      activityFilters,
     ],
     queryFn: async (): Promise<PagedResponse<ActivityDto>> => {
-      // Teklif/sipariş ile aynı sunucu filtresi (ErpCustomerCode veya PotentialCustomerName)
-      if (documentFilters.length > 0) {
+      if (activityFilters.length > 0) {
         try {
-          return await activityApi.getList({
+          const response = await activityApi.getList({
             pageNumber,
             pageSize,
             sortBy: 'StartDateTime',
             sortDirection: 'desc',
-            filters: documentFilters,
+            filters: activityFilters,
           });
+          const raw = response.data ?? [];
+
+          if (didServerIgnoreActivityCustomerFilter(raw, customerId, customerCode, customerName)) {
+            return fetchActivitiesClientSide({
+              customerId,
+              customerCode,
+              customerName,
+              activityFilters,
+              pageNumber,
+              pageSize,
+            });
+          }
+
+          const data = raw.filter((row) =>
+            activityBelongsToCustomer(row, customerId, customerCode, customerName)
+          );
+
+          return { ...response, data };
         } catch {
-          // Activity/query bu kolonları desteklemiyorsa aşağıdaki istemci eşlemesine düş
+          // Activity/query filtre hatası — istemci eşlemesine düş
         }
       }
 
@@ -140,7 +137,7 @@ export function useCustomerActivities(params: {
         customerId,
         customerCode,
         customerName,
-        documentFilters,
+        activityFilters,
         pageNumber,
         pageSize,
       });
