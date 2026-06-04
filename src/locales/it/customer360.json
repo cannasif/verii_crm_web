@@ -18,7 +18,8 @@
     "mailLogs": "Cronologia Email",
     "images": "Immagini",
     "imagesDefaultDescription": "Immagine biglietto da visita",
-    "erpMovements": "Movimenti ERP"
+    "erpMovements": "Movimenti ERP",
+    "erpOrders": "Ordini ERP"
   },
   "quickQuotations": {
     "empty": "Nessun preventivo rapido trovato per questo cliente",
@@ -167,6 +168,24 @@
       "totalCredit": "Accredito Totale",
       "balance": "Saldo",
       "closed": "Chiuso"
+    }
+  },
+  "erpOrders": {
+    "title": "Netsis Orders",
+    "noCariCode": "No ERP customer code is defined for this customer.",
+    "forbidden": "You do not have permission to view ERP orders.",
+    "error": "ERP orders could not be loaded.",
+    "empty": "No Netsis orders were found for this customer.",
+    "scopeHint": "Limited to the logged-in user's Netsis scope.",
+    "columns": {
+      "branch": "Branch",
+      "orderNo": "Order No",
+      "date": "Date",
+      "deliveryDate": "Delivery",
+      "gross": "Gross",
+      "vat": "VAT",
+      "total": "Total",
+      "salesRep": "Sales Rep"
     }
   },
   "hero": {

@@ -6,11 +6,12 @@ export const ERP_ORDER_QUERY_KEYS = {
   lines: (fatirsNo: string | null | undefined) => ['erp-orders', 'lines', fatirsNo || 'none'] as const,
 };
 
-export function useErpOrders() {
+export function useErpOrders(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ERP_ORDER_QUERY_KEYS.all,
     queryFn: erpOrderApi.getOrders,
-    staleTime: 2 * 60 * 1000,
+    staleTime: 3 * 60 * 1000,
+    enabled: options?.enabled ?? true,
   });
 }
 

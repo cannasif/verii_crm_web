@@ -18,7 +18,8 @@
     "mailLogs": "سجل البريد",
     "images": "الصور",
     "imagesDefaultDescription": "صورة البطاقة الشخصية",
-    "erpMovements": "حركات ERP"
+    "erpMovements": "حركات ERP",
+    "erpOrders": "طلبات ERP"
   },
   "quickQuotations": {
     "empty": "لم يتم العثور على عروض أسعار سريعة لهذا العميل",
@@ -167,6 +168,24 @@
       "totalCredit": "إجمالي الدائن",
       "balance": "الرصيد",
       "closed": "مغلق"
+    }
+  },
+  "erpOrders": {
+    "title": "Netsis Orders",
+    "noCariCode": "No ERP customer code is defined for this customer.",
+    "forbidden": "You do not have permission to view ERP orders.",
+    "error": "ERP orders could not be loaded.",
+    "empty": "No Netsis orders were found for this customer.",
+    "scopeHint": "Limited to the logged-in user's Netsis scope.",
+    "columns": {
+      "branch": "Branch",
+      "orderNo": "Order No",
+      "date": "Date",
+      "deliveryDate": "Delivery",
+      "gross": "Gross",
+      "vat": "VAT",
+      "total": "Total",
+      "salesRep": "Sales Rep"
     }
   },
   "hero": {

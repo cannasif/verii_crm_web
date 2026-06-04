@@ -16,6 +16,7 @@
     "analytics": "Çözümleme",
     "quickQuotations": "Hızlı Teklifler",
     "erpMovements": "ERP Hareket",
+    "erpOrders": "ERP Sipariş",
     "mailLogs": "E-posta Geçmişi",
     "images": "Görseller",
     "imagesDefaultDescription": "Kartvizit Görseli"
@@ -60,6 +61,24 @@
       "totalCredit": "Toplam Alacak",
       "balance": "Bakiye",
       "closed": "Kapalı"
+    }
+  },
+  "erpOrders": {
+    "title": "Netsis Siparişleri",
+    "noCariCode": "Bu müşteri için ERP cari kodu tanımlı değil. Netsis siparişleri görüntülenemez.",
+    "forbidden": "ERP siparişlerini görüntüleme yetkiniz yok.",
+    "error": "ERP siparişleri yüklenemedi.",
+    "empty": "Bu cari için Netsis siparişi bulunamadı.",
+    "scopeHint": "Liste, oturum açmış kullanıcının Netsis kapsamındaki siparişlerle sınırlıdır.",
+    "columns": {
+      "branch": "Şube",
+      "orderNo": "Sipariş No",
+      "date": "Tarih",
+      "deliveryDate": "Teslim",
+      "gross": "Brüt",
+      "vat": "KDV",
+      "total": "Toplam",
+      "salesRep": "Plasiyer"
     }
   },
   "mail": {

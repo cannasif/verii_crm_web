@@ -27,6 +27,7 @@ import {
   BadgeCheck,
   Pencil,
   MoreVertical,
+  Package,
   Send,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -82,6 +83,7 @@ import {
   CustomerOrdersTab,
   CustomerActivitiesTab,
 } from './Customer360RelatedTabs';
+import { CustomerErpOrdersTab, useCanViewCustomerErpOrders } from './CustomerErpOrdersTab';
 import type { CustomerDto, CustomerFormData } from '@/features/customer-management/types/customer-types';
 import { CustomerCurrencySummaryCards } from './CustomerCurrencySummaryCards';
 import { CustomerAmountComparisonByCurrencyTable } from './CustomerAmountComparisonByCurrencyTable';
@@ -1294,6 +1296,7 @@ export function Customer360Page(): ReactElement {
   const { t, i18n } = useTranslation(['customer-management', 'customer360', 'common']);
   const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
   const { user } = useAuthStore();
+  const canViewErpOrders = useCanViewCustomerErpOrders();
   const id = Number(customerId ?? 0);
   const [currency, setCurrency] = useState<string>(ALL_CURRENCY);
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -1344,6 +1347,26 @@ export function Customer360Page(): ReactElement {
   const isAllCurrencies = currency === ALL_CURRENCY;
   const quickActivityWindow = useMemo(() => getQuickActivityWindow(), []);
   const profile = data?.profile ?? { id: 0, name: '', customerCode: null };
+  const customerErpCode = customerDetail?.customerCode ?? profile.customerCode;
+  const customerDisplayName = customerDetail?.name ?? profile.name;
+
+  const customer360Tabs = useMemo(() => {
+    const tabs = [
+      { value: 'overview', icon: Clock, label: tc('tabs.overview') },
+      { value: 'quotations', icon: FileText, label: tc('tabs.quotations') },
+      { value: 'orders', icon: ShoppingCart, label: tc('tabs.orders') },
+      ...(canViewErpOrders
+        ? [{ value: 'erpOrders' as const, icon: Package, label: tc('tabs.erpOrders') }]
+        : []),
+      { value: 'activities', icon: Activity, label: tc('tabs.activities') },
+      { value: 'analytics', icon: Activity, label: tc('tabs.analytics') },
+      { value: 'quickQuotations', icon: FileText, label: tc('tabs.quickQuotations') },
+      { value: 'erpMovements', icon: ClipboardList, label: tc('tabs.erpMovements') },
+      { value: 'mailLogs', icon: Mail, label: tc('tabs.mailLogs') },
+      { value: 'images', icon: ImageIcon, label: tc('tabs.images') },
+    ];
+    return tabs;
+  }, [canViewErpOrders, tc]);
   const handleQuickActivitySubmit = useCallback(
     async (
       formData: ActivityFormSchema,
@@ -1559,17 +1582,7 @@ export function Customer360Page(): ReactElement {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <div className="sticky -top-4 z-30 -mx-4 flex flex-wrap items-center justify-between gap-3 border-b border-border/60 bg-background/95 px-4 pt-4 pb-2.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/85 md:-top-6 md:-mx-6 md:px-6 md:pt-6">
           <TabsList className="h-auto flex-wrap gap-1 bg-transparent p-0">
-            {([
-              { value: 'overview', icon: Clock, label: tc('tabs.overview') },
-              { value: 'quotations', icon: FileText, label: tc('tabs.quotations') },
-              { value: 'orders', icon: ShoppingCart, label: tc('tabs.orders') },
-              { value: 'activities', icon: Activity, label: tc('tabs.activities') },
-              { value: 'analytics', icon: Activity, label: tc('tabs.analytics') },
-              { value: 'quickQuotations', icon: FileText, label: tc('tabs.quickQuotations') },
-              { value: 'erpMovements', icon: ClipboardList, label: tc('tabs.erpMovements') },
-              { value: 'mailLogs', icon: Mail, label: tc('tabs.mailLogs') },
-              { value: 'images', icon: ImageIcon, label: tc('tabs.images') },
-            ] as const).map((tab) => (
+            {customer360Tabs.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
@@ -1737,16 +1750,22 @@ export function Customer360Page(): ReactElement {
         <TabsContent value="orders" className="space-y-4">
           <CustomerOrdersTab
             customerId={id}
-            customerCode={customerDetail?.customerCode ?? profile.customerCode}
-            customerName={customerDetail?.name ?? profile.name}
+            customerCode={customerErpCode}
+            customerName={customerDisplayName}
           />
         </TabsContent>
+
+        {canViewErpOrders && (
+          <TabsContent value="erpOrders" className="space-y-4">
+            <CustomerErpOrdersTab customerCode={customerErpCode} />
+          </TabsContent>
+        )}
 
         <TabsContent value="activities" className="space-y-4">
           <CustomerActivitiesTab
             customerId={id}
-            customerCode={customerDetail?.customerCode ?? profile.customerCode}
-            customerName={customerDetail?.name ?? profile.name}
+            customerCode={customerErpCode}
+            customerName={customerDisplayName}
             onNewActivity={() => setQuickActivityOpen(true)}
             onOpenActivity={setEditingActivityId}
           />
