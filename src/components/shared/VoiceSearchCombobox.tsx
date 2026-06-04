@@ -68,6 +68,9 @@ export function VoiceSearchCombobox({
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const [pinnedSelection, setPinnedSelection] = useState<{ value: string; label: string } | null>(
+    null
+  );
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const contentDomId = useId().replace(/:/g, '');
 
@@ -205,6 +208,21 @@ export function VoiceSearchCombobox({
     };
   }, [onDebouncedSearchChange, searchQuery]);
 
+  useEffect(() => {
+    if (!value) {
+      setPinnedSelection(null);
+      return;
+    }
+
+    const match = options.find((option) => option.value === value);
+    if (match) {
+      setPinnedSelection({ value, label: match.label });
+      return;
+    }
+
+    setPinnedSelection((previous) => (previous?.value === value ? previous : null));
+  }, [value, options]);
+
   const isAsyncMode = Boolean(onDebouncedSearchChange);
   const trimmedSearchQuery = searchQuery.trim();
   const isThresholdMode = isAsyncMode && trimmedSearchQuery.length > 0 && trimmedSearchQuery.length < minChars;
@@ -229,9 +247,21 @@ export function VoiceSearchCombobox({
     }
   };
 
-  const selectedLabel = value 
-    ? options.find((option) => option.value === value)?.label 
+  const selectedLabel = value
+    ? (options.find((option) => option.value === value)?.label ??
+      (pinnedSelection?.value === value ? pinnedSelection.label : null))
     : null;
+
+  const handleOptionSelect = (option: ComboboxOption): void => {
+    const nextValue = option.value === value ? null : option.value;
+    if (nextValue) {
+      setPinnedSelection({ value: nextValue, label: option.label });
+    } else {
+      setPinnedSelection(null);
+    }
+    onSelect(nextValue);
+    setOpen(false);
+  };
 
   const iconPrefixStyle = getIconPrefixPaddingStyle(className);
 
@@ -321,10 +351,7 @@ export function VoiceSearchCombobox({
                   <CommandItem
                     key={option.value}
                     value={option.label}
-                    onSelect={() => {
-                      onSelect(option.value === value ? null : option.value)
-                      setOpen(false)
-                    }}
+                    onSelect={() => handleOptionSelect(option)}
                     className="cursor-pointer rounded-xl border border-transparent px-3 py-2.5 shadow-sm transition-all hover:border-slate-200 hover:bg-slate-50 data-[selected=true]:border-pink-200 data-[selected=true]:bg-pink-50 data-[selected=true]:text-slate-900 dark:hover:border-white/12 dark:hover:bg-white/8 dark:data-[selected=true]:border-pink-400/35 dark:data-[selected=true]:bg-pink-900/25 dark:data-[selected=true]:text-white"
                   >
                     <Check
