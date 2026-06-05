@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle2, Loader2, PlugZap, XCircle } from 'lucide-react';
 import type { ApiResponse } from '@/types/api';
+import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import {
   Form,
   FormControl,
@@ -195,7 +196,8 @@ export function SystemSettingsForm({
   };
 
   const handleSubmit: SubmitHandler<SystemSettingsFormSchema> = (values) => onSubmit(values);
-  const submitSettings = form.handleSubmit(handleSubmit);
+  const watchedFormValues = form.watch();
+  const isFormValid = systemSettingsFormSchema.safeParse(watchedFormValues).success;
   const erpConnectionSucceeded = erpConnectionTest?.success === true;
   const erpConnectionMessage = erpConnectionSucceeded
     ? erpConnectionTest.message || t('systemSettings.ErpConnection.TestSucceeded')
@@ -442,31 +444,30 @@ export function SystemSettingsForm({
               </Select>
             </div>
 
+            <div className="md:col-span-2 flex justify-end pt-2">
+              <FormSubmitTooltipWrap
+                schema={systemSettingsFormSchema}
+                value={watchedFormValues}
+                isValid={isFormValid}
+                isPending={isSubmitting}
+              >
+                <Button
+                  type="submit"
+                  disabled={isSubmitting || !isFormValid}
+                  className="min-w-[140px] bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.03] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t('common.saving')}
+                    </>
+                  ) : t('common.save')}
+                </Button>
+              </FormSubmitTooltipWrap>
+            </div>
+
           </CardContent>
         </Card>
-
-        <div className="flex justify-end pt-4">
-          <Button
-            type="submit"
-            aria-disabled={isSubmitting}
-            onClick={(event) => {
-              if (isSubmitting) {
-                event.preventDefault();
-                return;
-              }
-
-              void submitSettings(event);
-            }}
-            className="min-w-[120px] bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('common.saving')}
-              </>
-            ) : t('common.save')}
-          </Button>
-        </div>
       </form>
     </Form>
   );
