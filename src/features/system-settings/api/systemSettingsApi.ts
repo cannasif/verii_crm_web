@@ -24,6 +24,7 @@ function resolveBranchCode(): string {
 
 function getErrorMessage(response: ApiResponse<unknown>, fallbackKey: string): string {
   if (response.message?.trim()) return response.message;
+  if (response.exceptionMessage?.trim()) return response.exceptionMessage;
   if (response.errors?.length) return response.errors.join(' ');
   return fallbackKey;
 }
@@ -36,7 +37,9 @@ export const systemSettingsApi = {
   },
 
   update: async (data: UpdateSystemSettingsDto): Promise<SystemSettingsDto> => {
-    const response = await api.post<ApiResponse<SystemSettingsDto>>(`${SYSTEM_SETTINGS_BASE}/update`, data);
+    const response = await api.post<ApiResponse<SystemSettingsDto>>(`${SYSTEM_SETTINGS_BASE}/update`, data, {
+      timeout: 30_000,
+    });
     if (response.success === true && response.data) return response.data;
     throw new Error(getErrorMessage(response, 'common.UnexpectedError'));
   },
