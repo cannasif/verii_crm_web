@@ -1,12 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ReactElement, useMemo } from 'react';
+import { type ReactElement, useEffect, useMemo } from 'react';
 import { type Resolver, type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CheckCircle2, Loader2, PlugZap, XCircle } from 'lucide-react';
 import type { ApiResponse } from '@/types/api';
-import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import {
   Form,
   FormControl,
@@ -158,46 +157,17 @@ export function SystemSettingsForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: DEFAULT_FORM_VALUES,
-    values: formValues,
-    resetOptions: {
-      keepDirtyValues: false,
-      keepErrors: false,
-    },
   });
 
-  const demandActionValue = resolveActionSelectValue(
-    form.watch('demandApprovalCompletionAction'),
-    formValues.demandApprovalCompletionAction,
-    demandActionOptions
-  );
-  const quotationActionValue = resolveActionSelectValue(
-    form.watch('quotationApprovalCompletionAction'),
-    formValues.quotationApprovalCompletionAction,
-    quotationActionOptions
-  );
-  const orderActionValue = resolveActionSelectValue(
-    form.watch('orderApprovalCompletionAction'),
-    formValues.orderApprovalCompletionAction,
-    orderActionOptions
-  );
-
-  const setActionValue = (
-    fieldName:
-      | 'demandApprovalCompletionAction'
-      | 'quotationApprovalCompletionAction'
-      | 'orderApprovalCompletionAction',
-    value: string
-  ) => {
-    form.setValue(fieldName, Number(value), {
-      shouldDirty: true,
-      shouldTouch: true,
-      shouldValidate: true,
+  useEffect(() => {
+    form.reset(formValues, {
+      keepDirtyValues: false,
+      keepErrors: false,
     });
-  };
+    void form.trigger();
+  }, [form, formValues]);
 
   const handleSubmit: SubmitHandler<SystemSettingsFormSchema> = (values) => onSubmit(values);
-  const watchedFormValues = form.watch();
-  const isFormValid = systemSettingsFormSchema.safeParse(watchedFormValues).success;
   const erpConnectionSucceeded = erpConnectionTest?.success === true;
   const erpConnectionMessage = erpConnectionSucceeded
     ? erpConnectionTest.message || t('systemSettings.ErpConnection.TestSucceeded')
@@ -381,89 +351,118 @@ export function SystemSettingsForm({
               )}
             />
 
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">
-                {t('systemSettings.Fields.DemandApprovalCompletionAction')}
-              </label>
-              <Select
-                value={String(demandActionValue)}
-                onValueChange={(value) => setActionValue('demandApprovalCompletionAction', value)}
-              >
-                <SelectTrigger>
-                  <span>{getSelectedOptionLabel(demandActionOptions, demandActionValue)}</span>
-                </SelectTrigger>
-                <SelectContent>
-                  {demandActionOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <FormField
+              control={form.control}
+              name="demandApprovalCompletionAction"
+              render={({ field }) => {
+                const selectedValue = resolveActionSelectValue(
+                  field.value,
+                  formValues.demandApprovalCompletionAction,
+                  demandActionOptions
+                );
 
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">
-                {t('systemSettings.Fields.QuotationApprovalCompletionAction')}
-              </label>
-              <Select
-                value={String(quotationActionValue)}
-                onValueChange={(value) => setActionValue('quotationApprovalCompletionAction', value)}
-              >
-                <SelectTrigger>
-                  <span>{getSelectedOptionLabel(quotationActionOptions, quotationActionValue)}</span>
-                </SelectTrigger>
-                <SelectContent>
-                  {quotationActionOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                return (
+                  <FormItem>
+                    <FormLabel>{t('systemSettings.Fields.DemandApprovalCompletionAction')}</FormLabel>
+                    <Select value={String(selectedValue)} onValueChange={(value) => field.onChange(Number(value))}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <span>{getSelectedOptionLabel(demandActionOptions, selectedValue)}</span>
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {demandActionOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
 
-            <div className="grid gap-2">
-              <label className="text-sm font-medium">
-                {t('systemSettings.Fields.OrderApprovalCompletionAction')}
-              </label>
-              <Select
-                value={String(orderActionValue)}
-                onValueChange={(value) => setActionValue('orderApprovalCompletionAction', value)}
-              >
-                <SelectTrigger>
-                  <span>{getSelectedOptionLabel(orderActionOptions, orderActionValue)}</span>
-                </SelectTrigger>
-                <SelectContent>
-                  {orderActionOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <FormField
+              control={form.control}
+              name="quotationApprovalCompletionAction"
+              render={({ field }) => {
+                const selectedValue = resolveActionSelectValue(
+                  field.value,
+                  formValues.quotationApprovalCompletionAction,
+                  quotationActionOptions
+                );
+
+                return (
+                  <FormItem>
+                    <FormLabel>{t('systemSettings.Fields.QuotationApprovalCompletionAction')}</FormLabel>
+                    <Select value={String(selectedValue)} onValueChange={(value) => field.onChange(Number(value))}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <span>{getSelectedOptionLabel(quotationActionOptions, selectedValue)}</span>
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {quotationActionOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
+
+            <FormField
+              control={form.control}
+              name="orderApprovalCompletionAction"
+              render={({ field }) => {
+                const selectedValue = resolveActionSelectValue(
+                  field.value,
+                  formValues.orderApprovalCompletionAction,
+                  orderActionOptions
+                );
+
+                return (
+                  <FormItem>
+                    <FormLabel>{t('systemSettings.Fields.OrderApprovalCompletionAction')}</FormLabel>
+                    <Select value={String(selectedValue)} onValueChange={(value) => field.onChange(Number(value))}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <span>{getSelectedOptionLabel(orderActionOptions, selectedValue)}</span>
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {orderActionOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
+            />
 
             <div className="md:col-span-2 flex justify-end pt-2">
-              <FormSubmitTooltipWrap
-                schema={systemSettingsFormSchema}
-                value={watchedFormValues}
-                isValid={isFormValid}
-                isPending={isSubmitting}
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="min-w-[140px] bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.03] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
-                <Button
-                  type="submit"
-                  disabled={isSubmitting || !isFormValid}
-                  className="min-w-[140px] bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.03] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t('common.saving')}
-                    </>
-                  ) : t('common.save')}
-                </Button>
-              </FormSubmitTooltipWrap>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t('common.saving')}
+                  </>
+                ) : t('common.save')}
+              </Button>
             </div>
 
           </CardContent>
