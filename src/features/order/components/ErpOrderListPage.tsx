@@ -24,6 +24,7 @@ import { ERP_ORDER_QUERY_KEYS, useErpOrderLines, useErpOrders } from '../hooks/u
 import type { NetsisOrderHeader, NetsisOrderLine } from '../types/erp-order-types';
 
 const PAGE_KEY = 'erp-order-list';
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 
 type ErpOrderColumnKey = keyof NetsisOrderHeader;
 type SortDirection = 'asc' | 'desc';
@@ -151,6 +152,8 @@ export function ErpOrderListPage(): ReactElement {
   const queryClient = useQueryClient();
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
   const [sortBy, setSortBy] = useState<ErpOrderColumnKey>('tarih');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [selectedOrder, setSelectedOrder] = useState<NetsisOrderHeader | null>(null);
@@ -239,9 +242,18 @@ export function ErpOrderListPage(): ReactElement {
   const sortedRows = useMemo(() => sortRows(filteredRows, sortBy, sortDirection), [filteredRows, sortBy, sortDirection]);
   const orderedVisibleColumns = columnOrder.filter((key) => visibleColumns.includes(key)) as ErpOrderColumnKey[];
 
-  const tablePageSize = Math.max(sortedRows.length, 1);
-  const tablePageNumber = 1;
-  const paginationInfoText = sortedRows.length === 0 ? '0 / 0' : `1 - ${sortedRows.length} / ${sortedRows.length}`;
+  const totalCount = sortedRows.length;
+  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
+  const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
+  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const currentPageRows = useMemo(
+    () => sortedRows.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),
+    [sortedRows, pageNumber, pageSize]
+  );
+
+  useEffect(() => {
+    setPageNumber(1);
+  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
 
   const exportColumns = useMemo(
     () =>
@@ -253,14 +265,14 @@ export function ErpOrderListPage(): ReactElement {
   );
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
-      sortedRows.map((row) => {
+      currentPageRows.map((row) => {
         const exportRow: Record<string, unknown> = {};
         orderedVisibleColumns.forEach((key) => {
           exportRow[key] = row[key] ?? '';
         });
         return exportRow;
       }),
-    [orderedVisibleColumns, sortedRows]
+    [orderedVisibleColumns, currentPageRows]
   );
 
   const handleRefresh = async (): Promise<void> => {
@@ -364,7 +376,7 @@ export function ErpOrderListPage(): ReactElement {
               <DataTableGrid<NetsisOrderHeader, ErpOrderColumnKey>
                 columns={columns}
                 visibleColumnKeys={orderedVisibleColumns}
-                rows={sortedRows}
+                rows={currentPageRows}
                 rowKey={(row) => row.fatirsNo}
                 renderCell={renderCell}
                 sortBy={sortBy}
@@ -400,25 +412,27 @@ export function ErpOrderListPage(): ReactElement {
                   </Button>
                 )}
                 onRowClick={setSelectedOrder}
-                pageSize={tablePageSize}
-                pageSizeOptions={[tablePageSize]}
-                onPageSizeChange={() => {
-                  // ERP order list is intentionally shown as a full, non-paged result set.
+                pageSize={pageSize}
+                pageSizeOptions={PAGE_SIZE_OPTIONS}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setPageNumber(1);
                 }}
-                pageNumber={tablePageNumber}
-                totalPages={1}
-                hasPreviousPage={false}
-                hasNextPage={false}
-                onPreviousPage={() => {
-                  // no-op
-                }}
-                onNextPage={() => {
-                  // no-op
-                }}
+                pageNumber={pageNumber}
+                totalPages={totalPages}
+                hasPreviousPage={pageNumber > 1}
+                hasNextPage={pageNumber < totalPages}
+                onPreviousPage={() => setPageNumber((page) => Math.max(1, page - 1))}
+                onNextPage={() => setPageNumber((page) => Math.min(totalPages, page + 1))}
                 previousLabel={t('previous', { ns: 'common' })}
                 nextLabel={t('next', { ns: 'common' })}
-                paginationInfoText={paginationInfoText}
-                disablePaginationButtons
+                paginationInfoText={t('common.table.showing', {
+                  ns: 'common',
+                  from: startRow,
+                  to: endRow,
+                  total: totalCount,
+                })}
+                disablePaginationButtons={false}
                 rowClassName={(row) => cn(
                   'group cursor-pointer',
                   selectedOrder?.fatirsNo === row.fatirsNo && 'bg-emerald-50/70 dark:bg-emerald-500/10'
