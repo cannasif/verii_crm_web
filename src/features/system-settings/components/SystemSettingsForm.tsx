@@ -19,6 +19,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -68,13 +69,13 @@ function resolveActionSelectValue(
   value: number | string | undefined,
   fallback: number,
   options: Array<{ value: string; label: string }>
-): number {
+): string | undefined {
   const numericValue = typeof value === 'string' ? Number(value) : value;
   if (Number.isInteger(numericValue) && options.some((option) => option.value === String(numericValue))) {
-    return numericValue as number;
+    return String(numericValue);
   }
 
-  return fallback;
+  return options.some((option) => option.value === String(fallback)) ? String(fallback) : undefined;
 }
 
 interface SystemSettingsFormProps {
@@ -99,11 +100,6 @@ export function SystemSettingsForm({
   onSubmit,
 }: SystemSettingsFormProps): ReactElement {
   const { t } = useTranslation();
-
-  const getSelectedOptionLabel = (
-    options: Array<{ value: string; label: string }>,
-    value: number | string | undefined
-  ): string | undefined => options.find((option) => option.value === String(value))?.label;
 
   const numberFormatOptions = useMemo(
     () => [
@@ -164,7 +160,29 @@ export function SystemSettingsForm({
       keepDirtyValues: false,
       keepErrors: false,
     });
-    void form.trigger();
+    form.setValue('demandApprovalCompletionAction', formValues.demandApprovalCompletionAction, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+    form.setValue('quotationApprovalCompletionAction', formValues.quotationApprovalCompletionAction, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+    form.setValue('orderApprovalCompletionAction', formValues.orderApprovalCompletionAction, {
+      shouldDirty: false,
+      shouldTouch: false,
+      shouldValidate: true,
+    });
+    void form.trigger([
+      'numberFormat',
+      'decimalPlaces',
+      'restrictCustomersBySalesRepMatch',
+      'demandApprovalCompletionAction',
+      'quotationApprovalCompletionAction',
+      'orderApprovalCompletionAction',
+    ]);
   }, [form, formValues]);
 
   const handleSubmit: SubmitHandler<SystemSettingsFormSchema> = (values) => onSubmit(values);
@@ -261,7 +279,7 @@ export function SystemSettingsForm({
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <span>{getSelectedOptionLabel(numberFormatOptions, field.value) ?? t('systemSettings.Placeholders.NumberFormat')}</span>
+                        <SelectValue placeholder={t('systemSettings.Placeholders.NumberFormat')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -364,10 +382,10 @@ export function SystemSettingsForm({
                 return (
                   <FormItem>
                     <FormLabel>{t('systemSettings.Fields.DemandApprovalCompletionAction')}</FormLabel>
-                    <Select value={String(selectedValue)} onValueChange={(value) => field.onChange(Number(value))}>
+                    <Select value={selectedValue} onValueChange={(value) => field.onChange(Number(value))}>
                       <FormControl>
                         <SelectTrigger>
-                          <span>{getSelectedOptionLabel(demandActionOptions, selectedValue)}</span>
+                          <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -397,10 +415,10 @@ export function SystemSettingsForm({
                 return (
                   <FormItem>
                     <FormLabel>{t('systemSettings.Fields.QuotationApprovalCompletionAction')}</FormLabel>
-                    <Select value={String(selectedValue)} onValueChange={(value) => field.onChange(Number(value))}>
+                    <Select value={selectedValue} onValueChange={(value) => field.onChange(Number(value))}>
                       <FormControl>
                         <SelectTrigger>
-                          <span>{getSelectedOptionLabel(quotationActionOptions, selectedValue)}</span>
+                          <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -430,10 +448,10 @@ export function SystemSettingsForm({
                 return (
                   <FormItem>
                     <FormLabel>{t('systemSettings.Fields.OrderApprovalCompletionAction')}</FormLabel>
-                    <Select value={String(selectedValue)} onValueChange={(value) => field.onChange(Number(value))}>
+                    <Select value={selectedValue} onValueChange={(value) => field.onChange(Number(value))}>
                       <FormControl>
                         <SelectTrigger>
-                          <span>{getSelectedOptionLabel(orderActionOptions, selectedValue)}</span>
+                          <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>

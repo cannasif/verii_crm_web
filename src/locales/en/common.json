@@ -29,7 +29,8 @@
     "optional": "Optional",
     "required": "Required",
     "form": {
-      "requiredFields": "Please fill in the required fields."
+      "requiredFields": "Please fill in the required fields.",
+      "invalidValue": "Invalid value."
     },
     "disabledActionHints": {
       "saveTitle": "Fill required fields before saving",

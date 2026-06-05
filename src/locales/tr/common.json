@@ -30,7 +30,8 @@
     "optional": "Opsiyonel",
     "required": "Zorunlu",
     "form": {
-      "requiredFields": "Lütfen zorunlu alanları doldurun."
+      "requiredFields": "Lütfen zorunlu alanları doldurun.",
+      "invalidValue": "Geçersiz değer."
     },
     "disabledActionHints": {
       "saveTitle": "Kaydetmek için zorunlu alanları doldurun",
