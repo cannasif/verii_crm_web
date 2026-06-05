@@ -220,7 +220,7 @@ export function SystemSettingsForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6" noValidate>
         <Card className={headerCardStyle}>
 
           <CardContent className="grid gap-4 md:grid-cols-2">
@@ -447,7 +447,7 @@ export function SystemSettingsForm({
         <div className="flex justify-end pt-4">
           <Button
             type="submit"
-            disabled={isSubmitting || !form.formState.isValid}
+            disabled={isSubmitting}
             className="min-w-[120px] bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isSubmitting ? (
