@@ -941,6 +941,9 @@
       },
       "sectionWidgetCount": "{{count}} widget bu bölümde",
       "sectionBadge": "Bölüm",
+      "sectionLabels": {
+        "DETAY": "Detay"
+      },
       "dateGrouping": "Tarih grupla",
       "sorting": "Sıralama",
       "sortBy": "Sıralama ölçütü",
@@ -4741,6 +4744,27 @@
     "PageTitle": "Sistem Ayarları",
     "PageDescription": "Sayı biçimi ve müşteri kapsamı ayarlarını yönetin.",
     "SavedSuccessfully": "Sistem ayarları başarıyla kaydedildi.",
+    "DemandActionLabels": {
+      "1": "Sadece onaylandı kalsın",
+      "2": "Netsis'te talep aç",
+      "3": "Teklif kaydı aç",
+      "4": "Netsis'te talep kaydı aç",
+      "5": "Netsis'te talep aç ve teklif oluştur"
+    },
+    "QuotationActionLabels": {
+      "1": "Sadece onaylandı kalsın",
+      "2": "Netsis'te teklif aç",
+      "3": "CRM'de sipariş kaydı aç",
+      "4": "Netsis'te sipariş kaydı aç",
+      "5": "Netsis'te teklif aç ve sipariş oluştur",
+      "6": "CRM'de sipariş kaydı aç ve Netsis'te sipariş oluştur"
+    },
+    "OrderActionLabels": {
+      "1": "Sadece onaylandı kalsın",
+      "2": "Netsis'te sipariş aç",
+      "3": "Netsis'te satış faturası aç",
+      "4": "Netsis'te sipariş ve satış faturası aç"
+    },
     "ErpConnection": {
       "Title": "Netsis Rest bağlantı testi",
       "Description": "Netsis REST bağlantısını, login/token alma ve yenileme akışını bu ekrandan kontrol edin.",
@@ -5434,6 +5458,24 @@
     "updateError": "Kullanıcı detayı güncellenirken bir hata oluştu",
     "uploadProfilePictureSuccess": "Profil resmi başarıyla yüklendi",
     "uploadProfilePictureError": "Profil resmi yüklenirken bir hata oluştu",
+    "defaultUser": "Kullanıcı",
+    "healthScore": "Sağlık Skoru",
+    "healthScoreDesc": "Genel Portföy Sağlığı",
+    "retention": "Elde Tutma",
+    "retentionDesc": "Müşteri Elde Tutma Oranı",
+    "churnRisk": "Kayıp Riski",
+    "churnRiskDesc": "Müşteri Kayıp Tahmini",
+    "financeAndSales": "Finans & Satış Vitrini",
+    "financeAndSalesDesc": "Dönüşüm ve ciro istatistikleri",
+    "demands": "Talepler",
+    "quotations": "Teklifler",
+    "orders": "Siparişler",
+    "currencyRevenues": "Döviz Bazlı Cirolar",
+    "fieldAndActivity": "Saha & Aktivite Vitrini",
+    "fieldAndActivityDesc": "Gerçekleşen saha performans verileri",
+    "totalActivity": "Toplam Aktivite",
+    "pendingActions": "Aksiyon Bekleyenler",
+    "pendingActionsDesc": "Önerilen aksiyon sayısı",
     "heightPlaceholderExample": "Örn: 175",
     "weightPlaceholderExample": "Örn: 70",
     "title": "Kullanıcı Detayları",

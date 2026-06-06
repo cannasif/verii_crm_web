@@ -836,6 +836,11 @@
         "in": "In Liste",
         "isNull": "Ist null",
         "isNotNull": "Ist nicht null"
+      },
+      "sectionWidgetCount": "{{count}} Widgets in diesem Bereich",
+      "sectionBadge": "Bereich",
+      "sectionLabels": {
+        "DETAY": "Details"
       }
     },
     "create": "Erstellen",
@@ -1193,7 +1198,7 @@
       "Completed": "Abgeschlossen"
     },
     "explain": {
-      "revenueQualityTitle": "Umsatzqualitaets-Scores werden regelbasiert aus den letzten 12 Monaten Bestell-/Angebots-/Aktivitaetsdaten berechnet und decken cohort, retention, RFM, LTV, churn, upsell und payment ab.",
+      "revenueQualityTitle": "Umsatzqualitaets-Scores werden regelbasiert aus den letzten 12 Monaten Bestell-/Angebots-/Aktivitaetsdaten berechnet und decken Kohorte, Kundenbindung, RFM, LTV, Abwanderung, Zusatzverkäufe und Zahlungsverhalten ab.",
       "churnRisk": "Churn Risk is calculated between 0-100 using last order date, last activity date, and order frequency. Higher score means higher risk of loss.",
       "upsellPropensity": "Upsell Propensity is scored 0-100 from order count, quotation-to-order conversion, and average order amount signals. Higher score indicates stronger upsell opportunity.",
       "paymentBehavior": "Zahlungsverhalten ist derzeit ein Proxy-Score (Bestellkontinuität, Angebotsablehnung, letzte Bestellung) statt direkter Forderungshistorie, Skala 0–100.",
@@ -1284,6 +1289,22 @@
       "empty": "Keine Kohortendaten",
       "cohortKey": "Kohorte"
     },
+    "segmentLabels": {
+      "CHAMPIONS": "Champions",
+      "CHAMPION": "Champion",
+      "LOYAL": "Treue",
+      "LOYAL_CUSTOMERS": "Treue Kunden",
+      "AT_RISK": "Gefährdet",
+      "AT_RISK_CUSTOMERS": "Gefährdete Kunden",
+      "POTENTIAL": "Potenziell",
+      "POTENTIAL_LOYALISTS": "Potenziell treu",
+      "NEW_CUSTOMERS": "Neukunden",
+      "HIBERNATING": "Schlafend",
+      "ABOUT_TO_SLEEP": "Bald schlafend",
+      "NEEDS_ATTENTION": "Braucht Aufmerksamkeit",
+      "PROMISING": "Vielversprechend",
+      "CANT_LOSE_THEM": "Nicht verlieren"
+    },
     "actions": {
       "title": "Empfohlene Aktionen",
       "empty": "Keine empfohlenen Aktionen",
@@ -1296,7 +1317,7 @@
       }
     },
     "explain": {
-      "revenueQualityTitle": "Scores werden regelbasiert aus der Portfolio-/Bestell-/Aktivitaetsperformance des Vertreters der letzten 12 Monate berechnet und umfassen cohort, retention, RFM, LTV, churn, upsell und payment.",
+      "revenueQualityTitle": "Scores werden regelbasiert aus der Portfolio-/Bestell-/Aktivitaetsperformance des Vertreters der letzten 12 Monate berechnet und umfassen Kohorte, Kundenbindung, RFM, LTV, Abwanderung, Zusatzverkäufe und Zahlungsverhalten.",
       "churnRisk": "Portfolio-Churn-Risiko wird 0–100 anhand aktiver Kunden vs. in den letzten 90 Tagen inaktiver Kunden berechnet.",
       "upsellPropensity": "Upsell-Potenzial wird 0–100 aus Bestellintensität, gewonnenen Angeboten und Aktivitätstakt berechnet.",
       "paymentBehavior": "Zahlungsverhalten nutzt derzeit Proxy-Metriken; wird genauer, sobald direkte Forderungshistorie angebunden ist.",
@@ -4169,6 +4190,27 @@
     "PageTitle": "Systemeinstellungen",
     "PageDescription": "Zahlenformat und Kundenkreis verwalten.",
     "SavedSuccessfully": "Systemeinstellungen wurden gespeichert.",
+    "DemandActionLabels": {
+      "1": "Nur als genehmigt beibehalten",
+      "2": "Bedarf in Netsis öffnen",
+      "3": "Angebotsdatensatz öffnen",
+      "4": "Bedarfsdatensatz in Netsis öffnen",
+      "5": "Bedarf in Netsis öffnen und Angebot erstellen"
+    },
+    "QuotationActionLabels": {
+      "1": "Nur als genehmigt beibehalten",
+      "2": "Angebot in Netsis öffnen",
+      "3": "Auftragsdatensatz im CRM öffnen",
+      "4": "Auftragsdatensatz in Netsis öffnen",
+      "5": "Angebot in Netsis öffnen und Auftrag erstellen",
+      "6": "Auftragsdatensatz im CRM öffnen und Auftrag in Netsis erstellen"
+    },
+    "OrderActionLabels": {
+      "1": "Nur als genehmigt beibehalten",
+      "2": "Auftrag in Netsis öffnen",
+      "3": "Verkaufsrechnung in Netsis öffnen",
+      "4": "Auftrag und Verkaufsrechnung in Netsis öffnen"
+    },
     "ErpConnection": {
       "Title": "Netsis Rest-Verbindungstest",
       "Description": "Prüfen Sie Netsis REST-Verbindung, Login/Token-Abruf und Token-Erneuerung auf diesem Bildschirm.",
@@ -4185,9 +4227,13 @@
       "DefaultTimeZone": "Standardzeitzone",
       "DateFormat": "Datumsformat",
       "TimeFormat": "Zeitformat",
-      "NumberFormat": "Zahlenformat",
+      "NumberFormat": "Wählen Sie ein Zahlenformat",
+      "ApprovalCompletionAction": "Wählen Sie eine Aktion nach der Genehmigung",
       "DecimalPlaces": "Dezimalstellen",
-      "RestrictCustomersBySalesRepMatch": "Kunden nach Vertriebszuordnung einschränken"
+      "RestrictCustomersBySalesRepMatch": "Kunden nach Vertriebszuordnung einschränken",
+      "DemandApprovalCompletionAction": "Aktion nach Abschluss der Bedarfsgenehmigung",
+      "QuotationApprovalCompletionAction": "Aktion nach Abschluss der Angebotsgenehmigung",
+      "OrderApprovalCompletionAction": "Aktion nach Abschluss der Auftragsgenehmigung"
     },
     "Descriptions": {
       "RestrictCustomersBySalesRepMatch": "Wenn aktiviert, werden Kundenlisten und -auswahl auf die dem gewählten Benutzer zugeordneten Vertriebsmitarbeiter-Codes begrenzt."
@@ -4198,7 +4244,8 @@
       "DefaultTimeZone": "Zeitzone wählen",
       "DateFormat": "Datumsformat wählen",
       "TimeFormat": "Zeitformat wählen",
-      "NumberFormat": "Zahlenformat wählen"
+      "NumberFormat": "Zahlenformat wählen",
+      "ApprovalCompletionAction": "Wählen Sie eine Aktion nach der Genehmigung"
     },
     "NumberFormatOptions": {
       "trTR": "Türkisches Zahlenformat (1.234,56)",
@@ -4817,7 +4864,25 @@
     "updateSuccess": "Benutzerdetails erfolgreich aktualisiert",
     "updateError": "Beim Aktualisieren der Benutzerdetails ist ein Fehler aufgetreten",
     "uploadProfilePictureSuccess": "Profilbild erfolgreich hochgeladen",
-    "uploadProfilePictureError": "Beim Laden des Profilbilds ist ein Fehler aufgetreten"
+    "uploadProfilePictureError": "Beim Laden des Profilbilds ist ein Fehler aufgetreten",
+    "defaultUser": "Benutzer",
+    "healthScore": "Gesundheitsscore",
+    "healthScoreDesc": "Allgemeine Portfolio-Gesundheit",
+    "retention": "Kundenbindung",
+    "retentionDesc": "Kundenbindungsrate",
+    "churnRisk": "Abwanderungsrisiko",
+    "churnRiskDesc": "Kundenabwanderungsprognose",
+    "financeAndSales": "Finanz- & Vertriebs-Showcase",
+    "financeAndSalesDesc": "Konversions- und Umsatzstatistiken",
+    "demands": "Bedarf",
+    "quotations": "Angebote",
+    "orders": "Bestellungen",
+    "currencyRevenues": "Umsätze nach Währung",
+    "fieldAndActivity": "Feld- & Aktivitäts-Showcase",
+    "fieldAndActivityDesc": "Tatsächliche Leistungsdaten im Feld",
+    "totalActivity": "Gesamtaktivität",
+    "pendingActions": "Ausstehende Aktionen",
+    "pendingActionsDesc": "Anzahl empfohlener Aktionen"
   },
   "profile": {
     "title": "Profilinformationen"

@@ -936,6 +936,9 @@
       },
       "sectionWidgetCount": "{{count}} widgets in this section",
       "sectionBadge": "Section",
+      "sectionLabels": {
+        "DETAY": "Detail"
+      },
       "dateGrouping": "Date grouping",
       "sorting": "Sorting",
       "sortBy": "Sort by",
@@ -4685,6 +4688,27 @@
     "PageTitle": "System Settings",
     "PageDescription": "Manage number formatting and customer scope settings.",
     "SavedSuccessfully": "System settings saved successfully.",
+    "DemandActionLabels": {
+      "1": "Keep as approved only",
+      "2": "Open demand in Netsis",
+      "3": "Open quotation record",
+      "4": "Open demand record in Netsis",
+      "5": "Open demand in Netsis and create quotation"
+    },
+    "QuotationActionLabels": {
+      "1": "Keep as approved only",
+      "2": "Open quotation in Netsis",
+      "3": "Open order record in CRM",
+      "4": "Open order record in Netsis",
+      "5": "Open quotation in Netsis and create order",
+      "6": "Open order record in CRM and create order in Netsis"
+    },
+    "OrderActionLabels": {
+      "1": "Keep as approved only",
+      "2": "Open order in Netsis",
+      "3": "Open sales invoice in Netsis",
+      "4": "Open order and sales invoice in Netsis"
+    },
     "ErpConnection": {
       "Title": "Netsis Rest connection test",
       "Description": "Check Netsis REST connectivity, login/token acquisition, and token refresh from this screen.",
@@ -5367,7 +5391,25 @@
     "updateSuccess": "User detail updated successfully",
     "updateError": "An error occurred while updating user detail",
     "uploadProfilePictureSuccess": "Profile picture uploaded successfully",
-    "uploadProfilePictureError": "An error occurred while loading the profile picture"
+    "uploadProfilePictureError": "An error occurred while loading the profile picture",
+    "defaultUser": "User",
+    "healthScore": "Health Score",
+    "healthScoreDesc": "Overall Portfolio Health",
+    "retention": "Retention",
+    "retentionDesc": "Customer Retention Rate",
+    "churnRisk": "Churn Risk",
+    "churnRiskDesc": "Customer Churn Prediction",
+    "financeAndSales": "Finance & Sales Showcase",
+    "financeAndSalesDesc": "Conversion and revenue statistics",
+    "demands": "Demands",
+    "quotations": "Quotations",
+    "orders": "Orders",
+    "currencyRevenues": "Currency Based Revenues",
+    "fieldAndActivity": "Field & Activity Showcase",
+    "fieldAndActivityDesc": "Actual field performance data",
+    "totalActivity": "Total Activity",
+    "pendingActions": "Pending Actions",
+    "pendingActionsDesc": "Recommended action count"
   },
   "profile": {
     "title": "Profile Information"

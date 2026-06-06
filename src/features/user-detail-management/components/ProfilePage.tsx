@@ -257,7 +257,7 @@ export function ProfilePage(): ReactElement {
 
   const isSaving = createUserDetail.isPending || updateUserDetail.isPending;
   const isChangingPassword = changePassword.isPending;
-  const displayName = user?.name || user?.email || 'Kullanıcı';
+  const displayName = user?.name || user?.email || t('userDetailManagement.defaultUser');
 
   if (isLoadingDetail || isLoadingOverview) {
     return (
@@ -333,7 +333,7 @@ export function ProfilePage(): ReactElement {
                 <SheetTrigger asChild>
                   <Button variant="outline" className="rounded-2xl border-slate-300 dark:border-white/20 bg-white/40 dark:bg-white/5 backdrop-blur-sm hover:bg-white/60 dark:hover:bg-white/10 transition-all gap-2 font-bold shadow-sm px-6">
                     <Settings size={18} className="text-pink-500" />
-                    Profil Ayarları
+                    {t('userDetailManagement.profileEditTitle')}
                   </Button>
                 </SheetTrigger>
                 <SheetContent showCloseButton={false} className="w-full sm:max-w-2xl overflow-y-auto border-l border-white/20 bg-white/90 dark:bg-[#180F22] backdrop-blur-3xl p-0">
@@ -346,8 +346,8 @@ export function ProfilePage(): ReactElement {
                       </SheetClose>
                     </div>
                     <SheetHeader>
-                      <SheetTitle className="text-3xl font-black tracking-tighter">Profil Ayarları</SheetTitle>
-                      <SheetDescription className="text-base font-medium">Profil bilgilerinizi ve güvenlik ayarlarınızı buradan yönetebilirsiniz.</SheetDescription>
+                      <SheetTitle className="text-3xl font-black tracking-tighter">{t('userDetailManagement.profileEditTitle')}</SheetTitle>
+                      <SheetDescription className="text-base font-medium">{t('userDetailManagement.profileEditDescription')}</SheetDescription>
                     </SheetHeader>
 
                     <Tabs defaultValue="personal" className="w-full">
@@ -384,7 +384,7 @@ export function ProfilePage(): ReactElement {
                                             value={field.value ?? ''}
                                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                                             className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
-                                            placeholder="Örn: 175"
+                                            placeholder={t('userDetailManagement.heightPlaceholderExample')}
                                           />
                                         </div>
                                       </FormControl>
@@ -409,7 +409,7 @@ export function ProfilePage(): ReactElement {
                                             value={field.value ?? ''}
                                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                                             className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
-                                            placeholder="Örn: 70"
+                                            placeholder={t('userDetailManagement.weightPlaceholderExample')}
                                           />
                                         </div>
                                       </FormControl>
@@ -649,28 +649,28 @@ export function ProfilePage(): ReactElement {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard
-          title="Sağlık Skoru"
+          title={t('userDetailManagement.healthScore')}
           value={`${revenueQuality?.healthScore || 0}%`}
           icon={Heart}
           progress={revenueQuality?.healthScore || 0}
           colorClass="text-emerald-200 dark:text-emerald-100 bg-emerald-600 dark:bg-emerald-900"
-          description="Genel Portföy Sağlığı"
+          description={t('userDetailManagement.healthScoreDesc')}
         />
         <StatCard
-          title="Elde Tutma"
+          title={t('userDetailManagement.retention')}
           value={`${Math.round(revenueQuality?.retentionRate || 0)}%`}
           icon={TrendingUp}
           progress={Math.round(revenueQuality?.retentionRate || 0)}
           colorClass="text-blue-200 dark:text-blue-100 bg-blue-600 dark:bg-blue-900"
-          description="Müşteri Elde Tutma Oranı"
+          description={t('userDetailManagement.retentionDesc')}
         />
         <StatCard
-          title="Kayıp Riski"
+          title={t('userDetailManagement.churnRisk')}
           value={`${revenueQuality?.churnRiskScore || 0}%`}
           icon={UserMinus}
           progress={revenueQuality?.churnRiskScore || 0}
           colorClass="text-rose-200 dark:text-rose-100 bg-rose-600 dark:bg-rose-900"
-          description="Müşteri Kayıp Tahmini"
+          description={t('userDetailManagement.churnRiskDesc')}
         />
       </div>
 
@@ -681,9 +681,9 @@ export function ProfilePage(): ReactElement {
             <div className="space-y-1">
               <CardTitle className="text-lg font-black flex items-center gap-2">
                 <BarChart3 size={20} className="text-pink-600" />
-                Finans & Satış Vitrini
+                {t('userDetailManagement.financeAndSales')}
               </CardTitle>
-              <CardDescription>Dönüşüm ve ciro istatistikleri</CardDescription>
+              <CardDescription>{t('userDetailManagement.financeAndSalesDesc')}</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-6 pt-2">
@@ -693,7 +693,7 @@ export function ProfilePage(): ReactElement {
                   <div className="p-2.5 rounded-xl bg-pink-100 dark:bg-pink-500/10 text-pink-600">
                     <MessageSquare size={20} />
                   </div>
-                  <div className="text-sm font-black text-muted-foreground uppercase tracking-tight">Talepler</div>
+                  <div className="text-sm font-black text-muted-foreground uppercase tracking-tight">{t('userDetailManagement.demands')}</div>
                 </div>
                 <div className="text-3xl font-black text-slate-900 dark:text-white">{kpis?.totalDemands || 0}</div>
               </div>
@@ -703,7 +703,7 @@ export function ProfilePage(): ReactElement {
                   <div className="p-2.5 rounded-xl bg-blue-100 dark:bg-blue-500/10 text-blue-600">
                     <FileText size={20} />
                   </div>
-                  <div className="text-sm font-black text-muted-foreground uppercase tracking-tight">Teklifler</div>
+                  <div className="text-sm font-black text-muted-foreground uppercase tracking-tight">{t('userDetailManagement.quotations')}</div>
                 </div>
                 <div className="text-3xl font-black text-slate-900 dark:text-white">{kpis?.totalQuotations || 0}</div>
               </div>
@@ -713,7 +713,7 @@ export function ProfilePage(): ReactElement {
                   <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600">
                     <CheckCircle size={20} />
                   </div>
-                  <div className="text-sm font-black text-muted-foreground uppercase tracking-tight">Siparişler</div>
+                  <div className="text-sm font-black text-muted-foreground uppercase tracking-tight">{t('userDetailManagement.orders')}</div>
                 </div>
                 <div className="text-3xl font-black text-slate-900 dark:text-white">{kpis?.totalOrders || 0}</div>
               </div>
@@ -722,7 +722,7 @@ export function ProfilePage(): ReactElement {
             <div className="space-y-4">
               <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
                 <DollarSign size={12} className="text-pink-600" />
-                Döviz Bazlı Cirolar
+                {t('userDetailManagement.currencyRevenues')}
               </h4>
               <div className="space-y-3">
                 {kpis?.totalsByCurrency?.map((cur) => (
@@ -748,9 +748,9 @@ export function ProfilePage(): ReactElement {
           <CardHeader>
             <CardTitle className="text-lg font-black flex items-center gap-2">
               <Activity size={20} className="text-orange-500" />
-              Saha & Aktivite Vitrini
+              {t('userDetailManagement.fieldAndActivity')}
             </CardTitle>
-            <CardDescription className="text-xs">Gerçekleşen saha performans verileri</CardDescription>
+            <CardDescription className="text-xs">{t('userDetailManagement.fieldAndActivityDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-8 pt-4">
             <div className="flex items-center justify-center py-6">
@@ -759,7 +759,7 @@ export function ProfilePage(): ReactElement {
                 <div className="absolute inset-0 rounded-full border-8 border-orange-500 border-t-transparent -rotate-45 shadow-[0_0_15px_rgba(249,115,22,0.3)]" />
                 <div className="text-center">
                   <div className="text-4xl font-black text-slate-800 dark:text-white">{kpis?.totalActivities || 0}</div>
-                  <div className="text-xs font-black uppercase text-muted-foreground tracking-tighter">Toplam Aktivite</div>
+                  <div className="text-xs font-black uppercase text-muted-foreground tracking-tighter">{t('userDetailManagement.totalActivity')}</div>
                 </div>
               </div>
             </div>
@@ -771,8 +771,8 @@ export function ProfilePage(): ReactElement {
                     <Zap size={20} />
                   </div>
                   <div>
-                    <div className="text-sm font-black text-slate-800 dark:text-white">Aksiyon Bekleyenler</div>
-                    <div className="text-xs font-medium text-muted-foreground">Önerilen aksiyon sayısı</div>
+                    <div className="text-sm font-black text-slate-800 dark:text-white">{t('userDetailManagement.pendingActions')}</div>
+                    <div className="text-xs font-medium text-muted-foreground">{t('userDetailManagement.pendingActionsDesc')}</div>
                   </div>
                 </div>
                 <div className="text-3xl font-black text-orange-600">{overview?.recommendedActions?.length || 0}</div>

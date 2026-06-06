@@ -56,7 +56,9 @@
     "button": "Delete",
     "confirmTitle": "Delete Confirmation",
     "confirmMessage": "Are you sure you want to delete this record?",
-    "action": "Sil"
+    "action": "Delete",
+    "success": "Rule successfully deleted",
+    "error": "An error occurred while deleting the rule"
   },
   "salesmen": {
     "title": "Salesmen",
@@ -72,7 +74,11 @@
     "search": "Search salesman...",
     "empty": "No salesmen added yet",
     "emptyDescription": "Will be valid for all salesmen",
-    "salesman": "Salesman"
+    "salesman": "Salesman",
+    "addConfirmTitle": "Add Salesman",
+    "addConfirmMessage": "{{name}} will be added to pricing rule. Do you confirm?",
+    "deleteConfirmTitle": "Remove Salesman",
+    "deleteConfirmMessage": "{{name}} will be removed from pricing rule. Do you confirm?"
   },
   "header": {
     "ruleType": "Rule Type",
@@ -218,11 +224,13 @@
       "deleteSuccess": "Line deleted",
       "deleteSuccessMessage": "Pricing rule line successfully deleted",
       "deleteError": "Failed to delete line",
-      "stokCodeRequired": "Stock code is required"
+      "stokCodeRequired": "Stock code is required",
+      "selectCurrency": "Select currency"
     },
     "form": {
       "cancel": "Cancel",
       "save": "Save",
+      "confirm": "Confirm",
       "create": "New Pricing Rule",
       "edit": "Edit Pricing Rule",
       "createDescription": "Enter new pricing rule information",

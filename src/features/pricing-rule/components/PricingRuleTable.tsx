@@ -112,7 +112,7 @@ export function PricingRuleTable({
   disablePaginationButtons = false,
   onColumnOrderChange,
 }: PricingRuleTableProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('pricing-rule');
   const { canUpdate, canDelete } = useCrudPermissions('pricing.pricing-rules.view');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedHeader, setSelectedHeader] = useState<PricingRuleHeaderGetDto | null>(null);
@@ -128,11 +128,11 @@ export function PricingRuleTable({
     if (selectedHeader) {
       try {
         await deleteHeader.mutateAsync(selectedHeader.id);
-        toast.success(t('pricingRule.delete.success'));
+        toast.success(t('delete.success'));
         setDeleteDialogOpen(false);
         setSelectedHeader(null);
       } catch {
-        toast.error(t('pricingRule.delete.error'));
+        toast.error(t('delete.error'));
       }
     }
   };
@@ -213,10 +213,10 @@ export function PricingRuleTable({
             </div>
             <div className="space-y-2">
               <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('pricingRule.delete.confirmTitle')}
+                {t('delete.confirmTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('pricingRule.delete.confirmMessage', { name: selectedHeader?.ruleName || '' })}
+                {t('delete.confirmMessage', { name: selectedHeader?.ruleName || '' })}
               </DialogDescription>
             </div>
           </DialogHeader>
@@ -227,7 +227,7 @@ export function PricingRuleTable({
               onClick={() => setDeleteDialogOpen(false)}
               className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
             >
-              {t('pricingRule.cancel')}
+              {t('form.cancel')}
             </Button>
             <Button
               type="button"
@@ -237,7 +237,7 @@ export function PricingRuleTable({
               className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
             >
               {deleteHeader.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {t('pricingRule.delete.action')}
+              {t('delete.action')}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -836,6 +836,11 @@
         "in": "En lista",
         "isNull": "Es nulo",
         "isNotNull": "No es nulo"
+      },
+      "sectionWidgetCount": "{{count}} widgets en esta sección",
+      "sectionBadge": "Sección",
+      "sectionLabels": {
+        "DETAY": "Detalles"
       }
     },
     "create": "Crear",
@@ -1189,7 +1194,7 @@
       "Completed": "Completado"
     },
     "explain": {
-      "revenueQualityTitle": "Los scores de calidad de ingresos se calculan por reglas a partir de los ultimos 12 meses de pedidos/cotizaciones/actividad e incluyen cohort, retention, RFM, LTV, churn, upsell y payment.",
+      "revenueQualityTitle": "Los scores de calidad de ingresos se calculan por reglas a partir de los ultimos 12 meses de pedidos/cotizaciones/actividad e incluyen cohorte, retención, RFM, LTV, abandono, ventas adicionales y pagos.",
       "churnRisk": "El riesgo de abandono se calcula entre 0 y 100 según última fecha de pedido, última actividad y frecuencia de pedidos. Un score más alto significa mayor riesgo de pérdida.",
       "upsellPropensity": "La propensión a venta adicional se puntúa 0–100 según número de pedidos, conversión cotización–pedido y importe medio. Un score más alto indica mayor oportunidad.",
       "paymentBehavior": "El comportamiento de pago es actualmente un score proxy (continuidad de pedidos, tasa de rechazo de cotizaciones, recencia) y no historial de cobro directo, escala 0–100.",
@@ -1280,6 +1285,22 @@
       "empty": "Sin datos de cohorte",
       "cohortKey": "Cohorte"
     },
+    "segmentLabels": {
+      "CHAMPIONS": "Campeones",
+      "CHAMPION": "Campeón",
+      "LOYAL": "Leales",
+      "LOYAL_CUSTOMERS": "Clientes leales",
+      "AT_RISK": "En riesgo",
+      "AT_RISK_CUSTOMERS": "Clientes en riesgo",
+      "POTENTIAL": "Potencial",
+      "POTENTIAL_LOYALISTS": "Potenciales leales",
+      "NEW_CUSTOMERS": "Nuevos clientes",
+      "HIBERNATING": "Inactivos",
+      "ABOUT_TO_SLEEP": "A punto de dormirse",
+      "NEEDS_ATTENTION": "Necesita atención",
+      "PROMISING": "Prometedores",
+      "CANT_LOSE_THEM": "No podemos perderlos"
+    },
     "actions": {
       "title": "Acciones recomendadas",
       "empty": "Sin acciones recomendadas",
@@ -1292,7 +1313,7 @@
       }
     },
     "explain": {
-      "revenueQualityTitle": "Los scores se calculan por reglas a partir del rendimiento cartera/pedidos/actividad del representante en los ultimos 12 meses e incluyen cohort, retention, RFM, LTV, churn, upsell y payment.",
+      "revenueQualityTitle": "Los scores se calculan por reglas a partir del rendimiento cartera/pedidos/actividad del representante en los ultimos 12 meses e incluyen cohorte, retención, RFM, LTV, abandono, ventas adicionales y pagos.",
       "churnRisk": "El riesgo de abandono de cartera se puntúa 0–100 según clientes activos frente a clientes inactivos en los últimos 90 días.",
       "upsellPropensity": "La propensión a venta adicional se puntúa 0–100 según intensidad de pedidos, cotizaciones ganadas y ritmo de actividad.",
       "paymentBehavior": "El comportamiento de pago usa actualmente métricas proxy; será más preciso cuando se integre el historial de cobro directo.",
@@ -4114,6 +4135,27 @@
     "PageTitle": "Ajustes del sistema",
     "PageDescription": "Administre el formato numérico y el alcance de clientes.",
     "SavedSuccessfully": "Los ajustes del sistema se guardaron correctamente.",
+    "DemandActionLabels": {
+      "1": "Mantener solo como aprobado",
+      "2": "Abrir demanda en Netsis",
+      "3": "Abrir registro de cotización",
+      "4": "Abrir registro de demanda en Netsis",
+      "5": "Abrir demanda en Netsis y crear cotización"
+    },
+    "QuotationActionLabels": {
+      "1": "Mantener solo como aprobado",
+      "2": "Abrir cotización en Netsis",
+      "3": "Abrir registro de pedido en CRM",
+      "4": "Abrir registro de pedido en Netsis",
+      "5": "Abrir cotización en Netsis y crear pedido",
+      "6": "Abrir registro de pedido en CRM y crear pedido en Netsis"
+    },
+    "OrderActionLabels": {
+      "1": "Mantener solo como aprobado",
+      "2": "Abrir pedido en Netsis",
+      "3": "Abrir factura de venta en Netsis",
+      "4": "Abrir pedido y factura de venta en Netsis"
+    },
     "ErpConnection": {
       "Title": "Prueba de conexión Netsis Rest",
       "Description": "Compruebe la conexión REST de Netsis, el inicio de sesión/token y la renovación del token desde esta pantalla.",
@@ -4132,7 +4174,10 @@
       "TimeFormat": "Formato de hora",
       "NumberFormat": "Formato numérico",
       "DecimalPlaces": "Cifras decimales",
-      "RestrictCustomersBySalesRepMatch": "Limitar clientes según coincidencia con representante de ventas"
+      "RestrictCustomersBySalesRepMatch": "Limitar clientes según coincidencia con representante de ventas",
+      "DemandApprovalCompletionAction": "Acción al completar la aprobación de la demanda",
+      "QuotationApprovalCompletionAction": "Acción al completar la aprobación de la cotización",
+      "OrderApprovalCompletionAction": "Acción al completar la aprobación del pedido"
     },
     "Descriptions": {
       "RestrictCustomersBySalesRepMatch": "Si está activado, las listas y selectores de clientes se limitan a los códigos de representante de ventas asociados al usuario seleccionado."
@@ -4143,7 +4188,8 @@
       "DefaultTimeZone": "Seleccionar zona horaria",
       "DateFormat": "Seleccionar formato de fecha",
       "TimeFormat": "Seleccionar formato de hora",
-      "NumberFormat": "Seleccionar formato numérico"
+      "NumberFormat": "Seleccionar formato numérico",
+      "ApprovalCompletionAction": "Seleccione acción posterior a la aprobación"
     },
     "NumberFormatOptions": {
       "trTR": "Formato numérico turco (1.234,56)",
@@ -4762,7 +4808,25 @@
     "updateSuccess": "El detalle del usuario se actualizó correctamente",
     "updateError": "Ocurrió un error al actualizar el detalle del usuario",
     "uploadProfilePictureSuccess": "La foto de perfil se cargó correctamente",
-    "uploadProfilePictureError": "Error al cargar la foto de perfil"
+    "uploadProfilePictureError": "Error al cargar la foto de perfil",
+    "defaultUser": "Usuario",
+    "healthScore": "Puntaje de salud",
+    "healthScoreDesc": "Salud general de la cartera",
+    "retention": "Retención",
+    "retentionDesc": "Tasa de retención de clientes",
+    "churnRisk": "Riesgo de abandono",
+    "churnRiskDesc": "Predicción de abandono de clientes",
+    "financeAndSales": "Vitrina de finanzas y ventas",
+    "financeAndSalesDesc": "Estadísticas de conversión e ingresos",
+    "demands": "Demandas",
+    "quotations": "Cotizaciones",
+    "orders": "Pedidos",
+    "currencyRevenues": "Ingresos por moneda",
+    "fieldAndActivity": "Vitrina de campo y actividades",
+    "fieldAndActivityDesc": "Datos reales de rendimiento de campo",
+    "totalActivity": "Actividad total",
+    "pendingActions": "Acciones pendientes",
+    "pendingActionsDesc": "Número de acciones recomendadas"
   },
   "profile": {
     "title": "Información de perfil"

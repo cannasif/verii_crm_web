@@ -84,7 +84,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
         minQuantity: line.minQuantity,
         maxQuantity: line.maxQuantity,
         fixedUnitPrice: line.fixedUnitPrice,
-        currencyCode: line.currencyCode ? (typeof line.currencyCode === 'string' ? Number(line.currencyCode) || 1 : line.currencyCode) : 1,
+        currencyCode: (line.currencyCode !== undefined && line.currencyCode !== null && line.currencyCode !== '') ? Number(line.currencyCode) : undefined,
         discountRate1: line.discountRate1,
         discountAmount1: line.discountAmount1,
         discountRate2: line.discountRate2,
@@ -171,7 +171,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
     }
 
     const linesWithInvalidCurrency = validLines.filter((line) =>
-      !line.currencyCode ||
+      line.currencyCode === '' ||
       line.currencyCode === undefined ||
       line.currencyCode === null
     );

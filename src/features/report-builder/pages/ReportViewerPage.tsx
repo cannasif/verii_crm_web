@@ -1282,7 +1282,9 @@ export function ReportViewerPage(): ReactElement {
                       <BarChart3 className="size-4 text-slate-500" />
                     </div>
                     <div>
-                      <div className="text-sm font-black tracking-wide text-slate-800 dark:text-white">{section.label}</div>
+                      <div className="text-sm font-black tracking-wide text-slate-800 dark:text-white">
+                        {t(`common.reportBuilder.sectionLabels.${section.label.toUpperCase()}`, { defaultValue: section.label })}
+                      </div>
                       <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                         {t('common.reportBuilder.sectionWidgetCount', { count: section.widgets.length })}
                       </div>

@@ -53,10 +53,12 @@
     }
   },
   "delete": {
-    "button": "Delete",
-    "confirmTitle": "Delete Confirmation",
-    "confirmMessage": "Are you sure you want to delete this record?",
-    "action": "Sil"
+    "button": "Löschen",
+    "confirmTitle": "Löschen bestätigen",
+    "confirmMessage": "Möchten Sie diesen Datensatz wirklich löschen?",
+    "action": "Löschen",
+    "success": "Regel erfolgreich gelöscht",
+    "error": "Fehler beim Löschen der Regel"
   },
   "salesmen": {
     "title": "Verkäufer",
@@ -72,7 +74,11 @@
     "search": "Verkäufer suchen...",
     "empty": "Noch kein Verkäufer hinzugefügt",
     "emptyDescription": "Gilt für alle Verkäufer",
-    "salesman": "Verkäufer"
+    "salesman": "Verkäufer",
+    "addConfirmTitle": "Verkäufer Hinzufügen",
+    "addConfirmMessage": "{{name}} wird der Preisregel hinzugefügt. Bestätigen Sie?",
+    "deleteConfirmTitle": "Verkäufer Entfernen",
+    "deleteConfirmMessage": "{{name}} wird aus der Preisregel entfernt. Bestätigen Sie?"
   },
   "header": {
     "ruleType": "Regeltyp",
@@ -218,11 +224,13 @@
       "deleteSuccess": "Zeile gelöscht",
       "deleteSuccessMessage": "Preisregelzeile erfolgreich gelöscht",
       "deleteError": "Zeile konnte nicht gelöscht werden",
-      "stokCodeRequired": "Bestandscode ist erforderlich"
+      "stokCodeRequired": "Bestandscode ist erforderlich",
+      "selectCurrency": "Währung wählen"
     },
     "form": {
       "cancel": "Abbrechen",
       "save": "Speichern",
+      "confirm": "Bestätigen",
       "create": "Neue Preisregel",
       "edit": "Preisregel bearbeiten",
       "createDescription": "Geben Sie die neuen Preisregelinformationen ein",

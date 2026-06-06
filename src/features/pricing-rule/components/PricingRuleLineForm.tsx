@@ -268,18 +268,18 @@ export function PricingRuleLineForm({
                         className={cn(
                           INPUT_STYLE,
                           "w-full justify-between px-3",
-                          !field.value && "text-slate-400 dark:text-slate-600"
+                          (field.value === undefined || field.value === null || field.value === '') && "text-slate-400 dark:text-slate-600"
                         )}
                       >
                         <div className="flex items-center gap-2 truncate">
-                          {field.value ? (
+                          {(field.value !== undefined && field.value !== null && field.value !== '') ? (
                             <span className="font-bold">
                               {exchangeRates.find(
                                 (c) => String(c.dovizTipi) === String(field.value)
                               )?.dovizIsmi || field.value}
                             </span>
                           ) : (
-                            <span>{isLoadingRates ? t('pricingRule.loading') : t('pricingRule.lines.selectCurrency')}</span>
+                            <span>{isLoadingRates ? t('loading') : t('lines.selectCurrency')}</span>
                           )}
                         </div>
                         <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

@@ -4,10 +4,12 @@
   "create": "قاعدة جديدة",
   "edit": "تعديل القاعدة",
   "delete": {
-    "button": "Delete",
-    "confirmTitle": "Delete Confirmation",
-    "confirmMessage": "Are you sure you want to delete this record?",
-    "action": "Sil"
+    "button": "حذف",
+    "confirmTitle": "تأكيد الحذف",
+    "confirmMessage": "هل أنت متأكد أنك تريد حذف هذا السجل؟",
+    "action": "حذف",
+    "success": "تم حذف القاعدة بنجاح",
+    "error": "حدث خطأ أثناء حذف القاعدة"
   },
   "table": {
     "id": "المعرف",
@@ -98,7 +100,11 @@
     "search": "البحث عن مندوب...",
     "empty": "لم يتم إضافة أي مندوبين بعد",
     "emptyDescription": "سيكون صالحاً لجميع المندوبين",
-    "salesman": "المندوب"
+    "salesman": "المندوب",
+    "addConfirmTitle": "إضافة مندوب",
+    "addConfirmMessage": "سيتم إضافة {{name}} إلى قاعدة التسعير. هل تؤكد؟",
+    "deleteConfirmTitle": "إزالة المندوب",
+    "deleteConfirmMessage": "سيتم إزالة {{name}} من قاعدة التسعير. هل تؤكد؟"
   },
   "header": {
     "ruleType": "نوع القاعدة",
@@ -244,11 +250,13 @@
       "deleteSuccess": "تم حذف البند",
       "deleteSuccessMessage": "تم حذف بند قاعدة التسعير بنجاح",
       "deleteError": "تعذر حذف البند",
-      "stokCodeRequired": "رمز المخزون مطلوب"
+      "stokCodeRequired": "رمز المخزون مطلوب",
+      "selectCurrency": "اختر العملة"
     },
     "form": {
       "cancel": "إلغاء",
       "save": "حفظ",
+      "confirm": "تأكيد",
       "create": "قاعدة تسعير جديدة",
       "edit": "تعديل قاعدة التسعير",
       "createDescription": "أدخل معلومات قاعدة التسعير الجديدة",

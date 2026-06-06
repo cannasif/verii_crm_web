@@ -836,6 +836,11 @@
         "in": "In elenco",
         "isNull": "È nullo",
         "isNotNull": "Non è nullo"
+      },
+      "sectionWidgetCount": "{{count}} widget in questa sezione",
+      "sectionBadge": "Sezione",
+      "sectionLabels": {
+        "DETAY": "Dettagli"
       }
     },
     "create": "Crea",
@@ -1189,7 +1194,7 @@
       "Completed": "Completato"
     },
     "explain": {
-      "revenueQualityTitle": "I punteggi di qualita del fatturato sono calcolati a regole sugli ultimi 12 mesi di ordini/preventivi/attivita e includono cohort, retention, RFM, LTV, churn, upsell e payment.",
+      "revenueQualityTitle": "I punteggi di qualita del fatturato sono calcolati a regole sugli ultimi 12 mesi di ordini/preventivi/attivita e includono coorte, ritenzione, RFM, LTV, abbandono, vendita aggiuntiva e pagamenti.",
       "churnRisk": "Il rischio di abbandono è calcolato tra 0 e 100 in base a ultima data ordine, ultima attività e frequenza ordini. Punteggio più alto significa maggior rischio di perdita.",
       "upsellPropensity": "La propensione alla vendita aggiuntiva è puntata 0–100 da numero ordini, conversione preventivo–ordine e importo medio. Punteggio più alto indica maggiore opportunità.",
       "paymentBehavior": "Il comportamento di pagamento è attualmente un punteggio proxy (continuità ordini, tasso rifiuto preventivi, recenza) e non storico incassi diretto, scala 0–100.",
@@ -1280,6 +1285,22 @@
       "empty": "Nessun dato di coorte",
       "cohortKey": "Coorte"
     },
+    "segmentLabels": {
+      "CHAMPIONS": "Campioni",
+      "CHAMPION": "Campione",
+      "LOYAL": "Fedeli",
+      "LOYAL_CUSTOMERS": "Clienti fedeli",
+      "AT_RISK": "A rischio",
+      "AT_RISK_CUSTOMERS": "Clienti a rischio",
+      "POTENTIAL": "Potenziale",
+      "POTENTIAL_LOYALISTS": "Potenziali fedeli",
+      "NEW_CUSTOMERS": "Nuovi clienti",
+      "HIBERNATING": "Inattivi",
+      "ABOUT_TO_SLEEP": "Quasi inattivi",
+      "NEEDS_ATTENTION": "Necessita attenzione",
+      "PROMISING": "Promettenti",
+      "CANT_LOSE_THEM": "Da non perdere"
+    },
     "actions": {
       "title": "Azioni raccomandate",
       "empty": "Nessuna azione raccomandata",
@@ -1292,7 +1313,7 @@
       }
     },
     "explain": {
-      "revenueQualityTitle": "I punteggi sono calcolati a regole dalle performance portafoglio/ordini/attivita del rappresentante negli ultimi 12 mesi e includono cohort, retention, RFM, LTV, churn, upsell e payment.",
+      "revenueQualityTitle": "I punteggi sono calcolati a regole dalle performance portafoglio/ordini/attivita del rappresentante negli ultimi 12 mesi e includono coorte, ritenzione, RFM, LTV, abbandono, vendita aggiuntiva e pagamenti.",
       "churnRisk": "Il rischio di abbandono del portafoglio è puntato 0–100 in base a clienti attivi vs clienti diventati inattivi negli ultimi 90 giorni.",
       "upsellPropensity": "La propensione alla vendita aggiuntiva è puntata 0–100 con intensità ordini, preventivi vinti e ritmo attività.",
       "paymentBehavior": "Il comportamento di pagamento usa attualmente metriche proxy; diventa più accurato con l'integrazione dello storico incassi diretto.",
@@ -4143,6 +4164,27 @@
     "PageTitle": "Impostazioni di sistema",
     "PageDescription": "Gestisci il formato numerico e l'ambito clienti.",
     "SavedSuccessfully": "Impostazioni di sistema salvate correttamente.",
+    "DemandActionLabels": {
+      "1": "Mantieni solo come approvato",
+      "2": "Apri richiesta in Netsis",
+      "3": "Apri registrazione preventivo",
+      "4": "Apri registrazione richiesta in Netsis",
+      "5": "Apri richiesta in Netsis e crea preventivo"
+    },
+    "QuotationActionLabels": {
+      "1": "Mantieni solo come approvato",
+      "2": "Apri preventivo in Netsis",
+      "3": "Apri registrazione ordine nel CRM",
+      "4": "Apri registrazione ordine in Netsis",
+      "5": "Apri preventivo in Netsis e crea ordine",
+      "6": "Apri registrazione ordine nel CRM e crea ordine in Netsis"
+    },
+    "OrderActionLabels": {
+      "1": "Mantieni solo come approvato",
+      "2": "Apri ordine in Netsis",
+      "3": "Apri fattura di vendita in Netsis",
+      "4": "Apri ordine e fattura di vendita in Netsis"
+    },
     "ErpConnection": {
       "Title": "Test connessione Netsis Rest",
       "Description": "Controlla la connessione REST Netsis, il login/token e il rinnovo del token da questa schermata.",
@@ -4161,7 +4203,10 @@
       "TimeFormat": "Formato ora",
       "NumberFormat": "Formato numeri",
       "DecimalPlaces": "Cifre decimali",
-      "RestrictCustomersBySalesRepMatch": "Limita i clienti in base all'abbinamento al rappresentante di vendita"
+      "RestrictCustomersBySalesRepMatch": "Limita i clienti in base all'abbinamento al rappresentante di vendita",
+      "DemandApprovalCompletionAction": "Azione al completamento dell'approvazione della richiesta",
+      "QuotationApprovalCompletionAction": "Azione al completamento dell'approvazione del preventivo",
+      "OrderApprovalCompletionAction": "Azione al completamento dell'approvazione dell'ordine"
     },
     "Descriptions": {
       "RestrictCustomersBySalesRepMatch": "Se abilitato, elenchi e selettori clienti sono limitati ai codici rappresentante di vendita associati all'utente selezionato."
@@ -4172,7 +4217,8 @@
       "DefaultTimeZone": "Seleziona fuso orario",
       "DateFormat": "Seleziona formato data",
       "TimeFormat": "Seleziona formato ora",
-      "NumberFormat": "Seleziona formato numeri"
+      "NumberFormat": "Seleziona formato numeri",
+      "ApprovalCompletionAction": "Seleziona azione post-approvazione"
     },
     "NumberFormatOptions": {
       "trTR": "Formato numerico turco (1.234,56)",
@@ -4790,7 +4836,25 @@
     "updateSuccess": "Dettaglio utente aggiornato con successo",
     "updateError": "Si è verificato un errore durante l'aggiornamento del dettaglio utente",
     "uploadProfilePictureSuccess": "Immagine profilo caricata con successo",
-    "uploadProfilePictureError": "Si è verificato un errore durante il caricamento dell'immagine profilo"
+    "uploadProfilePictureError": "Si è verificato un errore durante il caricamento dell'immagine profilo",
+    "defaultUser": "Utente",
+    "healthScore": "Punteggio di salute",
+    "healthScoreDesc": "Salute generale del portafoglio",
+    "retention": "Fidelizzazione",
+    "retentionDesc": "Tasso di fidelizzazione clienti",
+    "churnRisk": "Rischio di abbandono",
+    "churnRiskDesc": "Previsione abbandono clienti",
+    "financeAndSales": "Vetrina finanze e vendite",
+    "financeAndSalesDesc": "Statistiche di conversione e fatturato",
+    "demands": "Richieste",
+    "quotations": "Preventivi",
+    "orders": "Ordini",
+    "currencyRevenues": "Fatturato per valuta",
+    "fieldAndActivity": "Vetrina campo e attività",
+    "fieldAndActivityDesc": "Dati reali delle prestazioni sul campo",
+    "totalActivity": "Attività totale",
+    "pendingActions": "Azioni in sospeso",
+    "pendingActionsDesc": "Numero di azioni consigliate"
   },
   "profile": {
     "title": "Informazioni sul profilo"

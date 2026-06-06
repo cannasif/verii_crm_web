@@ -4,10 +4,12 @@
   "create": "Nuova Regola",
   "edit": "Modifica Regola",
   "delete": {
-    "button": "Delete",
-    "confirmTitle": "Delete Confirmation",
-    "confirmMessage": "Are you sure you want to delete this record?",
-    "action": "Sil"
+    "button": "Elimina",
+    "confirmTitle": "Conferma eliminazione",
+    "confirmMessage": "Sei sicuro di voler eliminare questo record?",
+    "action": "Elimina",
+    "success": "Regola eliminata con successo",
+    "error": "Errore durante l'eliminazione della regola"
   },
   "table": {
     "id": "ID",
@@ -98,7 +100,11 @@
     "search": "Cerca venditore...",
     "empty": "Nessun venditore ancora aggiunto",
     "emptyDescription": "Sarà valido per tutti i venditori",
-    "salesman": "Venditore"
+    "salesman": "Venditore",
+    "addConfirmTitle": "Aggiungi Venditore",
+    "addConfirmMessage": "{{name}} verrà aggiunto alla regola di prezzo. Confermi?",
+    "deleteConfirmTitle": "Rimuovi Venditore",
+    "deleteConfirmMessage": "{{name}} verrà rimosso dalla regola di prezzo. Confermi?"
   },
   "header": {
     "ruleType": "Tipo di regola",
@@ -244,11 +250,13 @@
       "deleteSuccess": "Riga eliminata",
       "deleteSuccessMessage": "Riga della regola di prezzo eliminata con successo",
       "deleteError": "Impossibile eliminare la riga",
-      "stokCodeRequired": "Il codice stock è obbligatorio"
+      "stokCodeRequired": "Il codice stock è obbligatorio",
+      "selectCurrency": "Seleziona valuta"
     },
     "form": {
       "cancel": "Annulla",
       "save": "Salva",
+      "confirm": "Conferma",
       "create": "Nuova Regola di Prezzo",
       "edit": "Modifica Regola di Prezzo",
       "createDescription": "Inserisci le informazioni della nuova regola di prezzo",

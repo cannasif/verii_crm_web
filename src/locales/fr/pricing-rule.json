@@ -56,7 +56,9 @@
     "button": "Supprimer",
     "confirmTitle": "Confirmation de suppression",
     "confirmMessage": "Êtes-vous sûr de vouloir supprimer cet enregistrement ?",
-    "action": "Sil"
+    "action": "Supprimer",
+    "success": "Règle supprimée avec succès",
+    "error": "Erreur lors de la suppression de la règle"
   },
   "salesmen": {
     "title": "Vendeurs",
@@ -72,7 +74,11 @@
     "search": "Rechercher vendeur...",
     "empty": "Aucun vendeur ajouté pour le moment",
     "emptyDescription": "S'appliquera à tous les vendeurs",
-    "salesman": "Vendeur"
+    "salesman": "Vendeur",
+    "addConfirmTitle": "Ajouter Vendeur",
+    "addConfirmMessage": "{{name}} sera ajouté à la règle de prix. Confirmez-vous ?",
+    "deleteConfirmTitle": "Supprimer Vendeur",
+    "deleteConfirmMessage": "{{name}} sera supprimé de la règle de prix. Confirmez-vous ?"
   },
   "header": {
     "ruleType": "Type Règle",
@@ -218,11 +224,13 @@
       "deleteSuccess": "Ligne supprimée",
       "deleteSuccessMessage": "Ligne de règle de prix supprimée avec succès",
       "deleteError": "Échec de la suppression de la ligne",
-      "stokCodeRequired": "Le code stock est requis"
+      "stokCodeRequired": "Le code stock est requis",
+      "selectCurrency": "Sélectionner devise"
     },
     "form": {
       "cancel": "Annuler",
       "save": "Enregistrer",
+      "confirm": "Confirmer",
       "create": "Nouvelle Règle de Prix",
       "edit": "Modifier Règle de Prix",
       "createDescription": "Entrez les informations de la nouvelle règle de prix",
