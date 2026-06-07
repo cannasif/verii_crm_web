@@ -54,14 +54,14 @@
       "deleteSuccess": "Shipping deleted successfully",
       "deleteError": "Failed to delete shipping"
     },
-    "error": "Hata oluştu",
-    "create": "Yeni Teslimat Ekle",
-    "loading": "Yükleniyor...",
-    "noData": "Veri yok",
-    "actions": "İşlemler",
-    "cancel": "İptal",
-    "save": "Kaydet",
-    "saving": "Kaydediliyor..."
+    "error": "An error occurred",
+    "create": "Add New Shipping",
+    "loading": "Loading...",
+    "noData": "No data found",
+    "actions": "Actions",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving..."
   },
   "deleteConfirm": {
     "confirmTitle": "Delete Shipping",
@@ -74,9 +74,9 @@
   "table": {
     "title": "Shipping List",
     "id": "ID",
-    "name": "Teslimat Adı",
-    "description": "Açıklama",
-    "createdDate": "Oluşturulma Tarihi",
-    "createdBy": "Oluşturan Kullanıcı"
+    "name": "Shipping Name",
+    "description": "Description",
+    "createdDate": "Created Date",
+    "createdBy": "Created By"
   }
 }

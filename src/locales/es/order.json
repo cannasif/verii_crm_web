@@ -38,7 +38,9 @@
     "validUntil": "Válido hasta",
     "currency": "Moneda",
     "grandTotal": "Gran Total",
-    "status": "Estado"
+    "status": "Estado",
+    "erpIntegrated": "Integración completada",
+    "erpNotIntegrated": "No integrado"
   },
   "detail": {
     "title": "Detalle de Cotización",
@@ -155,7 +157,25 @@
     "updateSuccess": "Sipariş satırları güncellendi.",
     "updateError": "Sipariş satırları güncellenemedi.",
     "deleteSuccess": "Sipariş satırı silindi.",
-    "deleteError": "Sipariş satırı silinemedi."
+    "deleteError": "Sipariş satırı silinemedi.",
+    "descriptionFieldsTitle": "Perfil, varilla, tornillo",
+    "descriptionField1Label": "Descripción 1",
+    "descriptionField2Label": "Descripción 2",
+    "descriptionField3Label": "Descripción 3",
+    "discountNumbered1": "1. Descuento",
+    "discountNumbered2": "2. Descuento",
+    "discountNumbered3": "3. Descuento",
+    "windoProfileLabel": "Perfil",
+    "windoRebarLabel": "Varilla",
+    "windoScrewLabel": "Tornillo",
+    "selectWindoProfile": "Seleccionar perfil",
+    "selectWindoRebar": "Seleccionar varilla",
+    "selectWindoScrew": "Seleccionar tornillo",
+    "searchWindoProfile": "Buscar perfil...",
+    "searchWindoRebar": "Buscar varilla...",
+    "searchWindoScrew": "Buscar tornillo...",
+    "windoNoneSelected": "Ninguno",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Tasas de Cambio",
@@ -253,7 +273,15 @@
     "startError": "Onay süreci başlatılamadı.",
     "rejectTitle": "Siparişi Reddet",
     "rejectDescription": "Siparişi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "rejectReasonPlaceholder": "Red nedeni",
+    "statusFilterLabel": "Estado de aprobación",
+    "status": {
+      "notRequired": "No requerido",
+      "waiting": "Esperando",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "closed": "Cerrado"
+    }
   },
   "approvalFlow": {
     "loading": "Onay akışı yükleniyor...",

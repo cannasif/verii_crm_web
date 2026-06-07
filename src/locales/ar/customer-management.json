@@ -26,7 +26,8 @@
     "phone2": "الهاتف 2",
     "salesRepCode": "Sales Representative",
     "branchCode": "رمز الفرع",
-    "defaultShippingAddressId": "عنوان الشحن الافتراضي"
+    "defaultShippingAddressId": "عنوان الشحن الافتراضي",
+    "title": "Customer List"
   },
   "form": {
     "addCustomer": "إضافة عميل جديد",
@@ -103,7 +104,28 @@
     "websitePlaceholderExample": "www.sirket.com",
     "phonePlaceholderExample": "0555...",
     "phone2PlaceholderExample": "Alternatif telefon...",
-    "groupCodePlaceholder": "Grup kodu..."
+    "groupCodePlaceholder": "Grup kodu...",
+    "taxNumberExactLength": "Tax ID (VKN) must be exactly 10 digits",
+    "tcknNumberExactLength": "TCKN must be exactly 11 digits",
+    "groupCode": "Group Code",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "code": "Customer Code",
+    "creditLimit": "Credit Limit",
+    "countryPlaceholder": "Select country",
+    "cityPlaceholder": "Select city",
+    "districtPlaceholder": "Select district",
+    "customerTypePlaceholder": "Select customer type",
+    "conflict": {
+      "Email": "This email matches customer \"{{customerName}}\".",
+      "Phone1": "This phone matches customer \"{{customerName}}\".",
+      "Phone2": "This phone matches customer \"{{customerName}}\".",
+      "TaxNumber": "This tax number matches customer \"{{customerName}}\".",
+      "TcknNumber": "This TCKN matches customer \"{{customerName}}\".",
+      "CustomerCode": "This customer code matches customer \"{{customerName}}\".",
+      "CustomerName": "This name matches customer \"{{customerName}}\"."
+    }
   },
   "delete": {
     "action": "حذف",
@@ -125,7 +147,11 @@
     "updateSuccess": "تم تحديث العميل بنجاح",
     "updateError": "تعذر تحديث العميل",
     "deleteSuccess": "تم حذف العميل بنجاح",
-    "deleteError": "تعذر حذف العميل"
+    "deleteError": "تعذر حذف العميل",
+    "syncQueued": "Customer sync queued. Job: {{jobId}}",
+    "syncError": "Customer sync could not be triggered",
+    "erpCreateSuccess": "Customer is created as Netsis customer.",
+    "erpCreateError": "Could not create customer in ERP."
   },
   "customerManagement": {
     "menu": "إدارة العملاء",
@@ -170,7 +196,9 @@
       "deleteSuccess": "تم حذف العميل بنجاح",
       "deleteError": "تعذر حذف العميل",
       "syncQueued": "تمت جدولة مزامنة العملاء. المهمة: {{jobId}}",
-      "syncError": "تعذر تشغيل مزامنة العملاء"
+      "syncError": "تعذر تشغيل مزامنة العملاء",
+      "erpCreateSuccess": "Customer is created as Netsis customer.",
+      "erpCreateError": "Could not create customer in ERP."
     },
     "stats": {
       "totalCustomers": "إجمالي العملاء",
@@ -197,7 +225,11 @@
     },
     "quickActivity": "نشاط سريع",
     "manualSync": "مزامنة يدوية",
-    "syncing": "جاري المزامنة"
+    "syncing": "جاري المزامنة",
+    "erpCreate": {
+      "button": "Create ERP Customer",
+      "alreadyIntegrated": "ERP customer already created"
+    }
   },
   "advancedFilter": {
     "columnName": "اسم العميل",
@@ -210,5 +242,8 @@
   "completion": "معدل الاكتمال",
   "customer360": {
     "button": "العميل 360"
-  }
+  },
+  "quickActivity": "Quick Activity",
+  "manualSync": "Manual Sync",
+  "syncing": "Syncing"
 }

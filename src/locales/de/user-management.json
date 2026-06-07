@@ -1,4 +1,76 @@
 {
+  "userManagement": {
+    "form": {
+      "editUser": "Benutzer bearbeiten",
+      "addUser": "Neuen Benutzer hinzufügen",
+      "editDescription": "Benutzerinformationen bearbeiten",
+      "addDescription": "Geben Sie neue Benutzerinformationen ein",
+      "username": "Benutzername",
+      "usernamePlaceholder": "Geben Sie den Benutzernamen ein",
+      "email": "E-Mail",
+      "emailPlaceholder": "Geben Sie die E-Mail-Adresse ein",
+      "password": "Passwort",
+      "passwordPlaceholder": "Bleibt das Feld leer, wird ein temporäres Passwort erstellt.",
+      "firstName": "Name",
+      "firstNamePlaceholder": "Namen eingeben",
+      "lastName": "Nachname",
+      "lastNamePlaceholder": "Geben Sie den Nachnamen ein",
+      "phoneNumber": "Telefon",
+      "phoneNumberPlaceholder": "Geben Sie die Telefonnummer ein",
+      "manager": "Manager",
+      "managerPlaceholder": "Select manager",
+      "noManager": "No manager",
+      "role": "Rolle",
+      "rolePlaceholder": "Rolle auswählen",
+      "permissionGroups": "Berechtigungsgruppen",
+      "isActive": "Aktiv",
+      "cancel": "Stornieren",
+      "saving": "Aufnahme...",
+      "save": "Speichern",
+      "selectAll": "Alles auswählen",
+      "permissionGroupsNoData": "Berechtigungsgruppe nicht gefunden"
+    },
+    "table": {
+      "loading": "Laden...",
+      "title": "User List",
+      "noData": "No data",
+      "id": "ID",
+      "username": "Username",
+      "email": "Email",
+      "fullName": "Full Name",
+      "manager": "Manager",
+      "role": "Role",
+      "status": "Status",
+      "createdDate": "Created Date",
+      "active": "Active",
+      "inactive": "Inactive",
+      "confirmed": "Confirmed",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "menu": "User Management",
+    "description": "Manage and Bearbeiten Benutzer",
+    "addButton": "Hinzufügen Neu User",
+    "searchPlaceholder": "Search Benutzer...",
+    "advancedFilter": {
+      "columnUsername": "Username",
+      "columnEmail": "Email",
+      "columnFullName": "Full Name",
+      "columnRole": "Role"
+    },
+    "stats": {
+      "totalUsers": "Total Benutzer",
+      "activeUsers": "Active Benutzer",
+      "newThisMonth": "Neu This Month",
+      "confirmedUsers": "Confirmed Benutzer",
+      "loading": "Laden..."
+    },
+    "messages": {
+      "error": "Ein Fehler ist aufgetreten"
+    }
+  },
   "menu": "Benutzerverwaltung",
   "description": "Benutzer verwalten und bearbeiten",
   "addButton": "Hinzufügen Neu User",
@@ -7,6 +79,7 @@
     "username": "Benutzername",
     "email": "E-Mail",
     "fullName": "Vollständiger Name",
+    "manager": "Manager",
     "role": "Rolle",
     "status": "Status",
     "createdDate": "Erstellungsdatum",
@@ -40,6 +113,9 @@
     "lastNamePlaceholder": "Nachname eingeben",
     "phoneNumber": "Phone Number",
     "phoneNumberPlaceholder": "Telefonnummer eingeben",
+    "manager": "Manager",
+    "managerPlaceholder": "Select manager",
+    "noManager": "No manager",
     "role": "Rolle",
     "rolePlaceholder": "Rolle auswählen",
     "isActive": "Aktiv",
@@ -65,73 +141,5 @@
   "delete": {
     "confirmTitle": "Delete User",
     "confirmMessage": "Are you sure you want to delete user {{username}}?"
-  },
-  "userManagement": {
-    "form": {
-      "editUser": "Benutzer bearbeiten",
-      "addUser": "Neuen Benutzer hinzufügen",
-      "editDescription": "Benutzerinformationen bearbeiten",
-      "addDescription": "Geben Sie neue Benutzerinformationen ein",
-      "username": "Benutzername",
-      "usernamePlaceholder": "Geben Sie den Benutzernamen ein",
-      "email": "E-Mail",
-      "emailPlaceholder": "Geben Sie die E-Mail-Adresse ein",
-      "password": "Passwort",
-      "passwordPlaceholder": "Bleibt das Feld leer, wird ein temporäres Passwort erstellt.",
-      "firstName": "Name",
-      "firstNamePlaceholder": "Namen eingeben",
-      "lastName": "Nachname",
-      "lastNamePlaceholder": "Geben Sie den Nachnamen ein",
-      "phoneNumber": "Telefon",
-      "phoneNumberPlaceholder": "Geben Sie die Telefonnummer ein",
-      "role": "Rolle",
-      "rolePlaceholder": "Rolle auswählen",
-      "permissionGroups": "Berechtigungsgruppen",
-      "isActive": "Aktiv",
-      "cancel": "Stornieren",
-      "saving": "Aufnahme...",
-      "save": "Speichern",
-      "selectAll": "Alles auswählen",
-      "permissionGroupsNoData": "Berechtigungsgruppe nicht gefunden"
-    },
-    "table": {
-      "loading": "Laden...",
-      "title": "User List",
-      "noData": "No data",
-      "id": "ID",
-      "username": "Username",
-      "email": "Email",
-      "fullName": "Full Name",
-      "role": "Role",
-      "status": "Status",
-      "createdDate": "Created Date",
-      "active": "Active",
-      "inactive": "Inactive",
-      "confirmed": "Confirmed",
-      "showing": "Showing {{from}}-{{to}} / {{total}}",
-      "page": "Page {{current}} / {{total}}",
-      "previous": "Previous",
-      "next": "Next"
-    },
-    "menu": "User Management",
-    "description": "Manage and Bearbeiten Benutzer",
-    "addButton": "Hinzufügen Neu User",
-    "searchPlaceholder": "Search Benutzer...",
-    "advancedFilter": {
-      "columnUsername": "Username",
-      "columnEmail": "Email",
-      "columnFullName": "Full Name",
-      "columnRole": "Role"
-    },
-    "stats": {
-      "totalUsers": "Total Benutzer",
-      "activeUsers": "Active Benutzer",
-      "newThisMonth": "Neu This Month",
-      "confirmedUsers": "Confirmed Benutzer",
-      "loading": "Laden..."
-    },
-    "messages": {
-      "error": "Ein Fehler ist aufgetreten"
-    }
   }
 }

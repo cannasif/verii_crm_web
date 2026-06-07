@@ -1,82 +1,82 @@
 {
   "activityType": {
     "table": {
-      "title": "Shipping List",
+      "title": "Liste des envois",
       "id": "ID",
-      "name": "Teslimat Adı",
-      "description": "Açıklama",
-      "createdDate": "Créerulma Tarihi",
-      "createdBy": "Créeran Kullanıcı",
-      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
+      "name": "Nom de l'expédition",
+      "description": "Description",
+      "createdDate": "Date de création",
+      "createdBy": "Créé par",
+      "showing": "Affichage de {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
     },
     "error": "Une erreur est survenue",
-    "create": "Yeni Teslimat Ekle",
+    "create": "Ajouter un nouvel envoi",
     "loading": "Chargement...",
-    "noData": "Veri yok",
-    "actions": "İşlemler",
+    "noData": "Aucune donnée",
+    "actions": "Actions",
     "cancel": "Annuler",
     "save": "Enregistrer",
-    "saving": "Kaydediliyor...",
+    "saving": "Enregistrement...",
     "form": {
-      "addTitle": "Yeni Teslimat Ekle",
-      "editTitle": "Teslimat Modifier",
-      "addDescription": "Yeni teslimat bilgisini girin",
-      "editDescription": "Teslimat bilgisini düzenleyin",
-      "name": "Teslimat Adı",
-      "namePlaceholder": "Teslimat adını girin",
-      "nameRequired": "Teslimat adı zorunludur",
-      "nameMaxLength": "Teslimat adı en fazla 100 karakter olabilir",
-      "description": "Açıklama",
-      "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
-      "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
+      "addTitle": "Ajouter un nouvel envoi",
+      "editTitle": "Modifier l'expédition",
+      "addDescription": "Saisissez les informations d'expédition",
+      "editDescription": "Modifier les informations d'expédition",
+      "name": "Nom de l'expédition",
+      "namePlaceholder": "Saisir le nom de l'expédition",
+      "nameRequired": "Le nom de l'expédition est requis",
+      "nameMaxLength": "Le nom de l'expédition peut contenir au maximum 100 caractères",
+      "description": "Description",
+      "descriptionPlaceholder": "Saisir la description (optionnel)",
+      "descriptionMaxLength": "La description peut contenir au maximum 500 caractères"
     },
     "stats": {
-      "totalActivityTypes": "Toplam Teslimat",
-      "activeActivityTypes": "Aktif Teslimat",
-      "newThisMonth": "Bu Ay Yeni"
+      "totalActivityTypes": "Total des envois",
+      "activeActivityTypes": "Envois actifs",
+      "newThisMonth": "Nouveaux ce mois-ci"
     },
     "messages": {
-      "createSuccess": "Teslimat başarıyla oluşturuldu",
-      "createError": "Teslimat oluşturulamadı",
-      "updateSuccess": "Teslimat başarıyla güncellendi",
-      "updateError": "Teslimat güncellenemedi",
-      "deleteSuccess": "Teslimat başarıyla silindi",
-      "deleteError": "Teslimat silinemedi"
+      "createSuccess": "L'expédition a été créée avec succès",
+      "createError": "Impossible de créer l'expédition",
+      "updateSuccess": "L'expédition a été mise à jour avec succès",
+      "updateError": "Impossible de mettre à jour l'expédition",
+      "deleteSuccess": "L'expédition a été supprimée avec succès",
+      "deleteError": "Impossible de supprimer l'expédition"
     }
   },
-  "menu": "Teslimat Yönetimi",
-  "description": "Teslimat tanımlarını yönetin ve düzenleyin",
-  "addButton": "Yeni Teslimat Ekle",
+  "menu": "Gestion des envois",
+  "description": "Gérez et modifiez les définitions d'expédition",
+  "addButton": "Ajouter un nouvel envoi",
   "loading": "Chargement...",
-  "noData": "Veri yok",
-  "actions": "İşlemler",
+  "noData": "Aucune donnée",
+  "actions": "Actions",
   "edit": "Modifier",
-  "deleteButton": "Sil",
+  "deleteButton": "Supprimer",
   "cancel": "Annuler",
   "save": "Enregistrer",
   "saving": "Kaydediliyor...",
-  "previous": "Önceki",
-  "next": "Sonraki",
+  "previous": "Précédent",
+  "next": "Suivant",
   "advancedFilter": {
-    "columnName": "Teslimat Adı",
-    "columnDescription": "Açıklama",
-    "columnCreatedBy": "Créeran"
+    "columnName": "Nom de l'expédition",
+    "columnDescription": "Description",
+    "columnCreatedBy": "Créé par"
   },
   "deleteConfirm": {
-    "confirmTitle": "Teslimatı Sil",
-    "confirmMessage": "{{name}} kaydını silmek istediğinizden emin misiniz?"
+    "confirmTitle": "Supprimer l'expédition",
+    "confirmMessage": "Êtes-vous sûr de vouloir supprimer {{name}} ?"
   },
   "messages": {
-    "deleteSuccess": "Teslimat başarıyla silindi",
-    "deleteError": "Teslimat silinemedi"
+    "deleteSuccess": "L'expédition a été supprimée avec succès",
+    "deleteError": "Impossible de supprimer l'expédition"
   },
   "table": {
-    "title": "Teslimat Listesi",
+    "title": "Liste des envois",
     "id": "ID",
-    "name": "Teslimat Adı",
-    "description": "Açıklama",
-    "createdDate": "Créerulma Tarihi",
-    "createdBy": "Créeran Kullanıcı"
+    "name": "Nom de l'expédition",
+    "description": "Description",
+    "createdDate": "Date de création",
+    "createdBy": "Créé par"
   }
 }

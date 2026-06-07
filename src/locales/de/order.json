@@ -38,7 +38,9 @@
     "validUntil": "Gültig bis",
     "currency": "Währung",
     "grandTotal": "Gesamtsumme",
-    "status": "Status"
+    "status": "Status",
+    "erpIntegrated": "Integration abgeschlossen",
+    "erpNotIntegrated": "Nicht integriert"
   },
   "detail": {
     "title": "Bestelldetails",
@@ -155,7 +157,25 @@
     "updateSuccess": "Sipariş satırları güncellendi.",
     "updateError": "Sipariş satırları güncellenemedi.",
     "deleteSuccess": "Sipariş satırı silindi.",
-    "deleteError": "Sipariş satırı silinemedi."
+    "deleteError": "Sipariş satırı silinemedi.",
+    "descriptionFieldsTitle": "Profil, Rebar, Schraube",
+    "descriptionField1Label": "Beschreibung 1",
+    "descriptionField2Label": "Beschreibung 2",
+    "descriptionField3Label": "Beschreibung 3",
+    "discountNumbered1": "1. Rabatt",
+    "discountNumbered2": "2. Rabatt",
+    "discountNumbered3": "3. Rabatt",
+    "windoProfileLabel": "Profil",
+    "windoRebarLabel": "Rebar",
+    "windoScrewLabel": "Schraube",
+    "selectWindoProfile": "Profil auswählen",
+    "selectWindoRebar": "Rebar auswählen",
+    "selectWindoScrew": "Schraube auswählen",
+    "searchWindoProfile": "Profil suchen...",
+    "searchWindoRebar": "Rebar suchen...",
+    "searchWindoScrew": "Schraube suchen...",
+    "windoNoneSelected": "Keine",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Wechselkurse",
@@ -253,7 +273,15 @@
     "startError": "Onay süreci başlatılamadı.",
     "rejectTitle": "Siparişi Reddet",
     "rejectDescription": "Siparişi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "rejectReasonPlaceholder": "Red nedeni",
+    "statusFilterLabel": "Freigabestatus",
+    "status": {
+      "notRequired": "Nicht erforderlich",
+      "waiting": "Ausstehend",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt",
+      "closed": "Abgeschlossen"
+    }
   },
   "approvalFlow": {
     "loading": "Onay akışı yükleniyor...",

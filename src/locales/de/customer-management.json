@@ -27,7 +27,8 @@
     "createdBy": "Erstellt von",
     "showing": "Zeige {{from}}-{{to}} / {{total}}",
     "page": "Seite {{current}} / {{total}}",
-    "defaultShippingAddressId": "Standardversandadresse"
+    "defaultShippingAddressId": "Standardversandadresse",
+    "title": "Customer List"
   },
   "form": {
     "addCustomer": "Hinzufügen Neu Customer",
@@ -104,7 +105,28 @@
     "websitePlaceholderExample": "www.sirket.com",
     "phonePlaceholderExample": "0555...",
     "phone2PlaceholderExample": "Alternatif telefon...",
-    "groupCodePlaceholder": "Grup kodu..."
+    "groupCodePlaceholder": "Grup kodu...",
+    "taxNumberExactLength": "Tax ID (VKN) must be exactly 10 digits",
+    "tcknNumberExactLength": "TCKN must be exactly 11 digits",
+    "groupCode": "Group Code",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "code": "Customer Code",
+    "creditLimit": "Credit Limit",
+    "countryPlaceholder": "Select country",
+    "cityPlaceholder": "Select city",
+    "districtPlaceholder": "Select district",
+    "customerTypePlaceholder": "Select customer type",
+    "conflict": {
+      "Email": "This email matches customer \"{{customerName}}\".",
+      "Phone1": "This phone matches customer \"{{customerName}}\".",
+      "Phone2": "This phone matches customer \"{{customerName}}\".",
+      "TaxNumber": "This tax number matches customer \"{{customerName}}\".",
+      "TcknNumber": "This TCKN matches customer \"{{customerName}}\".",
+      "CustomerCode": "This customer code matches customer \"{{customerName}}\".",
+      "CustomerName": "This name matches customer \"{{customerName}}\"."
+    }
   },
   "delete": {
     "action": "Delete",
@@ -126,7 +148,11 @@
     "updateSuccess": "Kunde erfolgreich aktualisiert",
     "updateError": "Kunde konnte nicht aktualisiert werden",
     "deleteSuccess": "Customer deleted successfully",
-    "deleteError": "Customer could not be deleted"
+    "deleteError": "Customer could not be deleted",
+    "syncQueued": "Customer sync queued. Job: {{jobId}}",
+    "syncError": "Customer sync could not be triggered",
+    "erpCreateSuccess": "Customer is created as Netsis customer.",
+    "erpCreateError": "Could not create customer in ERP."
   },
   "customerManagement": {
     "menu": "Kundenverwaltung",
@@ -171,7 +197,9 @@
       "deleteSuccess": "Kunde erfolgreich gelöscht",
       "deleteError": "Kunde konnte nicht gelöscht werden",
       "syncQueued": "Kundensynchronisation in Warteschlange. Auftrag: {{jobId}}",
-      "syncError": "Kundensynchronisation konnte nicht gestartet werden"
+      "syncError": "Kundensynchronisation konnte nicht gestartet werden",
+      "erpCreateSuccess": "Customer is created as Netsis customer.",
+      "erpCreateError": "Could not create customer in ERP."
     },
     "stats": {
       "totalCustomers": "Gesamtkunden",
@@ -198,7 +226,11 @@
     },
     "quickActivity": "Schnellaktivität",
     "manualSync": "Manuelle Synchronisation",
-    "syncing": "Synchronisation läuft"
+    "syncing": "Synchronisation läuft",
+    "erpCreate": {
+      "button": "Create ERP Customer",
+      "alreadyIntegrated": "ERP customer already created"
+    }
   },
   "advancedFilter": {
     "columnName": "Kundenname",
@@ -211,5 +243,7 @@
   "completion": "Vollständigkeitsrate",
   "customer360": {
     "button": "Kunde 360"
-  }
+  },
+  "manualSync": "Manual Sync",
+  "syncing": "Syncing"
 }

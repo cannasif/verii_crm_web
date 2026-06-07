@@ -1,4 +1,76 @@
 {
+  "userManagement": {
+    "form": {
+      "editUser": "Edit User",
+      "addUser": "Add New User",
+      "editDescription": "Edit user information",
+      "addDescription": "Enter new user information",
+      "username": "User name",
+      "usernamePlaceholder": "Enter username",
+      "email": "Email",
+      "emailPlaceholder": "Enter email address",
+      "password": "Password",
+      "passwordPlaceholder": "If left blank, temporary password will be generated",
+      "firstName": "Name",
+      "firstNamePlaceholder": "Enter first name",
+      "lastName": "Surname",
+      "lastNamePlaceholder": "Enter last name",
+      "phoneNumber": "Telephone",
+      "phoneNumberPlaceholder": "Enter phone number",
+      "manager": "Manager",
+      "managerPlaceholder": "Select manager",
+      "noManager": "No manager",
+      "role": "Role",
+      "rolePlaceholder": "Select role",
+      "permissionGroups": "Permission Groups",
+      "isActive": "Active",
+      "cancel": "Cancel",
+      "saving": "Recording...",
+      "save": "Save",
+      "selectAll": "Select all",
+      "permissionGroupsNoData": "Permission group not found"
+    },
+    "table": {
+      "loading": "Loading...",
+      "title": "User List",
+      "noData": "No data",
+      "id": "ID",
+      "username": "Username",
+      "email": "Email",
+      "fullName": "Full Name",
+      "manager": "Manager",
+      "role": "Role",
+      "status": "Status",
+      "createdDate": "Created Date",
+      "active": "Active",
+      "inactive": "Inactive",
+      "confirmed": "Confirmed",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "menu": "User Management",
+    "description": "Manage and edit users",
+    "addButton": "Add New User",
+    "searchPlaceholder": "Search users...",
+    "advancedFilter": {
+      "columnUsername": "Username",
+      "columnEmail": "Email",
+      "columnFullName": "Full Name",
+      "columnRole": "Role"
+    },
+    "stats": {
+      "totalUsers": "Total Users",
+      "activeUsers": "Active Users",
+      "newThisMonth": "New This Month",
+      "confirmedUsers": "Confirmed Users",
+      "loading": "Loading..."
+    },
+    "messages": {
+      "error": "An error occurred"
+    }
+  },
   "menu": "User Management",
   "description": "Manage and edit users",
   "addButton": "Add New User",
@@ -69,77 +141,5 @@
   "delete": {
     "confirmTitle": "Delete User",
     "confirmMessage": "Are you sure you want to delete user {{username}}?"
-  },
-  "userManagement": {
-    "menu": "User Management",
-    "description": "Manage and edit users",
-    "addButton": "Add New User",
-    "searchPlaceholder": "Search users...",
-    "advancedFilter": {
-      "columnUsername": "Username",
-      "columnEmail": "Email",
-      "columnFullName": "Full Name",
-      "columnRole": "Role"
-    },
-    "form": {
-      "editUser": "Edit User",
-      "addUser": "Add New User",
-      "editDescription": "Edit user information",
-      "addDescription": "Enter new user information",
-      "username": "User name",
-      "usernamePlaceholder": "Enter username",
-      "email": "Email",
-      "emailPlaceholder": "Enter email address",
-      "password": "Password",
-      "passwordPlaceholder": "If left blank, temporary password will be generated",
-      "firstName": "Name",
-      "firstNamePlaceholder": "Enter first name",
-      "lastName": "Surname",
-      "lastNamePlaceholder": "Enter last name",
-      "phoneNumber": "Telephone",
-      "phoneNumberPlaceholder": "Enter phone number",
-      "manager": "Manager",
-      "managerPlaceholder": "Select manager",
-      "noManager": "No manager",
-      "role": "Role",
-      "rolePlaceholder": "Select role",
-      "permissionGroups": "Permission Groups",
-      "isActive": "Active",
-      "cancel": "Cancel",
-      "saving": "Recording...",
-      "save": "Save",
-      "selectAll": "Select all",
-      "permissionGroupsNoData": "Permission group not found"
-    },
-    "table": {
-      "title": "User List",
-      "loading": "Loading...",
-      "noData": "No data",
-      "id": "ID",
-      "username": "Username",
-      "email": "Email",
-      "fullName": "Full Name",
-      "manager": "Manager",
-      "role": "Role",
-      "status": "Status",
-      "createdDate": "Created Date",
-      "active": "Active",
-      "inactive": "Inactive",
-      "confirmed": "Confirmed",
-      "showing": "Showing {{from}}-{{to}} / {{total}}",
-      "page": "Page {{current}} / {{total}}",
-      "previous": "Previous",
-      "next": "Next"
-    },
-    "stats": {
-      "totalUsers": "Total Users",
-      "activeUsers": "Active Users",
-      "newThisMonth": "New This Month",
-      "confirmedUsers": "Confirmed Users",
-      "loading": "Loading..."
-    },
-    "messages": {
-      "error": "An error occurred"
-    }
   }
 }

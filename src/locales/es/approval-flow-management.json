@@ -2,9 +2,9 @@
   "approvalFlow": {
     "menu": "Gestión de Flujos de Aprobación",
     "description": "Gestionar y organizar flujos de aprobación",
-    "addButton": "Añadir Nuevo Flujo",
+    "addButton": "Agregar Nuevo Flujo de Aprobación",
     "table": {
-      "id": "IDENTIFICACIÓN",
+      "id": "ID",
       "documentType": "Tipo de Documento",
       "description": "Descripción",
       "isActive": "Activo",

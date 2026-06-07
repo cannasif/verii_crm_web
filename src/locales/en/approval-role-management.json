@@ -19,7 +19,7 @@
       "page": "Page {{current}} / {{total}}",
       "previous": "Previous",
       "next": "Next",
-      "title": "Onay Rolü Listesi"
+      "title": "Approval Roles"
     },
     "delete": {
       "confirmTitle": "Delete Confirmation",
@@ -49,12 +49,12 @@
       "saving": "Saving..."
     },
     "advancedFilter": {
-      "columnName": "Rol Adı",
-      "columnApprovalRoleGroupName": "Rol Grubu",
-      "columnMaxAmount": "Maks. Tutar"
+      "columnName": "Role Name",
+      "columnApprovalRoleGroupName": "Role Group",
+      "columnMaxAmount": "Maximum Amount"
     },
     "messages": {
-      "error": "Hata oluştu"
+      "error": "An error occurred"
     }
   }
 }

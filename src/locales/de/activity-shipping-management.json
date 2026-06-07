@@ -1,82 +1,82 @@
 {
   "activityType": {
     "table": {
-      "title": "Shipping List",
+      "title": "Lieferungsliste",
       "id": "ID",
-      "name": "Teslimat Adı",
-      "description": "Açıklama",
-      "createdDate": "Erstellenulma Tarihi",
-      "createdBy": "Erstellenan Kullanıcı",
-      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
+      "name": "Lieferungsname",
+      "description": "Beschreibung",
+      "createdDate": "Erstellungsdatum",
+      "createdBy": "Erstellt von",
+      "showing": "Zeigt {{from}}-{{to}} von {{total}}",
+      "page": "Seite {{current}} / {{total}}"
     },
     "error": "Fehler ist aufgetreten",
-    "create": "Yeni Teslimat Ekle",
+    "create": "Neue Lieferung hinzufügen",
     "loading": "Wird geladen...",
-    "noData": "Veri yok",
-    "actions": "İşlemler",
+    "noData": "Keine Daten gefunden",
+    "actions": "Aktionen",
     "cancel": "Abbrechen",
     "save": "Speichern",
-    "saving": "Kaydediliyor...",
+    "saving": "Wird gespeichert...",
     "form": {
-      "addTitle": "Yeni Teslimat Ekle",
-      "editTitle": "Teslimat Bearbeiten",
-      "addDescription": "Yeni teslimat bilgisini girin",
-      "editDescription": "Teslimat bilgisini düzenleyin",
-      "name": "Teslimat Adı",
-      "namePlaceholder": "Teslimat adını girin",
-      "nameRequired": "Teslimat adı zorunludur",
-      "nameMaxLength": "Teslimat adı en fazla 100 karakter olabilir",
-      "description": "Açıklama",
-      "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
-      "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
+      "addTitle": "Neue Lieferung hinzufügen",
+      "editTitle": "Lieferung bearbeiten",
+      "addDescription": "Geben Sie neue Versandinformationen ein",
+      "editDescription": "Versandinformationen bearbeiten",
+      "name": "Lieferungsname",
+      "namePlaceholder": "Lieferungsname eingeben",
+      "nameRequired": "Lieferungsname ist erforderlich",
+      "nameMaxLength": "Lieferungsname darf höchstens 100 Zeichen haben",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreibung eingeben (optional)",
+      "descriptionMaxLength": "Beschreibung darf höchstens 500 Zeichen haben"
     },
     "stats": {
-      "totalActivityTypes": "Toplam Teslimat",
-      "activeActivityTypes": "Aktif Teslimat",
-      "newThisMonth": "Bu Ay Yeni"
+      "totalActivityTypes": "Gesamte Lieferungen",
+      "activeActivityTypes": "Aktive Lieferungen",
+      "newThisMonth": "Neu diesen Monat"
     },
     "messages": {
-      "createSuccess": "Teslimat başarıyla oluşturuldu",
-      "createError": "Teslimat oluşturulamadı",
-      "updateSuccess": "Teslimat başarıyla güncellendi",
-      "updateError": "Teslimat güncellenemedi",
-      "deleteSuccess": "Teslimat başarıyla silindi",
-      "deleteError": "Teslimat silinemedi"
+      "createSuccess": "Lieferung erfolgreich erstellt",
+      "createError": "Lieferung konnte nicht erstellt werden",
+      "updateSuccess": "Lieferung erfolgreich aktualisiert",
+      "updateError": "Lieferung konnte nicht aktualisiert werden",
+      "deleteSuccess": "Lieferung erfolgreich gelöscht",
+      "deleteError": "Lieferung konnte nicht gelöscht werden"
     }
   },
-  "menu": "Teslimat Yönetimi",
-  "description": "Teslimat tanımlarını yönetin ve düzenleyin",
-  "addButton": "Yeni Teslimat Ekle",
+  "menu": "Versandverwaltung",
+  "description": "Verwalten und bearbeiten Sie Versanddefinitionen",
+  "addButton": "Neue Lieferung hinzufügen",
   "loading": "Wird geladen...",
-  "noData": "Veri yok",
-  "actions": "İşlemler",
+  "noData": "Keine Daten gefunden",
+  "actions": "Aktionen",
   "edit": "Bearbeiten",
-  "deleteButton": "Sil",
+  "deleteButton": "Löschen",
   "cancel": "Abbrechen",
   "save": "Speichern",
   "saving": "Kaydediliyor...",
-  "previous": "Önceki",
-  "next": "Sonraki",
+  "previous": "Zurück",
+  "next": "Weiter",
   "advancedFilter": {
-    "columnName": "Teslimat Adı",
-    "columnDescription": "Açıklama",
-    "columnCreatedBy": "Erstellenan"
+    "columnName": "Lieferungsname",
+    "columnDescription": "Beschreibung",
+    "columnCreatedBy": "Erstellt von"
   },
   "deleteConfirm": {
-    "confirmTitle": "Teslimatı Sil",
-    "confirmMessage": "{{name}} kaydını silmek istediğinizden emin misiniz?"
+    "confirmTitle": "Lieferung löschen",
+    "confirmMessage": "Sind Sie sicher, dass Sie {{name}} löschen möchten?"
   },
   "messages": {
-    "deleteSuccess": "Teslimat başarıyla silindi",
-    "deleteError": "Teslimat silinemedi"
+    "deleteSuccess": "Lieferung erfolgreich gelöscht",
+    "deleteError": "Lieferung konnte nicht gelöscht werden"
   },
   "table": {
-    "title": "Teslimat Listesi",
+    "title": "Lieferungsliste",
     "id": "ID",
-    "name": "Teslimat Adı",
-    "description": "Açıklama",
-    "createdDate": "Erstellenulma Tarihi",
-    "createdBy": "Erstellenan Kullanıcı"
+    "name": "Lieferungsname",
+    "description": "Beschreibung",
+    "createdDate": "Erstellungsdatum",
+    "createdBy": "Erstellt von"
   }
 }

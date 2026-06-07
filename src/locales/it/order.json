@@ -38,7 +38,9 @@
     "validUntil": "Valido fino a",
     "currency": "Valuta",
     "grandTotal": "Totale Generale",
-    "status": "Stato"
+    "status": "Stato",
+    "erpIntegrated": "Integrazione completata",
+    "erpNotIntegrated": "Non integrato"
   },
   "detail": {
     "title": "Dettaglio Ordine",
@@ -155,7 +157,25 @@
     "updateSuccess": "Sipariş satırları güncellendi.",
     "updateError": "Sipariş satırları güncellenemedi.",
     "deleteSuccess": "Sipariş satırı silindi.",
-    "deleteError": "Sipariş satırı silinemedi."
+    "deleteError": "Sipariş satırı silinemedi.",
+    "descriptionFieldsTitle": "Profilo, tondino, vite",
+    "descriptionField1Label": "Descrizione 1",
+    "descriptionField2Label": "Descrizione 2",
+    "descriptionField3Label": "Descrizione 3",
+    "discountNumbered1": "1. Sconto",
+    "discountNumbered2": "2. Sconto",
+    "discountNumbered3": "3. Sconto",
+    "windoProfileLabel": "Profilo",
+    "windoRebarLabel": "Tondino",
+    "windoScrewLabel": "Vite",
+    "selectWindoProfile": "Seleziona profilo",
+    "selectWindoRebar": "Seleziona tondino",
+    "selectWindoScrew": "Seleziona vite",
+    "searchWindoProfile": "Cerca profilo...",
+    "searchWindoRebar": "Cerca tondino...",
+    "searchWindoScrew": "Cerca vite...",
+    "windoNoneSelected": "Nessuno",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Tassi di Cambio",
@@ -253,7 +273,15 @@
     "startError": "Onay süreci başlatılamadı.",
     "rejectTitle": "Siparişi Reddet",
     "rejectDescription": "Siparişi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "rejectReasonPlaceholder": "Red nedeni",
+    "statusFilterLabel": "Stato di approvazione",
+    "status": {
+      "notRequired": "Non richiesto",
+      "waiting": "In attesa",
+      "approved": "Approvato",
+      "rejected": "Rifiutato",
+      "closed": "Chiuso"
+    }
   },
   "approvalFlow": {
     "loading": "Onay akışı yükleniyor...",

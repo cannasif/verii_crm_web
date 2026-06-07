@@ -19,7 +19,7 @@
       "page": "صفحة {{current}} / {{total}}",
       "previous": "السابق",
       "next": "التالي",
-      "title": "Onay Rolü Listesi"
+      "title": "أدوار الموافقة"
     },
     "delete": {
       "confirmTitle": "تأكيد الحذف",
@@ -49,9 +49,9 @@
       "saving": "جاري الحفظ..."
     },
     "advancedFilter": {
-      "columnName": "Rol Adı",
-      "columnApprovalRoleGroupName": "Rol Grubu",
-      "columnMaxAmount": "Maks. Tutar"
+      "columnName": "اسم الدور",
+      "columnApprovalRoleGroupName": "مجموعة الأدوار",
+      "columnMaxAmount": "الحد الأقصى للمبلغ"
     },
     "messages": {
       "error": "حدث خطأ"

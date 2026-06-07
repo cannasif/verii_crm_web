@@ -83,7 +83,12 @@
   "mediumProfit": "Mittlerer Gewinn",
   "lowProfit": "Niedriger Gewinn",
   "negativeProfit": "Verlust",
+  "advancedFilter": {
+    "columnErpGroupCode": "ERP-Gruppencode",
+    "columnCurrency": "Währung"
+  },
   "table": {
+    "title": "Preisgruppenliste",
     "id": "AUSWEIS",
     "erpGroupCode": "ERP-Produktgruppencode",
     "currency": "Währung",
@@ -96,11 +101,6 @@
     "createdDate": "Erstellungsdatum",
     "updatedDate": "Aktualisierungsdatum",
     "showing": "{{from}}-{{to}} / {{total}} angezeigt",
-    "page": "Seite {{current}} / {{total}}",
-    "title": "Preisgruppenliste"
-  },
-  "advancedFilter": {
-    "columnErpGroupCode": "ERP-Gruppencode",
-    "columnCurrency": "Währung"
+    "page": "Seite {{current}} / {{total}}"
   }
 }

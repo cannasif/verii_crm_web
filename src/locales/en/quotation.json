@@ -280,7 +280,15 @@
     "startError": "Approval flow could not be started.",
     "rejectTitle": "Reject quotation",
     "rejectDescription": "Enter the reason for rejection.",
-    "rejectReasonPlaceholder": "Reason for rejection"
+    "rejectReasonPlaceholder": "Reason for rejection",
+    "statusFilterLabel": "Approval status",
+    "status": {
+      "notRequired": "Not required",
+      "waiting": "Waiting",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "closed": "Closed"
+    }
   },
   "approvalFlow": {
     "loading": "Loading approval flow...",
@@ -340,5 +348,12 @@
     "rejectTitle": "Reject quotation",
     "rejectDescription": "Enter the reason for rejecting this quotation.",
     "rejectReasonPlaceholder": "Rejection reason"
-  }
+  },
+  "date": "Date",
+  "offerNo": "Offer No",
+  "customerAccount": "Customer Account",
+  "export": "Export",
+  "exportPdf": "Export PDF",
+  "shareMail": "Share by Mail",
+  "shareWhatsapp": "Share by WhatsApp"
 }

@@ -1,10 +1,14 @@
 {
+  "addButton": "Add New Title",
   "loading": "Loading...",
   "noData": "No data found",
+  "error": "An error occurred",
   "search": "Search...",
   "refresh": "Refresh",
   "previous": "Previous",
   "next": "Next",
+  "menu": "Title Management",
+  "description": "Manage and edit titles",
   "advancedFilter": {
     "columnTitleName": "Title Name",
     "columnCode": "Code"
@@ -32,7 +36,7 @@
     "createdBy": "Created By",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
-    "title": "Ünvan Listesi"
+    "title": "Title List"
   },
   "form": {
     "addTitle": "Add New Title",
@@ -52,8 +56,8 @@
     "activeTitles": "Active titles",
     "newThisMonth": "New this month"
   },
-  "titleManagement": {
-    "error": "Hata oluştu"
-  },
-  "error": "Hata oluştu"
+  "messages": {
+    "deleteSuccess": "Title deleted successfully",
+    "deleteError": "Failed to delete title"
+  }
 }

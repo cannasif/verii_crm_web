@@ -1,33 +1,4 @@
 {
-  "title": "Gestione Magazzino",
-  "description": "Tracciamento e gestione dei livelli di magazzino",
-  "filter": {
-    "search": "Cerca",
-    "warehouse": "Magazzino",
-    "product": "Prodotto",
-    "category": "Categoria"
-  },
-  "table": {
-    "productCode": "Codice Prodotto",
-    "productName": "Nome Prodotto",
-    "warehouse": "Magazzino",
-    "quantity": "Quantità",
-    "unit": "Unità",
-    "status": "Stato",
-    "lastUpdated": "Ultimo Aggiornamento"
-  },
-  "status": {
-    "inStock": "Disponibile",
-    "lowStock": "Scorta Bassa",
-    "outOfStock": "Esaurito"
-  },
-  "movements": {
-    "title": "Movimenti di Magazzino",
-    "in": "Entrata",
-    "out": "Uscita",
-    "transfer": "Trasferimento",
-    "adjustment": "Rettifica"
-  },
   "list": {
     "title": "Prodotti",
     "description": "Gestisci i prodotti sincronizzati con l'ERP",
@@ -47,7 +18,10 @@
     "refresh": "Refresh",
     "loading": "Caricamento...",
     "loadError": "An error occurred while loading data.",
-    "noData": "No records found."
+    "noData": "No records found.",
+    "warehouseBalance": "Depo bakiyesi",
+    "warehouseBalanceTooltipBranch": "Şube {{branch}}",
+    "warehouseBalanceTooltipLastSync": "Son senkron: {{date}}"
   },
   "detail": {
     "title": "Dettaglio prodotto",
@@ -92,7 +66,20 @@
     "summary": "Özet",
     "addRelation": "Bağlı Stok Ekle",
     "saving": "Kaydediliyor...",
-    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı"
+    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı",
+    "warehouseBalances": {
+      "title": "Depo Bakiyeleri",
+      "totalLabel": "Toplam bakiye",
+      "warehouseCount": "{{count}} depo",
+      "colWarehouse": "Depo",
+      "colBranch": "Şube",
+      "colBalance": "Bakiye",
+      "colLastSync": "Son senkron",
+      "emptyTitle": "Depo bakiyesi kaydı yok",
+      "emptyDesc": "Bu stok için CRM depo bakiye tablosunda (RII_WAREHOUSE_STOCK_BALANCE) kayıt bulunamadı. ERP'de bakiye olsa bile ekranda görünmesi için depo bakiye senkronizasyonunun çalışmış olması gerekir.",
+      "loadErrorTitle": "Bakiyeler yüklenemedi",
+      "loadErrorDesc": "Depo stok bakiyeleri alınırken bir hata oluştu."
+    }
   },
   "images": {
     "upload": "Carica",
@@ -115,7 +102,7 @@
   },
   "relations": {
     "add": "Aggiungi relazione",
-    "relatedStock": "Prodotto correlato",
+    "relatedStock": "Stock collegato",
     "relatedStock.required": "È obbligatorio selezionare il prodotto correlato",
     "quantity": "Quantità",
     "quantity.positive": "La quantità deve essere un numero positivo",

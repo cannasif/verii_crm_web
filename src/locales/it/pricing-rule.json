@@ -1,42 +1,114 @@
 {
-  "title": "Regole di Prezzo",
-  "description": "Gestisci le regole di prezzo e gli sconti",
-  "create": "Nuova Regola",
-  "edit": "Modifica Regola",
-  "delete": {
-    "button": "Delete",
-    "confirmTitle": "Delete Confirmation",
-    "confirmMessage": "Are you sure you want to delete this record?",
-    "action": "Sil"
+  "pricingRule": {
+    "loading": "Caricamento...",
+    "loadingDescription": "Caricamento dati, attendere prego",
+    "noData": "Nessun dato",
+    "error": "Si è verificato un errore",
+    "actions": "Azioni",
+    "list": {
+      "title": "Regole di Prezzo",
+      "description": "Gestisci e modifica le regole di prezzo",
+      "add": "Aggiungi Nuova Regola"
+    },
+    "table": {
+      "title": "Elenco Regole di Prezzo",
+      "ruleCode": "Codice Regola",
+      "ruleName": "Nome Regola",
+      "ruleType": "Tipo di Regola",
+      "validFrom": "Valido Dal",
+      "validTo": "Valido Fino Al",
+      "customer": "Cliente",
+      "currency": "Valuta",
+      "status": "Stato",
+      "actions": "Azioni"
+    },
+    "status": {
+      "active": "Attivo",
+      "inactive": "Inattivo"
+    },
+    "ruleType": {
+      "demand": "Richiesta",
+      "quotation": "Preventivo",
+      "order": "Ordine",
+      "unknown": "Sconosciuto"
+    },
+    "form": {
+      "cancel": "Annulla",
+      "save": "Salva",
+      "create": "Nuova Regola di Prezzo",
+      "edit": "Modifica Regola di Prezzo",
+      "createDescription": "Inserisci le informazioni della nuova regola di prezzo",
+      "editDescription": "Modifica le informazioni della regola di prezzo",
+      "tabs": {
+        "header": "Informazioni Generali",
+        "lines": "Righe",
+        "salesmen": "Venditori"
+      },
+      "lines": {
+        "required": "È necessario aggiungere almeno 1 riga",
+        "requiredMessage": "Si prega di aggiungere almeno una riga"
+      }
+    },
+    "lines": {
+      "title": "Righe Regola di Prezzo",
+      "section": {
+        "stock": "Info Stock",
+        "pricing": "Info Prezzi"
+      },
+      "badgeCount": "RIGA",
+      "createTitle": "Aggiungi Riga",
+      "editTitle": "Modifica Riga",
+      "dialogDescription": "Inserisci le informazioni della riga della regola di prezzo",
+      "selectStock": "Aggiungi Stock alle Righe",
+      "empty": "Nessuna riga ancora aggiunta",
+      "addFirst": "Aggiungi la prima riga",
+      "stokCode": "Codice Stock",
+      "minQuantity": "Quantità Min",
+      "maxQuantity": "Quantità Max",
+      "fixedUnitPrice": "Prezzo Unitario Fisso",
+      "currencyCode": "Valuta",
+      "discount1": "Sconto 1",
+      "discount2": "Sconto 2",
+      "discount3": "Sconto 3",
+      "discount1Rate": "Aliquota sconto 1",
+      "discount1Amount": "Importo sconto 1",
+      "discount2Rate": "Aliquota sconto 2",
+      "discount2Amount": "Importo sconto 2",
+      "discount3Rate": "Aliquota sconto 3",
+      "discount3Amount": "Importo sconto 3",
+      "addConfirmTitle": "Aggiungi Riga",
+      "addConfirmMessage": "{{code}} sarà aggiunto a questa regola. Confermi?",
+      "addSuccess": "Riga aggiunta",
+      "addSuccessMessage": "Riga della regola di prezzo aggiunta con successo",
+      "addError": "Impossibile aggiungere la riga",
+      "deleteConfirmTitle": "Elimina Riga",
+      "deleteConfirmMessage": "Sei sicuro di voler eliminare la riga {{code}}?",
+      "deleteSuccess": "Riga eliminata",
+      "deleteSuccessMessage": "Riga della regola di prezzo eliminata con successo",
+      "deleteError": "Impossibile eliminare la riga",
+      "stokCodeRequired": "Il codice stock è obbligatorio"
+    }
+  },
+  "loading": "Caricamento...",
+  "loadingDescription": "Caricamento delle informazioni sulle regole di prezzo",
+  "list": {
+    "title": "Regole di prezzo",
+    "description": "Gestisci le regole di prezzo e le loro righe",
+    "add": "Aggiungi regola",
+    "empty": "Nessuna regola di prezzo"
   },
   "table": {
-    "id": "ID",
-    "name": "Nome Regola",
-    "description": "Descrizione",
-    "priority": "Priorità",
-    "status": "Stato",
-    "startDate": "Data Inizio",
-    "endDate": "Data Fine",
-    "actions": "Azioni",
     "ruleCode": "Codice Regola",
     "ruleName": "Nome Regola",
     "ruleType": "Tipo di Regola",
     "validFrom": "Valido Dal",
     "validTo": "Valido Fino Al",
     "customer": "Cliente",
-    "currency": "Valuta"
+    "currency": "Valuta",
+    "status": "Stato",
+    "actions": "Azioni"
   },
   "form": {
-    "name": "Nome Regola",
-    "description": "Descrizione",
-    "priority": "Priorità",
-    "status": "Stato",
-    "active": "Attivo",
-    "passive": "Inattivo",
-    "startDate": "Data Inizio",
-    "endDate": "Data Fine",
-    "conditions": "Condizioni",
-    "actions": "Azioni Prezzo",
     "cancel": "Annulla",
     "save": "Salva",
     "saving": "Saving...",
@@ -70,19 +142,11 @@
       "minQuantityInvalidMessage": "La quantità minima non può essere inferiore a 0"
     }
   },
-  "messages": {
-    "createSuccess": "Regola creata con successo",
-    "updateSuccess": "Regola aggiornata con successo",
-    "deleteSuccess": "Regola eliminata con successo",
-    "confirmDelete": "Sei sicuro di voler eliminare questa regola?"
-  },
-  "loading": "Caricamento...",
-  "loadingDescription": "Caricamento delle informazioni sulle regole di prezzo",
-  "list": {
-    "title": "Regole di prezzo",
-    "description": "Gestisci le regole di prezzo e le loro righe",
-    "add": "Aggiungi regola",
-    "empty": "Nessuna regola di prezzo"
+  "delete": {
+    "button": "Delete",
+    "confirmTitle": "Delete Confirmation",
+    "confirmMessage": "Are you sure you want to delete this record?",
+    "action": "Sil"
   },
   "salesmen": {
     "title": "Venditori",
@@ -173,95 +237,5 @@
     "active": "Attivo",
     "inactive": "Inattivo",
     "expired": "Scaduto"
-  },
-  "pricingRule": {
-    "loading": "Caricamento...",
-    "loadingDescription": "Caricamento dati, attendere prego",
-    "noData": "Nessun dato",
-    "error": "Si è verificato un errore",
-    "actions": "Azioni",
-    "list": {
-      "title": "Regole di Prezzo",
-      "description": "Gestisci e modifica le regole di prezzo",
-      "add": "Aggiungi Nuova Regola"
-    },
-    "table": {
-      "title": "Elenco Regole di Prezzo",
-      "ruleCode": "Codice Regola",
-      "ruleName": "Nome Regola",
-      "ruleType": "Tipo di Regola",
-      "validFrom": "Valido Dal",
-      "validTo": "Valido Fino Al",
-      "customer": "Cliente",
-      "currency": "Valuta",
-      "status": "Stato",
-      "actions": "Azioni"
-    },
-    "status": {
-      "active": "Attivo",
-      "inactive": "Inattivo"
-    },
-    "ruleType": {
-      "demand": "Richiesta",
-      "quotation": "Preventivo",
-      "order": "Ordine",
-      "unknown": "Sconosciuto"
-    },
-    "lines": {
-      "section": {
-        "stock": "Info Stock",
-        "pricing": "Info Prezzi"
-      },
-      "badgeCount": "RIGA",
-      "createTitle": "Aggiungi Riga",
-      "editTitle": "Modifica Riga",
-      "dialogDescription": "Inserisci le informazioni della riga della regola di prezzo",
-      "title": "Righe Regola di Prezzo",
-      "selectStock": "Aggiungi Stock alle Righe",
-      "empty": "Nessuna riga ancora aggiunta",
-      "addFirst": "Aggiungi la prima riga",
-      "stokCode": "Codice Stock",
-      "minQuantity": "Quantità Min",
-      "maxQuantity": "Quantità Max",
-      "fixedUnitPrice": "Prezzo Unitario Fisso",
-      "currencyCode": "Valuta",
-      "discount1": "Sconto 1",
-      "discount2": "Sconto 2",
-      "discount3": "Sconto 3",
-      "discount1Rate": "Aliquota sconto 1",
-      "discount1Amount": "Importo sconto 1",
-      "discount2Rate": "Aliquota sconto 2",
-      "discount2Amount": "Importo sconto 2",
-      "discount3Rate": "Aliquota sconto 3",
-      "discount3Amount": "Importo sconto 3",
-      "addConfirmTitle": "Aggiungi Riga",
-      "addConfirmMessage": "{{code}} sarà aggiunto a questa regola. Confermi?",
-      "addSuccess": "Riga aggiunta",
-      "addSuccessMessage": "Riga della regola di prezzo aggiunta con successo",
-      "addError": "Impossibile aggiungere la riga",
-      "deleteConfirmTitle": "Elimina Riga",
-      "deleteConfirmMessage": "Sei sicuro di voler eliminare la riga {{code}}?",
-      "deleteSuccess": "Riga eliminata",
-      "deleteSuccessMessage": "Riga della regola di prezzo eliminata con successo",
-      "deleteError": "Impossibile eliminare la riga",
-      "stokCodeRequired": "Il codice stock è obbligatorio"
-    },
-    "form": {
-      "cancel": "Annulla",
-      "save": "Salva",
-      "create": "Nuova Regola di Prezzo",
-      "edit": "Modifica Regola di Prezzo",
-      "createDescription": "Inserisci le informazioni della nuova regola di prezzo",
-      "editDescription": "Modifica le informazioni della regola di prezzo",
-      "tabs": {
-        "header": "Informazioni Generali",
-        "lines": "Righe",
-        "salesmen": "Venditori"
-      },
-      "lines": {
-        "required": "È necessario aggiungere almeno 1 riga",
-        "requiredMessage": "Si prega di aggiungere almeno una riga"
-      }
-    }
   }
 }

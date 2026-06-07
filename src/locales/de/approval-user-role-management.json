@@ -2,13 +2,13 @@
   "approvalUserRole": {
     "menu": "Genehmigungsbenutzerrollen-Verwaltung",
     "description": "Verwalten und bearbeiten Sie Genehmigungsbenutzerrollen",
-    "addButton": "Hinzufügen Neu Role",
+    "addButton": "Neue Rollen hinzufügen",
     "searchPlaceholder": "Suchen...",
     "refresh": "Aktualisieren",
     "loading": "Laden...",
     "noData": "Keine Daten",
     "table": {
-      "id": "AUSWEIS",
+      "id": "ID",
       "userFullName": "Benutzer",
       "approvalRoleName": "Genehmigungsrolle",
       "createdDate": "Erstellungsdatum",
@@ -18,17 +18,17 @@
       "page": "Seite {{current}} / {{total}}",
       "previous": "Vorherige",
       "next": "Nächste",
-      "title": "Onay Kullanıcı Rolleri"
+      "title": "Genehmigungsbenutzerrollen"
     },
     "delete": {
-      "title": "Delete Role",
-      "confirmMessage": "Are you sure you want to delete this user role?",
-      "confirmButton": "Delete",
+      "title": "Rolle löschen",
+      "confirmMessage": "Sind Sie sicher, dass Sie diese Benutzerrolle löschen möchten?",
+      "confirmButton": "Löschen",
       "cancelButton": "Abbrechen"
     },
     "form": {
       "editTitle": "Genehmigungsbenutzerrolle bearbeiten",
-      "addTitle": "Hinzufügen Neu Approval User Role",
+      "addTitle": "Neue Genehmigungsbenutzerrolle hinzufügen",
       "editDescription": "Genehmigungsbenutzerrollen-Informationen bearbeiten",
       "addDescription": "Neue Genehmigungsbenutzerrollen-Informationen eingeben",
       "userId": "Benutzer",
@@ -38,15 +38,15 @@
       "selectApprovalRole": "Genehmigungsrolle auswählen",
       "noApprovalRoleSelected": "Keine Genehmigungsrolle ausgewählt",
       "save": "Speichern",
-      "saving": "Speichert...",
+      "saving": "Wird gespeichert...",
       "cancel": "Abbrechen",
-      "userIdRequired": "User selection is required",
-      "approvalRoleIdRequired": "Approval role selection is required"
+      "userIdRequired": "Benutzerauswahl ist erforderlich",
+      "approvalRoleIdRequired": "Auswahl der Genehmigungsrolle ist erforderlich"
     },
     "advancedFilter": {
-      "columnUserFullName": "Kullanıcı",
-      "columnApprovalRoleName": "Onay Rolü",
-      "columnCreatedBy": "Erstellenan"
+      "columnUserFullName": "Benutzer",
+      "columnApprovalRoleName": "Genehmigungsrolle",
+      "columnCreatedBy": "Erstellt von"
     },
     "error": "Fehler ist aufgetreten"
   }

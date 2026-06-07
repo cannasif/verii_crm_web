@@ -38,7 +38,9 @@
     "validUntil": "Valable jusqu’au",
     "currency": "Devise",
     "grandTotal": "Total Général",
-    "status": "Statut"
+    "status": "Statut",
+    "erpIntegrated": "Intégration terminée",
+    "erpNotIntegrated": "Non intégré"
   },
   "detail": {
     "title": "Détail du Devis",
@@ -155,7 +157,25 @@
     "updateSuccess": "Sipariş satırları güncellendi.",
     "updateError": "Sipariş satırları güncellenemedi.",
     "deleteSuccess": "Sipariş satırı silindi.",
-    "deleteError": "Sipariş satırı silinemedi."
+    "deleteError": "Sipariş satırı silinemedi.",
+    "descriptionFieldsTitle": "Profil, armature, vis",
+    "descriptionField1Label": "Description 1",
+    "descriptionField2Label": "Description 2",
+    "descriptionField3Label": "Description 3",
+    "discountNumbered1": "1. Remise",
+    "discountNumbered2": "2. Remise",
+    "discountNumbered3": "3. Remise",
+    "windoProfileLabel": "Profil",
+    "windoRebarLabel": "Armature",
+    "windoScrewLabel": "Vis",
+    "selectWindoProfile": "Sélectionner un profil",
+    "selectWindoRebar": "Sélectionner une armature",
+    "selectWindoScrew": "Sélectionner une vis",
+    "searchWindoProfile": "Rechercher un profil...",
+    "searchWindoRebar": "Rechercher une armature...",
+    "searchWindoScrew": "Rechercher une vis...",
+    "windoNoneSelected": "Aucun",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Taux de Change",
@@ -253,7 +273,15 @@
     "startError": "Onay süreci başlatılamadı.",
     "rejectTitle": "Siparişi Reddet",
     "rejectDescription": "Siparişi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "rejectReasonPlaceholder": "Red nedeni",
+    "statusFilterLabel": "Statut d'approbation",
+    "status": {
+      "notRequired": "Non requis",
+      "waiting": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "closed": "Fermé"
+    }
   },
   "approvalFlow": {
     "loading": "Onay akışı yükleniyor...",

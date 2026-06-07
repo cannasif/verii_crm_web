@@ -40,7 +40,9 @@
     "detail": "Detay",
     "customerCode": "Codice cliente",
     "validUntil": "Valido fino a",
-    "revisionNo": "Revizyon No"
+    "revisionNo": "Revizyon No",
+    "erpIntegrated": "Integrazione completata",
+    "erpNotIntegrated": "Non integrato"
   },
   "detail": {
     "title": "Dettaglio Preventivo",
@@ -164,7 +166,22 @@
     "updateSuccess": "Teklif satırları güncellendi.",
     "updateError": "Teklif satırları güncellenemedi.",
     "deleteSuccess": "Teklif satırı silindi.",
-    "deleteError": "Teklif satırı silinemedi."
+    "deleteError": "Teklif satırı silinemedi.",
+    "descriptionFieldsTitle": "Profilo, tondino, vite",
+    "descriptionField1Label": "Descrizione 1",
+    "descriptionField2Label": "Descrizione 2",
+    "descriptionField3Label": "Descrizione 3",
+    "windoProfileLabel": "Profilo",
+    "windoRebarLabel": "Tondino",
+    "windoScrewLabel": "Vite",
+    "selectWindoProfile": "Seleziona profilo",
+    "selectWindoRebar": "Seleziona tondino",
+    "selectWindoScrew": "Seleziona vite",
+    "searchWindoProfile": "Cerca profilo...",
+    "searchWindoRebar": "Cerca tondino...",
+    "searchWindoScrew": "Cerca vite...",
+    "windoNoneSelected": "Nessuno",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Tassi di Cambio",
@@ -270,7 +287,15 @@
     "startError": "Onay süreci başlatılamadı.",
     "rejectTitle": "Teklifi Reddet",
     "rejectDescription": "Teklifi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "rejectReasonPlaceholder": "Red nedeni",
+    "statusFilterLabel": "Stato di approvazione",
+    "status": {
+      "notRequired": "Non richiesto",
+      "waiting": "In attesa",
+      "approved": "Approvato",
+      "rejected": "Rifiutato",
+      "closed": "Chiuso"
+    }
   },
   "approvalFlow": {
     "loading": "Onay akışı yükleniyor...",
@@ -326,6 +351,9 @@
     "status": "Durum",
     "stepOrder": "Adım Sırası",
     "approvedBy": "Onaylayan",
-    "actionDate": "İşlem Tarihi"
+    "actionDate": "İşlem Tarihi",
+    "rejectTitle": "Rifiuta offerta",
+    "rejectDescription": "Inserisci il motivo del rifiuto.",
+    "rejectReasonPlaceholder": "Motivo del rifiuto"
   }
 }

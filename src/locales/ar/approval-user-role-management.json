@@ -18,7 +18,7 @@
       "page": "صفحة {{current}} / {{total}}",
       "previous": "السابق",
       "next": "التالي",
-      "title": "Onay Kullanıcı Rolleri"
+      "title": "أدوار المستخدمين المصرح لهم"
     },
     "delete": {
       "title": "حذف الدور",
@@ -44,9 +44,9 @@
       "cancel": "إلغاء"
     },
     "advancedFilter": {
-      "columnUserFullName": "Kullanıcı",
-      "columnApprovalRoleName": "Onay Rolü",
-      "columnCreatedBy": "إنشاءan"
+      "columnUserFullName": "المستخدم",
+      "columnApprovalRoleName": "دور الموافقة",
+      "columnCreatedBy": "تم الإنشاء بواسطة"
     },
     "error": "حدث خطأ"
   }

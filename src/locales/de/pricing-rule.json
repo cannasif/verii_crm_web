@@ -1,4 +1,94 @@
 {
+  "pricingRule": {
+    "loading": "Wird geladen...",
+    "loadingDescription": "Daten werden geladen, bitte warten",
+    "noData": "Keine Daten",
+    "error": "Fehler ist aufgetreten",
+    "actions": "Aktionen",
+    "list": {
+      "title": "Preisregeln",
+      "description": "Preisregeln verwalten und bearbeiten",
+      "add": "Neue Regel hinzufügen"
+    },
+    "table": {
+      "title": "Preisregelliste",
+      "ruleCode": "Regelcode",
+      "ruleName": "Regelname",
+      "ruleType": "Regeltyp",
+      "validFrom": "Gültig von",
+      "validTo": "Gültig bis",
+      "customer": "Kunde",
+      "currency": "Währung",
+      "status": "Status",
+      "actions": "Aktionen"
+    },
+    "status": {
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "ruleType": {
+      "demand": "Nachfrage",
+      "quotation": "Angebot",
+      "order": "Bestellung",
+      "unknown": "Unbekannt"
+    },
+    "form": {
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "create": "Neue Preisregel",
+      "edit": "Preisregel bearbeiten",
+      "createDescription": "Geben Sie die neuen Preisregelinformationen ein",
+      "editDescription": "Bearbeiten Sie die Preisregelinformationen",
+      "tabs": {
+        "header": "Allgemeine Informationen",
+        "lines": "Zeilen",
+        "salesmen": "Verkäufer"
+      },
+      "lines": {
+        "required": "Mindestens 1 Zeile muss hinzugefügt werden",
+        "requiredMessage": "Bitte fügen Sie mindestens eine Zeile hinzu"
+      }
+    },
+    "lines": {
+      "title": "Preisregelzeilen",
+      "section": {
+        "stock": "Bestandsinformationen",
+        "pricing": "Preisinformationen"
+      },
+      "badgeCount": "ZEILE",
+      "createTitle": "Zeile hinzufügen",
+      "editTitle": "Zeile bearbeiten",
+      "dialogDescription": "Geben Sie die Zeileninformationen für die Preisregel ein",
+      "selectStock": "Bestand zu Zeilen hinzufügen",
+      "empty": "Noch keine Zeile hinzugefügt",
+      "addFirst": "Erste Zeile hinzufügen",
+      "stokCode": "Bestandscode",
+      "minQuantity": "Min Menge",
+      "maxQuantity": "Max Menge",
+      "fixedUnitPrice": "Fester Einzelpreis",
+      "currencyCode": "Währung",
+      "discount1": "Rabatt 1",
+      "discount2": "Rabatt 2",
+      "discount3": "Rabatt 3",
+      "discount1Rate": "Rabattsatz 1",
+      "discount1Amount": "Rabattbetrag 1",
+      "discount2Rate": "Rabattsatz 2",
+      "discount2Amount": "Rabattbetrag 2",
+      "discount3Rate": "Rabattsatz 3",
+      "discount3Amount": "Rabattbetrag 3",
+      "addConfirmTitle": "Zeile hinzufügen",
+      "addConfirmMessage": "{{code}} wird zu dieser Regel hinzugefügt. Bestätigen?",
+      "addSuccess": "Zeile hinzugefügt",
+      "addSuccessMessage": "Preisregelzeile erfolgreich hinzugefügt",
+      "addError": "Zeile konnte nicht hinzugefügt werden",
+      "deleteConfirmTitle": "Zeile löschen",
+      "deleteConfirmMessage": "Möchten Sie die Zeile {{code}} wirklich löschen?",
+      "deleteSuccess": "Zeile gelöscht",
+      "deleteSuccessMessage": "Preisregelzeile erfolgreich gelöscht",
+      "deleteError": "Zeile konnte nicht gelöscht werden",
+      "stokCodeRequired": "Bestandscode ist erforderlich"
+    }
+  },
   "loading": "Wird geladen...",
   "loadingDescription": "Preisregel‑Informationen werden geladen",
   "list": {
@@ -147,95 +237,5 @@
     "active": "Aktiv",
     "inactive": "Inaktiv",
     "expired": "Abgelaufen"
-  },
-  "pricingRule": {
-    "loading": "Wird geladen...",
-    "loadingDescription": "Daten werden geladen, bitte warten",
-    "noData": "Keine Daten",
-    "error": "Fehler ist aufgetreten",
-    "actions": "Aktionen",
-    "list": {
-      "title": "Preisregeln",
-      "description": "Preisregeln verwalten und bearbeiten",
-      "add": "Neue Regel hinzufügen"
-    },
-    "table": {
-      "title": "Preisregelliste",
-      "ruleCode": "Regelcode",
-      "ruleName": "Regelname",
-      "ruleType": "Regeltyp",
-      "validFrom": "Gültig von",
-      "validTo": "Gültig bis",
-      "customer": "Kunde",
-      "currency": "Währung",
-      "status": "Status",
-      "actions": "Aktionen"
-    },
-    "status": {
-      "active": "Aktiv",
-      "inactive": "Inaktiv"
-    },
-    "ruleType": {
-      "demand": "Nachfrage",
-      "quotation": "Angebot",
-      "order": "Bestellung",
-      "unknown": "Unbekannt"
-    },
-    "lines": {
-      "section": {
-        "stock": "Bestandsinformationen",
-        "pricing": "Preisinformationen"
-      },
-      "badgeCount": "ZEILE",
-      "createTitle": "Zeile hinzufügen",
-      "editTitle": "Zeile bearbeiten",
-      "dialogDescription": "Geben Sie die Zeileninformationen für die Preisregel ein",
-      "title": "Preisregelzeilen",
-      "selectStock": "Bestand zu Zeilen hinzufügen",
-      "empty": "Noch keine Zeile hinzugefügt",
-      "addFirst": "Erste Zeile hinzufügen",
-      "stokCode": "Bestandscode",
-      "minQuantity": "Min Menge",
-      "maxQuantity": "Max Menge",
-      "fixedUnitPrice": "Fester Einzelpreis",
-      "currencyCode": "Währung",
-      "discount1": "Rabatt 1",
-      "discount2": "Rabatt 2",
-      "discount3": "Rabatt 3",
-      "discount1Rate": "Rabattsatz 1",
-      "discount1Amount": "Rabattbetrag 1",
-      "discount2Rate": "Rabattsatz 2",
-      "discount2Amount": "Rabattbetrag 2",
-      "discount3Rate": "Rabattsatz 3",
-      "discount3Amount": "Rabattbetrag 3",
-      "addConfirmTitle": "Zeile hinzufügen",
-      "addConfirmMessage": "{{code}} wird zu dieser Regel hinzugefügt. Bestätigen?",
-      "addSuccess": "Zeile hinzugefügt",
-      "addSuccessMessage": "Preisregelzeile erfolgreich hinzugefügt",
-      "addError": "Zeile konnte nicht hinzugefügt werden",
-      "deleteConfirmTitle": "Zeile löschen",
-      "deleteConfirmMessage": "Möchten Sie die Zeile {{code}} wirklich löschen?",
-      "deleteSuccess": "Zeile gelöscht",
-      "deleteSuccessMessage": "Preisregelzeile erfolgreich gelöscht",
-      "deleteError": "Zeile konnte nicht gelöscht werden",
-      "stokCodeRequired": "Bestandscode ist erforderlich"
-    },
-    "form": {
-      "cancel": "Abbrechen",
-      "save": "Speichern",
-      "create": "Neue Preisregel",
-      "edit": "Preisregel bearbeiten",
-      "createDescription": "Geben Sie die neuen Preisregelinformationen ein",
-      "editDescription": "Bearbeiten Sie die Preisregelinformationen",
-      "tabs": {
-        "header": "Allgemeine Informationen",
-        "lines": "Zeilen",
-        "salesmen": "Verkäufer"
-      },
-      "lines": {
-        "required": "Mindestens 1 Zeile muss hinzugefügt werden",
-        "requiredMessage": "Bitte fügen Sie mindestens eine Zeile hinzu"
-      }
-    }
   }
 }

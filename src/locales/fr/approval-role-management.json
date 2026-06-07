@@ -19,7 +19,7 @@
       "page": "Page {{current}} / {{total}}",
       "previous": "Précédent",
       "next": "Suivant",
-      "title": "Onay Rolü Listesi"
+      "title": "Rôles d'Approbation"
     },
     "delete": {
       "confirmTitle": "Confirmation de Suppression",
@@ -30,7 +30,7 @@
     },
     "form": {
       "editTitle": "Modifier le Rôle d'Approbation",
-      "addTitle": "Ajouter un Nouveau Rôle d'Approbation",
+      "addTitle": "Ajouter un nouveau rôle d'approbation",
       "editDescription": "Modifier les détails du rôle d'approbation",
       "addDescription": "Entrez les détails du nouveau rôle d'approbation",
       "approvalRoleGroupId": "Groupe de Rôles d'Approbation",
@@ -43,15 +43,15 @@
       "cancel": "Annuler",
       "save": "Enregistrer",
       "saving": "Enregistrement...",
-      "approvalRoleGroupIdRequired": "Approval role group selection is required",
-      "nameRequired": "Role name is required",
-      "nameMaxLength": "Role name can be at most 100 characters",
-      "maxAmountMin": "Max amount cannot be less than 0"
+      "approvalRoleGroupIdRequired": "La sélection du groupe de rôle est obligatoire",
+      "nameRequired": "Le nom du rôle est obligatoire",
+      "nameMaxLength": "Le nom du rôle peut comporter au maximum 100 caractères",
+      "maxAmountMin": "Le montant maximum ne peut pas être inférieur à 0"
     },
     "advancedFilter": {
-      "columnName": "Rol Adı",
-      "columnApprovalRoleGroupName": "Rol Grubu",
-      "columnMaxAmount": "Maks. Tutar"
+      "columnName": "Nom du Rôle",
+      "columnApprovalRoleGroupName": "Groupe de Rôle",
+      "columnMaxAmount": "Montant Maximum"
     },
     "messages": {
       "error": "Une erreur est survenue"

@@ -1,28 +1,6 @@
 {
   "title": "Gestione Dettagli Utente",
   "description": "Visualizza e gestisci dettagli utente",
-  "sections": {
-    "personalInfo": "Informazioni Personali",
-    "accountSettings": "Impostazioni Account",
-    "preferences": "Preferenze"
-  },
-  "fields": {
-    "firstName": "Nome",
-    "lastName": "Cognome",
-    "email": "Email",
-    "phone": "Telefono",
-    "language": "Lingua",
-    "timezone": "Fuso Orario"
-  },
-  "actions": {
-    "save": "Salva Modifiche",
-    "cancel": "Annulla",
-    "changePassword": "Cambia Password"
-  },
-  "messages": {
-    "successUpdate": "Dettagli utente aggiornati con successo",
-    "errorUpdate": "Errore durante l'aggiornamento dei dettagli utente"
-  },
   "profilePicture": "Foto profilo",
   "height": "Altezza (cm)",
   "weight": "Peso (kg)",

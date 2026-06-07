@@ -1,4 +1,94 @@
 {
+  "pricingRule": {
+    "loading": "Chargement...",
+    "loadingDescription": "Chargement des données, veuillez patienter",
+    "noData": "Aucune donnée",
+    "error": "Une erreur est survenue",
+    "actions": "Actions",
+    "list": {
+      "title": "Règles de Prix",
+      "description": "Gérer et modifier les règles de prix",
+      "add": "Ajouter une Règle"
+    },
+    "table": {
+      "title": "Liste des Règles de Prix",
+      "ruleCode": "Code de la Règle",
+      "ruleName": "Nom de la Règle",
+      "ruleType": "Type de Règle",
+      "validFrom": "Valide à Partir De",
+      "validTo": "Valide Jusqu'à",
+      "customer": "Client",
+      "currency": "Devise",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "ruleType": {
+      "demand": "Demande",
+      "quotation": "Devis",
+      "order": "Commande",
+      "unknown": "Inconnu"
+    },
+    "form": {
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "create": "Nouvelle Règle de Prix",
+      "edit": "Modifier Règle de Prix",
+      "createDescription": "Entrez les informations de la nouvelle règle de prix",
+      "editDescription": "Modifier les informations de la règle de prix",
+      "tabs": {
+        "header": "Informations Générales",
+        "lines": "Lignes",
+        "salesmen": "Vendeurs"
+      },
+      "lines": {
+        "required": "Au moins 1 ligne doit être ajoutée",
+        "requiredMessage": "Veuillez ajouter au moins une ligne"
+      }
+    },
+    "lines": {
+      "title": "Lignes de Règle de Prix",
+      "section": {
+        "stock": "Infos Stock",
+        "pricing": "Infos Prix"
+      },
+      "badgeCount": "LIGNE",
+      "createTitle": "Ajouter Ligne",
+      "editTitle": "Modifier Ligne",
+      "dialogDescription": "Saisissez les informations de la ligne de règle de prix",
+      "selectStock": "Ajouter Stock aux Lignes",
+      "empty": "Aucune ligne ajoutée pour le moment",
+      "addFirst": "Ajouter la première ligne",
+      "stokCode": "Code Stock",
+      "minQuantity": "Qté Min",
+      "maxQuantity": "Qté Max",
+      "fixedUnitPrice": "Prix Unitaire Fixe",
+      "currencyCode": "Devise",
+      "discount1": "Remise 1",
+      "discount2": "Remise 2",
+      "discount3": "Remise 3",
+      "discount1Rate": "Taux Remise 1",
+      "discount1Amount": "Montant Remise 1",
+      "discount2Rate": "Taux Remise 2",
+      "discount2Amount": "Montant Remise 2",
+      "discount3Rate": "Taux Remise 3",
+      "discount3Amount": "Montant Remise 3",
+      "addConfirmTitle": "Ajouter Ligne",
+      "addConfirmMessage": "{{code}} sera ajouté à cette règle. Confirmez-vous ?",
+      "addSuccess": "Ligne ajoutée",
+      "addSuccessMessage": "Ligne de règle de prix ajoutée avec succès",
+      "addError": "Échec de l'ajout de la ligne",
+      "deleteConfirmTitle": "Supprimer Ligne",
+      "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer la ligne {{code}} ?",
+      "deleteSuccess": "Ligne supprimée",
+      "deleteSuccessMessage": "Ligne de règle de prix supprimée avec succès",
+      "deleteError": "Échec de la suppression de la ligne",
+      "stokCodeRequired": "Le code stock est requis"
+    }
+  },
   "loading": "Chargement...",
   "loadingDescription": "Chargement des données, veuillez patienter",
   "list": {
@@ -19,6 +109,9 @@
     "actions": "Actions"
   },
   "form": {
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saving": "Saving...",
     "confirm": "Confirmer",
     "update": "Mettre à jour",
     "createButton": "Créer",
@@ -47,10 +140,7 @@
       "currencyCodeRequiredMessage": "Le type de devise doit être sélectionné dans toutes les lignes",
       "minQuantityInvalid": "Quantité Min Invalide",
       "minQuantityInvalidMessage": "La quantité minimale ne peut pas être inférieure à 0"
-    },
-    "cancel": "Annuler",
-    "save": "Enregistrer",
-    "saving": "Saving..."
+    }
   },
   "delete": {
     "button": "Supprimer",
@@ -147,95 +237,5 @@
     "active": "Actif",
     "inactive": "Inactif",
     "expired": "Expiré"
-  },
-  "pricingRule": {
-    "loading": "Chargement...",
-    "loadingDescription": "Chargement des données, veuillez patienter",
-    "noData": "Aucune donnée",
-    "error": "Une erreur est survenue",
-    "actions": "Actions",
-    "list": {
-      "title": "Règles de Prix",
-      "description": "Gérer et modifier les règles de prix",
-      "add": "Ajouter une Règle"
-    },
-    "table": {
-      "title": "Liste des Règles de Prix",
-      "ruleCode": "Code de la Règle",
-      "ruleName": "Nom de la Règle",
-      "ruleType": "Type de Règle",
-      "validFrom": "Valide à Partir De",
-      "validTo": "Valide Jusqu'à",
-      "customer": "Client",
-      "currency": "Devise",
-      "status": "Statut",
-      "actions": "Actions"
-    },
-    "status": {
-      "active": "Actif",
-      "inactive": "Inactif"
-    },
-    "ruleType": {
-      "demand": "Demande",
-      "quotation": "Devis",
-      "order": "Commande",
-      "unknown": "Inconnu"
-    },
-    "lines": {
-      "section": {
-        "stock": "Infos Stock",
-        "pricing": "Infos Prix"
-      },
-      "badgeCount": "LIGNE",
-      "createTitle": "Ajouter Ligne",
-      "editTitle": "Modifier Ligne",
-      "dialogDescription": "Saisissez les informations de la ligne de règle de prix",
-      "title": "Lignes de Règle de Prix",
-      "selectStock": "Ajouter Stock aux Lignes",
-      "empty": "Aucune ligne ajoutée pour le moment",
-      "addFirst": "Ajouter la première ligne",
-      "stokCode": "Code Stock",
-      "minQuantity": "Qté Min",
-      "maxQuantity": "Qté Max",
-      "fixedUnitPrice": "Prix Unitaire Fixe",
-      "currencyCode": "Devise",
-      "discount1": "Remise 1",
-      "discount2": "Remise 2",
-      "discount3": "Remise 3",
-      "discount1Rate": "Taux Remise 1",
-      "discount1Amount": "Montant Remise 1",
-      "discount2Rate": "Taux Remise 2",
-      "discount2Amount": "Montant Remise 2",
-      "discount3Rate": "Taux Remise 3",
-      "discount3Amount": "Montant Remise 3",
-      "addConfirmTitle": "Ajouter Ligne",
-      "addConfirmMessage": "{{code}} sera ajouté à cette règle. Confirmez-vous ?",
-      "addSuccess": "Ligne ajoutée",
-      "addSuccessMessage": "Ligne de règle de prix ajoutée avec succès",
-      "addError": "Échec de l'ajout de la ligne",
-      "deleteConfirmTitle": "Supprimer Ligne",
-      "deleteConfirmMessage": "Êtes-vous sûr de vouloir supprimer la ligne {{code}} ?",
-      "deleteSuccess": "Ligne supprimée",
-      "deleteSuccessMessage": "Ligne de règle de prix supprimée avec succès",
-      "deleteError": "Échec de la suppression de la ligne",
-      "stokCodeRequired": "Le code stock est requis"
-    },
-    "form": {
-      "cancel": "Annuler",
-      "save": "Enregistrer",
-      "create": "Nouvelle Règle de Prix",
-      "edit": "Modifier Règle de Prix",
-      "createDescription": "Entrez les informations de la nouvelle règle de prix",
-      "editDescription": "Modifier les informations de la règle de prix",
-      "tabs": {
-        "header": "Informations Générales",
-        "lines": "Lignes",
-        "salesmen": "Vendeurs"
-      },
-      "lines": {
-        "required": "Au moins 1 ligne doit être ajoutée",
-        "requiredMessage": "Veuillez ajouter au moins une ligne"
-      }
-    }
   }
 }

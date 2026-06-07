@@ -18,7 +18,7 @@
       "page": "Page {{current}} / {{total}}",
       "previous": "Previous",
       "next": "Next",
-      "title": "Onay Kullanıcı Rolleri"
+      "title": "Approval User Roles"
     },
     "delete": {
       "title": "Delete Role",
@@ -44,10 +44,10 @@
       "cancel": "Cancel"
     },
     "advancedFilter": {
-      "columnUserFullName": "Kullanıcı",
-      "columnApprovalRoleName": "Onay Rolü",
-      "columnCreatedBy": "Oluşturan"
+      "columnUserFullName": "User",
+      "columnApprovalRoleName": "Approval Role",
+      "columnCreatedBy": "Created By"
     },
-    "error": "Hata oluştu"
+    "error": "An error occurred"
   }
 }

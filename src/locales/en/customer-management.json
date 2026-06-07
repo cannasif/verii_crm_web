@@ -27,7 +27,8 @@
     "phone2": "phone 2",
     "salesRepCode": "Sales Representative",
     "branchCode": "Branch Code",
-    "defaultShippingAddressId": "Default Shipping Address"
+    "defaultShippingAddressId": "Default Shipping Address",
+    "title": "Customer List"
   },
   "form": {
     "addCustomer": "Add New Customer",
@@ -149,7 +150,9 @@
     "deleteSuccess": "Customer deleted successfully",
     "deleteError": "Customer could not be deleted",
     "syncQueued": "Customer sync queued. Job: {{jobId}}",
-    "syncError": "Customer sync could not be triggered"
+    "syncError": "Customer sync could not be triggered",
+    "erpCreateSuccess": "Customer is created as Netsis customer.",
+    "erpCreateError": "Could not create customer in ERP."
   },
   "manualSync": "Manual Sync",
   "syncing": "Syncing",
@@ -196,7 +199,9 @@
       "deleteSuccess": "Customer deleted successfully",
       "deleteError": "Customer could not be deleted",
       "syncQueued": "Customer sync queued. Job: {{jobId}}",
-      "syncError": "Customer sync could not be triggered"
+      "syncError": "Customer sync could not be triggered",
+      "erpCreateSuccess": "Customer is created as Netsis customer.",
+      "erpCreateError": "Could not create customer in ERP."
     },
     "stats": {
       "totalCustomers": "Total Customers",
@@ -223,7 +228,11 @@
     },
     "quickActivity": "Quick Activity",
     "manualSync": "Manual Sync",
-    "syncing": "Syncing"
+    "syncing": "Syncing",
+    "erpCreate": {
+      "button": "Create ERP Customer",
+      "alreadyIntegrated": "ERP customer already created"
+    }
   },
   "advancedFilter": {
     "columnName": "Customer Name",

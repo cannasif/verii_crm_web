@@ -328,7 +328,10 @@
     "approvedBy": "Approved By",
     "actionDate": "Action Date",
     "status": "Status",
-    "waiting": "Waiting"
+    "waiting": "Waiting",
+    "rejectTitle": "Talebi Reddet",
+    "rejectDescription": "Reddetme gerekçesini girin.",
+    "rejectReasonPlaceholder": "Reddetme nedeni"
   },
   "quotation": {
     "notes": {

@@ -1,42 +1,114 @@
 {
-  "title": "قواعد التسعير",
-  "description": "إدارة قواعد التسعير والخصومات",
-  "create": "قاعدة جديدة",
-  "edit": "تعديل القاعدة",
-  "delete": {
-    "button": "Delete",
-    "confirmTitle": "Delete Confirmation",
-    "confirmMessage": "Are you sure you want to delete this record?",
-    "action": "Sil"
+  "pricingRule": {
+    "loading": "جارٍ التحميل...",
+    "loadingDescription": "جاري تحميل البيانات، يرجى الانتظار",
+    "noData": "لا توجد بيانات",
+    "error": "حدث خطأ",
+    "actions": "إجراءات",
+    "list": {
+      "title": "قواعد التسعير",
+      "description": "إدارة وتعديل قواعد التسعير",
+      "add": "إضافة قاعدة جديدة"
+    },
+    "table": {
+      "title": "قائمة قواعد التسعير",
+      "ruleCode": "رمز القاعدة",
+      "ruleName": "اسم القاعدة",
+      "ruleType": "نوع القاعدة",
+      "validFrom": "صالح من",
+      "validTo": "صالح إلى",
+      "customer": "العميل",
+      "currency": "العملة",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "ruleType": {
+      "demand": "طلب",
+      "quotation": "عرض سعر",
+      "order": "طلب",
+      "unknown": "غير معروف"
+    },
+    "form": {
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "create": "قاعدة تسعير جديدة",
+      "edit": "تعديل قاعدة التسعير",
+      "createDescription": "أدخل معلومات قاعدة التسعير الجديدة",
+      "editDescription": "تعديل معلومات قاعدة التسعير",
+      "tabs": {
+        "header": "معلومات عامة",
+        "lines": "البنود",
+        "salesmen": "المندوبون"
+      },
+      "lines": {
+        "required": "يجب إضافة بند واحد على الأقل",
+        "requiredMessage": "يرجى إضافة بند واحد على الأقل"
+      }
+    },
+    "lines": {
+      "title": "بنود قاعدة التسعير",
+      "section": {
+        "stock": "معلومات المخزون",
+        "pricing": "معلومات التسعير"
+      },
+      "badgeCount": "صفوف",
+      "createTitle": "إضافة بند",
+      "editTitle": "تعديل بند",
+      "dialogDescription": "أدخل معلومات بند قاعدة التسعير",
+      "selectStock": "إضافة مخزون للبنود",
+      "empty": "لم يتم إضافة أي بند بعد",
+      "addFirst": "أضف البند الأول",
+      "stokCode": "رمز المخزون",
+      "minQuantity": "أقل كمية",
+      "maxQuantity": "أقصى كمية",
+      "fixedUnitPrice": "سعر الوحدة الثابت",
+      "currencyCode": "العملة",
+      "discount1": "خصم 1",
+      "discount2": "خصم 2",
+      "discount3": "خصم 3",
+      "discount1Rate": "نسبة خصم 1",
+      "discount1Amount": "قيمة خصم 1",
+      "discount2Rate": "نسبة خصم 2",
+      "discount2Amount": "قيمة خصم 2",
+      "discount3Rate": "نسبة خصم 3",
+      "discount3Amount": "قيمة خصم 3",
+      "addConfirmTitle": "إضافة بند",
+      "addConfirmMessage": "سيتم إضافة {{code}} إلى هذه القاعدة. هل تؤكد؟",
+      "addSuccess": "تم إضافة البند",
+      "addSuccessMessage": "تم إضافة بند قاعدة التسعير بنجاح",
+      "addError": "تعذر إضافة البند",
+      "deleteConfirmTitle": "حذف بند",
+      "deleteConfirmMessage": "هل أنت متأكد أنك تريد حذف البند {{code}}؟",
+      "deleteSuccess": "تم حذف البند",
+      "deleteSuccessMessage": "تم حذف بند قاعدة التسعير بنجاح",
+      "deleteError": "تعذر حذف البند",
+      "stokCodeRequired": "رمز المخزون مطلوب"
+    }
+  },
+  "loading": "جارٍ التحميل...",
+  "loadingDescription": "جارٍ تحميل معلومات قواعد التسعير",
+  "list": {
+    "title": "قواعد التسعير",
+    "description": "إدارة قواعد التسعير والبنود التابعة لها",
+    "add": "إضافة قاعدة",
+    "empty": "لا توجد قواعد تسعير"
   },
   "table": {
-    "id": "المعرف",
-    "name": "اسم القاعدة",
-    "description": "الوصف",
-    "priority": "الأولوية",
-    "status": "الحالة",
-    "startDate": "تاريخ البدء",
-    "endDate": "تاريخ الانتهاء",
-    "actions": "إجراءات",
     "ruleCode": "رمز القاعدة",
     "ruleName": "اسم القاعدة",
     "ruleType": "نوع القاعدة",
     "validFrom": "صالح من",
     "validTo": "صالح إلى",
     "customer": "العميل",
-    "currency": "العملة"
+    "currency": "العملة",
+    "status": "الحالة",
+    "actions": "إجراءات"
   },
   "form": {
-    "name": "اسم القاعدة",
-    "description": "الوصف",
-    "priority": "الأولوية",
-    "status": "الحالة",
-    "active": "نشط",
-    "passive": "غير نشط",
-    "startDate": "تاريخ البدء",
-    "endDate": "تاريخ الانتهاء",
-    "conditions": "الشروط",
-    "actions": "إجراءات السعر",
     "cancel": "إلغاء",
     "save": "حفظ",
     "saving": "Saving...",
@@ -70,19 +142,11 @@
       "minQuantityInvalidMessage": "أقل كمية لا يمكن أن تكون أقل من 0"
     }
   },
-  "messages": {
-    "createSuccess": "تم إنشاء القاعدة بنجاح",
-    "updateSuccess": "تم تحديث القاعدة بنجاح",
-    "deleteSuccess": "تم حذف القاعدة بنجاح",
-    "confirmDelete": "هل أنت متأكد أنك تريد حذف هذه القاعدة؟"
-  },
-  "loading": "جارٍ التحميل...",
-  "loadingDescription": "جارٍ تحميل معلومات قواعد التسعير",
-  "list": {
-    "title": "قواعد التسعير",
-    "description": "إدارة قواعد التسعير والبنود التابعة لها",
-    "add": "إضافة قاعدة",
-    "empty": "لا توجد قواعد تسعير"
+  "delete": {
+    "button": "Delete",
+    "confirmTitle": "Delete Confirmation",
+    "confirmMessage": "Are you sure you want to delete this record?",
+    "action": "Sil"
   },
   "salesmen": {
     "title": "مندوبو المبيعات",
@@ -173,95 +237,5 @@
     "active": "نشط",
     "inactive": "غير نشط",
     "expired": "منتهي"
-  },
-  "pricingRule": {
-    "loading": "جارٍ التحميل...",
-    "loadingDescription": "جاري تحميل البيانات، يرجى الانتظار",
-    "noData": "لا توجد بيانات",
-    "error": "حدث خطأ",
-    "actions": "إجراءات",
-    "list": {
-      "title": "قواعد التسعير",
-      "description": "إدارة وتعديل قواعد التسعير",
-      "add": "إضافة قاعدة جديدة"
-    },
-    "table": {
-      "title": "قائمة قواعد التسعير",
-      "ruleCode": "رمز القاعدة",
-      "ruleName": "اسم القاعدة",
-      "ruleType": "نوع القاعدة",
-      "validFrom": "صالح من",
-      "validTo": "صالح إلى",
-      "customer": "العميل",
-      "currency": "العملة",
-      "status": "الحالة",
-      "actions": "إجراءات"
-    },
-    "status": {
-      "active": "نشط",
-      "inactive": "غير نشط"
-    },
-    "ruleType": {
-      "demand": "طلب",
-      "quotation": "عرض سعر",
-      "order": "طلب",
-      "unknown": "غير معروف"
-    },
-    "lines": {
-      "section": {
-        "stock": "معلومات المخزون",
-        "pricing": "معلومات التسعير"
-      },
-      "badgeCount": "صفوف",
-      "createTitle": "إضافة بند",
-      "editTitle": "تعديل بند",
-      "dialogDescription": "أدخل معلومات بند قاعدة التسعير",
-      "title": "بنود قاعدة التسعير",
-      "selectStock": "إضافة مخزون للبنود",
-      "empty": "لم يتم إضافة أي بند بعد",
-      "addFirst": "أضف البند الأول",
-      "stokCode": "رمز المخزون",
-      "minQuantity": "أقل كمية",
-      "maxQuantity": "أقصى كمية",
-      "fixedUnitPrice": "سعر الوحدة الثابت",
-      "currencyCode": "العملة",
-      "discount1": "خصم 1",
-      "discount2": "خصم 2",
-      "discount3": "خصم 3",
-      "discount1Rate": "نسبة خصم 1",
-      "discount1Amount": "قيمة خصم 1",
-      "discount2Rate": "نسبة خصم 2",
-      "discount2Amount": "قيمة خصم 2",
-      "discount3Rate": "نسبة خصم 3",
-      "discount3Amount": "قيمة خصم 3",
-      "addConfirmTitle": "إضافة بند",
-      "addConfirmMessage": "سيتم إضافة {{code}} إلى هذه القاعدة. هل تؤكد؟",
-      "addSuccess": "تم إضافة البند",
-      "addSuccessMessage": "تم إضافة بند قاعدة التسعير بنجاح",
-      "addError": "تعذر إضافة البند",
-      "deleteConfirmTitle": "حذف بند",
-      "deleteConfirmMessage": "هل أنت متأكد أنك تريد حذف البند {{code}}؟",
-      "deleteSuccess": "تم حذف البند",
-      "deleteSuccessMessage": "تم حذف بند قاعدة التسعير بنجاح",
-      "deleteError": "تعذر حذف البند",
-      "stokCodeRequired": "رمز المخزون مطلوب"
-    },
-    "form": {
-      "cancel": "إلغاء",
-      "save": "حفظ",
-      "create": "قاعدة تسعير جديدة",
-      "edit": "تعديل قاعدة التسعير",
-      "createDescription": "أدخل معلومات قاعدة التسعير الجديدة",
-      "editDescription": "تعديل معلومات قاعدة التسعير",
-      "tabs": {
-        "header": "معلومات عامة",
-        "lines": "البنود",
-        "salesmen": "المندوبون"
-      },
-      "lines": {
-        "required": "يجب إضافة بند واحد على الأقل",
-        "requiredMessage": "يرجى إضافة بند واحد على الأقل"
-      }
-    }
   }
 }

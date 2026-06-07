@@ -18,7 +18,10 @@
     "refresh": "Refresh",
     "loading": "Chargement...",
     "loadError": "An error occurred while loading data.",
-    "noData": "No records found."
+    "noData": "No records found.",
+    "warehouseBalance": "Depo bakiyesi",
+    "warehouseBalanceTooltipBranch": "Şube {{branch}}",
+    "warehouseBalanceTooltipLastSync": "Son senkron: {{date}}"
   },
   "detail": {
     "title": "Détail du stock",
@@ -63,7 +66,20 @@
     "summary": "Özet",
     "addRelation": "Bağlı Stok Ekle",
     "saving": "Kaydediliyor...",
-    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı"
+    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı",
+    "warehouseBalances": {
+      "title": "Depo Bakiyeleri",
+      "totalLabel": "Toplam bakiye",
+      "warehouseCount": "{{count}} depo",
+      "colWarehouse": "Depo",
+      "colBranch": "Şube",
+      "colBalance": "Bakiye",
+      "colLastSync": "Son senkron",
+      "emptyTitle": "Depo bakiyesi kaydı yok",
+      "emptyDesc": "Bu stok için CRM depo bakiye tablosunda (RII_WAREHOUSE_STOCK_BALANCE) kayıt bulunamadı. ERP'de bakiye olsa bile ekranda görünmesi için depo bakiye senkronizasyonunun çalışmış olması gerekir.",
+      "loadErrorTitle": "Bakiyeler yüklenemedi",
+      "loadErrorDesc": "Depo stok bakiyeleri alınırken bir hata oluştu."
+    }
   },
   "images": {
     "upload": "Glisser-déposer les images ici ou cliquer",
@@ -112,33 +128,6 @@
     "saving": "Traitement..."
   },
   "bulkImport": {
-    "rule1": "Les dossiers du ZIP doivent être groupés par code stock ERP.",
-    "rule2": "Exemples : STK-001/img1.jpg, STK-001/1/img2.png, Images/STK-001/img3.jpg",
-    "rule3": "Si le code est trouvé, les images sont ajoutées ; sinon, le fichier est ignoré.",
-    "rule4": "Les grandes archives sont traitées en arrière-plan (Hangfire). Un ZIP est requis.",
-    "fileRequired": "Veuillez d'abord sélectionner un fichier ZIP.",
-    "queued": "Importation d'images en file d'attente. Tâche : {{jobId}}",
-    "button": "Importation d'images en masse",
-    "title": "Importation d'images de stock en masse",
-    "description": "Importez un ZIP. Le système lit le code dans le nom du dossier et ajoute les images au stock.",
-    "structureTitle": "Structure du fichier ZIP",
-    "selectArchive": "Sélectionner l'archive ZIP",
-    "uploadHint": "Glissez-déposez le fichier ZIP ici ou cliquez pour sélectionner",
-    "uploadLimit": "Max 500MB (Traité en arrière-plan)",
-    "notesTitle": "Remarques importantes",
-    "submitting": "Mise en file d'attente...",
-    "submit": "Importer le ZIP et Démarrer"
-  },
-  "messages": {
-    "detailCreateSuccess": "Détails du stock créés avec succès",
-    "detailUpdateSuccess": "Détails du stock mis à jour avec succès",
-    "deleteSuccess": "Supprimé avec succès",
-    "uploadSuccess": "Images téléchargées avec succès",
-    "setPrimarySuccess": "Image principale définie avec succès",
-    "relationCreateSuccess": "Stock associé ajouté avec succès",
-    "error": "Une erreur s'est produite"
-  },
-  "bulkImport": {
     "button": "Téléchargement groupé d'images",
     "title": "Téléchargement groupé d'images de stock",
     "description": "Téléchargez un seul ZIP. Le système lira le code de stock ERP à partir du nom du dossier et ajoutera les images au stock concerné en arrière-plan.",
@@ -155,5 +144,14 @@
     "notesTitle": "Éléments à considérer",
     "submitting": "Mise en file d'attente...",
     "submit": "Télécharger le ZIP et démarrer"
+  },
+  "messages": {
+    "detailCreateSuccess": "Détails du stock créés avec succès",
+    "detailUpdateSuccess": "Détails du stock mis à jour avec succès",
+    "deleteSuccess": "Supprimé avec succès",
+    "uploadSuccess": "Images téléchargées avec succès",
+    "setPrimarySuccess": "Image principale définie avec succès",
+    "relationCreateSuccess": "Stock associé ajouté avec succès",
+    "error": "Une erreur s'est produite"
   }
 }

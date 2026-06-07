@@ -2,9 +2,9 @@
   "approvalFlow": {
     "menu": "Genehmigungsablauf-Verwaltung",
     "description": "Genehmigungsabläufe verwalten und bearbeiten",
-    "addButton": "Hinzufügen Neu Approval Flow",
+    "addButton": "Neuen Genehmigungsablauf hinzufügen",
     "table": {
-      "id": "AUSWEIS",
+      "id": "ID",
       "documentType": "Dokumententyp",
       "description": "Beschreibung",
       "isActive": "Aktiv",
@@ -16,9 +16,9 @@
       "title": "Genehmigungsflüsse"
     },
     "form": {
-      "addTitle": "Hinzufügen Neu Approval Flow",
+      "addTitle": "Neuen Genehmigungsablauf hinzufügen",
       "editTitle": "Genehmigungsablauf bearbeiten",
-      "addDescription": "Enter Neu approval flow information",
+      "addDescription": "Neue Genehmigungsablauf-Informationen eingeben",
       "editDescription": "Bearbeiten Sie die Informationen des Genehmigungsablaufs",
       "documentType": "Dokumententyp",
       "selectDocumentType": "Dokumententyp auswählen",
@@ -69,7 +69,7 @@
   },
   "approvalFlowStep": {
     "title": "Ablaufschritte",
-      "addButton": "Schritt hinzufügen",
+    "addButton": "Schritt hinzufügen",
       "empty": "Noch keine Schritte hinzugefügt",
       "unknownRoleGroup": "Keine Rollengruppe",
       "stepDescription": "Genehmigungsreihenfolge: {{order}}",
@@ -80,7 +80,7 @@
       "cancel": "Abbrechen"
     },
     "form": {
-      "addTitle": "Hinzufügen Neu Step",
+      "addTitle": "Neuen Schritt hinzufügen",
       "editTitle": "Schritt bearbeiten",
       "addDescription": "Neuen Schritt zum Fluss hinzufügen",
       "editDescription": "Ablaufschritt bearbeiten",

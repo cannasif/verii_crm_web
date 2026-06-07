@@ -19,7 +19,7 @@
       "page": "Pagina {{current}} / {{total}}",
       "previous": "Precedente",
       "next": "Successivo",
-      "title": "Onay Rolü Listesi"
+      "title": "Ruoli di Approvazione"
     },
     "delete": {
       "confirmTitle": "Conferma Eliminazione",
@@ -49,9 +49,9 @@
       "saving": "Salvataggio..."
     },
     "advancedFilter": {
-      "columnName": "Rol Adı",
-      "columnApprovalRoleGroupName": "Rol Grubu",
-      "columnMaxAmount": "Maks. Tutar"
+      "columnName": "Nome Ruolo",
+      "columnApprovalRoleGroupName": "Gruppo Ruolo",
+      "columnMaxAmount": "Importo Massimo"
     },
     "messages": {
       "error": "Si è verificato un errore"

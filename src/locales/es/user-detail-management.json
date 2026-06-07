@@ -1,28 +1,6 @@
 {
   "title": "Detalles del usuario",
   "description": "Edite la información de su perfil",
-  "sections": {
-    "personalInfo": "Información Personal",
-    "accountSettings": "Configuración de Cuenta",
-    "preferences": "Preferencias"
-  },
-  "fields": {
-    "firstName": "Nombre",
-    "lastName": "Apellido",
-    "email": "Correo Electrónico",
-    "phone": "Teléfono",
-    "language": "Idioma",
-    "timezone": "Zona Horaria"
-  },
-  "actions": {
-    "save": "Guardar Cambios",
-    "cancel": "Cancelar",
-    "changePassword": "Cambiar Contraseña"
-  },
-  "messages": {
-    "successUpdate": "Detalles de usuario actualizados con éxito",
-    "errorUpdate": "Error al actualizar detalles de usuario"
-  },
   "profilePicture": "Foto de perfil",
   "height": "Altura (cm)",
   "weight": "Peso (kg)",

@@ -22,7 +22,7 @@
     "updatedBy": "تم التحديث بواسطة",
     "showing": "عرض {{from}}-{{to}} / {{total}}",
     "page": "صفحة {{current}} / {{total}}",
-    "salutation": "عنوان",
+    "salutation": "تحية",
     "status": "الحالة"
   },
   "form": {
@@ -53,8 +53,8 @@
     "title": "اللقب",
     "selectTitle": "اختر اللقب",
     "titleRequired": "اختيار اللقب مطلوب",
-    "salutation": "عنوان",
-    "selectSalutation": "اختر العنوان",
+    "salutation": "تحية",
+    "selectSalutation": "اختر التحية",
     "salutationNone": "لا يوجد",
     "salutationMr": "السيد",
     "salutationMs": "امرأة",

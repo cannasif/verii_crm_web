@@ -1,82 +1,82 @@
 {
   "activityType": {
     "table": {
-      "title": "Shipping List",
+      "title": "قائمة الشحن",
       "id": "ID",
-      "name": "Teslimat Adı",
-      "description": "Açıklama",
-      "createdDate": "إنشاءulma Tarihi",
-      "createdBy": "إنشاءan Kullanıcı",
-      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
+      "name": "اسم الشحنة",
+      "description": "الوصف",
+      "createdDate": "تاريخ الإنشاء",
+      "createdBy": "أنشئ بواسطة",
+      "showing": "عرض {{from}}-{{to}} من {{total}}",
+      "page": "صفحة {{current}} من {{total}}"
     },
     "error": "حدث خطأ",
-    "create": "Yeni Teslimat Ekle",
+    "create": "إضافة شحنة جديدة",
     "loading": "جارٍ التحميل...",
-    "noData": "Veri yok",
-    "actions": "İşlemler",
+    "noData": "لا توجد بيانات",
+    "actions": "إجراءات",
     "cancel": "إلغاء",
     "save": "حفظ",
-    "saving": "Kaydediliyor...",
+    "saving": "جارٍ الحفظ...",
     "form": {
-      "addTitle": "Yeni Teslimat Ekle",
-      "editTitle": "Teslimat تعديل",
-      "addDescription": "Yeni teslimat bilgisini girin",
-      "editDescription": "Teslimat bilgisini düzenleyin",
-      "name": "Teslimat Adı",
-      "namePlaceholder": "Teslimat adını girin",
-      "nameRequired": "Teslimat adı zorunludur",
-      "nameMaxLength": "Teslimat adı en fazla 100 karakter olabilir",
-      "description": "Açıklama",
-      "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
-      "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
+      "addTitle": "إضافة شحنة جديدة",
+      "editTitle": "تعديل الشحنة",
+      "addDescription": "أدخل معلومات الشحنة الجديدة",
+      "editDescription": "تعديل معلومات الشحنة",
+      "name": "اسم الشحنة",
+      "namePlaceholder": "أدخل اسم الشحنة",
+      "nameRequired": "اسم الشحنة مطلوب",
+      "nameMaxLength": "يجب ألا يتجاوز اسم الشحنة 100 حرف",
+      "description": "الوصف",
+      "descriptionPlaceholder": "أدخل الوصف (اختياري)",
+      "descriptionMaxLength": "يمكن أن يصل وصف الشحنة إلى 500 حرف"
     },
     "stats": {
-      "totalActivityTypes": "Toplam Teslimat",
-      "activeActivityTypes": "Aktif Teslimat",
-      "newThisMonth": "Bu Ay Yeni"
+      "totalActivityTypes": "إجمالي الشحنات",
+      "activeActivityTypes": "الشحنات النشطة",
+      "newThisMonth": "جديد هذا الشهر"
     },
     "messages": {
-      "createSuccess": "Teslimat başarıyla oluşturuldu",
-      "createError": "Teslimat oluşturulamadı",
-      "updateSuccess": "Teslimat başarıyla güncellendi",
-      "updateError": "Teslimat güncellenemedi",
-      "deleteSuccess": "Teslimat başarıyla silindi",
-      "deleteError": "Teslimat silinemedi"
+      "createSuccess": "تم إنشاء الشحنة بنجاح",
+      "createError": "فشل إنشاء الشحنة",
+      "updateSuccess": "تم تحديث الشحنة بنجاح",
+      "updateError": "فشل تحديث الشحنة",
+      "deleteSuccess": "تم حذف الشحنة بنجاح",
+      "deleteError": "فشل حذف الشحنة"
     }
   },
-  "menu": "Teslimat Yönetimi",
-  "description": "Teslimat tanımlarını yönetin ve düzenleyin",
-  "addButton": "Yeni Teslimat Ekle",
+  "menu": "إدارة الشحن",
+  "description": "أدر وحرر تعريفات الشحن",
+  "addButton": "إضافة شحنة جديدة",
   "loading": "جارٍ التحميل...",
-  "noData": "Veri yok",
-  "actions": "İşlemler",
+  "noData": "لا توجد بيانات",
+  "actions": "إجراءات",
   "edit": "تعديل",
-  "deleteButton": "Sil",
+  "deleteButton": "حذف",
   "cancel": "إلغاء",
   "save": "حفظ",
   "saving": "Kaydediliyor...",
-  "previous": "Önceki",
-  "next": "Sonraki",
+  "previous": "السابق",
+  "next": "التالي",
   "advancedFilter": {
-    "columnName": "Teslimat Adı",
-    "columnDescription": "Açıklama",
-    "columnCreatedBy": "إنشاءan"
+    "columnName": "اسم الشحنة",
+    "columnDescription": "الوصف",
+    "columnCreatedBy": "أنشئ بواسطة"
   },
   "deleteConfirm": {
-    "confirmTitle": "Teslimatı Sil",
-    "confirmMessage": "{{name}} kaydını silmek istediğinizden emin misiniz?"
+    "confirmTitle": "حذف الشحنة",
+    "confirmMessage": "هل أنت متأكد أنك تريد حذف {{name}}؟"
   },
   "messages": {
-    "deleteSuccess": "Teslimat başarıyla silindi",
-    "deleteError": "Teslimat silinemedi"
+    "deleteSuccess": "تم حذف الشحنة بنجاح",
+    "deleteError": "فشل حذف الشحنة"
   },
   "table": {
-    "title": "Teslimat Listesi",
+    "title": "قائمة الشحن",
     "id": "ID",
-    "name": "Teslimat Adı",
-    "description": "Açıklama",
-    "createdDate": "إنشاءulma Tarihi",
-    "createdBy": "إنشاءan Kullanıcı"
+    "name": "اسم الشحنة",
+    "description": "الوصف",
+    "createdDate": "تاريخ الإنشاء",
+    "createdBy": "أنشئ بواسطة"
   }
 }

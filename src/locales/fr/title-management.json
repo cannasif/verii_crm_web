@@ -1,15 +1,23 @@
 {
+  "addButton": "Ajouter un nouveau titre",
   "loading": "Chargement...",
   "noData": "Aucune donnée trouvée",
+  "error": "Une erreur est survenue",
   "search": "Rechercher...",
   "refresh": "Actualiser",
   "previous": "Précédent",
   "next": "Suivant",
+  "menu": "Gestion des titres",
+  "description": "Gérer et modifier les titres",
+  "advancedFilter": {
+    "columnTitleName": "Nom du titre",
+    "columnCode": "Code"
+  },
   "cancel": "Annuler",
   "save": "Enregistrer",
   "saving": "Enregistrement...",
   "delete": {
-    "confirmTitle": "Supprimer le Titre",
+    "confirmTitle": "Supprimer le titre",
     "confirmMessage": "Êtes-vous sûr de vouloir supprimer le titre {{name}} ?",
     "button": "Supprimer"
   },
@@ -21,34 +29,35 @@
     "description": "Gérez les définitions de titres ici."
   },
   "table": {
-    "id": "IDENTIFIANT",
-    "name": "Nom du Titre",
+    "id": "ID",
+    "name": "Nom du titre",
     "code": "Code",
-    "createdDate": "Date de Création",
+    "createdDate": "Date de création",
     "createdBy": "Créé par",
     "showing": "Affichage {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
-    "title": "Ünvan Listesi"
+    "title": "Liste des titres"
   },
   "form": {
-    "addTitle": "Ajouter un Nouveau Titre",
-    "editTitle": "Modifier le Titre",
-    "addDescription": "Entrez les détails du nouveau titre",
-    "editDescription": "Modifier les détails du titre",
-    "titleName": "Nom du Titre",
+    "addTitle": "Ajouter un nouveau titre",
+    "editTitle": "Modifier le titre",
+    "addDescription": "Entrez les informations du nouveau titre",
+    "editDescription": "Modifier les informations du titre",
+    "titleName": "Nom du titre",
     "titleNamePlaceholder": "Entrez le nom du titre",
-    "titleCode": "Code du Titre",
+    "titleCode": "Code du titre",
     "codePlaceholder": "Entrez le code (optionnel)",
     "cancel": "Annuler",
     "save": "Enregistrer",
     "saving": "Enregistrement..."
   },
-  "advancedFilter": {
-    "columnTitleName": "Title Name",
-    "columnCode": "Code"
+  "stats": {
+    "totalTitles": "Total des titres",
+    "activeTitles": "Titres actifs",
+    "newThisMonth": "Nouveau ce mois"
   },
-  "titleManagement": {
-    "error": "Une erreur est survenue"
-  },
-  "error": "Une erreur est survenue"
+  "messages": {
+    "deleteSuccess": "Le titre a été supprimé avec succès",
+    "deleteError": "Échec de la suppression du titre"
+  }
 }

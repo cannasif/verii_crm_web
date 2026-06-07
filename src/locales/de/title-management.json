@@ -1,54 +1,63 @@
 {
+  "addButton": "Neuen Titel hinzufügen",
   "loading": "Laden...",
   "noData": "Keine Daten gefunden",
+  "error": "Ein Fehler ist aufgetreten",
   "search": "Suchen...",
   "refresh": "Aktualisieren",
   "previous": "Previous",
   "next": "Weiter",
+  "menu": "Titelverwaltung",
+  "description": "Titel verwalten und bearbeiten",
+  "advancedFilter": {
+    "columnTitleName": "Titelname",
+    "columnCode": "Code"
+  },
   "cancel": "Abbrechen",
   "save": "Speichern",
   "saving": "Speichern...",
   "delete": {
-    "confirmTitle": "Delete Title",
-    "confirmMessage": "Are you sure you want to delete the title {{name}}?",
-    "button": "Delete"
+    "confirmTitle": "Titel löschen",
+    "confirmMessage": "Möchten Sie den Titel {{name}} wirklich löschen?",
+    "button": "Löschen"
   },
-  "deleting": "Deleting...",
+  "deleting": "Wird gelöscht...",
   "actions": "Aktionen",
   "edit": "Bearbeiten",
   "header": {
     "title": "Titelverwaltung",
-    "description": "Verwalten Sie hier Titeldefinitionen."
+    "description": "Verwalten Sie Titeldefinitionen hier."
   },
   "table": {
-    "id": "AUSWEIS",
+    "id": "ID",
     "name": "Titelname",
     "code": "Code",
     "createdDate": "Erstellungsdatum",
     "createdBy": "Erstellt von",
-    "showing": "Zeige {{from}}-{{to}} / {{total}}",
+    "showing": "Anzeigen {{from}}-{{to}} / {{total}}",
     "page": "Seite {{current}} / {{total}}",
-    "title": "Ünvan Listesi"
+    "title": "Titel Listesi"
   },
   "form": {
-    "addTitle": "Hinzufügen Neu Title",
+    "addTitle": "Neuen Titel hinzufügen",
     "editTitle": "Titel bearbeiten",
-    "addDescription": "Geben Sie die neuen Titeldetails ein",
-    "editDescription": "Bearbeiten Sie die Titeldetails",
+    "addDescription": "Geben Sie die neuen Titelinformationen ein",
+    "editDescription": "Titelinformationen bearbeiten",
     "titleName": "Titelname",
-    "titleNamePlaceholder": "Titelnamen eingeben",
+    "titleNamePlaceholder": "Titelname eingeben",
     "titleCode": "Titelcode",
-    "codePlaceholder": "Code eingeben (optional)",
+    "codePlaceholder": "Code eingeben (opsiyonel)",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "saving": "Speichern..."
   },
-  "advancedFilter": {
-    "columnTitleName": "Title Name",
-    "columnCode": "Code"
+  "stats": {
+    "totalTitles": "Toplam Titel",
+    "activeTitles": "Aktive Titel",
+    "newThisMonth": "Neu diesen Monat"
   },
-  "titleManagement": {
-    "error": "Fehler ist aufgetreten"
-  },
-  "error": "Fehler ist aufgetreten"
+  "messages": {
+    "deleteSuccess": "Titel erfolgreich gelöscht",
+    "deleteError": "Titel konnte nicht gelöscht werden"
+  }
 }

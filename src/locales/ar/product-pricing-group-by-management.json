@@ -1,37 +1,6 @@
 {
   "title": "إدارة تجميع تسعير المنتجات",
   "description": "إدارة وتجميع تسعير المنتجات",
-  "groupBy": {
-    "product": "تجميع حسب المنتج",
-    "group": "تجميع حسب المجموعة"
-  },
-  "table": {
-    "productCode": "رمز المنتج",
-    "groupCode": "رمز المجموعة",
-    "totalCount": "العدد الإجمالي",
-    "avgListPrice": "متوسط سعر القائمة",
-    "avgFinalPrice": "متوسط السعر النهائي",
-    "minFinalPrice": "أقل سعر نهائي",
-    "maxFinalPrice": "أعلى سعر نهائي",
-    "actions": "إجراءات",
-    "id": "المعرف",
-    "erpGroupCode": "ERP Product Group Code",
-    "currency": "Currency",
-    "listPrice": "List Price",
-    "costPrice": "Cost Price",
-    "discount1": "Discount 1",
-    "discount2": "Discount 2",
-    "discount3": "Discount 3",
-    "finalPrice": "Final Price",
-    "createdDate": "Created Date",
-    "updatedDate": "Updated Date",
-    "showing": "Showing {{from}}-{{to}} of {{total}}",
-    "page": "Page {{current}} of {{total}}",
-    "title": "قائمة مجموعات الأسعار"
-  },
-  "viewDetails": "عرض التفاصيل",
-  "noData": "لم يتم العثور على بيانات",
-  "loading": "جاري التحميل...",
   "create": "مجموعة تسعير جديدة",
   "edit": "تعديل مجموعة التسعير",
   "editDescription": "قم بتعديل معلومات مجموعة التسعير",
@@ -55,6 +24,7 @@
   "filterByCurrency": "تصفية حسب العملة",
   "filterByPriceRange": "تصفية حسب نطاق السعر",
   "filterByDiscountRange": "تصفية حسب نطاق الخصم",
+  "noData": "لم يتم العثور على بيانات",
   "confirmDelete": "هل أنت متأكد من حذف مجموعة التسعير هذه؟",
   "createSuccess": "تم إنشاء مجموعة التسعير بنجاح",
   "updateSuccess": "تم تحديث مجموعة التسعير بنجاح",
@@ -88,6 +58,7 @@
   "enterDiscount3": "أدخل خصم 3 (0-100، اختياري)",
   "priceCalculation": "حساب السعر",
   "finalPriceAfterDiscounts": "السعر النهائي بعد الخصومات",
+  "loading": "جاري التحميل...",
   "save": "حفظ",
   "saving": "جارٍ الحفظ...",
   "cancel": "إلغاء",
@@ -115,5 +86,21 @@
   "advancedFilter": {
     "columnErpGroupCode": "رمز مجموعة ERP",
     "columnCurrency": "العملة"
+  },
+  "table": {
+    "title": "قائمة مجموعات الأسعار",
+    "id": "المعرف",
+    "erpGroupCode": "ERP Product Group Code",
+    "currency": "Currency",
+    "listPrice": "List Price",
+    "costPrice": "Cost Price",
+    "discount1": "Discount 1",
+    "discount2": "Discount 2",
+    "discount3": "Discount 3",
+    "finalPrice": "Final Price",
+    "createdDate": "Created Date",
+    "updatedDate": "Updated Date",
+    "showing": "Showing {{from}}-{{to}} of {{total}}",
+    "page": "Page {{current}} of {{total}}"
   }
 }

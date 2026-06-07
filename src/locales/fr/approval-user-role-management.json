@@ -18,7 +18,7 @@
       "page": "Page {{current}} / {{total}}",
       "previous": "Précédent",
       "next": "Suivant",
-      "title": "Onay Kullanıcı Rolleri"
+      "title": "Rôles Utilisateur d'Approbation"
     },
     "delete": {
       "title": "Supprimer le Rôle",
@@ -40,13 +40,13 @@
       "save": "Enregistrer",
       "saving": "Enregistrement...",
       "cancel": "Annuler",
-      "userIdRequired": "User selection is required",
-      "approvalRoleIdRequired": "Approval role selection is required"
+      "userIdRequired": "La sélection de l'utilisateur est obligatoire",
+      "approvalRoleIdRequired": "La sélection du rôle d'approbation est obligatoire"
     },
     "advancedFilter": {
-      "columnUserFullName": "Kullanıcı",
-      "columnApprovalRoleName": "Onay Rolü",
-      "columnCreatedBy": "Créeran"
+      "columnUserFullName": "Utilisateur",
+      "columnApprovalRoleName": "Rôle d'Approbation",
+      "columnCreatedBy": "Créé par"
     },
     "error": "Une erreur est survenue"
   }

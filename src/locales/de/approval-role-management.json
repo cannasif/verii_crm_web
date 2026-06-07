@@ -2,13 +2,13 @@
   "approvalRole": {
     "menu": "Genehmigungsrollen-Verwaltung",
     "description": "Verwalten und bearbeiten Sie Genehmigungsrollen",
-    "addButton": "Hinzufügen Neu Approval Role",
+    "addButton": "Neue Genehmigungsrolle hinzufügen",
     "searchPlaceholder": "Suchen...",
     "refresh": "Aktualisieren",
     "loading": "Laden...",
     "noData": "Keine Daten",
     "table": {
-      "id": "AUSWEIS",
+      "id": "ID",
       "approvalRoleGroupName": "Rollengruppe",
       "name": "Rollenname",
       "maxAmount": "Maximaler Betrag",
@@ -19,18 +19,18 @@
       "page": "Seite {{current}} / {{total}}",
       "previous": "Vorherige",
       "next": "Nächste",
-      "title": "Onay Rolü Listesi"
+      "title": "Genehmigungsrollen"
     },
     "delete": {
-      "confirmTitle": "Delete Confirmation",
-      "confirmMessage": "Are you sure you want to delete this record? This action cannot be undone.",
+      "confirmTitle": "Löschen bestätigen",
+      "confirmMessage": "Sind Sie sicher, dass Sie diesen Datensatz löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
       "cancelButton": "Abbrechen",
-      "confirmButton": "Delete",
-      "deleting": "Deleting..."
+      "confirmButton": "Löschen",
+      "deleting": "Wird gelöscht..."
     },
     "form": {
       "editTitle": "Genehmigungsrolle bearbeiten",
-      "addTitle": "Hinzufügen Neu Approval Role",
+      "addTitle": "Neue Genehmigungsrolle hinzufügen",
       "editDescription": "Bearbeiten Sie die Details der Genehmigungsrolle",
       "addDescription": "Geben Sie die Details der neuen Genehmigungsrolle ein",
       "approvalRoleGroupId": "Genehmigungsrollengruppe",
@@ -43,18 +43,18 @@
       "cancel": "Abbrechen",
       "save": "Speichern",
       "saving": "Speichern...",
-      "approvalRoleGroupIdRequired": "Approval role group selection is required",
-      "nameRequired": "Role name is required",
-      "nameMaxLength": "Role name can be at most 100 characters",
-      "maxAmountMin": "Max amount cannot be less than 0"
+      "approvalRoleGroupIdRequired": "Die Auswahl der Genehmigungsrollengruppe ist erforderlich",
+      "nameRequired": "Der Rollenname ist erforderlich",
+      "nameMaxLength": "Der Rollenname darf maximal 100 Zeichen haben",
+      "maxAmountMin": "Der Höchstbetrag darf nicht kleiner als 0 sein"
     },
     "advancedFilter": {
-      "columnName": "Rol Adı",
-      "columnApprovalRoleGroupName": "Rol Grubu",
-      "columnMaxAmount": "Maks. Tutar"
+      "columnName": "Rollenname",
+      "columnApprovalRoleGroupName": "Rollengruppe",
+      "columnMaxAmount": "Höchstbetrag"
     },
     "messages": {
-      "error": "Fehler ist aufgetreten"
+      "error": "Ein Fehler ist aufgetreten"
     }
   }
 }

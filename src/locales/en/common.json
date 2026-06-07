@@ -6,6 +6,7 @@
     "save": "Save",
     "saving": "Saving...",
     "cancel": "Cancel",
+    "create": "Oluştur",
     "close": "Close",
     "expand": "Expand",
     "collapse": "Collapse",
@@ -67,6 +68,7 @@
     "yes": "Yes",
     "no": "No",
     "add": "Add",
+    "remove": "Kaldır",
     "start": "Start",
     "actions": "Actions",
     "processing": "Processing...",
@@ -97,12 +99,6 @@
       "discount3": "Discount 3",
       "discount2And3": "Disc. 2/3"
     },
-    "table": {
-      "showing": "Showing {{from}}-{{to}} / {{total}}",
-      "page": "Page {{current}} / {{total}}"
-    },
-    "ok": "OK",
-    "imageUrlPlaceholder": "https://... veya /logo.png",
     "serverErrorTitle": "Server error",
     "serverErrorRetrying": "The connection is lost. Automatically retrying...",
     "serverErrorDescription": "Could not load credentials. Please try again.",
@@ -129,6 +125,10 @@
     "paginationInfo": "{{start}}-{{end}} / {{total}} records",
     "refresh": "Refresh",
     "showing": "shown",
+    "table": {
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
     "filters": "Detailed Filter",
     "total": "Total",
     "advancedFilter": {
@@ -175,10 +175,15 @@
     "selectAll": "Select All",
     "export": "Export",
     "exportExcel": "Download Excel",
-    "exportPdf": "Download PDF",
+    "exportPreparing": "Hazırlanıyor...",
+    "exportPDF": "Download PDF",
     "exportPPT": "Download PowerPoint",
     "active": "Active",
+    "inactive": "Pasif",
     "columns": "Visible Columns",
+    "hide": "Gizle",
+    "hiddenColumns": "Gizli Sütunlar",
+    "ok": "OK",
     "clearFilters": "clear",
     "apply": "Apply",
     "page": "Page {{current}} / {{total}}",
@@ -215,7 +220,7 @@
     "imageSettings": "Image Properties",
     "imageUrl": "Image URL",
     "uploadFromFile": "Load from file",
-    "inactive": "Pasif",
+    "imageUrlPlaceholder": "https://... veya /logo.png",
     "routeError": {
       "title": "An error occurred",
       "chunkError": "A problem occurred while loading the page. Please refresh the page.",
@@ -518,7 +523,7 @@
       "guidedStepGoalTitle": "What should this widget help with?",
       "guidedStepGoalDescription": "Choose the business purpose first. The system will set the visual language and safe starting behavior based on it.",
       "guidedStepVisualBadge": "2. Visual",
-      "guidedStepVisualTitle": "How do you want to show it?",
+      "guidedStepVisualTitle": "Visual type",
       "guidedStepVisualDescription": "After the purpose is chosen, start the right visual. The system prepares the widget in its first usable state.",
       "guidedVisualAutoSelected": "The system picked {{visual}} as the default view for this purpose.",
       "guidedStepFieldsBadge": "3. Fields",
@@ -824,7 +829,6 @@
       "guidedTemplateDescription": "Pick the goal and visual type; we auto-suggest the fields.",
       "guidedTemplateSummaryReady": "{{goal}} · {{visual}}",
       "guidedTemplateSummaryPending": "No selection yet",
-      "guidedStepVisualTitle": "Visual type",
       "guidedVisualPlaceholder": "Pick a visual (table, trend, compare…)",
       "dashboardFiltersSummary": "{{count}} filter · {{fields}}",
       "dashboardFiltersEmptyShort": "No filters yet",
@@ -1104,6 +1108,11 @@
       "lastReview": "Last review",
       "reportSummary": "Report summary",
       "reportSummaryDescription": "A short summary of the saved report configuration.",
+      "exportCurrentCsv": "Mevcut CSV'yi dışa aktar",
+      "exportAllCsv": "Tüm CSV'leri dışa aktar",
+      "exportCurrentXlsx": "Export current widget as Excel (.xlsx)",
+      "exportAllXlsx": "Export all widgets as Excel (one sheet per widget)",
+      "exportDefinition": "Tanımı dışa aktar",
       "widgetCountBadge": "{{count}} widgets",
       "fieldCountBadge": "{{count}} fields",
       "copyName": "{{name}} Copy",
@@ -1118,6 +1127,16 @@
       "propertiesDescriptionBasic": "Only the most important settings are shown here. Switch to advanced mode for deeper controls.",
       "basicModeTitle": "Basic mode is on",
       "basicModeDescription": "Only the essential settings are shown right now. You can move faster with the ready-made starter kits and the design cards on the right.",
+      "chartTypeDescriptions": {
+        "table": "Best for reviewing detailed row-level data directly.",
+        "bar": "Best for comparing magnitudes across categories.",
+        "stackedBar": "Best for comparing segment contribution inside totals.",
+        "line": "Best for tracking movement and trends over time.",
+        "pie": "Best for showing ratio distribution for a single metric.",
+        "donut": "Best for an executive-friendly ratio view with a cleaner card feel.",
+        "kpi": "Best for emphasizing one standout metric and its change.",
+        "matrix": "Best for pivot-style summaries with row and column breakdowns."
+      },
       "widgetSize": {
         "full": "full",
         "half": "half",
@@ -1137,16 +1156,6 @@
         "donut": "Donut",
         "kpi": "KPI",
         "matrix": "Matrix"
-      },
-      "chartTypeDescriptions": {
-        "table": "Best for reviewing detailed row-level data directly.",
-        "bar": "Best for comparing magnitudes across categories.",
-        "stackedBar": "Best for comparing segment contribution inside totals.",
-        "line": "Best for tracking movement and trends over time.",
-        "pie": "Best for showing ratio distribution for a single metric.",
-        "donut": "Best for an executive-friendly ratio view with a cleaner card feel.",
-        "kpi": "Best for emphasizing one standout metric and its change.",
-        "matrix": "Best for pivot-style summaries with row and column breakdowns."
       },
       "aggregations": {
         "sum": "Sum",
@@ -1209,18 +1218,8 @@
         "draft": "Draft",
         "publish": "Publish",
         "archive": "Archive"
-      },
-      "exportCurrentCsv": "Mevcut CSV'yi dışa aktar",
-      "exportAllCsv": "Tüm CSV'leri dışa aktar",
-      "exportCurrentXlsx": "Export current widget as Excel (.xlsx)",
-      "exportAllXlsx": "Export all widgets as Excel (one sheet per widget)",
-      "exportDefinition": "Tanımı dışa aktar"
-    },
-    "create": "Oluştur",
-    "remove": "Kaldır",
-    "hide": "Gizle",
-    "hiddenColumns": "Gizli Sütunlar",
-    "exportPreparing": "Hazırlanıyor..."
+      }
+    }
   },
   "auth": {
     "login": {
@@ -1229,25 +1228,26 @@
       "branch": "Branch",
       "selectBranch": "Select branch",
       "branchNotFound": "Branch not found",
+      "branchPlaceholder": "Select Branch",
       "email": "Email",
       "emailPlaceholder": "Enter your email address",
       "password": "Password",
       "passwordPlaceholder": "Enter your password",
       "loginButton": "Sign In",
+      "submitButton": "Sign In",
       "loggingIn": "Signing in...",
+      "processing": "Processing...",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
       "wrongPassword": "Email or password is incorrect",
       "loginError": "An error occurred while signing in",
       "sessionExpired": "Your session has expired. Please sign in again.",
       "copyright": "© 2025 VERII. All rights reserved.",
-      "branchPlaceholder": "Select Branch",
-      "rememberMe": "Remember me",
-      "forgotPassword": "Forgot password?",
-      "processing": "Processing...",
-      "submitButton": "Sign In",
       "slogan": "Empowering your business with <1>VERII CRM</1>",
       "capsLockOn": "Caps lock is on",
       "animationOff": "Turn off animation",
-      "animationOn": "Turn on animation"
+      "animationOn": "Turn on animation",
+      "comingSoon": "Yakında"
     },
     "logout": "Logout",
     "changePassword": {
@@ -1258,6 +1258,9 @@
       "successRedirect": "Your password has been successfully reset. You are directed to the login page...",
       "failed": "Password reset failed",
       "error": "An error occurred during the password reset process"
+    },
+    "validation": {
+      "requiredFieldsNotFilled": "Zorunlu alanlar doldurulmadı."
     }
   },
   "navbar": {
@@ -1393,13 +1396,6 @@
     "stockManagement": "Stock Management",
     "settings": "Settings",
     "logout": "Log Out",
-    "productAndStock": "Products and Stock",
-    "salesManagement": "Sales Management",
-    "proposals": "Offers",
-    "quotationList": "Offer List",
-    "waitingApprovals": "Pending Approvals",
-    "definitions": "Definitions",
-    "users": "Users",
     "accessControl": "Access Control",
     "accessControlManagementGroup": "Permissions and User Management",
     "accessControlSystemGroup": "System Tools",
@@ -1410,18 +1406,25 @@
     "userVisibilityAssignments": "User Visibility Assignments",
     "visibilitySimulator": "Visibility Simulator",
     "auditLogs": "Audit Logs",
+    "salesManagement": "Sales Management",
     "demands": "Requests",
     "demandCreateWizard": "Create New Request",
     "waitingApprovalDemands": "Requests Pending Approval",
     "demandList": "Request List",
+    "proposals": "Offers",
+    "waitingApprovals": "Pending Approvals",
+    "quotationList": "Offer List",
     "orderCreateWizard": "Create New Order",
     "waitingApprovalOrders": "Orders Pending Approval",
     "orderList": "Order List",
     "erpOrderList": "ERP Order List",
+    "productAndStock": "Products and Stock",
     "reportsList": "List",
     "reportsCreate": "Create New",
     "pdfReportsList": "PDF List",
-    "pdfReportsCreate": "Create PDF"
+    "pdfReportsCreate": "Create PDF",
+    "definitions": "Definitions",
+    "users": "Users"
   },
   "dashboard": {
     "title": "dashboard",
@@ -1454,11 +1457,11 @@
     "reportDownload": "Download Report",
     "quickAction": "Quick Action",
     "monthsShort": {
-      "mar": "Mar",
-      "may": "May",
       "jan": "Jan",
       "feb": "Feb",
+      "mar": "Mar",
       "apr": "Apr",
+      "may": "May",
       "jun": "Jun",
       "jul": "Jul",
       "aug": "Aug",
@@ -2087,6 +2090,12 @@
       "targetCellCode": "Target Bin",
       "detailDescription": "Detailed information of the transfer order"
     },
+    "assignedList": {
+      "title": "Assigned Transfer Orders",
+      "searchPlaceholder": "Document No, Customer Code, Warehouse...",
+      "noData": "No assigned transfer orders found",
+      "error": "An error occurred while loading data"
+    },
     "step1": {
       "transferDate": "Transfer Date",
       "documentNo": "Document No",
@@ -2144,12 +2153,6 @@
       "sourceCellCodePlaceholder": "Enter source bin code",
       "targetCellCode": "Target Bin Code",
       "targetCellCodePlaceholder": "Enter target bin code"
-    },
-    "assignedList": {
-      "title": "Assigned Transfer Orders",
-      "searchPlaceholder": "Document No, Customer Code, Warehouse...",
-      "noData": "No assigned transfer orders found",
-      "error": "An error occurred while loading data"
     },
     "validation": {
       "transferDateRequired": "Date is required",
@@ -2436,10 +2439,10 @@
       "searchPlaceholder": "Packing No, Customer Code...",
       "filterStatus": "Filter Status",
       "allStatuses": "All Statuses",
-      "filterWarehouse": "Warehouse Code",
       "detail": "Detail",
       "detailTitle": "Package Detail",
       "detailDescription": "Package detailed information",
+      "filterWarehouse": "Warehouse Code",
       "id": "Record No",
       "packingNo": "Packing No",
       "packingDate": "Packing Date",
@@ -2630,6 +2633,26 @@
       "shipped": "Shipped",
       "cancelled": "Cancelled"
     },
+    "sourceType": {
+      "GR": "Goods Receipt",
+      "WT": "Warehouse Transfer",
+      "SH": "Shipment",
+      "PR": "Production",
+      "PT": "Production Transfer",
+      "SIT": "Subcontracting Issue",
+      "SRT": "Subcontracting Receipt",
+      "WI": "Warehouse Inbound",
+      "WO": "Warehouse Outbound",
+      "gr": "Goods Receipt",
+      "wt": "Warehouse Transfer",
+      "pr": "Production",
+      "pt": "Production Transfer",
+      "sit": "Subcontracting Issue",
+      "srt": "Subcontracting Receipt",
+      "wi": "Warehouse Inbound",
+      "wo": "Warehouse Outbound",
+      "sh": "Shipment"
+    },
     "packageStatus": {
       "open": "Open",
       "closed": "Closed",
@@ -2640,26 +2663,6 @@
       "pallet": "Pallet",
       "bag": "Bag",
       "custom": "Custom"
-    },
-    "sourceType": {
-      "gr": "Goods Receipt",
-      "wt": "Warehouse Transfer",
-      "pr": "Production",
-      "pt": "Production Transfer",
-      "sit": "Subcontracting Issue",
-      "srt": "Subcontracting Receipt",
-      "wi": "Warehouse Inbound",
-      "wo": "Warehouse Outbound",
-      "sh": "Shipment",
-      "GR": "Goods Receipt",
-      "WT": "Warehouse Transfer",
-      "SH": "Shipment",
-      "PR": "Production",
-      "PT": "Production Transfer",
-      "SIT": "Subcontracting Issue",
-      "SRT": "Subcontracting Receipt",
-      "WI": "Warehouse Inbound",
-      "WO": "Warehouse Outbound"
     },
     "cargoCompany": {
       "None": "None",
@@ -3294,17 +3297,18 @@
     "noResults": "No results found"
   },
   "customerSelectDialog": {
-    "erpCustomers": "ERP",
     "loading": "Loading...",
     "noResults": "Search results not found",
     "title": "Select Customer",
     "description": "Select the customer you want to transact with",
     "searchPlaceholder": "Search by name, code or phone...",
+    "erpCustomers": "ERP",
     "potentialCustomers": "Potential",
     "allCustomers": "All",
     "badgeKindErp": "ERP",
     "badgeKindPotential": "Potential"
   },
+  "menu": "Hangfire Monitoring",
   "roles": {
     "admin": "Executive"
   },
@@ -3320,11 +3324,8 @@
       "noteLabel": "Notes",
       "saving": "Recording..."
     },
+    "select": "Select",
     "header": {
-      "currencyChange": {
-        "title": "Exchange Rate Change",
-        "message": "Currency change will affect all rows. Do you want to continue?"
-      },
       "projectCode": "Project Code",
       "projectCodePlaceholder": "Select project code...",
       "descriptionPlaceholder": "Special conditions...",
@@ -3334,7 +3335,14 @@
       "tryDifferentSearch": "Try a different search term",
       "representative": "Sales Representative",
       "shippingAddress": "Shipping Address",
-      "selectShippingAddress": "Choose shipping address"
+      "selectShippingAddress": "Choose shipping address",
+      "currencyChange": {
+        "title": "Exchange Rate Change",
+        "message": "Currency change will affect all rows. Do you want to continue?"
+      },
+      "paymentType": "Ödeme Tipi",
+      "deliveryMethod": "Teslimat Yöntemi",
+      "documentDetail": "Belge Açıklaması"
     },
     "exchangeRates": {
       "dialog": {
@@ -3354,8 +3362,15 @@
       "date": "Exchange Rate Date",
       "isOfficial": "Official",
       "updateSuccess": "Exchange rates updated",
-      "updateError": "An error occurred while updating exchange rates"
+      "updateError": "An error occurred while updating exchange rates",
+      "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
     },
+    "loading": "Rates are loading...",
+    "actions": "Transactions",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "saveAndApply": "Save and Apply",
     "approvalFlow": {
       "stepCompleted": "completed",
       "stepInProgress": "in progress",
@@ -3376,18 +3391,12 @@
       "subtitle": "Create the quote by entering customer and item information"
     },
     "lines": {
-      "vatRate": "VAT",
-      "delete": {
-        "confirmTitleMultiple": "Delete Linked Stocks",
-        "confirmTitle": "Delete Row",
-        "confirmMessageMultiple": "When this row is deleted, the other {count} connected stocks will also be deleted.",
-        "confirmMessage": "Are you sure you want to delete this row?"
-      },
       "required": "At least 1 line must be added",
       "productCode": "Product Code",
       "productName": "Product Name",
       "quantity": "Amount",
       "unitPrice": "Unit Price",
+      "vatRate": "VAT",
       "total": "Total",
       "stock": "Stock Selection",
       "unit": "Unit",
@@ -3408,13 +3417,29 @@
       "discount3": "Ind.3",
       "addTitle": "Add New Line",
       "editTitle": "Edit Row",
+      "delete": {
+        "confirmTitleMultiple": "Delete Linked Stocks",
+        "confirmTitle": "Delete Row",
+        "confirmMessageMultiple": "When this row is deleted, the other {count} connected stocks will also be deleted.",
+        "confirmMessage": "Are you sure you want to delete this row?"
+      },
       "createSuccess": "Rows added",
       "createError": "An error occurred while adding rows",
       "deleteSuccess": "Row deleted",
       "deleteError": "An error occurred while deleting the row",
       "updateSuccess": "Rows updated",
-      "updateError": "An error occurred while updating rows"
+      "updateError": "An error occurred while updating rows",
+      "max200Chars": "Maksimum 200 karakter",
+      "currencyTry": "TL",
+      "approvalNeeded": "Onay Gerekiyor",
+      "discountLimitExceeded": "İndirim oranları yetki limitlerinizi aşıyor.",
+      "subtotal": "Ara Toplam",
+      "totalDiscount": "Toplam İndirim",
+      "vatAmount": "KDV Tutarı",
+      "grandTotal": "Genel Toplam",
+      "approvalRequired": "Onay Gerekli"
     },
+    "date": "History",
     "share": {
       "whatsappMessage": "Hello, I am sending you the offer file.",
       "downloaded": "PDF downloaded. Please share via WhatsApp.",
@@ -3426,6 +3451,11 @@
       "lines": "Quotation items",
       "summary": "Summary & Totals"
     },
+    "export": "Export",
+    "exportPdf": "Download PDF",
+    "shareWhatsapp": "Share via WhatsApp",
+    "shareMail": "Share via Email",
+    "save": "Save Offer",
     "detail": {
       "title": "Offer Detail: {{offerNo}}",
       "notFound": "No offer found",
@@ -3435,6 +3465,7 @@
       "tabApprovalFlow": "Approval Flow",
       "tabReport": "Report"
     },
+    "offerNo": "Offer No.",
     "update": {
       "error": "Offer Failed to Update",
       "invalidCurrency": "A valid currency must be selected",
@@ -3443,6 +3474,7 @@
       "errorMessage": "An error occurred while updating the offer.",
       "validationError": "Please check the required fields."
     },
+    "backToQuotations": "Return to Offers",
     "approval": {
       "sending": "Sending...",
       "sendForApproval": "Submit for Approval",
@@ -3458,12 +3490,17 @@
       "startSuccess": "Approval flow started successfully",
       "startError": "Approval flow failed to initialize"
     },
+    "add": "Add",
+    "guide": "Directory",
+    "confirm": "Confirm",
+    "error": "Mistake",
+    "delete": "Delete",
     "list": {
-      "id": "ID",
       "title": "Offer List",
       "description": "View and manage all offers",
       "createNew": "Create New Offer",
       "searchPlaceholder": "Search by quote number or customer name...",
+      "id": "ID",
       "offerNo": "Offer No.",
       "customer": "Customer",
       "representative": "Representative",
@@ -3476,6 +3513,7 @@
       "showing": "Showing {{from}}-{{to}} / {{total}}",
       "page": "Page {{current}} / {{total}}"
     },
+    "refresh": "Refresh",
     "summary": {
       "title": "Summary",
       "generalDiscountRate": "General Discount Rate (%)",
@@ -3484,8 +3522,12 @@
       "subtotal": "Subtotal",
       "generalDiscount": "General Discount",
       "totalVat": "Total VAT",
-      "grandTotal": "Grand Total"
+      "grandTotal": "Grand Total",
+      "grandTotalAnalysis": "Genel Toplam Analizi"
     },
+    "noData": "No data",
+    "previous": "Former",
+    "next": "Next",
     "waitingApprovals": {
       "title": "Offers Pending Approval",
       "list": "List of Offers Pending Approval",
@@ -3498,35 +3540,11 @@
       "status": "Situation",
       "waiting": "waiting"
     },
+    "back": "Back",
     "revision": {
       "success": "Quote revision created successfully",
       "error": "An error occurred while creating the quote revision"
-    },
-    "select": "Select",
-    "loading": "Rates are loading...",
-    "actions": "Transactions",
-    "edit": "Edit",
-    "cancel": "Cancel",
-    "saving": "Recording...",
-    "saveAndApply": "Save and Apply",
-    "date": "History",
-    "export": "Export",
-    "exportPdf": "Download PDF",
-    "shareWhatsapp": "Share via WhatsApp",
-    "shareMail": "Share via Email",
-    "save": "Save Offer",
-    "offerNo": "Offer No.",
-    "backToQuotations": "Return to Offers",
-    "add": "Add",
-    "guide": "Directory",
-    "confirm": "Confirm",
-    "error": "Mistake",
-    "delete": "Delete",
-    "refresh": "Refresh",
-    "noData": "No data",
-    "previous": "Former",
-    "next": "Next",
-    "back": "Back"
+    }
   },
   "warehouseBalanceTooltip": {
     "totalLabel": "Total balance",
@@ -3755,7 +3773,6 @@
     "unnamedGroup": "Anonymous Group"
   },
   "activityManagement": {
-    "id": "ID",
     "edit": "Edit Activity",
     "create": "New Activity",
     "editDescription": "Edit activity information",
@@ -3793,9 +3810,19 @@
     "statusScheduled": "planned",
     "statusCompleted": "completed",
     "statusCanceled": "Canceled",
+    "id": "ID",
     "contact": "Person",
     "deleteActivity": "Delete Activity",
     "deleteConfirmation": "Are you sure you want to delete this activity?",
+    "activityTypeRequired": "Aktivite tipi seçimi gereklidir",
+    "assignedUserRequired": "Atanan kullanıcı gereklidir",
+    "endDateRequired": "Bitiş tarihi gereklidir",
+    "listLoadError": "Aktivite listesi yüklenemedi",
+    "detailLoadError": "Aktivite detayı yüklenemedi",
+    "cancel": "İptal",
+    "complete": "Tamamla",
+    "reminderChannelIn-App": "Uygulama İçi",
+    "reminderChannelEmail": "E-posta",
     "createSuccess": "Activity created successfully",
     "createError": "An error occurred while creating the activity",
     "deleteSuccess": "Activity deleted successfully",
@@ -3811,18 +3838,13 @@
       "moveUp": "Up",
       "moveDown": "Down"
     },
-    "activityTypeRequired": "Aktivite tipi seçimi gereklidir",
-    "assignedUserRequired": "Atanan kullanıcı gereklidir",
-    "endDateRequired": "Bitiş tarihi gereklidir",
-    "listLoadError": "Aktivite listesi yüklenemedi",
-    "detailLoadError": "Aktivite detayı yüklenemedi",
-    "cancel": "İptal",
-    "complete": "Tamamla",
-    "reminderChannelIn-App": "Uygulama İçi",
-    "reminderChannelEmail": "E-posta",
     "table": {
       "title": "Aktivite Listesi"
-    }
+    },
+    "paymentType": "Ödeme",
+    "activityMeetingType": "Görüşme",
+    "activityTopicPurpose": "İlgilenilen Konular",
+    "activityShipping": "Teslimat"
   },
   "status": {
     "active": "Active",
@@ -3839,25 +3861,36 @@
       "description": "Explanation",
       "descriptionPlaceholder": "Enter a description (optional)"
     },
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save",
     "management": {
       "title": "Activity Type Management",
       "description": "Manage and edit activity types"
     },
+    "create": "New Activity Type",
+    "error": "Bir hata oluştu",
+    "loading": "Loading...",
     "stats": {
       "totalActivityTypes": "Total Activity Type",
       "activeActivityTypes": "Active Activity Type",
       "newThisMonth": "New This Month"
     },
     "table": {
+      "title": "Aktivite Tipi Listesi",
       "id": "ID",
       "name": "Activity Type",
       "description": "Explanation",
       "createdDate": "Creation",
       "createdBy": "Created by",
       "showing": "Showing {{from}}-{{to}} / {{total}}",
-      "page": "Page {{current}} / {{total}}",
-      "title": "Aktivite Tipi Listesi"
+      "page": "Page {{current}} / {{total}}"
     },
+    "noData": "No data",
+    "quickActivity": "Quick Activity",
+    "actions": "Transactions",
+    "previous": "Former",
+    "next": "Next",
     "delete": {
       "confirmTitle": "Delete Activity Type",
       "confirmMessage": "Are you sure you want to delete activity type {{name}}? This action cannot be undone.",
@@ -3870,18 +3903,7 @@
       "deleteError": "Activity type could not be deleted",
       "updateSuccess": "Activity type updated successfully",
       "updateError": "Activity type could not be updated"
-    },
-    "cancel": "Cancel",
-    "saving": "Recording...",
-    "save": "Save",
-    "create": "New Activity Type",
-    "loading": "Loading...",
-    "noData": "No data",
-    "quickActivity": "Quick Activity",
-    "actions": "Transactions",
-    "previous": "Former",
-    "next": "Next",
-    "error": "Bir hata oluştu"
+    }
   },
   "approval": {
     "approve": {
@@ -3900,19 +3922,20 @@
       "label": "Notes",
       "placeholder": "You can add an approval/rejection note (optional)"
     },
+    "processing": "Processing...",
     "actions": {
       "reject": "reject",
       "approve": "Confirm",
       "view": "View"
     },
     "detail": {
+      "title": "Offer Detail",
+      "subtitle": "View offer details and take action",
       "tabs": {
         "detail": "Detail",
         "history": "Past",
         "action": "Process"
       },
-      "title": "Offer Detail",
-      "subtitle": "View offer details and take action",
       "notFound": "No offer found",
       "quotationInfo": "Offer Information",
       "offerNo": "Offer No.",
@@ -3947,6 +3970,7 @@
       "empty": "There is no approval history",
       "approvedBy": "Approved by"
     },
+    "assignedTo": "Assigned User",
     "list": {
       "title": "Pending Approvals",
       "error": "An error occurred while loading confirmations",
@@ -3960,8 +3984,6 @@
       "rejected": "Rejected",
       "closed": "Closed"
     },
-    "processing": "Processing...",
-    "assignedTo": "Assigned User",
     "yes": "Yes",
     "no": "No",
     "closedReason": "Reason for Closing",
@@ -3977,6 +3999,11 @@
       "updateSuccess": "Flow step updated successfully",
       "updateError": "Failed to update flow step"
     },
+    "title": "Flow Steps",
+    "addButton": "Add Step",
+    "empty": "No steps added yet",
+    "unknownRoleGroup": "No Role Group",
+    "stepDescription": "Approval Order: {order}",
     "form": {
       "editTitle": "Edit Step",
       "addTitle": "Add New Step",
@@ -3987,12 +4014,7 @@
       "cancel": "Cancel",
       "saving": "Recording...",
       "save": "Save"
-    },
-    "title": "Flow Steps",
-    "addButton": "Add Step",
-    "empty": "No steps added yet",
-    "unknownRoleGroup": "No Role Group",
-    "stepDescription": "Approval Order: {order}"
+    }
   },
   "contactManagement": {
     "form": {
@@ -4020,8 +4042,20 @@
       "phone": "Telephone",
       "email": "Email",
       "notes": "Notes",
-      "notesPlaceholder": "Add your notes here if you have any..."
+      "notesPlaceholder": "Add your notes here if you have any...",
+      "mobilePlaceholderExample": "05XX...",
+      "phonePlaceholderExample": "0212...",
+      "emailPlaceholderExample": "ornek@email.com"
     },
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save",
+    "menu": "Communication Management",
+    "description": "Manage and organize communications",
+    "addButton": "Add New Contact",
+    "columns": "Edit Column",
+    "visibleColumns": "Visible Columns",
+    "loading": "Loading...",
     "stats": {
       "totalContacts": "Total Communication",
       "activeContacts": "Active Communication",
@@ -4042,6 +4076,10 @@
       "showing": "Showing {{from}}-{{to}} / {{total}}",
       "page": "Page {{current}} / {{total}}"
     },
+    "noData": "No data",
+    "actions": "Transactions",
+    "previous": "Former",
+    "next": "Next",
     "delete": {
       "confirmTitle": "Delete Contact",
       "confirmMessage": "Are you sure you want to delete the {{name}} communication? This action cannot be undone.",
@@ -4054,30 +4092,10 @@
       "deleteError": "Contact could not be deleted",
       "updateSuccess": "Contact updated successfully",
       "updateError": "Contact could not be updated"
-    },
-    "cancel": "Cancel",
-    "saving": "Recording...",
-    "save": "Save",
-    "menu": "Communication Management",
-    "description": "Manage and organize communications",
-    "addButton": "Add New Contact",
-    "columns": "Edit Column",
-    "visibleColumns": "Visible Columns",
-    "loading": "Loading...",
-    "noData": "No data",
-    "actions": "Transactions",
-    "previous": "Former",
-    "next": "Next"
+    }
   },
   "customerManagement": {
     "form": {
-      "tcknNumber": "TR ID number",
-      "branchCode": {
-        "label": "Branch Code"
-      },
-      "businessUnitCode": {
-        "label": "Business Code"
-      },
       "editCustomer": "Edit Customer",
       "addCustomer": "Add New Customer",
       "editDescription": "Update customer information",
@@ -4088,6 +4106,7 @@
       "customerTypePlaceholder": "Select customer type",
       "taxNumber": "Tax Number",
       "taxOffice": "Tax Office",
+      "tcknNumber": "TR ID number",
       "email": "Email",
       "website": "Website",
       "phone": "Telephone",
@@ -4101,24 +4120,42 @@
       "creditLimit": "Credit Limit",
       "salesRepCode": "Sales Representative Code",
       "groupCode": "Group Code",
+      "branchCode": {
+        "label": "Branch Code"
+      },
+      "businessUnitCode": {
+        "label": "Business Code"
+      },
       "defaultShippingAddress": "Default Shipping Address",
       "selectDefaultShippingAddress": "Choose shipping address",
       "none": "None",
       "address": "Address",
       "notes": "Notes",
       "notesPlaceholder": "Add note...",
-      "cancel": "Cancel",
-      "saving": "Recording...",
-      "save": "Save",
       "taxOfficePlaceholderExample": "Vergi dairesi...",
       "tcknPlaceholderExample": "TCKN...",
       "emailPlaceholderExample": "ornek@sirket.com",
       "websitePlaceholderExample": "www.sirket.com",
       "phonePlaceholderExample": "0555...",
       "phone2PlaceholderExample": "Alternatif telefon...",
+      "salesRepCodePlaceholder": "Satış temsilci kodu...",
       "groupCodePlaceholder": "Grup kodu...",
-      "salesRepCodePlaceholder": "Satış temsilci kodu..."
+      "cancel": "Cancel",
+      "saving": "Recording...",
+      "save": "Save",
+      "conflictFieldError": "Bu alan mevcut bir müşteri kaydıyla çakışıyor.",
+      "customerCode": "Müşteri Kodu",
+      "conflictTitle": "Çakışan müşteri kayıtları bulundu",
+      "conflictDescription": "Kayıt işlemi durduruldu. Aşağıdaki müşterilerle çakışan tüm alanlar listelendi.",
+      "conflictItem": "{{customerName}} (ID: {{customerId}}) kaydında {{field}} alanı \"{{value}}\" değeriyle çakışıyor. Şube: {{branchCode}}",
+      "namePlaceholder": "Müşteri adını girin",
+      "customerCodePlaceholder": "Müşteri kodunu girin (opsiyonel)",
+      "taxNumberPlaceholder": "Vergi numarasını girin (opsiyonel)",
+      "addressPlaceholder": "Adresi girin (opsiyonel)"
     },
+    "menu": "Customer Management",
+    "description": "Manage and organize your customers",
+    "addButton": "Add New Customer",
     "filter": {
       "name": "Search by Customer Name...",
       "email": "Email",
@@ -4127,6 +4164,7 @@
       "taxNumber": "Tax Number",
       "city": "City"
     },
+    "loading": "Loading...",
     "stats": {
       "totalCustomers": "Total Customers",
       "approvedCustomers": "Approved Customer",
@@ -4134,7 +4172,6 @@
     },
     "table": {
       "id": "ID",
-      "tckn": "TR ID number",
       "customerCode": "Code",
       "name": "Customer Name",
       "customerType": "Customer Type",
@@ -4146,17 +4183,23 @@
       "creditLimit": "Credit Limit",
       "defaultShippingAddressId": "Default Shipping Address",
       "salesRep": "Representative",
+      "tckn": "TR ID number",
       "tax": "Tax Number",
       "website": "web",
       "createdDate": "Creation",
       "showing": "Showing {{from}}-{{to}} / {{total}}",
       "page": "Page {{current}} / {{total}}"
     },
+    "noData": "No data",
+    "actions": "Transactions",
+    "previous": "Former",
+    "next": "Next",
     "delete": {
       "confirmTitle": "Delete Customer",
       "confirmMessage": "Are you sure you want to delete customer {{name}}? This action cannot be undone.",
       "action": "Yes, Delete"
     },
+    "cancel": "Cancel",
     "messages": {
       "createSuccess": "Customer created successfully",
       "createError": "Failed to create customer",
@@ -4164,16 +4207,7 @@
       "deleteError": "Failed to delete customer",
       "updateSuccess": "Client updated successfully",
       "updateError": "Failed to update client"
-    },
-    "menu": "Customer Management",
-    "description": "Manage and organize your customers",
-    "addButton": "Add New Customer",
-    "loading": "Loading...",
-    "noData": "No data",
-    "actions": "Transactions",
-    "previous": "Former",
-    "next": "Next",
-    "cancel": "Cancel"
+    }
   },
   "customerTypeManagement": {
     "form": {
@@ -4187,20 +4221,27 @@
       "saving": "Recording...",
       "save": "Save"
     },
+    "menu": "Customer Type Management",
+    "description": "Manage and edit customer types",
+    "addButton": "Add New Type",
     "table": {
-      "id": "ID",
       "name": "Customer Type Name",
       "description": "Explanation",
+      "id": "ID",
       "createdDate": "Creation",
       "createdBy": "Created by",
       "showing": "Showing {{from}}-{{to}} / {{total}}",
       "page": "Page {{current}} / {{total}}"
     },
+    "loading": "Loading...",
     "stats": {
       "totalCustomerTypes": "Total Customer Type",
       "activeCustomerTypes": "Active Types",
       "newThisMonth": "New This Month"
     },
+    "noData": "No data",
+    "previous": "Former",
+    "next": "Next",
     "delete": {
       "confirmTitle": "Delete Customer Type",
       "confirmMessage": "Are you sure you want to delete customer type {{name}}? This action cannot be undone.",
@@ -4214,25 +4255,9 @@
       "deleteError": "Could not delete customer type",
       "updateSuccess": "Customer type updated successfully",
       "updateError": "Failed to update customer type"
-    },
-    "menu": "Customer Type Management",
-    "description": "Manage and edit customer types",
-    "addButton": "Add New Type",
-    "loading": "Loading...",
-    "noData": "No data",
-    "previous": "Former",
-    "next": "Next"
+    }
   },
   "dailyTasks": {
-    "days": {
-      "mon": "mon",
-      "tue": "Shawl",
-      "wed": "Tsar",
-      "thu": "thu",
-      "fri": "cum",
-      "sat": "Sat",
-      "sun": "sun"
-    },
     "morning": "Good morning",
     "afternoon": "Have a nice day",
     "evening": "Good evening",
@@ -4255,6 +4280,15 @@
     "monthly": "Monthly",
     "thisWeek": "This week",
     "today": "Today",
+    "days": {
+      "mon": "mon",
+      "tue": "Shawl",
+      "wed": "Tsar",
+      "thu": "thu",
+      "fri": "cum",
+      "sat": "Sat",
+      "sun": "sun"
+    },
     "more": "more"
   },
   "demand": {
@@ -4265,7 +4299,8 @@
       "stepNotStarted": "Did not start",
       "loading": "Loading approval flow...",
       "noData": "No data found.",
-      "notStarted": "The approval process has not started yet."
+      "notStarted": "The approval process has not started yet.",
+      "errorTitle": "Hata Oluştu"
     },
     "create": {
       "title": "Create New Offer",
@@ -4280,12 +4315,6 @@
       "subtitle": "Create a new sales request for the customer."
     },
     "lines": {
-      "delete": {
-        "confirmTitleMultiple": "Delete Linked Stocks",
-        "confirmTitle": "Delete Row",
-        "confirmMessageMultiple": "When this row is deleted, the other {count} connected stocks will also be deleted.",
-        "confirmMessage": "Are you sure you want to delete this row?"
-      },
       "required": "At least 1 line must be added",
       "editLine": "Edit Row",
       "approvalRequired": "Approval Required",
@@ -4315,26 +4344,40 @@
       "empty": "Your Cart is Empty",
       "emptyDescription": "To create an offer",
       "addLine": "Add New Line",
+      "delete": {
+        "confirmTitleMultiple": "Delete Linked Stocks",
+        "confirmTitle": "Delete Row",
+        "confirmMessageMultiple": "When this row is deleted, the other {count} connected stocks will also be deleted.",
+        "confirmMessage": "Are you sure you want to delete this row?"
+      },
       "createSuccess": "Rows added",
       "createError": "An error occurred while adding rows",
       "deleteSuccess": "Row deleted",
       "deleteError": "An error occurred while deleting the row",
       "updateSuccess": "Rows updated",
       "updateError": "An error occurred while updating rows",
-      "max200Chars": "Up to 200 characters",
+      "descriptionPlaceholder": "Açıklama giriniz...",
+      "editStockItemDetails": "Stok kalemi detaylarını düzenleyin",
+      "description1": "Açıklama 1",
+      "description2": "Açıklama 2",
+      "description3": "Açıklama 3",
       "discountNumbered1": "1. Discount",
       "discountNumbered2": "2. Discount",
       "discountNumbered3": "3. Discount",
       "descriptionFieldsTitle": "Description fields",
       "descriptionField1Label": "Description 1",
       "descriptionField2Label": "Description 2",
-      "descriptionField3Label": "Description 3"
+      "descriptionField3Label": "Description 3",
+      "max200Chars": "Up to 200 characters"
     },
     "sections": {
       "header": "Customer and document information",
       "lines": "Demand items",
       "summary": "Summary & Totals"
     },
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "save": "Save Offer",
     "detail": {
       "title": "Offer Detail: {{offerNo}}",
       "notFound": "No offer found",
@@ -4352,6 +4395,8 @@
       "errorMessage": "An error occurred while updating the offer.",
       "validationError": "Please check the required fields."
     },
+    "loading": "Loading...",
+    "backToDemands": "Return to Offers",
     "approval": {
       "sending": "Sending...",
       "sendForApproval": "Submit for Approval",
@@ -4368,12 +4413,6 @@
       "startError": "Approval flow failed to initialize"
     },
     "exchangeRates": {
-      "dialog": {
-        "title": "Exchange Rates",
-        "subtitle": "Manage current exchange rates",
-        "description": "View exchange rates and edit if necessary.",
-        "info": "Changes made here are valid only for this offer and do not affect the general system rates. Changed exchange rates"
-      },
       "title": "Exchange Rates",
       "currency": "Currency",
       "rate": "Exchange Value",
@@ -4382,16 +4421,22 @@
       "official": "Official",
       "custom": "Special",
       "empty": "There are no special rates added yet.",
+      "dialog": {
+        "title": "Exchange Rates",
+        "subtitle": "Manage current exchange rates",
+        "description": "View exchange rates and edit if necessary.",
+        "info": "Changes made here are valid only for this offer and do not affect the general system rates. Changed exchange rates"
+      },
       "status": "Situation",
       "cannotEditUsedCurrency": "The exchange rate in use cannot be changed",
       "updateSuccess": "Exchange rates updated",
-      "updateError": "An error occurred while updating exchange rates"
+      "updateError": "An error occurred while updating exchange rates",
+      "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
     },
+    "select": "Select",
+    "add": "Add",
+    "actions": "Process",
     "header": {
-      "currencyChange": {
-        "title": "Exchange Rate Change",
-        "message": "Currency change will affect all rows. Do you want to continue?"
-      },
       "title": "Offer Details",
       "subtitle": "You can manage customer and financial information here.",
       "customer": "Customer Account",
@@ -4399,14 +4444,25 @@
       "representative": "Sales Representative",
       "shippingAddress": "Shipping Address",
       "selectShippingAddress": "Choose shipping address",
-      "descriptionPlaceholder": "Special conditions..."
+      "descriptionPlaceholder": "Special conditions...",
+      "currencyChange": {
+        "title": "Exchange Rate Change",
+        "message": "Currency change will affect all rows. Do you want to continue?"
+      },
+      "paymentType": "Ödeme Tipi",
+      "deliveryMethod": "Teslimat Yöntemi",
+      "offerDate": "Talep Tarihi",
+      "documentDetail": "Belge Açıklaması"
     },
+    "confirm": "Confirm",
+    "error": "Mistake",
+    "delete": "Delete",
     "list": {
-      "id": "ID",
       "title": "Offer List",
       "description": "View and manage all offers",
       "createNew": "Create New Offer",
       "searchPlaceholder": "Search by quote number or customer name...",
+      "id": "ID",
       "offerNo": "Offer No.",
       "customer": "Customer",
       "representative": "Representative",
@@ -4419,6 +4475,7 @@
       "showing": "Showing {{from}}-{{to}} / {{total}}",
       "page": "Page {{current}} / {{total}}"
     },
+    "refresh": "Refresh",
     "summary": {
       "title": "Summary",
       "generalDiscountRate": "General Discount Rate (%)",
@@ -4427,8 +4484,14 @@
       "subtotal": "Subtotal",
       "generalDiscount": "General Discount",
       "totalVat": "Total VAT",
-      "grandTotal": "Grand Total"
+      "grandTotal": "Grand Total",
+      "grandTotalAnalysis": "Genel Toplam Analizi"
     },
+    "noData": "No data",
+    "previous": "Former",
+    "next": "Next",
+    "edit": "Edit",
+    "saveAndApply": "Save and Apply",
     "waitingApprovals": {
       "title": "Offers Pending Approval",
       "list": "List of Offers Pending Approval",
@@ -4441,28 +4504,12 @@
       "status": "Situation",
       "waiting": "waiting"
     },
+    "back": "Back",
     "revision": {
       "success": "Quote revision created successfully",
       "error": "An error occurred while creating the quote revision"
     },
-    "cancel": "Cancel",
-    "saving": "Recording...",
-    "save": "Save Offer",
-    "loading": "Loading...",
-    "backToDemands": "Return to Offers",
-    "select": "Select",
-    "add": "Add",
-    "actions": "Process",
-    "confirm": "Confirm",
-    "error": "Mistake",
-    "delete": "Delete",
-    "refresh": "Refresh",
-    "noData": "No data",
-    "previous": "Former",
-    "next": "Next",
-    "edit": "Edit",
-    "saveAndApply": "Save and Apply",
-    "back": "Back"
+    "untitled": "Başlıksız"
   },
   "documentSerialTypeManagement": {
     "form": {
@@ -4489,15 +4536,6 @@
       "serialStart": "Series Start",
       "serialStartPlaceholder": "Enter the series starting value"
     },
-    "table": {
-      "id": "ID",
-      "ruleType": "Rule Type",
-      "customerType": "Customer Type",
-      "salesRep": "Sales Representative",
-      "serialPrefix": "Serial Prefix",
-      "serialLength": "Series Length",
-      "createdDate": "Creation Date"
-    },
     "cancel": "Cancel",
     "saving": "Recording...",
     "save": "Save",
@@ -4508,6 +4546,15 @@
     "addButton": "Add New File Type",
     "loading": "Loading...",
     "noData": "No data",
+    "table": {
+      "id": "ID",
+      "ruleType": "Rule Type",
+      "customerType": "Customer Type",
+      "salesRep": "Sales Representative",
+      "serialPrefix": "Serial Prefix",
+      "serialLength": "Series Length",
+      "createdDate": "Creation Date"
+    },
     "actions": "Transactions",
     "totalRecords": "Total Registration",
     "previous": "Former",
@@ -4533,11 +4580,6 @@
         "currencyCodeRequired": "Currency Type Required",
         "currencyCodeRequiredMessage": "Currency type must be selected in all lines"
       },
-      "tabs": {
-        "header": "General Information",
-        "lines": "rows",
-        "salesmen": "salespeople"
-      },
       "updateSuccess": "Price Rule Updated",
       "updateSuccessMessage": "Price rule updated successfully",
       "createSuccess": "Price Rule Created",
@@ -4547,10 +4589,16 @@
       "create": "New Price Rule",
       "editDescription": "Edit price rule information",
       "createDescription": "Enter new price rule information",
+      "tabs": {
+        "header": "General Information",
+        "lines": "rows",
+        "salesmen": "salespeople"
+      },
       "cancel": "Cancel",
       "save": "Save",
       "confirm": "Confirm"
     },
+    "loadingDescription": "Loading data...",
     "header": {
       "ruleType": "Rule Type",
       "ruleTypePlaceholder": "Select rule type",
@@ -4597,8 +4645,17 @@
       "addConfirmTitle": "Add Row",
       "addConfirmMessage": "The stock code {{code}} will be added to the price rule. Do you approve?",
       "deleteConfirmTitle": "Remove Row",
-      "deleteConfirmMessage": "The line with stock code {{code}} will be removed from the price rule. Do you approve?"
+      "deleteConfirmMessage": "The line with stock code {{code}} will be removed from the price rule. Do you approve?",
+      "section": {
+        "stock": "Stok Bilgileri",
+        "pricing": "Fiyat Bilgileri"
+      },
+      "badgeCount": "Satır",
+      "createTitle": "Satır Ekle",
+      "editTitle": "Satırı Düzenle",
+      "dialogDescription": "Fiyat kuralı satır bilgilerini girin"
     },
+    "loading": "Loading...",
     "table": {
       "actions": "Transactions",
       "ruleCode": "Rule Code",
@@ -4645,8 +4702,6 @@
       "active": "Active",
       "inactive": "Passive"
     },
-    "loadingDescription": "Loading data...",
-    "loading": "Loading...",
     "noData": "No data",
     "actions": "Transactions",
     "previous": "Former",
@@ -4660,6 +4715,8 @@
     }
   },
   "mailSettings": {
+    "PageTitle": "Mail Settings",
+    "PageDescription": "Configure SMTP server settings",
     "Fields": {
       "Host": "Presenter",
       "Port": "Connection Port",
@@ -4676,8 +4733,6 @@
       "Send": "Send Test Email",
       "Success": "Test email sent"
     },
-    "PageTitle": "Mail Settings",
-    "PageDescription": "Configure SMTP server settings",
     "Save": "Save",
     "SavedSuccessfully": "Settings saved successfully"
   },
@@ -4781,8 +4836,15 @@
       "date": "Exchange Rate Date",
       "isOfficial": "Official",
       "updateSuccess": "Exchange rates updated",
-      "updateError": "An error occurred while updating exchange rates"
+      "updateError": "An error occurred while updating exchange rates",
+      "zeroRateError": "Lütfen devam edebilmek için kur değeri girin."
     },
+    "loading": "Rates are loading...",
+    "actions": "Transactions",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "saving": "Recording...",
+    "saveAndApply": "Save and Apply",
     "approvalFlow": {
       "stepCompleted": "completed",
       "stepInProgress": "in progress",
@@ -4805,12 +4867,6 @@
       "subtitle": "Create a new sales order for the customer."
     },
     "lines": {
-      "delete": {
-        "confirmTitleMultiple": "Delete Linked Stocks",
-        "confirmTitle": "Delete Row",
-        "confirmMessageMultiple": "When this row is deleted, the other {count} connected stocks will also be deleted.",
-        "confirmMessage": "Are you sure you want to delete this row?"
-      },
       "required": "At least 1 line must be added",
       "editLine": "Edit Row",
       "approvalRequired": "Approval Required",
@@ -4840,6 +4896,12 @@
       "empty": "Your Cart is Empty",
       "emptyDescription": "To create an order",
       "addLine": "Add New Line",
+      "delete": {
+        "confirmTitleMultiple": "Delete Linked Stocks",
+        "confirmTitle": "Delete Row",
+        "confirmMessageMultiple": "When this row is deleted, the other {count} connected stocks will also be deleted.",
+        "confirmMessage": "Are you sure you want to delete this row?"
+      },
       "createSuccess": "Rows added",
       "createError": "An error occurred while adding rows",
       "deleteSuccess": "Row deleted",
@@ -4860,6 +4922,7 @@
       "lines": "Order items",
       "summary": "Summary & Totals"
     },
+    "save": "Save Order",
     "detail": {
       "title": "Order Detail: {{offerNo}}",
       "notFound": "Order not found",
@@ -4877,6 +4940,7 @@
       "errorMessage": "An error occurred while updating the order.",
       "validationError": "Please check the required fields."
     },
+    "backToOrders": "Return to Orders",
     "approval": {
       "sending": "Sending...",
       "sendForApproval": "Submit for Approval",
@@ -4892,11 +4956,9 @@
       "startSuccess": "Approval flow started successfully",
       "startError": "Approval flow failed to initialize"
     },
+    "select": "Select",
+    "add": "Add",
     "header": {
-      "currencyChange": {
-        "title": "Exchange Rate Change",
-        "message": "Currency change will affect all rows. Do you want to continue?"
-      },
       "title": "Order Details",
       "subtitle": "You can manage customer and financial information here.",
       "customer": "Customer Account",
@@ -4904,14 +4966,25 @@
       "representative": "Sales Representative",
       "shippingAddress": "Shipping Address",
       "selectShippingAddress": "Choose shipping address",
-      "descriptionPlaceholder": "Special conditions..."
+      "descriptionPlaceholder": "Special conditions...",
+      "currencyChange": {
+        "title": "Exchange Rate Change",
+        "message": "Currency change will affect all rows. Do you want to continue?"
+      },
+      "paymentType": "Ödeme Tipi",
+      "deliveryMethod": "Teslimat Yöntemi",
+      "offerDate": "Sipariş Tarihi",
+      "documentDetail": "Belge Açıklaması"
     },
+    "confirm": "Confirm",
+    "error": "Mistake",
+    "delete": "Delete",
     "list": {
-      "id": "ID",
       "title": "Order List",
       "description": "View and manage all orders",
       "createNew": "Create New Order",
       "searchPlaceholder": "Search by order number or customer name...",
+      "id": "ID",
       "offerNo": "Order No.",
       "customer": "Customer",
       "representative": "Representative",
@@ -4924,6 +4997,7 @@
       "showing": "Showing {{from}}-{{to}} / {{total}}",
       "page": "Page {{current}} / {{total}}"
     },
+    "refresh": "Refresh",
     "summary": {
       "title": "Summary",
       "generalDiscountRate": "General Discount Rate (%)",
@@ -4932,8 +5006,12 @@
       "subtotal": "Subtotal",
       "generalDiscount": "General Discount",
       "totalVat": "Total VAT",
-      "grandTotal": "Grand Total"
+      "grandTotal": "Grand Total",
+      "orderTotalAnalysis": "Sipariş Toplam Analizi"
     },
+    "noData": "No data",
+    "previous": "Former",
+    "next": "Next",
     "waitingApprovals": {
       "title": "Orders Pending Approval",
       "list": "List of Orders Pending Approval",
@@ -4946,44 +5024,13 @@
       "status": "Situation",
       "waiting": "waiting"
     },
+    "back": "Back",
     "revision": {
       "success": "Order revision created successfully",
       "error": "An error occurred while creating the order revision"
-    },
-    "loading": "Rates are loading...",
-    "actions": "Transactions",
-    "edit": "Edit",
-    "cancel": "Cancel",
-    "saving": "Recording...",
-    "saveAndApply": "Save and Apply",
-    "save": "Save Order",
-    "backToOrders": "Return to Orders",
-    "select": "Select",
-    "add": "Add",
-    "confirm": "Confirm",
-    "error": "Mistake",
-    "delete": "Delete",
-    "refresh": "Refresh",
-    "noData": "No data",
-    "previous": "Former",
-    "next": "Next",
-    "back": "Back"
+    }
   },
   "paymentTypeManagement": {
-    "table": {
-      "id": "ID",
-      "name": "Name",
-      "description": "Explanation",
-      "status": "Situation",
-      "showing": "Showing {{from}}-{{to}} / {{total}}",
-      "page": "Page {{current}} / {{total}}"
-    },
-    "delete": {
-      "success": "Payment type successfully deleted",
-      "error": "An error occurred while deleting the payment type",
-      "confirmTitle": "Delete Payment Type",
-      "confirmMessage": "Are you sure you want to delete payment type {{name}}? This action cannot be undone."
-    },
     "edit": "Edit Payment Type",
     "create": "New Payment Type",
     "editDescription": "Edit payment type information",
@@ -4996,8 +5043,22 @@
     "saving": "Recording...",
     "save": "Save",
     "title": "Payment Type Management",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "description": "Explanation",
+      "status": "Situation",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
     "createdDate": "Creation Date",
     "updatedDate": "Updated Date",
+    "delete": {
+      "success": "Payment type successfully deleted",
+      "error": "An error occurred while deleting the payment type",
+      "confirmTitle": "Delete Payment Type",
+      "confirmMessage": "Are you sure you want to delete payment type {{name}}? This action cannot be undone."
+    },
     "noData": "No data found",
     "createSuccess": "Payment type created successfully",
     "createError": "An error occurred while creating the payment type",
@@ -5024,6 +5085,7 @@
       "deleteSuccess": "Group deleted",
       "deleteError": "Could not be deleted"
     },
+    "filterPlaceholder": "Filter (query param)",
     "groupReportDefinition": {
       "edit": "Edit Matching",
       "add": "New Matching",
@@ -5085,8 +5147,7 @@
       "updateError": "Failed to update",
       "deleteSuccess": "User-group mapping deleted",
       "deleteError": "Could not be deleted"
-    },
-    "filterPlaceholder": "Filter (query param)"
+    }
   },
   "powerbiConfiguration": {
     "title": "PowerBI Configuration",
@@ -5147,9 +5208,6 @@
     "updateError": "An error occurred while updating the pricing group"
   },
   "productPricingManagement": {
-    "table": {
-      "showing": "{{from}}-{{to}} / {{total}} register"
-    },
     "title": "Product Pricing Management",
     "description": "Manage product prices, costs and discounts",
     "create": "New Pricing",
@@ -5164,6 +5222,9 @@
     "category": "CATEGORY",
     "priceAndDiscount": "PRICE & DISCOUNT",
     "actions": "TRANSACTIONS",
+    "table": {
+      "showing": "{{from}}-{{to}} / {{total}} register"
+    },
     "previous": "Former",
     "next": "Next",
     "deleteTitle": "Clear Pricing",
@@ -5255,7 +5316,11 @@
       "relations": "Tied Stocks",
       "summary": "Quick Look",
       "gallery": "Gallery",
-      "addRelation": "Add Link"
+      "addRelation": "Add Link",
+      "noCode": "Kod Yok",
+      "tipTitle": "İpucu",
+      "tipDescription": "Stok bilgilerini güncelledikten sonra kaydetmeyi unutmayın. ERP entegrasyonu varsa veriler bir sonraki senkronizasyonda güncellenecektir.",
+      "relationHint": "Bu stoka ait alt veya üst ürün tanımlayın."
     },
     "images": {
       "noImages": "No images uploaded yet",
@@ -5276,12 +5341,12 @@
       "uploadButton": "Upload Selected"
     },
     "list": {
-      "id": "ID",
       "title": "Stock Management",
       "description": "Track inventory and stock status.",
       "search": "Search for stock name or ERP code...",
       "syncedFromErp": "ERP Synchronization Active",
       "noData": "No Record Found",
+      "id": "ID",
       "erpStockCode": "ERP Code",
       "stockName": "Stock Name",
       "unit": "Unit",
@@ -5327,7 +5392,6 @@
     }
   },
   "userDetailManagement": {
-    "enterLinkedinUrl": "https://linkedin.com/in/...",
     "profilePageTitle": "Profile",
     "fileSizeError": "File size 5MB\\",
     "fileTypeError": "Only image files can be uploaded",
@@ -5349,6 +5413,7 @@
     "email": "Email Address",
     "enterEmail": "example@company.com",
     "linkedinUrl": "LinkedIn Profile",
+    "enterLinkedinUrl": "https://linkedin.com/in/...",
     "description": "Biography",
     "enterDescription": "Tell us briefly about yourself...",
     "saving": "Recording...",
@@ -5367,7 +5432,14 @@
     "updateSuccess": "User detail updated successfully",
     "updateError": "An error occurred while updating user detail",
     "uploadProfilePictureSuccess": "Profile picture uploaded successfully",
-    "uploadProfilePictureError": "An error occurred while loading the profile picture"
+    "uploadProfilePictureError": "An error occurred while loading the profile picture",
+    "heightPlaceholderExample": "Örn: 175",
+    "weightPlaceholderExample": "Örn: 70",
+    "title": "Kullanıcı Detayları",
+    "profileEditTitle": "Profil Düzenle",
+    "profileEditDescription": "Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.",
+    "weightPlaceholderExampleDecimal": "Örn: 70.5",
+    "newPasswordPlaceholderShort": "Yeni şifreniz"
   },
   "profile": {
     "title": "Profile Information"
@@ -5384,12 +5456,10 @@
       "order": "order"
     }
   },
+  "language_choice": "Language Option",
+  "appearance": "View Mode",
+  "logout": "LOG OUT",
   "userDiscountLimitManagement": {
-    "table": {
-      "id": "ID",
-      "showing": "Showing {{from}}-{{to}} / {{total}}",
-      "page": "Page {{current}} / {{total}}"
-    },
     "alreadyExists": "A discount limit already exists for this sales representative and product group combination",
     "edit": "Edit Discount Limit",
     "create": "New Discount Limit",
@@ -5414,6 +5484,11 @@
     "description": "Manage and edit user discount limits",
     "loading": "Loading...",
     "noData": "No data found",
+    "table": {
+      "id": "ID",
+      "showing": "Showing {{from}}-{{to}} / {{total}}",
+      "page": "Page {{current}} / {{total}}"
+    },
     "salespersonName": "Sales Representative Name",
     "createdDate": "Creation Date",
     "updatedDate": "Updated Date",
@@ -5430,9 +5505,28 @@
     "updateSuccess": "Discount limit updated successfully",
     "updateError": "An error occurred while updating the discount limit"
   },
-  "menu": "Hangfire Monitoring",
-  "language_choice": "Language Option",
-  "appearance": "View Mode",
-  "logout": "LOG OUT",
-  "exportPreparing": "Hazırlanıyor..."
+  "exportPdf": "PDF İndir",
+  "table": {
+    "id": "ID",
+    "ruleType": "Kural Tipi",
+    "customerType": "Müşteri Tipi",
+    "salesRep": "Satış Temsilcisi",
+    "serialPrefix": "Seri Öneki",
+    "serialLength": "Seri Uzunluğu",
+    "createdDate": "Oluşturulma Tarihi",
+    "branchCode": "Şube Kodu",
+    "businessUnitCode": "İş Birimi Kodu",
+    "customerCode": "Müşteri Kodu",
+    "customerName": "Müşteri Adı",
+    "phone": "Telefon",
+    "email": "E-posta",
+    "city": "Şehir",
+    "district": "İlçe",
+    "address": "Adres",
+    "countryCode": "Ülke Kodu",
+    "website": "Web Sitesi",
+    "taxNumber": "Vergi Numarası",
+    "taxOffice": "Vergi Dairesi",
+    "tcknNumber": "TCKN Numarası"
+  }
 }

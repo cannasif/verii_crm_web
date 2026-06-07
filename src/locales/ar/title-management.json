@@ -1,54 +1,18 @@
 {
-  "menu": "إدارة الألقاب",
-  "title": "إدارة الألقاب",
-  "description": "إدارة وتعديل الألقاب",
   "addButton": "إضافة لقب جديد",
-  "deleteTitle": "حذف اللقب",
-  "deleteMessage": "هل أنت متأكد أنك تريد حذف هذا اللقب؟",
-  "deleteSuccess": "تم حذف اللقب بنجاح",
-  "table": {
-    "name": "اللقب",
-    "code": "الرمز",
-    "description": "الوصف",
-    "status": "الحالة",
-    "actions": "إجراءات",
-    "searchPlaceholder": "البحث في الألقاب...",
-    "showing": "عرض {{from}}-{{to}} من {{total}}",
-    "page": "صفحة {{current}} من {{total}}",
-    "rowsPerPage": "الصفوف لكل صفحة",
-    "id": "المعرف",
-    "createdDate": "Created Date",
-    "createdBy": "Created By",
-    "title": "Ünvan Listesi"
-  },
-  "form": {
-    "addTitle": "إضافة لقب جديد",
-    "editTitle": "تعديل اللقب",
-    "name": "اللقب",
-    "code": "الرمز",
-    "description": "الوصف",
-    "status": "الحالة",
-    "active": "نشط",
-    "passive": "غير نشط",
-    "cancel": "إلغاء",
-    "save": "حفظ",
-    "required": "مطلوب",
-    "successAdd": "تم إضافة اللقب بنجاح",
-    "successUpdate": "تم تحديث اللقب بنجاح",
-    "addDescription": "Enter جديد title details",
-    "editDescription": "تعديل title details",
-    "titleName": "Title Name",
-    "titleNamePlaceholder": "Enter title name",
-    "titleCode": "Title Code",
-    "codePlaceholder": "Enter code (optional)",
-    "saving": "Saving..."
-  },
   "loading": "جارٍ التحميل...",
   "noData": "لا توجد بيانات",
+  "error": "حدث خطأ",
   "search": "بحث...",
   "refresh": "تحديث",
   "previous": "السابق",
   "next": "التالي",
+  "menu": "إدارة الألقاب",
+  "description": "إدارة وتعديل الألقاب",
+  "advancedFilter": {
+    "columnTitleName": "اللقب",
+    "columnCode": "الرمز"
+  },
   "cancel": "إلغاء",
   "save": "حفظ",
   "saving": "جارٍ الحفظ...",
@@ -64,12 +28,36 @@
     "title": "إدارة الألقاب",
     "description": "يمكنك إدارة تعريفات الألقاب من هنا."
   },
-  "advancedFilter": {
-    "columnTitleName": "Title Name",
-    "columnCode": "Code"
+  "table": {
+    "id": "المعرف",
+    "name": "اللقب",
+    "code": "الرمز",
+    "createdDate": "تاريخ الإنشاء",
+    "createdBy": "تم الإنشاء بواسطة",
+    "showing": "عرض {{from}}-{{to}} من {{total}}",
+    "page": "صفحة {{current}} من {{total}}",
+    "title": "قائمة الألقاب"
   },
-  "titleManagement": {
-    "error": "حدث خطأ"
+  "form": {
+    "addTitle": "إضافة لقب جديد",
+    "editTitle": "تعديل اللقب",
+    "addDescription": "أدخل معلومات اللقب الجديدة",
+    "editDescription": "عدل معلومات اللقب",
+    "titleName": "اللقب",
+    "titleNamePlaceholder": "أدخل اسم اللقب",
+    "titleCode": "رمز اللقب",
+    "codePlaceholder": "أدخل الرمز (اختياري)",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ..."
   },
-  "error": "حدث خطأ"
+  "stats": {
+    "totalTitles": "إجمالي الألقاب",
+    "activeTitles": "الألقاب النشطة",
+    "newThisMonth": "جديد هذا الشهر"
+  },
+  "messages": {
+    "deleteSuccess": "تم حذف اللقب بنجاح",
+    "deleteError": "تعذر حذف اللقب"
+  }
 }

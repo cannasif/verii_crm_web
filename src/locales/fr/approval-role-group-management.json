@@ -12,19 +12,19 @@
   "noData": "Aucune donnée trouvée",
   "noDataDescription": "Aucun enregistrement correspondant à vos critères de recherche n'a été trouvé ou aucun enregistrement n'a encore été ajouté.",
   "approvalRoleGroup": {
-    "menu": "Onay Rol Grubu Yönetimi",
-    "description": "Onay rol gruplarını yönetin ve düzenleyin",
-    "addButton": "Yeni Grup Ekle",
-    "searchPlaceholder": "Ara...",
-    "noData": "Veri bulunamadı",
+    "menu": "Gestion des groupes de rôles d'approbation",
+    "description": "Gérer et modifier les groupes de rôles d'approbation",
+    "addButton": "Ajouter un groupe de rôles",
+    "searchPlaceholder": "Rechercher...",
+    "noData": "Aucune donnée trouvée",
     "table": {
-      "title": "Grup Listesi",
+      "title": "Liste des groupes",
       "id": "ID",
-      "name": "Grup Adı",
-      "createdDate": "Oluşturulma Tarihi",
-      "createdBy": "Oluşturan Kullanıcı",
-      "actions": "İşlemler",
-      "showing": "Toplam {{total}} kayıttan {{from}}-{{to}} arası gösteriliyor"
+      "name": "Nom du groupe",
+      "createdDate": "Date de création",
+      "createdBy": "Créé par",
+      "actions": "Actions",
+      "showing": "Affichage de {{from}} à {{to}} sur {{total}} enregistrements"
     },
     "delete": {
       "title": "Confirmation de suppression",

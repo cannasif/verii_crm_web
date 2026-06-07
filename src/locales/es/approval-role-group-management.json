@@ -34,29 +34,29 @@
     "nameMaxLength": "El nombre puede tener máx. 100 caracteres"
   },
   "advancedFilter": {
-    "columnName": "Grup Adı",
-    "columnCreatedBy": "Crearan"
+    "columnName": "Nombre de grupo",
+    "columnCreatedBy": "Creado por"
   },
   "approvalRoleGroup": {
-    "menu": "Onay Rol Grubu Yönetimi",
-    "description": "Onay rol gruplarını yönetin ve düzenleyin",
-    "addButton": "Yeni Grup Ekle",
+    "menu": "Gestión de Grupos de Roles de Aprobación",
+    "description": "Gestionar y organizar grupos de roles de aprobación",
+    "addButton": "Añadir Nuevo Grupo",
     "searchPlaceholder": "Buscar...",
-    "noData": "Veri bulunamadı",
+    "noData": "No se encontraron datos",
     "table": {
-      "title": "Grup Listesi",
+      "title": "Lista de Grupos",
       "id": "ID",
-      "name": "Grup Adı",
-      "createdDate": "Crearulma Tarihi",
-      "createdBy": "Crearan Kullanıcı",
-      "actions": "İşlemler",
-      "showing": "Toplam {{total}} kayıttan {{from}}-{{to}} arası gösteriliyor"
+      "name": "Nombre del Grupo",
+      "createdDate": "Fecha de creación",
+      "createdBy": "Creado por",
+      "actions": "Acciones",
+      "showing": "Mostrando {{from}}-{{to}} de {{total}} registros"
     },
     "delete": {
-      "title": "Silme Onayı",
-      "confirmMessage": "{{name}} grubunu silmek istediğinizden emin misiniz?",
-      "success": "Grup başarıyla silindi",
-      "error": "Grup silinirken bir hata oluştu"
+      "title": "Confirmación de Eliminación",
+      "confirmMessage": "¿Está seguro de que desea eliminar {{name}}?",
+      "success": "Grupo eliminado correctamente",
+      "error": "Error al eliminar el grupo"
     }
   }
 }

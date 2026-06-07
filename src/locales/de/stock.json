@@ -18,7 +18,10 @@
     "cardTitle": "Stock list",
     "refresh": "Refresh",
     "loading": "Laden...",
-    "loadError": "An error occurred while loading data."
+    "loadError": "An error occurred while loading data.",
+    "warehouseBalance": "Depo bakiyesi",
+    "warehouseBalanceTooltipBranch": "Şube {{branch}}",
+    "warehouseBalanceTooltipLastSync": "Son senkron: {{date}}"
   },
   "detail": {
     "title": "Produktdetails",
@@ -53,7 +56,7 @@
     "erpStockCode": "ERP‑Lagercode",
     "stockName": "Produktname",
     "unit": "Einheit",
-    "htmlDescription": "HTML‑Beschreibung",
+    "htmlDescription": "HTML-Beschreibung",
     "htmlDescriptionPlaceholder": "HTML‑Beschreibung eingeben",
     "htmlDescription.required": "HTML‑Beschreibung ist erforderlich",
     "technicalSpecs": "Technische Spezifikationen",
@@ -63,7 +66,20 @@
     "relationHint": "Define lower or upper related products for this stock.",
     "noCode": "Kod Yok",
     "saving": "Kaydediliyor...",
-    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı"
+    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı",
+    "warehouseBalances": {
+      "title": "Depo Bakiyeleri",
+      "totalLabel": "Toplam bakiye",
+      "warehouseCount": "{{count}} depo",
+      "colWarehouse": "Depo",
+      "colBranch": "Şube",
+      "colBalance": "Bakiye",
+      "colLastSync": "Son senkron",
+      "emptyTitle": "Depo bakiyesi kaydı yok",
+      "emptyDesc": "Bu stok için CRM depo bakiye tablosunda (RII_WAREHOUSE_STOCK_BALANCE) kayıt bulunamadı. ERP'de bakiye olsa bile ekranda görünmesi için depo bakiye senkronizasyonunun çalışmış olması gerekir.",
+      "loadErrorTitle": "Bakiyeler yüklenemedi",
+      "loadErrorDesc": "Depo stok bakiyeleri alınırken bir hata oluştu."
+    }
   },
   "images": {
     "upload": "Hochladen",
@@ -86,7 +102,7 @@
   },
   "relations": {
     "add": "Hinzufügen Related Stock",
-    "relatedStock": "Related Stock",
+    "relatedStock": "Verbundener Bestand",
     "relatedStock.required": "Related stock selection is required",
     "quantity": "Menge",
     "quantity.positive": "Die Menge muss eine positive Zahl sein",

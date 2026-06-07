@@ -38,7 +38,9 @@
     "validUntil": "صالح حتى",
     "currency": "العملة",
     "grandTotal": "الإجمالي الكلي",
-    "status": "الحالة"
+    "status": "الحالة",
+    "erpIntegrated": "تم التكامل بنجاح",
+    "erpNotIntegrated": "غير متكامل"
   },
   "detail": {
     "title": "تفاصيل عرض السعر",
@@ -155,7 +157,25 @@
     "updateSuccess": "Sipariş satırları güncellendi.",
     "updateError": "Sipariş satırları güncellenemedi.",
     "deleteSuccess": "Sipariş satırı silindi.",
-    "deleteError": "Sipariş satırı silinemedi."
+    "deleteError": "Sipariş satırı silinemedi.",
+    "descriptionFieldsTitle": "مقطع، قضيب، مسمار",
+    "descriptionField1Label": "الوصف 1",
+    "descriptionField2Label": "الوصف 2",
+    "descriptionField3Label": "الوصف 3",
+    "discountNumbered1": "الخصم 1",
+    "discountNumbered2": "الخصم 2",
+    "discountNumbered3": "الخصم 3",
+    "windoProfileLabel": "مقطع",
+    "windoRebarLabel": "قضيب",
+    "windoScrewLabel": "مسمار",
+    "selectWindoProfile": "اختر مقطع",
+    "selectWindoRebar": "اختر قضيب",
+    "selectWindoScrew": "اختر مسمار",
+    "searchWindoProfile": "ابحث عن مقطع...",
+    "searchWindoRebar": "ابحث عن قضيب...",
+    "searchWindoScrew": "ابحث عن مسمار...",
+    "windoNoneSelected": "لا شيء",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "أسعار الصرف",
@@ -253,7 +273,15 @@
     "startError": "Onay süreci başlatılamadı.",
     "rejectTitle": "Siparişi Reddet",
     "rejectDescription": "Siparişi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "rejectReasonPlaceholder": "Red nedeni",
+    "statusFilterLabel": "حالة الموافقة",
+    "status": {
+      "notRequired": "غير مطلوب",
+      "waiting": "قيد الانتظار",
+      "approved": "تمت الموافقة",
+      "rejected": "مرفوض",
+      "closed": "مغلق"
+    }
   },
   "approvalFlow": {
     "loading": "Onay akışı yükleniyor...",

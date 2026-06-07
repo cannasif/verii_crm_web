@@ -1,37 +1,6 @@
 {
   "title": "Gestione Raggruppamento Prezzi Prodotti",
   "description": "Gestisci e raggruppa i prezzi dei prodotti",
-  "groupBy": {
-    "product": "Raggruppa per Prodotto",
-    "group": "Raggruppa per Gruppo"
-  },
-  "table": {
-    "productCode": "Codice Prodotto",
-    "groupCode": "Codice Gruppo",
-    "totalCount": "Conteggio Totale",
-    "avgListPrice": "Prezzo di Listino Medio",
-    "avgFinalPrice": "Prezzo Finale Medio",
-    "minFinalPrice": "Prezzo Finale Minimo",
-    "maxFinalPrice": "Prezzo Finale Massimo",
-    "actions": "Azioni",
-    "id": "ID",
-    "erpGroupCode": "ERP Product Group Code",
-    "currency": "Currency",
-    "listPrice": "List Price",
-    "costPrice": "Cost Price",
-    "discount1": "Discount 1",
-    "discount2": "Discount 2",
-    "discount3": "Discount 3",
-    "finalPrice": "Final Price",
-    "createdDate": "Created Date",
-    "updatedDate": "Updated Date",
-    "showing": "Showing {{from}}-{{to}} of {{total}}",
-    "page": "Page {{current}} of {{total}}",
-    "title": "Elenco Gruppi di Prezzo"
-  },
-  "viewDetails": "Visualizza Dettagli",
-  "noData": "Nessun dato trovato",
-  "loading": "Caricamento...",
   "create": "Nuovo gruppo di prezzi",
   "edit": "Modifica gruppo di prezzi",
   "editDescription": "Modifica le informazioni del gruppo di prezzi",
@@ -55,6 +24,7 @@
   "filterByCurrency": "Filtra per valuta",
   "filterByPriceRange": "Filtra per intervallo di prezzo",
   "filterByDiscountRange": "Filtra per intervallo di sconto",
+  "noData": "Nessun dato trovato",
   "confirmDelete": "Sei sicuro di voler eliminare questo gruppo di prezzi?",
   "createSuccess": "Gruppo di prezzi creato correttamente",
   "updateSuccess": "Gruppo di prezzi aggiornato correttamente",
@@ -88,6 +58,7 @@
   "enterDiscount3": "Inserisci sconto 3 (0-100, opzionale)",
   "priceCalculation": "Calcolo prezzo",
   "finalPriceAfterDiscounts": "Prezzo finale dopo sconti",
+  "loading": "Caricamento...",
   "save": "Salva",
   "saving": "Salvataggio...",
   "cancel": "Annulla",
@@ -115,5 +86,21 @@
   "advancedFilter": {
     "columnErpGroupCode": "Codice Gruppo ERP",
     "columnCurrency": "Valuta"
+  },
+  "table": {
+    "title": "Elenco Gruppi di Prezzo",
+    "id": "ID",
+    "erpGroupCode": "ERP Product Group Code",
+    "currency": "Currency",
+    "listPrice": "List Price",
+    "costPrice": "Cost Price",
+    "discount1": "Discount 1",
+    "discount2": "Discount 2",
+    "discount3": "Discount 3",
+    "finalPrice": "Final Price",
+    "createdDate": "Created Date",
+    "updatedDate": "Updated Date",
+    "showing": "Showing {{from}}-{{to}} of {{total}}",
+    "page": "Page {{current}} of {{total}}"
   }
 }

@@ -102,7 +102,7 @@
   },
   "relations": {
     "add": "Add Related Stock",
-    "relatedStock": "Related Stock",
+    "relatedStock": "Related stock",
     "relatedStock.required": "Related stock selection is required",
     "quantity": "Quantity",
     "quantity.positive": "Quantity must be a positive number",
@@ -153,19 +153,5 @@
     "setPrimarySuccess": "Primary image set successfully",
     "relationCreateSuccess": "Related stock added successfully",
     "error": "An error occurred"
-  },
-  "stock": {
-    "detail": {
-      "noCode": "Kod Yok",
-      "tipTitle": "İpucu",
-      "tipDescription": "Stok bilgilerini güncelledikten sonra kaydetmeyi unutmayın. ERP entegrasyonu varsa veriler bir sonraki senkronizasyonda güncellenecektir.",
-      "relationHint": "Bu stoka ait alt veya üst ürün tanımlayın."
-    },
-    "list": {
-      "cardTitle": "Stok listesi",
-      "refresh": "Yenile",
-      "loading": "Yükleniyor...",
-      "loadError": "Veriler yüklenirken hata oluştu."
-    }
   }
 }

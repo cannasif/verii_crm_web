@@ -1,37 +1,6 @@
 {
   "title": "Gestión de grupos de precios de productos",
   "description": "Gestione y edite los grupos de precios de productos",
-  "groupBy": {
-    "product": "Agrupar por Producto",
-    "group": "Agrupar por Grupo"
-  },
-  "table": {
-    "productCode": "Código de Producto",
-    "groupCode": "Código de Grupo",
-    "totalCount": "Cantidad Total",
-    "avgListPrice": "Precio de Lista Promedio",
-    "avgFinalPrice": "Precio Final Promedio",
-    "minFinalPrice": "Precio Final Mínimo",
-    "maxFinalPrice": "Precio Final Máximo",
-    "actions": "Acciones",
-    "id": "IDENTIFICACIÓN",
-    "erpGroupCode": "Código de grupo de producto ERP",
-    "currency": "Moneda",
-    "listPrice": "Precio de lista",
-    "costPrice": "Precio de costo",
-    "discount1": "Descuento 1",
-    "discount2": "Descuento 2",
-    "discount3": "Descuento 3",
-    "finalPrice": "Precio final",
-    "createdDate": "Fecha de creación",
-    "updatedDate": "Fecha de actualización",
-    "showing": "Mostrando {{from}}-{{to}} / {{total}}",
-    "page": "Página {{current}} / {{total}}",
-    "title": "Lista de Grupos de Precios"
-  },
-  "viewDetails": "Ver Detalles",
-  "noData": "No se encontraron datos",
-  "loading": "Cargando...",
   "create": "Nuevo grupo de precios",
   "edit": "Editar grupo de precios",
   "editDescription": "Edite la información del grupo de precios",
@@ -55,6 +24,7 @@
   "filterByCurrency": "Filtrar por moneda",
   "filterByPriceRange": "Filtrar por rango de precios",
   "filterByDiscountRange": "Filtrar por rango de descuentos",
+  "noData": "No se encontraron datos",
   "confirmDelete": "¿Seguro que desea eliminar este grupo de precios?",
   "createSuccess": "Grupo de precios creado correctamente",
   "updateSuccess": "Grupo de precios actualizado correctamente",
@@ -88,6 +58,7 @@
   "enterDiscount3": "Ingrese descuento 3 (0-100, opcional)",
   "priceCalculation": "Cálculo de precio",
   "finalPriceAfterDiscounts": "Precio final después de descuentos",
+  "loading": "Cargando...",
   "save": "Guardar",
   "saving": "Guardando...",
   "cancel": "Cancelar",
@@ -115,5 +86,21 @@
   "advancedFilter": {
     "columnErpGroupCode": "Código de Grupo ERP",
     "columnCurrency": "Moneda"
+  },
+  "table": {
+    "title": "Lista de Grupos de Precios",
+    "id": "IDENTIFICACIÓN",
+    "erpGroupCode": "Código de grupo de producto ERP",
+    "currency": "Moneda",
+    "listPrice": "Precio de lista",
+    "costPrice": "Precio de costo",
+    "discount1": "Descuento 1",
+    "discount2": "Descuento 2",
+    "discount3": "Descuento 3",
+    "finalPrice": "Precio final",
+    "createdDate": "Fecha de creación",
+    "updatedDate": "Fecha de actualización",
+    "showing": "Mostrando {{from}}-{{to}} / {{total}}",
+    "page": "Página {{current}} / {{total}}"
   }
 }

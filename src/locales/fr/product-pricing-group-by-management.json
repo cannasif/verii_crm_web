@@ -83,7 +83,12 @@
   "mediumProfit": "Profit Moyen",
   "lowProfit": "Profit Faible",
   "negativeProfit": "Perte",
+  "advancedFilter": {
+    "columnErpGroupCode": "Code de Groupe ERP",
+    "columnCurrency": "Devise"
+  },
   "table": {
+    "title": "Liste des Groupes de Prix",
     "id": "IDENTIFIANT",
     "erpGroupCode": "Code Groupe Produit ERP",
     "currency": "Devise",
@@ -96,11 +101,6 @@
     "createdDate": "Date de Création",
     "updatedDate": "Date de Mise à Jour",
     "showing": "Affichage de {{from}}-{{to}} / {{total}}",
-    "page": "Page {{current}} / {{total}}",
-    "title": "Liste des Groupes de Prix"
-  },
-  "advancedFilter": {
-    "columnErpGroupCode": "Code de Groupe ERP",
-    "columnCurrency": "Devise"
+    "page": "Page {{current}} / {{total}}"
   }
 }

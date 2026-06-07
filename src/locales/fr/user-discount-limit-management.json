@@ -57,6 +57,7 @@
   "getByGroup": "Obtenir par Groupe",
   "getBySalespersonAndGroup": "Obtenir par Représentant et Groupe",
   "table": {
+    "title": "İskonto Limiti Listesi",
     "id": "IDENTIFIANT",
     "salespersonName": "Nom Représentant Commercial",
     "erpProductGroupCode": "Code Groupe Produit ERP",
@@ -66,8 +67,7 @@
     "createdDate": "Date de Création",
     "updatedDate": "Date de Mise à Jour",
     "showing": "Affichage de {{from}}-{{to}} / {{total}}",
-    "page": "Page {{current}} / {{total}}",
-    "title": "İskonto Limiti Listesi"
+    "page": "Page {{current}} / {{total}}"
   },
   "advancedFilter": {
     "title": "Advanced Filter",

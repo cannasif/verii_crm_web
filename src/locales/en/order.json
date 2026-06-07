@@ -273,7 +273,15 @@
     "startError": "Approval flow could not be started.",
     "rejectTitle": "Reject order",
     "rejectDescription": "Enter the reason for rejection.",
-    "rejectReasonPlaceholder": "Reason for rejection"
+    "rejectReasonPlaceholder": "Reason for rejection",
+    "statusFilterLabel": "Approval status",
+    "status": {
+      "notRequired": "Not required",
+      "waiting": "Waiting",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "closed": "Closed"
+    }
   },
   "approvalFlow": {
     "loading": "Loading approval flow...",

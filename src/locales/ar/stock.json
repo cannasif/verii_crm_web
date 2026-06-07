@@ -1,33 +1,4 @@
 {
-  "title": "إدارة المخزون",
-  "description": "تتبع وإدارة مستويات المخزون",
-  "filter": {
-    "search": "بحث",
-    "warehouse": "المستودع",
-    "product": "المنتج",
-    "category": "الفئة"
-  },
-  "table": {
-    "productCode": "رمز المنتج",
-    "productName": "اسم المنتج",
-    "warehouse": "المستودع",
-    "quantity": "الكمية",
-    "unit": "الوحدة",
-    "status": "الحالة",
-    "lastUpdated": "آخر تحديث"
-  },
-  "status": {
-    "inStock": "متوفر",
-    "lowStock": "مخزون منخفض",
-    "outOfStock": "نفد المخزون"
-  },
-  "movements": {
-    "title": "حركات المخزون",
-    "in": "دخول",
-    "out": "خروج",
-    "transfer": "نقل",
-    "adjustment": "تعديل"
-  },
   "list": {
     "title": "المنتجات",
     "description": "إدارة المنتجات المتزامنة مع ERP",
@@ -47,7 +18,10 @@
     "refresh": "Refresh",
     "loading": "جارٍ التحميل...",
     "loadError": "An error occurred while loading data.",
-    "noData": "No records found."
+    "noData": "No records found.",
+    "warehouseBalance": "Depo bakiyesi",
+    "warehouseBalanceTooltipBranch": "Şube {{branch}}",
+    "warehouseBalanceTooltipLastSync": "Son senkron: {{date}}"
   },
   "detail": {
     "title": "تفاصيل المنتج",
@@ -60,7 +34,7 @@
     "erpStockCode": "رمز المخزون في ERP",
     "stockName": "اسم المنتج",
     "unit": "الوحدة",
-    "htmlDescription": "وصف HTML",
+    "htmlDescription": "الوصف HTML",
     "htmlDescriptionPlaceholder": "أدخل وصف HTML",
     "htmlDescription.required": "وصف HTML مطلوب",
     "technicalSpecs": "المواصفات الفنية",
@@ -92,7 +66,20 @@
     "summary": "Özet",
     "addRelation": "Bağlı Stok Ekle",
     "saving": "Kaydediliyor...",
-    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı"
+    "htmlDescriptionDesc": "Web ve belge çıktılarında kullanılacak açıklama alanı",
+    "warehouseBalances": {
+      "title": "Depo Bakiyeleri",
+      "totalLabel": "Toplam bakiye",
+      "warehouseCount": "{{count}} depo",
+      "colWarehouse": "Depo",
+      "colBranch": "Şube",
+      "colBalance": "Bakiye",
+      "colLastSync": "Son senkron",
+      "emptyTitle": "Depo bakiyesi kaydı yok",
+      "emptyDesc": "Bu stok için CRM depo bakiye tablosunda (RII_WAREHOUSE_STOCK_BALANCE) kayıt bulunamadı. ERP'de bakiye olsa bile ekranda görünmesi için depo bakiye senkronizasyonunun çalışmış olması gerekir.",
+      "loadErrorTitle": "Bakiyeler yüklenemedi",
+      "loadErrorDesc": "Depo stok bakiyeleri alınırken bir hata oluştu."
+    }
   },
   "images": {
     "upload": "رفع",
@@ -115,7 +102,7 @@
   },
   "relations": {
     "add": "إضافة علاقة",
-    "relatedStock": "منتج مرتبط",
+    "relatedStock": "المخزون المرتبط",
     "relatedStock.required": "اختيار المنتج المرتبط مطلوب",
     "quantity": "الكمية",
     "quantity.positive": "يجب أن تكون الكمية رقمًا موجبًا",

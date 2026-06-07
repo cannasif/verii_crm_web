@@ -40,7 +40,9 @@
     "detail": "Detay",
     "customerCode": "Code client",
     "validUntil": "Valable jusqu’au",
-    "revisionNo": "Revizyon No"
+    "revisionNo": "Revizyon No",
+    "erpIntegrated": "Intégration terminée",
+    "erpNotIntegrated": "Non intégré"
   },
   "detail": {
     "title": "Détail du Devis",
@@ -164,7 +166,22 @@
     "updateSuccess": "Teklif satırları güncellendi.",
     "updateError": "Teklif satırları güncellenemedi.",
     "deleteSuccess": "Teklif satırı silindi.",
-    "deleteError": "Teklif satırı silinemedi."
+    "deleteError": "Teklif satırı silinemedi.",
+    "descriptionFieldsTitle": "Profil, armature, vis",
+    "descriptionField1Label": "Description 1",
+    "descriptionField2Label": "Description 2",
+    "descriptionField3Label": "Description 3",
+    "windoProfileLabel": "Profil",
+    "windoRebarLabel": "Armature",
+    "windoScrewLabel": "Vis",
+    "selectWindoProfile": "Sélectionner un profil",
+    "selectWindoRebar": "Sélectionner une armature",
+    "selectWindoScrew": "Sélectionner une vis",
+    "searchWindoProfile": "Rechercher un profil...",
+    "searchWindoRebar": "Rechercher une armature...",
+    "searchWindoScrew": "Rechercher une vis...",
+    "windoNoneSelected": "Aucun",
+    "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
     "title": "Taux de Change",
@@ -270,7 +287,15 @@
     "startError": "Onay süreci başlatılamadı.",
     "rejectTitle": "Teklifi Reddet",
     "rejectDescription": "Teklifi reddetme nedeninizi girin.",
-    "rejectReasonPlaceholder": "Red nedeni"
+    "rejectReasonPlaceholder": "Red nedeni",
+    "statusFilterLabel": "Statut d'approbation",
+    "status": {
+      "notRequired": "Non requis",
+      "waiting": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "closed": "Fermé"
+    }
   },
   "approvalFlow": {
     "loading": "Onay akışı yükleniyor...",
@@ -326,6 +351,9 @@
     "status": "Durum",
     "stepOrder": "Adım Sırası",
     "approvedBy": "Onaylayan",
-    "actionDate": "İşlem Tarihi"
+    "actionDate": "İşlem Tarihi",
+    "rejectTitle": "Rejeter le devis",
+    "rejectDescription": "Saisissez la raison du refus.",
+    "rejectReasonPlaceholder": "Raison du refus"
   }
 }

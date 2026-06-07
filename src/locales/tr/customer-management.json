@@ -80,6 +80,7 @@
   "menu": "Müşteri Yönetimi",
   "description": "Müşterileri yönetin ve düzenleyin",
   "addButton": "Yeni Müşteri Ekle",
+  "quickActivity": "Hızlı Aktivite",
   "stats": {
     "totalCustomers": "Toplam Müşteri",
     "approvedCustomers": "Onaylı Müşteri",
@@ -213,6 +214,7 @@
   "loading": "Yükleniyor...",
   "noData": "Veri yok",
   "actions": "İşlemler",
+  "manualSync": "Manuel Senkronizasyon",
   "edit": "Düzenle",
   "previous": "Önceki",
   "next": "Sonraki",
@@ -234,10 +236,13 @@
     "updateError": "Müşteri güncellenemedi",
     "deleteSuccess": "Müşteri başarıyla silindi",
     "deleteError": "Müşteri silinemedi",
+    "syncQueued": "Müşteri senkronizasyonu kuyruğa alındı. İş: {{jobId}}",
+    "syncError": "Müşteri senkronizasyonu tetiklenemedi",
     "erpCreateSuccess": "Müşteri Netsis cari kartı olarak oluşturuldu",
     "erpCreateError": "ERP müşteri kaydı oluşturulamadı"
   },
   "completion": "Doluluk Oranı",
+  "syncing": "Senkronizasyon çalışıyor",
   "customer360": {
     "button": "Müşteri 360"
   }
