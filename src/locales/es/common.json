@@ -1218,8 +1218,13 @@
         "draft": "Borrador",
         "publish": "Publicar",
         "archive": "Archivar"
+      },
+      "studioDescription": "Cree informes gestionados a partir de conjuntos de datos seleccionados por TI con visuales guiados y diseños multi-widget.",
+      "sectionLabels": {
+        "DETAY": "Detalles"
       }
-    }
+    },
+    "exportPdf": "Descargar PDF"
   },
   "auth": {
     "login": {
@@ -2624,7 +2629,52 @@
     "form": {
       "selectWarehouse": "Seleccionar Almacén",
       "selectCustomer": "Seleccionar Cliente",
-      "selectCarrier": "Seleccionar Transportista"
+      "selectCarrier": "Seleccionar Transportista",
+      "packingNo": "Nº Embalaje",
+      "sourceType": "Tipo Origen",
+      "selectSourceType": "Seleccionar Tipo Origen",
+      "noSourceType": "Tipo origen no encontrado",
+      "sourceHeaderId": "Encabezado a Mapear",
+      "selectSourceHeader": "Seleccionar Encabezado a Mapear",
+      "noAvailableHeaders": "No se encontraron encabezados disponibles",
+      "selectSourceTypeFirst": "Por favor seleccione tipo de origen primero",
+      "packingNoRequired": "El Nº de Embalaje es obligatorio",
+      "packingDate": "Fecha de Embalaje",
+      "warehouseCode": "Código de Almacén",
+      "customerCode": "Código de Cliente",
+      "customerAddress": "Dirección del Cliente",
+      "status": "Estado",
+      "carrierId": "ID Transportista",
+      "carrierServiceType": "Tipo Servicio Transportista",
+      "trackingNo": "Nº Seguimiento",
+      "packageNo": "Nº Paquete",
+      "packageNoRequired": "El Nº de Paquete es obligatorio",
+      "packageType": "Tipo Paquete",
+      "package": "Paquete",
+      "selectPackage": "Seleccionar Paquete",
+      "packingHeaderId": "ID Encabezado Embalaje",
+      "packingHeaderIdRequired": "ID Encabezado Embalaje es obligatorio",
+      "packageIdRequired": "ID Paquete es obligatorio",
+      "barcode": "Código de Barras",
+      "length": "Largo",
+      "width": "Ancho",
+      "height": "Alto",
+      "volume": "Volumen",
+      "netWeight": "Peso Neto",
+      "tareWeight": "Peso Tara",
+      "grossWeight": "Peso Bruto",
+      "isMixed": "Mixto",
+      "stockCode": "Código Stock",
+      "stockCodeRequired": "El Código de Stock es obligatorio",
+      "yapKod": "Cód Yap",
+      "yapKodRequired": "El Cód Yap es obligatorio",
+      "quantity": "Cantidad",
+      "quantityRequired": "La Cantidad es obligatoria",
+      "serialNo": "Nº Serie",
+      "serialNo2": "Nº Serie 2",
+      "serialNo3": "Nº Serie 3",
+      "serialNo4": "Nº Serie 4",
+      "sourceRouteId": "ID Ruta Origen"
     },
     "status": {
       "draft": "Borrador",
@@ -4812,6 +4862,27 @@
       "CustomLabel2": "Etiqueta personalizada para hierro (opcional)",
       "CustomLabel3": "Etiqueta personalizada para tornillo (opcional)",
       "CustomLabelPlaceholder": "Dejar vacío para los nombres predeterminados"
+    },
+    "DemandActionLabels": {
+      "1": "Mantener solo como aprobado",
+      "2": "Abrir demanda en Netsis",
+      "3": "Abrir registro de cotización",
+      "4": "Abrir registro de demanda en Netsis",
+      "5": "Abrir demanda en Netsis y crear cotización"
+    },
+    "QuotationActionLabels": {
+      "1": "Mantener solo como aprobado",
+      "2": "Abrir cotización en Netsis",
+      "3": "Abrir registro de pedido en CRM",
+      "4": "Abrir registro de pedido en Netsis",
+      "5": "Abrir cotización en Netsis y crear pedido",
+      "6": "Abrir registro de pedido en CRM y crear pedido en Netsis"
+    },
+    "OrderActionLabels": {
+      "1": "Mantener solo como aprobado",
+      "2": "Abrir pedido en Netsis",
+      "3": "Abrir factura de venta en Netsis",
+      "4": "Abrir pedido y factura de venta en Netsis"
     }
   },
   "lineFormPreferences": {
@@ -5127,7 +5198,8 @@
       "updateSuccess": "Definición de informe actualizada",
       "updateError": "No se pudo actualizar",
       "deleteSuccess": "Definición de informe eliminada",
-      "deleteError": "No se pudo eliminar"
+      "deleteError": "No se pudo eliminar",
+      "clientSecretInfo": "El secreto del clientasde solo se lee de la variable de entorno del servidor por razones de seguridad."
     },
     "userGroup": {
       "edit": "Editar coincidencia",
@@ -5439,7 +5511,25 @@
     "profileEditTitle": "Profil Düzenle",
     "profileEditDescription": "Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.",
     "weightPlaceholderExampleDecimal": "Örn: 70.5",
-    "newPasswordPlaceholderShort": "Yeni şifreniz"
+    "newPasswordPlaceholderShort": "Yeni şifreniz",
+    "defaultUser": "Usuario",
+    "healthScore": "Puntaje de salud",
+    "healthScoreDesc": "Salud general de la cartera",
+    "retention": "Retención",
+    "retentionDesc": "Tasa de retención de clientes",
+    "churnRisk": "Riesgo de abandono",
+    "churnRiskDesc": "Predicción de abandono de clientes",
+    "financeAndSales": "Vitrina de finanzas y ventas",
+    "financeAndSalesDesc": "Estadísticas de conversión e ingresos",
+    "demands": "Demandas",
+    "quotations": "Cotizaciones",
+    "orders": "Pedidos",
+    "currencyRevenues": "Ingresos por moneda",
+    "fieldAndActivity": "Vitrina de campo y actividades",
+    "fieldAndActivityDesc": "Datos reales de rendimiento de campo",
+    "totalActivity": "Actividad total",
+    "pendingActions": "Acciones pendientes",
+    "pendingActionsDesc": "Número de acciones recomendadas"
   },
   "profile": {
     "title": "Información de perfil"
@@ -5528,5 +5618,6 @@
     "taxNumber": "Vergi Numarası",
     "taxOffice": "Vergi Dairesi",
     "tcknNumber": "TCKN Numarası"
-  }
+  },
+  "exportPreparing": "Hazırlanıyor..."
 }

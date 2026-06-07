@@ -1218,8 +1218,13 @@
         "draft": "Brouillon",
         "publish": "Publier",
         "archive": "Archiver"
+      },
+      "studioDescription": "Construisez des rapports gérés à partir de jeux de données approuvés par l'informatique avec des visuels guidés et des dispositions multi-widgets.",
+      "sectionLabels": {
+        "DETAY": "Détails"
       }
-    }
+    },
+    "exportPdf": "Télécharger le PDF"
   },
   "auth": {
     "login": {
@@ -4812,6 +4817,27 @@
       "CustomLabel2": "Libellé personnalisé pour le fer (facultatif)",
       "CustomLabel3": "Libellé personnalisé pour la vis (facultatif)",
       "CustomLabelPlaceholder": "Laisser vide pour les noms par défaut"
+    },
+    "DemandActionLabels": {
+      "1": "Garder comme approuvé uniquement",
+      "2": "Ouvrir la demande dans Netsis",
+      "3": "Ouvrir le dossier de devis",
+      "4": "Ouvrir le dossier de demande dans Netsis",
+      "5": "Ouvrir la demande dans Netsis et créer un devis"
+    },
+    "QuotationActionLabels": {
+      "1": "Garder comme approuvé uniquement",
+      "2": "Ouvrir le devis dans Netsis",
+      "3": "Ouvrir le dossier de commande dans le CRM",
+      "4": "Ouvrir le dossier de commande dans Netsis",
+      "5": "Ouvrir le devis dans Netsis et créer une commande",
+      "6": "Ouvrir le dossier de commande dans le CRM et créer une commande dans Netsis"
+    },
+    "OrderActionLabels": {
+      "1": "Garder comme approuvé uniquement",
+      "2": "Ouvrir la commande dans Netsis",
+      "3": "Ouvrir la facture de vente dans Netsis",
+      "4": "Ouvrir la commande et la facture de vente dans Netsis"
     }
   },
   "lineFormPreferences": {
@@ -5439,7 +5465,25 @@
     "profileEditTitle": "Profil Düzenle",
     "profileEditDescription": "Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.",
     "weightPlaceholderExampleDecimal": "Örn: 70.5",
-    "newPasswordPlaceholderShort": "Yeni şifreniz"
+    "newPasswordPlaceholderShort": "Yeni şifreniz",
+    "defaultUser": "Utilisateur",
+    "healthScore": "Score de santé",
+    "healthScoreDesc": "Santé globale du portefeuille",
+    "retention": "Rétention",
+    "retentionDesc": "Taux de rétention de la clientèle",
+    "churnRisk": "Risque d'attrition",
+    "churnRiskDesc": "Prévision d'attrition des clients",
+    "financeAndSales": "Vitrine finances et ventes",
+    "financeAndSalesDesc": "Statistiques de conversion et de revenus",
+    "demands": "Demandes",
+    "quotations": "Devis",
+    "orders": "Commandes",
+    "currencyRevenues": "Revenus par devise",
+    "fieldAndActivity": "Vitrine terrain et activités",
+    "fieldAndActivityDesc": "Données réelles de performances sur le terrain",
+    "totalActivity": "Activité totale",
+    "pendingActions": "Actions en attente",
+    "pendingActionsDesc": "Nombre d'actions recommandées"
   },
   "profile": {
     "title": "Informations sur le profil"
@@ -5528,5 +5572,6 @@
     "taxNumber": "Vergi Numarası",
     "taxOffice": "Vergi Dairesi",
     "tcknNumber": "TCKN Numarası"
-  }
+  },
+  "exportPreparing": "Hazırlanıyor..."
 }

@@ -54,7 +54,7 @@
   "invalidEmail": "Veuillez entrer une adresse e-mail valide",
   "phoneNumberMaxLength": "Le numéro de téléphone doit contenir au maximum 20 caractères",
   "profileEditTitle": "Modifier le profil",
-  "profileEditDescription": "You can manage your personal information and account settings here.",
+  "profileEditDescription": "Vous pouvez gérer vos informations personnelles et les paramètres de votre compte ici.",
   "heightPlaceholderExample": "Ex: 175",
   "weightPlaceholderExample": "Ex: 70",
   "weightPlaceholderExampleDecimal": "Ex: 70.5",

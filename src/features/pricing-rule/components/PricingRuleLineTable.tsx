@@ -228,12 +228,12 @@ export function PricingRuleLineTable({
   // --- Helperlar ---
   const formatCurrency = (amount: number | null | undefined, currencyCode: number | string | undefined): string => {
     if (amount === null || amount === undefined) return '-';
-    if (!currencyCode) return '-';
+    if (currencyCode === null || currencyCode === undefined || currencyCode === '') return '-';
     const numericCode = typeof currencyCode === 'string' ? Number(currencyCode) : currencyCode;
     const currencyOption = exchangeRates.find((rate: KurDto) => rate.dovizTipi === numericCode);
     const displayName = currencyOption?.dovizIsmi || `Döviz ${numericCode}`;
     try {
-      const isoCode = numericCode === 1 ? 'TRY' : numericCode === 2 ? 'USD' : numericCode === 3 ? 'EUR' : 'TRY';
+      const isoCode = numericCode === 0 ? 'TRY' : numericCode === 1 ? 'USD' : numericCode === 2 ? 'EUR' : numericCode === 3 ? 'GBP' : 'TRY';
       return new Intl.NumberFormat(i18n.language, { style: 'currency', currency: isoCode, minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
     } catch {
       return new Intl.NumberFormat(i18n.language, { style: 'decimal', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount) + ' ' + displayName;
@@ -241,7 +241,7 @@ export function PricingRuleLineTable({
   };
 
   const getCurrencyDisplayName = (currencyCode: number | string | undefined): string => {
-    if (!currencyCode) return '-';
+    if (currencyCode === null || currencyCode === undefined || currencyCode === '') return '-';
     const numericCode = typeof currencyCode === 'string' ? Number(currencyCode) : currencyCode;
     const currencyOption = exchangeRates.find((rate: KurDto) => rate.dovizTipi === numericCode);
     return currencyOption ? (currencyOption.dovizIsmi ? `${currencyOption.dovizIsmi}(${currencyOption.dovizTipi})` : `Döviz(${currencyOption.dovizTipi})`) : `Döviz(${numericCode})`;

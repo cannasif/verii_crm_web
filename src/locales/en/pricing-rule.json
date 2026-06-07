@@ -1,4 +1,95 @@
 {
+  "pricingRule": {
+    "loading": "Loading...",
+    "loadingDescription": "Loading data, please wait",
+    "noData": "No data",
+    "error": "An error occurred",
+    "actions": "Actions",
+    "list": {
+      "title": "Pricing Rules",
+      "description": "Manage and edit pricing rules",
+      "add": "Add New Rule"
+    },
+    "table": {
+      "title": "Pricing Rule List",
+      "ruleCode": "Rule Code",
+      "ruleName": "Rule Name",
+      "ruleType": "Rule Type",
+      "validFrom": "Valid From",
+      "validTo": "Valid To",
+      "customer": "Customer",
+      "currency": "Currency",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "ruleType": {
+      "demand": "Demand",
+      "quotation": "Quotation",
+      "order": "Order",
+      "unknown": "Unknown"
+    },
+    "form": {
+      "cancel": "Cancel",
+      "save": "Save",
+      "confirm": "Confirm",
+      "create": "New Pricing Rule",
+      "edit": "Edit Pricing Rule",
+      "createDescription": "Enter new pricing rule information",
+      "editDescription": "Edit pricing rule information",
+      "tabs": {
+        "header": "General Information",
+        "lines": "Lines",
+        "salesmen": "Salesmen"
+      },
+      "lines": {
+        "required": "At least 1 line must be added",
+        "requiredMessage": "Please add at least one line"
+      }
+    },
+    "lines": {
+      "title": "Pricing Rule Lines",
+      "section": {
+        "stock": "Stock Info",
+        "pricing": "Pricing Info"
+      },
+      "badgeCount": "LINE",
+      "createTitle": "Add Line",
+      "editTitle": "Edit Line",
+      "dialogDescription": "Enter pricing rule line information",
+      "selectStock": "Add Stock to Lines",
+      "empty": "No lines added yet",
+      "addFirst": "Add the first line",
+      "stokCode": "Stock Code",
+      "minQuantity": "Min Quantity",
+      "maxQuantity": "Max Quantity",
+      "fixedUnitPrice": "Fixed Unit Price",
+      "currencyCode": "Currency",
+      "discount1": "Discount 1",
+      "discount2": "Discount 2",
+      "discount3": "Discount 3",
+      "discount1Rate": "Discount Rate 1",
+      "discount1Amount": "Discount Amount 1",
+      "discount2Rate": "Discount Rate 2",
+      "discount2Amount": "Discount Amount 2",
+      "discount3Rate": "Discount Rate 3",
+      "discount3Amount": "Discount Amount 3",
+      "addConfirmTitle": "Add Line",
+      "addConfirmMessage": "{{code}} will be added to this rule. Do you confirm?",
+      "addSuccess": "Line added",
+      "addSuccessMessage": "Pricing rule line successfully added",
+      "addError": "Failed to add line",
+      "deleteConfirmTitle": "Delete Line",
+      "deleteConfirmMessage": "Are you sure you want to delete line {{code}}?",
+      "deleteSuccess": "Line deleted",
+      "deleteSuccessMessage": "Pricing rule line successfully deleted",
+      "deleteError": "Failed to delete line",
+      "stokCodeRequired": "Stock code is required"
+    }
+  },
   "loading": "Loading...",
   "loadingDescription": "Loading data, please wait",
   "list": {
@@ -56,7 +147,9 @@
     "button": "Delete",
     "confirmTitle": "Delete Confirmation",
     "confirmMessage": "Are you sure you want to delete this record?",
-    "action": "Sil"
+    "action": "Delete",
+    "success": "Rule successfully deleted",
+    "error": "An error occurred while deleting the rule"
   },
   "salesmen": {
     "title": "Salesmen",
@@ -72,7 +165,11 @@
     "search": "Search salesman...",
     "empty": "No salesmen added yet",
     "emptyDescription": "Will be valid for all salesmen",
-    "salesman": "Salesman"
+    "salesman": "Salesman",
+    "addConfirmTitle": "Add Salesman",
+    "addConfirmMessage": "{{name}} will be added to pricing rule. Do you confirm?",
+    "deleteConfirmTitle": "Remove Salesman",
+    "deleteConfirmMessage": "{{name}} will be removed from pricing rule. Do you confirm?"
   },
   "header": {
     "ruleType": "Rule Type",
@@ -129,11 +226,11 @@
     "selectProduct": "Select Product",
     "stokCodePlaceholder": "Product code",
     "stokCodeRequired": "Stock code is required",
+    "selectCurrency": "Select currency",
     "minQuantityRequired": "Min quantity is required and cannot be less than 0",
     "maxQuantityRequired": "Max quantity is required and must be greater than 0",
     "fixedUnitPriceRequired": "List price is required and must be greater than 0",
     "currencyCodeRequired": "Currency type is required",
-    "selectCurrency": "Select currency",
     "minQuantityInvalid": "Invalid Min Quantity",
     "minQuantityInvalidMessage": "Minimum quantity cannot be less than 0"
   },
@@ -147,95 +244,5 @@
     "active": "Active",
     "inactive": "Inactive",
     "expired": "Expired"
-  },
-  "pricingRule": {
-    "loading": "Loading...",
-    "loadingDescription": "Loading data, please wait",
-    "noData": "No data",
-    "error": "An error occurred",
-    "actions": "Actions",
-    "list": {
-      "title": "Pricing Rules",
-      "description": "Manage and edit pricing rules",
-      "add": "Add New Rule"
-    },
-    "table": {
-      "title": "Pricing Rule List",
-      "ruleCode": "Rule Code",
-      "ruleName": "Rule Name",
-      "ruleType": "Rule Type",
-      "validFrom": "Valid From",
-      "validTo": "Valid To",
-      "customer": "Customer",
-      "currency": "Currency",
-      "status": "Status",
-      "actions": "Actions"
-    },
-    "status": {
-      "active": "Active",
-      "inactive": "Inactive"
-    },
-    "ruleType": {
-      "demand": "Demand",
-      "quotation": "Quotation",
-      "order": "Order",
-      "unknown": "Unknown"
-    },
-    "lines": {
-      "section": {
-        "stock": "Stock Info",
-        "pricing": "Pricing Info"
-      },
-      "badgeCount": "LINE",
-      "createTitle": "Add Line",
-      "editTitle": "Edit Line",
-      "dialogDescription": "Enter pricing rule line information",
-      "title": "Pricing Rule Lines",
-      "selectStock": "Add Stock to Lines",
-      "empty": "No lines added yet",
-      "addFirst": "Add the first line",
-      "stokCode": "Stock Code",
-      "minQuantity": "Min Quantity",
-      "maxQuantity": "Max Quantity",
-      "fixedUnitPrice": "Fixed Unit Price",
-      "currencyCode": "Currency",
-      "discount1": "Discount 1",
-      "discount2": "Discount 2",
-      "discount3": "Discount 3",
-      "discount1Rate": "Discount Rate 1",
-      "discount1Amount": "Discount Amount 1",
-      "discount2Rate": "Discount Rate 2",
-      "discount2Amount": "Discount Amount 2",
-      "discount3Rate": "Discount Rate 3",
-      "discount3Amount": "Discount Amount 3",
-      "addConfirmTitle": "Add Line",
-      "addConfirmMessage": "{{code}} will be added to this rule. Do you confirm?",
-      "addSuccess": "Line added",
-      "addSuccessMessage": "Pricing rule line successfully added",
-      "addError": "Failed to add line",
-      "deleteConfirmTitle": "Delete Line",
-      "deleteConfirmMessage": "Are you sure you want to delete line {{code}}?",
-      "deleteSuccess": "Line deleted",
-      "deleteSuccessMessage": "Pricing rule line successfully deleted",
-      "deleteError": "Failed to delete line",
-      "stokCodeRequired": "Stock code is required"
-    },
-    "form": {
-      "cancel": "Cancel",
-      "save": "Save",
-      "create": "New Pricing Rule",
-      "edit": "Edit Pricing Rule",
-      "createDescription": "Enter new pricing rule information",
-      "editDescription": "Edit pricing rule information",
-      "tabs": {
-        "header": "General Information",
-        "lines": "Lines",
-        "salesmen": "Salesmen"
-      },
-      "lines": {
-        "required": "At least 1 line must be added",
-        "requiredMessage": "Please add at least one line"
-      }
-    }
   }
 }

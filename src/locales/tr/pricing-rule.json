@@ -35,6 +35,7 @@
     "form": {
       "cancel": "İptal",
       "save": "Kaydet",
+      "confirm": "Onayla",
       "create": "Yeni Fiyat Kuralı",
       "edit": "Fiyat Kuralı Düzenle",
       "createDescription": "Yeni fiyat kuralı bilgilerini girin",
@@ -146,7 +147,9 @@
     "button": "Sil",
     "confirmTitle": "Silme Onayı",
     "confirmMessage": "Bu kaydı silmek istediğinizden emin misiniz?",
-    "action": "Sil"
+    "action": "Sil",
+    "success": "Kural başarıyla silindi",
+    "error": "Kural silinirken bir hata oluştu"
   },
   "salesmen": {
     "title": "Satışçılar",
@@ -162,7 +165,11 @@
     "search": "Satışçı ara...",
     "empty": "Henüz satışçı eklenmedi",
     "emptyDescription": "Tüm satışçılar için geçerli olacaktır",
-    "salesman": "Satışçı"
+    "salesman": "Satışçı",
+    "addConfirmTitle": "Satışçı Ekle",
+    "addConfirmMessage": "{{name}} satışçısı fiyat kuralına eklenecektir. Onaylıyor musunuz?",
+    "deleteConfirmTitle": "Satışçı Kaldır",
+    "deleteConfirmMessage": "{{name}} satışçısı fiyat kuralından kaldırılacaktır. Onaylıyor musunuz?"
   },
   "header": {
     "ruleType": "Kural Tipi",
@@ -219,6 +226,7 @@
     "selectProduct": "Ürün Seç",
     "stokCodePlaceholder": "Ürün kodu",
     "stokCodeRequired": "Stok kodu zorunludur",
+      "selectCurrency": "Para birimi seçin",
     "minQuantityRequired": "Min miktar zorunludur ve 0'dan küçük olamaz",
     "maxQuantityRequired": "Max miktar zorunludur ve 0'dan büyük olmalıdır",
     "fixedUnitPriceRequired": "Liste fiyatı zorunludur ve 0'dan büyük olmalıdır",

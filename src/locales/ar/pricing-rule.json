@@ -1,14 +1,14 @@
 {
   "pricingRule": {
     "loading": "جارٍ التحميل...",
-    "loadingDescription": "جاري تحميل البيانات، يرجى الانتظار",
+    "loadingDescription": "جارٍ تحميل معلومات قواعد التسعير",
     "noData": "لا توجد بيانات",
     "error": "حدث خطأ",
     "actions": "إجراءات",
     "list": {
       "title": "قواعد التسعير",
-      "description": "إدارة وتعديل قواعد التسعير",
-      "add": "إضافة قاعدة جديدة"
+      "description": "إدارة قواعد التسعير والبنود التابعة لها",
+      "add": "إضافة قاعدة"
     },
     "table": {
       "title": "قائمة قواعد التسعير",
@@ -29,12 +29,13 @@
     "ruleType": {
       "demand": "طلب",
       "quotation": "عرض سعر",
-      "order": "طلب",
+      "order": "طلب شراء",
       "unknown": "غير معروف"
     },
     "form": {
       "cancel": "إلغاء",
       "save": "حفظ",
+      "confirm": "Confirm",
       "create": "قاعدة تسعير جديدة",
       "edit": "تعديل قاعدة التسعير",
       "createDescription": "أدخل معلومات قاعدة التسعير الجديدة",
@@ -50,7 +51,7 @@
       }
     },
     "lines": {
-      "title": "بنود قاعدة التسعير",
+      "title": "البنود",
       "section": {
         "stock": "معلومات المخزون",
         "pricing": "معلومات التسعير"
@@ -59,8 +60,8 @@
       "createTitle": "إضافة بند",
       "editTitle": "تعديل بند",
       "dialogDescription": "أدخل معلومات بند قاعدة التسعير",
-      "selectStock": "إضافة مخزون للبنود",
-      "empty": "لم يتم إضافة أي بند بعد",
+      "selectStock": "اختر المخزون",
+      "empty": "لا توجد بنود",
       "addFirst": "أضف البند الأول",
       "stokCode": "رمز المخزون",
       "minQuantity": "أقل كمية",
@@ -146,7 +147,9 @@
     "button": "Delete",
     "confirmTitle": "Delete Confirmation",
     "confirmMessage": "Are you sure you want to delete this record?",
-    "action": "Sil"
+    "action": "Sil",
+    "success": "تم حذف القاعدة بنجاح",
+    "error": "حدث خطأ أثناء حذف القاعدة"
   },
   "salesmen": {
     "title": "مندوبو المبيعات",
@@ -162,7 +165,11 @@
     "search": "البحث عن مندوب...",
     "empty": "لم يتم إضافة أي مندوبين بعد",
     "emptyDescription": "سيكون صالحاً لجميع المندوبين",
-    "salesman": "المندوب"
+    "salesman": "المندوب",
+    "addConfirmTitle": "إضافة مندوب",
+    "addConfirmMessage": "سيتم إضافة {{name}} إلى قاعدة التسعير. هل تؤكد؟",
+    "deleteConfirmTitle": "إزالة المندوب",
+    "deleteConfirmMessage": "سيتم إزالة {{name}} من قاعدة التسعير. هل تؤكد؟"
   },
   "header": {
     "ruleType": "نوع القاعدة",
@@ -219,11 +226,11 @@
     "selectProduct": "اختر المنتج",
     "stokCodePlaceholder": "أدخل رمز المخزون",
     "stokCodeRequired": "رمز المخزون مطلوب",
+    "selectCurrency": "اختر العملة",
     "minQuantityRequired": "أقل كمية مطلوبة",
     "maxQuantityRequired": "أقصى كمية مطلوبة",
     "fixedUnitPriceRequired": "سعر الوحدة الثابت مطلوب",
     "currencyCodeRequired": "العملة مطلوبة",
-    "selectCurrency": "اختر العملة",
     "minQuantityInvalid": "أقل كمية غير صالحة",
     "minQuantityInvalidMessage": "أدخل أقل كمية صحيحة"
   },

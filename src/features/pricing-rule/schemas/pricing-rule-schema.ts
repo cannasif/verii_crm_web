@@ -61,7 +61,7 @@ export const pricingRuleLineSchema = z
     currencyCode: z
       .union([z.string(), z.number()])
       .refine((val) => {
-        if (typeof val === 'number') return val > 0;
+        if (typeof val === 'number') return val >= 0;
         if (typeof val === 'string') return val.trim().length > 0;
         return false;
       }, {

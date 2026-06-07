@@ -1218,8 +1218,13 @@
         "draft": "Bozza",
         "publish": "Pubblica",
         "archive": "Archivia"
+      },
+      "studioDescription": "Build managed reports from IT-curated datasets with guided visuals and multi-widget layouts.",
+      "sectionLabels": {
+        "DETAY": "Dettagli"
       }
-    }
+    },
+    "exportPdf": "Scarica PDF"
   },
   "auth": {
     "login": {
@@ -2159,7 +2164,8 @@
       "documentNoRequired": "Il numero del documento è obbligatorio",
       "customerRequired": "Customer selection is required",
       "sourceWarehouseRequired": "Il magazzino di origine è obbligatorio",
-      "targetWarehouseRequired": "Il magazzino di destinazione è obbligatorio"
+      "targetWarehouseRequired": "Il magazzino di destinazione è obbligatorio",
+      "sameWarehouse": "I magazzini di origine e destinazione non possono essere uguali"
     },
     "collection": {
       "title": "Transfer Collection",
@@ -2202,6 +2208,10 @@
       "deleteConfirmTitle": "Delete Product",
       "deleteConfirmWithPackage": "The selected product will be removed from both the package and the process. Are you sure you want to proceed?",
       "deleteConfirmWithoutPackage": "The product will be removed from the collection. Are you sure you want to proceed?"
+    },
+    "report": {
+      "title": "Report Trasferimento",
+      "searchPlaceholder": "N. Documento, Codice Cliente, Magazzino..."
     }
   },
   "inventory": {
@@ -2462,7 +2472,30 @@
       "deleteConfirm": "Elimina Imballaggio",
       "deleteConfirmMessage": "Sei sicuro di voler eliminare questo imballaggio?",
       "deleteSuccess": "Imballaggio eliminato con successo",
-      "deleteError": "Si è verificato un errore durante l'eliminazione dell'imballaggio"
+      "deleteError": "Si è verificato un errore durante l'eliminazione dell'imballaggio",
+      "code": "Codice",
+      "name": "Nome",
+      "description": "Descrizione",
+      "type": "Tipo",
+      "createdDate": "Data Creazione",
+      "serialNo": "N. Serie",
+      "barcode": "Codice a Barre",
+      "noPackages": "Nessun imballaggio trovato",
+      "noLines": "Nessuna riga trovata",
+      "notFound": "Imballaggio non trovato",
+      "addPackageDescription": "Aggiungi un nuovo pacco",
+      "addLineDescription": "Aggiungi una nuova riga",
+      "packageFormComingSoon": "Il modulo pacco verrà aggiunto presto",
+      "lineFormComingSoon": "Il modulo riga verrà aggiunto presto",
+      "packageAddSuccess": "Pacco aggiunto con successo",
+      "packageAddError": "Si è verificato un errore durante l'aggiunta del pacco",
+      "lineAddSuccess": "Riga aggiunta con successo",
+      "lineAddError": "Si è verificato un errore durante l'aggiunta della riga",
+      "match": "Abbina",
+      "unmatch": "Disabbina",
+      "matchSuccess": "Abbinamento completato con successo",
+      "unmatchSuccess": "Disabbinamento completato con successo",
+      "matchError": "Si è verificato un errore durante l'abbinamento"
     },
     "wizard": {
       "step1": {
@@ -2624,7 +2657,53 @@
     "form": {
       "selectWarehouse": "Seleziona Magazzino",
       "selectCustomer": "Seleziona Cliente",
-      "selectCarrier": "Seleziona Trasportatore"
+      "selectCarrier": "Seleziona Trasportatore",
+      "packingNo": "N. Imballaggio",
+      "sourceType": "Tipo Origine",
+      "selectSourceType": "Seleziona Tipo Origine",
+      "noSourceType": "Tipo origine non trovato",
+      "sourceHeaderId": "Intestazione da Mappare",
+      "sourceLineId": "Riga da Mappare",
+      "selectSourceHeader": "Seleziona Intestazione da Mappare",
+      "noAvailableHeaders": "Nessuna intestazione disponibile trovata",
+      "selectSourceTypeFirst": "Seleziona prima il tipo di origine",
+      "packingNoRequired": "Il N. Imballaggio è obbligatorio",
+      "packingDate": "Data Imballaggio",
+      "warehouseCode": "Codice Magazzino",
+      "customerCode": "Codice Cliente",
+      "customerAddress": "Indirizzo Cliente",
+      "status": "Stato",
+      "carrierId": "ID Trasportatore",
+      "carrierServiceType": "Tipo Servizio Trasportatore",
+      "trackingNo": "N. Tracciamento",
+      "packageNo": "N. Pacco",
+      "packageNoRequired": "Il N. Pacco è obbligatorio",
+      "packageType": "Tipo Pacco",
+      "package": "Pacco",
+      "selectPackage": "Seleziona Pacco",
+      "packingHeaderId": "ID Intestazione Imballaggio",
+      "packingHeaderIdRequired": "L'ID Intestazione Imballaggio è obbligatorio",
+      "packageIdRequired": "L'ID Pacco è obbligatorio",
+      "barcode": "Codice a Barre",
+      "length": "Lunghezza",
+      "width": "Larghezza",
+      "height": "Altezza",
+      "volume": "Volume",
+      "netWeight": "Peso Netto",
+      "tareWeight": "Tara",
+      "grossWeight": "Peso Lordo",
+      "isMixed": "Misto",
+      "stockCode": "Codice Articolo",
+      "stockCodeRequired": "Il Codice Articolo è obbligatorio",
+      "yapKod": "Codice Yap",
+      "yapKodRequired": "Il Codice Yap è obbligatorio",
+      "quantity": "Quantità",
+      "quantityRequired": "La Quantità è obbligatoria",
+      "serialNo": "N. Serie",
+      "serialNo2": "N. Serie 2",
+      "serialNo3": "N. Serie 3",
+      "serialNo4": "N. Serie 4",
+      "sourceRouteId": "ID Percorso Origine"
     },
     "status": {
       "draft": "Bozza",
@@ -4812,6 +4891,27 @@
       "CustomLabel2": "Etichetta personalizzata per il ferro (facoltativo)",
       "CustomLabel3": "Etichetta personalizzata per la vite (facoltativo)",
       "CustomLabelPlaceholder": "Lascia vuoto per i nomi predefiniti"
+    },
+    "DemandActionLabels": {
+      "1": "Mantieni solo come approvato",
+      "2": "Apri richiesta in Netsis",
+      "3": "Apri registrazione preventivo",
+      "4": "Apri registrazione richiesta in Netsis",
+      "5": "Apri richiesta in Netsis e crea preventivo"
+    },
+    "QuotationActionLabels": {
+      "1": "Mantieni solo come approvato",
+      "2": "Apri preventivo in Netsis",
+      "3": "Apri registrazione ordine nel CRM",
+      "4": "Apri registrazione ordine in Netsis",
+      "5": "Apri preventivo in Netsis e crea ordine",
+      "6": "Apri registrazione ordine nel CRM e crea ordine in Netsis"
+    },
+    "OrderActionLabels": {
+      "1": "Mantieni solo come approvato",
+      "2": "Apri ordine in Netsis",
+      "3": "Apri fattura di vendita in Netsis",
+      "4": "Apri ordine e fattura di vendita in Netsis"
     }
   },
   "lineFormPreferences": {
@@ -5439,7 +5539,25 @@
     "profileEditTitle": "Profil Düzenle",
     "profileEditDescription": "Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.",
     "weightPlaceholderExampleDecimal": "Örn: 70.5",
-    "newPasswordPlaceholderShort": "Yeni şifreniz"
+    "newPasswordPlaceholderShort": "Yeni şifreniz",
+    "defaultUser": "Utente",
+    "healthScore": "Punteggio di salute",
+    "healthScoreDesc": "Salute generale del portafoglio",
+    "retention": "Fidelizzazione",
+    "retentionDesc": "Tasso di fidelizzazione clienti",
+    "churnRisk": "Rischio di abbandono",
+    "churnRiskDesc": "Previsione abbandono clienti",
+    "financeAndSales": "Vetrina finanze e vendite",
+    "financeAndSalesDesc": "Statistiche di conversione e fatturato",
+    "demands": "Richieste",
+    "quotations": "Preventivi",
+    "orders": "Ordini",
+    "currencyRevenues": "Fatturato per valuta",
+    "fieldAndActivity": "Vetrina campo e attività",
+    "fieldAndActivityDesc": "Dati reali delle prestazioni sul campo",
+    "totalActivity": "Attività totale",
+    "pendingActions": "Azioni in sospeso",
+    "pendingActionsDesc": "Numero di azioni consigliate"
   },
   "profile": {
     "title": "Informazioni sul profilo"
@@ -5528,5 +5646,6 @@
     "taxNumber": "Vergi Numarası",
     "taxOffice": "Vergi Dairesi",
     "tcknNumber": "TCKN Numarası"
-  }
+  },
+  "exportPreparing": "Hazırlanıyor..."
 }

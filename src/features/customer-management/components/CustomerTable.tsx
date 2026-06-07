@@ -104,9 +104,9 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerDto>[] => [
     key: 'id',
     label: tc(t, 'customerManagement.table.id'),
     type: 'text',
-    headClassName: cn(idColumnSurface, 'min-w-[92px] md:min-w-[104px]'),
+    headClassName: cn(idColumnSurface, 'min-w-[92px] md:min-w-[104px] w-auto'),
     className: cn(
-      'text-center font-medium min-w-[92px] w-[92px] md:min-w-[104px] md:w-[104px]',
+      'text-center font-medium min-w-[92px] md:min-w-[104px] w-auto',
       'bg-slate-100/80 dark:bg-white/[0.04]',
       'border-r border-slate-200/90 dark:border-white/[0.08]'
     ),
@@ -305,8 +305,8 @@ export function CustomerTable({
       const isComplete = completionPercentage === 100;
       const colors = getCompletionColorClasses(completionPercentage);
       return (
-        <div className="flex items-center justify-center gap-1.5 w-full min-w-0 px-0.5">
-          <span className="min-w-0 flex-1 truncate text-right tabular-nums leading-none">{inner}</span>
+        <div className="flex items-center justify-between gap-1.5 w-full px-1">
+          <span className="whitespace-nowrap text-right flex-1 tabular-nums leading-none">{inner}</span>
           <div className="flex shrink-0 items-center">
             <Popover>
               <PopoverTrigger asChild>

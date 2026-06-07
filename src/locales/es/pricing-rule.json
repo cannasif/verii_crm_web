@@ -1,14 +1,14 @@
 {
   "pricingRule": {
     "loading": "Cargando...",
-    "loadingDescription": "Cargando datos, por favor espere",
+    "loadingDescription": "Se está cargando la información de reglas de precio",
     "noData": "Sin datos",
     "error": "Se produjo un error",
     "actions": "Acciones",
     "list": {
-      "title": "Reglas de Precios",
-      "description": "Administrar y editar reglas de precios",
-      "add": "Añadir Nueva Regla"
+      "title": "Reglas de precio",
+      "description": "Gestione las reglas de precio y sus líneas",
+      "add": "Agregar regla"
     },
     "table": {
       "title": "Lista de Reglas de Precio",
@@ -27,7 +27,7 @@
       "inactive": "Inactivo"
     },
     "ruleType": {
-      "demand": "Demanda",
+      "demand": "Solicitud",
       "quotation": "Cotización",
       "order": "Pedido",
       "unknown": "Desconocido"
@@ -35,6 +35,7 @@
     "form": {
       "cancel": "Cancelar",
       "save": "Guardar",
+      "confirm": "Confirm",
       "create": "Nueva Regla de Precios",
       "edit": "Editar Regla de Precios",
       "createDescription": "Ingrese nueva información de regla de precios",
@@ -50,7 +51,7 @@
       }
     },
     "lines": {
-      "title": "Líneas de Regla de Precios",
+      "title": "Líneas",
       "section": {
         "stock": "Info Stock",
         "pricing": "Info Precios"
@@ -59,13 +60,13 @@
       "createTitle": "Añadir Línea",
       "editTitle": "Editar Línea",
       "dialogDescription": "Introduzca la información de la línea de la regla de precios",
-      "selectStock": "Añadir Stock a Líneas",
-      "empty": "Aún no se ha añadido ninguna línea",
+      "selectStock": "Seleccione stock",
+      "empty": "No hay líneas",
       "addFirst": "Añadir la primera línea",
-      "stokCode": "Código de Stock",
-      "minQuantity": "Cantidad Min",
-      "maxQuantity": "Cantidad Max",
-      "fixedUnitPrice": "Precio Unitario Fijo",
+      "stokCode": "Código de stock",
+      "minQuantity": "Cantidad mín.",
+      "maxQuantity": "Cantidad máx.",
+      "fixedUnitPrice": "Precio unitario fijo",
       "currencyCode": "Moneda",
       "discount1": "Descuento 1",
       "discount2": "Descuento 2",
@@ -146,7 +147,9 @@
     "button": "Delete",
     "confirmTitle": "Delete Confirmation",
     "confirmMessage": "Are you sure you want to delete this record?",
-    "action": "Sil"
+    "action": "Sil",
+    "success": "Regla eliminada con éxito",
+    "error": "Error al eliminar la regla"
   },
   "salesmen": {
     "title": "Vendedores",
@@ -162,7 +165,11 @@
     "search": "Buscar vendedor...",
     "empty": "Aún no se han agregado vendedores",
     "emptyDescription": "Será válido para todos los vendedores",
-    "salesman": "Vendedor"
+    "salesman": "Vendedor",
+    "addConfirmTitle": "Añadir Vendedor",
+    "addConfirmMessage": "{{name}} se añadirá a la regla de precios. ¿Confirma?",
+    "deleteConfirmTitle": "Eliminar Vendedor",
+    "deleteConfirmMessage": "{{name}} se eliminará de la regla de precios. ¿Confirma?"
   },
   "header": {
     "ruleType": "Tipo de regla",
@@ -219,11 +226,11 @@
     "selectProduct": "Seleccione producto",
     "stokCodePlaceholder": "Ingrese código de stock",
     "stokCodeRequired": "El código de stock es obligatorio",
+    "selectCurrency": "Seleccione moneda",
     "minQuantityRequired": "La cantidad mín. es obligatoria",
     "maxQuantityRequired": "La cantidad máx. es obligatoria",
     "fixedUnitPriceRequired": "El precio unitario fijo es obligatorio",
     "currencyCodeRequired": "La moneda es obligatoria",
-    "selectCurrency": "Seleccione moneda",
     "minQuantityInvalid": "Cantidad mínima inválida",
     "minQuantityInvalidMessage": "Ingrese una cantidad mínima válida"
   },

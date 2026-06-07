@@ -1218,8 +1218,13 @@
         "draft": "Entwurf",
         "publish": "Veröffentlichen",
         "archive": "Archivieren"
+      },
+      "studioDescription": "Erstellen Sie verwaltete Berichte aus IT-kuratierten Datensätzen mit geführten visuellen Elementen und Multi-Widget-Layouts.",
+      "sectionLabels": {
+        "DETAY": "Details"
       }
-    }
+    },
+    "exportPdf": "PDF herunterladen"
   },
   "auth": {
     "login": {
@@ -4092,7 +4097,8 @@
       "deleteError": "Der Kontakt konnte nicht gelöscht werden",
       "updateSuccess": "Kontakt erfolgreich aktualisiert",
       "updateError": "Der Kontakt konnte nicht aktualisiert werden"
-    }
+    },
+    "quickActivity": "Schnellaktivität"
   },
   "customerManagement": {
     "form": {
@@ -4761,7 +4767,8 @@
       "RestrictCustomersBySalesRepMatch": "Kunden nach Vertriebszuordnung einschränken",
       "DemandApprovalCompletionAction": "Demand approval completion action",
       "QuotationApprovalCompletionAction": "Quotation approval completion action",
-      "OrderApprovalCompletionAction": "Order approval completion action"
+      "OrderApprovalCompletionAction": "Order approval completion action",
+      "ApprovalCompletionAction": "Wählen Sie eine Aktion nach der Genehmigung"
     },
     "Descriptions": {
       "RestrictCustomersBySalesRepMatch": "Wenn aktiviert, werden Kundenlisten und -auswahl auf die dem gewählten Benutzer zugeordneten Vertriebsmitarbeiter-Codes begrenzt."
@@ -4812,6 +4819,27 @@
       "CustomLabel2": "Optionaler eigener Name für Eisen",
       "CustomLabel3": "Optionaler eigener Name für Schraube",
       "CustomLabelPlaceholder": "Leer lassen für Standardnamen"
+    },
+    "DemandActionLabels": {
+      "1": "Nur als genehmigt beibehalten",
+      "2": "Bedarf in Netsis öffnen",
+      "3": "Angebotsdatensatz öffnen",
+      "4": "Bedarfsdatensatz in Netsis öffnen",
+      "5": "Bedarf in Netsis öffnen und Angebot erstellen"
+    },
+    "QuotationActionLabels": {
+      "1": "Nur als genehmigt beibehalten",
+      "2": "Angebot in Netsis öffnen",
+      "3": "Auftragsdatensatz im CRM öffnen",
+      "4": "Auftragsdatensatz in Netsis öffnen",
+      "5": "Angebot in Netsis öffnen und Auftrag erstellen",
+      "6": "Auftragsdatensatz im CRM öffnen und Auftrag in Netsis erstellen"
+    },
+    "OrderActionLabels": {
+      "1": "Nur als genehmigt beibehalten",
+      "2": "Auftrag in Netsis öffnen",
+      "3": "Verkaufsrechnung in Netsis öffnen",
+      "4": "Auftrag und Verkaufsrechnung in Netsis öffnen"
     }
   },
   "lineFormPreferences": {
@@ -5127,7 +5155,8 @@
       "updateSuccess": "Berichtsdefinition aktualisiert",
       "updateError": "Aktualisierung fehlgeschlagen",
       "deleteSuccess": "Berichtsdefinition gelöscht",
-      "deleteError": "Konnte nicht gelöscht werden"
+      "deleteError": "Konnte nicht gelöscht werden",
+      "clientSecretInfo": "Der Client-Geheimschlüssel wird aus Sicherheitsgründen nur aus der Server-Umgebungsvariable gelesen."
     },
     "userGroup": {
       "edit": "Matching bearbeiten",
@@ -5439,7 +5468,25 @@
     "profileEditTitle": "Profil Düzenle",
     "profileEditDescription": "Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.",
     "weightPlaceholderExampleDecimal": "Örn: 70.5",
-    "newPasswordPlaceholderShort": "Yeni şifreniz"
+    "newPasswordPlaceholderShort": "Yeni şifreniz",
+    "defaultUser": "Benutzer",
+    "healthScore": "Gesundheitsscore",
+    "healthScoreDesc": "Allgemeine Portfolio-Gesundheit",
+    "retention": "Kundenbindung",
+    "retentionDesc": "Kundenbindungsrate",
+    "churnRisk": "Abwanderungsrisiko",
+    "churnRiskDesc": "Kundenabwanderungsprognose",
+    "financeAndSales": "Finanz- & Vertriebs-Showcase",
+    "financeAndSalesDesc": "Konversions- und Umsatzstatistiken",
+    "demands": "Bedarf",
+    "quotations": "Angebote",
+    "orders": "Bestellungen",
+    "currencyRevenues": "Umsätze nach Währung",
+    "fieldAndActivity": "Feld- & Aktivitäts-Showcase",
+    "fieldAndActivityDesc": "Tatsächliche Leistungsdaten im Feld",
+    "totalActivity": "Gesamtaktivität",
+    "pendingActions": "Ausstehende Aktionen",
+    "pendingActionsDesc": "Anzahl empfohlener Aktionen"
   },
   "profile": {
     "title": "Profilinformationen"
@@ -5528,5 +5575,6 @@
     "taxNumber": "Vergi Numarası",
     "taxOffice": "Vergi Dairesi",
     "tcknNumber": "TCKN Numarası"
-  }
+  },
+  "exportPreparing": "Hazırlanıyor..."
 }

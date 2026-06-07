@@ -1218,8 +1218,13 @@
         "draft": "مسودة",
         "publish": "نشر",
         "archive": "أرشيف"
+      },
+      "studioDescription": "قم ببناء تقارير مدارة من مجموعات بيانات منتقاة من تقنية المعلومات باستخدام مرئيات موجهة وتخطيطات متعددة الأدوات.",
+      "sectionLabels": {
+        "DETAY": "تفاصيل"
       }
-    }
+    },
+    "exportPdf": "تحميل قوات الدفاع الشعبي"
   },
   "auth": {
     "login": {
@@ -2624,7 +2629,52 @@
     "form": {
       "selectWarehouse": "اختر المستودع",
       "selectCustomer": "اختر العميل",
-      "selectCarrier": "اختر الناقل"
+      "selectCarrier": "اختر الناقل",
+      "packingNo": "رقم التغليف",
+      "sourceType": "نوع المصدر",
+      "selectSourceType": "اختر نوع المصدر",
+      "noSourceType": "نوع المصدر غير موجود",
+      "sourceHeaderId": "الرأس للمطابقة",
+      "selectSourceHeader": "اختر الرأس للمطابقة",
+      "noAvailableHeaders": "لم يتم العثور على رؤوس متاحة",
+      "selectSourceTypeFirst": "يرجى اختيار نوع المصدر أولاً",
+      "packingNoRequired": "رقم التغليف مطلوب",
+      "packingDate": "تاريخ التغليف",
+      "warehouseCode": "رمز المستودع",
+      "customerCode": "رمز العميل",
+      "customerAddress": "عنوان العميل",
+      "status": "الحالة",
+      "carrierId": "معرف الناقل",
+      "carrierServiceType": "نوع خدمة الناقل",
+      "trackingNo": "رقم التتبع",
+      "packageNo": "رقم الطرد",
+      "packageNoRequired": "رقم الطرد مطلوب",
+      "packageType": "نوع الطرد",
+      "package": "الطرد",
+      "selectPackage": "اختر الطرد",
+      "packingHeaderId": "معرف رأس التغليف",
+      "packingHeaderIdRequired": "معرف رأس التغليف مطلوب",
+      "packageIdRequired": "معرف الطرد مطلوب",
+      "barcode": "الباركود",
+      "length": "الطول",
+      "width": "العرض",
+      "height": "الارتفاع",
+      "volume": "الحجم",
+      "netWeight": "الوزن الصافي",
+      "tareWeight": "وزن العبوة الفارغة",
+      "grossWeight": "الوزن القائم",
+      "isMixed": "مختلط",
+      "stockCode": "رمز المخزون",
+      "stockCodeRequired": "رمز المخزون مطلوب",
+      "yapKod": "رمز الهيكل",
+      "yapKodRequired": "رمز الهيكل مطلوب",
+      "quantity": "الكمية",
+      "quantityRequired": "الكمية مطلوبة",
+      "serialNo": "الرقم التسلسلي",
+      "serialNo2": "الرقم التسلسلي 2",
+      "serialNo3": "الرقم التسلسلي 3",
+      "serialNo4": "الرقم التسلسلي 4",
+      "sourceRouteId": "معرف المسار المصدر"
     },
     "status": {
       "draft": "مسودة",
@@ -4761,7 +4811,8 @@
       "RestrictCustomersBySalesRepMatch": "تقييد العملاء وفق تطابق مندوب المبيعات",
       "DemandApprovalCompletionAction": "Demand approval completion action",
       "QuotationApprovalCompletionAction": "Quotation approval completion action",
-      "OrderApprovalCompletionAction": "Order approval completion action"
+      "OrderApprovalCompletionAction": "Order approval completion action",
+      "ApprovalCompletionAction": "حدد الإجراء بعد الموافقة"
     },
     "Descriptions": {
       "RestrictCustomersBySalesRepMatch": "عند التفعيل، تُقيَّد قوائم العملاء ومنتقي العملاء برموز مندوب المبيعات المطابقة للمستخدم المحدد."
@@ -4812,6 +4863,27 @@
       "CustomLabel2": "تسمية مخصصة للحديد (اختياري)",
       "CustomLabel3": "تسمية مخصصة للبرغي (اختياري)",
       "CustomLabelPlaceholder": "اتركه فارغًا للأسماء الافتراضية"
+    },
+    "DemandActionLabels": {
+      "1": "الاحتفاظ به كمعتمد فقط",
+      "2": "فتح الطلب في Netsis",
+      "3": "فتح سجل عرض الأسعار",
+      "4": "فتح سجل الطلب في Netsis",
+      "5": "فتح الطلب في Netsis وإنشاء عرض أسعار"
+    },
+    "QuotationActionLabels": {
+      "1": "الاحتفاظ به كمعتمد فقط",
+      "2": "فتح عرض الأسعار في Netsis",
+      "3": "فتح سجل أمر المبيعات في CRM",
+      "4": "فتح سجل أمر المبيعات في Netsis",
+      "5": "فتح عرض الأسعار في Netsis وإنشاء أمر مبيعات",
+      "6": "فتح سجل أمر المبيعات في CRM وإنشاء أمر مبيعات في Netsis"
+    },
+    "OrderActionLabels": {
+      "1": "الاحتفاظ به كمعتمد فقط",
+      "2": "فتح أمر المبيعات في Netsis",
+      "3": "فتح فاتورة المبيعات في Netsis",
+      "4": "فتح أمر المبيعات وفاتورة المبيعات في Netsis"
     }
   },
   "lineFormPreferences": {
@@ -5439,7 +5511,25 @@
     "profileEditTitle": "Profil Düzenle",
     "profileEditDescription": "Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.",
     "weightPlaceholderExampleDecimal": "Örn: 70.5",
-    "newPasswordPlaceholderShort": "Yeni şifreniz"
+    "newPasswordPlaceholderShort": "Yeni şifreniz",
+    "defaultUser": "مستخدم",
+    "healthScore": "نقاط الصحة",
+    "healthScoreDesc": "الصحة العامة للمحفظة",
+    "retention": "الاحتفاظ",
+    "retentionDesc": "معدل الاحتفاظ بالعملاء",
+    "churnRisk": "خطر التوقف",
+    "churnRiskDesc": "توقع توقف العملاء",
+    "financeAndSales": "واجهة التمويل والمبيعات",
+    "financeAndSalesDesc": "إحصائيات التحويل والإيرادات",
+    "demands": "الطلبات",
+    "quotations": "عروض الأسعار",
+    "orders": "الطلبيات",
+    "currencyRevenues": "الإيرادات حسب العملة",
+    "fieldAndActivity": "واجهة الميدان والأنشطة",
+    "fieldAndActivityDesc": "بيانات الأداء الميداني الفعلية",
+    "totalActivity": "إجمالي النشاط",
+    "pendingActions": "الإجراءات المعلقة",
+    "pendingActionsDesc": "عدد الإجراءات الموصى بها"
   },
   "profile": {
     "title": "معلومات الملف الشخصي"
@@ -5528,5 +5618,6 @@
     "taxNumber": "Vergi Numarası",
     "taxOffice": "Vergi Dairesi",
     "tcknNumber": "TCKN Numarası"
-  }
+  },
+  "exportPreparing": "Hazırlanıyor..."
 }

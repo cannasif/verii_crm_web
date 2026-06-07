@@ -41,29 +41,7 @@ const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   orderApprovalCompletionAction: 1,
 };
 
-const DEMAND_ACTION_LABELS: Record<number, string> = {
-  1: 'Sadece onaylandı kalsın',
-  2: "Netsis'te talep aç",
-  3: 'Teklif kaydı aç',
-  4: "Netsis'te talep kaydı aç",
-  5: "Netsis'te talep aç ve teklif oluştur",
-};
 
-const QUOTATION_ACTION_LABELS: Record<number, string> = {
-  1: 'Sadece onaylandı kalsın',
-  2: "Netsis'te teklif aç",
-  3: "CRM'de sipariş kaydı aç",
-  4: "Netsis'te sipariş kaydı aç",
-  5: "Netsis'te teklif aç ve sipariş oluştur",
-  6: "CRM'de sipariş kaydı aç ve Netsis'te sipariş oluştur",
-};
-
-const ORDER_ACTION_LABELS: Record<number, string> = {
-  1: 'Sadece onaylandı kalsın',
-  2: "Netsis'te sipariş aç",
-  3: "Netsis'te satış faturası aç",
-  4: "Netsis'te sipariş ve satış faturası aç",
-};
 
 function resolveActionSelectValue(
   value: number | string | undefined,
@@ -113,25 +91,25 @@ export function SystemSettingsForm({
   const demandActionOptions = useMemo(
     () => [1, 2, 3, 4, 5].map((value) => ({
       value: String(value),
-      label: DEMAND_ACTION_LABELS[value],
+      label: t(`systemSettings.DemandActionLabels.${value}`),
     })),
-    []
+    [t]
   );
 
   const quotationActionOptions = useMemo(
     () => [1, 2, 3, 4, 5, 6].map((value) => ({
       value: String(value),
-      label: QUOTATION_ACTION_LABELS[value],
+      label: t(`systemSettings.QuotationActionLabels.${value}`),
     })),
-    []
+    [t]
   );
 
   const orderActionOptions = useMemo(
     () => [1, 2, 3, 4].map((value) => ({
       value: String(value),
-      label: ORDER_ACTION_LABELS[value],
+      label: t(`systemSettings.OrderActionLabels.${value}`),
     })),
-    []
+    [t]
   );
 
   const formValues = useMemo<SystemSettingsFormSchema>(() => {

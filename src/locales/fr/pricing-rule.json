@@ -8,7 +8,7 @@
     "list": {
       "title": "Règles de Prix",
       "description": "Gérer et modifier les règles de prix",
-      "add": "Ajouter une Règle"
+      "add": "Ajouter une Nouvelle Règle"
     },
     "table": {
       "title": "Liste des Règles de Prix",
@@ -35,6 +35,7 @@
     "form": {
       "cancel": "Annuler",
       "save": "Enregistrer",
+      "confirm": "Confirmer",
       "create": "Nouvelle Règle de Prix",
       "edit": "Modifier Règle de Prix",
       "createDescription": "Entrez les informations de la nouvelle règle de prix",
@@ -59,7 +60,7 @@
       "createTitle": "Ajouter Ligne",
       "editTitle": "Modifier Ligne",
       "dialogDescription": "Saisissez les informations de la ligne de règle de prix",
-      "selectStock": "Ajouter Stock aux Lignes",
+      "selectStock": "Sélectionner Stock",
       "empty": "Aucune ligne ajoutée pour le moment",
       "addFirst": "Ajouter la première ligne",
       "stokCode": "Code Stock",
@@ -67,9 +68,9 @@
       "maxQuantity": "Qté Max",
       "fixedUnitPrice": "Prix Unitaire Fixe",
       "currencyCode": "Devise",
-      "discount1": "Remise 1",
-      "discount2": "Remise 2",
-      "discount3": "Remise 3",
+      "discount1": "Remise 1 %",
+      "discount2": "Remise 2 %",
+      "discount3": "Remise 3 %",
       "discount1Rate": "Taux Remise 1",
       "discount1Amount": "Montant Remise 1",
       "discount2Rate": "Taux Remise 2",
@@ -146,7 +147,9 @@
     "button": "Supprimer",
     "confirmTitle": "Confirmation de suppression",
     "confirmMessage": "Êtes-vous sûr de vouloir supprimer cet enregistrement ?",
-    "action": "Sil"
+    "action": "Sil",
+    "success": "Règle supprimée avec succès",
+    "error": "Erreur lors de la suppression de la règle"
   },
   "salesmen": {
     "title": "Vendeurs",
@@ -162,7 +165,11 @@
     "search": "Rechercher vendeur...",
     "empty": "Aucun vendeur ajouté pour le moment",
     "emptyDescription": "S'appliquera à tous les vendeurs",
-    "salesman": "Vendeur"
+    "salesman": "Vendeur",
+    "addConfirmTitle": "Ajouter Vendeur",
+    "addConfirmMessage": "{{name}} sera ajouté à la règle de prix. Confirmez-vous ?",
+    "deleteConfirmTitle": "Supprimer Vendeur",
+    "deleteConfirmMessage": "{{name}} sera supprimé de la règle de prix. Confirmez-vous ?"
   },
   "header": {
     "ruleType": "Type Règle",
@@ -219,11 +226,11 @@
     "selectProduct": "Sélectionner Produit",
     "stokCodePlaceholder": "Code produit",
     "stokCodeRequired": "Le code stock est requis",
+    "selectCurrency": "Sélectionner devise",
     "minQuantityRequired": "La quantité min est requise et ne peut pas être inférieure à 0",
     "maxQuantityRequired": "La quantité max est requise et doit être supérieure à 0",
     "fixedUnitPriceRequired": "Le prix catalogue est requis et doit être supérieur à 0",
     "currencyCodeRequired": "Le type de devise est requis",
-    "selectCurrency": "Sélectionner devise",
     "minQuantityInvalid": "Quantité Min Invalide",
     "minQuantityInvalidMessage": "La quantité minimale ne peut pas être inférieure à 0"
   },

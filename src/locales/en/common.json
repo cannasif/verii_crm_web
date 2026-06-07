@@ -1218,8 +1218,12 @@
         "draft": "Draft",
         "publish": "Publish",
         "archive": "Archive"
+      },
+      "sectionLabels": {
+        "DETAY": "Detail"
       }
-    }
+    },
+    "exportPdf": "Download PDF"
   },
   "auth": {
     "login": {
@@ -4812,6 +4816,27 @@
       "CustomLabel2": "Optional custom label for rebar",
       "CustomLabel3": "Optional custom label for screw",
       "CustomLabelPlaceholder": "Leave empty for default names"
+    },
+    "DemandActionLabels": {
+      "1": "Keep as approved only",
+      "2": "Open demand in Netsis",
+      "3": "Open quotation record",
+      "4": "Open demand record in Netsis",
+      "5": "Open demand in Netsis and create quotation"
+    },
+    "QuotationActionLabels": {
+      "1": "Keep as approved only",
+      "2": "Open quotation in Netsis",
+      "3": "Open order record in CRM",
+      "4": "Open order record in Netsis",
+      "5": "Open quotation in Netsis and create order",
+      "6": "Open order record in CRM and create order in Netsis"
+    },
+    "OrderActionLabels": {
+      "1": "Keep as approved only",
+      "2": "Open order in Netsis",
+      "3": "Open sales invoice in Netsis",
+      "4": "Open order and sales invoice in Netsis"
     }
   },
   "lineFormPreferences": {
@@ -5439,7 +5464,25 @@
     "profileEditTitle": "Profil Düzenle",
     "profileEditDescription": "Kişisel bilgilerinizi ve hesap ayarlarınızı buradan yönetebilirsiniz.",
     "weightPlaceholderExampleDecimal": "Örn: 70.5",
-    "newPasswordPlaceholderShort": "Yeni şifreniz"
+    "newPasswordPlaceholderShort": "Yeni şifreniz",
+    "defaultUser": "User",
+    "healthScore": "Health Score",
+    "healthScoreDesc": "Overall Portfolio Health",
+    "retention": "Retention",
+    "retentionDesc": "Customer Retention Rate",
+    "churnRisk": "Churn Risk",
+    "churnRiskDesc": "Customer Churn Prediction",
+    "financeAndSales": "Finance & Sales Showcase",
+    "financeAndSalesDesc": "Conversion and revenue statistics",
+    "demands": "Demands",
+    "quotations": "Quotations",
+    "orders": "Orders",
+    "currencyRevenues": "Currency Based Revenues",
+    "fieldAndActivity": "Field & Activity Showcase",
+    "fieldAndActivityDesc": "Actual field performance data",
+    "totalActivity": "Total Activity",
+    "pendingActions": "Pending Actions",
+    "pendingActionsDesc": "Recommended action count"
   },
   "profile": {
     "title": "Profile Information"
@@ -5528,5 +5571,6 @@
     "taxNumber": "Vergi Numarası",
     "taxOffice": "Vergi Dairesi",
     "tcknNumber": "TCKN Numarası"
-  }
+  },
+  "exportPreparing": "Hazırlanıyor..."
 }

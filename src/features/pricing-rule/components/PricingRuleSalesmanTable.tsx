@@ -42,7 +42,7 @@ interface PricingRuleSalesmanTableProps {
 export function PricingRuleSalesmanTable({
   header,
 }: PricingRuleSalesmanTableProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation('pricing-rule');
   const { control } = useFormContext<PricingRuleFormSchema>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -106,11 +106,11 @@ export function PricingRuleSalesmanTable({
         append(newSalesman);
         setAddConfirmOpen(false);
         setSelectedSalesmanId(null);
-        toast.success(t('pricingRule.salesmen.addSuccess'), { description: t('pricingRule.salesmen.addSuccessMessage') });
+        toast.success(t('salesmen.addSuccess'), { description: t('salesmen.addSuccessMessage') });
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t('pricingRule.salesmen.addError');
-      toast.error(t('pricingRule.salesmen.addError'), { description: errorMessage });
+      const errorMessage = error instanceof Error ? error.message : t('salesmen.addError');
+      toast.error(t('salesmen.addError'), { description: errorMessage });
     }
   };
 
@@ -150,10 +150,10 @@ export function PricingRuleSalesmanTable({
       if (index !== -1) remove(index);
       setDeleteConfirmOpen(false);
       setSelectedSalesmanToDelete(null);
-      toast.success(t('pricingRule.salesmen.deleteSuccess'), { description: t('pricingRule.salesmen.deleteSuccessMessage') });
+      toast.success(t('salesmen.deleteSuccess'), { description: t('salesmen.deleteSuccessMessage') });
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : t('pricingRule.salesmen.deleteError');
-      toast.error(t('pricingRule.salesmen.deleteError'), { description: errorMessage });
+      const errorMessage = error instanceof Error ? error.message : t('salesmen.deleteError');
+      toast.error(t('salesmen.deleteError'), { description: errorMessage });
     }
   };
 
@@ -181,7 +181,7 @@ export function PricingRuleSalesmanTable({
           <div className="bg-purple-50 dark:bg-purple-500/20 p-1.5 rounded-lg text-purple-600 dark:text-purple-400">
             <User size={18} />
           </div>
-          {t('pricingRule.salesmen.title')}
+          {t('salesmen.title')}
         </h3>
         
         {availableUserOptions.length > 0 && (
@@ -197,8 +197,8 @@ export function PricingRuleSalesmanTable({
                 hasNextPage={userDropdown.hasNextPage}
                 isLoading={userDropdown.isLoading}
                 isFetchingNextPage={userDropdown.isFetchingNextPage}
-                placeholder={t('pricingRule.salesmen.add')}
-                searchPlaceholder={t('pricingRule.salesmen.search')}
+                placeholder={t('salesmen.add')}
+                searchPlaceholder={t('salesmen.search')}
                 className="w-[240px] h-9 bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-xs"
                 disabled={isLoadingAction}
                 modal={true}
@@ -215,15 +215,15 @@ export function PricingRuleSalesmanTable({
                         <User size={32} className="opacity-50" />
                     </div>
                     <div className="text-center">
-                        <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{t('pricingRule.salesmen.empty')}</p>
-                        <p className="text-xs mt-1 text-slate-400">{t('pricingRule.salesmen.emptyDescription')}</p>
+                        <p className="text-sm font-medium text-slate-600 dark:text-slate-300">{t('salesmen.empty')}</p>
+                        <p className="text-xs mt-1 text-slate-400">{t('salesmen.emptyDescription')}</p>
                     </div>
                 </div>
             ) : (
                 <Table>
                 <TableHeader className="bg-slate-50/80 dark:bg-white/5 sticky top-0 z-10 backdrop-blur-sm">
                     <TableRow className="border-b border-slate-200 dark:border-white/10 hover:bg-transparent">
-                    <TableHead className={headStyle}>{t('pricingRule.salesmen.salesman')}</TableHead>
+                    <TableHead className={headStyle}>{t('salesmen.salesman')}</TableHead>
                     <TableHead className={`text-right ${headStyle}`}>{t('pricingRule.table.actions')}</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -280,10 +280,10 @@ export function PricingRuleSalesmanTable({
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('pricingRule.salesmen.addConfirmTitle')}
+                {t('salesmen.addConfirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                  {t('pricingRule.salesmen.addConfirmMessage', {
+                  {t('salesmen.addConfirmMessage', {
                     name: selectedUser?.fullName || '',
                   })}
                 </DialogDescription>
@@ -322,15 +322,15 @@ export function PricingRuleSalesmanTable({
           
           <DialogHeader className="flex flex-col items-center gap-4 text-center pb-6 pt-10 px-6">
             <div className="h-20 w-20 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-2 animate-in zoom-in duration-300">
-               <Alert02Icon size={36} className="text-red-600 dark:text-red-500" />
+               <Alert02Icon size={36} className="text-red-600 dark:red-500" />
             </div>
             
             <div className="space-y-2">
                 <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('pricingRule.salesmen.deleteConfirmTitle')}
+                {t('salesmen.deleteConfirmTitle')}
                 </DialogTitle>
                 <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('pricingRule.salesmen.deleteConfirmMessage', {
+                {t('salesmen.deleteConfirmMessage', {
                     name: userToDelete?.fullName || '',
                 })}
                 </DialogDescription>

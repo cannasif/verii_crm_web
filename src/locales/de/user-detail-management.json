@@ -54,7 +54,7 @@
   "invalidEmail": "Bitte geben Sie eine gültige E-Mail-Adresse ein",
   "phoneNumberMaxLength": "Die Telefonnummer kann bis zu 20 Zeichen lang sein",
   "profileEditTitle": "Profil bearbeiten",
-  "profileEditDescription": "You can manage your personal information and account settings here.",
+  "profileEditDescription": "Hier können Sie Ihre persönlichen Informationen und Kontoeinstellungen verwalten.",
   "heightPlaceholderExample": "Ex: 175",
   "weightPlaceholderExample": "Ex: 70",
   "weightPlaceholderExampleDecimal": "Ex: 70.5",
