@@ -15,7 +15,6 @@ import { useDeleteApprovalUserRole } from '../hooks/useDeleteApprovalUserRole';
 import type { ApprovalUserRoleDto } from '../types/approval-user-role-types';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
-import { toast } from 'sonner';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 export interface ColumnDef<T> {
@@ -124,10 +123,8 @@ export function ApprovalUserRoleTable({
         await deleteUserRole.mutateAsync(selectedUserRole.id);
         setDeleteDialogOpen(false);
         setSelectedUserRole(null);
-        toast.success(t('approvalUserRole.messages.deleteSuccess', { defaultValue: t('common.delete.action') }));
       } catch (error) {
         console.error(error);
-        toast.error(t('approvalUserRole.messages.deleteError', { defaultValue: 'Silme hatası' }));
       }
     }
   };
@@ -160,43 +157,43 @@ export function ApprovalUserRoleTable({
   return (
     <>
       <ManagementDataTableChrome>
-      <DataTableGrid<ApprovalUserRoleDto, ApprovalUserRoleColumnKey>
-        toolbar={toolbar}
-        columns={columns}
-        visibleColumnKeys={visibleColumnKeys}
-        rows={rows}
-        rowKey={rowKey}
-        renderCell={renderCell}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-        onSort={onSort}
-        renderSortIcon={renderSortIcon}
-        isLoading={isLoading}
-        isError={false}
-        loadingText={loadingText}
-        errorText={errorText}
-        emptyText={emptyText}
-        minTableWidthClassName={minTableWidthClassName}
-        showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
-        actionsHeaderLabel={actionsHeaderLabel}
-        renderActionsCell={renderActionsCell}
-        rowClassName={rowClassName}
-        pageSize={pageSize}
-        pageSizeOptions={pageSizeOptions}
-        onPageSizeChange={onPageSizeChange}
-        pageNumber={pageNumber}
-        totalPages={totalPages}
-        hasPreviousPage={hasPreviousPage}
-        hasNextPage={hasNextPage}
-        onPreviousPage={onPreviousPage}
-        onNextPage={onNextPage}
-        previousLabel={previousLabel}
-        nextLabel={nextLabel}
-        paginationInfoText={paginationInfoText}
-        disablePaginationButtons={disablePaginationButtons}
-        centerColumnHeaders
-        onColumnOrderChange={onColumnOrderChange}
-      />
+        <DataTableGrid<ApprovalUserRoleDto, ApprovalUserRoleColumnKey>
+          toolbar={toolbar}
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          rows={rows}
+          rowKey={rowKey}
+          renderCell={renderCell}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          onSort={onSort}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={false}
+          loadingText={loadingText}
+          errorText={errorText}
+          emptyText={emptyText}
+          minTableWidthClassName={minTableWidthClassName}
+          showActionsColumn={Boolean(showActionsColumn && (canUpdate || canDelete))}
+          actionsHeaderLabel={actionsHeaderLabel}
+          renderActionsCell={renderActionsCell}
+          rowClassName={rowClassName}
+          pageSize={pageSize}
+          pageSizeOptions={pageSizeOptions}
+          onPageSizeChange={onPageSizeChange}
+          pageNumber={pageNumber}
+          totalPages={totalPages}
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+          onPreviousPage={onPreviousPage}
+          onNextPage={onNextPage}
+          previousLabel={previousLabel}
+          nextLabel={nextLabel}
+          paginationInfoText={paginationInfoText}
+          disablePaginationButtons={disablePaginationButtons}
+          centerColumnHeaders
+          onColumnOrderChange={onColumnOrderChange}
+        />
       </ManagementDataTableChrome>
 
       <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

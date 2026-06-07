@@ -34,7 +34,6 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
-import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { MANAGEMENT_DATA_GRID_CLASSNAME } from '@/lib/management-list-layout';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
@@ -273,20 +272,8 @@ export function CustomerTable({
         await deleteCustomer.mutateAsync(selectedCustomer.id);
         setDeleteDialogOpen(false);
         setSelectedCustomer(null);
-        toast.success(
-          t('messages.deleteSuccess', {
-            ns: CRM_NS,
-            defaultValue: t('delete.success', { ns: CRM_NS }),
-          })
-        );
       } catch (error) {
         console.error(error);
-        toast.error(
-          t('messages.deleteError', {
-            ns: CRM_NS,
-            defaultValue: t('delete.error', { ns: CRM_NS }),
-          })
-        );
       }
     }
   };
@@ -329,14 +316,14 @@ export function CustomerTable({
                     <span className={colors.text}>{completionPercentage}%</span>
                   </div>
                   <div className="h-2 w-full bg-slate-100 dark:bg-white/10 rounded-full overflow-hidden shadow-inner">
-                    <div 
+                    <div
                       className={`h-full transition-all duration-500 ease-out rounded-full ${colors.bg} ${colors.shadow}`}
                       style={{ width: `${completionPercentage}%` }}
                     />
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed font-medium">
-                    {isComplete 
-                      ? t('completion.completeMsg', { ns: CRM_NS, defaultValue: 'Tüm temel bilgiler eksiksiz doldurulmuş.' }) 
+                    {isComplete
+                      ? t('completion.completeMsg', { ns: CRM_NS, defaultValue: 'Tüm temel bilgiler eksiksiz doldurulmuş.' })
                       : t('completion.incompleteMsg', { ns: CRM_NS, defaultValue: 'Daha verimli bir takip için eksik bilgileri tamamlayın.' })}
                   </p>
                 </div>

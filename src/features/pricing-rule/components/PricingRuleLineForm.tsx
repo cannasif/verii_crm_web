@@ -73,7 +73,7 @@ export function PricingRuleLineForm({
     defaultValues: {
       ...line,
       minQuantity: line.minQuantity ?? 0,
-      currencyCode: line.currencyCode ? (typeof line.currencyCode === 'string' ? Number(line.currencyCode) : line.currencyCode) : undefined,
+      currencyCode: line.currencyCode != null && line.currencyCode !== '' ? (typeof line.currencyCode === 'string' ? Number(line.currencyCode) : line.currencyCode) : undefined,
       discountRate1: line.discountRate1 ?? 0,
       discountAmount1: line.discountAmount1 ?? 0,
       discountRate2: line.discountRate2 ?? 0,
@@ -121,7 +121,7 @@ export function PricingRuleLineForm({
       ...formData,
       id: line.id,
       minQuantity: formData.minQuantity ?? 0,
-      currencyCode: typeof formData.currencyCode === 'number' ? formData.currencyCode : (formData.currencyCode ? Number(formData.currencyCode) : undefined),
+      currencyCode: typeof formData.currencyCode === 'number' ? formData.currencyCode : (formData.currencyCode != null && formData.currencyCode !== '' ? Number(formData.currencyCode) : undefined),
       discountRate1: formData.discountRate1 ?? 0,
       discountAmount1: formData.discountAmount1 ?? 0,
       discountRate2: formData.discountRate2 ?? 0,
@@ -140,7 +140,10 @@ export function PricingRuleLineForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={(e) => {
+          e.stopPropagation();
+          void form.handleSubmit(handleSubmit)(e);
+        }}
         className="space-y-5 p-4 md:p-5 border border-slate-200 dark:border-white/10 rounded-xl bg-white dark:bg-[#130822] shadow-md"
       >
         <div className="space-y-1">

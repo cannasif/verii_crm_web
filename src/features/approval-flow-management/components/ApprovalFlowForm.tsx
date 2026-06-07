@@ -234,7 +234,7 @@ export function ApprovalFlowForm({
                   <div className="mb-6 flex items-center gap-4">
                     <div className="h-[1px] flex-1 bg-slate-100 dark:bg-white/5" />
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
-                      {t('approvalFlow.steps', { defaultValue: 'Akış Adımları' })}
+                      {t('approvalFlow.steps', { ns: 'approval-flow-management', defaultValue: 'Akış Adımları' })}
                     </span>
                     <div className="h-[1px] flex-1 bg-slate-100 dark:bg-white/5" />
                   </div>

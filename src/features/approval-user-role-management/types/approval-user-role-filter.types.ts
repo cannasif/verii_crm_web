@@ -3,9 +3,9 @@ import { applyFilterRowsClient } from '@/lib/advanced-filter-types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 
 export const APPROVAL_USER_ROLE_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
-  { value: 'userFullName', type: 'string', labelKey: 'advancedFilter.columnUserFullName' },
-  { value: 'approvalRoleName', type: 'string', labelKey: 'advancedFilter.columnApprovalRoleName' },
-  { value: 'createdByFullUser', type: 'string', labelKey: 'advancedFilter.columnCreatedBy' },
+  { value: 'userFullName', type: 'string', labelKey: 'approvalUserRole.advancedFilter.columnUserFullName' },
+  { value: 'approvalRoleName', type: 'string', labelKey: 'approvalUserRole.advancedFilter.columnApprovalRoleName' },
+  { value: 'createdByFullUser', type: 'string', labelKey: 'approvalUserRole.advancedFilter.columnCreatedBy' },
 ] as const;
 
 export function applyApprovalUserRoleFilters<T extends object>(

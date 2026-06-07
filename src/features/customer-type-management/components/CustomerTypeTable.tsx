@@ -19,7 +19,6 @@ import { Edit2, Trash2, Tag, Calendar, User } from 'lucide-react';
 
 import { DescriptionCell } from '@/components/shared';
 import { Alert02Icon } from 'hugeicons-react';
-import { toast } from 'sonner';
 
 export interface ColumnDef<T> {
   key: keyof T;
@@ -167,9 +166,7 @@ export function CustomerTypeTable({
         await deleteCustomerType.mutateAsync(selectedCustomerType.id);
         setDeleteDialogOpen(false);
         setSelectedCustomerType(null);
-        toast.success(t('messages.deleteSuccess', { defaultValue: t('delete.success') }));
       } catch {
-        toast.error(t('messages.deleteError', { defaultValue: t('delete.error') }));
       }
     }
   };

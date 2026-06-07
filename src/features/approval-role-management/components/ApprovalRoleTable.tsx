@@ -15,7 +15,6 @@ import { useDeleteApprovalRole } from '../hooks/useDeleteApprovalRole';
 import type { ApprovalRoleDto } from '../types/approval-role-types';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
-import { toast } from 'sonner';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 export interface ColumnDef<T> {
@@ -134,10 +133,8 @@ export function ApprovalRoleTable({
         await deleteRole.mutateAsync(selectedRole.id);
         setDeleteDialogOpen(false);
         setSelectedRole(null);
-        toast.success(t('approvalRole.messages.deleteSuccess', { defaultValue: t('approvalRole.delete.confirmButton') }));
       } catch (error) {
         console.error(error);
-        toast.error(t('approvalRole.messages.deleteError', { defaultValue: 'Silme hatası' }));
       }
     }
   };
@@ -226,7 +223,7 @@ export function ApprovalRoleTable({
                 {t('approvalRole.delete.confirmTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('approvalRole.delete.confirmMessage')}
+                {t('approvalRole.delete.confirmMessage', { name: selectedRole?.name })}
               </DialogDescription>
             </div>
           </DialogHeader>

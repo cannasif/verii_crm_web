@@ -29,6 +29,7 @@ import type { PricingRuleLineFormState, PricingRuleHeaderGetDto, PricingRuleForm
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import type { KurDto } from '@/services/erp-types';
 import { useCreatePricingRuleLine } from '../hooks/useCreatePricingRuleLine';
+import { useUpdatePricingRuleLine } from '../hooks/useUpdatePricingRuleLine';
 import { useDeletePricingRuleLine } from '../hooks/useDeletePricingRuleLine';
 
 interface PricingRuleLineTableProps {
@@ -57,6 +58,7 @@ export function PricingRuleLineTable({
   const [lineDialogOpen, setLineDialogOpen] = useState(false);
   const { data: exchangeRates = [] } = useExchangeRate();
   const createMutation = useCreatePricingRuleLine();
+  const updateMutation = useUpdatePricingRuleLine();
   const deleteMutation = useDeletePricingRuleLine();
 
   const isExistingRecord = !!header?.id;
@@ -154,7 +156,7 @@ export function PricingRuleLineTable({
               minQuantity: response.minQuantity,
               maxQuantity: response.maxQuantity,
               fixedUnitPrice: response.fixedUnitPrice,
-              currencyCode: typeof response.currencyCode === 'string' ? Number(response.currencyCode) || 1 : response.currencyCode,
+              currencyCode: typeof response.currencyCode === 'string' ? Number(response.currencyCode) : response.currencyCode,
               discountRate1: response.discountRate1,
               discountAmount1: response.discountAmount1,
               discountRate2: response.discountRate2,
@@ -172,8 +174,56 @@ export function PricingRuleLineTable({
           toast.error(t('pricingRule.lines.addError'), { description: errorMessage });
         }
       } else {
-        update(index, { ...updatedLine, isEditing: false });
-        setEditingLineId(null);
+        const lineIdMatch = updatedLine.id.match(/^existing-(\d+)$/);
+        if (lineIdMatch) {
+          const dbId = parseInt(lineIdMatch[1], 10);
+          try {
+            const response = await updateMutation.mutateAsync({
+              id: dbId,
+              data: {
+                pricingRuleHeaderId: header.id,
+                stokCode: updatedLine.stokCode,
+                minQuantity: updatedLine.minQuantity ?? 0,
+                maxQuantity: updatedLine.maxQuantity ?? null,
+                fixedUnitPrice: updatedLine.fixedUnitPrice ?? null,
+                currencyCode: typeof updatedLine.currencyCode === 'number' ? String(updatedLine.currencyCode) : (updatedLine.currencyCode ? String(updatedLine.currencyCode) : 'TRY'),
+                discountRate1: updatedLine.discountRate1 ?? 0,
+                discountAmount1: updatedLine.discountAmount1 ?? 0,
+                discountRate2: updatedLine.discountRate2 ?? 0,
+                discountAmount2: updatedLine.discountAmount2 ?? 0,
+                discountRate3: updatedLine.discountRate3 ?? 0,
+                discountAmount3: updatedLine.discountAmount3 ?? 0,
+              }
+            });
+
+            if (response) {
+              const savedLine: PricingRuleLineFormState = {
+                id: `existing-${response.id}`,
+                stokCode: response.stokCode,
+                minQuantity: response.minQuantity,
+                maxQuantity: response.maxQuantity,
+                fixedUnitPrice: response.fixedUnitPrice,
+                currencyCode: typeof response.currencyCode === 'string' ? Number(response.currencyCode) : response.currencyCode,
+                discountRate1: response.discountRate1,
+                discountAmount1: response.discountAmount1,
+                discountRate2: response.discountRate2,
+                discountAmount2: response.discountAmount2,
+                discountRate3: response.discountRate3,
+                discountAmount3: response.discountAmount3,
+                isEditing: false,
+              };
+              update(index, savedLine);
+              setEditingLineId(null);
+              toast.success(t('pricingRule.lines.updateSuccess', { defaultValue: 'Satır başarıyla güncellendi' }), { description: t('pricingRule.lines.updateSuccessMessage', { defaultValue: 'Fiyat kuralı satırı güncellendi.' }) });
+            }
+          } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : t('pricingRule.lines.updateError', { defaultValue: 'Satır güncellenemedi' });
+            toast.error(t('pricingRule.lines.updateError', { defaultValue: 'Satır güncellenemedi' }), { description: errorMessage });
+          }
+        } else {
+          update(index, { ...updatedLine, isEditing: false });
+          setEditingLineId(null);
+        }
       }
     } else {
       update(index, { ...updatedLine, isEditing: false });
@@ -247,7 +297,7 @@ export function PricingRuleLineTable({
     return currencyOption ? (currencyOption.dovizIsmi ? `${currencyOption.dovizIsmi}(${currencyOption.dovizTipi})` : `Döviz(${currencyOption.dovizTipi})`) : `Döviz(${numericCode})`;
   };
 
-  const isLoadingAction = createMutation.isPending || deleteMutation.isPending;
+  const isLoadingAction = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
   const lineToDelete = selectedLineToDelete ? lines.find((l) => l.id === selectedLineToDelete.id) : null;
   const editingLine = editingLineId ? lines.find((l) => l.id === editingLineId) : null;
   return (

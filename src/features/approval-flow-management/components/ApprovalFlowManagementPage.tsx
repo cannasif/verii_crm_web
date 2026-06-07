@@ -222,14 +222,14 @@ export function ApprovalFlowManagementPage(): ReactElement {
         id: editingApprovalFlow.id,
         data: {
           documentType: data.documentType,
-          description: data.description || undefined,
+          description: data.description ?? undefined,
           isActive: data.isActive,
         },
       });
     } else {
       await createApprovalFlow.mutateAsync({
         documentType: data.documentType,
-        description: data.description || undefined,
+        description: data.description ?? undefined,
         isActive: data.isActive,
       });
     }

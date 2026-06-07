@@ -28,7 +28,6 @@ import {
   Activity,
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
-import { toast } from 'sonner';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 export interface ColumnDef<T> {
@@ -238,9 +237,7 @@ export function ContactTable({
         await deleteContact.mutateAsync(selectedContact.id);
         setDeleteDialogOpen(false);
         setSelectedContact(null);
-        toast.success(t('delete.success'));
       } catch {
-        toast.error(t('delete.error'));
       }
     }
   };
@@ -290,44 +287,44 @@ export function ContactTable({
   return (
     <>
       <div className={MANAGEMENT_DATA_GRID_CLASSNAME}>
-      <DataTableGrid<ContactDto, ContactColumnKey>
-        toolbar={toolbar}
-        columns={columns}
-        visibleColumnKeys={visibleColumnKeys}
-        rows={rows}
-        rowKey={rowKey}
-        renderCell={cellRenderer}
-        sortBy={sortBy}
-        sortDirection={sortDirection}
-        onSort={onSort}
-        renderSortIcon={renderSortIcon}
-        isLoading={isLoading}
-        isError={false}
-        loadingText={loadingText}
-        errorText={errorText}
-        emptyText={emptyText}
-        minTableWidthClassName={minTableWidthClassName}
-        showActionsColumn={showActionsColumn}
-        actionsHeaderLabel={actionsHeaderLabel}
-        renderActionsCell={renderActionsCell}
-        rowClassName={rowClassName}
-        onRowDoubleClick={onEdit}
-        pageSize={pageSize}
-        pageSizeOptions={pageSizeOptions}
-        onPageSizeChange={onPageSizeChange}
-        pageNumber={pageNumber}
-        totalPages={totalPages}
-        hasPreviousPage={hasPreviousPage}
-        hasNextPage={hasNextPage}
-        onPreviousPage={onPreviousPage}
-        onNextPage={onNextPage}
-        previousLabel={previousLabel}
-        nextLabel={nextLabel}
-        paginationInfoText={paginationInfoText}
-        disablePaginationButtons={disablePaginationButtons}
-        centerColumnHeaders
-        onColumnOrderChange={onColumnOrderChange}
-      />
+        <DataTableGrid<ContactDto, ContactColumnKey>
+          toolbar={toolbar}
+          columns={columns}
+          visibleColumnKeys={visibleColumnKeys}
+          rows={rows}
+          rowKey={rowKey}
+          renderCell={cellRenderer}
+          sortBy={sortBy}
+          sortDirection={sortDirection}
+          onSort={onSort}
+          renderSortIcon={renderSortIcon}
+          isLoading={isLoading}
+          isError={false}
+          loadingText={loadingText}
+          errorText={errorText}
+          emptyText={emptyText}
+          minTableWidthClassName={minTableWidthClassName}
+          showActionsColumn={showActionsColumn}
+          actionsHeaderLabel={actionsHeaderLabel}
+          renderActionsCell={renderActionsCell}
+          rowClassName={rowClassName}
+          onRowDoubleClick={onEdit}
+          pageSize={pageSize}
+          pageSizeOptions={pageSizeOptions}
+          onPageSizeChange={onPageSizeChange}
+          pageNumber={pageNumber}
+          totalPages={totalPages}
+          hasPreviousPage={hasPreviousPage}
+          hasNextPage={hasNextPage}
+          onPreviousPage={onPreviousPage}
+          onNextPage={onNextPage}
+          previousLabel={previousLabel}
+          nextLabel={nextLabel}
+          paginationInfoText={paginationInfoText}
+          disablePaginationButtons={disablePaginationButtons}
+          centerColumnHeaders
+          onColumnOrderChange={onColumnOrderChange}
+        />
       </div>
 
       <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

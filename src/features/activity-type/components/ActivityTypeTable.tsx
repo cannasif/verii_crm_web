@@ -18,7 +18,6 @@ import { Edit2, Trash2, Calendar, User, ListTodo } from 'lucide-react';
 
 import { DescriptionCell } from '@/components/shared';
 import { Alert02Icon } from 'hugeicons-react';
-import { toast } from 'sonner';
 
 export interface ColumnDef<T> {
   key: keyof T;
@@ -169,9 +168,7 @@ export function ActivityTypeTable({
         await deleteActivityType.mutateAsync(selectedActivityType.id);
         setDeleteDialogOpen(false);
         setSelectedActivityType(null);
-        toast.success(t('messages.deleteSuccess'));
       } catch {
-        toast.error(t('messages.deleteError'));
       }
     }
   };

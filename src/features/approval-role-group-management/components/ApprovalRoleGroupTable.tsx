@@ -15,7 +15,6 @@ import { useDeleteApprovalRoleGroup } from '../hooks/useDeleteApprovalRoleGroup'
 import type { ApprovalRoleGroupDto } from '../types/approval-role-group-types';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
-import { toast } from 'sonner';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 export interface ColumnDef<T> {
@@ -122,10 +121,8 @@ export function ApprovalRoleGroupTable({
         await deleteRoleGroup.mutateAsync(selectedRoleGroup.id);
         setDeleteDialogOpen(false);
         setSelectedRoleGroup(null);
-        toast.success(t('approvalRoleGroup.delete.success'));
       } catch (error) {
         console.error(error);
-        toast.error(t('approvalRoleGroup.delete.error'));
       }
     }
   };
