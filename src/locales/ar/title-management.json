@@ -18,7 +18,7 @@
   "saving": "جارٍ الحفظ...",
   "delete": {
     "confirmTitle": "حذف اللقب",
-    "confirmMessage": "هل أنت متأكد من حذف اللقب {{name}}؟",
+    "confirmMessage": "هل أنت متأكد من حذف اللقب {{titleName}}؟",
     "button": "حذف"
   },
   "deleting": "جارٍ الحذف...",

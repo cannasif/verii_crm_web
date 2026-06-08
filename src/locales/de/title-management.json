@@ -18,7 +18,7 @@
   "saving": "Speichern...",
   "delete": {
     "confirmTitle": "Titel löschen",
-    "confirmMessage": "Möchten Sie den Titel {{name}} wirklich löschen?",
+    "confirmMessage": "Möchten Sie den Titel {{titleName}} wirklich löschen?",
     "button": "Löschen"
   },
   "deleting": "Wird gelöscht...",

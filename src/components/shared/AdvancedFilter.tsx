@@ -190,7 +190,7 @@ export function AdvancedFilter({
                   <SelectContent>
                     {columns.map((c) => (
                       <SelectItem key={c.value} value={c.value}>
-                        {t(c.labelKey, { ns: translationNamespace, defaultValue: c.value })}
+                        {t(c.labelKey, { ns: [translationNamespace, 'common'], defaultValue: c.value })}
                       </SelectItem>
                     ))}
                   </SelectContent>

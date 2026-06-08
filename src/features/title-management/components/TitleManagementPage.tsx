@@ -212,7 +212,6 @@ export function TitleManagementPage(): ReactElement {
 
   const handleFormClose = (open: boolean): void => {
     setFormOpen(open);
-    if (!open) setEditingTitle(null);
   };
 
   const handleFormSubmit = async (data: TitleFormSchema): Promise<void> => {
@@ -225,7 +224,6 @@ export function TitleManagementPage(): ReactElement {
       await createTitle.mutateAsync({ titleName: data.titleName, code: data.code || undefined });
     }
     setFormOpen(false);
-    setEditingTitle(null);
   };
 
   const handleRefresh = async (): Promise<void> => {

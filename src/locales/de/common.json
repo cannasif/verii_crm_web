@@ -158,6 +158,11 @@
       "columnStockName": "Stok Adı",
       "columnGroupCode": "Grup Kodu",
       "columnGroupName": "Grup Adı",
+      "columnName": "Name",
+      "columnErpCode": "ERP-Code",
+      "columnCountryName": "Ländername",
+      "columnCityName": "Stadtname",
+      "columnStatus": "Status",
       "columnCode1": "Kod-1",
       "columnCode1Name": "Kod-1 Adı",
       "columnCode2": "Kod-2",
@@ -5558,7 +5563,7 @@
     "updateSuccess": "Rabattlimit erfolgreich aktualisiert",
     "updateError": "Beim Aktualisieren des Rabattlimits ist ein Fehler aufgetreten"
   },
-  "exportPdf": "PDF İndir",
+  "exportPdf": "PDF herunterladen",
   "table": {
     "id": "ID",
     "ruleType": "Kural Tipi",

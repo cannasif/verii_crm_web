@@ -18,7 +18,7 @@
   "saving": "Saving...",
   "delete": {
     "confirmTitle": "Delete Title",
-    "confirmMessage": "Are you sure you want to delete the title {{name}}?",
+    "confirmMessage": "Are you sure you want to delete the title {{titleName}}?",
     "button": "Delete"
   },
   "deleting": "Deleting...",

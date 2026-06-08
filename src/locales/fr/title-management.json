@@ -18,7 +18,7 @@
   "saving": "Enregistrement...",
   "delete": {
     "confirmTitle": "Supprimer le titre",
-    "confirmMessage": "Êtes-vous sûr de vouloir supprimer le titre {{name}} ?",
+    "confirmMessage": "Êtes-vous sûr de vouloir supprimer le titre {{titleName}} ?",
     "button": "Supprimer"
   },
   "deleting": "Suppression...",

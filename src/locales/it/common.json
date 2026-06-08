@@ -158,6 +158,11 @@
       "columnStockName": "Stok Adı",
       "columnGroupCode": "Grup Kodu",
       "columnGroupName": "Grup Adı",
+      "columnName": "Nome",
+      "columnErpCode": "Codice ERP",
+      "columnCountryName": "Nome del paese",
+      "columnCityName": "Nome della città",
+      "columnStatus": "Stato",
       "columnCode1": "Kod-1",
       "columnCode1Name": "Kod-1 Adı",
       "columnCode2": "Kod-2",
@@ -5629,7 +5634,7 @@
     "updateSuccess": "Limite di sconto aggiornato",
     "updateError": "Impossibile aggiornare il limite di sconto"
   },
-  "exportPdf": "PDF İndir",
+  "exportPdf": "Scarica PDF",
   "table": {
     "id": "ID",
     "ruleType": "Kural Tipi",

@@ -18,7 +18,7 @@
   "saving": "Salvataggio...",
   "delete": {
     "confirmTitle": "Elimina titolo",
-    "confirmMessage": "Sei sicuro di voler eliminare questo titolo?",
+    "confirmMessage": "Sei sicuro di voler eliminare il titolo {{titleName}}?",
     "button": "Elimina"
   },
   "deleting": "Eliminazione...",

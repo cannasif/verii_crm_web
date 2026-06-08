@@ -158,6 +158,11 @@
       "columnStockName": "Stok Adı",
       "columnGroupCode": "Grup Kodu",
       "columnGroupName": "Grup Adı",
+      "columnName": "الاسم",
+      "columnErpCode": "رمز ERP",
+      "columnCountryName": "اسم الدولة",
+      "columnCityName": "اسم المدينة",
+      "columnStatus": "الحالة",
       "columnCode1": "Kod-1",
       "columnCode1Name": "Kod-1 Adı",
       "columnCode2": "Kod-2",
@@ -5601,7 +5606,7 @@
     "updateSuccess": "تم تحديث حد الخصم بنجاح",
     "updateError": "تعذر تحديث حد الخصم"
   },
-  "exportPdf": "PDF İndir",
+  "exportPdf": "تحميل PDF",
   "table": {
     "id": "ID",
     "ruleType": "Kural Tipi",
