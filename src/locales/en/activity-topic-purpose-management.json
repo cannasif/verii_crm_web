@@ -54,14 +54,14 @@
       "deleteSuccess": "Topic deleted successfully",
       "deleteError": "Failed to delete topic"
     },
-    "error": "Hata oluştu",
-    "create": "Yeni Konu Ekle",
-    "loading": "Yükleniyor...",
-    "noData": "Veri yok",
-    "actions": "İşlemler",
-    "cancel": "İptal",
-    "save": "Kaydet",
-    "saving": "Kaydediliyor..."
+    "error": "An error occurred",
+    "create": "Add New Topic",
+    "loading": "Loading...",
+    "noData": "No data",
+    "actions": "Actions",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving..."
   },
   "deleteConfirm": {
     "confirmTitle": "Delete Topic",
@@ -74,9 +74,9 @@
   "table": {
     "title": "Interested Topics List",
     "id": "ID",
-    "name": "Konu Adı",
-    "description": "Açıklama",
-    "createdDate": "Oluşturulma Tarihi",
-    "createdBy": "Oluşturan Kullanıcı"
+    "name": "Topic Name",
+    "description": "Description",
+    "createdDate": "Created Date",
+    "createdBy": "Created By"
   }
 }

@@ -1,82 +1,82 @@
 {
-  "activityType": {
-    "table": {
-      "title": "Interested Topics List",
-      "id": "ID",
-      "name": "Konu Adı",
-      "description": "Açıklama",
-      "createdDate": "إنشاءulma Tarihi",
-      "createdBy": "إنشاءan Kullanıcı",
-      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
-    },
-    "error": "حدث خطأ",
-    "create": "Yeni Konu Ekle",
-    "loading": "جارٍ التحميل...",
-    "noData": "Veri yok",
-    "actions": "İşlemler",
-    "cancel": "إلغاء",
-    "save": "حفظ",
-    "saving": "Kaydediliyor...",
-    "form": {
-      "addTitle": "Yeni Konu Ekle",
-      "editTitle": "Konu تعديل",
-      "addDescription": "Yeni konu bilgisini girin",
-      "editDescription": "Konu bilgisini düzenleyin",
-      "name": "Konu Adı",
-      "namePlaceholder": "Konu adını girin",
-      "nameRequired": "Konu adı zorunludur",
-      "nameMaxLength": "Konu adı en fazla 100 karakter olabilir",
-      "description": "Açıklama",
-      "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
-      "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
-    },
-    "stats": {
-      "totalActivityTypes": "Toplam Konu",
-      "activeActivityTypes": "Aktif Konu",
-      "newThisMonth": "Bu Ay Yeni"
-    },
-    "messages": {
-      "createSuccess": "Konu başarıyla oluşturuldu",
-      "createError": "Konu oluşturulamadı",
-      "updateSuccess": "Konu başarıyla güncellendi",
-      "updateError": "Konu güncellenemedi",
-      "deleteSuccess": "Konu başarıyla silindi",
-      "deleteError": "Konu silinemedi"
-    }
-  },
-  "menu": "İlgilenilen Konular Yönetimi",
-  "description": "İlgilenilen konu tanımlarını yönetin ve düzenleyin",
-  "addButton": "Yeni Konu Ekle",
+  "menu": "إدارة مواضيع الاهتمام",
+  "description": "إدارة وتعديل مواضيع الاهتمام",
+  "addButton": "إضافة موضوع جديد",
   "loading": "جارٍ التحميل...",
-  "noData": "Veri yok",
-  "actions": "İşlemler",
+  "noData": "لا توجد بيانات",
+  "actions": "إجراءات",
   "edit": "تعديل",
-  "deleteButton": "Sil",
+  "deleteButton": "حذف",
   "cancel": "إلغاء",
   "save": "حفظ",
-  "saving": "Kaydediliyor...",
-  "previous": "Önceki",
-  "next": "Sonraki",
+  "saving": "جارٍ الحفظ...",
+  "previous": "السابق",
+  "next": "التالي",
   "advancedFilter": {
-    "columnName": "Konu Adı",
-    "columnDescription": "Açıklama",
-    "columnCreatedBy": "إنشاءan"
+    "columnName": "اسم الموضوع",
+    "columnDescription": "الوصف",
+    "columnCreatedBy": "تم الإنشاء بواسطة"
+  },
+  "activityType": {
+    "form": {
+      "addTitle": "إضافة موضوع جديد",
+      "editTitle": "تعديل الموضوع",
+      "addDescription": "أدخل معلومات الموضوع الجديد",
+      "editDescription": "تعديل معلومات الموضوع",
+      "name": "اسم الموضوع",
+      "namePlaceholder": "أدخل اسم الموضوع",
+      "nameRequired": "اسم الموضوع مطلوب",
+      "nameMaxLength": "يمكن أن يحتوي اسم الموضوع على 100 حرف كحد أقصى",
+      "description": "الوصف",
+      "descriptionPlaceholder": "أدخل الوصف (اختياري)",
+      "descriptionMaxLength": "يمكن أن يحتوي الوصف على 500 حرف كحد أقصى"
+    },
+    "table": {
+      "title": "قائمة مواضيع الاهتمام",
+      "id": "المعرف",
+      "name": "اسم الموضوع",
+      "description": "الوصف",
+      "createdDate": "تاريخ الإنشاء",
+      "createdBy": "تم الإنشاء بواسطة",
+      "showing": "عرض {{from}}-{{to}} / {{total}}",
+      "page": "صفحة {{current}} / {{total}}"
+    },
+    "stats": {
+      "totalActivityTypes": "إجمالي المواضيع",
+      "activeActivityTypes": "المواضيع النشطة",
+      "newThisMonth": "جديد هذا الشهر"
+    },
+    "messages": {
+      "createSuccess": "تم إنشاء الموضوع بنجاح",
+      "createError": "فشل في إنشاء الموضوع",
+      "updateSuccess": "تم تحديث الموضوع بنجاح",
+      "updateError": "فشل في تحديث الموضوع",
+      "deleteSuccess": "تم حذف الموضوع بنجاح",
+      "deleteError": "فشل في حذف الموضوع"
+    },
+    "error": "حدث خطأ",
+    "create": "إضافة موضوع جديد",
+    "loading": "جارٍ التحميل...",
+    "noData": "لا توجد بيانات",
+    "actions": "إجراءات",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ..."
   },
   "deleteConfirm": {
-    "confirmTitle": "Konuyu Sil",
-    "confirmMessage": "{{name}} kaydını silmek istediğinizden emin misiniz?"
+    "confirmTitle": "حذف الموضوع",
+    "confirmMessage": "هل أنت متأكد أنك تريد حذف {{name}}؟"
   },
   "messages": {
-    "deleteSuccess": "Konu başarıyla silindi",
-    "deleteError": "Konu silinemedi"
+    "deleteSuccess": "تم حذف الموضوع بنجاح",
+    "deleteError": "فشل في حذف الموضوع"
   },
   "table": {
-    "title": "İlgilenilen Konular Listesi",
-    "id": "ID",
-    "name": "Konu Adı",
-    "description": "Açıklama",
-    "createdDate": "إنشاءulma Tarihi",
-    "createdBy": "إنشاءan Kullanıcı"
+    "title": "قائمة مواضيع الاهتمام",
+    "id": "المعرف",
+    "name": "اسم الموضوع",
+    "description": "الوصف",
+    "createdDate": "تاريخ الإنشاء",
+    "createdBy": "تم الإنشاء بواسطة"
   }
 }

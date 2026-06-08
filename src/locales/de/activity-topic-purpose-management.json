@@ -1,82 +1,82 @@
 {
-  "activityType": {
-    "table": {
-      "title": "Interested Topics List",
-      "id": "ID",
-      "name": "Konu Adı",
-      "description": "Açıklama",
-      "createdDate": "Erstellenulma Tarihi",
-      "createdBy": "Erstellenan Kullanıcı",
-      "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
-      "page": "Sayfa {{current}} / {{total}}"
-    },
-    "error": "Fehler ist aufgetreten",
-    "create": "Yeni Konu Ekle",
-    "loading": "Wird geladen...",
-    "noData": "Veri yok",
-    "actions": "İşlemler",
-    "cancel": "Abbrechen",
-    "save": "Speichern",
-    "saving": "Kaydediliyor...",
-    "form": {
-      "addTitle": "Yeni Konu Ekle",
-      "editTitle": "Konu Bearbeiten",
-      "addDescription": "Yeni konu bilgisini girin",
-      "editDescription": "Konu bilgisini düzenleyin",
-      "name": "Konu Adı",
-      "namePlaceholder": "Konu adını girin",
-      "nameRequired": "Konu adı zorunludur",
-      "nameMaxLength": "Konu adı en fazla 100 karakter olabilir",
-      "description": "Açıklama",
-      "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
-      "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
-    },
-    "stats": {
-      "totalActivityTypes": "Toplam Konu",
-      "activeActivityTypes": "Aktif Konu",
-      "newThisMonth": "Bu Ay Yeni"
-    },
-    "messages": {
-      "createSuccess": "Konu başarıyla oluşturuldu",
-      "createError": "Konu oluşturulamadı",
-      "updateSuccess": "Konu başarıyla güncellendi",
-      "updateError": "Konu güncellenemedi",
-      "deleteSuccess": "Konu başarıyla silindi",
-      "deleteError": "Konu silinemedi"
-    }
-  },
-  "menu": "İlgilenilen Konular Yönetimi",
-  "description": "İlgilenilen konu tanımlarını yönetin ve düzenleyin",
-  "addButton": "Yeni Konu Ekle",
+  "menu": "Interessengebiete Verwaltung",
+  "description": "Interessengebiete verwalten und bearbeiten",
+  "addButton": "Neues Thema hinzufügen",
   "loading": "Wird geladen...",
-  "noData": "Veri yok",
-  "actions": "İşlemler",
+  "noData": "Keine Daten",
+  "actions": "Aktionen",
   "edit": "Bearbeiten",
-  "deleteButton": "Sil",
+  "deleteButton": "Löschen",
   "cancel": "Abbrechen",
   "save": "Speichern",
-  "saving": "Kaydediliyor...",
-  "previous": "Önceki",
-  "next": "Sonraki",
+  "saving": "Wird gespeichert...",
+  "previous": "Zurück",
+  "next": "Weiter",
   "advancedFilter": {
-    "columnName": "Konu Adı",
-    "columnDescription": "Açıklama",
-    "columnCreatedBy": "Erstellenan"
+    "columnName": "Themenname",
+    "columnDescription": "Beschreibung",
+    "columnCreatedBy": "Erstellt von"
+  },
+  "activityType": {
+    "form": {
+      "addTitle": "Neues Thema hinzufügen",
+      "editTitle": "Thema bearbeiten",
+      "addDescription": "Geben Sie neue Themeninformationen ein",
+      "editDescription": "Themeninformationen bearbeiten",
+      "name": "Themenname",
+      "namePlaceholder": "Themennamen eingeben",
+      "nameRequired": "Themenname ist erforderlich",
+      "nameMaxLength": "Themenname darf maximal 100 Zeichen lang sein",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Beschreibung eingeben (optional)",
+      "descriptionMaxLength": "Beschreibung darf maximal 500 Zeichen lang sein"
+    },
+    "table": {
+      "title": "Liste der Interessengebiete",
+      "id": "ID",
+      "name": "Themenname",
+      "description": "Beschreibung",
+      "createdDate": "Erstellungsdatum",
+      "createdBy": "Erstellt von",
+      "showing": "Zeige {{from}}-{{to}} / {{total}}",
+      "page": "Seite {{current}} / {{total}}"
+    },
+    "stats": {
+      "totalActivityTypes": "Gesamte Themen",
+      "activeActivityTypes": "Aktive Themen",
+      "newThisMonth": "Neu diesen Monat"
+    },
+    "messages": {
+      "createSuccess": "Thema erfolgreich erstellt",
+      "createError": "Fehler beim Erstellen des Themas",
+      "updateSuccess": "Thema erfolgreich aktualisiert",
+      "updateError": "Fehler beim Aktualisieren des Themas",
+      "deleteSuccess": "Thema erfolgreich gelöscht",
+      "deleteError": "Fehler beim Löschen des Themas"
+    },
+    "error": "Ein Fehler ist aufgetreten",
+    "create": "Neues Thema hinzufügen",
+    "loading": "Wird geladen...",
+    "noData": "Keine Daten",
+    "actions": "Aktionen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "saving": "Wird gespeichert..."
   },
   "deleteConfirm": {
-    "confirmTitle": "Konuyu Sil",
-    "confirmMessage": "{{name}} kaydını silmek istediğinizden emin misiniz?"
+    "confirmTitle": "Thema löschen",
+    "confirmMessage": "Sind Sie sicher, dass Sie {{name}} löschen möchten?"
   },
   "messages": {
-    "deleteSuccess": "Konu başarıyla silindi",
-    "deleteError": "Konu silinemedi"
+    "deleteSuccess": "Thema erfolgreich gelöscht",
+    "deleteError": "Fehler beim Löschen des Themas"
   },
   "table": {
-    "title": "İlgilenilen Konular Listesi",
+    "title": "Liste der Interessengebiete",
     "id": "ID",
-    "name": "Konu Adı",
-    "description": "Açıklama",
-    "createdDate": "Erstellenulma Tarihi",
-    "createdBy": "Erstellenan Kullanıcı"
+    "name": "Themenname",
+    "description": "Beschreibung",
+    "createdDate": "Erstellungsdatum",
+    "createdBy": "Erstellt von"
   }
 }
