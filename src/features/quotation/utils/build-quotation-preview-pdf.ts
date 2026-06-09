@@ -1,5 +1,6 @@
 import type { jsPDF } from 'jspdf';
 import { getLineUnitDiscountBreakdown } from '@/lib/line-discount-display';
+import { getImageUrl } from '@/lib/image-url';
 import { formatCurrency } from './format-currency';
 import {
   QUOTATION_EXPORT_PDF_FONT,
@@ -22,6 +23,8 @@ export interface QuotationPreviewPdfLine {
   vatAmount?: number;
   lineTotal: number;
   lineGrandTotal?: number;
+  imagePath?: string | null;
+  pendingImagePreviewUrl?: string | null;
 }
 
 export interface QuotationPreviewPdfLabels {
@@ -31,6 +34,7 @@ export interface QuotationPreviewPdfLabels {
   metaDate: string;
   metaOfferNo: string;
   notSpecified: string;
+  lineImage: string;
   productCode: string;
   productName: string;
   quantity: string;
@@ -102,6 +106,46 @@ function formatQuantityCell(line: QuotationPreviewPdfLine): string {
   const unit = line.unit?.trim();
   const qty = String(line.quantity ?? '');
   return unit ? `${qty} ${unit}` : qty;
+}
+
+async function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('Blob okunamadi'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function resolveLineImageDataUrl(line: QuotationPreviewPdfLine): Promise<string | null> {
+  const pending = line.pendingImagePreviewUrl?.trim();
+  if (pending) {
+    if (pending.startsWith('data:')) return pending;
+    try {
+      const response = await fetch(pending);
+      if (!response.ok) return null;
+      return blobToDataUrl(await response.blob());
+    } catch {
+      return null;
+    }
+  }
+
+  const remoteUrl = getImageUrl(line.imagePath);
+  if (!remoteUrl) return null;
+
+  try {
+    const response = await fetch(remoteUrl, { credentials: 'include' });
+    if (!response.ok) return null;
+    return blobToDataUrl(await response.blob());
+  } catch {
+    return null;
+  }
+}
+
+function getImageFormat(dataUrl: string): 'PNG' | 'JPEG' | 'WEBP' {
+  if (dataUrl.includes('image/jpeg') || dataUrl.includes('image/jpg')) return 'JPEG';
+  if (dataUrl.includes('image/webp')) return 'WEBP';
+  return 'PNG';
 }
 
 function formatUnitPriceCell(line: QuotationPreviewPdfLine, currencyCode: string): string {
@@ -442,10 +486,13 @@ export async function buildQuotationPreviewPdfBlob(
   const offerNoDisplay = params.offerNo?.trim() || params.labels.notSpecified;
   const anyLineDiscount = params.lines.some((line) => lineHasDiscount(line));
   const unitPriceColumnLabel = anyLineDiscount ? params.labels.unitPriceNet : params.labels.unitPrice;
+  const lineImageDataUrls = await Promise.all(params.lines.map((line) => resolveLineImageDataUrl(line)));
+  const hasAnyLineImage = lineImageDataUrls.some(Boolean);
+  const productCodeColumnIndex = hasAnyLineImage ? 1 : 0;
 
   const tableStartY = drawHeader(doc, bodyFont, params, offerDateStr, offerNoDisplay);
 
-  const headRow = [
+  const dataHeadRow = [
     params.labels.productCode,
     params.labels.productName,
     params.labels.quantity,
@@ -453,21 +500,36 @@ export async function buildQuotationPreviewPdfBlob(
     params.labels.lineTotal,
   ];
 
-  const bodyRows = params.lines.map((line) => [
-    line.productCode ?? '',
-    line.productName ?? '',
-    formatQuantityCell(line),
-    formatUnitPriceCell(line, params.currencyCode),
-    formatCurrency(line.lineTotal, params.currencyCode),
-  ]);
+  const headRow = hasAnyLineImage ? [params.labels.lineImage, ...dataHeadRow] : dataHeadRow;
 
-  const columnStyles: Record<number, { cellWidth?: number; halign?: 'left' | 'center' | 'right' }> = {
-    0: { cellWidth: 32, halign: 'left' },
-    1: { halign: 'left' },
-    2: { cellWidth: 18, halign: 'center' },
-    3: { cellWidth: 28, halign: 'right' },
-    4: { cellWidth: 30, halign: 'right' },
-  };
+  const bodyRows = params.lines.map((line) => {
+    const row = [
+      line.productCode ?? '',
+      line.productName ?? '',
+      formatQuantityCell(line),
+      formatUnitPriceCell(line, params.currencyCode),
+      formatCurrency(line.lineTotal, params.currencyCode),
+    ];
+    return hasAnyLineImage ? ['', ...row] : row;
+  });
+
+  const columnStyles: Record<number, { cellWidth?: number; halign?: 'left' | 'center' | 'right' }> =
+    hasAnyLineImage
+      ? {
+          0: { cellWidth: 16, halign: 'center' },
+          1: { cellWidth: 28, halign: 'left' },
+          2: { halign: 'left' },
+          3: { cellWidth: 18, halign: 'center' },
+          4: { cellWidth: 26, halign: 'right' },
+          5: { cellWidth: 28, halign: 'right' },
+        }
+      : {
+          0: { cellWidth: 32, halign: 'left' },
+          1: { halign: 'left' },
+          2: { cellWidth: 18, halign: 'center' },
+          3: { cellWidth: 28, halign: 'right' },
+          4: { cellWidth: 30, halign: 'right' },
+        };
 
   autoTable(doc, {
     startY: tableStartY,
@@ -486,6 +548,7 @@ export async function buildQuotationPreviewPdfBlob(
       textColor: INK,
       overflow: 'linebreak',
       valign: 'middle',
+      minCellHeight: hasAnyLineImage ? 16 : 0,
     },
     headStyles: {
       font: bodyFont,
@@ -502,7 +565,7 @@ export async function buildQuotationPreviewPdfBlob(
     columnStyles,
     alternateRowStyles: { fillColor: ROW_ALT },
     didParseCell: (data) => {
-      if (data.section === 'body' && data.column.index === 0) {
+      if (data.section === 'body' && data.column.index === productCodeColumnIndex) {
         const raw = Array.isArray(data.cell.text) ? data.cell.text.join('') : String(data.cell.text);
         if (raw.length > 22) {
           data.cell.styles.fontSize = 6;
@@ -510,6 +573,22 @@ export async function buildQuotationPreviewPdfBlob(
           data.cell.styles.fontSize = 6.8;
         }
       }
+    },
+    didDrawCell: (data) => {
+      if (!hasAnyLineImage || data.section !== 'body' || data.column.index !== 0) return;
+
+      const imageDataUrl = lineImageDataUrls[data.row.index];
+      if (!imageDataUrl) return;
+
+      const padding = 1.6;
+      const size = Math.min(12, data.cell.width - padding * 2, data.cell.height - padding * 2);
+      const x = data.cell.x + (data.cell.width - size) / 2;
+      const y = data.cell.y + (data.cell.height - size) / 2;
+
+      doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);
+      doc.setLineWidth(0.2);
+      doc.roundedRect(x - 0.4, y - 0.4, size + 0.8, size + 0.8, 0.8, 0.8, 'S');
+      doc.addImage(imageDataUrl, getImageFormat(imageDataUrl), x, y, size, size, undefined, 'FAST');
     },
   });
 
