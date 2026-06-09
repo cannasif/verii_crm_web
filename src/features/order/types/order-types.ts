@@ -99,6 +99,7 @@ export interface CreateOrderLineDto {
   profilDefinitionId?: number | null;
   demirDefinitionId?: number | null;
   vidaDefinitionId?: number | null;
+  baskiDefinitionId?: number | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -133,6 +134,7 @@ export interface UpdateOrderLineDto {
   profilDefinitionId?: number | null;
   demirDefinitionId?: number | null;
   vidaDefinitionId?: number | null;
+  baskiDefinitionId?: number | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -170,6 +172,7 @@ export interface OrderLineGetDto {
   profilDefinitionId?: number | null;
   demirDefinitionId?: number | null;
   vidaDefinitionId?: number | null;
+  baskiDefinitionId?: number | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;

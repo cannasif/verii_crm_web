@@ -16,6 +16,10 @@
     "vida": {
       "title": "Vida Tanımla",
       "description": "Satır bazında seçilecek vida tanımlarını yönetin."
+    },
+    "baski": {
+      "title": "Baskı Tanımla",
+      "description": "Satır bazında seçilecek baskı tanımlarını yönetin."
     }
   },
   "table": {

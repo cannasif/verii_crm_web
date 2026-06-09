@@ -16,6 +16,10 @@
     "vida": {
       "title": "Screw definitions",
       "description": "Manage screw options selectable on document lines."
+    },
+    "baski": {
+      "title": "Print definitions",
+      "description": "Manage print options selectable on document lines."
     }
   },
   "table": {

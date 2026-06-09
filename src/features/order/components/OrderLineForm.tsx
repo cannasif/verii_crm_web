@@ -165,7 +165,7 @@ export function OrderLineForm({
   }, [currency, currencyOptions]);
 
   const [formData, setFormData] = useState<OrderLineFormState>(line);
-  const { profilOptions, demirOptions, vidaOptions, allDemirOptions, allVidaOptions, isLoading: isDefinitionOptionsLoading } =
+  const { profilOptions, demirOptions, vidaOptions, baskiOptions, allDemirOptions, allVidaOptions, isLoading: isDefinitionOptionsLoading } =
     useWindoDefinitionOptions(formData.profilDefinitionId, {
       demirDefinitionId: formData.demirDefinitionId,
       vidaDefinitionId: formData.vidaDefinitionId,
@@ -208,6 +208,10 @@ export function OrderLineForm({
   const vidaComboboxOptions = useMemo<ComboboxOption[]>(
     () => vidaOptions.map((option) => ({ value: String(option.id), label: option.name })),
     [vidaOptions]
+  );
+  const baskiComboboxOptions = useMemo<ComboboxOption[]>(
+    () => baskiOptions.map((option) => ({ value: String(option.id), label: option.name })),
+    [baskiOptions]
   );
 
   const handleWindoDefinitionCreated = async (
@@ -1365,7 +1369,7 @@ export function OrderLineForm({
             <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
               {t('order.lines.descriptionFieldsTitle')}
             </h5>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                   {t('order.lines.descriptionField1Label')}
@@ -1475,6 +1479,20 @@ export function OrderLineForm({
                   <CirclePlus className="mr-1 h-3.5 w-3.5" />
                   {t('order.lines.addNewScrew', { defaultValue: 'Yeni vida ekle' })}
                 </Button>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
+                  {t('order.lines.windoPrintLabel', { defaultValue: 'Baskı' })}
+                </label>
+                <VoiceSearchCombobox
+                  options={baskiComboboxOptions}
+                  value={formData.baskiDefinitionId ? String(formData.baskiDefinitionId) : null}
+                  onSelect={(value) => handleFieldChange('baskiDefinitionId', value ? Number(value) : null)}
+                  placeholder={isDefinitionOptionsLoading ? t('order.loading') : t('order.lines.selectWindoPrint', { defaultValue: 'Baskı seçin' })}
+                  searchPlaceholder={t('order.lines.searchWindoPrint', { defaultValue: 'Baskı ara...' })}
+                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
+                  disabled={isDefinitionOptionsLoading}
+                />
               </div>
             </div>
           </div>

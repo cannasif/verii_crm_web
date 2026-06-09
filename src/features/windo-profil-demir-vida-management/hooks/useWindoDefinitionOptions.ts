@@ -39,17 +39,19 @@ export function useWindoDefinitionOptions(
   selectedProfilDefinitionId?: number | null,
   preserveSelection?: { demirDefinitionId?: number | null; vidaDefinitionId?: number | null }
 ) {
-  const [profilQuery, demirQuery, vidaQuery] = useQueries({
+  const [profilQuery, demirQuery, vidaQuery, baskiQuery] = useQueries({
     queries: [
       { queryKey: ['windo-definition', 'profil'], queryFn: windoDefinitionApi.getProfilList },
       { queryKey: ['windo-definition', 'demir'], queryFn: windoDefinitionApi.getDemirList },
       { queryKey: ['windo-definition', 'vida'], queryFn: windoDefinitionApi.getVidaList },
+      { queryKey: ['windo-definition', 'baski'], queryFn: windoDefinitionApi.getBaskiList },
     ],
   });
 
   const profilOptions = useMemo(() => toOptions(profilQuery.data ?? []), [profilQuery.data]);
   const allDemirOptions = useMemo(() => toOptions(demirQuery.data ?? []), [demirQuery.data]);
   const allVidaOptions = useMemo(() => toOptions(vidaQuery.data ?? []), [vidaQuery.data]);
+  const baskiOptions = useMemo(() => toOptions(baskiQuery.data ?? []), [baskiQuery.data]);
   const demirOptions = useMemo(
     () => filterChildOptions(allDemirOptions, selectedProfilDefinitionId, preserveSelection?.demirDefinitionId),
     [allDemirOptions, preserveSelection?.demirDefinitionId, selectedProfilDefinitionId]
@@ -63,11 +65,13 @@ export function useWindoDefinitionOptions(
     profilOptions,
     allDemirOptions,
     allVidaOptions,
+    baskiOptions,
     demirOptions,
     vidaOptions,
     profilMap: toOptionMap(profilOptions),
     demirMap: toOptionMap(allDemirOptions),
     vidaMap: toOptionMap(allVidaOptions),
-    isLoading: profilQuery.isLoading || demirQuery.isLoading || vidaQuery.isLoading,
+    baskiMap: toOptionMap(baskiOptions),
+    isLoading: profilQuery.isLoading || demirQuery.isLoading || vidaQuery.isLoading || baskiQuery.isLoading,
   };
 }

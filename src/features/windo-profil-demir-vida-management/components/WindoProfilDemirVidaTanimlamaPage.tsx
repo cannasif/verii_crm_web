@@ -29,7 +29,7 @@ import type { WindoDefinitionCreateDto, WindoDefinitionGetDto } from '../types/w
 
 const WINDO_I18N_NS = 'windo-profil-demir-vida-management' as const;
 
-type DefinitionKind = 'profil' | 'demir' | 'vida';
+type DefinitionKind = 'profil' | 'demir' | 'vida' | 'baski';
 type SortKey = 'id' | 'name' | 'profilName' | 'createdDate' | 'updatedDate';
 
 interface DefinitionSectionConfig {
@@ -559,6 +559,16 @@ export function WindoProfilDemirVidaTanimlamaPage(): ReactElement {
         create: windoDefinitionApi.createVida,
         update: windoDefinitionApi.updateVida,
         remove: windoDefinitionApi.deleteVida,
+      },
+      {
+        kind: 'baski',
+        title: t('sections.baski.title', { defaultValue: 'Baskı' }),
+        description: t('sections.baski.description', { defaultValue: 'Kalem bazında Netsis açıklama 8 alanına gönderilecek baskı tanımlarını yönetin.' }),
+        queryKey: 'baski',
+        getList: windoDefinitionApi.getBaskiPagedList,
+        create: windoDefinitionApi.createBaski,
+        update: windoDefinitionApi.updateBaski,
+        remove: windoDefinitionApi.deleteBaski,
       },
     ],
     [t]

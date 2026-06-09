@@ -131,6 +131,7 @@ function dtoToFormState(dto: QuotationLineGetDto, index: number): QuotationLineF
     profilDefinitionId: dto.profilDefinitionId ?? null,
     demirDefinitionId: dto.demirDefinitionId ?? null,
     vidaDefinitionId: dto.vidaDefinitionId ?? null,
+    baskiDefinitionId: dto.baskiDefinitionId ?? null,
     pricingRuleHeaderId: dto.pricingRuleHeaderId ?? null,
     projectCode: dto.erpProjectCode ?? dto.projectCode ?? null,
     imagePath: dto.imagePath ?? null,
@@ -172,6 +173,7 @@ function toUpdateDto(line: QuotationLineFormState, quotationId: number): Quotati
     profilDefinitionId: line.profilDefinitionId ?? null,
     demirDefinitionId: line.demirDefinitionId ?? null,
     vidaDefinitionId: line.vidaDefinitionId ?? null,
+    baskiDefinitionId: line.baskiDefinitionId ?? null,
     pricingRuleHeaderId: line.pricingRuleHeaderId ?? null,
     projectCode: line.projectCode ?? null,
     erpProjectCode: line.projectCode ?? null,
@@ -254,7 +256,7 @@ export function QuotationLineTable({
 }: QuotationLineTableProps): ReactElement {
   const linesEditable = enabled;
   const { t } = useTranslation(['quotation', 'common']);
-  const { profilMap, demirMap, vidaMap } = useWindoDefinitionOptions();
+  const { profilMap, demirMap, vidaMap, baskiMap } = useWindoDefinitionOptions();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -996,7 +998,7 @@ export function QuotationLineTable({
                                 </div>
                               )}
 
-                              {(line.description1 || line.description2 || line.description3 || line.profilDefinitionId || line.demirDefinitionId || line.vidaDefinitionId) && (
+                              {(line.description1 || line.description2 || line.description3 || line.profilDefinitionId || line.demirDefinitionId || line.vidaDefinitionId || line.baskiDefinitionId) && (
                                 <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
                                   {line.description1 && (
                                     <div className="line-clamp-1">
@@ -1043,6 +1045,14 @@ export function QuotationLineTable({
                                       {t('lines.lineDetailPair', {
                                         label: t('lines.windoScrewLabel'),
                                         value: vidaMap[line.vidaDefinitionId] ?? `#${line.vidaDefinitionId}`,
+                                      })}
+                                    </div>
+                                  )}
+                                  {line.baskiDefinitionId && (
+                                    <div className="line-clamp-1">
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.windoPrintLabel', { defaultValue: 'Baskı' }),
+                                        value: baskiMap[line.baskiDefinitionId] ?? `#${line.baskiDefinitionId}`,
                                       })}
                                     </div>
                                   )}
