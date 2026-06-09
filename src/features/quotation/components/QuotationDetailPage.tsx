@@ -25,14 +25,14 @@ import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPage
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Layers, Loader2, FileCheck, FileText, Share2, FileDown, MessageCircle, Mail, Save, X, ShoppingCart } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Send, Layers, Loader2, FileCheck, FileText, Save, X, Eye, ShoppingCart } from 'lucide-react';
 import { QuotationApprovalFlowTab } from './QuotationApprovalFlowTab';
+import { QuotationPdfExportPreviewDialog } from './QuotationPdfExportPreviewDialog';
+import { QuotationWhatsappSendDialog } from './QuotationWhatsappSendDialog';
+import { isIntegratedQuotationShare } from '../config/quotation-share-config';
+import { useQuotationNativeSharePrep } from '../hooks/useQuotationNativeSharePrep';
+import { blobToFile, resolveCustomerPhone } from '../utils/quotation-share-utils';
+import { QuotationMailShareDialogs, type QuotationMailShareContext } from './QuotationMailShareDialogs';
 import {
   buildQuotationPreviewPdfBlob,
   type QuotationPreviewPdfLabels,
@@ -123,6 +123,12 @@ export function QuotationDetailPage(): ReactElement {
   const notesInitializedRef = useRef(false);
   const formInitializedRef = useRef(false);
   const [activeTab, setActiveTab] = useState('detail');
+  const [pdfExportOpen, setPdfExportOpen] = useState(false);
+  const [pendingSharePdfBlob, setPendingSharePdfBlob] = useState<Blob | null>(null);
+  const [whatsappShareOpen, setWhatsappShareOpen] = useState(false);
+  const [mailProviderPickerOpen, setMailProviderPickerOpen] = useState(false);
+  const [googleMailOpen, setGoogleMailOpen] = useState(false);
+  const [outlookMailOpen, setOutlookMailOpen] = useState(false);
   const quotationStatus = Number((quotation as { status?: number; Status?: number })?.status ?? (quotation as { status?: number; Status?: number })?.Status);
   const isApprovalWaiting = quotationStatus === 1;
   const isReadOnlyByStatus = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4;
@@ -362,7 +368,7 @@ export function QuotationDetailPage(): ReactElement {
     return null;
   }, [watchedErpCustomerCode, watchedCustomerId, customerOptions]);
 
-  const buildPreviewPdfBlob = useCallback(async (): Promise<Blob> => {
+  const buildPreviewPdfBlob = useCallback(async (options?: { draft?: boolean }): Promise<Blob> => {
     const qc = quotationFormSlice;
     const customerLabel =
       (await resolveQuotationCustomerLabelForPdf({
@@ -380,6 +386,7 @@ export function QuotationDetailPage(): ReactElement {
       metaDate: t('pdfExportTemplate.metaDate'),
       metaOfferNo: t('pdfExportTemplate.metaOfferNo'),
       notSpecified: t('pdfExportTemplate.notSpecified'),
+      lineImage: t('pdfExportTemplate.lineImage'),
       productCode: t('lines.productCode'),
       productName: t('lines.productName'),
       quantity: t('lines.quantity'),
@@ -411,6 +418,7 @@ export function QuotationDetailPage(): ReactElement {
       generalDiscountRate: qc.generalDiscountRate ?? quotation?.generalDiscountRate ?? null,
       generalDiscountAmount: qc.generalDiscountAmount ?? quotation?.generalDiscountAmount ?? null,
       labels,
+      draft: options?.draft ?? false,
     });
   }, [
     quotationFormSlice,
@@ -424,34 +432,157 @@ export function QuotationDetailPage(): ReactElement {
     branch,
   ]);
 
-  const downloadPreviewPdf = async (fileName: string): Promise<void> => {
-    const blob = await buildPreviewPdfBlob();
-    const anchor = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    anchor.href = url;
-    anchor.download = fileName;
-    anchor.rel = 'noopener';
-    anchor.click();
-    URL.revokeObjectURL(url);
+  const reportBuiltInTemplates = useMemo(
+    () => [
+      {
+        id: 'v3rii-quotation-preview',
+        title: t('pdfExportTemplate.builtInTemplateTitle', {
+          defaultValue: 'V3RII Hazır Şablon (Önizleme)',
+        }),
+        isDefault: true,
+        generate: () => buildPreviewPdfBlob({ draft: false }),
+      },
+    ],
+    [buildPreviewPdfBlob, t]
+  );
+
+  const buildExportPdfBlob = useCallback(
+    async ({ draft }: { draft: boolean }): Promise<Blob> => buildPreviewPdfBlob({ draft }),
+    [buildPreviewPdfBlob],
+  );
+
+  const shareFileName = t('exportPreview.downloadFileName');
+  const pdfShareFileName = `teklif-${quotation?.offerNo || 'detay'}.pdf`;
+
+  const nativeShareLabels = useMemo(
+    () => ({
+      phoneRequired: t('shareWhatsappDialog.phoneRequired'),
+      emailRequired: t('share.nativeEmailRequired'),
+      emailInvalid: t('share.nativeEmailInvalid'),
+      shareOpened: t('share.nativeOpened'),
+      whatsappFallback: t('share.nativeWhatsappFallback'),
+      mailFallback: t('share.nativeMailFallback'),
+      mailSentApi: t('share.nativeMailSentApi'),
+      mailSendFailed: t('share.nativeMailSendFailed'),
+      shareFailed: t('exportPreview.error'),
+      shareCancelled: t('cancel'),
+    }),
+    [t],
+  );
+
+  const { openWhatsappPrep, openMailPrep, prepDialog } = useQuotationNativeSharePrep({
+    labels: nativeShareLabels,
+  });
+
+  const openPdfExportPreview = (): void => {
+    if (lines.length === 0) {
+      toast.error(t('update.error', { defaultValue: 'Güncelleme hatası' }), {
+        description: t('lines.required'),
+      });
+      return;
+    }
+    setPdfExportOpen(true);
   };
 
-  const handleExportPDF = async (): Promise<void> => {
-    await downloadPreviewPdf(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
+  const mailShareContext = useMemo<QuotationMailShareContext | null>(() => {
+    if (!isIntegratedQuotationShare) return null;
+    if (
+      !quotation
+      || (!mailProviderPickerOpen && !googleMailOpen && !outlookMailOpen && !pendingSharePdfBlob)
+    ) {
+      return null;
+    }
+
+    const qc = quotationFormSlice;
+
+    if (pendingSharePdfBlob) {
+      return {
+        recordId: quotation.id,
+        customerId: qc.potentialCustomerId ?? quotation.potentialCustomerId,
+        contactId: quotation.contactId,
+        customerName: quotation.potentialCustomerName ?? selectedCustomer?.name,
+        customerCode: qc.erpCustomerCode ?? quotation.erpCustomerCode,
+        recordNo: qc.offerNo ?? quotation.offerNo,
+        revisionNo: quotation.revisionNo,
+        totalAmountDisplay: quotation.grandTotalDisplay ?? undefined,
+        validUntil: quotation.validUntil,
+        recordOwnerName: quotation.representativeName,
+        attachmentFile: blobToFile(pendingSharePdfBlob, shareFileName),
+        autoAttachPdfOnOpen: false,
+      };
+    }
+
+    return {
+      recordId: quotation.id,
+      customerId: quotation.potentialCustomerId,
+      contactId: quotation.contactId,
+      customerName: quotation.potentialCustomerName,
+      customerCode: quotation.erpCustomerCode,
+      recordNo: quotation.offerNo,
+      revisionNo: quotation.revisionNo,
+      totalAmountDisplay: quotation.grandTotalDisplay ?? undefined,
+      validUntil: quotation.validUntil,
+      recordOwnerName: quotation.representativeName,
+      autoAttachPdfOnOpen: true,
+    };
+  }, [
+    quotation,
+    mailProviderPickerOpen,
+    googleMailOpen,
+    outlookMailOpen,
+    pendingSharePdfBlob,
+    quotationFormSlice,
+    selectedCustomer?.name,
+    shareFileName,
+  ]);
+
+  const handleModalShareWhatsapp = (pdfBlob: Blob): void => {
+    const customerId = quotationFormSlice.potentialCustomerId ?? quotation?.potentialCustomerId;
+    if (!customerId || customerId <= 0) {
+      toast.error(t('shareWhatsappDialog.customerRequired'));
+      return;
+    }
+
+    if (isIntegratedQuotationShare) {
+      setPendingSharePdfBlob(pdfBlob);
+      setWhatsappShareOpen(true);
+      return;
+    }
+
+    openWhatsappPrep({
+      pdfBlob,
+      fileName: pdfShareFileName,
+      customerId,
+      contactId: quotation?.contactId,
+      customerPhone: selectedCustomer?.phone,
+      customerPhone2: selectedCustomer?.phone2,
+      message: t('share.whatsappMessage'),
+    });
   };
 
-  const handleShareWhatsApp = async (): Promise<void> => {
-    await downloadPreviewPdf(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
-    const text = encodeURIComponent(t('share.whatsappMessage'));
-    window.open(`https://wa.me/?text=${text}`, '_blank');
-    toast.info(t('share.downloaded'));
-  };
+  const handleModalShareMail = (pdfBlob: Blob): void => {
+    const customerId = quotationFormSlice.potentialCustomerId ?? quotation?.potentialCustomerId;
+    if (!customerId || customerId <= 0) {
+      toast.error(t('shareMailDialog.customerRequired'));
+      return;
+    }
 
-  const handleShareMail = async (): Promise<void> => {
-    await downloadPreviewPdf(`teklif-${quotation?.offerNo || 'detay'}.pdf`);
-    const subject = encodeURIComponent(t('share.mailSubject'));
-    const body = encodeURIComponent(t('share.mailBody'));
-    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
-    toast.info(t('share.downloaded'));
+    if (isIntegratedQuotationShare) {
+      setPendingSharePdfBlob(pdfBlob);
+      setMailProviderPickerOpen(true);
+      return;
+    }
+
+    openMailPrep({
+      pdfBlob,
+      fileName: pdfShareFileName,
+      customerId,
+      contactId: quotation?.contactId,
+      recordId: quotationId,
+      customerEmail: selectedCustomer?.email,
+      subject: t('share.mailSubject'),
+      body: t('share.mailBody'),
+    });
   };
 
   const { data: pricingRulesData } = usePriceRuleOfQuotation(
@@ -780,6 +911,16 @@ export function QuotationDetailPage(): ReactElement {
               </AlertDescription>
             </Alert>
           )}
+          {quotationStatus === 2 && (
+            <Alert className="mb-4 border-blue-300 bg-blue-50 text-blue-900 dark:border-blue-800/80 dark:bg-blue-950/30 dark:text-blue-100">
+              <AlertDescription>{t('approval.approvedReadOnlyReason')}</AlertDescription>
+            </Alert>
+          )}
+          {quotationStatus === 3 && (
+            <Alert className="mb-4 border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800/80 dark:bg-amber-950/30 dark:text-amber-100">
+              <AlertDescription>{t('approval.rejectedReadOnlyReason')}</AlertDescription>
+            </Alert>
+          )}
           {isClosed && (
             <Alert className="mb-4 border-zinc-300 bg-zinc-100 dark:bg-zinc-800/50 dark:border-zinc-600">
               <AlertDescription>{t('approval.closedReason')}</AlertDescription>
@@ -872,6 +1013,8 @@ export function QuotationDetailPage(): ReactElement {
                       enabled={linesEnabled}
                       offerNo={quotation?.offerNo ?? null}
                       customerName={quotation?.potentialCustomerName ?? null}
+                      buildExportPdfBlob={buildPreviewPdfBlob}
+                      exportPdfFileName={`teklif-${quotation?.offerNo || 'kalemler'}.pdf`}
                     />
                     </div>
                   </section>
@@ -905,28 +1048,15 @@ export function QuotationDetailPage(): ReactElement {
                   {t('cancel')}
                 </Button>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button type="button" variant="outline" className="group w-full sm:w-auto">
-                      <Share2 className="mr-2 h-4 w-4" />
-                      {t('export')}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-white dark:bg-[#130822] border-slate-100 dark:border-white/10">
-                    <DropdownMenuItem onClick={handleExportPDF} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
-                      <FileDown className="mr-2 h-4 w-4 text-slate-500" />
-                      {t('exportPdf')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleShareWhatsApp} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
-                      <MessageCircle className="mr-2 h-4 w-4 text-green-500" />
-                      {t('shareWhatsapp')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleShareMail} className="cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5">
-                      <Mail className="mr-2 h-4 w-4 text-blue-500" />
-                      {t('shareMail')}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={openPdfExportPreview}
+                  className="group w-full sm:w-auto"
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  {t('exportPreview.trigger')}
+                </Button>
 
                 {!isReadOnly && (
                   <FormSubmitTooltipWrap
@@ -1008,9 +1138,62 @@ export function QuotationDetailPage(): ReactElement {
           <ReportTemplateTab
             entityId={quotationId}
             ruleType={DocumentRuleType.Quotation}
+            builtInTemplates={reportBuiltInTemplates}
           />
         </TabsContent>
       </Tabs>
+
+      <QuotationPdfExportPreviewDialog
+        open={pdfExportOpen}
+        onOpenChange={setPdfExportOpen}
+        buildPdfBlob={buildExportPdfBlob}
+        fileName={shareFileName}
+        labels={{
+          title: t('exportPreview.title'),
+          subtitle: t('exportPreview.subtitle'),
+          close: t('exportPreview.close'),
+          loading: t('exportPreview.loading'),
+          error: t('exportPreview.error'),
+          download: t('exportPreview.download'),
+          errorDismiss: t('exportPreview.errorDismiss'),
+          shareWhatsapp: t('shareWhatsapp'),
+          shareMail: t('shareMail'),
+        }}
+        onShareWhatsapp={handleModalShareWhatsapp}
+        onShareMail={handleModalShareMail}
+      />
+
+      {prepDialog}
+
+      {isIntegratedQuotationShare ? (
+        <>
+          <QuotationWhatsappSendDialog
+            open={whatsappShareOpen}
+            onOpenChange={(open) => {
+              setWhatsappShareOpen(open);
+              if (!open) setPendingSharePdfBlob(null);
+            }}
+            quotationId={pendingSharePdfBlob ? undefined : quotationId}
+            pdfBlob={pendingSharePdfBlob}
+            fileName={pdfShareFileName}
+            customerId={quotation?.potentialCustomerId}
+            contactId={quotation?.contactId}
+            customerName={quotation?.potentialCustomerName ?? selectedCustomer?.name}
+            defaultPhone={resolveCustomerPhone(selectedCustomer?.phone, selectedCustomer?.phone2)}
+            defaultMessage={t('share.whatsappMessage')}
+          />
+
+          <QuotationMailShareDialogs
+            providerPickerOpen={mailProviderPickerOpen}
+            onProviderPickerOpenChange={setMailProviderPickerOpen}
+            googleMailOpen={googleMailOpen}
+            onGoogleMailOpenChange={setGoogleMailOpen}
+            outlookMailOpen={outlookMailOpen}
+            onOutlookMailOpenChange={setOutlookMailOpen}
+            shareContext={mailShareContext}
+          />
+        </>
+      ) : null}
     </div>
   );
 }

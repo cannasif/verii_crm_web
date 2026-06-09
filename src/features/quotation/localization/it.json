@@ -211,6 +211,10 @@
     "rejectDescription": "Indicare il motivo del rifiuto.",
     "rejectReasonPlaceholder": "Motivo del rifiuto",
     "statusFilterLabel": "Stato approvazione",
+    "lockedForNonApprover": "Questo record è in fase di approvazione. Solo l'approvatore attivo può apportare modifiche. Il modulo è in sola lettura per te.",
+    "approvedReadOnlyReason": "Questo preventivo è stato approvato. I preventivi approvati non possono essere modificati o revisionati direttamente. Tutti i campi sono in sola lettura.",
+    "rejectedReadOnlyReason": "Questo preventivo è stato rifiutato. Usa \"Rivedi\" dall'elenco preventivi per apportare modifiche.",
+    "closedReason": "Questo record è stato chiuso perché un altro record con lo stesso numero di preventivo è stato approvato. Tutti i campi sono in sola lettura.",
     "status": {
       "notRequired": "Non richiesto",
       "waiting": "In attesa",

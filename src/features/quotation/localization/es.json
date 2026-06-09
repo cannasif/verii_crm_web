@@ -211,6 +211,10 @@
     "rejectDescription": "Indique el motivo del rechazo.",
     "rejectReasonPlaceholder": "Motivo del rechazo",
     "statusFilterLabel": "Estado de aprobación",
+    "lockedForNonApprover": "Este registro está en proceso de aprobación. Solo el aprobador activo puede realizar cambios. El formulario está en modo solo lectura para usted.",
+    "approvedReadOnlyReason": "Esta cotización ha sido aprobada. Las cotizaciones aprobadas no se pueden editar ni revisar directamente. Todos los campos son de solo lectura.",
+    "rejectedReadOnlyReason": "Esta cotización fue rechazada. Use \"Revisar\" desde la lista de cotizaciones para realizar cambios.",
+    "closedReason": "Este registro se cerró porque otro registro con el mismo número de oferta fue aprobado. Todos los campos son de solo lectura.",
     "status": {
       "notRequired": "No requerido",
       "waiting": "En espera",

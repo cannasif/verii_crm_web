@@ -584,6 +584,7 @@ export function QuotationHeaderForm({
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
                             placeholder={t('quotation:header.selectShippingAddress')}
                             className={cn(styles.selectTrigger, "px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            disabled={readOnly}
                           />
                         </FormControl>
                         <FormMessage />
@@ -613,6 +614,7 @@ export function QuotationHeaderForm({
                    variant="ghost"
                    size="sm"
                    onClick={() => setExchangeRateDialogOpen(true)}
+                   disabled={readOnly}
                    className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
                  >
                    <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
@@ -677,6 +679,7 @@ export function QuotationHeaderForm({
                           isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
                           placeholder={t('select')}
                           className={cn(styles.selectTrigger, "pl-10 hover:border-pink-400 dark:hover:border-zinc-700 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                          disabled={readOnly}
                         />
                       </FormControl>
                     </div>
@@ -773,6 +776,7 @@ export function QuotationHeaderForm({
                             {...field}
                             value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
                             onChange={(e) => field.onChange(e.target.value)}
+                            disabled={readOnly}
                           />
                         </FormControl>
                       </div>

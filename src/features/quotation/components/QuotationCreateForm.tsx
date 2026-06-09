@@ -19,6 +19,11 @@ import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hin
 import { Save, X, Eye, FileText, Layers, Calculator } from 'lucide-react';
 import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
 import { QuotationPdfExportPreviewDialog } from './QuotationPdfExportPreviewDialog';
+import { QuotationWhatsappSendDialog } from './QuotationWhatsappSendDialog';
+import { QuotationMailShareDialogs, type QuotationMailShareContext } from './QuotationMailShareDialogs';
+import { isIntegratedQuotationShare } from '../config/quotation-share-config';
+import { useQuotationNativeSharePrep } from '../hooks/useQuotationNativeSharePrep';
+import { blobToFile, resolveCustomerPhone } from '../utils/quotation-share-utils';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
 import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto, QuotationNotesDto } from '../types/quotation-types';
@@ -107,6 +112,11 @@ export function QuotationCreateForm(): ReactElement {
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
   const [pdfExportOpen, setPdfExportOpen] = useState(false);
+  const [whatsappShareOpen, setWhatsappShareOpen] = useState(false);
+  const [mailProviderPickerOpen, setMailProviderPickerOpen] = useState(false);
+  const [googleMailOpen, setGoogleMailOpen] = useState(false);
+  const [outlookMailOpen, setOutlookMailOpen] = useState(false);
+  const [pendingSharePdfBlob, setPendingSharePdfBlob] = useState<Blob | null>(null);
   const createMutation = useCreateQuotationBulk();
   const { currencyOptions } = useCurrencyOptions();
 
@@ -443,6 +453,7 @@ export function QuotationCreateForm(): ReactElement {
       metaDate: t('pdfExportTemplate.metaDate'),
       metaOfferNo: t('pdfExportTemplate.metaOfferNo'),
       notSpecified: t('pdfExportTemplate.notSpecified'),
+      lineImage: t('pdfExportTemplate.lineImage'),
       productCode: t('lines.productCode'),
       productName: t('lines.productName'),
       quantity: t('lines.quantity'),
@@ -497,17 +508,97 @@ export function QuotationCreateForm(): ReactElement {
     setPdfExportOpen(true);
   };
 
-  const handleModalShareWhatsapp = (): void => {
-    const text = encodeURIComponent(t('share.whatsappMessage'));
-    window.open(`https://wa.me/?text=${text}`, '_blank');
-    toast.info(t('share.downloaded'));
+  const shareFileName = t('exportPreview.downloadFileName');
+
+  const nativeShareLabels = useMemo(
+    () => ({
+      phoneRequired: t('shareWhatsappDialog.phoneRequired'),
+      emailRequired: t('share.nativeEmailRequired'),
+      emailInvalid: t('share.nativeEmailInvalid'),
+      shareOpened: t('share.nativeOpened'),
+      whatsappFallback: t('share.nativeWhatsappFallback'),
+      mailFallback: t('share.nativeMailFallback'),
+      mailSentApi: t('share.nativeMailSentApi'),
+      mailSendFailed: t('share.nativeMailSendFailed'),
+      shareFailed: t('exportPreview.error'),
+      shareCancelled: t('cancel'),
+    }),
+    [t],
+  );
+
+  const { openWhatsappPrep, openMailPrep, prepDialog } = useQuotationNativeSharePrep({
+    labels: nativeShareLabels,
+  });
+
+  const mailShareContext = useMemo<QuotationMailShareContext | null>(() => {
+    if (!isIntegratedQuotationShare) return null;
+    if (!pendingSharePdfBlob && !mailProviderPickerOpen && !googleMailOpen && !outlookMailOpen) {
+      return null;
+    }
+
+    const qc = quotationFormSlice;
+    return {
+      recordId: 0,
+      customerId: qc.potentialCustomerId,
+      customerName: selectedCustomer?.name ?? null,
+      customerCode: qc.erpCustomerCode,
+      recordNo: qc.offerNo,
+      attachmentFile: pendingSharePdfBlob ? blobToFile(pendingSharePdfBlob, shareFileName) : null,
+      autoAttachPdfOnOpen: false,
+    };
+  }, [
+    pendingSharePdfBlob,
+    mailProviderPickerOpen,
+    googleMailOpen,
+    outlookMailOpen,
+    quotationFormSlice,
+    selectedCustomer?.name,
+    shareFileName,
+  ]);
+
+  const handleModalShareWhatsapp = (pdfBlob: Blob): void => {
+    if (!watchedCustomerId || watchedCustomerId <= 0) {
+      toast.error(t('shareWhatsappDialog.customerRequired'));
+      return;
+    }
+
+    if (isIntegratedQuotationShare) {
+      setPendingSharePdfBlob(pdfBlob);
+      setWhatsappShareOpen(true);
+      return;
+    }
+
+    openWhatsappPrep({
+      pdfBlob,
+      fileName: shareFileName,
+      customerId: watchedCustomerId,
+      customerPhone: selectedCustomer?.phone,
+      customerPhone2: selectedCustomer?.phone2,
+      message: t('share.whatsappMessage'),
+    });
   };
 
-  const handleModalShareMail = (): void => {
-    const subject = encodeURIComponent(t('share.mailSubject'));
-    const body = encodeURIComponent(t('share.mailBody'));
-    window.open(`mailto:?subject=${subject}&body=${body}`, '_blank');
-    toast.info(t('share.downloaded'));
+  const handleModalShareMail = (pdfBlob: Blob): void => {
+    if (!watchedCustomerId || watchedCustomerId <= 0) {
+      toast.error(t('shareMailDialog.customerRequired'));
+      return;
+    }
+
+    if (isIntegratedQuotationShare) {
+      setPendingSharePdfBlob(pdfBlob);
+      setMailProviderPickerOpen(true);
+      return;
+    }
+
+    openMailPrep({
+      pdfBlob,
+      fileName: shareFileName,
+      customerId: watchedCustomerId,
+      recordId: 0,
+      customerEmail: selectedCustomer?.email,
+      subject: t('share.mailSubject'),
+      body: t('share.mailBody'),
+    });
   };
 
   const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -622,6 +713,8 @@ export function QuotationCreateForm(): ReactElement {
                       representativeId={watchedRepresentativeId}
                       offerNo={form.watch('quotation.offerNo')}
                       customerName={customerOptions.find((c) => c.id === watchedCustomerId)?.name ?? null}
+                      buildExportPdfBlob={buildExportPdfBlob}
+                      exportPdfFileName={shareFileName}
                     />
                   </div>
                 </div>
@@ -713,6 +806,33 @@ export function QuotationCreateForm(): ReactElement {
         onShareWhatsapp={handleModalShareWhatsapp}
         onShareMail={handleModalShareMail}
       />
+
+      {prepDialog}
+
+      {isIntegratedQuotationShare ? (
+        <>
+          <QuotationWhatsappSendDialog
+            open={whatsappShareOpen}
+            onOpenChange={setWhatsappShareOpen}
+            pdfBlob={pendingSharePdfBlob}
+            fileName={shareFileName}
+            customerId={watchedCustomerId}
+            customerName={selectedCustomer?.name}
+            defaultPhone={resolveCustomerPhone(selectedCustomer?.phone, selectedCustomer?.phone2)}
+            defaultMessage={t('share.whatsappMessage')}
+          />
+
+          <QuotationMailShareDialogs
+            providerPickerOpen={mailProviderPickerOpen}
+            onProviderPickerOpenChange={setMailProviderPickerOpen}
+            googleMailOpen={googleMailOpen}
+            onGoogleMailOpenChange={setGoogleMailOpen}
+            outlookMailOpen={outlookMailOpen}
+            onOutlookMailOpenChange={setOutlookMailOpen}
+            shareContext={mailShareContext}
+          />
+        </>
+      ) : null}
     </div>
   );
 }

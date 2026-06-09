@@ -211,6 +211,10 @@
     "rejectDescription": "Geben Sie den Ablehnungsgrund an.",
     "rejectReasonPlaceholder": "Ablehnungsgrund",
     "statusFilterLabel": "Genehmigungsstatus",
+    "lockedForNonApprover": "Dieser Datensatz befindet sich im Genehmigungsprozess. Nur der aktive Genehmiger kann Änderungen vornehmen. Das Formular ist für Sie schreibgeschützt.",
+    "approvedReadOnlyReason": "Dieses Angebot wurde genehmigt. Genehmigte Angebote können nicht direkt bearbeitet oder revidiert werden. Alle Felder sind schreibgeschützt.",
+    "rejectedReadOnlyReason": "Dieses Angebot wurde abgelehnt. Verwenden Sie in der Angebotsliste \"Überarbeiten\", um Änderungen vorzunehmen.",
+    "closedReason": "Dieser Datensatz wurde geschlossen, weil ein anderer Datensatz mit derselben Angebotsnummer genehmigt wurde. Alle Felder sind schreibgeschützt.",
     "status": {
       "notRequired": "Nicht erforderlich",
       "waiting": "Wartend",
