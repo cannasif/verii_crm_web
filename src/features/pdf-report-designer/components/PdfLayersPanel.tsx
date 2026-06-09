@@ -54,6 +54,7 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
   const bringForward = usePdfReportDesignerStore((s) => s.bringForward);
   const sendBackward = usePdfReportDesignerStore((s) => s.sendBackward);
   const setFlashingId = usePdfReportDesignerStore((s) => s.setFlashingId);
+  const invalidElementIds = usePdfReportDesignerStore((s) => s.invalidElementIds);
   const removeElement = usePdfReportDesignerStore((s) => s.removeElement);
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
   const [deleteDialogElementId, setDeleteDialogElementId] = useState<string | null>(null);
@@ -203,12 +204,15 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
           if (!el) return null;
           const index = elementOrder.length - 1 - reverseIndex;
           const isSelected = selectedIds.includes(id);
+          const isInvalid = invalidElementIds.includes(id);
           return (
             <div
               key={id}
               className={cn(
                 "group flex items-center gap-1 rounded-lg border px-2 py-1.5 text-xs transition-all duration-300",
-                isSelected
+                isInvalid
+                  ? "border-red-500/80 bg-red-50/80 shadow-sm dark:border-red-500/50 dark:bg-red-950/30"
+                  : isSelected
                   ? "border-pink-500/50 bg-white shadow-md dark:border-pink-500/30 dark:bg-white/10"
                   : "border-transparent hover:border-slate-300/60 hover:bg-white/50 dark:hover:border-white/10 dark:hover:bg-white/5"
               )}

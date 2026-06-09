@@ -1,8 +1,14 @@
 import type { ReactElement } from 'react';
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { useReportTemplateList } from '../hooks/useReportTemplateList';
-import { reportTemplateApi } from '../api/report-template-api';
-import { DocumentRuleType, type ReportTemplateGetDto } from '../types/report-template-types';
+import { useQuery } from '@tanstack/react-query';
+import {
+  DocumentRuleType,
+  pdfReportTemplateApi,
+  pdfReportTemplateQueryKeys,
+  type ReportTemplateListItemDto,
+} from '@/features/pdf-report';
+import { dtoToPdfCanvasElements } from '@/features/pdf-report-designer/utils/dto-to-canvas';
+import { countBoundTemplateFields } from '@/features/pdf-report-designer/utils/resolve-template-field-paths';
 import {
   Select,
   SelectContent,
@@ -49,16 +55,27 @@ export function ReportTemplateTab({
   const pdfBlobUrlRef = useRef<string | null>(null);
   pdfBlobUrlRef.current = pdfBlobUrl;
 
-  const { data: listData = [], isLoading: isLoadingTemplates } = useReportTemplateList();
-  const templates = listData;
+  const listQueryParams = useMemo(
+    () => ({
+      pageNumber: 1,
+      pageSize: 100,
+      sortBy: 'title' as const,
+      sortDirection: 'asc' as const,
+      ruleType,
+      isActive: true,
+    }),
+    [ruleType]
+  );
+
+  const { data: listData, isLoading: isLoadingTemplates } = useQuery({
+    queryKey: pdfReportTemplateQueryKeys.list(listQueryParams),
+    queryFn: () => pdfReportTemplateApi.getList(listQueryParams),
+    staleTime: 2 * 60 * 1000,
+  });
+
+  const filteredTemplates: ReportTemplateListItemDto[] = listData?.items ?? [];
   const stableBuiltInTemplates = builtInTemplates ?? EMPTY_BUILT_IN_TEMPLATES;
-  const filteredTemplates: ReportTemplateGetDto[] = templates.filter(
-    (template) => Number(template.ruleType) === ruleType
-  );
-  const effectiveBuiltInTemplates = useMemo(
-    () => (filteredTemplates.length > 0 ? EMPTY_BUILT_IN_TEMPLATES : stableBuiltInTemplates),
-    [filteredTemplates.length, stableBuiltInTemplates]
-  );
+  const effectiveBuiltInTemplates = stableBuiltInTemplates;
   const builtInTemplateMap = useMemo(
     () => new Map(effectiveBuiltInTemplates.map((template) => [template.id, template])),
     [effectiveBuiltInTemplates]
@@ -103,18 +120,18 @@ export function ReportTemplateTab({
       return;
     }
 
-    const builtInDefaultTemplate = effectiveBuiltInTemplates.find((template) => template.isDefault === true);
-    if (builtInDefaultTemplate != null) {
-      setSelectedTemplateId(builtInDefaultTemplate.id);
-      persistSelection(builtInDefaultTemplate.id);
-      return;
-    }
-
     const defaultTemplate = filteredTemplates.find((template) => template.default === true);
     if (defaultTemplate != null) {
       const value = String(defaultTemplate.id);
       setSelectedTemplateId(value);
       persistSelection(value);
+      return;
+    }
+
+    const builtInDefaultTemplate = effectiveBuiltInTemplates.find((template) => template.isDefault === true);
+    if (builtInDefaultTemplate != null) {
+      setSelectedTemplateId(builtInDefaultTemplate.id);
+      persistSelection(builtInDefaultTemplate.id);
       return;
     }
 
@@ -179,16 +196,31 @@ export function ReportTemplateTab({
     setIsGenerating(true);
     setHasPreviewError(false);
 
-    void reportTemplateApi
-      .generatePdf(templateId, entityId)
-      .then((blob) => {
+    void (async () => {
+      try {
+        const templateDetail = await pdfReportTemplateApi.getById(templateId);
+        const canvasElements = dtoToPdfCanvasElements(
+          templateDetail.templateData.elements,
+          templateDetail.templateData.page.unit
+        );
+        const boundFieldCount = countBoundTemplateFields(canvasElements);
+        if (boundFieldCount === 0) {
+          toast.warning(t('reportDesigner.preview.noBoundFields'), {
+            description: t('reportDesigner.preview.noBoundFieldsHint'),
+          });
+        }
+
+        const blob = await pdfReportTemplateApi.generateDocument(templateId, entityId);
         if (cancelled) return;
 
         setPdfBlobUrl((prev) => {
           if (prev) URL.revokeObjectURL(prev);
           return URL.createObjectURL(blob);
         });
-      })
+      } catch (err) {
+        throw err instanceof Error ? err : new Error(String(err));
+      }
+    })()
       .catch((err: Error) => {
         if (cancelled) return;
 

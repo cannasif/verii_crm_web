@@ -50,6 +50,7 @@ export interface PdfFieldPaletteItem {
   path: string;
   type: PdfFieldPaletteType;
   value?: string;
+  exampleValue?: string;
 }
 
 export interface PdfSidebarDragData {

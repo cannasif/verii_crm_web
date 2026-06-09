@@ -234,10 +234,10 @@ export const pdfReportTemplateApi = {
 
   delete: async (id: number): Promise<void> => {
     const response = await api.delete<unknown>(`${BASE}/${id}`);
-    if (!isApiSuccess(response)) {
-      const r = response as Record<string, unknown>;
-      throw new Error((r.message ?? r.Message ?? 'Şablon silinemedi') as string);
-    }
+    if (response == null || response === '') return;
+    if (isApiSuccess(response)) return;
+    const r = response as Record<string, unknown>;
+    throw new Error((r.message ?? r.Message ?? 'Şablon silinemedi') as string);
   },
 
   generateDocument: async (templateId: number, entityId: number): Promise<Blob> => {

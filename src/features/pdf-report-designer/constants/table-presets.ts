@@ -10,6 +10,24 @@ export interface PdfTablePresetDefinition {
 
 export const PDF_TABLE_PRESETS: PdfTablePresetDefinition[] = [
   {
+    key: 'quotation-preview-v3rii',
+    label: 'Teklif onizleme satirlari',
+    ruleTypes: ['quotation'],
+    columns: [
+      { label: 'Stok Kodu', path: 'Lines.ProductCode', width: 130, align: 'left', format: 'text' },
+      { label: 'Stok Adı', path: 'Lines.ProductName', align: 'left', format: 'text' },
+      { label: 'Miktar', path: 'Lines.Quantity', width: 90, align: 'center', format: 'number' },
+      { label: 'Net Birim', path: 'Lines.UnitPrice', width: 130, align: 'right', format: 'currency' },
+      { label: 'Toplam', path: 'Lines.LineTotal', width: 140, align: 'right', format: 'currency' },
+    ],
+    tableOptions: {
+      repeatHeader: true,
+      dense: true,
+      showBorders: true,
+      presetName: 'quotation-preview-v3rii',
+    },
+  },
+  {
     key: 'quotation-lines-default',
     label: 'Teklif satirlari',
     ruleTypes: ['quotation'],

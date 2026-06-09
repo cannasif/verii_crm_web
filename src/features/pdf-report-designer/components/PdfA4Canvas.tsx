@@ -150,7 +150,7 @@ export interface PdfA4CanvasProps {
   onPageRef?: (page: number, el: HTMLDivElement | null) => void;
   onPageChange?: (page: number) => void;
   onContextAdd?: (payload: PdfCanvasContextAddPayload) => void;
-  onApplyPreset?: (preset: 'commercialStarter' | 'compactSummary' | 'lineFocused' | 'signatureReady') => void;
+  onApplyPreset?: (preset: import('../constants/gallery-presets').PdfGalleryPresetKey) => void;
 }
 
 function shouldRenderOnPage(element: PdfCanvasElement, currentPage: number): boolean {
@@ -343,25 +343,35 @@ function formatSummaryValue(rawValue: string, format?: PdfSummaryItem['format'])
 
 function getQuotationTotalsPreviewRows(element: PdfReportElement): Array<{ label: string; value: string; emphasize?: boolean }> {
   const options = element.quotationTotalsOptions ?? {};
-  const currencySuffix = options.currencyMode === 'code' ? ' USD' : '';
+  const currencySuffix = options.currencyMode === 'code' ? ' TL' : '';
+  const isV3riiStyle = (element.text ?? '').toUpperCase().includes('FİYAT DETAYI');
   const rows: Array<{ label: string; value: string; emphasize?: boolean }> = [];
 
   if (options.showGross !== false) {
-    rows.push({ label: options.grossLabel || 'Brut Toplam', value: `12.500,00${currencySuffix}` });
+    rows.push({
+      label: options.grossLabel || 'Brut Toplam',
+      value: isV3riiStyle ? `903,050${currencySuffix}` : `12.500,00${currencySuffix}`,
+    });
   }
   if (options.showDiscount !== false) {
     rows.push({ label: options.discountLabel || 'Iskonto', value: `750,00${currencySuffix}` });
   }
 
-  rows.push({ label: options.netLabel || 'Net Toplam', value: `11.750,00${currencySuffix}` });
+  rows.push({
+    label: options.netLabel || 'Net Toplam',
+    value: isV3riiStyle ? `903,050${currencySuffix}` : `11.750,00${currencySuffix}`,
+  });
 
   if (options.showVat !== false) {
-    rows.push({ label: options.vatLabel || 'KDV', value: `2.115,00${currencySuffix}` });
+    rows.push({
+      label: options.vatLabel || 'KDV',
+      value: isV3riiStyle ? `180,610${currencySuffix}` : `2.115,00${currencySuffix}`,
+    });
   }
 
   rows.push({
     label: options.grandLabel || 'Genel Toplam',
-    value: `13.865,00${currencySuffix}`,
+    value: isV3riiStyle ? `1.083,660${currencySuffix}` : `13.865,00${currencySuffix}`,
     emphasize: options.emphasizeGrandTotal !== false,
   });
 
@@ -507,11 +517,18 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
         </span>
       ) : (
         <>
-          <div className="flex flex-row items-stretch border-b border-slate-200/60 bg-stone-100/80">
+          <div
+            className="flex flex-row items-stretch border-b last:border-b-0"
+            style={{
+              backgroundColor: table.headerStyle?.backgroundColor ?? '#f5f5f4',
+              color: table.headerStyle?.color ?? '#334155',
+              borderColor: table.headerStyle?.backgroundColor ? 'rgba(255,255,255,0.15)' : '#e2e8f0',
+            }}
+          >
             {table.columns.map((col) => (
               <div
                 key={col.path}
-                className="flex min-w-16 items-center border-r border-slate-300 px-2 py-1 text-xs font-medium text-slate-700 last:border-r-0"
+                className="flex min-w-16 items-center border-r px-2 py-1.5 text-[11px] font-bold last:border-r-0"
                 style={{
                   width: col.width != null ? `${col.width}px` : undefined,
                   flex: col.width != null ? '0 0 auto' : '1 1 0%',
@@ -521,15 +538,19 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
                       : col.align === 'center'
                         ? 'center'
                         : 'flex-start',
+                  fontFamily: table.headerStyle?.fontFamily,
+                  fontSize: table.headerStyle?.fontSize != null ? `${table.headerStyle.fontSize}px` : undefined,
                 }}
               >
                 {col.label}
               </div>
             ))}
           </div>
-          <div className="border-b border-slate-200/60 bg-pink-500/5 px-2 py-1 text-[11px] font-bold text-pink-600/80">
-            {groupHeaderLabel}: PRJ-01
-          </div>
+          {table.tableOptions?.detailColumnPath || table.tableOptions?.showGroupFooter ? (
+            <div className="border-b border-slate-200/60 bg-pink-500/5 px-2 py-1 text-[11px] font-bold text-pink-600/80">
+              {groupHeaderLabel}: PRJ-01
+            </div>
+          ) : null}
           {[0, 1].map((rowIndex) => (
             <div
               key={`sample-row-${rowIndex}`}
@@ -697,10 +718,12 @@ function FieldElementBlock({
   element,
   templateId,
   ruleType,
+  fieldDefinitions = [],
 }: {
   element: PdfReportElement;
   templateId?: number | null;
   ruleType?: number;
+  fieldDefinitions?: FieldDefinitionDto[];
 }): ReactElement {
   if (element.type === 'shape') {
     const style = element.style ?? {};
@@ -769,11 +792,14 @@ function FieldElementBlock({
             key={`${row.label}-${index}`}
             className={cn(
               "flex items-center justify-between rounded-lg border transition-all duration-300",
-              row.emphasize 
-                ? "bg-slate-900 font-bold text-white border-slate-900 shadow-md dark:bg-pink-600 dark:border-pink-500" 
-                : "bg-white border-slate-200/60 text-slate-700 hover:border-slate-300"
+              row.emphasize
+                ? "border-transparent font-bold text-white shadow-md"
+                : "border-slate-200/60 bg-white text-slate-700 hover:border-slate-300"
             )}
             style={{
+              ...(row.emphasize
+                ? { background: 'linear-gradient(90deg, #e5117d 0%, #ffac24 100%)' }
+                : {}),
               minHeight: `${quotationTotalsLayoutSpec.rowHeight}px`,
               paddingLeft: `${quotationTotalsLayoutSpec.rowPaddingX}px`,
               paddingRight: `${quotationTotalsLayoutSpec.rowPaddingX}px`,
@@ -812,11 +838,13 @@ function FieldElementBlock({
         }}
       >
         <div
+          className="rounded-t-lg px-3 py-2"
           style={{
             fontSize: `${quotationTotalsLayoutSpec.titleFontSize}px`,
-            fontWeight: 600,
-            color: quotationTotalsLayoutSpec.titleColor,
+            fontWeight: 700,
+            color: (element.text ?? '').toUpperCase().includes('FİYAT DETAYI') ? '#3c1636' : quotationTotalsLayoutSpec.titleColor,
             marginBottom: `${quotationTotalsLayoutSpec.titleBottomGap}px`,
+            backgroundColor: (element.text ?? '').toUpperCase().includes('FİYAT DETAYI') ? '#fcebf2' : 'transparent',
           }}
         >
           {element.text || 'TEKLIF TOPLAMLARI'}
@@ -863,14 +891,34 @@ function FieldElementBlock({
       </div>
     );
   }
+  const fieldSample =
+    element.type === 'field' && element.path
+      ? fieldDefinitions.find((field) => field.path === element.path)?.exampleValue
+      : undefined;
+  const fieldDisplay =
+    element.type === 'field'
+      ? fieldSample?.trim() || element.value?.trim() || element.path || ''
+      : element.type;
+
   return (
     <div
-      className="flex h-full w-full select-none items-center justify-center text-slate-700"
-      style={getCanvasTextStyle(element)}
+      className="flex h-full w-full select-none overflow-hidden text-slate-700"
+      style={{
+        ...getCanvasTextStyle(element),
+        alignItems: element.style?.textAlign === 'right' ? 'flex-end' : 'center',
+        justifyContent:
+          element.style?.textAlign === 'right'
+            ? 'flex-end'
+            : element.style?.textAlign === 'center'
+              ? 'center'
+              : 'flex-start',
+        paddingLeft: element.style?.textAlign === 'right' ? 0 : 2,
+        paddingRight: element.style?.textAlign === 'right' ? 2 : 0,
+      }}
       contentEditable={false}
       suppressContentEditableWarning
     >
-      {element.type === 'field' && element.value ? element.value : element.type}
+      {fieldDisplay}
     </div>
   );
 }
@@ -1266,6 +1314,7 @@ export function PdfA4Canvas({
   const removeElement = usePdfReportDesignerStore((s) => s.removeElement);
   const snapEnabled = usePdfReportDesignerStore((s) => s.snapEnabled);
   const flashingId = usePdfReportDesignerStore((s) => s.flashingId);
+  const invalidElementIds = usePdfReportDesignerStore((s) => s.invalidElementIds);
   const [deleteDialogElementId, setDeleteDialogElementId] = useState<string | null>(null);
 
   const makeElementDragStop = useCallback(
@@ -1464,13 +1513,21 @@ export function PdfA4Canvas({
 
                   const el = applyConditionalStyleRules(element, getSampleValue);
                   const isFlashing = flashingId === el.id;
+                  const isInvalid = invalidElementIds.includes(el.id);
                   const isSelected = selectedIds.includes(el.id);
 
                   if (!isActivePage) {
                     return (
                       <div
                         key={el.id}
-                        className={`absolute overflow-hidden border ${isSelected ? 'border-blue-400 ring-1 ring-blue-400' : 'border-slate-200'}`}
+                        className={cn(
+                          'absolute overflow-hidden border',
+                          isInvalid
+                            ? 'border-red-500 ring-2 ring-red-500/70'
+                            : isSelected
+                              ? 'border-blue-400 ring-1 ring-blue-400'
+                              : 'border-slate-200'
+                        )}
                         style={{
                           left: absoluteX,
                           top: absoluteY,
@@ -1494,7 +1551,12 @@ export function PdfA4Canvas({
                           ) : el.type === 'container' ? (
                             <ContainerElementBlock element={el} />
                           ) : (
-                            <FieldElementBlock element={el as PdfReportElement} templateId={templateId} ruleType={ruleType} />
+                            <FieldElementBlock
+                              element={el as PdfReportElement}
+                              templateId={templateId}
+                              ruleType={ruleType}
+                              fieldDefinitions={fieldDefinitions}
+                            />
                           )}
                         </div>
                       </div>
@@ -1515,7 +1577,9 @@ export function PdfA4Canvas({
                       dragHandleClassName="pdf-element-drag-handle"
                       className={cn(
                         "relative z-10 flex flex-col overflow-hidden border bg-white/50 shadow-sm transition-all duration-300 backdrop-blur-xs",
-                        isFlashing
+                        isInvalid
+                          ? "border-red-500 ring-2 ring-red-500/80 shadow-md shadow-red-500/10"
+                          : isFlashing
                           ? "border-amber-400 ring-4 ring-amber-400 ring-offset-1 animate-pulse"
                           : isSelected
                           ? "border-pink-500/60 ring-1 ring-pink-500/40 shadow-lg shadow-pink-500/5"
@@ -1566,7 +1630,12 @@ export function PdfA4Canvas({
                         ) : el.type === 'container' ? (
                           <ContainerElementBlock element={el} />
                         ) : (
-                          <FieldElementBlock element={el} templateId={templateId} ruleType={ruleType} />
+                          <FieldElementBlock
+                            element={el}
+                            templateId={templateId}
+                            ruleType={ruleType}
+                            fieldDefinitions={fieldDefinitions}
+                          />
                         )}
                       </div>
                     </Rnd>

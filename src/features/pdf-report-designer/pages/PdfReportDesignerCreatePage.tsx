@@ -59,6 +59,12 @@ import { useUpdatePdfReportTemplate } from '../hooks/useUpdatePdfReportTemplate'
 import { usePdfReportTemplateById } from '../hooks/usePdfReportTemplateById';
 import { dtoToPdfCanvasElements, pdfCanvasElementsToDto } from '../utils/dto-to-canvas';
 import { getApiErrorMessage } from '../utils/get-api-error-message';
+import {
+  extractPdfTemplateApiErrorStrings,
+  parsePdfTemplateApiErrors,
+  validatePdfTemplate,
+  type PdfTemplateValidationIssue,
+} from '../utils/validate-pdf-template';
 import { createPdfElement } from '../utils/create-pdf-element';
 import type { PdfCanvasContextAddPayload } from '../components/PdfCanvasContextMenu';
 import { createClientId } from '@/lib/create-client-id';
@@ -75,6 +81,12 @@ import {
   PDF_REPORT_DRAFT_STORAGE_KEY,
 } from '../constants';
 import { PDF_LAYOUT_PRESET } from '../constants/layout-presets';
+import type { PdfGalleryPresetKey } from '../constants/gallery-presets';
+import { createV3riiQuotationPresetElements } from '../utils/create-v3rii-quotation-preset';
+import {
+  countBoundTemplateFields,
+  rebindTemplateFieldPaths,
+} from '../utils/resolve-template-field-paths';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const PdfDesignerOnboardingPanel = lazy(() =>
@@ -594,6 +606,11 @@ export function PdfReportDesignerCreatePage(): ReactElement {
   const history = usePdfReportDesignerStore((s) => s.history);
   const snapEnabled = usePdfReportDesignerStore((s) => s.snapEnabled);
   const setSnapEnabled = usePdfReportDesignerStore((s) => s.setSnapEnabled);
+  const setInvalidElementIds = usePdfReportDesignerStore((s) => s.setInvalidElementIds);
+  const clearInvalidElementIds = usePdfReportDesignerStore((s) => s.clearInvalidElementIds);
+  const invalidElementIds = usePdfReportDesignerStore((s) => s.invalidElementIds);
+  const setSelectedIds = usePdfReportDesignerStore((s) => s.setSelectedIds);
+  const setFlashingId = usePdfReportDesignerStore((s) => s.setFlashingId);
 
   const form = useForm<PdfReportDesignerCreateFormValues, unknown, PdfReportDesignerCreateFormValues>(
     {
@@ -609,13 +626,28 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       },
     }
   );
-  const isFormValid = form.formState.isValid;
   const [currentPage, setCurrentPage] = useState(1);
+  const [saveValidationIssues, setSaveValidationIssues] = useState<PdfTemplateValidationIssue[]>([]);
+  const [identityExpanded, setIdentityExpanded] = useState<boolean>(() => {
+    if (isEdit) return false;
+    if (typeof window === 'undefined') return true;
+    return !window.matchMedia('(max-width: 1279px)').matches;
+  });
+
+  const handleNavigateToPage = useCallback((page: number) => {
+    setCurrentPage(page);
+    requestAnimationFrame(() => {
+      document
+        .getElementById(`pdf-canvas-page-${page}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }, []);
   const { data: templateById, isSuccess: templateByIdLoaded } = usePdfReportTemplateById(
     isEdit && editId != null ? editId : null
   );
   const appliedEditIdRef = useRef<number | null>(null);
   const justAppliedCopyRef = useRef(false);
+  const fieldsReboundRef = useRef(false);
 
   useEffect(() => {
     if (copyFrom) {
@@ -658,6 +690,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         label: f.label,
         path: f.path,
         type: 'field' as const,
+        exampleValue: f.exampleValue,
       })),
     [fieldsData?.headerFields]
   );
@@ -667,6 +700,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
         label: f.label,
         path: f.path,
         type: 'table-column' as const,
+        exampleValue: f.exampleValue,
       })),
     [fieldsData?.lineFields]
   );
@@ -690,6 +724,48 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       })),
     [fieldsData?.exchangeRateFields]
   );
+
+  useEffect(() => {
+    fieldsReboundRef.current = false;
+  }, [editId, copyFrom?.id]);
+
+  useEffect(() => {
+    if (!fieldsData) return;
+    if (headerFields.length === 0 && lineFields.length === 0) return;
+    if (orderedElements.length === 0) return;
+    if (fieldsReboundRef.current) return;
+    if (!isEdit && !copyFrom) return;
+
+    const { elements, changed, unresolvedFieldCount, unresolvedColumnCount } = rebindTemplateFieldPaths(
+      orderedElements,
+      headerFields,
+      lineFields
+    );
+
+    fieldsReboundRef.current = true;
+
+    if (changed) {
+      setElements(elements);
+      toast.info(t('pdfReportDesigner.fieldPathsRebound'));
+    }
+
+    if (unresolvedFieldCount > 0 || unresolvedColumnCount > 0) {
+      toast.warning(t('pdfReportDesigner.unresolvedFieldPaths', {
+        fields: unresolvedFieldCount,
+        columns: unresolvedColumnCount,
+      }));
+    }
+  }, [
+    copyFrom,
+    fieldsData,
+    headerFields,
+    isEdit,
+    lineFields,
+    orderedElements,
+    setElements,
+    t,
+  ]);
+
   const starterElements = useMemo(
     () =>
       ruleType === TemplateDesignerRuleType.Activity
@@ -1060,25 +1136,62 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     handleAddSmartNote();
   }, [addElement, currentPage, handleAddSmartNote, headerFields, t]);
 
-  const handleApplyPdfPreset = useCallback((preset: 'commercialStarter' | 'compactSummary' | 'lineFocused' | 'signatureReady') => {
-    if (preset === 'commercialStarter') {
-      handleApplyStarterLayout();
-      return;
-    }
-    if (preset === 'compactSummary') {
+  const handleApplyPdfPreset = useCallback(
+    (preset: PdfGalleryPresetKey) => {
+      if (preset === 'v3riiQuotation') {
+        if (headerFields.length === 0 || lineFields.length === 0) {
+          toast.error(t('pdfReportDesigner.presetGallery.fieldsNotLoaded'));
+          return;
+        }
+        if (ruleType !== TemplateDesignerRuleType.Quotation) {
+          form.setValue('ruleType', TemplateDesignerRuleType.Quotation, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
+        }
+        const { elements, missingSlots } = createV3riiQuotationPresetElements(headerFields, lineFields);
+        if (missingSlots.length > 0) {
+          toast.error(t('pdfReportDesigner.presetGallery.missingFields', {
+            fields: missingSlots.join(', '),
+          }));
+          return;
+        }
+        setElements(elements);
+        clearInvalidElementIds();
+        setSaveValidationIssues([]);
+        toast.success(t('pdfReportDesigner.presetGallery.v3riiApplied'));
+        return;
+      }
+      if (preset === 'commercialStarter') {
+        handleApplyStarterLayout();
+        return;
+      }
+      if (preset === 'compactSummary') {
+        handleAddReusableBlock('documentMeta');
+        handleAddReusableBlock('customerSummary');
+        handleAddReusableBlock('noteBox');
+        return;
+      }
+      if (preset === 'lineFocused') {
+        handleAddSmartTable();
+        handleAddSmartTotals();
+        return;
+      }
+      handleAddReusableBlock('signature');
       handleAddReusableBlock('documentMeta');
-      handleAddReusableBlock('customerSummary');
-      handleAddReusableBlock('noteBox');
-      return;
-    }
-    if (preset === 'lineFocused') {
-      handleAddSmartTable();
-      handleAddSmartTotals();
-      return;
-    }
-    handleAddReusableBlock('signature');
-    handleAddReusableBlock('documentMeta');
-  }, [handleAddReusableBlock, handleAddSmartTable, handleAddSmartTotals, handleApplyStarterLayout]);
+    },
+    [
+      clearInvalidElementIds,
+      handleAddReusableBlock,
+      handleAddSmartTable,
+      handleAddSmartTotals,
+      handleApplyStarterLayout,
+      headerFields,
+      lineFields,
+      setElements,
+      t,
+    ]
+  );
 
   const handleContextAdd = useCallback(
     (payload: PdfCanvasContextAddPayload): void => {
@@ -1111,8 +1224,59 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     }
   }, [form, layoutPreset]);
 
+  const focusValidationIssues = useCallback(
+    (issues: PdfTemplateValidationIssue[], elements: PdfCanvasElement[]): void => {
+      setSaveValidationIssues(issues);
+
+      const elementIds = issues.map((issue) => issue.elementId).filter((id): id is string => Boolean(id));
+      setInvalidElementIds(elementIds);
+
+      if (issues.some((issue) => issue.formField === 'title')) {
+        setIdentityExpanded(true);
+        form.setError('title', { message: t('reportDesigner.form.requiredTitle') });
+      }
+
+      const firstElementIssue = issues.find((issue) => issue.elementId);
+      if (firstElementIssue?.elementId) {
+        const target = elements.find((element) => element.id === firstElementIssue.elementId);
+        const targetPage = target?.pageNumbers?.[0] ?? 1;
+        handleNavigateToPage(targetPage);
+        setSelectedIds([firstElementIssue.elementId]);
+        setFlashingId(firstElementIssue.elementId);
+        window.setTimeout(() => setFlashingId(null), 2400);
+      }
+    },
+    [form, handleNavigateToPage, setFlashingId, setIdentityExpanded, setInvalidElementIds, setSelectedIds, t]
+  );
+
+  const onInvalidSubmit = useCallback((): void => {
+    const values = form.getValues();
+    const issues = validatePdfTemplate(values, getOrderedElements(), t);
+    focusValidationIssues(issues, getOrderedElements());
+    toast.error(t('pdfReportDesigner.validation.failed'), {
+      description: issues.map((issue) => issue.message).join(' • '),
+    });
+  }, [focusValidationIssues, form, getOrderedElements, t]);
+
   const onSubmit = async (values: PdfReportDesignerCreateFormValues): Promise<void> => {
     const elements = getOrderedElements();
+    const issues = validatePdfTemplate(values, elements, t);
+    if (issues.length > 0) {
+      focusValidationIssues(issues, elements);
+      toast.error(t('pdfReportDesigner.validation.failed'), {
+        description: issues.map((issue) => issue.message).join(' • '),
+      });
+      return;
+    }
+
+    clearInvalidElementIds();
+    setSaveValidationIssues([]);
+
+    const { elements: elementsToSave } =
+      headerFields.length > 0 || lineFields.length > 0
+        ? rebindTemplateFieldPaths(elements, headerFields, lineFields)
+        : { elements };
+
     const payload: ReportTemplateCreateDto = {
       ruleType: ruleTypeForApi(values.ruleType as TemplateDesignerRuleTypeValue) as DocumentRuleType,
       title: values.title,
@@ -1126,7 +1290,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
           unit: 'mm',
           pageCount: values.pageCount,
         },
-        elements: pdfCanvasElementsToDto(elements, 'mm'),
+        elements: pdfCanvasElementsToDto(elementsToSave, 'mm'),
       },
       isActive: true,
       default: values.default ?? false,
@@ -1150,6 +1314,16 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       }
       navigate('/pdf-report-designer');
     } catch (err) {
+      const apiErrorStrings = extractPdfTemplateApiErrorStrings(err);
+      if (apiErrorStrings.length > 0) {
+        const apiIssues = parsePdfTemplateApiErrors(apiErrorStrings, elements, t);
+        focusValidationIssues(apiIssues, elements);
+        toast.error(t('pdfReportDesigner.validation.failed'), {
+          description: apiIssues.map((issue) => issue.message).join(' • '),
+        });
+        return;
+      }
+
       const detail = getApiErrorMessage(err);
       toast.error(
         isEdit
@@ -1433,26 +1607,33 @@ export function PdfReportDesignerCreatePage(): ReactElement {
     }
   }, [currentPage, pageCount]);
 
-  const handleNavigateToPage = useCallback((page: number) => {
-    setCurrentPage(page);
-    requestAnimationFrame(() => {
-      document
-        .getElementById(`pdf-canvas-page-${page}`)
-        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }, []);
-
-  const [identityExpanded, setIdentityExpanded] = useState<boolean>(() => {
-    if (isEdit) return false;
-    if (typeof window === 'undefined') return true;
-    return !window.matchMedia('(max-width: 1279px)').matches;
-  });
   const watchedTitle = form.watch('title') ?? '';
   const watchedDefault = form.watch('default') ?? false;
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-slate-300/80 bg-stone-50/95 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-none dark:ring-0">
       <div className="absolute inset-0 pointer-events-none bg-linear-to-br from-pink-500/5 to-orange-500/5 dark:from-pink-500/10 dark:to-orange-500/10" />
+      {(saveValidationIssues.length > 0 || invalidElementIds.length > 0) && (
+        <div className="relative z-20 border-b border-red-200/80 bg-red-50/90 px-4 py-3 backdrop-blur-md dark:border-red-900/50 dark:bg-red-950/40">
+          <div className="flex flex-wrap items-start gap-3">
+            <AlertTriangle className="mt-0.5 size-4 shrink-0 text-red-600 dark:text-red-400" />
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <p className="text-sm font-semibold text-red-900 dark:text-red-100">
+                {t('pdfReportDesigner.validation.bannerTitle')}
+              </p>
+              <p className="text-xs text-red-800/90 dark:text-red-200/90">
+                {t('pdfReportDesigner.validation.bannerIntro')}
+              </p>
+              <ul className="list-disc space-y-1 pl-4 text-xs leading-relaxed text-red-900 dark:text-red-100">
+                {saveValidationIssues.map((issue, index) => (
+                  <li key={`${issue.message}-${index}`}>{issue.message}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {hasDraft && !draftBannerDismissed && (
         <div className="relative z-20 border-b border-amber-200/60 bg-amber-50/80 px-4 py-2.5 backdrop-blur-md dark:border-amber-900/40 dark:bg-amber-950/40">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1525,7 +1706,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       <div className="relative shrink-0 overflow-hidden border-b border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
         <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="relative z-10">
+          <form onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)} className="relative z-10">
             <div className="flex items-center gap-2 px-4 py-2">
               <Button
                 type="button"
@@ -1647,7 +1828,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
               <Button
                 type="submit"
                 size="sm"
-                disabled={isSaving || (isEdit && !templateByIdLoaded) || !isFormValid}
+                disabled={isSaving || (isEdit && !templateByIdLoaded)}
                 className="min-w-[100px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {isSaving ? (
@@ -1707,7 +1888,25 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                       <FormItem className="min-w-[220px] flex-1">
                         <FormLabel className="text-xs text-slate-600">{t('pdfReportDesigner.title')}</FormLabel>
                         <FormControl>
-                          <Input className="h-9 text-xs" placeholder={t('pdfReportDesigner.titlePlaceholder')} {...field} />
+                          <Input
+                            className={cn(
+                              'h-9 text-xs',
+                              (form.formState.errors.title || saveValidationIssues.some((issue) => issue.formField === 'title')) &&
+                                'border-destructive ring-1 ring-destructive/40 focus-visible:ring-destructive'
+                            )}
+                            placeholder={t('pdfReportDesigner.titlePlaceholder')}
+                            aria-invalid={Boolean(form.formState.errors.title)}
+                            {...field}
+                            onChange={(event) => {
+                              field.onChange(event);
+                              if (event.target.value.trim()) {
+                                form.clearErrors('title');
+                                setSaveValidationIssues((prev) =>
+                                  prev.filter((issue) => issue.formField !== 'title')
+                                );
+                              }
+                            }}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1776,7 +1975,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
               },
               {
                 label: t('pdfReportDesigner.healthMetrics.boundFields'),
-                value: orderedElements.filter((element) => 'path' in element && Boolean(element.path)).length,
+                value: countBoundTemplateFields(orderedElements),
               },
             ]}
             smartStartDescription={t('pdfReportDesigner.smartStartDescription')}
@@ -1793,6 +1992,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
               compactSummary: t('pdfReportDesigner.presetGallery.compactSummary'),
               lineFocused: t('pdfReportDesigner.presetGallery.lineFocused'),
               signatureReady: t('pdfReportDesigner.presetGallery.signatureReady'),
+              v3riiQuotation: t('pdfReportDesigner.presetGallery.v3riiQuotation'),
             }}
             smartStartLabels={{
               applyStarter: t('pdfReportDesigner.smartStartActions.applyStarter'),

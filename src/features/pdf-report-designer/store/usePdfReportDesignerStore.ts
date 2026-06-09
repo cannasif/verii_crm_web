@@ -3,6 +3,15 @@ import type { PdfCanvasElement, PdfReportElement, PdfTableColumn, PdfTableElemen
 
 const MAX_HISTORY = 50;
 
+function withoutInvalidTableIfFixed(
+  invalidElementIds: string[],
+  tableId: string,
+  columnCount: number
+): string[] {
+  if (columnCount <= 0) return invalidElementIds;
+  return invalidElementIds.filter((id) => id !== tableId);
+}
+
 interface PdfReportDesignerState {
   elementsById: Record<string, PdfCanvasElement>;
   elementOrder: string[];
@@ -44,6 +53,9 @@ interface PdfReportDesignerState {
   setSnapEnabled: (enabled: boolean) => void;
   flashingId: string | null;
   setFlashingId: (id: string | null) => void;
+  invalidElementIds: string[];
+  setInvalidElementIds: (ids: string[]) => void;
+  clearInvalidElementIds: () => void;
 }
 
 function snapshot(
@@ -66,6 +78,9 @@ export const usePdfReportDesignerStore = create<PdfReportDesignerState>((set, ge
   setSnapEnabled: (enabled) => set({ snapEnabled: enabled }),
   flashingId: null,
   setFlashingId: (id) => set({ flashingId: id }),
+  invalidElementIds: [],
+  setInvalidElementIds: (ids) => set({ invalidElementIds: [...new Set(ids)] }),
+  clearInvalidElementIds: () => set({ invalidElementIds: [] }),
 
   setElements: (elements) => {
     const byId: Record<string, PdfCanvasElement> = {};
@@ -213,11 +228,13 @@ export const usePdfReportDesignerStore = create<PdfReportDesignerState>((set, ge
       const el = s.elementsById[tableId];
       if (!el || el.type !== 'table') return s;
       if (el.columns.some((c) => c.path === column.path)) return s;
+      const columns = [...el.columns, column];
       return {
         elementsById: {
           ...s.elementsById,
-          [tableId]: { ...el, columns: [...el.columns, column] } as PdfCanvasElement,
+          [tableId]: { ...el, columns } as PdfCanvasElement,
         },
+        invalidElementIds: withoutInvalidTableIfFixed(s.invalidElementIds, tableId, columns.length),
       };
     });
     get().pushHistory();
@@ -232,6 +249,7 @@ export const usePdfReportDesignerStore = create<PdfReportDesignerState>((set, ge
           ...s.elementsById,
           [tableId]: { ...el, columns } as PdfCanvasElement,
         },
+        invalidElementIds: withoutInvalidTableIfFixed(s.invalidElementIds, tableId, columns.length),
       };
     });
     get().pushHistory();
@@ -263,6 +281,10 @@ export const usePdfReportDesignerStore = create<PdfReportDesignerState>((set, ge
           ...s.elementsById,
           [tableId]: { ...el, columns } as PdfCanvasElement,
         },
+        invalidElementIds:
+          columns.length > 0
+            ? withoutInvalidTableIfFixed(s.invalidElementIds, tableId, columns.length)
+            : [...new Set([...s.invalidElementIds, tableId])],
       };
     });
     get().pushHistory();

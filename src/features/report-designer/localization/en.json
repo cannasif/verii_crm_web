@@ -106,7 +106,9 @@
       "emptyQuotation": "Quote template not found",
       "emptyOrder": "Order template not found",
       "emptyFastQuotation": "Fast quotation template not found",
-      "emptyActivity": "Activity template not found"
+      "emptyActivity": "Activity template not found",
+      "noBoundFields": "Template has no bound data fields",
+      "noBoundFieldsHint": "Apply the V3RII Ready Template in the PDF designer and save, or drag fields from the palette."
     },
     "inspector": {
       "title": "controller",
@@ -387,6 +389,14 @@
     "qualityTitle": "Template quality",
     "qualitySubtitle": "Is this template clear enough for a first-time user?",
     "qualityReady": "The template passed the basic enterprise quality check.",
+    "validation": {
+      "failed": "Could not save — required fields are missing or invalid",
+      "bannerTitle": "Fix these issues before saving",
+      "bannerIntro": "Correct the fields marked in red. Drag columns from the left panel onto tables.",
+      "tableNoColumns": "Table must have at least one column (element {{index}})",
+      "tableNoColumnsHint": "Drag at least one column from the left panel onto this table.",
+      "elementIssue": "Element {{index}}: {{detail}}"
+    },
     "qualityIssues": {
       "title": "Template title is missing.",
       "elements": "No element has been placed on the page yet.",
@@ -403,11 +413,17 @@
     "presetGalleryTitle": "Ready template gallery",
     "presetGalleryDescription": "Instead of building from scratch, start from one of these safe template patterns.",
     "presetGallery": {
+      "v3riiQuotation": "V3RII Ready Template",
       "commercialStarter": "Full commercial starter",
       "compactSummary": "Compact summary layout",
       "lineFocused": "Line-focused layout",
-      "signatureReady": "Approval and signature layout"
+      "signatureReady": "Approval and signature layout",
+      "v3riiApplied": "V3RII ready template applied.",
+      "fieldsNotLoaded": "Field list is not loaded yet. Wait a few seconds and try again.",
+      "missingFields": "Required fields were not found in the API: {{fields}}"
     },
+    "fieldPathsRebound": "Template fields were matched to API paths.",
+    "unresolvedFieldPaths": "Unresolved fields: {{fields}}, columns: {{columns}}. Drag the correct fields from the palette and save.",
     "smartStartActions": {
       "applyStarter": "Apply starter layout",
       "addTable": "Add line table",
