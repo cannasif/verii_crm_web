@@ -32,6 +32,12 @@ import { useDeleteDemandLine } from '../hooks/useDeleteDemandLine';
 import { demandApi } from '../api/demand-api';
 import { formatCurrency } from '../utils/format-currency';
 import {
+  buildDocumentLineTableExportData,
+  buildDocumentLineTableExportLabels,
+  exportDocumentLineTablePdf,
+  exportDocumentLineTablePowerPoint,
+} from '@/lib/document-line-table-export';
+import {
   Trash2,
   Edit,
   Plus,
@@ -271,6 +277,20 @@ export function DemandLineTable({
     const found = currencyOptions.find((opt) => opt.dovizTipi === currency);
     return found?.code || 'TRY';
   }, [currency, currencyOptions]);
+
+  const lineTableExportData = useMemo(
+    () =>
+      buildDocumentLineTableExportData({
+        lines,
+        labels: buildDocumentLineTableExportLabels(
+          (key, options) => t(key, { ns: 'demand', ...options }),
+        ),
+        currencyCode,
+        formatCurrency,
+        windoMaps: { profilMap, demirMap, vidaMap, baskiMap },
+      }),
+    [lines, t, currencyCode, profilMap, demirMap, vidaMap, baskiMap],
+  );
 
   const linePrerequisitesInput = useMemo(
     () => ({
@@ -560,91 +580,27 @@ export function DemandLineTable({
   };
 
   const handleExportExcel = async (): Promise<void> => {
-    const dataToExport = lines.map((line) => ({
-      [t('lines.productCode')]: line.productCode,
-      [t('lines.productName')]: line.productName,
-      [t('lines.quantity')]: line.quantity,
-      [t('lines.unitPrice')]: formatCurrency(line.unitPrice, currencyCode),
-      [t('lines.vatRate')]: `%${line.vatRate}`,
-      [t('lines.lineTotal')]: formatCurrency(line.lineTotal, currencyCode),
-    }));
-
     const XLSX = await import('xlsx');
-    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const ws = XLSX.utils.json_to_sheet(lineTableExportData.excelRows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Talep Kalemleri');
     XLSX.writeFile(wb, 'talep-kalemleri.xlsx');
   };
 
   const handleExportPDF = async (): Promise<void> => {
-    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable'),
-    ]);
-    const doc = new JsPDF();
-    doc.setFontSize(16);
-    doc.text(t('lines.title'), 14, 18);
-    const headers = [
-      [
-        t('lines.productCode'),
-        t('lines.productName'),
-        t('lines.quantity'),
-        t('lines.unitPrice'),
-        t('lines.vatRate'),
-        t('lines.lineTotal'),
-      ],
-    ];
-    const data = lines.map((line) => [
-      line.productCode ?? '',
-      line.productName ?? '',
-      String(line.quantity),
-      formatCurrency(line.unitPrice, currencyCode),
-      `%${line.vatRate}`,
-      formatCurrency(line.lineTotal, currencyCode),
-    ]);
-    autoTable(doc, {
-      startY: 24,
-      head: headers,
-      body: data,
-      styles: { font: 'helvetica', fontStyle: 'normal' },
-      theme: 'grid',
+    await exportDocumentLineTablePdf({
+      fileName: 'talep-kalemleri.pdf',
+      title: t('lines.title'),
+      exportData: lineTableExportData,
     });
-    doc.save('talep-kalemleri.pdf');
   };
 
   const handleExportPowerPoint = async (): Promise<void> => {
-    const { default: PptxGenJS } = await import('pptxgenjs');
-    const pptx = new PptxGenJS();
-    const slide = pptx.addSlide();
-
-    slide.addText(t('lines.title'), { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
-
-    const headers = [
-      t('lines.productCode'),
-      t('lines.productName'),
-      t('lines.quantity'),
-      t('lines.unitPrice'),
-      t('lines.vatRate'),
-      t('lines.lineTotal'),
-    ];
-
-    const rows = lines.map((line) => [
-      line.productCode,
-      line.productName,
-      String(line.quantity),
-      formatCurrency(line.unitPrice, currencyCode),
-      `%${line.vatRate}`,
-      formatCurrency(line.lineTotal, currencyCode),
-    ]);
-
-    const tableData = [
-      headers.map((text) => ({ text, options: { bold: true, fill: 'F0F0F0' } })),
-      ...rows.map((row) => row.map((text) => ({ text }))),
-    ];
-
-    slide.addTable(tableData, { x: 0.5, y: 1.5, w: '90%' });
-
-    pptx.writeFile({ fileName: 'talep-kalemleri.pptx' });
+    await exportDocumentLineTablePowerPoint({
+      fileName: 'talep-kalemleri.pptx',
+      title: t('lines.title'),
+      exportData: lineTableExportData,
+    });
   };
 
   const quickPatchDeps = useMemo(

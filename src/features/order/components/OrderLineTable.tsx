@@ -31,6 +31,12 @@ import { useUpdateOrderLines } from '../hooks/useUpdateOrderLines';
 import { useDeleteOrderLine } from '../hooks/useDeleteOrderLine';
 import { orderApi } from '../api/order-api';
 import { formatCurrency } from '../utils/format-currency';
+import {
+  buildDocumentLineTableExportData,
+  buildDocumentLineTableExportLabels,
+  exportDocumentLineTablePdf,
+  exportDocumentLineTablePowerPoint,
+} from '@/lib/document-line-table-export';
 import { mergeLinesAfterMainLineUpdate } from '@/lib/merge-lines-after-main-update';
 import {
   applyOrderLineQuickFieldPatch,
@@ -271,6 +277,18 @@ export function OrderLineTable({
     const found = currencyOptions.find((opt) => opt.dovizTipi === currency);
     return found?.code || 'TRY';
   }, [currency, currencyOptions]);
+
+  const lineTableExportData = useMemo(
+    () =>
+      buildDocumentLineTableExportData({
+        lines,
+        labels: buildDocumentLineTableExportLabels((key, options) => t(key, options), 'order.lines'),
+        currencyCode,
+        formatCurrency,
+        windoMaps: { profilMap, demirMap, vidaMap, baskiMap },
+      }),
+    [lines, t, currencyCode, profilMap, demirMap, vidaMap, baskiMap],
+  );
 
   const linePrerequisitesInput = useMemo(
     () => ({
@@ -692,91 +710,27 @@ export function OrderLineTable({
   };
 
   const handleExportExcel = async (): Promise<void> => {
-    const dataToExport = lines.map((line) => ({
-      [t('order.lines.productCode')]: line.productCode,
-      [t('order.lines.productName')]: line.productName,
-      [t('order.lines.quantity')]: line.quantity,
-      [t('order.lines.unitPrice')]: formatCurrency(line.unitPrice, currencyCode),
-      [t('order.lines.vatRate')]: `%${line.vatRate}`,
-      [t('order.lines.lineTotal')]: formatCurrency(line.lineTotal, currencyCode),
-    }));
-
     const XLSX = await import('xlsx');
-    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const ws = XLSX.utils.json_to_sheet(lineTableExportData.excelRows);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Siparis Kalemleri');
     XLSX.writeFile(wb, 'siparis-kalemleri.xlsx');
   };
 
   const handleExportPDF = async (): Promise<void> => {
-    const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
-      import('jspdf'),
-      import('jspdf-autotable'),
-    ]);
-    const doc = new JsPDF();
-    doc.setFontSize(16);
-    doc.text(t('order.lines.title'), 14, 18);
-    const headers = [
-      [
-        t('order.lines.productCode'),
-        t('order.lines.productName'),
-        t('order.lines.quantity'),
-        t('order.lines.unitPrice'),
-        t('order.lines.vatRate'),
-        t('order.lines.lineTotal'),
-      ],
-    ];
-    const data = lines.map((line) => [
-      line.productCode ?? '',
-      line.productName ?? '',
-      String(line.quantity),
-      formatCurrency(line.unitPrice, currencyCode),
-      `%${line.vatRate}`,
-      formatCurrency(line.lineTotal, currencyCode),
-    ]);
-    autoTable(doc, {
-      startY: 24,
-      head: headers,
-      body: data,
-      styles: { font: 'helvetica', fontStyle: 'normal' },
-      theme: 'grid',
+    await exportDocumentLineTablePdf({
+      fileName: 'siparis-kalemleri.pdf',
+      title: t('order.lines.title'),
+      exportData: lineTableExportData,
     });
-    doc.save('siparis-kalemleri.pdf');
   };
 
   const handleExportPowerPoint = async (): Promise<void> => {
-    const { default: PptxGenJS } = await import('pptxgenjs');
-    const pptx = new PptxGenJS();
-    const slide = pptx.addSlide();
-
-    slide.addText(t('order.lines.title'), { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
-
-    const headers = [
-      t('order.lines.productCode'),
-      t('order.lines.productName'),
-      t('order.lines.quantity'),
-      t('order.lines.unitPrice'),
-      t('order.lines.vatRate'),
-      t('order.lines.lineTotal'),
-    ];
-
-    const rows = lines.map((line) => [
-      line.productCode,
-      line.productName,
-      String(line.quantity),
-      formatCurrency(line.unitPrice, currencyCode),
-      `%${line.vatRate}`,
-      formatCurrency(line.lineTotal, currencyCode),
-    ]);
-
-    const tableData = [
-      headers.map((text) => ({ text, options: { bold: true, fill: 'F0F0F0' } })),
-      ...rows.map((row) => row.map((text) => ({ text }))),
-    ];
-
-    slide.addTable(tableData, { x: 0.5, y: 1.5, w: '90%' });
-
-    pptx.writeFile({ fileName: 'siparis-kalemleri.pptx' });
+    await exportDocumentLineTablePowerPoint({
+      fileName: 'siparis-kalemleri.pptx',
+      title: t('order.lines.title'),
+      exportData: lineTableExportData,
+    });
   };
 
   return (
