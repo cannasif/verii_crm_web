@@ -25,7 +25,7 @@ import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPage
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Layers, Loader2, FileCheck, FileText, Share2, FileDown, MessageCircle, Mail, Save, X } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText, Share2, FileDown, MessageCircle, Mail, Save, X, ShoppingCart } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,6 +55,7 @@ import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { useCanEditQuotation } from '../hooks/useCanEditQuotation';
+import { useConvertQuotationToOrder } from '../hooks/useConvertQuotationToOrder';
 
 function addDaysToDateOnly(dateValue: string, days: number): string {
   const date = new Date(`${dateValue}T12:00:00`);
@@ -108,6 +109,7 @@ export function QuotationDetailPage(): ReactElement {
   const updateMutation = useUpdateQuotationBulk();
   const updateNotesMutation = useUpdateQuotationNotesList(quotationId);
   const startApprovalFlow = useStartApprovalFlow();
+  const convertToOrderMutation = useConvertQuotationToOrder();
   const { data: customerOptions = [] } = useCustomerOptions();
 
   const [lines, setLines] = useState<QuotationLineFormState[]>([]);
@@ -672,6 +674,15 @@ export function QuotationDetailPage(): ReactElement {
     });
   };
 
+  const handleConvertToOrder = async (): Promise<void> => {
+    if (!quotation) return;
+
+    const result = await convertToOrderMutation.mutateAsync(quotation.id);
+    if (result.success && result.data) {
+      navigate(`/orders/${result.data}`);
+    }
+  };
+
   if (isLoading || isLoadingCanEdit || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
@@ -956,6 +967,30 @@ export function QuotationDetailPage(): ReactElement {
                       <>
                         <Send className="h-4 w-4 mr-2" />
                         {t('approval.sendForApproval')}
+                      </>
+                    )}
+                  </Button>
+                )}
+
+                {quotationStatus === 2 && (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => {
+                      void handleConvertToOrder();
+                    }}
+                    disabled={convertToOrderMutation.isPending || !quotation}
+                    className="h-10 w-full sm:w-auto"
+                  >
+                    {convertToOrderMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {t('list.convertToOrderPending', { defaultValue: 'Siparişe aktarılıyor...' })}
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        {t('list.convertToOrder', { defaultValue: 'Siparişe Aktar' })}
                       </>
                     )}
                   </Button>
