@@ -8,7 +8,7 @@
   "deleteConfirmMessage": "Zuordnung zwischen {{salesRep}} und {{user}} löschen?",
   "table": {
     "title": "Liste der Verkaufspersonen-Zuordnungen",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Vertriebsmitarbeitercode",
     "salesRepName": "Name des Verkaufspersonens",
     "userFullName": "Benutzer",
     "username": "Benutzername",

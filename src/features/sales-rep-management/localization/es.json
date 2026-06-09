@@ -9,7 +9,7 @@
   "table": {
     "title": "Lista de representantes de ventas",
     "branchCode": "Código de Sucursal",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Código Rep. Ventas",
     "salesRepDescription": "Descripción",
     "name": "Nombre",
     "createdDate": "Fecha de creación"
@@ -19,7 +19,7 @@
     "addDescription": "Crear manualmente un registro de código de representante de ventas.",
     "branchCode": "Código de Sucursal",
     "branchCodePlaceholder": "Ingrese el código de sucursal",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Código Rep. Ventas",
     "salesRepCodePlaceholder": "Ingrese el código",
     "salesRepDescription": "Descripción",
     "salesRepDescriptionPlaceholder": "Ingrese la descripción",

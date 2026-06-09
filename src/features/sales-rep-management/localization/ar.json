@@ -9,7 +9,7 @@
   "table": {
     "title": "قائمة مندوبي المبيعات",
     "branchCode": "رمز الفرع",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "رمز مندوب المبيعات",
     "salesRepDescription": "الوصف",
     "name": "الاسم",
     "createdDate": "تاريخ الإنشاء"
@@ -19,7 +19,7 @@
     "addDescription": "إنشاء سجل رمز مندوب المبيعات يدويًا.",
     "branchCode": "رمز الفرع",
     "branchCodePlaceholder": "أدخل رمز الفرع",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "رمز مندوب المبيعات",
     "salesRepCodePlaceholder": "أدخل الرمز",
     "salesRepDescription": "الوصف",
     "salesRepDescriptionPlaceholder": "أدخل الوصف",

@@ -9,7 +9,7 @@
   "table": {
     "title": "Liste der Verkaufspersonen",
     "branchCode": "Filialcode",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Vertriebsmitarbeitercode",
     "salesRepDescription": "Beschreibung",
     "name": "Name",
     "createdDate": "Erstellungsdatum"
@@ -19,7 +19,7 @@
     "addDescription": "Einen Verkaufspersonencode-Datensatz manuell erstellen.",
     "branchCode": "Filialcode",
     "branchCodePlaceholder": "Filialcode eingeben",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Vertriebsmitarbeitercode",
     "salesRepCodePlaceholder": "Code eingeben",
     "salesRepDescription": "Beschreibung",
     "salesRepDescriptionPlaceholder": "Beschreibung eingeben",

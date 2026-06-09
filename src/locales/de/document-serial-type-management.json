@@ -34,9 +34,11 @@
     "selectRuleType": "Regeltyp auswählen",
     "customerType": "Kundentyp",
     "selectCustomerType": "Wählen Sie einen Kundentyp (optional)",
+    "searchCustomerType": "Kundentyp suchen...",
     "noCustomerTypeSelected": "Kein Kundentyp ausgewählt",
     "salesRep": "Vertriebsmitarbeiter",
     "selectSalesRep": "Wählen Sie einen Vertriebsmitarbeiter (optional)",
+    "searchSalesRep": "Vertriebsmitarbeiter suchen...",
     "noSalesRepSelected": "Kein Vertriebsmitarbeiter ausgewählt",
     "serialPrefix": "Serienpräfix",
     "serialPrefix.required": "Serienpräfix ist erforderlich",
@@ -62,6 +64,14 @@
     "columnCustomerTypeName": "Kundentyp",
     "columnSalesRepFullName": "Vertriebsmitarbeiter",
     "columnRuleType": "Regeltyp"
+  },
+  "messages": {
+    "createSuccess": "Dokumentenserientyp erfolgreich erstellt",
+    "createError": "Ein Fehler ist beim Erstellen des Dokumentenserientyps aufgetreten",
+    "updateSuccess": "Dokumentenserientyp erfolgreich aktualisiert",
+    "updateError": "Ein Fehler ist beim Aktualisieren des Dokumentenserientyps aufgetreten",
+    "deleteSuccess": "Dokumentenserientyp erfolgreich gelöscht",
+    "deleteError": "Ein Fehler ist beim Löschen des Dokumentenserientyps aufgetreten"
   },
   "common": {
     "delete": "Löschen"

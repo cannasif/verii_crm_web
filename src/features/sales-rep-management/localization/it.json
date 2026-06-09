@@ -9,7 +9,7 @@
   "table": {
     "title": "Elenco rappresentanti commerciali",
     "branchCode": "Codice deposito",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Codice Rapp. Vendite",
     "salesRepDescription": "Descrizione",
     "name": "Nome",
     "createdDate": "Data di creazione"
@@ -19,7 +19,7 @@
     "addDescription": "Crea manualmente un codice rappresentante commerciale.",
     "branchCode": "Codice deposito",
     "branchCodePlaceholder": "Inserisci codice deposito",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Codice Rapp. Vendite",
     "salesRepCodePlaceholder": "Inserisci codice",
     "salesRepDescription": "Descrizione",
     "salesRepDescriptionPlaceholder": "Inserisci descrizione",

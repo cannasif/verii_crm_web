@@ -8,7 +8,7 @@
   "deleteConfirmMessage": "Eliminare l'associazione tra {{salesRep}} e {{user}}?",
   "table": {
     "title": "Elenco associazioni rappresentante commerciale",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Codice Rapp. Vendite",
     "salesRepName": "Nome del rappresentante commerciale",
     "userFullName": "Utente",
     "username": "Nome utente",

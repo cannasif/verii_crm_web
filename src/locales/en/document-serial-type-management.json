@@ -34,9 +34,11 @@
     "selectRuleType": "Select rule type",
     "customerType": "Customer Type",
     "selectCustomerType": "Select customer type (optional)",
+    "searchCustomerType": "Search customer type...",
     "noCustomerTypeSelected": "No customer type selected",
     "salesRep": "Sales Representative",
     "selectSalesRep": "Select sales representative (optional)",
+    "searchSalesRep": "Search sales representative...",
     "noSalesRepSelected": "No sales representative selected",
     "serialPrefix": "Serial Prefix",
     "serialPrefix.required": "Serial prefix is required",
@@ -62,6 +64,14 @@
     "columnCustomerTypeName": "Customer Type",
     "columnSalesRepFullName": "Sales Representative",
     "columnRuleType": "Rule Type"
+  },
+  "messages": {
+    "createSuccess": "Document serial type created successfully",
+    "createError": "An error occurred while creating the document serial type",
+    "updateSuccess": "Document serial type updated successfully",
+    "updateError": "An error occurred while updating the document serial type",
+    "deleteSuccess": "Document serial type deleted successfully",
+    "deleteError": "An error occurred while deleting the document serial type"
   },
   "common": {
     "delete": "Delete"

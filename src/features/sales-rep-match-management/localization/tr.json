@@ -8,7 +8,7 @@
   "deleteConfirmMessage": "{{salesRep}} ve {{user}} eşleşmesi silinsin mi?",
   "table": {
     "title": "Satış temsilcisi eşleşme listesi",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Satış Temsilcisi Kodu",
     "salesRepName": "Satış Temsilcisi Adı",
     "userFullName": "Kullanıcı",
     "username": "Kullanıcı Adı",

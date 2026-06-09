@@ -8,7 +8,7 @@
   "deleteConfirmMessage": "¿Eliminar la asignación entre {{salesRep}} y {{user}}?",
   "table": {
     "title": "Lista de asignaciones de representantes de ventas",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Código Rep. Ventas",
     "salesRepName": "Nombre del representante de ventas",
     "userFullName": "Usuario",
     "username": "Nombre de usuario",
