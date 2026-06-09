@@ -498,6 +498,36 @@ export const quotationApi = {
     }
   },
 
+  convertToOrder: async (quotationId: number): Promise<ApiResponse<number>> => {
+    try {
+      const response = await api.post<ApiResponse<number>>(
+        `/api/quotation/convert-to-order/${quotationId}`
+      );
+      if (!response.success) {
+        throw new Error(response.message || response.exceptionMessage || 'Teklif siparişe aktarılamadı');
+      }
+      return response;
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: unknown; status?: number } };
+        if (axiosError.response?.data) {
+          const payload = axiosError.response.data as {
+            message?: string;
+            exceptionMessage?: string;
+            errors?: string[];
+          };
+          const userMessage =
+            payload.message ||
+            payload.exceptionMessage ||
+            payload.errors?.find((item) => typeof item === 'string' && item.trim().length > 0) ||
+            'Teklif siparişe aktarılamadı';
+          throw new Error(userMessage);
+        }
+      }
+      throw error;
+    }
+  },
+
   getQuotationRelatedUsers: async (userId: number): Promise<ApprovalScopeUserDto[]> => {
     const response = await api.get<ApiResponse<ApprovalScopeUserDto[]>>(
       `/api/Quotation/related-users/${userId}`

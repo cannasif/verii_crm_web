@@ -41,6 +41,7 @@ import { formatCurrency } from '../utils/format-currency';
 import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
+import { useConvertQuotationToOrder } from '../hooks/useConvertQuotationToOrder';
 const GoogleCustomerMailDialog = lazy(() =>
   import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
 );
@@ -114,6 +115,7 @@ export function QuotationListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
   const createRevisionMutation = useCreateRevisionOfQuotation();
+  const convertToOrderMutation = useConvertQuotationToOrder();
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -434,20 +436,36 @@ export function QuotationListPage(): ReactElement {
     setOutlookMailDialogOpen(true);
   };
 
+  const handleConvertToOrder = async (event: React.MouseEvent, quotationId: number): Promise<void> => {
+    event.stopPropagation();
+    try {
+      await convertToOrderMutation.mutateAsync(quotationId);
+      await handleRefresh();
+    } catch {
+      void 0;
+    }
+  };
+
   const renderActionsCell = (quotation: QuotationGetDto): ReactElement => (
     <DocumentListRowActions
       detailLabel={t('list.detail', { defaultValue: 'Detay' })}
       gmailLabel={t('list.sendGmail', { defaultValue: 'Gmail Gönder' })}
       outlookLabel={t('list.sendOutlook', { defaultValue: 'Outlook Gönder' })}
       reviseLabel={t('list.revise', { defaultValue: 'Revize Et' })}
+      convertToOrderLabel={t('list.convertToOrder', { defaultValue: 'Siparişe Aktar' })}
       onDetail={() => navigate(`/quotations/${quotation.id}`)}
       onGmail={(event) => handleOpenMailDialog(event, quotation)}
       onOutlook={(event) => handleOpenOutlookMailDialog(event, quotation)}
       onRevise={(event) => {
         void handleRevision(event, quotation.id);
       }}
+      onConvertToOrder={(event) => {
+        void handleConvertToOrder(event, quotation.id);
+      }}
       isRevisePending={createRevisionMutation.isPending}
+      isConvertToOrderPending={convertToOrderMutation.isPending}
       showRevise={quotation.status === 0 || quotation.status === 3}
+      showConvertToOrder={quotation.status === 2}
     />
   );
 
