@@ -10,6 +10,8 @@ import type {
   WhatsappQuoteDraftConvertRequestDto,
   WhatsappQuoteDraftSendRequestDto,
   WhatsappTestMessageDto,
+  WhatsappQuotationSendRequestDto,
+  WhatsappDocumentSendRequestDto,
 } from '../types/whatsapp-integration.types';
 
 export function useUpdateWhatsappSettingsMutation() {
@@ -77,6 +79,41 @@ export function useSendWhatsappQuoteDraftMutation() {
     },
     onError: (error: Error) => {
       toast.error(error.message || t('drafts.actions.sendError'));
+    },
+  });
+}
+
+export function useSendWhatsappQuotationMutation() {
+  const { t } = useTranslation('whatsapp-integration');
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ quotationId, payload }: { quotationId: number; payload: WhatsappQuotationSendRequestDto }) =>
+      whatsappIntegrationApi.sendQuotation(quotationId, payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: WHATSAPP_STATUS_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: WHATSAPP_LOGS_QUERY_KEY });
+      toast.success(t('quotationSend.sendSuccess'));
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('quotationSend.sendError'));
+    },
+  });
+}
+
+export function useSendWhatsappDocumentMutation() {
+  const { t } = useTranslation('whatsapp-integration');
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: WhatsappDocumentSendRequestDto) => whatsappIntegrationApi.sendDocument(payload),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: WHATSAPP_STATUS_QUERY_KEY });
+      await queryClient.invalidateQueries({ queryKey: WHATSAPP_LOGS_QUERY_KEY });
+      toast.success(t('quotationSend.sendSuccess'));
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || t('quotationSend.sendError'));
     },
   });
 }

@@ -10,6 +10,10 @@ import type {
   WhatsappIntegrationStatusDto,
   WhatsappSendMessageResultDto,
   WhatsappTestMessageDto,
+  WhatsappQuotationSendRequestDto,
+  WhatsappQuotationSendResultDto,
+  WhatsappDocumentSendRequestDto,
+  WhatsappDocumentSendResultDto,
 } from '../types/whatsapp-integration.types';
 
 const WHATSAPP_INTEGRATION_BASE = '/api/integrations/whatsapp';
@@ -154,5 +158,34 @@ export const whatsappIntegrationApi = {
     }
 
     throw new Error(getErrorMessage(response, 'WhatsApp quote draft could not be sent.'));
+  },
+
+  sendQuotation: async (
+    quotationId: number,
+    payload: WhatsappQuotationSendRequestDto
+  ): Promise<WhatsappQuotationSendResultDto> => {
+    const response = await api.post<ApiResponse<WhatsappQuotationSendResultDto>>(
+      `${WHATSAPP_INTEGRATION_BASE}/quotations/${quotationId}/send`,
+      payload
+    );
+
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(getErrorMessage(response, 'Quotation could not be sent through WhatsApp.'));
+  },
+
+  sendDocument: async (payload: WhatsappDocumentSendRequestDto): Promise<WhatsappDocumentSendResultDto> => {
+    const response = await api.post<ApiResponse<WhatsappDocumentSendResultDto>>(
+      `${WHATSAPP_INTEGRATION_BASE}/send-document`,
+      payload
+    );
+
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(getErrorMessage(response, 'Document could not be sent through WhatsApp.'));
   },
 };
