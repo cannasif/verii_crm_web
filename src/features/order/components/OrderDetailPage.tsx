@@ -147,7 +147,7 @@ export function OrderDetailPage(): ReactElement {
           shippingAddressId: order.shippingAddressId || null,
           representativeId: order.representativeId || null,
           projectCode: projectCodeValue,
-          status: order.status || null,
+          status: order.status ?? null,
           description: order.description || null,
           paymentTypeId: order.paymentTypeId || null,
           documentSerialTypeId: order.documentSerialTypeId || null,
@@ -166,6 +166,8 @@ export function OrderDetailPage(): ReactElement {
   useEffect(() => {
     linesInitializedRef.current = false;
     notesInitializedRef.current = false;
+    exchangeRatesInitializedRef.current = false;
+    formInitializedRef.current = false;
   }, [orderId]);
 
   useEffect(() => {
@@ -345,6 +347,13 @@ export function OrderDetailPage(): ReactElement {
         throw new Error(t('order.update.invalidCurrency'));
       }
 
+      const normalizedStatus =
+        data.order.status == null || Number.isNaN(Number(data.order.status))
+          ? Number.isFinite(orderStatus)
+            ? orderStatus
+            : 0
+          : Number(data.order.status);
+
       const orderData: CreateOrderDto = {
         offerType: data.order.offerType,
         currency: currencyValue,
@@ -354,7 +363,7 @@ export function OrderDetailPage(): ReactElement {
         shippingAddressId: (data.order.shippingAddressId && data.order.shippingAddressId > 0) ? data.order.shippingAddressId : null,
         representativeId: (data.order.representativeId && data.order.representativeId > 0) ? data.order.representativeId : null,
         projectCode: data.order.projectCode || null,
-        status: (data.order.status && data.order.status > 0) ? data.order.status : null,
+        status: normalizedStatus,
         description: data.order.description || null,
         paymentTypeId: (data.order.paymentTypeId && data.order.paymentTypeId > 0) ? data.order.paymentTypeId : null,
         documentSerialTypeId: (data.order.documentSerialTypeId && data.order.documentSerialTypeId > 0) ? data.order.documentSerialTypeId : null,
@@ -683,7 +692,7 @@ export function OrderDetailPage(): ReactElement {
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
-                {order?.status === 0 && !isReadOnly && orderStatus !== 4 && (
+                {orderStatus === 0 && !isReadOnly && (
                   <Button
                     type="button"
                     variant="secondary"

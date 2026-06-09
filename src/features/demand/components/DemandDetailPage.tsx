@@ -147,7 +147,7 @@ export function DemandDetailPage(): ReactElement {
           shippingAddressId: demand.shippingAddressId || null,
           representativeId: demand.representativeId || null,
           projectCode: projectCodeValue,
-          status: demand.status || null,
+          status: demand.status ?? null,
           description: demand.description || null,
           paymentTypeId: demand.paymentTypeId || null,
           documentSerialTypeId: demand.documentSerialTypeId || null,
@@ -166,6 +166,8 @@ export function DemandDetailPage(): ReactElement {
   useEffect(() => {
     linesInitializedRef.current = false;
     notesInitializedRef.current = false;
+    exchangeRatesInitializedRef.current = false;
+    formInitializedRef.current = false;
   }, [demandId]);
 
   useEffect(() => {
@@ -345,6 +347,13 @@ export function DemandDetailPage(): ReactElement {
         throw new Error(t('update.invalidCurrency'));
       }
 
+      const normalizedStatus =
+        data.demand.status == null || Number.isNaN(Number(data.demand.status))
+          ? Number.isFinite(demandStatus)
+            ? demandStatus
+            : 0
+          : Number(data.demand.status);
+
       const demandData: CreateDemandDto = {
         offerType: data.demand.offerType,
         currency: currencyValue,
@@ -354,7 +363,7 @@ export function DemandDetailPage(): ReactElement {
         shippingAddressId: (data.demand.shippingAddressId && data.demand.shippingAddressId > 0) ? data.demand.shippingAddressId : null,
         representativeId: (data.demand.representativeId && data.demand.representativeId > 0) ? data.demand.representativeId : null,
         projectCode: data.demand.projectCode || null,
-        status: (data.demand.status && data.demand.status > 0) ? data.demand.status : null,
+        status: normalizedStatus,
         description: data.demand.description || null,
         paymentTypeId: (data.demand.paymentTypeId && data.demand.paymentTypeId > 0) ? data.demand.paymentTypeId : null,
         documentSerialTypeId: (data.demand.documentSerialTypeId && data.demand.documentSerialTypeId > 0) ? data.demand.documentSerialTypeId : null,
@@ -682,7 +691,7 @@ export function DemandDetailPage(): ReactElement {
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
-                {demand?.status === 0 && !isReadOnly && demandStatus !== 4 && (
+                {demandStatus === 0 && !isReadOnly && (
                   <Button
                     type="button"
                     variant="secondary"

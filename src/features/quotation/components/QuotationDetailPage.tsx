@@ -205,7 +205,7 @@ export function QuotationDetailPage(): ReactElement {
               ),
           shippingAddressId: quotation.shippingAddressId || null,
           representativeId: quotation.representativeId || null,
-          status: quotation.status || null,
+          status: quotation.status ?? null,
           description: quotation.description || null,
           paymentTypeId: quotation.paymentTypeId || undefined,
           documentSerialTypeId: quotation.documentSerialTypeId || null,
@@ -226,6 +226,8 @@ export function QuotationDetailPage(): ReactElement {
     linesInitializedRef.current = false;
     notesInitializedRef.current = false;
     exchangeRatesInitializedRef.current = false;
+    formInitializedRef.current = false;
+    offerDateSyncInitializedRef.current = false;
   }, [quotationId]);
 
   useEffect(() => {
@@ -527,6 +529,13 @@ export function QuotationDetailPage(): ReactElement {
         throw new Error(t('update.invalidCurrency'));
       }
 
+      const normalizedStatus =
+        data.quotation.status == null || Number.isNaN(Number(data.quotation.status))
+          ? Number.isFinite(quotationStatus)
+            ? quotationStatus
+            : 0
+          : Number(data.quotation.status);
+
       const quotationData: CreateQuotationDto = {
         offerType: data.quotation.offerType,
         currency: currencyValue,
@@ -535,7 +544,7 @@ export function QuotationDetailPage(): ReactElement {
         deliveryDate: data.quotation.deliveryDate || null,
         shippingAddressId: (data.quotation.shippingAddressId && data.quotation.shippingAddressId > 0) ? data.quotation.shippingAddressId : null,
         representativeId: (data.quotation.representativeId && data.quotation.representativeId > 0) ? data.quotation.representativeId : null,
-        status: (data.quotation.status && data.quotation.status > 0) ? data.quotation.status : null,
+        status: normalizedStatus,
         description: data.quotation.description || null,
         paymentTypeId: (data.quotation.paymentTypeId && data.quotation.paymentTypeId > 0) ? data.quotation.paymentTypeId : null,
         documentSerialTypeId: (data.quotation.documentSerialTypeId && data.quotation.documentSerialTypeId > 0) ? data.quotation.documentSerialTypeId : null,
@@ -922,7 +931,7 @@ export function QuotationDetailPage(): ReactElement {
                   </FormSubmitTooltipWrap>
                 )}
 
-                {quotation?.status === 0 && !isReadOnly && quotationStatus !== 4 && (
+                {quotationStatus === 0 && !isReadOnly && (
                   <Button
                     type="button"
                     variant="secondary"
