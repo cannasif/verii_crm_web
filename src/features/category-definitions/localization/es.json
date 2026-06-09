@@ -43,7 +43,7 @@
     "stocksGuideDescription": "Aquí decide qué productos pertenecen a la categoría seleccionada. Puede asignar stocks uno a uno si lo necesita.",
     "stocksHelperText": "Flujo sencillo: primero elija una categoría, después pulse «Asignar stock» y elija el producto en la lista.",
     "rulesGuideTitle": "¿Qué hace la pantalla de reglas?",
-    "rulesGuideDescription": "Si no quiere asignar productos similares uno a uno, defina aquí una regla. Por ejemplo, si Código1 = GLASS, colóquelos en esta categoría.",
+    "rulesGuideDescription": "Si no quiere asignar productos similares uno a uno, defina aquí una regla. Por ejemplo, si Código1 = VIDRIO, colóquelos en esta categoría.",
     "rulesHelperText": "Primero cree la regla. Después use «Vista previa de reglas» para ver qué ocurrirá. Si es correcto, use «Aplicar reglas» para asignar automáticamente.",
     "selectionTitle": "Estado de la selección",
     "selectionDescription": "Use el panel derecho para ver de un vistazo el catálogo, la categoría y los stocks vinculados seleccionados.",

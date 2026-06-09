@@ -1,58 +1,66 @@
 {
   "page": {
-    "title": "Windo profile / rebar / screw definitions",
-    "description": "Manage profile, rebar, and screw records using the same paged table pattern as other definition screens.",
-    "documentTitle": "Windo profile / rebar / screw"
+    "title": "Définitions de Profil / Fer / Vis Windo",
+    "description": "Gérez les profils, fers et vis à l'aide de la même structure de tableau que les autres écrans de définition.",
+    "documentTitle": "Profil / Fer / Vis Windo"
   },
   "sections": {
     "profil": {
-      "title": "Profile definitions",
-      "description": "Manage profile options selectable on document lines."
+      "title": "Définitions de profil",
+      "description": "Gérez les options de profil sélectionnables sur les lignes de document."
     },
     "demir": {
-      "title": "Rebar definitions",
-      "description": "Manage rebar options selectable on document lines."
+      "title": "Définitions de fer",
+      "description": "Gérez les options de fer sélectionnables sur les lignes de document."
     },
     "vida": {
-      "title": "Screw definitions",
-      "description": "Manage screw options selectable on document lines."
+      "title": "Définitions de vis",
+      "description": "Gérez les options de vis sélectionnables sur les lignes de document."
+    },
+    "baski": {
+      "title": "Définitions d'impression",
+      "description": "Gérez les options d'impression sélectionnables sur les lignes de document."
     }
   },
   "table": {
     "id": "ID",
-    "name": "Name",
-    "profilName": "Profile",
-    "createdDate": "Created",
-    "updatedDate": "Updated",
-    "newRecord": "New record",
-    "searchPlaceholder": "Search definitions...",
-    "refresh": "Refresh",
-    "loading": "Loading definitions...",
-    "empty": "No records found.",
+    "name": "Nom",
+    "profilName": "Profil",
+    "createdDate": "Créé le",
+    "updatedDate": "Mis à jour le",
+    "newRecord": "Nouvel enregistrement",
+    "searchPlaceholder": "Rechercher des définitions...",
+    "refresh": "Actualiser",
+    "loading": "Chargement des définitions...",
+    "empty": "Aucun enregistrement trouvé.",
     "actions": "Actions",
-    "previous": "Previous",
-    "next": "Next",
-    "pagination": "Showing {{from}}-{{to}} of {{total}} records",
-    "filterName": "Name",
+    "previous": "Précédent",
+    "next": "Suivant",
+    "pagination": "Affichage de {{from}} à {{to}} sur {{total}} enregistrements",
+    "filterName": "Nom",
     "dateDash": "-"
   },
   "dialog": {
-    "editTitle": "Edit {{section}}",
-    "addTitle": "Add {{section}}",
-    "nameLabel": "Name",
-    "profilLabel": "Linked profile",
-    "profilPlaceholder": "Select a profile",
-    "profilSearchPlaceholder": "Search profile",
-    "cancel": "Cancel",
-    "save": "Save"
+    "editTitle": "Modifier {{section}}",
+    "addTitle": "Ajouter {{section}}",
+    "nameLabel": "Nom",
+    "profilLabel": "Profil lié",
+    "profilPlaceholder": "Sélectionner un profil",
+    "profilSearchPlaceholder": "Rechercher un profil",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "demirNameLabel": "Nom du fer",
+    "demirNamePlaceholder": "Nom du fer lié",
+    "vidaNameLabel": "Nom de la vis",
+    "vidaNamePlaceholder": "Nom de la vis liée"
   },
   "validation": {
-    "nameRequired": "Name is required",
-    "profilRequired": "Profile selection is required"
+    "nameRequired": "Le nom est requis",
+    "profilRequired": "La sélection d'un profil est requise"
   },
   "toasts": {
-    "created": "{{section}} record created",
-    "updated": "{{section}} record updated",
-    "deleted": "{{section}} record deleted"
+    "created": "Enregistrement {{section}} créé",
+    "updated": "Enregistrement {{section}} mis à jour",
+    "deleted": "Enregistrement {{section}} supprimé"
   }
 }

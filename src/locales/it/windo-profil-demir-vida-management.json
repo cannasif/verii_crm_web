@@ -1,58 +1,66 @@
 {
   "page": {
-    "title": "Windo profile / rebar / screw definitions",
-    "description": "Manage profile, rebar, and screw records using the same paged table pattern as other definition screens.",
-    "documentTitle": "Windo profile / rebar / screw"
+    "title": "Definizioni Profilo / Ferro / Vite Windo",
+    "description": "Gestisci profili, ferri e viti utilizzando lo stesso schema a tabella di altre schermate di definizione.",
+    "documentTitle": "Profilo / Ferro / Vite Windo"
   },
   "sections": {
     "profil": {
-      "title": "Profile definitions",
-      "description": "Manage profile options selectable on document lines."
+      "title": "Definizioni profilo",
+      "description": "Gestisci le opzioni del profilo selezionabili nelle righe dei documenti."
     },
     "demir": {
-      "title": "Rebar definitions",
-      "description": "Manage rebar options selectable on document lines."
+      "title": "Definizioni ferro",
+      "description": "Gestisci le opzioni del ferro selezionabili nelle righe dei documenti."
     },
     "vida": {
-      "title": "Screw definitions",
-      "description": "Manage screw options selectable on document lines."
+      "title": "Definizioni vite",
+      "description": "Gestisci le opzioni della vite selezionabili nelle righe dei documenti."
+    },
+    "baski": {
+      "title": "Definizioni stampa",
+      "description": "Gestisci le opzioni di stampa selezionabili nelle righe dei documenti."
     }
   },
   "table": {
     "id": "ID",
-    "name": "Name",
-    "profilName": "Profile",
-    "createdDate": "Created",
-    "updatedDate": "Updated",
-    "newRecord": "New record",
-    "searchPlaceholder": "Search definitions...",
-    "refresh": "Refresh",
-    "loading": "Loading definitions...",
-    "empty": "No records found.",
-    "actions": "Actions",
-    "previous": "Previous",
-    "next": "Next",
-    "pagination": "Showing {{from}}-{{to}} of {{total}} records",
-    "filterName": "Name",
+    "name": "Nome",
+    "profilName": "Profilo",
+    "createdDate": "Creato il",
+    "updatedDate": "Aggiornato il",
+    "newRecord": "Nuovo record",
+    "searchPlaceholder": "Cerca definizioni...",
+    "refresh": "Aggiorna",
+    "loading": "Caricamento definizioni...",
+    "empty": "Nessun record trovato.",
+    "actions": "Azioni",
+    "previous": "Precedente",
+    "next": "Successivo",
+    "pagination": "Mostrando {{from}}-{{to}} di {{total}} record",
+    "filterName": "Nome",
     "dateDash": "-"
   },
   "dialog": {
-    "editTitle": "Edit {{section}}",
-    "addTitle": "Add {{section}}",
-    "nameLabel": "Name",
-    "profilLabel": "Linked profile",
-    "profilPlaceholder": "Select a profile",
-    "profilSearchPlaceholder": "Search profile",
-    "cancel": "Cancel",
-    "save": "Save"
+    "editTitle": "Modifica {{section}}",
+    "addTitle": "Aggiungi {{section}}",
+    "nameLabel": "Nome",
+    "profilLabel": "Profilo collegato",
+    "profilPlaceholder": "Seleziona un profilo",
+    "profilSearchPlaceholder": "Cerca profilo",
+    "cancel": "Annulla",
+    "save": "Salva",
+    "demirNameLabel": "Nome ferro",
+    "demirNamePlaceholder": "Nome ferro collegato",
+    "vidaNameLabel": "Nome vite",
+    "vidaNamePlaceholder": "Nome vite collegata"
   },
   "validation": {
-    "nameRequired": "Name is required",
-    "profilRequired": "Profile selection is required"
+    "nameRequired": "Il nome è obbligatorio",
+    "profilRequired": "La selezione di un profilo è obbligatoria"
   },
   "toasts": {
-    "created": "{{section}} record created",
-    "updated": "{{section}} record updated",
-    "deleted": "{{section}} record deleted"
+    "created": "Record {{section}} creato",
+    "updated": "Record {{section}} aggiornato",
+    "deleted": "Record {{section}} eliminato"
   }
 }

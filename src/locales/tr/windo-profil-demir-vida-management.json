@@ -48,7 +48,11 @@
     "profilPlaceholder": "Profil seçin",
     "profilSearchPlaceholder": "Profil ara",
     "cancel": "İptal",
-    "save": "Kaydet"
+    "save": "Kaydet",
+    "demirNameLabel": "Demir adı",
+    "demirNamePlaceholder": "Bağlı demir adı",
+    "vidaNameLabel": "Vida adı",
+    "vidaNamePlaceholder": "Bağlı vida adı"
   },
   "validation": {
     "nameRequired": "Ad alanı zorunludur",

@@ -36,7 +36,7 @@ export function WindoQuickCreateDialog({
   profilOptions,
   onCreated,
 }: WindoQuickCreateDialogProps): ReactElement {
-  const { i18n, t } = useTranslation(['common']);
+  const { i18n, t } = useTranslation(['windo-profil-demir-vida-management', 'common']);
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
   const [demirName, setDemirName] = useState('');
@@ -190,20 +190,20 @@ export function WindoQuickCreateDialog({
           {createsBundle ? (
             <>
               <div className="space-y-2">
-                <Label>{i18n.language.startsWith('tr') ? 'Demir adı' : 'Rebar name'}</Label>
+                <Label>{t('dialog.demirNameLabel')}</Label>
                 <Input
                   value={demirName}
                   onChange={(event) => setDemirName(event.target.value)}
-                  placeholder={i18n.language.startsWith('tr') ? 'Bağlı demir adı' : 'Linked rebar name'}
+                  placeholder={t('dialog.demirNamePlaceholder')}
                   maxLength={150}
                 />
               </div>
               <div className="space-y-2">
-                <Label>{i18n.language.startsWith('tr') ? 'Vida adı' : 'Screw name'}</Label>
+                <Label>{t('dialog.vidaNameLabel')}</Label>
                 <Input
                   value={vidaName}
                   onChange={(event) => setVidaName(event.target.value)}
-                  placeholder={i18n.language.startsWith('tr') ? 'Bağlı vida adı' : 'Linked screw name'}
+                  placeholder={t('dialog.vidaNamePlaceholder')}
                   maxLength={150}
                 />
               </div>
