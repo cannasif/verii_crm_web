@@ -301,7 +301,8 @@ export function UserDiscountLimitManagementPage(): ReactElement {
                 const val = row[key];
                 if (val == null && val !== 0) return '-';
                 if (key === 'createdDate' || key === 'updatedDate') {
-                  return new Date(String(val)).toLocaleDateString(i18n.language);
+                  const dateStr = new Date(String(val)).toLocaleDateString(i18n.language).replace(/[\u200E\u200F]/g, '');
+                  return <span dir="ltr">{dateStr}</span>;
                 }
                 if (key === 'maxDiscount1' || key === 'maxDiscount2' || key === 'maxDiscount3') {
                   return val != null ? `${Number(val).toFixed(2)}%` : '-';

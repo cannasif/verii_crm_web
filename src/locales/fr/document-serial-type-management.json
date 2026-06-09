@@ -34,9 +34,11 @@
     "selectRuleType": "Sélectionnez un type de règle",
     "customerType": "Type de client",
     "selectCustomerType": "Sélectionner le type de client (optionnel)",
+    "searchCustomerType": "Rechercher le type de client...",
     "noCustomerTypeSelected": "Aucun type de client sélectionné",
     "salesRep": "Représentant commercial",
     "selectSalesRep": "Sélectionner le représentant commercial (optionnel)",
+    "searchSalesRep": "Rechercher un représentant...",
     "noSalesRepSelected": "Aucun représentant commercial sélectionné",
     "serialPrefix": "Préfixe de série",
     "serialPrefix.required": "Le préfixe de série est obligatoire",
@@ -62,6 +64,14 @@
     "columnCustomerTypeName": "Type de client",
     "columnSalesRepFullName": "Représentant commercial",
     "columnRuleType": "Type de règle"
+  },
+  "messages": {
+    "createSuccess": "Type de série de document créé avec succès",
+    "createError": "Une erreur s'est produite lors de la création du type de série de document",
+    "updateSuccess": "Type de série de document mis à jour avec succès",
+    "updateError": "Une erreur s'est produite lors de la mise à jour du type de série de document",
+    "deleteSuccess": "Type de série de document supprimé avec succès",
+    "deleteError": "Une erreur s'est produite lors de la suppression du type de série de document"
   },
   "common": {
     "delete": "Supprimer"

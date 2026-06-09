@@ -8,7 +8,7 @@
   "deleteConfirmMessage": "Delete the match between {{salesRep}} and {{user}}?",
   "table": {
     "title": "Sales representative match list",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Sales Rep Code",
     "salesRepName": "Sales Representative Name",
     "userFullName": "User",
     "username": "Username",

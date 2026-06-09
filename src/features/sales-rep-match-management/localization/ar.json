@@ -8,7 +8,7 @@
   "deleteConfirmMessage": "حذف المطابقة بين {{salesRep}} و {{user}}؟",
   "table": {
     "title": "قائمة مطابقة مندوبي المبيعات",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "رمز مندوب المبيعات",
     "salesRepName": "اسم مندوب المبيعات",
     "userFullName": "المستخدم",
     "username": "اسم المستخدم",

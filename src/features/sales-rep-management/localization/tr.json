@@ -9,7 +9,7 @@
   "table": {
     "title": "Satış temsilcisi listesi",
     "branchCode": "Şube Kodu",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Satış Temsilcisi Kodu",
     "salesRepDescription": "Açıklama",
     "name": "İsim",
     "createdDate": "Oluşturulma Tarihi"
@@ -19,7 +19,7 @@
     "addDescription": "Satış temsilcisi kod kaydını manuel olarak ekleyin.",
     "branchCode": "Şube Kodu",
     "branchCodePlaceholder": "Şube kodu girin",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Satış Temsilcisi Kodu",
     "salesRepCodePlaceholder": "Kod girin",
     "salesRepDescription": "Açıklama",
     "salesRepDescriptionPlaceholder": "Açıklama girin",

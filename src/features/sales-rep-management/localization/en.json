@@ -9,7 +9,7 @@
   "table": {
     "title": "Sales representative list",
     "branchCode": "Branch Code",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Sales Rep Code",
     "salesRepDescription": "Description",
     "name": "Name",
     "createdDate": "Created Date"
@@ -19,7 +19,7 @@
     "addDescription": "Create a sales representative code record manually.",
     "branchCode": "Branch Code",
     "branchCodePlaceholder": "Enter branch code",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Sales Rep Code",
     "salesRepCodePlaceholder": "Enter code",
     "salesRepDescription": "Description",
     "salesRepDescriptionPlaceholder": "Enter description",

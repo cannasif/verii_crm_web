@@ -9,7 +9,7 @@
   "table": {
     "title": "Liste des représentants commerciaux",
     "branchCode": "Code de dépôt",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Code Rep. Commercial",
     "salesRepDescription": "Description",
     "name": "Nom",
     "createdDate": "Date de création"
@@ -19,7 +19,7 @@
     "addDescription": "Créer manuellement un code de représentant commercial.",
     "branchCode": "Code de dépôt",
     "branchCodePlaceholder": "Entrez le code de dépôt",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Code Rep. Commercial",
     "salesRepCodePlaceholder": "Entrez le code",
     "salesRepDescription": "Description",
     "salesRepDescriptionPlaceholder": "Entrez la description",

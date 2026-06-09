@@ -8,7 +8,7 @@
   "deleteConfirmMessage": "Supprimer la correspondance entre {{salesRep}} et {{user}} ?",
   "table": {
     "title": "Liste des correspondances des représentants commerciaux",
-    "salesRepCode": "SalesRepCode",
+    "salesRepCode": "Code Rep. Commercial",
     "salesRepName": "Nom du représentant commercial",
     "userFullName": "Utilisateur",
     "username": "Nom d'utilisateur",

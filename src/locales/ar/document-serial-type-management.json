@@ -34,9 +34,11 @@
     "selectRuleType": "اختر نوع القاعدة",
     "customerType": "نوع العميل",
     "selectCustomerType": "اختر نوع العميل (اختياري)",
+    "searchCustomerType": "البحث عن نوع العميل...",
     "noCustomerTypeSelected": "لم يتم اختيار نوع عميل",
     "salesRep": "مندوب المبيعات",
     "selectSalesRep": "اختر ممثل مبيعات (اختياري)",
+    "searchSalesRep": "البحث عن مندوب المبيعات...",
     "noSalesRepSelected": "لم يتم اختيار ممثل مبيعات",
     "serialPrefix": "بادئة السلسلة",
     "serialPrefix.required": "بادئة السلسلة مطلوبة",
@@ -62,6 +64,14 @@
     "columnCustomerTypeName": "نوع العميل",
     "columnSalesRepFullName": "مندوب المبيعات",
     "columnRuleType": "نوع القاعدة"
+  },
+  "messages": {
+    "createSuccess": "تم إنشاء نوع سلسلة المستند بنجاح",
+    "createError": "حدث خطأ أثناء إنشاء نوع سلسلة المستند",
+    "updateSuccess": "تم تحديث نوع سلسلة المستند بنجاح",
+    "updateError": "حدث خطأ أثناء تحديث نوع سلسلة المستند",
+    "deleteSuccess": "تم حذف نوع سلسلة المستند بنجاح",
+    "deleteError": "حدث خطأ أثناء حذف نوع سلسلة المستند"
   },
   "common": {
     "delete": "حذف"
