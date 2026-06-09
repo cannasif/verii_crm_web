@@ -36,23 +36,21 @@ function appendPathSegment(url: string | undefined, segment: string): string | u
   return query ? `${nextPath}?${query}` : nextPath;
 }
 
-function shouldUseMethodOverrideTunnel(url: string | undefined, method: string): boolean {
+// This API is hosted behind IIS, which rejects native PUT/DELETE verbs and the
+// X-HTTP-Method-Override tunnel with 403. Every mutation must therefore be sent
+// as a plain POST. Standard CRUD uses the legacy `POST .../{id}/update` and
+// `POST .../{id}/delete` aliases (the segment is appended below). The endpoints
+// matched here already carry their action verb in the route, so they must be
+// POSTed to the same URL without appending an extra `/update` segment.
+function isPutActionAlreadyInPath(url: string | undefined): boolean {
   if (!url) return false;
 
   const path = url.split('?')[0].toLowerCase();
 
-  if (method === 'put') {
-    if (/\/bulk-(quotation|order|demand)\/\d+/.test(path)) return true;
-    if (/\/(quotationline|orderline|demandline)\/update-multiple$/.test(path)) return true;
-    if (path.includes('exchangerate/update-exchange-rate-in-')) return true;
-    if (path.endsWith('/notes-list')) return true;
-    return false;
-  }
-
-  if (method === 'delete') {
-    if (/\/(quotationline|orderline|demandline)\/\d+$/.test(path)) return true;
-    return false;
-  }
+  if (/\/bulk-(quotation|order|demand)\/\d+/.test(path)) return true;
+  if (/\/(quotationline|orderline|demandline)\/update-multiple$/.test(path)) return true;
+  if (path.includes('exchangerate/update-exchange-rate-in-')) return true;
+  if (path.endsWith('/notes-list')) return true;
 
   return false;
 }
@@ -436,16 +434,13 @@ api.interceptors.request.use((config) => {
   config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
   const originalMethod = (config.method ?? 'get').toLowerCase();
   const useNativeHttpMethod = config.useNativeHttpMethod === true;
-  const useMethodOverrideTunnel =
-    !useNativeHttpMethod && shouldUseMethodOverrideTunnel(config.url, originalMethod);
 
-  if (useMethodOverrideTunnel) {
-    config.method = 'post';
-    config.headers['X-HTTP-Method-Override'] = originalMethod.toUpperCase();
-  } else if (!useNativeHttpMethod) {
+  if (!useNativeHttpMethod) {
     if (originalMethod === 'put') {
       config.method = 'post';
-      config.url = appendPathSegment(config.url, 'update');
+      if (!isPutActionAlreadyInPath(config.url)) {
+        config.url = appendPathSegment(config.url, 'update');
+      }
     } else if (originalMethod === 'delete') {
       config.method = 'post';
       config.url = appendPathSegment(config.url, 'delete');
