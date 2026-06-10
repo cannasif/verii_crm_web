@@ -217,8 +217,12 @@
     "rejectDescription": "Siparişi reddetme nedeninizi girin.",
     "rejectReasonPlaceholder": "Red nedeni",
     "statusFilterLabel": "Onay durumu",
+    "lockedForNonApprover": "Bu kayıt onay sürecinde. Yalnızca aktif onay kullanıcısı değişiklik yapabilir; sizin için düzenleme kapalı.",
+    "approvedReadOnlyReason": "Bu sipariş onaylandığı için değişiklik yapılamaz.",
+    "rejectedReadOnlyReason": "Bu sipariş reddedildiği için değişiklik yapılamaz. Güncellemek için listeden \"Revize et\" kullanın.",
+    "closedReason": "Bu kayıt aynı belge numarasında başka bir kayıt onaylandığı için kapatıldı; değişiklik yapılamaz.",
     "status": {
-      "notRequired": "Gerekli Değil",
+      "notRequired": "Taslak",
       "waiting": "Bekliyor",
       "approved": "Onaylandı",
       "rejected": "Reddedildi",
@@ -229,6 +233,11 @@
     "loading": "Onay akışı yükleniyor...",
     "noData": "Onay akışı kaydı bulunamadı",
     "notStarted": "Onay akışı henüz başlatılmadı",
+    "notStartedTitle": "Onay Süreci Başlamadı",
+    "statusTitle": "Onay Akışı Durumu",
+    "errorTitle": "Hata Oluştu",
+    "rejectedReasonLabel": "Ret Gerekçesi",
+    "processRejectedReasonLabel": "Süreç İptal Nedeni",
     "stepCompleted": "Tamamlandı",
     "stepInProgress": "Devam Ediyor",
     "stepNotStarted": "Başlamadı",
@@ -323,5 +332,14 @@
         "info": "Sipariş kaydedildikten sonra otomatik olarak onay sürecine gönderilecektir"
       }
     }
+  },
+  "customerCancel": {
+    "readOnlyReason": "Bu sipariş müşteri tarafından iptal edildiği için değişiklik yapılamaz.",
+    "reasonLabel": "İptal nedeni",
+    "button": "Müşteri İptali",
+    "title": "Müşteri iptali",
+    "description": "Bu siparişi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.",
+    "reasonPlaceholder": "Müşterinin iptal nedenini yazın...",
+    "confirmButton": "İptal Et"
   }
 }

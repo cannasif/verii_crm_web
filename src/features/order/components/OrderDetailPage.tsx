@@ -15,10 +15,15 @@ import { usePriceRuleOfOrder } from '../hooks/usePriceRuleOfOrder';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
 import { useUIStore } from '@/stores/ui-store';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
+import { DocumentDetailStatusAlerts } from '@/components/shared/DocumentDetailStatusAlerts';
+import {
+  DOCUMENT_DETAIL_BUTTON_APPROVAL,
+  DOCUMENT_DETAIL_BUTTON_BASE,
+  DOCUMENT_DETAIL_BUTTON_DANGER,
+} from '@/lib/document-detail-button-styles';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Layers, Loader2, FileCheck, FileText, XCircle } from 'lucide-react';
 import { OrderApprovalFlowTab } from './OrderApprovalFlowTab';
@@ -96,8 +101,6 @@ export function OrderDetailPage(): ReactElement {
   const isReadOnlyByStatus = orderStatus === 2 || orderStatus === 3 || orderStatus === 4 || orderStatus === 5;
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
   const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
-  const isClosed = orderStatus === 4;
-  const isCustomerCancelled = orderStatus === 5;
   const canCancelByCustomer = canUpdate && !order?.isERPIntegrated && orderStatus !== 4 && orderStatus !== 5;
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
@@ -584,29 +587,12 @@ export function OrderDetailPage(): ReactElement {
         </TabsList>
 
         <TabsContent value="detail" className="mt-6 focus-visible:outline-none">
-          {isApprovalLockedForCurrentUser && (
-            <Alert className="mb-4 border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800/80 dark:bg-amber-950/30 dark:text-amber-100">
-              <AlertDescription>
-                {t('approval.lockedForNonApprover', {
-                  defaultValue:
-                    'Bu kayıt onay sürecinde. Sadece aktif onay kullanıcısı değişiklik yapabilir. Senin için ekran salt okunur modda açıldı.',
-                })}
-              </AlertDescription>
-            </Alert>
-          )}
-          {isClosed && (
-            <Alert className="mb-4 border-zinc-300 bg-zinc-100 dark:bg-zinc-800/50 dark:border-zinc-600">
-              <AlertDescription>{t('approval.closedReason')}</AlertDescription>
-            </Alert>
-          )}
-          {isCustomerCancelled && (
-            <Alert className="mb-4 border-rose-300 bg-rose-50 text-rose-900 dark:border-rose-800/80 dark:bg-rose-950/30 dark:text-rose-100">
-              <AlertDescription>
-                {t('order.customerCancel.readOnlyReason', { defaultValue: 'Bu sipariş müşteri tarafından iptal edildiği için salt okunur.' })}
-                {order.cancellationReason ? ` ${t('order.customerCancel.reasonLabel', { defaultValue: 'Neden:' })} ${order.cancellationReason}` : ''}
-              </AlertDescription>
-            </Alert>
-          )}
+          <DocumentDetailStatusAlerts
+            documentKind="order"
+            status={orderStatus}
+            isApprovalLockedForCurrentUser={isApprovalLockedForCurrentUser}
+            cancellationReason={order.cancellationReason}
+          />
           <FormProvider {...form}>
             <form onSubmit={handleFormSubmit} className="space-y-0">
               <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
@@ -716,14 +702,13 @@ export function OrderDetailPage(): ReactElement {
                 </aside>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+              <div className="flex flex-wrap items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
                 {orderStatus === 0 && !isReadOnly && (
                   <Button
                     type="button"
-                    variant="secondary"
                     onClick={handleStartApprovalFlow}
                     disabled={startApprovalFlow.isPending || !order}
-                    className="h-10"
+                    className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_APPROVAL}`}
                   >
                     {startApprovalFlow.isPending ? (
                       <>
@@ -742,10 +727,9 @@ export function OrderDetailPage(): ReactElement {
                 {canCancelByCustomer && (
                   <Button
                     type="button"
-                    variant="destructive"
                     onClick={() => setCustomerCancellationOpen(true)}
                     disabled={cancelByCustomerMutation.isPending || !order}
-                    className="h-10"
+                    className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_DANGER}`}
                   >
                     {cancelByCustomerMutation.isPending ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />

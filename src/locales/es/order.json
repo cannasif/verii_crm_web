@@ -276,7 +276,7 @@
     "rejectReasonPlaceholder": "Red nedeni",
     "statusFilterLabel": "Estado de aprobación",
     "status": {
-      "notRequired": "No requerido",
+      "notRequired": "Borrador",
       "waiting": "Esperando",
       "approved": "Aprobado",
       "rejected": "Rechazado",
