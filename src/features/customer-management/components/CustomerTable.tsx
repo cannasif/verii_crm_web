@@ -34,8 +34,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
-import { cn } from '@/lib/utils';
-import { MANAGEMENT_DATA_GRID_CLASSNAME } from '@/lib/management-list-layout';
+import { MANAGEMENT_DATA_GRID_CLASSNAME, MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME, MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME } from '@/lib/management-list-layout';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { hasPermission } from '@/features/access-control/utils/hasPermission';
@@ -95,20 +94,15 @@ interface CustomerTableProps {
   onColumnOrderChange?: (newOrder: CustomerColumnKey[]) => void;
 }
 
-const idColumnSurface =
-  'bg-slate-200/70 dark:bg-white/[0.07] border-r border-slate-300/90 dark:border-white/10';
+const idColumnSurface = MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME;
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerDto>[] => [
   {
     key: 'id',
     label: tc(t, 'customerManagement.table.id'),
     type: 'text',
-    headClassName: cn(idColumnSurface, 'min-w-[92px] md:min-w-[104px] w-auto'),
-    className: cn(
-      'text-center font-medium min-w-[92px] md:min-w-[104px] w-auto',
-      'bg-slate-100/80 dark:bg-white/[0.04]',
-      'border-r border-slate-200/90 dark:border-white/[0.08]'
-    ),
+    headClassName: idColumnSurface,
+    className: MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME,
   },
   { key: 'customerCode', label: tc(t, 'customerManagement.table.customerCode'), type: 'code', className: 'font-mono text-xs' },
   { key: 'name', label: tc(t, 'customerManagement.table.name'), type: 'text', className: 'font-bold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
