@@ -139,6 +139,7 @@ export function QuotationLineForm({
   const [profilCreateOpen, setProfilCreateOpen] = useState(false);
   const [demirCreateOpen, setDemirCreateOpen] = useState(false);
   const [vidaCreateOpen, setVidaCreateOpen] = useState(false);
+  const [baskiCreateOpen, setBaskiCreateOpen] = useState(false);
   const [projectSearchTerm, setProjectSearchTerm] = useState('');
   const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
   const { currencyOptions } = useCurrencyOptions();
@@ -213,7 +214,7 @@ export function QuotationLineForm({
   );
 
   const handleWindoDefinitionCreated = async (
-    kind: 'profil' | 'demir' | 'vida',
+    kind: 'profil' | 'demir' | 'vida' | 'baski',
     item: { id: number; profilDefinitionId?: number | null }
   ): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: ['windo-definition'] });
@@ -235,11 +236,22 @@ export function QuotationLineForm({
         };
       }
 
-      return {
-        ...prev,
-        profilDefinitionId: item.profilDefinitionId ?? prev.profilDefinitionId ?? null,
-        vidaDefinitionId: item.id,
-      };
+      if (kind === 'vida') {
+        return {
+          ...prev,
+          profilDefinitionId: item.profilDefinitionId ?? prev.profilDefinitionId ?? null,
+          vidaDefinitionId: item.id,
+        };
+      }
+
+      if (kind === 'baski') {
+        return {
+          ...prev,
+          baskiDefinitionId: item.id,
+        };
+      }
+
+      return prev;
     });
   };
 
@@ -1536,6 +1548,16 @@ export function QuotationLineForm({
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-0 text-xs text-pink-600 hover:text-pink-700"
+                  onClick={() => setBaskiCreateOpen(true)}
+                >
+                  <CirclePlus className="mr-1 h-3.5 w-3.5" />
+                  {t('lines.addNewPrint', { defaultValue: 'Yeni baskı ekle' })}
+                </Button>
               </div>
             </div>
           </div>
@@ -1766,6 +1788,15 @@ export function QuotationLineForm({
         initialProfilDefinitionId={formData.profilDefinitionId}
         profilOptions={profilComboboxOptions}
         onCreated={(item) => void handleWindoDefinitionCreated('vida', item)}
+      />
+
+      <WindoQuickCreateDialog
+        kind="baski"
+        open={baskiCreateOpen}
+        onOpenChange={setBaskiCreateOpen}
+        initialProfilDefinitionId={formData.profilDefinitionId}
+        profilOptions={profilComboboxOptions}
+        onCreated={(item) => void handleWindoDefinitionCreated('baski', item)}
       />
 
       <ProductSelectDialog

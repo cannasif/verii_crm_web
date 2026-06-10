@@ -68,6 +68,26 @@ function snapshot(
   };
 }
 
+function areStringArraysEqual(a: string[], b: string[]): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  return a.every((value, index) => value === b[index]);
+}
+
+function areElementsEquivalent(
+  currentById: Record<string, PdfCanvasElement>,
+  currentOrder: string[],
+  nextElements: PdfCanvasElement[]
+): boolean {
+  if (currentOrder.length !== nextElements.length) return false;
+
+  return nextElements.every((nextElement, index) => {
+    if (currentOrder[index] !== nextElement.id) return false;
+    const currentElement = currentById[nextElement.id];
+    return currentElement === nextElement || JSON.stringify(currentElement) === JSON.stringify(nextElement);
+  });
+}
+
 export const usePdfReportDesignerStore = create<PdfReportDesignerState>((set, get) => ({
   elementsById: {},
   elementOrder: [],
@@ -79,22 +99,36 @@ export const usePdfReportDesignerStore = create<PdfReportDesignerState>((set, ge
   flashingId: null,
   setFlashingId: (id) => set({ flashingId: id }),
   invalidElementIds: [],
-  setInvalidElementIds: (ids) => set({ invalidElementIds: [...new Set(ids)] }),
-  clearInvalidElementIds: () => set({ invalidElementIds: [] }),
+  setInvalidElementIds: (ids) => {
+    const nextIds = [...new Set(ids)];
+    set((s) => (areStringArraysEqual(s.invalidElementIds, nextIds) ? s : { invalidElementIds: nextIds }));
+  },
+  clearInvalidElementIds: () => set((s) => (s.invalidElementIds.length === 0 ? s : { invalidElementIds: [] })),
 
   setElements: (elements) => {
-    const byId: Record<string, PdfCanvasElement> = {};
-    const order: string[] = [];
-    elements.forEach((el) => {
-      byId[el.id] = el;
-      order.push(el.id);
-    });
-    set({
-      elementsById: byId,
-      elementOrder: order,
-      selectedIds: [],
-      history: [snapshot(byId, order)],
-      historyIndex: 0,
+    set((s) => {
+      if (
+        s.selectedIds.length === 0 &&
+        s.historyIndex === 0 &&
+        s.history.length === 1 &&
+        areElementsEquivalent(s.elementsById, s.elementOrder, elements)
+      ) {
+        return s;
+      }
+
+      const byId: Record<string, PdfCanvasElement> = {};
+      const order: string[] = [];
+      elements.forEach((el) => {
+        byId[el.id] = el;
+        order.push(el.id);
+      });
+      return {
+        elementsById: byId,
+        elementOrder: order,
+        selectedIds: [],
+        history: [snapshot(byId, order)],
+        historyIndex: 0,
+      };
     });
   },
 
@@ -323,7 +357,7 @@ export const usePdfReportDesignerStore = create<PdfReportDesignerState>((set, ge
     });
   },
 
-  setSelectedIds: (ids) => set({ selectedIds: ids }),
+  setSelectedIds: (ids) => set((s) => (areStringArraysEqual(s.selectedIds, ids) ? s : { selectedIds: ids })),
 
   toggleSelection: (id) => {
     set((s) => {

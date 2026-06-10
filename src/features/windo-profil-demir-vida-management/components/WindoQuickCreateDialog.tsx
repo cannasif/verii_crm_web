@@ -11,7 +11,7 @@ import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
 import { windoDefinitionApi } from '../api/windo-definition-api';
 import type { WindoDefinitionCreateDto, WindoDefinitionGetDto } from '../types/windo-definition-types';
 
-type WindoQuickCreateKind = 'profil' | 'demir' | 'vida';
+type WindoQuickCreateKind = 'profil' | 'demir' | 'vida' | 'baski';
 
 interface WindoQuickCreateDialogProps {
   kind: WindoQuickCreateKind;
@@ -26,6 +26,7 @@ const KIND_LABELS: Record<WindoQuickCreateKind, { tr: string; en: string }> = {
   profil: { tr: 'Profil', en: 'Profile' },
   demir: { tr: 'Demir', en: 'Rebar' },
   vida: { tr: 'Vida', en: 'Screw' },
+  baski: { tr: 'Baskı', en: 'Print' },
 };
 
 export function WindoQuickCreateDialog({
@@ -47,14 +48,15 @@ export function WindoQuickCreateDialog({
 
   const labels = KIND_LABELS[kind];
   const label = i18n.language.startsWith('tr') ? labels.tr : labels.en;
-  const requiresProfil = kind !== 'profil';
+  const requiresProfil = kind === 'demir' || kind === 'vida';
   const createsBundle = kind === 'profil';
 
   const mutation = useMutation({
     mutationFn: async (payload: WindoDefinitionCreateDto): Promise<WindoDefinitionGetDto> => {
       if (kind === 'profil') return windoDefinitionApi.createProfil(payload);
       if (kind === 'demir') return windoDefinitionApi.createDemir(payload);
-      return windoDefinitionApi.createVida(payload);
+      if (kind === 'vida') return windoDefinitionApi.createVida(payload);
+      return windoDefinitionApi.createBaski(payload);
     },
     onSuccess: async (item) => {
       await queryClient.invalidateQueries({ queryKey: ['windo-definition'] });
