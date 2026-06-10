@@ -270,12 +270,14 @@ export function OrderListPage(): ReactElement {
 
   const getApprovalStatusLabel = useCallback(
     (status: number | null | undefined): string => {
-      if (typeof status !== 'number' || status < 0 || status > 4) {
+      if (typeof status !== 'number' || status < 0 || status > 5) {
         return '-';
       }
 
-      const statusKey = status === 0 ? 'waiting' : ['notRequired', 'waiting', 'approved', 'rejected', 'closed'][status];
-      return t(`approval.status.${statusKey}`);
+      const statusKey = status === 0 ? 'waiting' : ['notRequired', 'waiting', 'approved', 'rejected', 'closed', 'customerCancelled'][status];
+      return t(`approval.status.${statusKey}`, {
+        defaultValue: status === 5 ? 'Müşteri tarafından iptal edildi' : undefined,
+      });
     },
     [t]
   );
@@ -539,6 +541,7 @@ export function OrderListPage(): ReactElement {
                       <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
                       <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
                       <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
+                      <SelectItem value="5">{t('approval.status.customerCancelled', { defaultValue: 'Müşteri tarafından iptal edildi' })}</SelectItem>
                     </SelectContent>
                   </Select>
                 }

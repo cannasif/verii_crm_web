@@ -39,6 +39,7 @@
     "status": "Status",
     "detail": "Detay",
     "customerCode": "Código de cliente",
+    "koliBaski": "Impresión de paquete",
     "validUntil": "Válido hasta",
     "revisionNo": "Revizyon No",
     "erpIntegrated": "Integración completada",

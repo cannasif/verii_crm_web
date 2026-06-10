@@ -75,7 +75,9 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 
 function toCreateDto(line: QuotationLineFormState, quotationId: number): CreateQuotationLineDto {
-  const { id, isEditing, relatedLines, unit, pendingImageFile, pendingImagePreviewUrl, ...rest } = line;
+  const { id, isEditing, relatedLines, unit, pendingImageFile, pendingImagePreviewUrl, vidaDefinitionName, baskiDefinitionName, ...rest } = line;
+  void vidaDefinitionName;
+  void baskiDefinitionName;
   return {
     ...rest,
     quotationId,
@@ -135,7 +137,9 @@ function dtoToFormState(dto: QuotationLineGetDto, index: number): QuotationLineF
     profilDefinitionId: dto.profilDefinitionId ?? null,
     demirDefinitionId: dto.demirDefinitionId ?? null,
     vidaDefinitionId: dto.vidaDefinitionId ?? null,
+    vidaDefinitionName: dto.vidaDefinitionName ?? null,
     baskiDefinitionId: dto.baskiDefinitionId ?? null,
+    baskiDefinitionName: dto.baskiDefinitionName ?? null,
     pricingRuleHeaderId: dto.pricingRuleHeaderId ?? null,
     projectCode: dto.erpProjectCode ?? dto.projectCode ?? null,
     imagePath: dto.imagePath ?? null,
@@ -177,7 +181,9 @@ function toUpdateDto(line: QuotationLineFormState, quotationId: number): Quotati
     profilDefinitionId: line.profilDefinitionId ?? null,
     demirDefinitionId: line.demirDefinitionId ?? null,
     vidaDefinitionId: line.vidaDefinitionId ?? null,
+    vidaDefinitionName: line.vidaDefinitionName ?? null,
     baskiDefinitionId: line.baskiDefinitionId ?? null,
+    baskiDefinitionName: line.baskiDefinitionName ?? null,
     pricingRuleHeaderId: line.pricingRuleHeaderId ?? null,
     projectCode: line.projectCode ?? null,
     erpProjectCode: line.projectCode ?? null,
@@ -1053,7 +1059,7 @@ export function QuotationLineTable({
                                     <div className="line-clamp-1">
                                       {t('lines.lineDetailPair', {
                                         label: t('lines.windoScrewLabel'),
-                                        value: vidaMap[line.vidaDefinitionId] ?? `#${line.vidaDefinitionId}`,
+                                        value: line.vidaDefinitionName ?? vidaMap[line.vidaDefinitionId] ?? `#${line.vidaDefinitionId}`,
                                       })}
                                     </div>
                                   )}
@@ -1061,7 +1067,7 @@ export function QuotationLineTable({
                                     <div className="line-clamp-1">
                                       {t('lines.lineDetailPair', {
                                         label: t('lines.windoPrintLabel', { defaultValue: 'Baskı' }),
-                                        value: baskiMap[line.baskiDefinitionId] ?? `#${line.baskiDefinitionId}`,
+                                        value: line.baskiDefinitionName ?? baskiMap[line.baskiDefinitionId] ?? `#${line.baskiDefinitionId}`,
                                       })}
                                     </div>
                                   )}

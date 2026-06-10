@@ -49,7 +49,8 @@
     "waiting": "Wartend",
     "approved": "Genehmigt",
     "rejected": "Abgelehnt",
-    "closed": "Geschlossen"
+    "closed": "Geschlossen",
+    "customerCancelled": "Vom Kunden storniert"
   },
   "closedReason": "Dieser Datensatz wurde geschlossen, weil ein anderer Datensatz mit derselben Angebotsnummer genehmigt wurde.",
   "statusFilterLabel": "Genehmigungsstatus",

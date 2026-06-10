@@ -39,6 +39,7 @@
     "status": "Status",
     "detail": "Detay",
     "customerCode": "رمز العميل",
+    "koliBaski": "طباعة الطرد",
     "validUntil": "صالح حتى",
     "revisionNo": "Revizyon No",
     "erpIntegrated": "تم التكامل بنجاح",

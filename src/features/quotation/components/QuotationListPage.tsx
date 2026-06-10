@@ -59,6 +59,7 @@ type QuotationColumnKey =
   | 'PotentialCustomerName'
   | 'ErpCustomerCode'
   | 'RepresentativeName'
+  | 'KoliBaskiDefinitionName'
   | 'OfferDate'
   | 'ValidUntil'
   | 'Currency'
@@ -84,6 +85,7 @@ const QUOTATION_COLUMN_CONFIG: readonly QuotationColumnConfig[] = [
   { key: 'PotentialCustomerName', labelKey: 'quotation.list.customer', fallbackLabel: 'Müşteri', filterType: 'string' },
   { key: 'ErpCustomerCode', labelKey: 'quotation.list.customerCode', fallbackLabel: 'Cari Kodu', filterType: 'string' },
   { key: 'RepresentativeName', labelKey: 'quotation.list.representative', fallbackLabel: 'Temsilci', filterType: 'string' },
+  { key: 'KoliBaskiDefinitionName', labelKey: 'quotation.list.koliBaski', fallbackLabel: 'Koli Baskı', filterType: 'string' },
   { key: 'OfferDate', labelKey: 'quotation.list.offerDate', fallbackLabel: 'Tarih', filterType: 'date' },
   { key: 'ValidUntil', labelKey: 'quotation.list.validUntil', fallbackLabel: 'Geçerlilik', filterType: 'date' },
   { key: 'Currency', labelKey: 'quotation.list.currency', fallbackLabel: 'Para Birimi', filterType: 'string' },
@@ -257,12 +259,14 @@ export function QuotationListPage(): ReactElement {
 
   const getApprovalStatusLabel = useCallback(
     (status: number | null | undefined): string => {
-      if (typeof status !== 'number' || status < 0 || status > 4) {
+      if (typeof status !== 'number' || status < 0 || status > 5) {
         return '-';
       }
 
-      const statusKey = status === 0 ? 'waiting' : ['notRequired', 'waiting', 'approved', 'rejected', 'closed'][status];
-      return t(`approval.status.${statusKey}`);
+      const statusKey = status === 0 ? 'waiting' : ['notRequired', 'waiting', 'approved', 'rejected', 'closed', 'customerCancelled'][status];
+      return t(`approval.status.${statusKey}`, {
+        defaultValue: status === 5 ? 'Müşteri tarafından iptal edildi' : undefined,
+      });
     },
     [t]
   );
@@ -276,6 +280,7 @@ export function QuotationListPage(): ReactElement {
         PotentialCustomerName: quotation.potentialCustomerName ?? '-',
         ErpCustomerCode: quotation.erpCustomerCode ?? '-',
         RepresentativeName: quotation.representativeName ?? '-',
+        KoliBaskiDefinitionName: quotation.koliBaskiDefinitionName ?? '-',
         OfferDate: quotation.offerDate ? new Date(quotation.offerDate).toLocaleDateString(i18n.language) : '-',
         ValidUntil: quotation.validUntil ? new Date(quotation.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(quotation),
@@ -319,6 +324,7 @@ export function QuotationListPage(): ReactElement {
         PotentialCustomerName: quotation.potentialCustomerName ?? '-',
         ErpCustomerCode: quotation.erpCustomerCode ?? '-',
         RepresentativeName: quotation.representativeName ?? '-',
+        KoliBaskiDefinitionName: quotation.koliBaskiDefinitionName ?? '-',
         OfferDate: quotation.offerDate ? new Date(quotation.offerDate).toLocaleDateString(i18n.language) : '-',
         ValidUntil: quotation.validUntil ? new Date(quotation.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(quotation),
@@ -368,6 +374,7 @@ export function QuotationListPage(): ReactElement {
     if (key === 'PotentialCustomerName') return quotation.potentialCustomerName || '-';
     if (key === 'ErpCustomerCode') return quotation.erpCustomerCode || '-';
     if (key === 'RepresentativeName') return quotation.representativeName || '-';
+    if (key === 'KoliBaskiDefinitionName') return quotation.koliBaskiDefinitionName || '-';
     if (key === 'OfferDate') return formatDate(quotation.offerDate);
     if (key === 'ValidUntil') return formatDate(quotation.validUntil);
     if (key === 'Currency') return getCurrencyLabel(quotation);
@@ -384,7 +391,7 @@ export function QuotationListPage(): ReactElement {
     if (key === 'LastSyncDate') return formatDate(quotation.lastSyncDate);
     if (key === 'CountTriedBy') return quotation.countTriedBy ?? 0;
     if (key === 'Status') {
-      return typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 4 ? (
+      return typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 5 ? (
         <ApprovalStatusBadge status={quotation.status as ApprovalStatus} />
       ) : (
         <span className="text-muted-foreground text-sm">-</span>
@@ -557,6 +564,7 @@ export function QuotationListPage(): ReactElement {
                       <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
                       <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
                       <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
+                      <SelectItem value="5">{t('approval.status.customerCancelled', { defaultValue: 'Müşteri tarafından iptal edildi' })}</SelectItem>
                     </SelectContent>
                   </Select>
                 }

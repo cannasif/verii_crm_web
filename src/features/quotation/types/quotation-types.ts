@@ -15,6 +15,7 @@ export const ApprovalStatus = {
   Approved: 2,
   Rejected: 3,
   Closed: 4,
+  CustomerCancelled: 5,
 } as const;
 
 export type ApprovalStatus = typeof ApprovalStatus[keyof typeof ApprovalStatus];
@@ -87,6 +88,10 @@ export interface CreateQuotationDto {
   projectCode?: string | null;
   status?: number | null;
   description?: string | null;
+  cancelledByUserId?: number | null;
+  cancelledByUserFullName?: string | null;
+  cancelledAt?: string | null;
+  cancellationReason?: string | null;
   paymentTypeId?: number | null;
   documentSerialTypeId?: number | null;
   offerType: string;
@@ -137,7 +142,9 @@ export interface CreateQuotationLineDto {
   profilDefinitionId?: number | null;
   demirDefinitionId?: number | null;
   vidaDefinitionId?: number | null;
+  vidaDefinitionName?: string | null;
   baskiDefinitionId?: number | null;
+  baskiDefinitionName?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -172,7 +179,9 @@ export interface UpdateQuotationLineDto {
   profilDefinitionId?: number | null;
   demirDefinitionId?: number | null;
   vidaDefinitionId?: number | null;
+  vidaDefinitionName?: string | null;
   baskiDefinitionId?: number | null;
+  baskiDefinitionName?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -210,7 +219,9 @@ export interface QuotationLineGetDto {
   profilDefinitionId?: number | null;
   demirDefinitionId?: number | null;
   vidaDefinitionId?: number | null;
+  vidaDefinitionName?: string | null;
   baskiDefinitionId?: number | null;
+  baskiDefinitionName?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -243,6 +254,10 @@ export interface QuotationGetDto {
   representativeName?: string | null;
   status?: number | null;
   description?: string | null;
+  cancelledByUserId?: number | null;
+  cancelledByUserFullName?: string | null;
+  cancelledAt?: string | null;
+  cancellationReason?: string | null;
   paymentTypeId?: number | null;
   paymentTypeName?: string | null;
   documentSerialTypeId?: number | null;
@@ -296,6 +311,8 @@ export interface QuotationExchangeRateGetDto {
 export interface QuotationLineFormState extends Omit<CreateQuotationLineDto, 'quotationId'> {
   id: string;
   unit?: string | null;
+  vidaDefinitionName?: string | null;
+  baskiDefinitionName?: string | null;
   isEditing: boolean;
   relatedLines?: QuotationLineFormState[];
   supplierCode?: string;

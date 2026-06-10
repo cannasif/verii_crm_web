@@ -20,6 +20,8 @@ const STATUS_PILL_CLASS: Record<ApprovalStatus, string> = {
     'border-red-500/30 bg-red-500/10 text-red-800 dark:border-red-400/35 dark:bg-red-500/15 dark:text-red-200',
   [ApprovalStatusEnum.Closed]:
     'border-slate-400/30 bg-slate-500/10 text-slate-700 dark:border-slate-400/25 dark:bg-slate-500/15 dark:text-slate-300',
+  [ApprovalStatusEnum.CustomerCancelled]:
+    'border-rose-500/30 bg-rose-500/10 text-rose-800 dark:border-rose-400/35 dark:bg-rose-500/15 dark:text-rose-200',
 };
 
 export function ApprovalStatusBadge({ status, className }: ApprovalStatusBadgeProps): ReactElement {
@@ -31,6 +33,7 @@ export function ApprovalStatusBadge({ status, className }: ApprovalStatusBadgePr
     [ApprovalStatusEnum.Approved]: t('status.approved'),
     [ApprovalStatusEnum.Rejected]: t('status.rejected'),
     [ApprovalStatusEnum.Closed]: t('status.closed'),
+    [ApprovalStatusEnum.CustomerCancelled]: t('status.customerCancelled', { defaultValue: 'Müşteri tarafından iptal edildi' }),
   };
 
   const resolvedStatus = status in STATUS_PILL_CLASS ? status : ApprovalStatusEnum.Waiting;

@@ -22,10 +22,11 @@ import { useAuthStore } from '@/stores/auth-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
+import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Layers, Loader2, FileCheck, FileText, Save, X, Eye, ShoppingCart } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText, Save, X, Eye, ShoppingCart, XCircle } from 'lucide-react';
 import { QuotationApprovalFlowTab } from './QuotationApprovalFlowTab';
 import { QuotationPdfExportPreviewDialog } from './QuotationPdfExportPreviewDialog';
 import { QuotationWhatsappSendDialog } from './QuotationWhatsappSendDialog';
@@ -56,6 +57,7 @@ import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-type
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { useCanEditQuotation } from '../hooks/useCanEditQuotation';
 import { useConvertQuotationToOrder } from '../hooks/useConvertQuotationToOrder';
+import { useCancelQuotationByCustomer } from '../hooks/useCancelQuotationByCustomer';
 
 function addDaysToDateOnly(dateValue: string, days: number): string {
   const date = new Date(`${dateValue}T12:00:00`);
@@ -110,6 +112,7 @@ export function QuotationDetailPage(): ReactElement {
   const updateNotesMutation = useUpdateQuotationNotesList(quotationId);
   const startApprovalFlow = useStartApprovalFlow();
   const convertToOrderMutation = useConvertQuotationToOrder();
+  const cancelByCustomerMutation = useCancelQuotationByCustomer();
   const { data: customerOptions = [] } = useCustomerOptions();
 
   const [lines, setLines] = useState<QuotationLineFormState[]>([]);
@@ -129,12 +132,15 @@ export function QuotationDetailPage(): ReactElement {
   const [mailProviderPickerOpen, setMailProviderPickerOpen] = useState(false);
   const [googleMailOpen, setGoogleMailOpen] = useState(false);
   const [outlookMailOpen, setOutlookMailOpen] = useState(false);
+  const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
   const quotationStatus = Number((quotation as { status?: number; Status?: number })?.status ?? (quotation as { status?: number; Status?: number })?.Status);
   const isApprovalWaiting = quotationStatus === 1;
-  const isReadOnlyByStatus = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4;
+  const isReadOnlyByStatus = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4 || quotationStatus === 5;
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
   const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
   const isClosed = quotationStatus === 4;
+  const isCustomerCancelled = quotationStatus === 5;
+  const canCancelByCustomer = canUpdate && !quotation?.isERPIntegrated && quotationStatus !== 4 && quotationStatus !== 5;
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
   const form = useForm<CreateQuotationSchema>({
@@ -282,7 +288,9 @@ export function QuotationDetailPage(): ReactElement {
         profilDefinitionId: line.profilDefinitionId ?? null,
         demirDefinitionId: line.demirDefinitionId ?? null,
         vidaDefinitionId: line.vidaDefinitionId ?? null,
+        vidaDefinitionName: line.vidaDefinitionName ?? null,
         baskiDefinitionId: line.baskiDefinitionId ?? null,
+        baskiDefinitionName: line.baskiDefinitionName ?? null,
         pricingRuleHeaderId: line.pricingRuleHeaderId || null,
         imagePath: line.imagePath || null,
         relatedStockId: line.relatedStockId || null,
@@ -629,8 +637,10 @@ export function QuotationDetailPage(): ReactElement {
 
     try {
       const linesToSend = lines.map((line) => {
-        const { id, isEditing, relatedLines, ...cleanLineData } =
+        const { id, isEditing, relatedLines, vidaDefinitionName, baskiDefinitionName, ...cleanLineData } =
           line as QuotationLineFormState & { relatedLines?: unknown[] };
+        void vidaDefinitionName;
+        void baskiDefinitionName;
         return {
           ...cleanLineData,
           id: parsePersistedId(id, 'line'),
@@ -816,6 +826,16 @@ export function QuotationDetailPage(): ReactElement {
     }
   };
 
+  const handleCancelByCustomer = async (reason: string): Promise<void> => {
+    if (!quotation || !canCancelByCustomer) return;
+
+    await cancelByCustomerMutation.mutateAsync({
+      id: quotation.id,
+      reason,
+    });
+    setCustomerCancellationOpen(false);
+  };
+
   if (isLoading || isLoadingCanEdit || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
@@ -926,6 +946,14 @@ export function QuotationDetailPage(): ReactElement {
           {isClosed && (
             <Alert className="mb-4 border-zinc-300 bg-zinc-100 dark:bg-zinc-800/50 dark:border-zinc-600">
               <AlertDescription>{t('approval.closedReason')}</AlertDescription>
+            </Alert>
+          )}
+          {isCustomerCancelled && (
+            <Alert className="mb-4 border-rose-300 bg-rose-50 text-rose-900 dark:border-rose-800/80 dark:bg-rose-950/30 dark:text-rose-100">
+              <AlertDescription>
+                {t('customerCancel.readOnlyReason', { defaultValue: 'Bu teklif müşteri tarafından iptal edildiği için salt okunur.' })}
+                {quotation.cancellationReason ? ` ${t('customerCancel.reasonLabel', { defaultValue: 'Neden:' })} ${quotation.cancellationReason}` : ''}
+              </AlertDescription>
             </Alert>
           )}
           <FormProvider {...form}>
@@ -1104,6 +1132,23 @@ export function QuotationDetailPage(): ReactElement {
                   </Button>
                 )}
 
+                {canCancelByCustomer && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setCustomerCancellationOpen(true)}
+                    disabled={cancelByCustomerMutation.isPending || !quotation}
+                    className="h-10 w-full sm:w-auto"
+                  >
+                    {cancelByCustomerMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <XCircle className="h-4 w-4 mr-2" />
+                    )}
+                    {t('customerCancel.button', { defaultValue: 'Müşteri İptali' })}
+                  </Button>
+                )}
+
                 {quotationStatus === 2 && (
                   <Button
                     type="button"
@@ -1166,6 +1211,21 @@ export function QuotationDetailPage(): ReactElement {
       />
 
       {prepDialog}
+
+      <CustomerCancellationDialog
+        open={customerCancellationOpen}
+        onOpenChange={setCustomerCancellationOpen}
+        isPending={cancelByCustomerMutation.isPending}
+        title={t('customerCancel.title', { defaultValue: 'Müşteri iptali' })}
+        description={t('customerCancel.description', {
+          defaultValue: 'Bu teklifi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.',
+        })}
+        reasonLabel={t('customerCancel.reasonLabel', { defaultValue: 'İptal nedeni' })}
+        reasonPlaceholder={t('customerCancel.reasonPlaceholder', { defaultValue: 'Müşterinin iptal nedenini yazın...' })}
+        cancelLabel={t('common.cancel', { ns: 'common' })}
+        confirmLabel={t('customerCancel.confirmButton', { defaultValue: 'İptal Et' })}
+        onConfirm={handleCancelByCustomer}
+      />
 
       {isIntegratedQuotationShare ? (
         <>

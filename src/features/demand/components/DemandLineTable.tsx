@@ -75,7 +75,9 @@ import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } fr
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 
 function toCreateDto(line: DemandLineFormState, demandId: number): CreateDemandLineDto {
-  const { id, isEditing, relatedLines, unit, ...rest } = line;
+  const { id, isEditing, relatedLines, unit, vidaDefinitionName, baskiDefinitionName, ...rest } = line;
+  void vidaDefinitionName;
+  void baskiDefinitionName;
   return {
     ...rest,
     demandId,
@@ -135,7 +137,9 @@ function dtoToFormState(dto: DemandLineGetDto, index: number): DemandLineFormSta
     profilDefinitionId: dto.profilDefinitionId ?? null,
     demirDefinitionId: dto.demirDefinitionId ?? null,
     vidaDefinitionId: dto.vidaDefinitionId ?? null,
+    vidaDefinitionName: dto.vidaDefinitionName ?? null,
     baskiDefinitionId: dto.baskiDefinitionId ?? null,
+    baskiDefinitionName: dto.baskiDefinitionName ?? null,
     pricingRuleHeaderId: dto.pricingRuleHeaderId ?? null,
     projectCode: dto.erpProjectCode ?? dto.projectCode ?? null,
     imagePath: dto.imagePath ?? null,
@@ -175,7 +179,9 @@ function toUpdateDto(line: DemandLineFormState, demandId: number): DemandLineGet
     profilDefinitionId: line.profilDefinitionId ?? null,
     demirDefinitionId: line.demirDefinitionId ?? null,
     vidaDefinitionId: line.vidaDefinitionId ?? null,
+    vidaDefinitionName: line.vidaDefinitionName ?? null,
     baskiDefinitionId: line.baskiDefinitionId ?? null,
+    baskiDefinitionName: line.baskiDefinitionName ?? null,
     pricingRuleHeaderId: line.pricingRuleHeaderId ?? null,
     projectCode: line.projectCode ?? null,
     erpProjectCode: line.projectCode ?? null,
@@ -1004,7 +1010,7 @@ export function DemandLineTable({
                                     <div className="line-clamp-1">
                                       {t('lines.lineDetailPair', {
                                         label: t('lines.windoScrewLabel'),
-                                        value: vidaMap[line.vidaDefinitionId] ?? `#${line.vidaDefinitionId}`,
+                                        value: line.vidaDefinitionName ?? vidaMap[line.vidaDefinitionId] ?? `#${line.vidaDefinitionId}`,
                                       })}
                                     </div>
                                   )}
@@ -1012,7 +1018,7 @@ export function DemandLineTable({
                                     <div className="line-clamp-1">
                                       {t('lines.lineDetailPair', {
                                         label: t('lines.windoPrintLabel', { defaultValue: 'Baskı' }),
-                                        value: baskiMap[line.baskiDefinitionId] ?? `#${line.baskiDefinitionId}`,
+                                        value: line.baskiDefinitionName ?? baskiMap[line.baskiDefinitionId] ?? `#${line.baskiDefinitionId}`,
                                       })}
                                     </div>
                                   )}

@@ -18,8 +18,9 @@ import { useUIStore } from '@/stores/ui-store';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
+import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Layers, Loader2, FileCheck, FileText } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText, XCircle } from 'lucide-react';
 import { OrderApprovalFlowTab } from './OrderApprovalFlowTab';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
@@ -41,6 +42,7 @@ import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { useCanEditOrder } from '../hooks/useCanEditOrder';
+import { useCancelOrderByCustomer } from '../hooks/useCancelOrderByCustomer';
 
 function parsePersistedId(formId: string | number | undefined, prefix: string): number | null {
   if (formId == null) return null;
@@ -74,6 +76,7 @@ export function OrderDetailPage(): ReactElement {
   const updateMutation = useUpdateOrderBulk();
   const updateNotesMutation = useUpdateOrderNotesList(orderId);
   const startApprovalFlow = useStartApprovalFlow();
+  const cancelByCustomerMutation = useCancelOrderByCustomer();
   const { data: customerOptions = [] } = useCustomerOptions();
 
   const [lines, setLines] = useState<OrderLineFormState[]>([]);
@@ -87,12 +90,15 @@ export function OrderDetailPage(): ReactElement {
   const exchangeRatesInitializedRef = useRef(false);
   const formInitializedRef = useRef(false);
   const [activeTab, setActiveTab] = useState('detail');
+  const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
   const orderStatus = Number((order as { status?: number; Status?: number })?.status ?? (order as { status?: number; Status?: number })?.Status);
   const isApprovalWaiting = orderStatus === 1;
-  const isReadOnlyByStatus = orderStatus === 2 || orderStatus === 3 || orderStatus === 4;
+  const isReadOnlyByStatus = orderStatus === 2 || orderStatus === 3 || orderStatus === 4 || orderStatus === 5;
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
   const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
   const isClosed = orderStatus === 4;
+  const isCustomerCancelled = orderStatus === 5;
+  const canCancelByCustomer = canUpdate && !order?.isERPIntegrated && orderStatus !== 4 && orderStatus !== 5;
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
 
@@ -460,6 +466,7 @@ export function OrderDetailPage(): ReactElement {
 
   const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
+    if (isReadOnly) return;
     const isValid = await form.trigger();
     if (!isValid) {
       toast.error(t('order.update.error'), {
@@ -478,6 +485,16 @@ export function OrderDetailPage(): ReactElement {
       documentType: PricingRuleType.Order,
       totalAmount: order.grandTotal,
     });
+  };
+
+  const handleCancelByCustomer = async (reason: string): Promise<void> => {
+    if (!order || !canCancelByCustomer) return;
+
+    await cancelByCustomerMutation.mutateAsync({
+      id: order.id,
+      reason,
+    });
+    setCustomerCancellationOpen(false);
   };
 
   if (isLoading || isLoadingCanEdit || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
@@ -580,6 +597,14 @@ export function OrderDetailPage(): ReactElement {
           {isClosed && (
             <Alert className="mb-4 border-zinc-300 bg-zinc-100 dark:bg-zinc-800/50 dark:border-zinc-600">
               <AlertDescription>{t('approval.closedReason')}</AlertDescription>
+            </Alert>
+          )}
+          {isCustomerCancelled && (
+            <Alert className="mb-4 border-rose-300 bg-rose-50 text-rose-900 dark:border-rose-800/80 dark:bg-rose-950/30 dark:text-rose-100">
+              <AlertDescription>
+                {t('order.customerCancel.readOnlyReason', { defaultValue: 'Bu sipariş müşteri tarafından iptal edildiği için salt okunur.' })}
+                {order.cancellationReason ? ` ${t('order.customerCancel.reasonLabel', { defaultValue: 'Neden:' })} ${order.cancellationReason}` : ''}
+              </AlertDescription>
             </Alert>
           )}
           <FormProvider {...form}>
@@ -713,6 +738,23 @@ export function OrderDetailPage(): ReactElement {
                     )}
                   </Button>
                 )}
+
+                {canCancelByCustomer && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setCustomerCancellationOpen(true)}
+                    disabled={cancelByCustomerMutation.isPending || !order}
+                    className="h-10"
+                  >
+                    {cancelByCustomerMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <XCircle className="h-4 w-4 mr-2" />
+                    )}
+                    {t('order.customerCancel.button', { defaultValue: 'Müşteri İptali' })}
+                  </Button>
+                )}
               </div>
             </form>
           </FormProvider>
@@ -726,6 +768,21 @@ export function OrderDetailPage(): ReactElement {
           <ReportTemplateTab entityId={orderId} ruleType={DocumentRuleType.Order} />
         </TabsContent>
       </Tabs>
+
+      <CustomerCancellationDialog
+        open={customerCancellationOpen}
+        onOpenChange={setCustomerCancellationOpen}
+        isPending={cancelByCustomerMutation.isPending}
+        title={t('order.customerCancel.title', { defaultValue: 'Müşteri iptali' })}
+        description={t('order.customerCancel.description', {
+          defaultValue: 'Bu siparişi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.',
+        })}
+        reasonLabel={t('order.customerCancel.reasonLabel', { defaultValue: 'İptal nedeni' })}
+        reasonPlaceholder={t('order.customerCancel.reasonPlaceholder', { defaultValue: 'Müşterinin iptal nedenini yazın...' })}
+        cancelLabel={t('common.cancel', { ns: 'common' })}
+        confirmLabel={t('order.customerCancel.confirmButton', { defaultValue: 'İptal Et' })}
+        onConfirm={handleCancelByCustomer}
+      />
     </div>
   );
 }

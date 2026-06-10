@@ -49,7 +49,8 @@
     "waiting": "Waiting",
     "approved": "Approved",
     "rejected": "Rejected",
-    "closed": "Closed"
+    "closed": "Closed",
+    "customerCancelled": "Cancelled by customer"
   },
   "closedReason": "This record was closed because another record with the same offer number was approved.",
   "statusFilterLabel": "Approval status",

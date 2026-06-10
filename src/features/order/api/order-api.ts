@@ -96,6 +96,12 @@ export const orderApi = {
     throw new Error(response.message || 'Onay durumu yüklenemedi');
   },
 
+  cancelByCustomer: async (id: number, reason?: string | null): Promise<ApiResponse<boolean>> => {
+    return api.post<ApiResponse<boolean>>(`/api/order/${id}/customer-cancel`, {
+      reason: reason?.trim() || null,
+    });
+  },
+
   getPriceOfProduct: async (requests: PriceOfProductRequestDto[]): Promise<PriceOfProductDto[]> => {
     if (!requests || requests.length === 0) {
       return [];

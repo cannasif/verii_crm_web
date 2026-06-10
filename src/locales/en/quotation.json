@@ -40,6 +40,7 @@
     "showing": "Showing {{from}}-{{to}} / {{total}}",
     "detail": "Details",
     "customerCode": "Customer Code",
+    "koliBaski": "Package print",
     "validUntil": "Valid Until",
     "revisionNo": "Revision no.",
     "erpIntegrated": "Integration completed",
