@@ -1360,7 +1360,7 @@
     "commercialDefinitions": "Commercial Definitions",
     "productDefinitions": "تعريفات المنتجات والفئات",
     "categoryDefinitions": "تعريفات الفئات",
-    "windoProfilDemirVidaDefinitions": "Windo profile / rebar / screw definitions",
+    "windoProfilDemirVidaDefinitions": "تعريفات Windoform",
     "countryManagement": "إدارة الدول",
     "cityManagement": "إدارة المدن",
     "districtManagement": "إدارة المناطق",
@@ -4033,7 +4033,7 @@
       "description": "عرض والموافقة أو رفض عروض الأسعار المسندة إليك"
     },
     "status": {
-      "notRequired": "غير مطلوب",
+      "notRequired": "مسودة",
       "waiting": "في الانتظار",
       "approved": "تمت الموافقة",
       "rejected": "مرفوض",
@@ -5629,6 +5629,12 @@
     "taxNumber": "Vergi Numarası",
     "taxOffice": "Vergi Dairesi",
     "tcknNumber": "TCKN Numarası"
+  },
+  "documentList": {
+    "countTriedBy": "محاولات ERP",
+    "countTriedByTooltip": "عدد محاولات النقل إلى Netsis/ERP. عمود التكامل يعرض النتيجة فقط.",
+    "openDetailHint": "انقر نقرًا مزدوجًا لفتح التفاصيل",
+    "statusUnknown": "حالة غير معروفة"
   },
   "exportPreparing": "Hazırlanıyor..."
 }

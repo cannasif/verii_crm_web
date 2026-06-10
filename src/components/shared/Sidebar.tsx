@@ -1,9 +1,15 @@
 import { type ReactElement, useState, useEffect, useMemo, useCallback, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
 
+const SIDEBAR_EASE = 'ease-[cubic-bezier(0.4,0,0.2,1)]';
+const SIDEBAR_TRANSITION = `duration-[260ms] ${SIDEBAR_EASE}`;
+const SIDEBAR_LABEL_TRANSITION = cn(
+  'min-w-0 overflow-hidden transition-[opacity,max-width,width] duration-[200ms] ease-[cubic-bezier(0.4,0,0.2,1)]',
+  'motion-reduce:transition-none'
+);
 const LOGO_URL = '/v3logo-sm.png';
 const VERII_LOGO_URL = '/veriicrmlogo-sm.png';
 
@@ -183,7 +189,7 @@ function NavItemComponent({
       setSidebarOpen(true);
       setTimeout(() => {
         onToggleRef.current(itemKey);
-      }, 50);
+      }, 80);
     }
   };
 
@@ -196,7 +202,8 @@ function NavItemComponent({
             className={cn(
                 "relative flex w-full items-center gap-3 rounded-xl px-3 py-2 transition-colors cursor-pointer select-none text-left group",
                 visualActive ? 'bg-purple-50 dark:bg-white/5' : 'hover:bg-slate-100 dark:hover:bg-white/5',
-                !isSidebarOpen && "justify-center px-0"
+                !isSidebarOpen && "justify-center px-0 gap-0",
+                SIDEBAR_TRANSITION
             )}
             onClick={(e) => {
                 if (!isSidebarOpen) {
@@ -208,23 +215,33 @@ function NavItemComponent({
         >
           {item.icon && (
             <div className={cn(
-                "w-9 h-9 rounded-lg flex items-center justify-center transition-colors shrink-0",
+                "w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200",
                 visualActive ? 'bg-purple-100 text-purple-700 dark:bg-pink-500/20 dark:text-pink-400' : 'bg-white border border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-none dark:text-slate-400'
             )}>
               {item.icon}
             </div>
           )}
-          {isSidebarOpen && (
-             <span className={cn(
-               "flex-1 text-sm font-medium transition-colors whitespace-normal leading-tight text-left wrap-break-word pr-2",
-               visualActive ? 'text-purple-900 font-semibold dark:text-white' : 'text-slate-600 dark:text-slate-300'
-             )}>{item.title}</span>
-          )}
-          {isSidebarOpen && (
-            <div className="text-slate-400 dark:text-slate-500 shrink-0">
-                {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-            </div>
-          )}
+          <span
+            aria-hidden={!isSidebarOpen}
+            className={cn(
+              SIDEBAR_LABEL_TRANSITION,
+              "flex-1 min-w-0 text-sm font-medium leading-tight text-left pr-2 whitespace-nowrap text-ellipsis",
+              visualActive ? 'text-purple-900 font-semibold dark:text-white' : 'text-slate-600 dark:text-slate-300',
+              isSidebarOpen ? 'opacity-100 max-w-[12rem]' : 'opacity-0 max-w-0 w-0 pointer-events-none'
+            )}
+          >
+            {item.title}
+          </span>
+          <div
+            aria-hidden={!isSidebarOpen}
+            className={cn(
+              SIDEBAR_LABEL_TRANSITION,
+              "text-slate-400 dark:text-slate-500 shrink-0",
+              isSidebarOpen ? 'opacity-100 w-4' : 'opacity-0 w-0 pointer-events-none'
+            )}
+          >
+            {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          </div>
         </button>
 
         {isExpanded && isSidebarOpen && (
@@ -261,7 +278,12 @@ function NavItemComponent({
     <div className="mb-1">
         <Link 
           to={item.href || '#'} 
-          className={cn("relative flex items-center gap-3 rounded-xl px-3 py-2 transition-colors group", isActive ? 'bg-purple-50 dark:bg-white/5' : 'hover:bg-slate-100 dark:hover:bg-white/5', !isSidebarOpen && "justify-center px-0")}
+          className={cn(
+            "relative flex items-center gap-3 rounded-xl px-3 py-2 transition-all group",
+            isActive ? 'bg-purple-50 dark:bg-white/5' : 'hover:bg-slate-100 dark:hover:bg-white/5',
+            !isSidebarOpen && "justify-center px-0 gap-0",
+            SIDEBAR_TRANSITION
+          )}
           onClick={(e) => {
            
             if (window.innerWidth < 1024) {
@@ -272,12 +294,35 @@ function NavItemComponent({
           }}
         >
             {item.icon && (
-                <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center transition-colors shrink-0", isActive ? 'bg-purple-100 text-purple-700 dark:bg-pink-500/20 dark:text-pink-400' : 'bg-white border border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-none dark:text-slate-400')}>
+                <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200", isActive ? 'bg-purple-100 text-purple-700 dark:bg-pink-500/20 dark:text-pink-400' : 'bg-white border border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-none dark:text-slate-400')}>
                     {item.icon}
                 </div>
             )}
-            {isSidebarOpen && <span className={cn("text-sm font-medium transition-colors whitespace-normal leading-tight text-left wrap-break-word pr-2", isActive ? 'text-purple-900 font-semibold dark:text-white' : 'text-slate-600 dark:text-slate-300')}>{item.title}</span>}
-            {isActive && <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-linear-to-b from-purple-500 to-pink-500" />}
+            <span
+              aria-hidden={!isSidebarOpen}
+              className={cn(
+                SIDEBAR_LABEL_TRANSITION,
+                "flex-1 min-w-0 text-sm font-medium leading-tight text-left pr-2 whitespace-nowrap text-ellipsis",
+                isActive ? 'text-purple-900 font-semibold dark:text-white' : 'text-slate-600 dark:text-slate-300',
+                isSidebarOpen ? 'opacity-100 max-w-[12rem]' : 'opacity-0 max-w-0 w-0 pointer-events-none'
+              )}
+            >
+              {item.title}
+            </span>
+            <div
+              aria-hidden
+              className={cn(
+                SIDEBAR_LABEL_TRANSITION,
+                "shrink-0 pointer-events-none",
+                isSidebarOpen ? 'w-4 opacity-0' : 'w-0 opacity-0'
+              )}
+            />
+            <div
+              className={cn(
+                "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-linear-to-b from-purple-500 to-pink-500 transition-opacity duration-200",
+                isActive && isSidebarOpen ? 'opacity-100' : 'opacity-0'
+              )}
+            />
         </Link>
     </div>
   );
@@ -287,6 +332,11 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
 
   const { isSidebarOpen, setSidebarOpen, searchQuery, setSearchQuery } = useUIStore();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const handleLogoDoubleClick = (): void => {
+    navigate('/');
+  };
 
 
   useEffect(() => {
@@ -295,17 +345,29 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
     }
   }, [isSidebarOpen, setSearchQuery]);
   
-  const getDefaultKeys = useCallback(() => {
+  const getDefaultKeys = useCallback((): Set<string> => {
     const keys = new Set<string>();
-    const findActive = (navItems: NavItem[]) => {
-      navItems.forEach(item => {
-        if (item.href === location.pathname || (item.children?.some(c => c.href === location.pathname))) {
-          keys.add(item.href || item.title);
+
+    const visit = (navItems: NavItem[]): boolean => {
+      let branchHasActive = false;
+
+      for (const item of navItems) {
+        const itemKey = item.href || item.title;
+        const isDirectMatch = item.href === location.pathname;
+        const childHasActive = item.children ? visit(item.children) : false;
+
+        if (isDirectMatch || childHasActive) {
+          branchHasActive = true;
+          if (item.children && item.children.length > 0) {
+            keys.add(itemKey);
+          }
         }
-        if (item.children) findActive(item.children);
-      });
+      }
+
+      return branchHasActive;
     };
-    findActive(items);
+
+    visit(items);
     return keys;
   }, [items, location.pathname]);
 
@@ -324,12 +386,10 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
   }, [searchQuery, getDefaultKeys]);
 
   useEffect(() => {
-    if (!isSidebarOpen) {
-      setExpandedItemKeys(new Set());
-    } else {
-      setExpandedItemKeys(prev => prev.size > 0 ? prev : getDefaultKeys());
+    if (isSidebarOpen && !searchQuery.trim()) {
+      setExpandedItemKeys((prev) => new Set([...getDefaultKeys(), ...prev]));
     }
-  }, [isSidebarOpen, getDefaultKeys]);
+  }, [isSidebarOpen, getDefaultKeys, searchQuery]);
 
   const handleToggle = useCallback((key: string | null): void => {
     if (!key) return;
@@ -343,38 +403,69 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
 
   return (
     <>
-      {isSidebarOpen && <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />}
+      <div
+        className={cn(
+          'fixed inset-0 z-40 bg-black/50 lg:hidden transition-opacity duration-[260ms]',
+          SIDEBAR_EASE,
+          isSidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        )}
+        onClick={() => setSidebarOpen(false)}
+      />
       
       <aside className={cn(
-        'fixed lg:sticky top-0 min-h-dvh h-[100dvh] z-50 flex flex-col transition-all duration-300 ease-in-out shrink-0 overflow-hidden shadow-2xl bg-white border-r border-slate-200 dark:bg-[#130822]/90 dark:border-white/5 dark:backdrop-blur-2xl',
+        'fixed lg:sticky top-0 min-h-dvh h-[100dvh] z-50 flex flex-col shrink-0 overflow-hidden will-change-[width,transform]',
+        'bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl',
+        'border-r border-slate-200 dark:border-white/5',
+        'shadow-[2px_0_12px_-4px_rgba(15,23,42,0.08)] dark:shadow-[2px_0_16px_-4px_rgba(0,0,0,0.45)]',
         'pb-[env(safe-area-inset-bottom)]',
+        'transition-[width,transform] duration-[260ms] motion-reduce:transition-none',
+        SIDEBAR_EASE,
         isSidebarOpen ? "w-72 translate-x-0" : "w-72 -translate-x-full lg:w-20 lg:translate-x-0"
       )}>
         
         <div className={cn(
-          "h-24 flex items-center justify-center border-b border-slate-100 dark:border-white/5 shrink-0 relative",
-          "pt-[env(safe-area-inset-top)]",
+          "h-24 flex items-center justify-center border-b border-slate-200 dark:border-white/5 shrink-0 relative overflow-hidden",
+          "pt-[env(safe-area-inset-top)] transition-[padding] duration-[260ms]",
+          SIDEBAR_EASE,
           isSidebarOpen ? "px-4" : "px-0"
         )}>
-          {isSidebarOpen ? (
-            <div className="w-full flex items-center justify-between">
-              <div className="w-8 lg:hidden" />
-              <div className="flex justify-center flex-1">
-                <img src={VERII_LOGO_URL} alt="Logo" className="h-32 object-contain" />
-              </div>
-              <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-2 text-slate-500 hover:text-red-500 rounded-lg">
-                <X size={24} />
-              </button>
-              <div className="w-8 hidden lg:block" />
-            </div>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center p-1">
-              <img src={LOGO_URL} alt="V3" className="w-full h-full object-contain scale-150" />
-            </div>
-          )}
+          <div
+            className={cn(
+              "absolute inset-0 flex items-center justify-between px-4 transition-opacity duration-[260ms]",
+              SIDEBAR_EASE,
+              isSidebarOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+            )}
+          >
+            <div className="w-8 lg:hidden" />
+            <button
+              type="button"
+              onDoubleClick={handleLogoDoubleClick}
+              className="flex justify-center flex-1 cursor-pointer select-none rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-pink-500/30"
+            >
+              <img src={VERII_LOGO_URL} alt="Logo" className="h-32 object-contain pointer-events-none" />
+            </button>
+            <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-2 text-slate-500 hover:text-red-500 rounded-lg">
+              <X size={24} />
+            </button>
+            <div className="w-8 hidden lg:block" />
+          </div>
+          <button
+            type="button"
+            onDoubleClick={handleLogoDoubleClick}
+            className={cn(
+              "absolute inset-0 flex items-center justify-center p-1 cursor-pointer select-none rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-pink-500/30 transition-opacity duration-[260ms]",
+              SIDEBAR_EASE,
+              isSidebarOpen ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"
+            )}
+          >
+            <img src={LOGO_URL} alt="V3" className="w-full h-full object-contain scale-150 pointer-events-none" />
+          </button>
         </div>
 
-        <nav className="flex-1 min-h-0 pt-6 pb-6 px-3 space-y-2 overflow-y-auto custom-scrollbar overscroll-contain touch-pan-y">
+        <nav className={cn(
+          "flex-1 min-h-0 pt-6 pb-6 px-3 space-y-2 overscroll-contain touch-pan-y",
+          isSidebarOpen ? "overflow-y-auto custom-scrollbar" : "overflow-hidden"
+        )}>
           {items.map((item, idx) => (
             <NavItemComponent key={item.href || item.title || idx} item={item} searchQuery={searchQuery} expandedItemKeys={expandedItemKeys} onToggle={handleToggle} isManualClick={isManualClick} />
           ))}

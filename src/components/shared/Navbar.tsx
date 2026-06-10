@@ -1,7 +1,7 @@
 import { type ReactElement, useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Menu08Icon, SearchList01Icon, Cancel01Icon, Mic01Icon } from 'hugeicons-react'
+import { SidebarLeft01Icon, SearchList01Icon, Cancel01Icon, Mic01Icon } from 'hugeicons-react'
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { NotificationIcon } from '@/features/notification/components/NotificationIcon';
@@ -18,7 +18,7 @@ export function Navbar(): ReactElement {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useAuthStore();
-  const { toggleSidebar, searchQuery, setSearchQuery, setSidebarOpen } = useUIStore();
+  const { toggleSidebar, searchQuery, setSearchQuery, setSidebarOpen, isSidebarOpen } = useUIStore();
   const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
   const userDetail = useAppShellStore((state) =>
     user?.id ? state.userSummaries[String(user.id)]?.data ?? null : null
@@ -67,10 +67,12 @@ export function Navbar(): ReactElement {
       )}>
         <div className="flex items-center gap-2 sm:gap-4 shrink-0 h-20">
           <button
+            type="button"
             onClick={toggleSidebar}
+            aria-pressed={isSidebarOpen}
             className="p-2 shrink-0 rounded-xl text-slate-500 dark:text-slate-400 hover:text-pink-500 hover:bg-pink-500/10 dark:hover:text-pink-400 dark:hover:bg-pink-500/20 hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] transition-all duration-300 focus:outline-none"
           >
-            <Menu08Icon size={24} />
+            <SidebarLeft01Icon size={24} />
           </button>
 
           <div className="relative hidden md:block w-full max-md group">

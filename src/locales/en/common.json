@@ -1359,7 +1359,7 @@
     "commercialDefinitions": "Commercial Definitions",
     "productDefinitions": "Product and Category Definitions",
     "categoryDefinitions": "Category Definitions",
-    "windoProfilDemirVidaDefinitions": "Windo profile / rebar / screw definitions",
+    "windoProfilDemirVidaDefinitions": "Windoform Definitions",
     "countryManagement": "Country Management",
     "cityManagement": "City Management",
     "districtManagement": "District Management",
@@ -3987,7 +3987,7 @@
       "description": "You can view and approve or reject offers assigned to you"
     },
     "status": {
-      "notRequired": "Not Required",
+      "notRequired": "Draft",
       "waiting": "waiting",
       "approved": "Approved",
       "rejected": "Rejected",
@@ -5582,6 +5582,12 @@
     "taxNumber": "Vergi Numarası",
     "taxOffice": "Vergi Dairesi",
     "tcknNumber": "TCKN Numarası"
+  },
+  "documentList": {
+    "countTriedBy": "ERP Attempts",
+    "countTriedByTooltip": "Number of attempts to transfer this record to Netsis/ERP. The integration column shows only the outcome.",
+    "openDetailHint": "Double-click to open details",
+    "statusUnknown": "Status unknown"
   },
   "exportPreparing": "Hazırlanıyor..."
 }

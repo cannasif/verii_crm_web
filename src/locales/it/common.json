@@ -1360,7 +1360,7 @@
     "commercialDefinitions": "Commercial Definitions",
     "productDefinitions": "Definizioni di prodotti e categorie",
     "categoryDefinitions": "Definizioni delle categorie",
-    "windoProfilDemirVidaDefinitions": "Windo profile / rebar / screw definitions",
+    "windoProfilDemirVidaDefinitions": "Definizioni Windoform",
     "countryManagement": "Gestione Paesi",
     "cityManagement": "Gestione Città",
     "districtManagement": "Gestione Distretti",
@@ -4062,7 +4062,7 @@
       "description": "Visualizza e approva o rifiuta i preventivi assegnati a te"
     },
     "status": {
-      "notRequired": "Non Richiesto",
+      "notRequired": "Bozza",
       "waiting": "In Attesa",
       "approved": "Approvato",
       "rejected": "Rifiutato",
@@ -5657,6 +5657,12 @@
     "taxNumber": "Vergi Numarası",
     "taxOffice": "Vergi Dairesi",
     "tcknNumber": "TCKN Numarası"
+  },
+  "documentList": {
+    "countTriedBy": "Tentativi ERP",
+    "countTriedByTooltip": "Numero di tentativi di trasferimento verso Netsis/ERP. La colonna integrazione mostra solo l'esito.",
+    "openDetailHint": "Doppio clic per aprire il dettaglio",
+    "statusUnknown": "Stato sconosciuto"
   },
   "exportPreparing": "Hazırlanıyor..."
 }

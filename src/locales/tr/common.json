@@ -1359,7 +1359,7 @@
     "commercialDefinitions": "Ticari Tanımlar",
     "productDefinitions": "Ürün ve Kategori Tanımları",
     "categoryDefinitions": "Kategori Tanımlamaları",
-    "windoProfilDemirVidaDefinitions": "Windo Profil / Demir / Vida Tanımlama",
+    "windoProfilDemirVidaDefinitions": "Windoform Tanımları",
     "countryManagement": "Ülke Yönetimi",
     "cityManagement": "Şehir Yönetimi",
     "districtManagement": "İlçe Yönetimi",
@@ -3987,7 +3987,7 @@
       "description": "Size atanan teklifleri görüntüleyip onaylayabilir veya reddedebilirsiniz"
     },
     "status": {
-      "notRequired": "Gerekli Değil",
+      "notRequired": "Taslak",
       "waiting": "Bekliyor",
       "approved": "Onaylandı",
       "rejected": "Reddedildi",
@@ -5582,5 +5582,11 @@
     "taxNumber": "Vergi Numarası",
     "taxOffice": "Vergi Dairesi",
     "tcknNumber": "TCKN Numarası"
+  },
+  "documentList": {
+    "countTriedBy": "ERP Deneme",
+    "countTriedByTooltip": "Netsis/ERP'ye aktarım deneme sayısı. Entegrasyon kolonu yalnızca sonucu gösterir.",
+    "openDetailHint": "Çift tıklayarak detaya gidin",
+    "statusUnknown": "Durum bilinmiyor"
   }
 }
