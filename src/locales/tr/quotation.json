@@ -102,6 +102,9 @@
     "descriptionPlaceholder": "Açıklama giriniz",
     "projectCode": "Proje Kodu",
     "projectCodePlaceholder": "Proje kodunu girin",
+    "koliBaski": "Koli Baskı",
+    "koliBaskiPlaceholder": "Koli baskı seçin",
+    "koliBaskiSearchPlaceholder": "Koli baskı ara...",
     "offerNo": "Teklif No",
     "offerNoPlaceholder": "Teklif numarası",
     "currencyChange": {

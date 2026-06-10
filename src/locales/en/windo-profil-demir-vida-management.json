@@ -20,6 +20,10 @@
     "baski": {
       "title": "Print definitions",
       "description": "Manage print options selectable on document lines."
+    },
+    "koliBaski": {
+      "title": "Package print definitions",
+      "description": "Manage package print options selected on the quotation header and sent to the Netsis header description."
     }
   },
   "table": {

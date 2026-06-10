@@ -92,6 +92,7 @@ export interface CreateQuotationDto {
   offerType: string;
   deliveryMethod?: string | null;
   salesTypeDefinitionId?: number | null;
+  koliBaskiDefinitionId?: number | null;
   erpProjectCode?: string | null;
   offerDate?: string | null;
   offerNo?: string | null;
@@ -249,6 +250,8 @@ export interface QuotationGetDto {
   deliveryMethod?: string | null;
   salesTypeDefinitionId?: number | null;
   salesTypeDefinitionName?: string | null;
+  koliBaskiDefinitionId?: number | null;
+  koliBaskiDefinitionName?: string | null;
   erpProjectCode?: string | null;
   offerDate?: string | null;
   offerNo?: string | null;

@@ -20,6 +20,10 @@
     "baski": {
       "title": "Baskı Tanımla",
       "description": "Satır bazında seçilecek baskı tanımlarını yönetin."
+    },
+    "koliBaski": {
+      "title": "Koli Baskı Tanımla",
+      "description": "Teklif üst bilgisinde seçilip Netsis üst açıklama alanına gönderilecek koli baskı tanımlarını yönetin."
     }
   },
   "table": {

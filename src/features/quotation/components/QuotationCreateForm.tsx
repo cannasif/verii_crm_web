@@ -140,6 +140,7 @@ export function QuotationCreateForm(): ReactElement {
         representativeId: user?.id || null,
         generalDiscountRate: null,
         generalDiscountAmount: null,
+        koliBaskiDefinitionId: null,
       },
     },
   });
@@ -341,6 +342,7 @@ export function QuotationCreateForm(): ReactElement {
         generalDiscountRate: data.quotation.generalDiscountRate ?? null,
         generalDiscountAmount: data.quotation.generalDiscountAmount ?? null,
         salesTypeDefinitionId: data.quotation.deliveryMethod ? Number(data.quotation.deliveryMethod) : null,
+        koliBaskiDefinitionId: (data.quotation.koliBaskiDefinitionId && data.quotation.koliBaskiDefinitionId > 0) ? data.quotation.koliBaskiDefinitionId : null,
         erpProjectCode: data.quotation.projectCode ?? null,
       };
 

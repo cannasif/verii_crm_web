@@ -39,12 +39,13 @@ export function useWindoDefinitionOptions(
   selectedProfilDefinitionId?: number | null,
   preserveSelection?: { demirDefinitionId?: number | null; vidaDefinitionId?: number | null }
 ) {
-  const [profilQuery, demirQuery, vidaQuery, baskiQuery] = useQueries({
+  const [profilQuery, demirQuery, vidaQuery, baskiQuery, koliBaskiQuery] = useQueries({
     queries: [
       { queryKey: ['windo-definition', 'profil'], queryFn: windoDefinitionApi.getProfilList },
       { queryKey: ['windo-definition', 'demir'], queryFn: windoDefinitionApi.getDemirList },
       { queryKey: ['windo-definition', 'vida'], queryFn: windoDefinitionApi.getVidaList },
       { queryKey: ['windo-definition', 'baski'], queryFn: windoDefinitionApi.getBaskiList },
+      { queryKey: ['windo-definition', 'koli-baski'], queryFn: windoDefinitionApi.getKoliBaskiList },
     ],
   });
 
@@ -52,6 +53,7 @@ export function useWindoDefinitionOptions(
   const allDemirOptions = useMemo(() => toOptions(demirQuery.data ?? []), [demirQuery.data]);
   const allVidaOptions = useMemo(() => toOptions(vidaQuery.data ?? []), [vidaQuery.data]);
   const baskiOptions = useMemo(() => toOptions(baskiQuery.data ?? []), [baskiQuery.data]);
+  const koliBaskiOptions = useMemo(() => toOptions(koliBaskiQuery.data ?? []), [koliBaskiQuery.data]);
   const demirOptions = useMemo(
     () => filterChildOptions(allDemirOptions, selectedProfilDefinitionId, preserveSelection?.demirDefinitionId),
     [allDemirOptions, preserveSelection?.demirDefinitionId, selectedProfilDefinitionId]
@@ -66,12 +68,14 @@ export function useWindoDefinitionOptions(
     allDemirOptions,
     allVidaOptions,
     baskiOptions,
+    koliBaskiOptions,
     demirOptions,
     vidaOptions,
     profilMap: toOptionMap(profilOptions),
     demirMap: toOptionMap(allDemirOptions),
     vidaMap: toOptionMap(allVidaOptions),
     baskiMap: toOptionMap(baskiOptions),
-    isLoading: profilQuery.isLoading || demirQuery.isLoading || vidaQuery.isLoading || baskiQuery.isLoading,
+    koliBaskiMap: toOptionMap(koliBaskiOptions),
+    isLoading: profilQuery.isLoading || demirQuery.isLoading || vidaQuery.isLoading || baskiQuery.isLoading || koliBaskiQuery.isLoading,
   };
 }

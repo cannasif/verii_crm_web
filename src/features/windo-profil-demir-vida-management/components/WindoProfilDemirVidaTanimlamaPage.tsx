@@ -23,13 +23,14 @@ import {
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { windoDefinitionApi } from '../api/windo-definition-api';
 import { useWindoDefinitionOptions } from '../hooks/useWindoDefinitionOptions';
 import type { WindoDefinitionCreateDto, WindoDefinitionGetDto } from '../types/windo-definition-types';
 
 const WINDO_I18N_NS = 'windo-profil-demir-vida-management' as const;
 
-type DefinitionKind = 'profil' | 'demir' | 'vida' | 'baski';
+type DefinitionKind = 'profil' | 'demir' | 'vida' | 'baski' | 'koliBaski';
 type SortKey = 'id' | 'name' | 'profilName' | 'createdDate' | 'updatedDate';
 
 interface DefinitionSectionConfig {
@@ -71,6 +72,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   const { t, i18n } = useTranslation(WINDO_I18N_NS);
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('definitions.category-definitions.view');
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -293,21 +295,23 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{config.title}</CardTitle>
               <p className="text-sm text-muted-foreground">{config.description}</p>
             </div>
-            <Button
-              type="button"
-              className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 px-6 font-semibold text-white"
-              onClick={() => {
-                setEditingItem(null);
-                setDraftName('');
-                setDraftDemirName('');
-                setDraftVidaName('');
-                setDraftProfilDefinitionId(null);
-                setDialogOpen(true);
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              {t('table.newRecord')}
-            </Button>
+            {canCreate ? (
+              <Button
+                type="button"
+                className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 px-6 font-semibold text-white"
+                onClick={() => {
+                  setEditingItem(null);
+                  setDraftName('');
+                  setDraftDemirName('');
+                  setDraftVidaName('');
+                  setDraftProfilDefinitionId(null);
+                  setDialogOpen(true);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {t('table.newRecord')}
+              </Button>
+            ) : null}
           </div>
           <DataTableActionBar
             pageKey={`${PAGE_KEY}-${config.kind}`}
@@ -392,38 +396,42 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               loadingText={t('table.loading')}
               emptyText={t('table.empty')}
               minTableWidthClassName="min-w-[720px]"
-              showActionsColumn
+              showActionsColumn={canUpdate || canDelete}
               centerColumnHeaders
               actionsHeaderLabel={t('table.actions')}
               renderActionsCell={(item) => (
                 <div className="flex justify-end gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    className="rounded-xl"
-                    onClick={() => {
-                      setEditingItem(item);
-                      setDraftName(item.name);
-                      setDraftDemirName('');
-                      setDraftVidaName('');
-                      setDraftProfilDefinitionId(item.profilDefinitionId ? String(item.profilDefinitionId) : null);
-                      setDialogOpen(true);
-                    }}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    className="rounded-xl text-red-600"
-                    onClick={() => {
-                      void deleteMutation.mutateAsync(item.id);
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {canUpdate ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="rounded-xl"
+                      onClick={() => {
+                        setEditingItem(item);
+                        setDraftName(item.name);
+                        setDraftDemirName('');
+                        setDraftVidaName('');
+                        setDraftProfilDefinitionId(item.profilDefinitionId ? String(item.profilDefinitionId) : null);
+                        setDialogOpen(true);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  ) : null}
+                  {canDelete ? (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      className="rounded-xl text-red-600"
+                      onClick={() => {
+                        void deleteMutation.mutateAsync(item.id);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  ) : null}
                 </div>
               )}
               pageSize={pageSize}
@@ -569,6 +577,16 @@ export function WindoProfilDemirVidaTanimlamaPage(): ReactElement {
         create: windoDefinitionApi.createBaski,
         update: windoDefinitionApi.updateBaski,
         remove: windoDefinitionApi.deleteBaski,
+      },
+      {
+        kind: 'koliBaski',
+        title: t('sections.koliBaski.title', { defaultValue: 'Koli Baskı Tanımla' }),
+        description: t('sections.koliBaski.description', { defaultValue: 'Teklif üst bilgisinde seçilip Netsis üst açıklama alanına gönderilecek koli baskı tanımlarını yönetin.' }),
+        queryKey: 'koli-baski',
+        getList: windoDefinitionApi.getKoliBaskiPagedList,
+        create: windoDefinitionApi.createKoliBaski,
+        update: windoDefinitionApi.updateKoliBaski,
+        remove: windoDefinitionApi.deleteKoliBaski,
       },
     ],
     [t]

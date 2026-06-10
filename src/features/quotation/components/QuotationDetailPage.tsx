@@ -223,6 +223,7 @@ export function QuotationDetailPage(): ReactElement {
           generalDiscountRate: quotation.generalDiscountRate ?? null,
           generalDiscountAmount: quotation.generalDiscountAmount ?? null,
           deliveryMethod: deliveryMethodValue,
+          koliBaskiDefinitionId: quotation.koliBaskiDefinitionId ?? (raw.KoliBaskiDefinitionId as number) ?? null,
           projectCode: quotation.erpProjectCode ?? (raw.ErpProjectCode as string) ?? (raw.ProjectCode as string) ?? null,
         },
       });
@@ -696,6 +697,7 @@ export function QuotationDetailPage(): ReactElement {
         generalDiscountRate: data.quotation.generalDiscountRate ?? null,
         generalDiscountAmount: data.quotation.generalDiscountAmount ?? null,
         salesTypeDefinitionId: data.quotation.deliveryMethod ? Number(data.quotation.deliveryMethod) : null,
+        koliBaskiDefinitionId: (data.quotation.koliBaskiDefinitionId && data.quotation.koliBaskiDefinitionId > 0) ? data.quotation.koliBaskiDefinitionId : null,
         erpProjectCode: data.quotation.projectCode ?? null,
       };
 
