@@ -741,9 +741,10 @@ export function QuotationLineTable({
   const handleDeleteClick = (id: string): void => {
     if (!linesEditable) return;
     const line = lines.find((l) => l.id === id);
+    const relatedProductKey = line?.relatedProductKey?.trim();
     setLineToDelete(id);
-    if (line?.relatedProductKey) {
-      setRelatedLinesCount(lines.filter((l) => l.relatedProductKey === line.relatedProductKey).length);
+    if (relatedProductKey) {
+      setRelatedLinesCount(lines.filter((l) => l.relatedProductKey?.trim() === relatedProductKey).length);
     } else {
       setRelatedLinesCount(0);
     }
@@ -760,8 +761,9 @@ export function QuotationLineTable({
       return;
     }
     const removeFromList = (): void => {
-      if (lineToDeleteObj.relatedProductKey) {
-        setLines(lines.filter((l) => l.relatedProductKey !== lineToDeleteObj.relatedProductKey));
+      const relatedProductKey = lineToDeleteObj.relatedProductKey?.trim();
+      if (relatedProductKey) {
+        setLines(lines.filter((l) => l.relatedProductKey?.trim() !== relatedProductKey));
       } else {
         setLines(lines.filter((l) => l.id !== lineToDelete));
       }
