@@ -43,12 +43,15 @@ const FIELDS: FieldPaletteItem[] = [
   { label: 'Company Name', path: 'CompanyName', type: 'field' },
   { label: 'Customer Name', path: 'CustomerName', type: 'field' },
   { label: 'Offer Date', path: 'OfferDate', type: 'field' },
+  { label: 'Koli Baskı', path: 'KoliBaskiDefinitionName', type: 'field' },
+  { label: 'Müşteri İptal Nedeni', path: 'CancellationReason', type: 'field' },
 ];
 
 const TABLE_COLUMNS: FieldPaletteItem[] = [
   { label: 'Product Name', path: 'Lines.ProductName', type: 'table-column' },
   { label: 'Quantity', path: 'Lines.Quantity', type: 'table-column' },
   { label: 'Price', path: 'Lines.Price', type: 'table-column' },
+  { label: 'Baskı', path: 'Lines.BaskiDefinitionName', type: 'table-column' },
 ];
 
 function DraggablePaletteItem({

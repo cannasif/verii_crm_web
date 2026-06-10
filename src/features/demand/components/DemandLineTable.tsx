@@ -106,6 +106,20 @@ function parseLineId(formId: string | number | undefined): number | null {
   return null;
 }
 
+function getValidRelatedProductGroup(
+  lines: DemandLineFormState[],
+  line?: DemandLineFormState | null
+): DemandLineFormState[] {
+  const relatedProductKey = line?.relatedProductKey?.trim();
+  if (!relatedProductKey) return [];
+
+  const sameGroupLines = lines.filter((l) => l.relatedProductKey?.trim() === relatedProductKey);
+  const hasMainLine = sameGroupLines.some((l) => l.isMainRelatedProduct === true);
+  const hasRelatedLine = sameGroupLines.some((l) => l.isMainRelatedProduct !== true);
+
+  return sameGroupLines.length > 1 && hasMainLine && hasRelatedLine ? sameGroupLines : [];
+}
+
 function dtoToFormState(dto: DemandLineGetDto, index: number): DemandLineFormState {
   const amounts = calculateLineTotalsAmounts(
     dto.unitPrice,
@@ -452,9 +466,8 @@ export function DemandLineTable({
     const line = lines.find((l) => l.id === id);
     if (!line) return;
 
-    const isRelatedProduct = line.relatedProductKey !== null && line.relatedProductKey !== undefined;
-    if (isRelatedProduct) {
-      const sameGroupLines = lines.filter((l) => l.relatedProductKey === line.relatedProductKey);
+    const sameGroupLines = getValidRelatedProductGroup(lines, line);
+    if (sameGroupLines.length > 0) {
       const mainLine = sameGroupLines.find((l) => l.isMainRelatedProduct === true) || sameGroupLines[0];
 
       if (mainLine.id !== line.id) return;
@@ -525,13 +538,9 @@ export function DemandLineTable({
   const handleDeleteClick = (id: string): void => {
     if (!linesEditable) return;
     const line = lines.find((l) => l.id === id);
-    const relatedProductKey = line?.relatedProductKey?.trim();
+    const relatedGroup = getValidRelatedProductGroup(lines, line);
     setLineToDelete(id);
-    if (relatedProductKey) {
-      setRelatedLinesCount(lines.filter((l) => l.relatedProductKey?.trim() === relatedProductKey).length);
-    } else {
-      setRelatedLinesCount(0);
-    }
+    setRelatedLinesCount(relatedGroup.length);
     setDeleteDialogOpen(true);
   };
 
@@ -545,9 +554,10 @@ export function DemandLineTable({
       return;
     }
     const removeFromList = (): void => {
-      const relatedProductKey = lineToDeleteObj.relatedProductKey?.trim();
-      if (relatedProductKey) {
-        setLines(lines.filter((l) => l.relatedProductKey?.trim() !== relatedProductKey));
+      const relatedGroup = getValidRelatedProductGroup(lines, lineToDeleteObj);
+      if (relatedGroup.length > 0) {
+        const relatedGroupIds = new Set(relatedGroup.map((l) => l.id));
+        setLines(lines.filter((l) => !relatedGroupIds.has(l.id)));
       } else {
         setLines(lines.filter((l) => l.id !== lineToDelete));
       }
