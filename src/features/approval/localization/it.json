@@ -45,7 +45,7 @@
     "reject": "Rifiuta"
   },
   "status": {
-    "notRequired": "Non richiesto",
+    "notRequired": "Bozza",
     "waiting": "In attesa",
     "approved": "Approvato",
     "rejected": "Rifiutato",

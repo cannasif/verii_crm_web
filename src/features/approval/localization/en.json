@@ -45,7 +45,7 @@
     "reject": "Reject"
   },
   "status": {
-    "notRequired": "Not required",
+    "notRequired": "Draft",
     "waiting": "Waiting",
     "approved": "Approved",
     "rejected": "Rejected",

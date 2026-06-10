@@ -45,7 +45,7 @@
     "reject": "Reddet"
   },
   "status": {
-    "notRequired": "Gerekli Değil",
+    "notRequired": "Taslak",
     "waiting": "Bekliyor",
     "approved": "Onaylandı",
     "rejected": "Reddedildi",

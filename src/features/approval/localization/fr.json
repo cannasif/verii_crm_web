@@ -45,7 +45,7 @@
     "reject": "Refuser"
   },
   "status": {
-    "notRequired": "Non requis",
+    "notRequired": "Brouillon",
     "waiting": "En attente",
     "approved": "Approuvé",
     "rejected": "Refusé",

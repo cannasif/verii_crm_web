@@ -45,8 +45,8 @@
     "reject": "Reject"
   },
   "status": {
-    "notRequired": "Not Required",
-    "waiting": "Waiting",
+    "notRequired": "Draft",
+    "waiting": "Awaiting Approval",
     "approved": "Approved",
     "rejected": "Rejected",
     "closed": "Closed",

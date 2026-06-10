@@ -2,10 +2,13 @@ import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ApprovalStatus } from '../types/approval-types';
 import { ApprovalStatus as ApprovalStatusEnum } from '../types/approval-types';
+import { getApprovalStatusTranslationKey } from '../utils/approval-status-key';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface ApprovalStatusBadgeProps {
   status: ApprovalStatus;
+  cancellationReason?: string | null;
   className?: string;
 }
 
@@ -24,26 +27,30 @@ const STATUS_PILL_CLASS: Record<ApprovalStatus, string> = {
     'border-rose-500/30 bg-rose-500/10 text-rose-800 dark:border-rose-400/35 dark:bg-rose-500/15 dark:text-rose-200',
 };
 
-export function ApprovalStatusBadge({ status, className }: ApprovalStatusBadgeProps): ReactElement {
+export function ApprovalStatusBadge({
+  status,
+  cancellationReason,
+  className,
+}: ApprovalStatusBadgeProps): ReactElement {
   const { t } = useTranslation(['approval', 'common']);
-
-  const statusLabels: Record<ApprovalStatus, string> = {
-    [ApprovalStatusEnum.NotRequired]: t('status.notRequired'),
-    [ApprovalStatusEnum.Waiting]: t('status.waiting'),
-    [ApprovalStatusEnum.Approved]: t('status.approved'),
-    [ApprovalStatusEnum.Rejected]: t('status.rejected'),
-    [ApprovalStatusEnum.Closed]: t('status.closed'),
-    [ApprovalStatusEnum.CustomerCancelled]: t('status.customerCancelled', { defaultValue: 'Müşteri tarafından iptal edildi' }),
-  };
 
   const resolvedStatus = status in STATUS_PILL_CLASS ? status : ApprovalStatusEnum.Waiting;
   const pillClass = STATUS_PILL_CLASS[resolvedStatus];
-  const label = statusLabels[resolvedStatus] ?? statusLabels[ApprovalStatusEnum.Waiting];
+  const statusKey = getApprovalStatusTranslationKey(resolvedStatus);
+  const label =
+    statusKey != null
+      ? t(`status.${statusKey}`, {
+          defaultValue:
+            resolvedStatus === ApprovalStatusEnum.CustomerCancelled
+              ? 'Müşteri tarafından iptal edildi'
+              : undefined,
+        })
+      : t('status.waiting');
 
-  return (
+  const badge = (
     <span
       className={cn(
-        'inline-flex max-w-full items-center justify-center rounded-full border px-2 py-0.5 text-[11px] font-medium leading-tight',
+        'inline-flex min-w-[11.5rem] h-7 items-center justify-center rounded-full border px-2 text-[11px] font-medium leading-none text-center',
         pillClass,
         className
       )}
@@ -51,4 +58,20 @@ export function ApprovalStatusBadge({ status, className }: ApprovalStatusBadgePr
       {label}
     </span>
   );
+
+  const trimmedReason = cancellationReason?.trim();
+  if (resolvedStatus === ApprovalStatusEnum.CustomerCancelled && trimmedReason) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className="inline-flex cursor-default">{badge}</span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs">
+          {trimmedReason}
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
+  return badge;
 }

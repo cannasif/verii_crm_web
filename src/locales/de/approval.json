@@ -45,7 +45,7 @@
     "reject": "Ablehnen"
   },
   "status": {
-    "notRequired": "Nicht erforderlich",
+    "notRequired": "Entwurf",
     "waiting": "Wartend",
     "approved": "Genehmigt",
     "rejected": "Abgelehnt",
