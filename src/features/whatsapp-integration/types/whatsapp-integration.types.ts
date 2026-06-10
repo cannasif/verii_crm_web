@@ -119,3 +119,33 @@ export interface WhatsappQuoteDraftActionResultDto {
   pdfSent: boolean;
   message?: string | null;
 }
+
+export interface WhatsappQuotationSendRequestDto {
+  toPhoneNumber: string;
+  attachPdf: boolean;
+  customerMessage?: string | null;
+  pdfTemplateId?: number | null;
+}
+
+export interface WhatsappDocumentSendRequestDto {
+  toPhoneNumber: string;
+  message?: string | null;
+  fileName: string;
+  contentType?: string | null;
+  base64Content: string;
+  customerId?: number | null;
+}
+
+export interface WhatsappQuotationSendResultDto {
+  quotationId: number;
+  whatsappMessageSent: boolean;
+  pdfSent: boolean;
+  message?: string | null;
+}
+
+export interface WhatsappDocumentSendResultDto {
+  isSuccess: boolean;
+  messageId?: string | null;
+  logId?: number | null;
+  sentAt?: string | null;
+}

@@ -11,12 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -29,8 +23,7 @@ import {
 } from '@/components/ui/select';
 import {
   Plus,
-  MoreHorizontal,
-  Pencil,
+  Edit2,
   Copy,
   Trash2,
   FileDown,
@@ -138,7 +131,8 @@ function downloadBlobAsPdf(blob: Blob, filename: string): void {
 
 export function PdfReportDesignerListPage(): ReactElement {
   const { t, i18n } = useTranslation(['report-designer', 'common']);
-  const { canCreate, canUpdate, canDelete } = useCrudPermissions('reports.designer.list.view');
+  const { canCreate, canUpdate, canDelete, isSystemAdmin } = useCrudPermissions('reports.designer.list.view');
+  const canDeleteTemplate = canDelete || canUpdate || isSystemAdmin;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
@@ -565,50 +559,60 @@ export function PdfReportDesignerListPage(): ReactElement {
                 loadingText={t('common.loading')}
                 emptyText={hasActiveFilters ? t('common.noResults') : t('pdfReportDesigner.noTemplates')}
                 minTableWidthClassName="min-w-[1100px]"
-                showActionsColumn={canCreate || canUpdate || canDelete}
+                showActionsColumn={canCreate || canUpdate || canDeleteTemplate}
                 actionsHeaderLabel={t('common.actions')}
+                actionsCellClassName="text-right align-middle min-w-[180px]"
                 renderActionsCell={(template) => (
-                  <div className="flex justify-end">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-8">
-                          {copyingTemplateId === template.id ? (
-                            <Loader2 className="size-4 animate-spin" />
-                          ) : (
-                            <MoreHorizontal className="size-4" />
-                          )}
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        {canUpdate ? (
-                          <DropdownMenuItem asChild>
-                            <Link to={`/pdf-report-designer/edit/${template.id}`} className="flex items-center gap-2">
-                              <Pencil className="size-4" />
-                              {t('common.edit')}
-                            </Link>
-                          </DropdownMenuItem>
-                        ) : null}
-                        {canCreate ? (
-                          <DropdownMenuItem onClick={() => handleCopyAction(template)}>
-                            <Copy className="size-4" />
-                            {t('pdfReportDesigner.copy')}
-                          </DropdownMenuItem>
-                        ) : null}
-                        <DropdownMenuItem onClick={() => handlePdfAction(template)}>
-                          <FileDown className="size-4" />
-                          {t('pdfReportDesigner.generatePdf')}
-                        </DropdownMenuItem>
-                        {canDelete ? (
-                          <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={() => handleRowDeleteClick(template)}
-                          >
-                            <Trash2 className="size-4" />
-                            {t('common.delete.action')}
-                          </DropdownMenuItem>
-                        ) : null}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                  <div className="flex justify-end gap-1 opacity-100 transition-opacity">
+                    {canUpdate ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        asChild
+                        className="h-8 w-8 text-blue-600 hover:bg-blue-50 dark:text-blue-400"
+                        title={t('common.edit')}
+                      >
+                        <Link to={`/pdf-report-designer/edit/${template.id}`}>
+                          <Edit2 size={16} />
+                        </Link>
+                      </Button>
+                    ) : null}
+                    {canCreate ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-violet-600 hover:bg-violet-50 dark:text-violet-400"
+                        title={t('pdfReportDesigner.copy')}
+                        disabled={copyingTemplateId === template.id}
+                        onClick={() => handleCopyAction(template)}
+                      >
+                        {copyingTemplateId === template.id ? (
+                          <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                          <Copy size={16} />
+                        )}
+                      </Button>
+                    ) : null}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-sky-600 hover:bg-sky-50 dark:text-sky-400"
+                      title={t('pdfReportDesigner.generatePdf')}
+                      onClick={() => handlePdfAction(template)}
+                    >
+                      <FileDown size={16} />
+                    </Button>
+                    {canDeleteTemplate ? (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-red-600 hover:bg-red-50 dark:text-red-400"
+                        title={t('common.delete.action')}
+                        onClick={() => handleRowDeleteClick(template)}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    ) : null}
                   </div>
                 )}
                 onRowDoubleClick={canUpdate ? (template) => navigate(`/pdf-report-designer/edit/${template.id}`) : undefined}
@@ -639,7 +643,7 @@ export function PdfReportDesignerListPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{t('pdfReportDesigner.deleteTemplateTitle')}</DialogTitle>

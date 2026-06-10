@@ -5,6 +5,7 @@ import { ChevronDown, ChevronUp, Sparkles, LayoutTemplate, Blocks, Gauge, CheckC
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import type { PdfGalleryPresetKey } from '../constants/gallery-presets';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,9 +35,9 @@ export interface PdfDesignerOnboardingPanelProps {
   onAddSmartTable: () => void;
   onAddSmartTotals: () => void;
   onAddSmartNote: () => void;
-  onApplyPreset: (preset: 'commercialStarter' | 'compactSummary' | 'lineFocused' | 'signatureReady') => void;
+  onApplyPreset: (preset: PdfGalleryPresetKey) => void;
   onAddReusableBlock: (block: 'customerSummary' | 'documentMeta' | 'signature' | 'noteBox') => void;
-  presetLabels: Record<'commercialStarter' | 'compactSummary' | 'lineFocused' | 'signatureReady', string>;
+  presetLabels: Record<PdfGalleryPresetKey, string>;
   smartStartLabels: Record<'applyStarter' | 'addTable' | 'addTotals' | 'addNote', string>;
   reusableBlockLabels: Record<'customerSummary' | 'documentMeta' | 'signature' | 'noteBox', string>;
   showTableActions: boolean;
@@ -163,6 +164,9 @@ export function PdfDesignerOnboardingPanel({
                 {presetGalleryDescription}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onSelect={() => onApplyPreset('v3riiQuotation')}>
+                {presetLabels.v3riiQuotation}
+              </DropdownMenuItem>
               <DropdownMenuItem onSelect={() => onApplyPreset('commercialStarter')}>
                 {presetLabels.commercialStarter}
               </DropdownMenuItem>

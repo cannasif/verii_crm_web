@@ -32,7 +32,11 @@ import { useDeleteQuotationLine } from '../hooks/useDeleteQuotationLine';
 import { quotationApi } from '../api/quotation-api';
 import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
 import { formatCurrency } from '../utils/format-currency';
-import { exportQuotationLinesPdf } from '../utils/export-quotation-lines-pdf';
+import {
+  buildDocumentLineTableExportData,
+  buildDocumentLineTableExportLabels,
+  exportDocumentLineTablePowerPoint,
+} from '@/lib/document-line-table-export';
 import {
   Trash2,
   Edit,
@@ -237,6 +241,8 @@ interface QuotationLineTableProps {
   enabled?: boolean;
   offerNo?: string | null;
   customerName?: string | null;
+  buildExportPdfBlob?: (options: { draft: boolean }) => Promise<Blob>;
+  exportPdfFileName?: string;
 }
 
 export function QuotationLineTable({
@@ -251,8 +257,10 @@ export function QuotationLineTable({
   representativeId,
   quotationId,
   enabled = true,
-  offerNo,
-  customerName,
+  offerNo: _offerNo,
+  customerName: _customerName,
+  buildExportPdfBlob,
+  exportPdfFileName,
 }: QuotationLineTableProps): ReactElement {
   const linesEditable = enabled;
   const { t } = useTranslation(['quotation', 'common']);
@@ -315,6 +323,18 @@ export function QuotationLineTable({
     return found?.code || 'TRY';
   }, [currency, currencyOptions]);
 
+  const lineTableExportData = useMemo(
+    () =>
+      buildDocumentLineTableExportData({
+        lines,
+        labels: buildDocumentLineTableExportLabels((key, options) => t(key, options)),
+        currencyCode,
+        formatCurrency,
+        windoMaps: { profilMap, demirMap, vidaMap, baskiMap },
+      }),
+    [lines, t, currencyCode, profilMap, demirMap, vidaMap, baskiMap],
+  );
+
   const linePrerequisitesInput = useMemo(
     () => ({
       customerId,
@@ -350,68 +370,55 @@ export function QuotationLineTable({
   };
 
   const handleExportExcel = async () => {
-    const dataToExport = lines.map(line => ({
-      [t('lines.productCode')]: line.productCode,
-      [t('lines.productName')]: line.productName,
-      [t('lines.quantity')]: line.quantity,
-      [t('lines.unitPrice')]: formatCurrency(line.unitPrice, currencyCode),
-      [t('lines.vatRate')]: `%${line.vatRate}`,
-      [t('lines.total')]: formatCurrency(line.lineTotal, currencyCode),
-      [t('lines.description')]: line.description || '',
-    }));
-
     const XLSX = await import('xlsx');
-    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const ws = XLSX.utils.json_to_sheet(lineTableExportData.excelRows);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Teklif Kalemleri");
-    XLSX.writeFile(wb, "teklif-kalemleri.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, 'Teklif Kalemleri');
+    XLSX.writeFile(wb, 'teklif-kalemleri.xlsx');
   };
 
   const handleExportPDF = async () => {
-    await exportQuotationLinesPdf({
-      fileName: 'teklif-kalemleri.pdf',
-      title: t('sections.lines'),
-      currencyCode,
-      lines,
-      offerNo,
-      customerName,
-      t,
-    });
+    if (!buildExportPdfBlob) {
+      toast.error(t('error'), {
+        description: t('pdfExportTemplate.notAvailable', {
+          defaultValue: 'PDF çıktısı bu ekranda kullanılamıyor.',
+        }),
+      });
+      return;
+    }
+
+    if (lines.length === 0) {
+      toast.error(t('error'), {
+        description: t('lines.required'),
+      });
+      return;
+    }
+
+    try {
+      const blob = await buildExportPdfBlob({ draft: false });
+      const fileName = exportPdfFileName ?? 'teklif-kalemleri.pdf';
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = fileName;
+      anchor.rel = 'noopener';
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error(t('error'), {
+        description: t('exportPreview.error', {
+          defaultValue: 'PDF oluşturulurken bir hata oluştu.',
+        }),
+      });
+    }
   };
 
   const handleExportPowerPoint = async () => {
-    const { default: PptxGenJS } = await import('pptxgenjs');
-    const pptx = new PptxGenJS();
-    const slide = pptx.addSlide();
-
-    slide.addText("Teklif Kalemleri", { x: 0.5, y: 0.5, w: '90%', fontSize: 24, bold: true });
-
-    const headers = [
-      t('lines.productCode'),
-      t('lines.productName'),
-      t('lines.quantity'),
-      t('lines.unitPrice'),
-      t('lines.vatRate'),
-      t('lines.total')
-    ];
-
-    const rows = lines.map(line => [
-      line.productCode,
-      line.productName,
-      String(line.quantity),
-      formatCurrency(line.unitPrice, currencyCode),
-      `%${line.vatRate}`,
-      formatCurrency(line.lineTotal, currencyCode)
-    ]);
-
-    const tableData = [
-      headers.map(text => ({ text, options: { bold: true, fill: "F0F0F0" } })),
-      ...rows.map(row => row.map(text => ({ text })))
-    ];
-
-    slide.addTable(tableData, { x: 0.5, y: 1.5, w: '90%' });
-
-    pptx.writeFile({ fileName: "teklif-kalemleri.pptx" });
+    await exportDocumentLineTablePowerPoint({
+      fileName: 'teklif-kalemleri.pptx',
+      title: t('lines.title'),
+      exportData: lineTableExportData,
+    });
   };
 
   const handleAddLine = (): void => {

@@ -45,7 +45,7 @@ export interface PdfCanvasContextMenuProps {
   children: ReactNode;
   pageRef: React.RefObject<HTMLDivElement | null>;
   onAdd: (payload: PdfCanvasContextAddPayload) => void;
-  onApplyPreset?: (preset: 'commercialStarter' | 'compactSummary' | 'lineFocused' | 'signatureReady') => void;
+  onApplyPreset?: (preset: import('../constants/gallery-presets').PdfGalleryPresetKey) => void;
   headerFields?: FieldDefinitionDto[];
   lineFields?: FieldDefinitionDto[];
   allowTable?: boolean;
@@ -212,6 +212,11 @@ export function PdfCanvasContextMenu({
                 })}
               </ContextMenuSubTrigger>
               <ContextMenuSubContent className="w-56">
+                <ContextMenuItem onSelect={() => onApplyPreset('v3riiQuotation')}>
+                  {t('pdfReportDesigner.presetGallery.v3riiQuotation', {
+                    defaultValue: 'V3RII ready template',
+                  })}
+                </ContextMenuItem>
                 <ContextMenuItem onSelect={() => onApplyPreset('commercialStarter')}>
                   {t('pdfReportDesigner.presetGallery.commercialStarter', {
                     defaultValue: 'Commercial starter',

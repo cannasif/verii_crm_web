@@ -117,6 +117,10 @@
       "sendError": "Teklif WhatsApp üzerinden gönderilemedi."
     }
   },
+  "quotationSend": {
+    "sendSuccess": "Teklif PDF ile WhatsApp üzerinden gönderildi.",
+    "sendError": "Teklif WhatsApp üzerinden gönderilemedi."
+  },
   "flow": {
     "title": "WhatsApp Teklif Akışı",
     "description": "Müşterinin telefon üzerinden teklif talebi oluşturması için uygulanacak güvenli modül planı.",

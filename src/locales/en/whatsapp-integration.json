@@ -117,6 +117,10 @@
       "sendError": "Quotation could not be sent through WhatsApp."
     }
   },
+  "quotationSend": {
+    "sendSuccess": "Quotation was sent through WhatsApp with PDF.",
+    "sendError": "Quotation could not be sent through WhatsApp."
+  },
   "flow": {
     "title": "WhatsApp Quote Flow",
     "description": "A safe module plan for customers to request quotes from their phone.",

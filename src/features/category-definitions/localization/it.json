@@ -43,7 +43,7 @@
     "stocksGuideDescription": "Qui decidi quali prodotti appartengono alla categoria selezionata. Puoi assegnare gli articoli uno alla volta se necessario.",
     "stocksHelperText": "Flusso semplice: prima scegli una categoria, poi clicca «Assegna articolo», infine seleziona il prodotto dall'elenco.",
     "rulesGuideTitle": "Cosa fa la schermata delle regole?",
-    "rulesGuideDescription": "Se non vuoi assegnare prodotti simili uno per uno, definisci qui una regola. Ad esempio, se Code1 = GLASS, inseriscili in questa categoria.",
+    "rulesGuideDescription": "Se non vuoi assegnare prodotti simili uno per uno, definisci qui una regola. Ad esempio, se Code1 = VETRO, inseriscili in questa categoria.",
     "rulesHelperText": "Crea prima la regola. Poi usa «Anteprima regole» per vedere l'esito. Se è corretto, usa «Applica regole» per assegnare automaticamente.",
     "selectionTitle": "Stato della selezione",
     "selectionDescription": "Usa il pannello destro per vedere in un colpo d'occhio catalogo, categoria e articoli collegati.",

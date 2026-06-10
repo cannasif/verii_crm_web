@@ -28,7 +28,7 @@ import {
 } from '@/lib/management-list-layout';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Pencil, Trash2, ArrowLeft, TableProperties, X, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
+import { Plus, Edit2, Trash2, ArrowLeft, TableProperties, X, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -342,22 +342,22 @@ export function PdfTablePresetManagementPage(): ReactElement {
                 showActionsColumn
                 actionsHeaderLabel={t('common.actions')}
                 renderActionsCell={(preset) => (
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-end gap-1 opacity-100 transition-opacity">
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => openEdit(preset)}
-                      className="size-8 rounded-lg text-slate-400 hover:bg-white hover:text-pink-500 dark:hover:bg-white/5"
+                      className="h-8 w-8 text-blue-600 hover:bg-blue-50 dark:text-blue-400"
                     >
-                      <Pencil className="size-4" />
+                      <Edit2 size={16} />
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDelete(preset)}
-                      className="size-8 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10"
+                      className="h-8 w-8 text-red-600 hover:bg-red-50 dark:text-red-400"
                     >
-                      <Trash2 className="size-4" />
+                      <Trash2 size={16} />
                     </Button>
                   </div>
                 )}

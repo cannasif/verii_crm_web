@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { isPdfTableElement } from '../types/pdf-report-template.types';
 import { Input } from '@/components/ui/input';
@@ -155,6 +156,7 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
   const elementsById = usePdfReportDesignerStore((s) => s.elementsById);
   const elementOrder = usePdfReportDesignerStore((s) => s.elementOrder);
   const selectedIds = usePdfReportDesignerStore((s) => s.selectedIds);
+  const invalidElementIds = usePdfReportDesignerStore((s) => s.invalidElementIds);
   const updateElement = usePdfReportDesignerStore((s) => s.updateElement);
   const updateReportElement = usePdfReportDesignerStore((s) => s.updateReportElement);
   const addColumnToTable = usePdfReportDesignerStore((s) => s.addColumnToTable);
@@ -760,6 +762,20 @@ export function PdfInspectorPanel({ pageCount, fieldDefinitions = [] }: PdfInspe
             tone="accent"
           >
             <div className="flex flex-col gap-2">
+            {selectedElement.columns.length === 0 ? (
+              <p
+                className={cn(
+                  'rounded-md border px-2.5 py-2 text-xs leading-relaxed',
+                  invalidElementIds.includes(selectedElement.id)
+                    ? 'border-red-500/70 bg-red-50 text-red-800 dark:border-red-500/40 dark:bg-red-950/40 dark:text-red-200'
+                    : 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200'
+                )}
+              >
+                {t('pdfReportDesigner.validation.tableNoColumnsHint', {
+                  defaultValue: 'Drag at least one column from the left panel onto this table.',
+                })}
+              </p>
+            ) : null}
             <div className="flex flex-col gap-1">
               <Label className="text-xs">{t('reportDesigner.tableDesigner.presetLibrary')}</Label>
               <Select

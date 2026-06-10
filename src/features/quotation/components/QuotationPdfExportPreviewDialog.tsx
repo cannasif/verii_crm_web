@@ -42,8 +42,8 @@ export interface QuotationPdfExportPreviewDialogProps {
   buildPdfBlob: (options: { draft: boolean }) => Promise<Blob>;
   fileName: string;
   labels: QuotationPdfExportPreviewDialogLabels;
-  onShareWhatsapp: () => void;
-  onShareMail: () => void;
+  onShareWhatsapp: (pdfBlob: Blob) => void | Promise<void>;
+  onShareMail: (pdfBlob: Blob) => void | Promise<void>;
 }
 
 export function QuotationPdfExportPreviewDialog({
@@ -58,6 +58,7 @@ export function QuotationPdfExportPreviewDialog({
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [sharing, setSharing] = useState(false);
   const loadIdRef = useRef(0);
 
   const revokeBlobUrl = useCallback((url: string | null): void => {
@@ -113,13 +114,23 @@ export function QuotationPdfExportPreviewDialog({
   };
 
   const handleShareWhatsapp = async (): Promise<void> => {
-    await handleDownload();
-    onShareWhatsapp();
+    try {
+      setSharing(true);
+      const blob = await buildPdfBlob({ draft: false });
+      await onShareWhatsapp(blob);
+    } finally {
+      setSharing(false);
+    }
   };
 
   const handleShareMail = async (): Promise<void> => {
-    await handleDownload();
-    onShareMail();
+    try {
+      setSharing(true);
+      const blob = await buildPdfBlob({ draft: false });
+      await onShareMail(blob);
+    } finally {
+      setSharing(false);
+    }
   };
 
   const actionBtnClass = cn(
@@ -274,7 +285,7 @@ export function QuotationPdfExportPreviewDialog({
             <Button
               type="button"
               variant="outline"
-              disabled={!blobUrl || loading || error}
+              disabled={!blobUrl || loading || error || sharing}
               onClick={() => void handleDownload()}
               className={cn(
                 actionBtnClass,
@@ -290,7 +301,7 @@ export function QuotationPdfExportPreviewDialog({
             <Button
               type="button"
               variant="outline"
-              disabled={!blobUrl || loading || error}
+              disabled={!blobUrl || loading || error || sharing}
               onClick={() => void handleShareWhatsapp()}
               className={cn(
                 actionBtnClass,
@@ -306,7 +317,7 @@ export function QuotationPdfExportPreviewDialog({
             <Button
               type="button"
               variant="outline"
-              disabled={!blobUrl || loading || error}
+              disabled={!blobUrl || loading || error || sharing}
               onClick={() => void handleShareMail()}
               className={cn(
                 actionBtnClass,

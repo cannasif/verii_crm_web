@@ -1,58 +1,66 @@
 {
   "page": {
-    "title": "Windo profile / rebar / screw definitions",
-    "description": "Manage profile, rebar, and screw records using the same paged table pattern as other definition screens.",
-    "documentTitle": "Windo profile / rebar / screw"
+    "title": "تعريفات ملفات / حديد / براغي Windo",
+    "description": "إدارة السجلات باستخدام نفس نمط الجدول كشاشات التعريف الأخرى.",
+    "documentTitle": "ملف / حديد / برغي Windo"
   },
   "sections": {
     "profil": {
-      "title": "Profile definitions",
-      "description": "Manage profile options selectable on document lines."
+      "title": "تعريفات الملف",
+      "description": "إدارة خيارات الملف القابلة للتحديد في أسطر المستندات."
     },
     "demir": {
-      "title": "Rebar definitions",
-      "description": "Manage rebar options selectable on document lines."
+      "title": "تعريفات الحديد",
+      "description": "إدارة خيارات الحديد القابلة للتحديد في أسطر المستندات."
     },
     "vida": {
-      "title": "Screw definitions",
-      "description": "Manage screw options selectable on document lines."
+      "title": "تعريفات البراغي",
+      "description": "إدارة خيارات البراغي القابلة للتحديد في أسطر المستندات."
+    },
+    "baski": {
+      "title": "تعريفات الطباعة",
+      "description": "إدارة خيارات الطباعة القابلة للتحديد في أسطر المستندات."
     }
   },
   "table": {
-    "id": "ID",
-    "name": "Name",
-    "profilName": "Profile",
-    "createdDate": "Created",
-    "updatedDate": "Updated",
-    "newRecord": "New record",
-    "searchPlaceholder": "Search definitions...",
-    "refresh": "Refresh",
-    "loading": "Loading definitions...",
-    "empty": "No records found.",
-    "actions": "Actions",
-    "previous": "Previous",
-    "next": "Next",
-    "pagination": "Showing {{from}}-{{to}} of {{total}} records",
-    "filterName": "Name",
+    "id": "المعرف",
+    "name": "الاسم",
+    "profilName": "الملف",
+    "createdDate": "تاريخ الإنشاء",
+    "updatedDate": "تاريخ التحديث",
+    "newRecord": "سجل جديد",
+    "searchPlaceholder": "البحث في التعريفات...",
+    "refresh": "تحديث",
+    "loading": "جاري تحميل التعريفات...",
+    "empty": "لم يتم العثور على سجلات.",
+    "actions": "إجراءات",
+    "previous": "السابق",
+    "next": "التالي",
+    "pagination": "عرض {{from}}-{{to}} من {{total}} سجلات",
+    "filterName": "الاسم",
     "dateDash": "-"
   },
   "dialog": {
-    "editTitle": "Edit {{section}}",
-    "addTitle": "Add {{section}}",
-    "nameLabel": "Name",
-    "profilLabel": "Linked profile",
-    "profilPlaceholder": "Select a profile",
-    "profilSearchPlaceholder": "Search profile",
-    "cancel": "Cancel",
-    "save": "Save"
+    "editTitle": "تعديل {{section}}",
+    "addTitle": "إضافة {{section}}",
+    "nameLabel": "الاسم",
+    "profilLabel": "الملف المرتبط",
+    "profilPlaceholder": "اختر ملفاً",
+    "profilSearchPlaceholder": "البحث عن ملف",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "demirNameLabel": "اسم الحديد",
+    "demirNamePlaceholder": "اسم الحديد المرتبط",
+    "vidaNameLabel": "اسم البرغي",
+    "vidaNamePlaceholder": "اسم البرغي المرتبط"
   },
   "validation": {
-    "nameRequired": "Name is required",
-    "profilRequired": "Profile selection is required"
+    "nameRequired": "الاسم مطلوب",
+    "profilRequired": "تحديد الملف مطلوب"
   },
   "toasts": {
-    "created": "{{section}} record created",
-    "updated": "{{section}} record updated",
-    "deleted": "{{section}} record deleted"
+    "created": "تم إنشاء السجل {{section}}",
+    "updated": "تم تحديث السجل {{section}}",
+    "deleted": "تم حذف السجل {{section}}"
   }
 }

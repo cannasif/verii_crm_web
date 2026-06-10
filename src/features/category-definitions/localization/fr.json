@@ -43,7 +43,7 @@
     "stocksGuideDescription": "Vous déterminez ici quels produits appartiennent à la catégorie sélectionnée. Vous pouvez affecter les stocks un par un si besoin.",
     "stocksHelperText": "Parcours simple : choisissez une catégorie, cliquez sur « Assigner un stock », puis sélectionnez le produit dans la liste.",
     "rulesGuideTitle": "Que fait l’écran des règles ?",
-    "rulesGuideDescription": "Si vous ne souhaitez pas affecter des produits similaires un par un, définissez une règle ici. Par exemple, si Code1 = GLASS, placez-les dans cette catégorie.",
+    "rulesGuideDescription": "Si vous ne souhaitez pas affecter des produits similaires un par un, définissez une règle ici. Par exemple, si Code1 = VERRE, placez-les dans cette catégorie.",
     "rulesHelperText": "Créez d’abord la règle. Utilisez ensuite « Aperçu des règles » pour voir le résultat. Si c’est correct, utilisez « Appliquer les règles » pour affecter automatiquement.",
     "selectionTitle": "État de la sélection",
     "selectionDescription": "Le panneau de droite affiche d’un coup d’œil le catalogue, la catégorie et les stocks liés sélectionnés.",

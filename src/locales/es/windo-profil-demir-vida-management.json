@@ -1,58 +1,66 @@
 {
   "page": {
-    "title": "Windo profile / rebar / screw definitions",
-    "description": "Manage profile, rebar, and screw records using the same paged table pattern as other definition screens.",
-    "documentTitle": "Windo profile / rebar / screw"
+    "title": "Definiciones de Perfil / Hierro / Tornillo Windo",
+    "description": "Gestione perfiles, hierros y tornillos utilizando el mismo formato de tabla que otras pantallas de definición.",
+    "documentTitle": "Perfil / Hierro / Tornillo Windo"
   },
   "sections": {
     "profil": {
-      "title": "Profile definitions",
-      "description": "Manage profile options selectable on document lines."
+      "title": "Definiciones de perfil",
+      "description": "Gestione opciones de perfil seleccionables en las líneas de documentos."
     },
     "demir": {
-      "title": "Rebar definitions",
-      "description": "Manage rebar options selectable on document lines."
+      "title": "Definiciones de hierro",
+      "description": "Gestione opciones de hierro seleccionables en las líneas de documentos."
     },
     "vida": {
-      "title": "Screw definitions",
-      "description": "Manage screw options selectable on document lines."
+      "title": "Definiciones de tornillo",
+      "description": "Gestione opciones de tornillo seleccionables en las líneas de documentos."
+    },
+    "baski": {
+      "title": "Definiciones de impresión",
+      "description": "Gestione opciones de impresión seleccionables en las líneas de documentos."
     }
   },
   "table": {
     "id": "ID",
-    "name": "Name",
-    "profilName": "Profile",
-    "createdDate": "Created",
-    "updatedDate": "Updated",
-    "newRecord": "New record",
-    "searchPlaceholder": "Search definitions...",
-    "refresh": "Refresh",
-    "loading": "Loading definitions...",
-    "empty": "No records found.",
-    "actions": "Actions",
-    "previous": "Previous",
-    "next": "Next",
-    "pagination": "Showing {{from}}-{{to}} of {{total}} records",
-    "filterName": "Name",
+    "name": "Nombre",
+    "profilName": "Perfil",
+    "createdDate": "Fecha de creación",
+    "updatedDate": "Fecha de actualización",
+    "newRecord": "Nuevo registro",
+    "searchPlaceholder": "Buscar definiciones...",
+    "refresh": "Actualizar",
+    "loading": "Cargando definiciones...",
+    "empty": "No se encontraron registros.",
+    "actions": "Acciones",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "pagination": "Mostrando {{from}}-{{to}} de {{total}} registros",
+    "filterName": "Nombre",
     "dateDash": "-"
   },
   "dialog": {
-    "editTitle": "Edit {{section}}",
-    "addTitle": "Add {{section}}",
-    "nameLabel": "Name",
-    "profilLabel": "Linked profile",
-    "profilPlaceholder": "Select a profile",
-    "profilSearchPlaceholder": "Search profile",
-    "cancel": "Cancel",
-    "save": "Save"
+    "editTitle": "Editar {{section}}",
+    "addTitle": "Añadir {{section}}",
+    "nameLabel": "Nombre",
+    "profilLabel": "Perfil vinculado",
+    "profilPlaceholder": "Seleccione un perfil",
+    "profilSearchPlaceholder": "Buscar perfil",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "demirNameLabel": "Nombre del hierro",
+    "demirNamePlaceholder": "Nombre del hierro vinculado",
+    "vidaNameLabel": "Nombre del tornillo",
+    "vidaNamePlaceholder": "Nombre del tornillo vinculado"
   },
   "validation": {
-    "nameRequired": "Name is required",
-    "profilRequired": "Profile selection is required"
+    "nameRequired": "El nombre es obligatorio",
+    "profilRequired": "Es obligatorio seleccionar un perfil"
   },
   "toasts": {
-    "created": "{{section}} record created",
-    "updated": "{{section}} record updated",
-    "deleted": "{{section}} record deleted"
+    "created": "Registro de {{section}} creado",
+    "updated": "Registro de {{section}} actualizado",
+    "deleted": "Registro de {{section}} eliminado"
   }
 }

@@ -48,7 +48,11 @@
     "profilPlaceholder": "Select a profile",
     "profilSearchPlaceholder": "Search profile",
     "cancel": "Cancel",
-    "save": "Save"
+    "save": "Save",
+    "demirNameLabel": "Rebar name",
+    "demirNamePlaceholder": "Linked rebar name",
+    "vidaNameLabel": "Screw name",
+    "vidaNamePlaceholder": "Linked screw name"
   },
   "validation": {
     "nameRequired": "Name is required",

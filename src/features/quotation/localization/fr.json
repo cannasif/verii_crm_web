@@ -211,6 +211,10 @@
     "rejectDescription": "Indiquez le motif du rejet.",
     "rejectReasonPlaceholder": "Motif du rejet",
     "statusFilterLabel": "Statut d'approbation",
+    "lockedForNonApprover": "Cet enregistrement est en cours d'approbation. Seul l'approbateur actif peut apporter des modifications. Le formulaire est en lecture seule pour vous.",
+    "approvedReadOnlyReason": "Ce devis a été approuvé. Les devis approuvés ne peuvent pas être modifiés ou révisés directement. Tous les champs sont en lecture seule.",
+    "rejectedReadOnlyReason": "Ce devis a été rejeté. Utilisez « Réviser » depuis la liste des devis pour apporter des modifications.",
+    "closedReason": "Cet enregistrement a été fermé car un autre enregistrement avec le même numéro de devis a été approuvé. Tous les champs sont en lecture seule.",
     "status": {
       "notRequired": "Non requis",
       "waiting": "En attente",

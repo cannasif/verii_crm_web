@@ -1,4 +1,4 @@
-import { type ChangeEvent, type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
@@ -67,6 +67,8 @@ interface OutlookCustomerMailDialogProps {
   validUntil?: string | null;
   recordOwnerName?: string | null;
   contextTitle?: string | null;
+  initialAttachmentFiles?: File[];
+  autoAttachPdfOnOpen?: boolean;
 }
 
 interface MailTemplateOption {
@@ -168,6 +170,8 @@ export function OutlookCustomerMailDialog({
   validUntil,
   recordOwnerName,
   contextTitle,
+  initialAttachmentFiles,
+  autoAttachPdfOnOpen = false,
 }: OutlookCustomerMailDialogProps): ReactElement {
   const { t, i18n } = useTranslation('outlook-integration');
   const sendMutation = useSendOutlookCustomerMailMutation();
@@ -188,6 +192,7 @@ export function OutlookCustomerMailDialog({
   const [recentSuggestions, setRecentSuggestions] = useState<RecipientSuggestion[]>([]);
   const [selectedPdfTemplateId, setSelectedPdfTemplateId] = useState<string>('');
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const autoAttachAttemptedRef = useRef(false);
 
   const moduleLabel = useMemo(
     () =>
@@ -478,8 +483,9 @@ export function OutlookCustomerMailDialog({
       }
     }
 
-    setSelectedFiles([]);
-  }, [open, selectedTemplate, contextValues]);
+    setSelectedFiles(initialAttachmentFiles ?? []);
+    autoAttachAttemptedRef.current = false;
+  }, [open, selectedTemplate, contextValues, initialAttachmentFiles]);
 
   useEffect(() => {
     if (!open) return;
@@ -657,7 +663,7 @@ export function OutlookCustomerMailDialog({
   };
 
   const handleGeneratePdfAttachment = async (): Promise<void> => {
-    if (!documentRuleType || !selectedPdfTemplateId) {
+    if (!documentRuleType || !selectedPdfTemplateId || !recordId || recordId <= 0) {
       toast.error(t('mailDialog.pdfTemplateRequired'));
       return;
     }
@@ -700,6 +706,14 @@ export function OutlookCustomerMailDialog({
       setIsGeneratingPdf(false);
     }
   };
+
+  useEffect(() => {
+    if (!open || !autoAttachPdfOnOpen || autoAttachAttemptedRef.current) return;
+    if (!recordId || recordId <= 0 || !selectedPdfTemplateId) return;
+
+    autoAttachAttemptedRef.current = true;
+    void handleGeneratePdfAttachment();
+  }, [open, autoAttachPdfOnOpen, recordId, selectedPdfTemplateId]);
 
   const canSend =
     !missingCustomer &&

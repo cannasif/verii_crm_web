@@ -106,7 +106,9 @@
       "emptyQuotation": "Teklif şablonu bulunamadı",
       "emptyOrder": "Sipariş şablonu bulunamadı",
       "emptyFastQuotation": "Hızlı teklif şablonu bulunamadı",
-      "emptyActivity": "Aktivite şablonu bulunamadı"
+      "emptyActivity": "Aktivite şablonu bulunamadı",
+      "noBoundFields": "Şablonda bağlı veri alanı yok",
+      "noBoundFieldsHint": "PDF tasarımcıda V3RII Hazır Şablon'u uygulayıp kaydedin veya alanları paletten sürükleyin."
     },
     "inspector": {
       "title": "Denetleyici",
@@ -387,6 +389,14 @@
     "qualityTitle": "Şablon kalitesi",
     "qualitySubtitle": "Bu şablon ilk kez kullanan biri için yeterince net mi?",
     "qualityReady": "Şablon temel kurumsal kalite kontrolünü geçti.",
+    "validation": {
+      "failed": "Kaydedilemedi — eksik veya hatalı alanlar var",
+      "bannerTitle": "Kaydetmeden önce şu sorunları giderin",
+      "bannerIntro": "Kırmızı ile işaretli alanları düzeltin. Tablolara sol panelden sütun sürükleyin.",
+      "tableNoColumns": "Tablo en az bir sütun içermeli ({{index}}. öğe)",
+      "tableNoColumnsHint": "Bu tabloya sol panelden en az bir sütun sürükleyin.",
+      "elementIssue": "{{index}}. öğe: {{detail}}"
+    },
     "qualityIssues": {
       "title": "Şablon başlığı eksik.",
       "elements": "Sayfada henüz yerleştirilmiş bir öğe yok.",
@@ -403,11 +413,17 @@
     "presetGalleryTitle": "Hazır şablon galerisi",
     "presetGalleryDescription": "Belgeyi sıfırdan kurmak yerine güvenli hazır başlangıçlardan biriyle başla.",
     "presetGallery": {
+      "v3riiQuotation": "V3RII Hazır Şablon",
       "commercialStarter": "Tam ticari başlangıç",
       "compactSummary": "Kompakt özet düzeni",
       "lineFocused": "Kalem odaklı düzen",
-      "signatureReady": "Onay ve imza düzeni"
+      "signatureReady": "Onay ve imza düzeni",
+      "v3riiApplied": "V3RII hazır şablon yerleştirildi.",
+      "fieldsNotLoaded": "Alan listesi henüz yüklenmedi. Birkaç saniye bekleyip tekrar deneyin.",
+      "missingFields": "Şablon için gerekli alanlar API'de bulunamadı: {{fields}}"
     },
+    "fieldPathsRebound": "Şablon alanları API yollarıyla eşleştirildi.",
+    "unresolvedFieldPaths": "Eşleştirilemeyen alan: {{fields}}, sütun: {{columns}}. Paletten doğru alanları sürükleyip kaydedin.",
     "smartStartActions": {
       "applyStarter": "Temel şablon iskeleti uygula",
       "addTable": "Satır tablosu ekle",

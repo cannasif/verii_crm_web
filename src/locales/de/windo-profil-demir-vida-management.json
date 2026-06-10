@@ -1,58 +1,66 @@
 {
   "page": {
-    "title": "Windo profile / rebar / screw definitions",
-    "description": "Manage profile, rebar, and screw records using the same paged table pattern as other definition screens.",
-    "documentTitle": "Windo profile / rebar / screw"
+    "title": "Windo Profil- / Eisen- / Schrauben-Definitionen",
+    "description": "Verwalten Sie Profil-, Eisen- und Schraubendatensätze in derselben Tabellenansicht wie andere Definitionsseiten.",
+    "documentTitle": "Windo Profil / Eisen / Schraube"
   },
   "sections": {
     "profil": {
-      "title": "Profile definitions",
-      "description": "Manage profile options selectable on document lines."
+      "title": "Profil-Definitionen",
+      "description": "Verwalten Sie in Dokumentzeilen wählbare Profiloptionen."
     },
     "demir": {
-      "title": "Rebar definitions",
-      "description": "Manage rebar options selectable on document lines."
+      "title": "Eisen-Definitionen",
+      "description": "Verwalten Sie in Dokumentzeilen wählbare Eisenoptionen."
     },
     "vida": {
-      "title": "Screw definitions",
-      "description": "Manage screw options selectable on document lines."
+      "title": "Schrauben-Definitionen",
+      "description": "Verwalten Sie in Dokumentzeilen wählbare Schraubenoptionen."
+    },
+    "baski": {
+      "title": "Druck-Definitionen",
+      "description": "Verwalten Sie in Dokumentzeilen wählbare Druckoptionen."
     }
   },
   "table": {
     "id": "ID",
     "name": "Name",
-    "profilName": "Profile",
-    "createdDate": "Created",
-    "updatedDate": "Updated",
-    "newRecord": "New record",
-    "searchPlaceholder": "Search definitions...",
-    "refresh": "Refresh",
-    "loading": "Loading definitions...",
-    "empty": "No records found.",
-    "actions": "Actions",
-    "previous": "Previous",
-    "next": "Next",
-    "pagination": "Showing {{from}}-{{to}} of {{total}} records",
+    "profilName": "Profil",
+    "createdDate": "Erstellt am",
+    "updatedDate": "Aktualisiert am",
+    "newRecord": "Neuer Datensatz",
+    "searchPlaceholder": "Definitionen durchsuchen...",
+    "refresh": "Aktualisieren",
+    "loading": "Definitionen werden geladen...",
+    "empty": "Keine Datensätze gefunden.",
+    "actions": "Aktionen",
+    "previous": "Zurück",
+    "next": "Weiter",
+    "pagination": "Zeige {{from}}-{{to}} von {{total}} Datensätzen",
     "filterName": "Name",
     "dateDash": "-"
   },
   "dialog": {
-    "editTitle": "Edit {{section}}",
-    "addTitle": "Add {{section}}",
+    "editTitle": "{{section}} bearbeiten",
+    "addTitle": "{{section}} hinzufügen",
     "nameLabel": "Name",
-    "profilLabel": "Linked profile",
-    "profilPlaceholder": "Select a profile",
-    "profilSearchPlaceholder": "Search profile",
-    "cancel": "Cancel",
-    "save": "Save"
+    "profilLabel": "Verknüpftes Profil",
+    "profilPlaceholder": "Ein Profil auswählen",
+    "profilSearchPlaceholder": "Profil suchen",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "demirNameLabel": "Eisen Name",
+    "demirNamePlaceholder": "Verknüpfter Eisen Name",
+    "vidaNameLabel": "Schrauben Name",
+    "vidaNamePlaceholder": "Verknüpfter Schrauben Name"
   },
   "validation": {
-    "nameRequired": "Name is required",
-    "profilRequired": "Profile selection is required"
+    "nameRequired": "Name ist erforderlich",
+    "profilRequired": "Profilauswahl ist erforderlich"
   },
   "toasts": {
-    "created": "{{section}} record created",
-    "updated": "{{section}} record updated",
-    "deleted": "{{section}} record deleted"
+    "created": "{{section}}-Datensatz erstellt",
+    "updated": "{{section}}-Datensatz aktualisiert",
+    "deleted": "{{section}}-Datensatz gelöscht"
   }
 }
