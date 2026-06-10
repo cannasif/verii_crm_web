@@ -216,7 +216,7 @@
     "rejectedReadOnlyReason": "Ce devis a été rejeté. Utilisez « Réviser » depuis la liste des devis pour apporter des modifications.",
     "closedReason": "Cet enregistrement a été fermé car un autre enregistrement avec le même numéro de devis a été approuvé. Tous les champs sont en lecture seule.",
     "status": {
-      "notRequired": "Non requis",
+      "notRequired": "Brouillon",
       "waiting": "En attente",
       "approved": "Approuvé",
       "rejected": "Rejeté",

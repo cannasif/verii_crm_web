@@ -216,7 +216,7 @@
     "rejectedReadOnlyReason": "Esta cotización fue rechazada. Use \"Revisar\" desde la lista de cotizaciones para realizar cambios.",
     "closedReason": "Este registro se cerró porque otro registro con el mismo número de oferta fue aprobado. Todos los campos son de solo lectura.",
     "status": {
-      "notRequired": "No requerido",
+      "notRequired": "Borrador",
       "waiting": "En espera",
       "approved": "Aprobado",
       "rejected": "Rechazado",

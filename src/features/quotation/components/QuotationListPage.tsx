@@ -11,6 +11,8 @@ import {
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
   MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME,
+  MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
@@ -18,6 +20,11 @@ import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import {
   DataTableGrid,
   DataTableActionBar,
+  DocumentApprovalStatusFilter,
+  DocumentBackButton,
+  ConvertToOrderConfirmDialog,
+  DocumentListIdCell,
+  DocumentListOfferNoCell,
   DocumentListRowActions,
   ErpIntegrationPill,
   ManagementDataTableChrome,
@@ -25,13 +32,6 @@ import {
 } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useQuotationList } from '../hooks/useQuotationList';
 import { quotationApi } from '../api/quotation-api';
 import { QUOTATION_QUERY_KEYS } from '../utils/query-keys';
@@ -39,6 +39,12 @@ import type { QuotationGetDto } from '../types/quotation-types';
 import type { PagedFilter } from '@/types/api';
 import { formatCurrency } from '../utils/format-currency';
 import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
+import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
+import {
+  resolveDocumentApprovalStatus,
+  resolveDocumentCancellationReason,
+} from '@/features/approval/utils/resolve-document-status';
+import { filterDocumentsByApprovalStatus } from '@/features/approval/utils/filter-documents-by-status';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
 import { useConvertQuotationToOrder } from '../hooks/useConvertQuotationToOrder';
@@ -93,7 +99,7 @@ const QUOTATION_COLUMN_CONFIG: readonly QuotationColumnConfig[] = [
   { key: 'IsERPIntegrated', labelKey: 'quotation.list.isERPIntegrated', fallbackLabel: 'Netsis', filterType: 'boolean' },
   { key: 'ERPIntegrationNumber', labelKey: 'quotation.list.erpIntegrationNumber', fallbackLabel: 'Netsis No', filterType: 'string' },
   { key: 'LastSyncDate', labelKey: 'quotation.list.lastSyncDate', fallbackLabel: 'Netsis Tarihi', filterType: 'date' },
-  { key: 'CountTriedBy', labelKey: 'quotation.list.countTriedBy', fallbackLabel: 'Deneme', filterType: 'number' },
+  { key: 'CountTriedBy', labelKey: 'quotation.list.countTriedBy', fallbackLabel: 'ERP Deneme', filterType: 'number' },
   { key: 'Status', labelKey: 'quotation.list.status', fallbackLabel: 'Durum', filterType: 'number' },
 ];
 
@@ -146,12 +152,21 @@ export function QuotationListPage(): ReactElement {
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
   const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState<QuotationGetDto | null>(null);
+  const [convertConfirmQuotationId, setConvertConfirmQuotationId] = useState<number | null>(null);
+
+  const countTriedByTooltip = t('documentList.countTriedByTooltip', {
+    ns: 'common',
+    defaultValue: "Netsis/ERP'ye aktarım deneme sayısı. Entegrasyon kolonu yalnızca sonucu gösterir.",
+  });
 
   const baseColumns = useMemo(
     () =>
       QUOTATION_COLUMN_CONFIG.map((col) => ({
         key: col.key,
-        label: resolveLabel(t, col.labelKey, col.fallbackLabel),
+        label:
+          col.key === 'CountTriedBy'
+            ? t('documentList.countTriedBy', { ns: 'common', defaultValue: 'ERP Deneme' })
+            : resolveLabel(t, col.labelKey, col.fallbackLabel),
       })),
     [t]
   );
@@ -160,18 +175,26 @@ export function QuotationListPage(): ReactElement {
     () =>
       baseColumns.map((col) => ({
         ...col,
-        headClassName: col.key === 'GrandTotal' ? 'text-right' : col.key === 'IsERPIntegrated' || col.key === 'CountTriedBy' ? 'text-center' : undefined,
-        cellClassName:
-          col.key === 'GrandTotal'
-            ? 'text-right font-semibold'
-            : col.key === 'IsERPIntegrated' || col.key === 'CountTriedBy'
+        headTooltip: col.key === 'CountTriedBy' ? countTriedByTooltip : undefined,
+        headClassName:
+          col.key === 'Id'
+            ? MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME
+            : col.key === 'GrandTotal'
+            ? 'text-right'
+            : col.key === 'IsERPIntegrated' || col.key === 'CountTriedBy' || col.key === 'Status'
               ? 'text-center'
-              : col.key === 'Id'
-                ? 'font-medium'
-                : undefined,
+              : undefined,
+        cellClassName:
+          col.key === 'Id'
+            ? MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME
+            : col.key === 'GrandTotal'
+            ? 'text-right font-semibold'
+            : col.key === 'IsERPIntegrated' || col.key === 'CountTriedBy' || col.key === 'Status'
+              ? 'text-center'
+              : undefined,
         sortable: true,
       })),
-    [baseColumns]
+    [baseColumns, countTriedByTooltip]
   );
 
   const defaultColumnKeys = useMemo(() => baseColumns.map((col) => col.key), [baseColumns]);
@@ -189,13 +212,7 @@ export function QuotationListPage(): ReactElement {
     setVisibleColumns(prefs.visibleKeys);
   }, [defaultColumnKeys, user?.id]);
 
-  const appliedFilters = useMemo(() => {
-    const fromRows = rowsToBackendFilters(appliedFilterRows);
-    if (approvalStatusFilter !== 'all') {
-      return [...fromRows, { column: 'Status', operator: 'equals', value: approvalStatusFilter }];
-    }
-    return fromRows;
-  }, [appliedFilterRows, approvalStatusFilter]);
+  const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
 
   const filtersParam: { filters?: PagedFilter[] } =
     appliedFilters.length > 0 ? { filters: appliedFilters } : {};
@@ -206,6 +223,7 @@ export function QuotationListPage(): ReactElement {
     search: searchTerm || undefined,
     sortBy,
     sortDirection,
+    approvalStatusFilter,
     ...filtersParam,
   });
   const pagedData = quotationQuery.data;
@@ -259,11 +277,15 @@ export function QuotationListPage(): ReactElement {
 
   const getApprovalStatusLabel = useCallback(
     (status: number | null | undefined): string => {
-      if (typeof status !== 'number' || status < 0 || status > 5) {
+      if (typeof status !== 'number') {
         return '-';
       }
 
-      const statusKey = status === 0 ? 'waiting' : ['notRequired', 'waiting', 'approved', 'rejected', 'closed', 'customerCancelled'][status];
+      const statusKey = getApprovalStatusTranslationKey(status);
+      if (statusKey == null) {
+        return '-';
+      }
+
       return t(`approval.status.${statusKey}`, {
         defaultValue: status === 5 ? 'Müşteri tarafından iptal edildi' : undefined,
       });
@@ -289,7 +311,7 @@ export function QuotationListPage(): ReactElement {
         ERPIntegrationNumber: quotation.erpIntegrationNumber ?? '-',
         LastSyncDate: quotation.lastSyncDate ? new Date(quotation.lastSyncDate).toLocaleDateString(i18n.language) : '-',
         CountTriedBy: quotation.countTriedBy ?? 0,
-        Status: getApprovalStatusLabel(quotation.status),
+        Status: getApprovalStatusLabel(resolveDocumentApprovalStatus(quotation as unknown as Record<string, unknown>)),
       })),
     [currentPageRows, i18n.language, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel]
   );
@@ -304,17 +326,20 @@ export function QuotationListPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const list = await fetchAllPagedData({
-      fetchPage: (exportPageNumber, exportPageSize) =>
-        quotationApi.getList({
-          pageNumber: exportPageNumber,
-          pageSize: exportPageSize,
-          search: searchTerm || undefined,
-          sortBy,
-          sortDirection,
-          ...filtersParam,
-        }),
-    });
+    const list = filterDocumentsByApprovalStatus(
+      await fetchAllPagedData({
+        fetchPage: (exportPageNumber, exportPageSize) =>
+          quotationApi.getList({
+            pageNumber: exportPageNumber,
+            pageSize: exportPageSize,
+            search: searchTerm || undefined,
+            sortBy,
+            sortDirection,
+            ...filtersParam,
+          }),
+      }),
+      approvalStatusFilter
+    );
     return {
       columns: exportColumns,
       rows: list.map((quotation: QuotationGetDto) => ({
@@ -333,14 +358,14 @@ export function QuotationListPage(): ReactElement {
         ERPIntegrationNumber: quotation.erpIntegrationNumber ?? '-',
         LastSyncDate: quotation.lastSyncDate ? new Date(quotation.lastSyncDate).toLocaleDateString(i18n.language) : '-',
         CountTriedBy: quotation.countTriedBy ?? 0,
-        Status: getApprovalStatusLabel(quotation.status),
+        Status: getApprovalStatusLabel(resolveDocumentApprovalStatus(quotation as unknown as Record<string, unknown>)),
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, i18n.language, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, approvalStatusFilter, i18n.language, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel]);
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilters, searchTerm]);
+  }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilterRows, searchTerm]);
 
   const onSort = (column: QuotationColumnKey): void => {
     if (sortBy === column) {
@@ -367,9 +392,33 @@ export function QuotationListPage(): ReactElement {
     return new Date(dateString).toLocaleDateString(i18n.language);
   };
 
+  const openDetailHint = t('documentList.openDetailHint', {
+    ns: 'common',
+    defaultValue: 'Çift tıklayarak detaya gidin',
+  });
+
   const renderCell = (quotation: QuotationGetDto, key: QuotationColumnKey): ReactElement | string | number => {
-    if (key === 'Id') return quotation.id;
-    if (key === 'OfferNo') return quotation.offerNo || '-';
+    if (key === 'Id') {
+      const resolvedStatus = resolveDocumentApprovalStatus(quotation as unknown as Record<string, unknown>);
+      return (
+        <DocumentListIdCell
+          id={quotation.id}
+          status={resolvedStatus as ApprovalStatus | null}
+          cancellationReason={resolveDocumentCancellationReason(quotation as unknown as Record<string, unknown>)}
+        />
+      );
+    }
+    if (key === 'OfferNo') {
+      const offerNo = quotation.offerNo || '-';
+      if (offerNo === '-') return offerNo;
+      return (
+        <DocumentListOfferNoCell
+          offerNo={offerNo}
+          hint={openDetailHint}
+          onOpenDetail={() => navigate(`/quotations/${quotation.id}`)}
+        />
+      );
+    }
     if (key === 'RevisionNo') return quotation.revisionNo || '-';
     if (key === 'PotentialCustomerName') return quotation.potentialCustomerName || '-';
     if (key === 'ErpCustomerCode') return quotation.erpCustomerCode || '-';
@@ -391,8 +440,14 @@ export function QuotationListPage(): ReactElement {
     if (key === 'LastSyncDate') return formatDate(quotation.lastSyncDate);
     if (key === 'CountTriedBy') return quotation.countTriedBy ?? 0;
     if (key === 'Status') {
-      return typeof quotation.status === 'number' && quotation.status >= 0 && quotation.status <= 5 ? (
-        <ApprovalStatusBadge status={quotation.status as ApprovalStatus} />
+      const resolvedStatus = resolveDocumentApprovalStatus(quotation as unknown as Record<string, unknown>);
+      return resolvedStatus != null ? (
+        <div className="flex justify-center">
+          <ApprovalStatusBadge
+            status={resolvedStatus as ApprovalStatus}
+            cancellationReason={resolveDocumentCancellationReason(quotation as unknown as Record<string, unknown>)}
+          />
+        </div>
       ) : (
         <span className="text-muted-foreground text-sm">-</span>
       );
@@ -443,19 +498,32 @@ export function QuotationListPage(): ReactElement {
     setOutlookMailDialogOpen(true);
   };
 
-  const handleConvertToOrder = async (event: React.MouseEvent, quotationId: number): Promise<void> => {
-    event.stopPropagation();
+  const executeConvertToOrder = async (quotationId: number): Promise<void> => {
     try {
       await convertToOrderMutation.mutateAsync(quotationId);
+      setConvertConfirmQuotationId(null);
       await handleRefresh();
     } catch {
       void 0;
     }
   };
 
-  const renderActionsCell = (quotation: QuotationGetDto): ReactElement => (
+  const handleConvertToOrder = (event: React.MouseEvent, quotation: QuotationGetDto): void => {
+    event.stopPropagation();
+    if (quotation.isERPIntegrated) {
+      setConvertConfirmQuotationId(quotation.id);
+      return;
+    }
+    void executeConvertToOrder(quotation.id);
+  };
+
+  const renderActionsCell = (quotation: QuotationGetDto): ReactElement => {
+    const resolvedStatus = resolveDocumentApprovalStatus(quotation as unknown as Record<string, unknown>);
+
+    return (
     <DocumentListRowActions
       detailLabel={t('list.detail', { defaultValue: 'Detay' })}
+      mailMenuLabel={t('list.sendMail', { defaultValue: 'E-posta Gönder' })}
       gmailLabel={t('list.sendGmail', { defaultValue: 'Gmail Gönder' })}
       outlookLabel={t('list.sendOutlook', { defaultValue: 'Outlook Gönder' })}
       reviseLabel={t('list.revise', { defaultValue: 'Revize Et' })}
@@ -467,14 +535,20 @@ export function QuotationListPage(): ReactElement {
         void handleRevision(event, quotation.id);
       }}
       onConvertToOrder={(event) => {
-        void handleConvertToOrder(event, quotation.id);
+        handleConvertToOrder(event, quotation);
       }}
       isRevisePending={createRevisionMutation.isPending}
       isConvertToOrderPending={convertToOrderMutation.isPending}
-      showRevise={quotation.status === 0 || quotation.status === 3}
-      showConvertToOrder={quotation.status === 2}
+      showRevise={resolvedStatus === 0 || resolvedStatus === 3}
+      showConvertToOrder={resolvedStatus === 2 || resolvedStatus === 5}
+      convertToOrderDisabled={resolvedStatus !== 2}
     />
-  );
+    );
+  };
+
+  const handleBack = useCallback((): void => {
+    navigate(-1);
+  }, [navigate]);
 
   return (
     <div className="relative space-y-6 overflow-hidden">
@@ -483,14 +557,20 @@ export function QuotationListPage(): ReactElement {
 
       <div className="relative z-10 space-y-8">
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pb-2">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
-              {t('list.title')}
-            </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-              {t('list.description')}
-            </p>
+          <div className="flex min-w-0 flex-1 items-start gap-3">
+            <DocumentBackButton
+              onBack={handleBack}
+              backLabel={t('common.back', { ns: 'common', defaultValue: 'Geri' })}
+            />
+            <div className="min-w-0 space-y-1">
+              <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+                {t('list.title')}
+              </h1>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+                {t('list.description')}
+              </p>
+            </div>
           </div>
           <Button
             onClick={() => navigate('/quotations/create')}
@@ -537,7 +617,7 @@ export function QuotationListPage(): ReactElement {
                   setSearchResetKey((prev) => prev + 1);
                 }}
                 translationNamespace="quotation"
-                appliedFilterCount={appliedFilters.length}
+                appliedFilterCount={appliedFilterRows.length}
                 search={{
                   onSearchChange: setSearchTerm,
                   placeholder: t('common.search', { ns: 'common' }),
@@ -552,22 +632,11 @@ export function QuotationListPage(): ReactElement {
                   cooldownSeconds: 60,
                   label: t('list.refresh', { defaultValue: 'Yenile' }),
                 }}
-                leftSlot={
-                  <Select value={approvalStatusFilter} onValueChange={setApprovalStatusFilter}>
-                    <SelectTrigger className="w-[180px] h-9 border-slate-200/60 bg-white/50 dark:border-white/5 dark:bg-white/5">
-                      <SelectValue placeholder={t('approval.statusFilterLabel', { defaultValue: 'Onay durumu' })} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t('common.all', { ns: 'common' })}</SelectItem>
-                      <SelectItem value="0">{t('approval.status.waiting')}</SelectItem>
-                      <SelectItem value="1">{t('approval.status.waiting')}</SelectItem>
-                      <SelectItem value="2">{t('approval.status.approved')}</SelectItem>
-                      <SelectItem value="3">{t('approval.status.rejected')}</SelectItem>
-                      <SelectItem value="4">{t('approval.status.closed')}</SelectItem>
-                      <SelectItem value="5">{t('approval.status.customerCancelled', { defaultValue: 'Müşteri tarafından iptal edildi' })}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                }
+              />
+              <DocumentApprovalStatusFilter
+                value={approvalStatusFilter}
+                onValueChange={setApprovalStatusFilter}
+                className="mt-2 border-t border-slate-200/60 pt-2 dark:border-white/5 sm:mt-3 sm:pt-3"
               />
             </CardHeader>
             <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
@@ -664,6 +733,20 @@ export function QuotationListPage(): ReactElement {
             />
           ) : null}
         </Suspense>
+        <ConvertToOrderConfirmDialog
+          open={convertConfirmQuotationId != null}
+          onOpenChange={(open) => {
+            if (!open) {
+              setConvertConfirmQuotationId(null);
+            }
+          }}
+          onConfirm={() => {
+            if (convertConfirmQuotationId != null) {
+              void executeConvertToOrder(convertConfirmQuotationId);
+            }
+          }}
+          isPending={convertToOrderMutation.isPending}
+        />
       </div>
     </div>
   );

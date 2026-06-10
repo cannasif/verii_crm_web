@@ -216,7 +216,7 @@
     "rejectedReadOnlyReason": "Dieses Angebot wurde abgelehnt. Verwenden Sie in der Angebotsliste \"Überarbeiten\", um Änderungen vorzunehmen.",
     "closedReason": "Dieser Datensatz wurde geschlossen, weil ein anderer Datensatz mit derselben Angebotsnummer genehmigt wurde. Alle Felder sind schreibgeschützt.",
     "status": {
-      "notRequired": "Nicht erforderlich",
+      "notRequired": "Entwurf",
       "waiting": "Wartend",
       "approved": "Genehmigt",
       "rejected": "Abgelehnt",

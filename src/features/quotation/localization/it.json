@@ -216,7 +216,7 @@
     "rejectedReadOnlyReason": "Questo preventivo è stato rifiutato. Usa \"Rivedi\" dall'elenco preventivi per apportare modifiche.",
     "closedReason": "Questo record è stato chiuso perché un altro record con lo stesso numero di preventivo è stato approvato. Tutti i campi sono in sola lettura.",
     "status": {
-      "notRequired": "Non richiesto",
+      "notRequired": "Bozza",
       "waiting": "In attesa",
       "approved": "Approvato",
       "rejected": "Rifiutato",

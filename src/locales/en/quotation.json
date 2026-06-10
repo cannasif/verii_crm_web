@@ -188,6 +188,9 @@
     "searchWindoRebar": "Search rebar...",
     "searchWindoScrew": "Search screw...",
     "searchWindoPrint": "Search print...",
+    "windoKoliBaskiLabel": "Package print",
+    "koliBaskiHeaderHint": "Quotation header",
+    "addNewKoliBaski": "Add new package print",
     "windoNoneSelected": "None",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -290,7 +293,7 @@
     "rejectReasonPlaceholder": "Reason for rejection",
     "statusFilterLabel": "Approval status",
     "status": {
-      "notRequired": "Not required",
+      "notRequired": "Draft",
       "waiting": "Waiting",
       "approved": "Approved",
       "rejected": "Rejected",

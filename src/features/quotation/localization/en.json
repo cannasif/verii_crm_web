@@ -216,7 +216,7 @@
     "rejectedReadOnlyReason": "This quotation was rejected. Use \"Revise\" from the quotation list to make changes.",
     "closedReason": "This record was closed because another record with the same offer number was approved. All fields are read-only.",
     "status": {
-      "notRequired": "Not required",
+      "notRequired": "Draft",
       "waiting": "Pending",
       "approved": "Approved",
       "rejected": "Rejected",

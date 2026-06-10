@@ -45,6 +45,10 @@ import {
 } from '@/lib/quantity-input-tr';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 import { WindoQuickCreateDialog } from '@/features/windo-profil-demir-vida-management/components/WindoQuickCreateDialog';
+import {
+  DOCUMENT_LINE_FORM_CANCEL_BUTTON_CLASS,
+  DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS,
+} from '@/lib/document-line-dialog-styles';
 
 interface TemporaryStockData {
   productCode: string;
@@ -212,12 +216,12 @@ export function QuotationLineForm({
     () => baskiOptions.map((option) => ({ value: String(option.id), label: option.name })),
     [baskiOptions]
   );
-
   const handleWindoDefinitionCreated = async (
     kind: 'profil' | 'demir' | 'vida' | 'baski',
     item: { id: number; profilDefinitionId?: number | null }
   ): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: ['windo-definition'] });
+
     setFormData((prev) => {
       if (kind === 'profil') {
         return {
@@ -1120,14 +1124,14 @@ export function QuotationLineForm({
               <LineFormStockSearchField
                 productCode={formData.productCode || ''}
                 onSelectResult={handleProductSelect}
-                inputClassName={`border-slate-200 bg-slate-50 pl-10 font-mono text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
+                inputClassName={`border-slate-200 bg-slate-50 pl-10 font-mono text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
               />
             </div>
             <Button
               type="button"
               variant="outline"
               onClick={() => setProductDialogOpen(true)}
-              className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center justify-center"
+              className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center justify-center"
             >
               <Search className="h-5 w-5" />
             </Button>
@@ -1135,7 +1139,7 @@ export function QuotationLineForm({
               type="button"
               variant="outline"
               onClick={() => setCatalogDialogOpen(true)}
-              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center gap-2"
+              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center gap-2"
             >
               <LayoutGrid className="h-4 w-4" />
               <span className="text-xs font-medium">
@@ -1147,7 +1151,7 @@ export function QuotationLineForm({
               variant="outline"
               onClick={() => setPricingInfoOpen(true)}
               disabled={!isLineStockSelected}
-              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex-none items-center gap-2"
+              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-all flex-none items-center gap-2"
             >
               <Info className="h-4 w-4" />
               <span className="text-xs font-medium">
@@ -1166,13 +1170,13 @@ export function QuotationLineForm({
               value={formData.productName || ''}
               placeholder={t('lines.productName')}
               readOnly
-              className={`bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm h-11 rounded-xl w-full ${pinkFocusClass}`}
+              className={`bg-slate-50 dark:bg-white/[0.04] border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm h-11 rounded-xl w-full ${pinkFocusClass}`}
             />
           </div>
 
           <div className="w-full">
             <VoiceSearchCombobox
-              className="h-11 bg-slate-50 dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 rounded-xl"
+              className="h-11 bg-slate-50 dark:bg-white/[0.04] border-slate-200 dark:border-white/10 rounded-xl"
               value={formData.projectCode || ''}
               onSelect={(value) => handleFieldChange('projectCode', value)}
               options={projectDropdown.options}
@@ -1262,7 +1266,7 @@ export function QuotationLineForm({
               setQuantityInputValue(display);
               handleFieldChange('quantity', numeric);
             }}
-            className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-extrabold text-center shadow-sm ${pinkFocusClass}`}
+            className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white font-extrabold text-center shadow-sm ${pinkFocusClass}`}
           />
         </div>
 
@@ -1274,7 +1278,7 @@ export function QuotationLineForm({
           <LineFormUnitPriceInput
             disabled={!isLineStockSelected}
             value={unitPriceInput.unitPriceInputValue}
-            inputClassName={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-mono font-extrabold text-center shadow-sm ${pinkFocusClass}`}
+            inputClassName={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white font-mono font-extrabold text-center shadow-sm ${pinkFocusClass}`}
             currencyLabel={unitPriceInput.unitPriceInputCurrencyLabel}
             selectedCurrencyDovizTipi={unitPriceInput.unitPriceInputCurrencyDovizTipi}
             currencyDialogOpen={unitPriceInput.currencyDialogOpen}
@@ -1306,7 +1310,7 @@ export function QuotationLineForm({
             value={formData.unit || '-'}
             readOnly
             disabled={!isLineStockSelected}
-            className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-semibold text-center shadow-sm ${pinkFocusClass}`}
+            className={`h-11 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white font-semibold text-center shadow-sm ${pinkFocusClass}`}
           />
         </div>
 
@@ -1346,7 +1350,7 @@ export function QuotationLineForm({
                   }
                 }
               }}
-              className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white font-bold text-center pr-8 transition-all ${pinkFocusClass}`}
+              className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white font-bold text-center pr-8 transition-all ${pinkFocusClass}`}
             />
             <div className="absolute right-3 top-3 text-slate-400 dark:text-slate-500 font-bold">%</div>
           </div>
@@ -1361,7 +1365,7 @@ export function QuotationLineForm({
           </h5>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {discountInputs.map((item, idx) => (
-              <div key={idx} className="space-y-1.5 p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-[#0f0a18]">
+              <div key={idx} className="space-y-1.5 p-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/70 dark:bg-white/[0.04]">
                 <div className="flex items-center justify-between gap-2">
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                     {item.label}
@@ -1402,7 +1406,7 @@ export function QuotationLineForm({
                     }
                   }}
                   placeholder="0"
-                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white transition-all text-center ${pinkFocusClass}`}
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white transition-all text-center ${pinkFocusClass}`}
                 />
               </div>
             ))}
@@ -1434,7 +1438,7 @@ export function QuotationLineForm({
                   onChange={(e) => handleFieldChange('description1', e.target.value || null)}
                   maxLength={200}
                   placeholder={t('lines.max200Chars')}
-                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
               <div className="space-y-1.5">
@@ -1446,7 +1450,7 @@ export function QuotationLineForm({
                   onChange={(e) => handleFieldChange('description2', e.target.value || null)}
                   maxLength={200}
                   placeholder={t('lines.max200Chars')}
-                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
               <div className="space-y-1.5">
@@ -1458,12 +1462,12 @@ export function QuotationLineForm({
                   onChange={(e) => handleFieldChange('description3', e.target.value || null)}
                   maxLength={200}
                   placeholder={t('lines.max200Chars')}
-                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-slate-900 dark:text-white ${pinkFocusClass}`}
+                  className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-              <div className="space-y-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+              <div className="space-y-1.5 lg:col-span-2">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                   {t('lines.windoProfileLabel')}
                 </label>
@@ -1473,7 +1477,7 @@ export function QuotationLineForm({
                   onSelect={(value) => handleFieldChange('profilDefinitionId', value ? Number(value) : null)}
                   placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoProfile')}
                   searchPlaceholder={t('lines.searchWindoProfile')}
-                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
+                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
                 <Button
@@ -1487,7 +1491,7 @@ export function QuotationLineForm({
                   {t('lines.addNewProfile', { defaultValue: 'Yeni profil ekle' })}
                 </Button>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 lg:col-span-2">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                   {t('lines.windoRebarLabel')}
                 </label>
@@ -1497,7 +1501,7 @@ export function QuotationLineForm({
                   onSelect={(value) => handleFieldChange('demirDefinitionId', value ? Number(value) : null)}
                   placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoRebar')}
                   searchPlaceholder={t('lines.searchWindoRebar')}
-                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
+                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
                 <Button
@@ -1511,7 +1515,7 @@ export function QuotationLineForm({
                   {t('lines.addNewRebar', { defaultValue: 'Yeni demir ekle' })}
                 </Button>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 lg:col-span-2">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                   {t('lines.windoScrewLabel')}
                 </label>
@@ -1521,7 +1525,7 @@ export function QuotationLineForm({
                   onSelect={(value) => handleFieldChange('vidaDefinitionId', value ? Number(value) : null)}
                   placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoScrew')}
                   searchPlaceholder={t('lines.searchWindoScrew')}
-                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
+                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
                 <Button
@@ -1535,7 +1539,7 @@ export function QuotationLineForm({
                   {t('lines.addNewScrew', { defaultValue: 'Yeni vida ekle' })}
                 </Button>
               </div>
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 lg:col-span-2 lg:col-start-3 sm:col-span-2">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                   {t('lines.windoPrintLabel', { defaultValue: 'Baskı' })}
                 </label>
@@ -1545,7 +1549,7 @@ export function QuotationLineForm({
                   onSelect={(value) => handleFieldChange('baskiDefinitionId', value ? Number(value) : null)}
                   placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoPrint', { defaultValue: 'Baskı seçin' })}
                   searchPlaceholder={t('lines.searchWindoPrint', { defaultValue: 'Baskı ara...' })}
-                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white ${pinkFocusClass}`}
+                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
                 <Button
@@ -1565,7 +1569,7 @@ export function QuotationLineForm({
 
         <div className="xl:col-span-5 flex flex-col gap-4">
           {allowImageUpload ? (
-            <div className="bg-slate-50 dark:bg-[#1a1025]/50 rounded-2xl p-4 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
+            <div className="bg-slate-50 dark:bg-white/[0.03] rounded-2xl p-4 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -1604,7 +1608,7 @@ export function QuotationLineForm({
                   <img
                     src={formData.pendingImagePreviewUrl || getImageUrl(formData.imagePath) || formData.imagePath || ''}
                     alt={formData.productName || t('common.lineImage.title', { ns: 'common' })}
-                    className="h-44 w-full rounded-xl border border-slate-200 dark:border-white/10 object-cover bg-white dark:bg-[#0f0a18]"
+                    className="h-44 w-full rounded-xl border border-slate-200 dark:border-white/10 object-cover bg-white dark:bg-white/[0.04]"
                   />
                   <Button
                     type="button"
@@ -1617,14 +1621,14 @@ export function QuotationLineForm({
                   </Button>
                 </div>
               ) : (
-                <div className="rounded-xl border border-dashed border-slate-300 dark:border-white/10 bg-white/70 dark:bg-[#0f0a18] px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
+                <div className="rounded-xl border border-dashed border-slate-300 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] px-4 py-8 text-center text-sm text-slate-500 dark:text-slate-400">
                   {t('common.lineImage.empty', { ns: 'common' })}
                 </div>
               )}
             </div>
           ) : null}
 
-          <div className="bg-slate-50 dark:bg-[#1a1025]/50 rounded-2xl p-5 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
+          <div className="bg-slate-50 dark:bg-white/[0.03] rounded-2xl p-5 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
             <div className="flex justify-between items-center text-sm gap-4">
               <span className="text-slate-500 dark:text-slate-400 font-medium">{t('lines.subtotal')}</span>
               <span className="font-semibold text-slate-700 dark:text-slate-200">{formatCurrency(formData.lineTotal || 0, currencyCode)}</span>
@@ -1649,7 +1653,7 @@ export function QuotationLineForm({
           </div>
 
           {relatedLines.length > 0 && (
-            <div className="bg-slate-50 dark:bg-[#1a1025]/50 rounded-2xl p-4 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
+            <div className="bg-slate-50 dark:bg-white/[0.03] rounded-2xl p-4 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
               <div className="flex items-center gap-2">
                 <Package className="h-4 w-4 text-purple-500" />
                 <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -1660,7 +1664,7 @@ export function QuotationLineForm({
                 {relatedLines.map((relatedLine, index) => (
                   <div
                     key={`${relatedLine.productCode || 'related'}-${index}`}
-                    className="p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white/70 dark:bg-[#0f0a18] shadow-sm"
+                    className="p-3 rounded-xl border border-slate-200 dark:border-white/10 bg-white/70 dark:bg-white/[0.04] shadow-sm"
                   >
                     <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mb-2">
                       <div>
@@ -1721,10 +1725,10 @@ export function QuotationLineForm({
           <div className="flex items-center justify-end gap-3 mt-auto">
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
               onClick={onCancel}
               disabled={isSaving}
-              className="h-12 px-6 w-full sm:w-auto rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 font-medium transition-all"
+              className={DOCUMENT_LINE_FORM_CANCEL_BUTTON_CLASS}
             >
               {t('cancel')}
             </Button>
@@ -1732,7 +1736,7 @@ export function QuotationLineForm({
               type="button"
               onClick={bulkDraftLines.length > 0 ? handleBulkDraftConfirm : handleSave}
               disabled={(bulkDraftLines.length > 0 ? bulkDraftLines.length === 0 : (!formData.productCode || !formData.productName)) || isSaving}
-              className="h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              className={DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS}
             >
               {isSaving ? (
                 <>

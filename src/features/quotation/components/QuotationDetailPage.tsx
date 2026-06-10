@@ -19,14 +19,24 @@ import { resolveQuotationCustomerLabelForPdf } from '@/lib/resolve-quotation-cus
 import { resolveWatchedDocumentCurrency } from '@/lib/line-unit-price-currency';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
+import { DocumentDetailStatusAlerts } from '@/components/shared/DocumentDetailStatusAlerts';
+import { ConvertToOrderConfirmDialog } from '@/components/shared/ConvertToOrderConfirmDialog';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
+import {
+  DOCUMENT_DETAIL_BUTTON_APPROVAL,
+  DOCUMENT_DETAIL_BUTTON_BASE,
+  DOCUMENT_DETAIL_BUTTON_CONVERT,
+  DOCUMENT_DETAIL_BUTTON_DANGER,
+  DOCUMENT_DETAIL_BUTTON_PREVIEW,
+  DOCUMENT_DETAIL_BUTTON_REVISE,
+  DOCUMENT_DETAIL_BUTTON_SAVE,
+} from '@/lib/document-detail-button-styles';
 import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Layers, Loader2, FileCheck, FileText, Save, X, Eye, ShoppingCart, XCircle } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText, Save, Eye, ShoppingCart, XCircle, GitBranchPlus } from 'lucide-react';
 import { QuotationApprovalFlowTab } from './QuotationApprovalFlowTab';
 import { QuotationPdfExportPreviewDialog } from './QuotationPdfExportPreviewDialog';
 import { QuotationWhatsappSendDialog } from './QuotationWhatsappSendDialog';
@@ -58,6 +68,7 @@ import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermi
 import { useCanEditQuotation } from '../hooks/useCanEditQuotation';
 import { useConvertQuotationToOrder } from '../hooks/useConvertQuotationToOrder';
 import { useCancelQuotationByCustomer } from '../hooks/useCancelQuotationByCustomer';
+import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
 
 function addDaysToDateOnly(dateValue: string, days: number): string {
   const date = new Date(`${dateValue}T12:00:00`);
@@ -113,6 +124,7 @@ export function QuotationDetailPage(): ReactElement {
   const startApprovalFlow = useStartApprovalFlow();
   const convertToOrderMutation = useConvertQuotationToOrder();
   const cancelByCustomerMutation = useCancelQuotationByCustomer();
+  const createRevisionMutation = useCreateRevisionOfQuotation();
   const { data: customerOptions = [] } = useCustomerOptions();
 
   const [lines, setLines] = useState<QuotationLineFormState[]>([]);
@@ -133,13 +145,12 @@ export function QuotationDetailPage(): ReactElement {
   const [googleMailOpen, setGoogleMailOpen] = useState(false);
   const [outlookMailOpen, setOutlookMailOpen] = useState(false);
   const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
+  const [convertConfirmOpen, setConvertConfirmOpen] = useState(false);
   const quotationStatus = Number((quotation as { status?: number; Status?: number })?.status ?? (quotation as { status?: number; Status?: number })?.Status);
   const isApprovalWaiting = quotationStatus === 1;
   const isReadOnlyByStatus = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4 || quotationStatus === 5;
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
   const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
-  const isClosed = quotationStatus === 4;
-  const isCustomerCancelled = quotationStatus === 5;
   const canCancelByCustomer = canUpdate && !quotation?.isERPIntegrated && quotationStatus !== 4 && quotationStatus !== 5;
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
@@ -821,8 +832,30 @@ export function QuotationDetailPage(): ReactElement {
     if (!quotation) return;
 
     const result = await convertToOrderMutation.mutateAsync(quotation.id);
+    setConvertConfirmOpen(false);
     if (result.success && result.data) {
       navigate(`/orders/${result.data}`);
+    }
+  };
+
+  const requestConvertToOrder = (): void => {
+    if (!quotation) return;
+    if (quotation.isERPIntegrated) {
+      setConvertConfirmOpen(true);
+      return;
+    }
+    void handleConvertToOrder();
+  };
+
+  const handleRevision = async (): Promise<void> => {
+    if (!quotation) return;
+    try {
+      const result = await createRevisionMutation.mutateAsync(quotation.id);
+      if (result.success && result.data?.id) {
+        navigate(`/quotations/${result.data.id}`);
+      }
+    } catch {
+      void 0;
     }
   };
 
@@ -923,39 +956,12 @@ export function QuotationDetailPage(): ReactElement {
         </TabsList>
 
         <TabsContent value="detail" className="mt-6 focus-visible:outline-none">
-          {isApprovalLockedForCurrentUser && (
-            <Alert className="mb-4 border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800/80 dark:bg-amber-950/30 dark:text-amber-100">
-              <AlertDescription>
-                {t('approval.lockedForNonApprover', {
-                  defaultValue:
-                    'Bu kayıt onay sürecinde. Sadece aktif onay kullanıcısı değişiklik yapabilir. Senin için ekran salt okunur modda açıldı.',
-                })}
-              </AlertDescription>
-            </Alert>
-          )}
-          {quotationStatus === 2 && (
-            <Alert className="mb-4 border-blue-300 bg-blue-50 text-blue-900 dark:border-blue-800/80 dark:bg-blue-950/30 dark:text-blue-100">
-              <AlertDescription>{t('approval.approvedReadOnlyReason')}</AlertDescription>
-            </Alert>
-          )}
-          {quotationStatus === 3 && (
-            <Alert className="mb-4 border-amber-300 bg-amber-50 text-amber-900 dark:border-amber-800/80 dark:bg-amber-950/30 dark:text-amber-100">
-              <AlertDescription>{t('approval.rejectedReadOnlyReason')}</AlertDescription>
-            </Alert>
-          )}
-          {isClosed && (
-            <Alert className="mb-4 border-zinc-300 bg-zinc-100 dark:bg-zinc-800/50 dark:border-zinc-600">
-              <AlertDescription>{t('approval.closedReason')}</AlertDescription>
-            </Alert>
-          )}
-          {isCustomerCancelled && (
-            <Alert className="mb-4 border-rose-300 bg-rose-50 text-rose-900 dark:border-rose-800/80 dark:bg-rose-950/30 dark:text-rose-100">
-              <AlertDescription>
-                {t('customerCancel.readOnlyReason', { defaultValue: 'Bu teklif müşteri tarafından iptal edildiği için salt okunur.' })}
-                {quotation.cancellationReason ? ` ${t('customerCancel.reasonLabel', { defaultValue: 'Neden:' })} ${quotation.cancellationReason}` : ''}
-              </AlertDescription>
-            </Alert>
-          )}
+          <DocumentDetailStatusAlerts
+            documentKind="quotation"
+            status={quotationStatus}
+            isApprovalLockedForCurrentUser={isApprovalLockedForCurrentUser}
+            cancellationReason={quotation.cancellationReason}
+          />
           <FormProvider {...form}>
             <form onSubmit={handleFormSubmit} className="space-y-0">
               <div className="grid grid-cols-1 xl:grid-cols-[1fr_340px] gap-8 xl:gap-10 items-start">
@@ -1068,26 +1074,6 @@ export function QuotationDetailPage(): ReactElement {
               </div>
 
               <div className="flex flex-wrap items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => navigate('/quotations')}
-                  className="group w-full sm:w-auto"
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  {t('cancel')}
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={openPdfExportPreview}
-                  className="group w-full sm:w-auto"
-                >
-                  <Eye className="mr-2 h-4 w-4" />
-                  {t('exportPreview.trigger')}
-                </Button>
-
                 {!isReadOnly && (
                   <FormSubmitTooltipWrap
                     schema={createQuotationSchema}
@@ -1099,7 +1085,7 @@ export function QuotationDetailPage(): ReactElement {
                     <Button
                       type="submit"
                       disabled={updateMutation.isPending || !isFormValid}
-                      className="group w-full sm:w-auto bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white sm:min-w-[140px]"
+                      className={`group sm:min-w-[140px] ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_SAVE}`}
                     >
                       <Save className="mr-2 h-4 w-4" />
                       {updateMutation.isPending
@@ -1110,13 +1096,44 @@ export function QuotationDetailPage(): ReactElement {
                   </FormSubmitTooltipWrap>
                 )}
 
+                <Button
+                  type="button"
+                  onClick={openPdfExportPreview}
+                  className={`group ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_PREVIEW}`}
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  {t('exportPreview.trigger')}
+                </Button>
+
+                {quotationStatus === 3 && canUpdate && (
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      void handleRevision();
+                    }}
+                    disabled={createRevisionMutation.isPending || !quotation}
+                    className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_REVISE}`}
+                  >
+                    {createRevisionMutation.isPending ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        {t('revision.pending', { defaultValue: 'Revize oluşturuluyor...' })}
+                      </>
+                    ) : (
+                      <>
+                        <GitBranchPlus className="h-4 w-4 mr-2" />
+                        {t('list.revise', { defaultValue: 'Revize et' })}
+                      </>
+                    )}
+                  </Button>
+                )}
+
                 {quotationStatus === 0 && !isReadOnly && (
                   <Button
                     type="button"
-                    variant="secondary"
                     onClick={handleStartApprovalFlow}
                     disabled={startApprovalFlow.isPending || !quotation}
-                    className="h-10 w-full sm:w-auto"
+                    className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_APPROVAL}`}
                   >
                     {startApprovalFlow.isPending ? (
                       <>
@@ -1135,10 +1152,9 @@ export function QuotationDetailPage(): ReactElement {
                 {canCancelByCustomer && (
                   <Button
                     type="button"
-                    variant="destructive"
                     onClick={() => setCustomerCancellationOpen(true)}
                     disabled={cancelByCustomerMutation.isPending || !quotation}
-                    className="h-10 w-full sm:w-auto"
+                    className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_DANGER}`}
                   >
                     {cancelByCustomerMutation.isPending ? (
                       <Loader2 className="h-4 w-4 mr-2 animate-spin" />
@@ -1152,12 +1168,9 @@ export function QuotationDetailPage(): ReactElement {
                 {quotationStatus === 2 && (
                   <Button
                     type="button"
-                    variant="secondary"
-                    onClick={() => {
-                      void handleConvertToOrder();
-                    }}
+                    onClick={requestConvertToOrder}
                     disabled={convertToOrderMutation.isPending || !quotation}
-                    className="h-10 w-full sm:w-auto"
+                    className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_CONVERT}`}
                   >
                     {convertToOrderMutation.isPending ? (
                       <>
@@ -1211,6 +1224,15 @@ export function QuotationDetailPage(): ReactElement {
       />
 
       {prepDialog}
+
+      <ConvertToOrderConfirmDialog
+        open={convertConfirmOpen}
+        onOpenChange={setConvertConfirmOpen}
+        onConfirm={() => {
+          void handleConvertToOrder();
+        }}
+        isPending={convertToOrderMutation.isPending}
+      />
 
       <CustomerCancellationDialog
         open={customerCancellationOpen}

@@ -42,7 +42,19 @@
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
     "customerCode": "Cari Kodu",
     "validUntil": "Geçerlilik",
-    "revisionNo": "Revizyon No"
+    "revisionNo": "Revizyon No",
+    "convertToOrderConfirmTitle": "Tekrar siparişe aktar",
+    "convertToOrderConfirmDescription": "Bu teklifle daha önce ERP/Netsis entegrasyonu yapılmış bir sipariş oluşturulmuş olabilir. Yine de tekrar siparişe aktarmak istiyor musunuz?",
+    "convertToOrderConfirmAction": "Evet, aktar"
+  },
+  "customerCancel": {
+    "readOnlyReason": "Bu teklif müşteri tarafından iptal edildiği için değişiklik yapılamaz.",
+    "reasonLabel": "İptal nedeni",
+    "button": "Müşteri İptali",
+    "title": "Müşteri iptali",
+    "description": "Bu teklifi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.",
+    "reasonPlaceholder": "Müşterinin iptal nedenini yazın...",
+    "confirmButton": "İptal Et"
   },
   "date": "Tarih",
   "offerNo": "Teklif No",
@@ -211,12 +223,12 @@
     "rejectDescription": "Teklifi reddetme nedeninizi girin.",
     "rejectReasonPlaceholder": "Red nedeni",
     "statusFilterLabel": "Onay durumu",
-    "lockedForNonApprover": "Bu kayıt onay sürecinde. Sadece aktif onay kullanıcısı değişiklik yapabilir. Ekran salt okunur modda açıldı.",
-    "approvedReadOnlyReason": "Bu teklif onaylanmıştır. Onaylanmış teklifler doğrudan düzenlenemez ve revize edilemez. Tüm alanlar salt okunurdur.",
-    "rejectedReadOnlyReason": "Bu teklif reddedilmiştir. Değişiklik yapmak için teklif listesinden \"Revize et\" seçeneğini kullanın.",
-    "closedReason": "Bu kayıt aynı teklif numarasında başka bir kayıt onaylandığı için kapatıldı. Tüm alanlar salt okunurdur.",
+    "lockedForNonApprover": "Bu kayıt onay sürecinde. Yalnızca aktif onay kullanıcısı değişiklik yapabilir; sizin için düzenleme kapalı.",
+    "approvedReadOnlyReason": "Bu teklif onaylandığı için değişiklik yapılamaz.",
+    "rejectedReadOnlyReason": "Bu teklif reddedildiği için değişiklik yapılamaz. Güncellemek için aşağıdaki \"Revize et\" butonunu kullanın.",
+    "closedReason": "Bu kayıt aynı teklif numarasında başka bir kayıt onaylandığı için kapatıldı; değişiklik yapılamaz.",
     "status": {
-      "notRequired": "Gerekli Değil",
+      "notRequired": "Taslak",
       "waiting": "Bekliyor",
       "approved": "Onaylandı",
       "rejected": "Reddedildi",
@@ -227,6 +239,11 @@
     "loading": "Onay akışı yükleniyor...",
     "noData": "Onay akışı kaydı bulunamadı",
     "notStarted": "Onay akışı henüz başlatılmadı",
+    "notStartedTitle": "Onay Süreci Başlamadı",
+    "statusTitle": "Onay Akışı Durumu",
+    "errorTitle": "Hata Oluştu",
+    "rejectedReasonLabel": "Ret Gerekçesi",
+    "processRejectedReasonLabel": "Süreç İptal Nedeni",
     "stepCompleted": "Tamamlandı",
     "stepInProgress": "Devam Ediyor",
     "stepNotStarted": "Başlamadı",
@@ -358,8 +375,9 @@
     "draftWatermark": "TASLAK"
   },
   "revision": {
-    "success": "Revizyon kaydı oluşturuldu.",
-    "error": "Revizyon kaydı oluşturulamadı."
+    "success": "Revize kaydı oluşturuldu.",
+    "error": "Revize kaydı oluşturulamadı.",
+    "pending": "Revize oluşturuluyor..."
   },
   "update": {
     "saveButton": "Güncellemeyi Kaydet",
