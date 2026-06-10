@@ -293,7 +293,7 @@
     "rejectReasonPlaceholder": "Reddetme nedeni",
     "statusFilterLabel": "Onay durumu",
     "status": {
-      "notRequired": "Gerekli Değil",
+      "notRequired": "Taslak",
       "waiting": "Bekliyor",
       "approved": "Onaylandı",
       "rejected": "Reddedildi",

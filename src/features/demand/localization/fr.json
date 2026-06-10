@@ -251,7 +251,7 @@
     "rejectReasonPlaceholder": "Motif",
     "statusFilterLabel": "Statut d'approbation",
     "status": {
-      "notRequired": "Non requis",
+      "notRequired": "Brouillon",
       "waiting": "En attente",
       "approved": "Approuvé",
       "rejected": "Refusé",

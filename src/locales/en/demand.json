@@ -293,7 +293,7 @@
     "rejectReasonPlaceholder": "Rejection reason",
     "statusFilterLabel": "Approval Status",
     "status": {
-      "notRequired": "Not Required",
+      "notRequired": "Draft",
       "waiting": "Waiting",
       "approved": "Approved",
       "rejected": "Rejected",

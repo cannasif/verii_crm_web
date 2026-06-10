@@ -251,7 +251,7 @@
     "rejectReasonPlaceholder": "Grund der Ablehnung",
     "statusFilterLabel": "Freigabestatus",
     "status": {
-      "notRequired": "Nicht erforderlich",
+      "notRequired": "Entwurf",
       "waiting": "Ausstehend",
       "approved": "Genehmigt",
       "rejected": "Abgelehnt",

@@ -290,7 +290,7 @@
     "rejectReasonPlaceholder": "Rejection reason",
     "statusFilterLabel": "Stato approvazione",
     "status": {
-      "notRequired": "Non richiesto",
+      "notRequired": "Bozza",
       "waiting": "In attesa",
       "approved": "Approvato",
       "rejected": "Respinto",

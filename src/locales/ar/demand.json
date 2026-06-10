@@ -290,7 +290,7 @@
     "rejectReasonPlaceholder": "Rejection reason",
     "statusFilterLabel": "حالة الموافقة",
     "status": {
-      "notRequired": "غير مطلوب",
+      "notRequired": "مسودة",
       "waiting": "قيد الانتظار",
       "approved": "تمت الموافقة",
       "rejected": "مرفوض",

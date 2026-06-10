@@ -290,7 +290,7 @@
     "rejectReasonPlaceholder": "Rejection reason",
     "statusFilterLabel": "Genehmigungsstatus",
     "status": {
-      "notRequired": "Nicht erforderlich",
+      "notRequired": "Entwurf",
       "waiting": "Wartend",
       "approved": "Genehmigt",
       "rejected": "Abgelehnt",

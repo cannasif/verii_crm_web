@@ -251,7 +251,7 @@
     "rejectReasonPlaceholder": "السبب",
     "statusFilterLabel": "حالة الموافقة",
     "status": {
-      "notRequired": "غير مطلوب",
+      "notRequired": "مسودة",
       "waiting": "قيد الانتظار",
       "approved": "موافق",
       "rejected": "مرفوض",

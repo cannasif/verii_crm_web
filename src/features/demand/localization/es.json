@@ -251,7 +251,7 @@
     "rejectReasonPlaceholder": "Motivo",
     "statusFilterLabel": "Estado de aprobación",
     "status": {
-      "notRequired": "No requerido",
+      "notRequired": "Borrador",
       "waiting": "En espera",
       "approved": "Aprobado",
       "rejected": "Rechazado",

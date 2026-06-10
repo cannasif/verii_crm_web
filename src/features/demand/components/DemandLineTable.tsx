@@ -20,6 +20,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { DemandLineForm } from './DemandLineForm';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
+import { DocumentLineFormDialog } from '@/components/shared/DocumentLineFormDialog';
 import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { DescriptionCell } from '@/components/shared';
@@ -1342,7 +1343,7 @@ export function DemandLineTable({
         onSelect={handleProductSelect}
       />
 
-      <Dialog
+      <DocumentLineFormDialog
         open={addLineDialogOpen}
         onOpenChange={(open) => {
           setAddLineDialogOpen(open);
@@ -1350,100 +1351,67 @@ export function DemandLineTable({
             setNewLine(null);
           }
         }}
+        title={t('lines.addLine')}
+        icon={<Plus className="h-4 w-4 sm:h-5 sm:w-5" />}
+        variant="add"
+        onClose={() => setAddLineDialogOpen(false)}
       >
-        <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1200px] max-h-[92vh] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
-          <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
-            <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
-                  <Plus className="h-5 w-5 text-pink-600 dark:text-pink-500" />
-                </div>
-              </div>
-              {t('lines.addLine')}
-            </DialogTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/10 transition-colors"
-              onClick={() => setAddLineDialogOpen(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogHeader>
-          <div className="px-3 sm:px-6 py-3 sm:py-4 overflow-y-auto max-h-[calc(90vh-76px)]">
-            {newLine && (
-              <DemandLineForm
-                key={`add-line-${newLine.id}-${currency}`}
-                line={newLine}
-                onSave={handleSaveNewLine}
-                onSaveMultiple={handleSaveMultipleLines}
-                onCancel={handleCancelNewLine}
-                currency={currency}
-                exchangeRates={exchangeRates}
-                pricingRules={pricingRules}
-                userDiscountLimits={userDiscountLimits}
-                isSaving={createMutation.isPending}
-                existingLineStockMarkers={existingDocumentLineMarkers}
-                allowImageUpload
-                imageUploadScope="demand-line"
-                imageUploadExtras={{
-                  demandId: demandId ?? undefined,
-                  productCode: newLine.productCode || undefined,
-                }}
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+        {newLine && (
+          <DemandLineForm
+            key={`add-line-${newLine.id}-${currency}`}
+            line={newLine}
+            onSave={handleSaveNewLine}
+            onSaveMultiple={handleSaveMultipleLines}
+            onCancel={handleCancelNewLine}
+            currency={currency}
+            exchangeRates={exchangeRates}
+            pricingRules={pricingRules}
+            userDiscountLimits={userDiscountLimits}
+            isSaving={createMutation.isPending}
+            existingLineStockMarkers={existingDocumentLineMarkers}
+            allowImageUpload
+            imageUploadScope="demand-line"
+            imageUploadExtras={{
+              demandId: demandId ?? undefined,
+              productCode: newLine.productCode || undefined,
+            }}
+          />
+        )}
+      </DocumentLineFormDialog>
 
-      <Dialog open={editLineDialogOpen} onOpenChange={setEditLineDialogOpen}>
-        <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1200px] max-h-[92vh] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
-          <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
-            <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-linear-to-br from-blue-500 to-indigo-500 p-0.5 shadow-lg shadow-blue-500/20">
-                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
-                  <Edit className="h-5 w-5 text-blue-600 dark:text-blue-500" />
-                </div>
-              </div>
-              {t('lines.editLine')}
-            </DialogTitle>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-white/10 transition-colors"
-              onClick={() => setEditLineDialogOpen(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </DialogHeader>
-          <div className="px-3 sm:px-6 py-3 sm:py-4 overflow-y-auto max-h-[calc(90vh-76px)]">
-            {lineToEdit && (
-              <DemandLineForm
-                line={lineToEdit}
-                onSave={(line) => handleSaveLine(line)}
-                onSaveMultiple={(lines) => {
-                  if (lines.length > 0) {
-                    handleSaveLine(lines[0], lines.slice(1));
-                  }
-                }}
-                onCancel={handleCancelEditLine}
-                currency={currency}
-                exchangeRates={exchangeRates}
-                pricingRules={pricingRules}
-                userDiscountLimits={userDiscountLimits}
-                isSaving={updateMutation.isPending}
-                existingLineStockMarkers={existingDocumentLineMarkersForEdit}
-                allowImageUpload={Boolean(parseLineId(lineToEdit.id))}
-                imageUploadScope="demand-line"
-                imageUploadExtras={{
-                  demandId: demandId ?? undefined,
-                  demandLineId: parseLineId(lineToEdit.id) ?? undefined,
-                }}
-              />
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <DocumentLineFormDialog
+        open={editLineDialogOpen}
+        onOpenChange={setEditLineDialogOpen}
+        title={t('lines.editLine')}
+        icon={<Edit className="h-4 w-4 sm:h-5 sm:w-5" />}
+        variant="edit"
+        onClose={() => setEditLineDialogOpen(false)}
+      >
+        {lineToEdit && (
+          <DemandLineForm
+            line={lineToEdit}
+            onSave={(line) => handleSaveLine(line)}
+            onSaveMultiple={(lines) => {
+              if (lines.length > 0) {
+                handleSaveLine(lines[0], lines.slice(1));
+              }
+            }}
+            onCancel={handleCancelEditLine}
+            currency={currency}
+            exchangeRates={exchangeRates}
+            pricingRules={pricingRules}
+            userDiscountLimits={userDiscountLimits}
+            isSaving={updateMutation.isPending}
+            existingLineStockMarkers={existingDocumentLineMarkersForEdit}
+            allowImageUpload={Boolean(parseLineId(lineToEdit.id))}
+            imageUploadScope="demand-line"
+            imageUploadExtras={{
+              demandId: demandId ?? undefined,
+              demandLineId: parseLineId(lineToEdit.id) ?? undefined,
+            }}
+          />
+        )}
+      </DocumentLineFormDialog>
 
       <Dialog
         open={deleteDialogOpen}
