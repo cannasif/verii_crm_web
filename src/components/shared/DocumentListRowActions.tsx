@@ -1,11 +1,18 @@
 import { type MouseEvent, type ReactElement } from 'react';
 import { Edit2, GitBranchPlus, Mail, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 export interface DocumentListRowActionsProps {
   detailLabel: string;
+  mailMenuLabel: string;
   gmailLabel: string;
   outlookLabel: string;
   reviseLabel: string;
@@ -19,6 +26,7 @@ export interface DocumentListRowActionsProps {
   isConvertToOrderPending?: boolean;
   showRevise?: boolean;
   showConvertToOrder?: boolean;
+  convertToOrderDisabled?: boolean;
   className?: string;
 }
 
@@ -30,7 +38,7 @@ function ActionIconButton({
   children,
 }: {
   label: string;
-  onClick: (event: MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
   className: string;
   children: ReactElement;
@@ -45,7 +53,7 @@ function ActionIconButton({
           disabled={disabled}
           onClick={(event) => {
             event.stopPropagation();
-            onClick(event);
+            onClick?.(event);
           }}
           className={cn('h-8 w-8 shrink-0', className)}
           aria-label={label}
@@ -60,6 +68,7 @@ function ActionIconButton({
 
 export function DocumentListRowActions({
   detailLabel,
+  mailMenuLabel,
   gmailLabel,
   outlookLabel,
   reviseLabel,
@@ -73,8 +82,11 @@ export function DocumentListRowActions({
   isConvertToOrderPending = false,
   showRevise = false,
   showConvertToOrder = false,
+  convertToOrderDisabled = false,
   className,
 }: DocumentListRowActionsProps): ReactElement {
+  const convertDisabled = convertToOrderDisabled || isConvertToOrderPending;
+
   return (
     <div className={cn('flex items-center justify-center gap-0.5', className)}>
       <ActionIconButton
@@ -84,20 +96,45 @@ export function DocumentListRowActions({
       >
         <Edit2 className="h-4 w-4" />
       </ActionIconButton>
-      <ActionIconButton
-        label={gmailLabel}
-        onClick={onGmail}
-        className="text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
-      >
-        <Mail className="h-4 w-4" />
-      </ActionIconButton>
-      <ActionIconButton
-        label={outlookLabel}
-        onClick={onOutlook}
-        className="text-sky-600 hover:bg-sky-50 hover:text-sky-700 dark:text-sky-400 dark:hover:bg-sky-500/10"
-      >
-        <Mail className="h-4 w-4" />
-      </ActionIconButton>
+
+      <DropdownMenu>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 shrink-0 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
+                aria-label={mailMenuLabel}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <Mail className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent side="top">{mailMenuLabel}</TooltipContent>
+        </Tooltip>
+        <DropdownMenuContent align="end" onClick={(event) => event.stopPropagation()}>
+          <DropdownMenuItem
+            onClick={(event) => {
+              event.stopPropagation();
+              onGmail(event as unknown as MouseEvent<HTMLButtonElement>);
+            }}
+          >
+            {gmailLabel}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(event) => {
+              event.stopPropagation();
+              onOutlook(event as unknown as MouseEvent<HTMLButtonElement>);
+            }}
+          >
+            {outlookLabel}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       {showRevise && onRevise ? (
         <ActionIconButton
           label={reviseLabel}
@@ -108,14 +145,19 @@ export function DocumentListRowActions({
           <GitBranchPlus className={cn('h-4 w-4', isRevisePending && 'animate-pulse')} />
         </ActionIconButton>
       ) : null}
+
       {showConvertToOrder && onConvertToOrder && convertToOrderLabel ? (
         <ActionIconButton
           label={convertToOrderLabel}
-          onClick={onConvertToOrder}
-          disabled={isConvertToOrderPending}
-          className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+          onClick={convertDisabled ? undefined : onConvertToOrder}
+          disabled={convertDisabled}
+          className={
+            convertToOrderDisabled
+              ? 'cursor-not-allowed text-muted-foreground/45 opacity-50 hover:bg-transparent hover:text-muted-foreground/45 dark:text-muted-foreground/45 dark:hover:bg-transparent'
+              : 'text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-500/10'
+          }
         >
-          <ShoppingCart className={cn('h-4 w-4', isConvertToOrderPending && 'animate-pulse')} />
+          <ShoppingCart className={cn('h-4 w-4', isConvertToOrderPending && !convertToOrderDisabled && 'animate-pulse')} />
         </ActionIconButton>
       ) : null}
     </div>

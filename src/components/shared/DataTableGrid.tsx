@@ -6,6 +6,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, horizontalList
 import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
@@ -16,6 +17,7 @@ export type DataTableSortDirection = 'asc' | 'desc';
 export interface DataTableGridColumn<TKey extends string> {
   key: TKey;
   label: string;
+  headTooltip?: string;
   sortable?: boolean;
   headClassName?: string;
   cellClassName?: string;
@@ -128,6 +130,20 @@ function SortableTableHead<TKey extends string>({
     overflow: 'hidden',
   };
 
+  const headerLabel = column?.label ?? columnKey;
+  const headerLabelNode = column?.headTooltip ? (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className="truncate cursor-help border-b border-dotted border-current/40">{headerLabel}</span>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-xs text-center">
+        {column.headTooltip}
+      </TooltipContent>
+    </Tooltip>
+  ) : (
+    <span className="truncate">{headerLabel}</span>
+  );
+
   return (
     <TableHead
       ref={setNodeRef}
@@ -165,12 +181,12 @@ function SortableTableHead<TKey extends string>({
                 : 'px-1 -ml-1 text-left justify-start'
             )}
           >
-            <span className="truncate">{column?.label ?? columnKey}</span>
+            {headerLabelNode}
             {renderSortIcon?.(columnKey)}
           </Button>
         ) : (
           <span className={cn("flex-1 px-1 truncate min-w-0", centerColumnHeaders ? "text-center block w-full" : "text-left")}>
-            {column?.label ?? columnKey}
+            {headerLabelNode}
           </span>
         )}
       </div>

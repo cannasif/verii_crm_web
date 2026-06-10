@@ -8,6 +8,7 @@ import {
 } from '@/components/ui/popover';
 import { Columns3, EyeOff, Eye, ArrowUp, ArrowDown } from 'lucide-react';
 import { saveColumnPreferences } from '@/lib/column-preferences';
+import { cn } from '@/lib/utils';
 
 const ID_COLUMN_KEY = 'id';
 
@@ -24,6 +25,9 @@ interface ColumnPreferencesPopoverProps {
   columnOrder: string[];
   onVisibleColumnsChange: (visible: string[]) => void;
   onColumnOrderChange: (order: string[]) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  triggerClassName?: string;
 }
 
 export function ColumnPreferencesPopover({
@@ -34,9 +38,21 @@ export function ColumnPreferencesPopover({
   columnOrder,
   onVisibleColumnsChange,
   onColumnOrderChange,
+  open: controlledOpen,
+  onOpenChange,
+  triggerClassName,
 }: ColumnPreferencesPopoverProps): ReactElement {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+
+  const setOpen = (nextOpen: boolean): void => {
+    if (!isControlled) {
+      setInternalOpen(nextOpen);
+    }
+    onOpenChange?.(nextOpen);
+  };
   const columnMap = useMemo(() => new Map(columns.map((c) => [c.key, c])), [columns]);
 
   const displayColumns = columnOrder.filter((k) => visibleColumns.includes(k));
@@ -73,7 +89,10 @@ export function ColumnPreferencesPopover({
         <Button
           variant="outline"
           size="sm"
-          className="h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm"
+          className={cn(
+            'h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm',
+            triggerClassName
+          )}
         >
           <Columns3 className="mr-2 h-4 w-4" />
           {t('common.editColumns')}
