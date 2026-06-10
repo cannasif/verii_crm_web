@@ -1,8 +1,8 @@
 {
   "page": {
-    "title": "Définitions de Profil / Fer / Vis Windo",
-    "description": "Gérez les profils, fers et vis à l'aide de la même structure de tableau que les autres écrans de définition.",
-    "documentTitle": "Profil / Fer / Vis Windo"
+    "title": "Définitions Windoform",
+    "description": "Gérez les profils, fers, vis et impressions à l'aide de la même structure de tableau que les autres écrans de définition.",
+    "documentTitle": "Définitions Windoform"
   },
   "sections": {
     "profil": {

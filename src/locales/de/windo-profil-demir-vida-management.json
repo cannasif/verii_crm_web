@@ -1,8 +1,8 @@
 {
   "page": {
-    "title": "Windo Profil- / Eisen- / Schrauben-Definitionen",
-    "description": "Verwalten Sie Profil-, Eisen- und Schraubendatensätze in derselben Tabellenansicht wie andere Definitionsseiten.",
-    "documentTitle": "Windo Profil / Eisen / Schraube"
+    "title": "Windoform-Definitionen",
+    "description": "Verwalten Sie Profil-, Eisen-, Schrauben- und Druckdatensätze in derselben Tabellenansicht wie andere Definitionsseiten.",
+    "documentTitle": "Windoform-Definitionen"
   },
   "sections": {
     "profil": {

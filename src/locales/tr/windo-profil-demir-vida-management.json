@@ -1,8 +1,8 @@
 {
   "page": {
-    "title": "Windo Profil / Demir / Vida Tanımlama",
-    "description": "Profil, demir ve vida kayıtlarını proje genelindeki yönetim sayfalarıyla uyumlu, sayfalı tablo yapısında yönetin.",
-    "documentTitle": "Windo Profil / Demir / Vida"
+    "title": "Windoform Tanımları",
+    "description": "Profil, demir, vida ve baskı kayıtlarını proje genelindeki yönetim sayfalarıyla uyumlu, sayfalı tablo yapısında yönetin.",
+    "documentTitle": "Windoform Tanımları"
   },
   "sections": {
     "profil": {

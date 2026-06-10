@@ -11,7 +11,7 @@ import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
 import { windoDefinitionApi } from '../api/windo-definition-api';
 import type { WindoDefinitionCreateDto, WindoDefinitionGetDto } from '../types/windo-definition-types';
 
-type WindoQuickCreateKind = 'profil' | 'demir' | 'vida' | 'baski';
+type WindoQuickCreateKind = 'profil' | 'demir' | 'vida' | 'baski' | 'koliBaski';
 
 interface WindoQuickCreateDialogProps {
   kind: WindoQuickCreateKind;
@@ -27,6 +27,7 @@ const KIND_LABELS: Record<WindoQuickCreateKind, { tr: string; en: string }> = {
   demir: { tr: 'Demir', en: 'Rebar' },
   vida: { tr: 'Vida', en: 'Screw' },
   baski: { tr: 'Baskı', en: 'Print' },
+  koliBaski: { tr: 'Koli Baskı', en: 'Package print' },
 };
 
 export function WindoQuickCreateDialog({
@@ -38,6 +39,7 @@ export function WindoQuickCreateDialog({
   onCreated,
 }: WindoQuickCreateDialogProps): ReactElement {
   const { i18n, t } = useTranslation(['windo-profil-demir-vida-management', 'common']);
+  const windoNs = 'windo-profil-demir-vida-management' as const;
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
   const [demirName, setDemirName] = useState('');
@@ -56,7 +58,8 @@ export function WindoQuickCreateDialog({
       if (kind === 'profil') return windoDefinitionApi.createProfil(payload);
       if (kind === 'demir') return windoDefinitionApi.createDemir(payload);
       if (kind === 'vida') return windoDefinitionApi.createVida(payload);
-      return windoDefinitionApi.createBaski(payload);
+      if (kind === 'baski') return windoDefinitionApi.createBaski(payload);
+      return windoDefinitionApi.createKoliBaski(payload);
     },
     onSuccess: async (item) => {
       await queryClient.invalidateQueries({ queryKey: ['windo-definition'] });
@@ -170,42 +173,46 @@ export function WindoQuickCreateDialog({
         <div className="space-y-4">
           {requiresProfil ? (
             <div className="space-y-2">
-              <Label>{i18n.language.startsWith('tr') ? 'Profil' : 'Profile'}</Label>
+              <Label>{t('dialog.profilLabel', { ns: windoNs, defaultValue: 'Bağlı profil' })}</Label>
               <VoiceSearchCombobox
                 options={profilOptions}
                 value={profilDefinitionId}
                 onSelect={setProfilDefinitionId}
-                placeholder={i18n.language.startsWith('tr') ? 'Profil seçin' : 'Select profile'}
-                searchPlaceholder={i18n.language.startsWith('tr') ? 'Profil ara' : 'Search profile'}
+                placeholder={t('dialog.profilPlaceholder', { ns: windoNs, defaultValue: 'Profil seçin' })}
+                searchPlaceholder={t('dialog.profilSearchPlaceholder', { ns: windoNs, defaultValue: 'Profil ara' })}
               />
             </div>
           ) : null}
           <div className="space-y-2">
-            <Label>{i18n.language.startsWith('tr') ? 'Ad' : 'Name'}</Label>
+            <Label>{t('dialog.nameLabel', { ns: windoNs, defaultValue: 'Ad' })}</Label>
             <Input
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder={i18n.language.startsWith('tr') ? `${label} adı` : `${label} name`}
+              placeholder={
+                i18n.language.startsWith('tr')
+                  ? `${label} adı`
+                  : t('dialog.nameLabel', { ns: windoNs, defaultValue: `${label} name` })
+              }
               maxLength={150}
             />
           </div>
           {createsBundle ? (
             <>
               <div className="space-y-2">
-                <Label>{t('dialog.demirNameLabel')}</Label>
+                <Label>{t('dialog.demirNameLabel', { ns: windoNs, defaultValue: 'Demir adı' })}</Label>
                 <Input
                   value={demirName}
                   onChange={(event) => setDemirName(event.target.value)}
-                  placeholder={t('dialog.demirNamePlaceholder')}
+                  placeholder={t('dialog.demirNamePlaceholder', { ns: windoNs, defaultValue: 'Bağlı demir adı' })}
                   maxLength={150}
                 />
               </div>
               <div className="space-y-2">
-                <Label>{t('dialog.vidaNameLabel')}</Label>
+                <Label>{t('dialog.vidaNameLabel', { ns: windoNs, defaultValue: 'Vida adı' })}</Label>
                 <Input
                   value={vidaName}
                   onChange={(event) => setVidaName(event.target.value)}
-                  placeholder={t('dialog.vidaNamePlaceholder')}
+                  placeholder={t('dialog.vidaNamePlaceholder', { ns: windoNs, defaultValue: 'Bağlı vida adı' })}
                   maxLength={150}
                 />
               </div>
@@ -213,7 +220,7 @@ export function WindoQuickCreateDialog({
           ) : null}
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              {i18n.language.startsWith('tr') ? 'İptal' : 'Cancel'}
+              {t('dialog.cancel', { ns: windoNs, defaultValue: 'İptal' })}
             </Button>
             <Button
               type="button"
@@ -221,7 +228,7 @@ export function WindoQuickCreateDialog({
               onClick={() => void handleSubmit()}
               disabled={mutation.isPending}
             >
-              {i18n.language.startsWith('tr') ? 'Kaydet' : 'Save'}
+              {t('dialog.save', { ns: windoNs, defaultValue: 'Kaydet' })}
             </Button>
           </div>
         </div>

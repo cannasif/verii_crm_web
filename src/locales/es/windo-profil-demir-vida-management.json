@@ -1,8 +1,8 @@
 {
   "page": {
-    "title": "Definiciones de Perfil / Hierro / Tornillo Windo",
-    "description": "Gestione perfiles, hierros y tornillos utilizando el mismo formato de tabla que otras pantallas de definición.",
-    "documentTitle": "Perfil / Hierro / Tornillo Windo"
+    "title": "Definiciones Windoform",
+    "description": "Gestione perfiles, hierros, tornillos e impresiones utilizando el mismo formato de tabla que otras pantallas de definición.",
+    "documentTitle": "Definiciones Windoform"
   },
   "sections": {
     "profil": {

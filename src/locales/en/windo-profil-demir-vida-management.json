@@ -1,8 +1,8 @@
 {
   "page": {
-    "title": "Windo profile / rebar / screw definitions",
-    "description": "Manage profile, rebar, and screw records using the same paged table pattern as other definition screens.",
-    "documentTitle": "Windo profile / rebar / screw"
+    "title": "Windoform Definitions",
+    "description": "Manage profile, rebar, screw, and print records using the same paged table pattern as other definition screens.",
+    "documentTitle": "Windoform Definitions"
   },
   "sections": {
     "profil": {
