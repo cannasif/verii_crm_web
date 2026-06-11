@@ -19,6 +19,7 @@ import {
   GripHorizontal,
   LayoutGrid,
   Loader2,
+  Menu,
   Pencil,
   RefreshCw,
   RotateCcw,
@@ -84,15 +85,15 @@ const RIBBON_ACCENT_MAP: Record<StatRibbonItem['accent'], { bg: string; ring: st
   sky: { bg: 'bg-sky-50 dark:bg-sky-500/10', ring: 'border-sky-100 dark:border-sky-500/20', icon: 'text-sky-600 dark:text-sky-400' },
 };
 
-function ViewerMetaStrip({ items }: { items: StatRibbonItem[] }): ReactElement {
+function ViewerMetaStrip({ items, vertical = false }: { items: StatRibbonItem[]; vertical?: boolean }): ReactElement {
   return (
-    <div className="flex flex-wrap items-center gap-x-0 gap-y-2">
+    <div className={cn("gap-y-2", vertical ? "grid grid-cols-2 gap-3" : "flex flex-wrap items-center gap-x-0")}>
       {items.map((item, index) => {
         const accent = RIBBON_ACCENT_MAP[item.accent];
         const Icon = item.icon;
         return (
           <Fragment key={`${item.label}-${index}`}>
-            {index > 0 ? (
+            {index > 0 && !vertical ? (
               <span
                 className="mx-2 hidden h-3 w-px shrink-0 bg-slate-200 dark:bg-white/15 sm:inline-block"
                 aria-hidden
@@ -969,20 +970,38 @@ export function ReportViewerPage(): ReactElement {
 
       <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-white/10 dark:bg-slate-950/70">
         <div className="flex flex-col gap-4 border-b border-slate-200/80 p-4 dark:border-white/10 sm:flex-row sm:items-start sm:justify-between sm:gap-6 sm:p-5">
-          <div className="flex min-w-0 gap-3 sm:gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-200/80 bg-indigo-50 dark:border-white/10 dark:bg-indigo-500/10">
-              <LayoutGrid className="size-5 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-2xl">{meta.name}</h1>
-              <p className="mt-0.5 truncate text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                {meta.connectionKey}{' '}
-                <span className="mx-0.5 text-slate-300 dark:text-slate-600">/</span> {dataSourceTypeLabel}{' '}
-                <span className="mx-0.5 text-slate-300 dark:text-slate-600">/</span> {meta.dataSourceName}
-              </p>
-              <div className="mt-2">
-                <ViewerMetaStrip items={reportHeaderMetaItems} />
+          <div className="flex w-full min-w-0 items-start justify-between gap-3 sm:w-auto sm:justify-start">
+            <div className="flex min-w-0 gap-3 sm:gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-indigo-200/80 bg-indigo-50 dark:border-white/10 dark:bg-indigo-500/10">
+                <LayoutGrid className="size-5 text-indigo-600 dark:text-indigo-400" />
               </div>
+              <div className="min-w-0">
+                <h1 className="truncate text-xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-2xl" title={meta.name}>
+                  {meta.name}
+                </h1>
+                <p className="mt-0.5 truncate text-[11px] font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  {meta.connectionKey}{' '}
+                  <span className="mx-0.5 text-slate-300 dark:text-slate-600">/</span> {dataSourceTypeLabel}{' '}
+                  <span className="mx-0.5 text-slate-300 dark:text-slate-600">/</span> {meta.dataSourceName}
+                </p>
+                <div className="mt-2 hidden sm:block">
+                  <ViewerMetaStrip items={reportHeaderMetaItems} />
+                </div>
+              </div>
+            </div>
+
+            <div className="block shrink-0 sm:hidden">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9 w-9 px-0 rounded-lg border-slate-200 dark:border-white/10">
+                    <Menu className="size-4 text-slate-600 dark:text-slate-300" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-[min(320px,90vw)] p-4 shadow-xl">
+
+                  <ViewerMetaStrip items={reportHeaderMetaItems} vertical />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:justify-end">
@@ -1008,9 +1027,9 @@ export function ReportViewerPage(): ReactElement {
             ) : null}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9 gap-1 rounded-lg font-semibold">
+                <Button variant="outline" size="sm" className="h-9 gap-1 rounded-lg font-semibold px-2 sm:px-3">
                   <Download className="size-4 text-indigo-500" />
-                  {t('common.reportBuilder.viewerExportMenu')}
+                  <span className="hidden sm:inline">{t('common.reportBuilder.viewerExportMenu')}</span>
                   <ChevronDown className="size-4 opacity-60" />
                 </Button>
               </DropdownMenuTrigger>
@@ -1156,112 +1175,112 @@ export function ReportViewerPage(): ReactElement {
               ) : null}
             </div>
             <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-            <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-9 rounded-xl border-slate-200 px-4 font-bold text-xs uppercase tracking-wider dark:border-white/10"
+              <Popover open={filtersOpen} onOpenChange={setFiltersOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-9 rounded-xl border-slate-200 px-4 font-bold text-xs uppercase tracking-wider dark:border-white/10"
+                  >
+                    <Settings2 className="mr-2 size-3.5 text-indigo-500" />
+                    {t('common.reportBuilder.runtimeFilters')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  sideOffset={10}
+                  className="w-[min(640px,90vw)] rounded-2xl border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#120D19]/95"
                 >
-                  <Settings2 className="mr-2 size-3.5 text-indigo-500" />
-                  {t('common.reportBuilder.runtimeFilters')}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent
-                align="end"
-                sideOffset={10}
-                className="w-[min(640px,90vw)] rounded-2xl border-slate-200 bg-white/95 p-4 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#120D19]/95"
-              >
-                <div className="space-y-4">
-                  {viewerEditableParameters.length > 0 && (
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <Settings2 className="size-4 text-indigo-500" />
-                        <h3 className="text-sm font-black uppercase tracking-wide text-slate-800 dark:text-white">
-                          {t('common.reportBuilder.viewerParametersTitle')}
-                        </h3>
+                  <div className="space-y-4">
+                    {viewerEditableParameters.length > 0 && (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Settings2 className="size-4 text-indigo-500" />
+                          <h3 className="text-sm font-black uppercase tracking-wide text-slate-800 dark:text-white">
+                            {t('common.reportBuilder.viewerParametersTitle')}
+                          </h3>
+                        </div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          {viewerEditableParameters.map((parameter) => (
+                            <div key={parameter.name} className="grid gap-1.5">
+                              <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                {parameter.viewerLabel || parameter.name}
+                              </Label>
+                              <Input
+                                value={viewerParameterValues[parameter.name] ?? ''}
+                                onChange={(e) =>
+                                  setViewerParameterValues((current) => ({
+                                    ...current,
+                                    [parameter.name]: e.target.value,
+                                  }))
+                                }
+                                className="h-9 rounded-lg border-slate-200 bg-white text-sm dark:border-white/10 dark:bg-white/5"
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        {viewerEditableParameters.map((parameter) => (
-                          <div key={parameter.name} className="grid gap-1.5">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                              {parameter.viewerLabel || parameter.name}
-                            </Label>
-                            <Input
-                              value={viewerParameterValues[parameter.name] ?? ''}
-                              onChange={(e) =>
-                                setViewerParameterValues((current) => ({
-                                  ...current,
-                                  [parameter.name]: e.target.value,
-                                }))
-                              }
-                              className="h-9 rounded-lg border-slate-200 bg-white text-sm dark:border-white/10 dark:bg-white/5"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                    )}
 
-                  <Suspense fallback={<Skeleton className="h-32 w-full rounded-xl" />}>
-                    <RuntimeFiltersPanel
-                      schema={schema}
-                      loading={ui.previewLoading}
-                      onApply={async () => {
-                        await runPreview(viewerParameterValues);
-                        await runAllWidgetPreviews(viewerParameterValues);
-                        setFiltersOpen(false);
-                      }}
-                      onReset={loadReport}
-                    />
-                  </Suspense>
-
-                  {viewerEditableParameters.length > 0 && (
-                    <div className="flex justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/5">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled={!hasViewerParameterChanges}
-                        className="h-9 rounded-lg font-bold"
-                        onClick={() => setViewerParameterValues(initialViewerParameterValues)}
-                      >
-                        {t('common.reset')}
-                      </Button>
-                      <Button
-                        type="button"
-                        size="sm"
-                        disabled={!hasViewerParameterChanges}
-                        className="h-9 rounded-lg bg-indigo-600 font-bold text-white hover:bg-indigo-500"
-                        onClick={async () => {
+                    <Suspense fallback={<Skeleton className="h-32 w-full rounded-xl" />}>
+                      <RuntimeFiltersPanel
+                        schema={schema}
+                        loading={ui.previewLoading}
+                        onApply={async () => {
                           await runPreview(viewerParameterValues);
                           await runAllWidgetPreviews(viewerParameterValues);
                           setFiltersOpen(false);
                         }}
-                      >
-                        {t('common.reportBuilder.applyViewerParameters')}
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
-            {reportWidgetTotal > 0 ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={handleResetLayout}
-                className="h-9 rounded-xl px-3 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-indigo-600 dark:text-slate-400"
-                title={t('common.reportBuilder.resetMyDashboard') as string}
-              >
-                <RotateCcw className="mr-1.5 size-3.5" />
-                {t('common.reset')}
-              </Button>
-            ) : null}
+                        onReset={loadReport}
+                      />
+                    </Suspense>
+
+                    {viewerEditableParameters.length > 0 && (
+                      <div className="flex justify-end gap-2 border-t border-slate-100 pt-3 dark:border-white/5">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          disabled={!hasViewerParameterChanges}
+                          className="h-9 rounded-lg font-bold"
+                          onClick={() => setViewerParameterValues(initialViewerParameterValues)}
+                        >
+                          {t('common.reset')}
+                        </Button>
+                        <Button
+                          type="button"
+                          size="sm"
+                          disabled={!hasViewerParameterChanges}
+                          className="h-9 rounded-lg bg-indigo-600 font-bold text-white hover:bg-indigo-500"
+                          onClick={async () => {
+                            await runPreview(viewerParameterValues);
+                            await runAllWidgetPreviews(viewerParameterValues);
+                            setFiltersOpen(false);
+                          }}
+                        >
+                          {t('common.reportBuilder.applyViewerParameters')}
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {reportWidgetTotal > 0 ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleResetLayout}
+                  className="h-9 rounded-xl border-slate-200 px-2.5 sm:px-3 text-xs font-bold uppercase tracking-wider text-slate-500 hover:text-indigo-600 dark:border-white/10 dark:text-slate-400"
+                  title={t('common.reportBuilder.resetMyDashboard') as string}
+                >
+                  <RotateCcw className="size-4 sm:mr-1.5 sm:size-3.5" />
+                  <span className="hidden sm:inline">{t('common.reset')}</span>
+                </Button>
+              ) : null}
+            </div>
           </div>
-        </div>
-      )}
+        )}
       </div>
 
       {reportWidgetTotal === 0 ? (

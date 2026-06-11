@@ -7,6 +7,7 @@ import { useRechartsModule } from '@/lib/useRechartsModule';
 import { Button } from '@/components/ui/button';
 import { formatSystemCurrency, formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
 import { TrendingUp } from 'lucide-react';
+import { DescriptionCell } from '@/components/shared/DescriptionCell';
 
 type ColumnItem = string | { name: string; sqlType?: string; dotNetType?: string; isNullable?: boolean };
 
@@ -187,6 +188,8 @@ function TablePanScrollContainer({
         )}
         onPointerDown={(e) => {
           if (e.button !== 0) return;
+          const target = e.target as HTMLElement;
+          if (target.closest('button') || target.closest('[data-no-drag-scroll]')) return;
           const el = scrollRef.current;
           if (!el) return;
           el.setPointerCapture(e.pointerId);
@@ -242,16 +245,9 @@ export function ReportChart({
   labelOverrides,
   isExpanded = false,
   presentationVariant = 'default',
-  onTableColumnWidthPxCommit,
 }: ReportChartProps): ReactElement {
   const { t } = useTranslation('common');
   const [showAllSeries, setShowAllSeries] = useState(false);
-  const [tableResizePreview, setTableResizePreview] = useState<{ key: string; widthPx: number } | null>(null);
-  const [tableSessionWidths, setTableSessionWidths] = useState<Record<string, number>>({});
-  const tableSessionWidthsRef = useRef<Record<string, number>>({});
-  tableSessionWidthsRef.current = tableSessionWidths;
-  const tableResizeSessionRef = useRef<{ pointerId: number; key: string; startX: number; startW: number } | null>(null);
-  const tableResizeWidthRef = useRef<number>(112);
   const isDashboardTile = presentationVariant === 'dashboard' && !isExpanded;
   const needsRecharts =
     chartType === 'bar' ||
@@ -301,21 +297,14 @@ export function ReportChart({
   );
 
   const orderedColumnWidthsPx = useMemo(() => {
-    return orderedRawColumns.map((columnKey, i) => {
+    return orderedRawColumns.map((_, i) => {
       const setting = orderedColumnSettings[i];
-      if (tableResizePreview?.key === columnKey) {
-        return clampTableColWidth(tableResizePreview.widthPx);
-      }
-      const sess = tableSessionWidths[columnKey];
-      if (sess != null) {
-        return clampTableColWidth(sess);
-      }
       if (setting?.widthPx != null && setting.widthPx > 0) {
         return clampTableColWidth(setting.widthPx);
       }
       return getPresetFallbackWidthPx(setting?.width);
     });
-  }, [orderedRawColumns, orderedColumnSettings, tableResizePreview, tableSessionWidths]);
+  }, [orderedRawColumns, orderedColumnSettings]);
 
   const tableScrollMeasureRef = useRef<HTMLDivElement | null>(null);
   const [tableContainerWidthPx, setTableContainerWidthPx] = useState(0);
@@ -353,10 +342,7 @@ export function ReportChart({
     const presetSum = presetWeights.reduce((a, b) => a + b, 0) || 1;
 
     const hasHardWidth = (i: number): boolean => {
-      const key = orderedRawColumns[i];
       const s = orderedColumnSettings[i];
-      if (tableResizePreview?.key === key) return true;
-      if (tableSessionWidths[key] != null) return true;
       if (s?.widthPx != null && s.widthPx > 0) return true;
       return false;
     };
@@ -425,61 +411,9 @@ export function ReportChart({
     orderedColumnSettings,
     orderedColumnWidthsPx,
     tableContainerWidthPx,
-    tableResizePreview,
-    tableSessionWidths,
   ]);
 
-  const handleTableColumnResizePointerDown = (
-    e: PointerEvent<HTMLSpanElement>,
-    columnKey: string,
-    setting?: ReportWidgetTableColumnSetting,
-  ): void => {
-    if (e.button !== 0) return;
-    e.preventDefault();
-    e.stopPropagation();
-    e.currentTarget.setPointerCapture(e.pointerId);
-    const fromSession = tableSessionWidthsRef.current[columnKey];
-    const colIndex = orderedRawColumns.indexOf(columnKey);
-    const fromLayout =
-      colIndex >= 0 && tableLayout.displayWidthsPx[colIndex] != null
-        ? tableLayout.displayWidthsPx[colIndex]
-        : null;
-    let startW = getPresetFallbackWidthPx(setting?.width);
-    if (fromSession != null) {
-      startW = clampTableColWidth(fromSession);
-    } else if (setting?.widthPx != null && setting.widthPx > 0) {
-      startW = clampTableColWidth(setting.widthPx);
-    } else if (fromLayout != null && fromLayout > 0) {
-      startW = clampTableColWidth(fromLayout);
-    }
-    tableResizeSessionRef.current = { pointerId: e.pointerId, key: columnKey, startX: e.clientX, startW };
-    tableResizeWidthRef.current = startW;
-  };
 
-  const handleTableColumnResizePointerMove = (e: PointerEvent<HTMLSpanElement>): void => {
-    const s = tableResizeSessionRef.current;
-    if (!s || e.pointerId !== s.pointerId) return;
-    const dw = e.clientX - s.startX;
-    const nw = clampTableColWidth(s.startW + dw);
-    tableResizeWidthRef.current = nw;
-    setTableResizePreview({ key: s.key, widthPx: nw });
-  };
-
-  const handleTableColumnResizePointerEnd = (e: PointerEvent<HTMLSpanElement>): void => {
-    const s = tableResizeSessionRef.current;
-    if (!s || e.pointerId !== s.pointerId) return;
-    tableResizeSessionRef.current = null;
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId);
-    } catch {}
-    const finalW = tableResizeWidthRef.current;
-    setTableResizePreview(null);
-    if (onTableColumnWidthPxCommit) {
-      onTableColumnWidthPxCommit(s.key, finalW);
-    } else {
-      setTableSessionWidths((prev) => ({ ...prev, [s.key]: finalW }));
-    }
-  };
 
   const tableData = useMemo(() => {
     return normalizedRows.map((row) => {
@@ -702,12 +636,7 @@ export function ReportChart({
           measureRef={tableScrollMeasureRef}
           contentVersion={`${orderedRawColumns.join('\0')}:${orderedRows.length}:${tableLayout.tableClassName}`}
         >
-          <table className={cn(tableLayout.tableClassName, tableText)} style={tableLayout.tableStyle}>
-            <colgroup>
-              {tableLayout.colStyles.map((colStyle, i) => (
-                <col key={`${orderedRawColumns[i]}-${i}`} style={colStyle} />
-              ))}
-            </colgroup>
+          <table className={cn('w-max min-w-full border-collapse', tableText)}>
             <thead className="sticky top-0 z-20 border-b border-slate-200 bg-slate-50/95 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-slate-950/95">
               <tr>
                 {orderedColumnLabels.map((col, i) => {
@@ -718,25 +647,17 @@ export function ReportChart({
                       key={col || colKey || i}
                       scope="col"
                       className={cn(
-                        'relative max-w-0 overflow-hidden px-3 align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400',
+                        'relative whitespace-nowrap px-3 align-middle font-black uppercase tracking-widest text-[10px] text-slate-600 dark:text-slate-400',
                         TABLE_CELL_RAIL,
                         tableDensity === 'compact' ? 'py-3' : 'py-3.5',
                         getColumnAlignClass(setting?.align, col),
                       )}
                     >
-                      <span className="block min-w-0 truncate pr-2" title={col}>
+                      <span className="block pr-2" title={col}>
                         {col}
                       </span>
-                      <span
-                        role="separator"
-                        aria-orientation="vertical"
-                        aria-label={t('common.reportBuilder.tableColumnResizeHandle')}
-                        className="pointer-events-auto absolute top-0 right-0 z-40 h-full w-1.5 cursor-col-resize touch-none select-none hover:bg-primary/40"
-                        onPointerDown={(e) => handleTableColumnResizePointerDown(e, colKey, setting)}
-                        onPointerMove={handleTableColumnResizePointerMove}
-                        onPointerUp={handleTableColumnResizePointerEnd}
-                        onPointerCancel={handleTableColumnResizePointerEnd}
-                      />
+                      {/* Explicit column separator line to ensure visibility */}
+                      <div className="absolute right-0 top-0 h-full w-px bg-slate-200 dark:bg-white/15" />
                     </th>
                   );
                 })}
@@ -754,18 +675,24 @@ export function ReportChart({
                   {row.map((cell, ci) => {
                     const setting = orderedColumnSettings[ci];
                     const shown = renderCellValueWithSetting(cell, appearance, setting);
+                    const isLongText = typeof shown === 'string' && shown.length > 35;
                     return (
                       <td
                         key={ci}
                         className={cn(
-                          'max-w-0 overflow-hidden text-ellipsis whitespace-nowrap px-3 align-top font-medium text-slate-700 dark:text-slate-300',
+                          'max-w-[250px] px-3 align-top font-medium text-slate-700 dark:text-slate-300',
+                          !isLongText && 'truncate',
                           TABLE_CELL_RAIL,
                           tableDensity === 'compact' ? 'py-2.5' : 'py-3',
                           getColumnAlignClass(setting?.align, orderedColumnLabels[ci]),
                         )}
-                        title={shown}
+                        title={!isLongText ? shown : undefined}
                       >
-                        {shown}
+                        {isLongText ? (
+                          <DescriptionCell content={shown} hideIcon popoverHeader={orderedColumnLabels[ci]} />
+                        ) : (
+                          shown
+                        )}
                       </td>
                     );
                   })}
