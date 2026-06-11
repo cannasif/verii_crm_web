@@ -116,7 +116,10 @@
     "assignedGroups": "مجموعات الأذونات المعينة",
     "noUsers": "لا يوجد مستخدمون",
     "noGroups": "لا توجد مجموعات أذونات متاحة",
-    "selectAll": "تحديد الكل"
+    "selectAll": "تحديد الكل",
+    "status": "الحالة",
+    "unsavedChanges": "غير محفوظ",
+    "upToDate": "محدث"
   },
   "common": {
     "cancel": "إلغاء",

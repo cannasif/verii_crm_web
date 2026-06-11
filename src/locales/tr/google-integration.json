@@ -235,8 +235,13 @@
     "pageInfo": "Sayfa: {{current}} • Toplam kayıt: {{loaded}}",
     "actions": "İşlemler",
     "viewDetails": "Detayları görüntüle",
-    "detailsTitle": "Kayıt detayları",
-    "detailsDescription": "Seçili Google entegrasyon kaydına ait detaylı bilgiler.",
+    "detailsTitle": "Log Detayları",
+    "detailsDescription": "Seçili Google entegrasyonu log kaydının detaylı bilgisi.",
+    "severities": {
+      "info": "Bilgi",
+      "warning": "Uyarı",
+      "error": "Hata"
+    },
     "columns": {
       "date": "Tarih",
       "operation": "İşlem",

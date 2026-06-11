@@ -19,7 +19,11 @@
     },
     "baski": {
       "title": "Definiciones de impresión",
-      "description": "Gestione opciones de impresión seleccionables en las líneas de documentos."
+      "description": "Administre las opciones de impresión seleccionables en las líneas del documento."
+    },
+    "koliBaski": {
+      "title": "Definiciones de impresión de paquetes",
+      "description": "Administre las opciones de impresión de paquetes seleccionadas en el encabezado de la cotización y enviadas a la descripción del encabezado de Netsis."
     }
   },
   "table": {

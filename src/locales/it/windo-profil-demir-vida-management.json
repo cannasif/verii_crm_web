@@ -18,8 +18,12 @@
       "description": "Gestisci le opzioni della vite selezionabili nelle righe dei documenti."
     },
     "baski": {
-      "title": "Definizioni stampa",
-      "description": "Gestisci le opzioni di stampa selezionabili nelle righe dei documenti."
+      "title": "Definizioni di stampa",
+      "description": "Gestisci le opzioni di stampa selezionabili sulle righe del documento."
+    },
+    "koliBaski": {
+      "title": "Definizioni di stampa pacchetti",
+      "description": "Gestisci le opzioni di stampa dei pacchetti selezionate nell'intestazione del preventivo e inviate alla descrizione dell'intestazione Netsis."
     }
   },
   "table": {

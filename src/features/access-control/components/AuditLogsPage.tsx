@@ -137,9 +137,9 @@ export function AuditLogsPage(): ReactElement {
       sortDirection: 'desc',
       ...(appliedFilterRows.length > 0
         ? {
-            filters: rowsToBackendFilters(appliedFilterRows),
-            filterLogic: 'and' as const,
-          }
+          filters: rowsToBackendFilters(appliedFilterRows),
+          filterLogic: 'and' as const,
+        }
         : {}),
     }),
     [appliedFilterRows, pageNumber, pageSize, searchTerm]
@@ -319,7 +319,7 @@ export function AuditLogsPage(): ReactElement {
                       </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant={getResultBadgeVariant(item.result)}>{item.result}</Badge>
+                      <Badge variant={getResultBadgeVariant(item.result)}>{t(`auditLogs.results.${item.result.toLowerCase()}`, { defaultValue: item.result })}</Badge>
                       {item.requestMethod ? <Badge variant="outline">{item.requestMethod}</Badge> : null}
                       {item.requestPath ? <Badge variant="outline">{item.requestPath}</Badge> : null}
                     </div>
@@ -413,7 +413,7 @@ export function AuditLogsPage(): ReactElement {
                     return new Date(row.createdDate).toLocaleString();
                   }
                   if (key === 'result') {
-                    return <Badge variant={getResultBadgeVariant(row.result)}>{row.result}</Badge>;
+                    return <Badge variant={getResultBadgeVariant(row.result)}>{t(`auditLogs.results.${row.result.toLowerCase()}`, { defaultValue: row.result })}</Badge>;
                   }
                   return formatValue(row[key]);
                 }}
@@ -488,7 +488,7 @@ export function AuditLogsPage(): ReactElement {
       </Card>
 
       <Dialog open={selectedAuditLogId != null} onOpenChange={(open) => !open && setSelectedAuditLogId(null)}>
-        <DialogContent className="w-[95vw] max-w-5xl bg-white p-0 text-slate-900 dark:bg-[#130822] dark:text-white">
+        <DialogContent className="min-w-[45vw] max-w-5xl bg-white p-0 text-slate-900 dark:bg-[#130822] dark:text-white">
           <DialogHeader className="border-b border-slate-100 px-6 py-5 text-left dark:border-white/10">
             <DialogTitle className="text-xl font-bold tracking-tight">{t('auditLogs.detail.title')}</DialogTitle>
             <DialogDescription className="text-sm text-slate-500 dark:text-slate-400">
@@ -533,7 +533,7 @@ export function AuditLogsPage(): ReactElement {
                     <CardContent className="space-y-2 p-4 text-sm">
                       <div className="text-slate-500">{t('auditLogs.table.result')}</div>
                       <div>
-                        <Badge variant={getResultBadgeVariant(selectedAuditLog.result)}>{selectedAuditLog.result}</Badge>
+                        <Badge variant={getResultBadgeVariant(selectedAuditLog.result)}>{t(`auditLogs.results.${selectedAuditLog.result.toLowerCase()}`, { defaultValue: selectedAuditLog.result })}</Badge>
                       </div>
                     </CardContent>
                   </Card>

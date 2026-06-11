@@ -116,7 +116,10 @@
     "assignedGroups": "Atanan İzin Grupları",
     "noUsers": "Kullanıcı bulunamadı",
     "noGroups": "Kullanılabilir izin grubu yok",
-    "selectAll": "Tümünü seç"
+    "selectAll": "Tümünü seç",
+    "status": "Durum",
+    "unsavedChanges": "Kaydedilmedi",
+    "upToDate": "Güncel"
   },
   "common": {
     "cancel": "Vazgeç",

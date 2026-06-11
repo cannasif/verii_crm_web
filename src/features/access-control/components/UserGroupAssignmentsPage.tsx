@@ -121,10 +121,10 @@ export function UserGroupAssignmentsPage(): ReactElement {
               </div>
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
-                  Durum
+                  {t('userGroupAssignments.status')}
                 </p>
                 <p className="mt-1 text-sm font-black text-slate-900 dark:text-white">
-                  {hasChanges ? 'Kaydedilmedi' : 'Güncel'}
+                  {hasChanges ? t('userGroupAssignments.unsavedChanges') : t('userGroupAssignments.upToDate')}
                 </p>
               </div>
             </div>

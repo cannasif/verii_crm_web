@@ -130,7 +130,7 @@
       "page": "Página {{current}} / {{total}}"
     },
     "filters": "Filtro Avanzato",
-    "total": "Toplam",
+    "total": "Total",
     "advancedFilter": {
       "title": "Filtro Avanzado",
       "add": "Añadir Filtro",

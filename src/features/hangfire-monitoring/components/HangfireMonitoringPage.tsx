@@ -511,7 +511,7 @@ export function HangfireMonitoringPage(): ReactElement {
               onNextPage={() => setRecurringPage((p) => Math.min(recurringTotalPages, p + 1))}
               previousLabel={t('common:previous')}
               nextLabel={t('common:next')}
-              paginationInfoText={t('failed.total') + `: ${recurringJobsQuery.data?.total ?? 0}`}
+              paginationInfoText={t('common:total') + `: ${recurringJobsQuery.data?.total ?? 0}`}
               rowClassName={(row: HangfireRecurringJobItemDto) => (selectedRecurringJobId === row.id ? 'bg-pink-50 dark:bg-pink-500/10' : undefined)}
               onRowClick={(row: HangfireRecurringJobItemDto) => setSelectedRecurringJobId(row.id)}
               enableColumnDragAndDrop={false}

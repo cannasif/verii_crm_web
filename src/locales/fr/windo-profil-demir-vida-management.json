@@ -19,7 +19,11 @@
     },
     "baski": {
       "title": "Définitions d'impression",
-      "description": "Gérez les options d'impression sélectionnables sur les lignes de document."
+      "description": "Gérer les options d'impression sélectionnables sur les lignes de document."
+    },
+    "koliBaski": {
+      "title": "Définitions d'impression de colis",
+      "description": "Gérer les options d'impression de colis sélectionnées dans l'en-tête du devis et envoyées à la description de l'en-tête Netsis."
     }
   },
   "table": {

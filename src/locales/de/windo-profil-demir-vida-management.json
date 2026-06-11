@@ -18,8 +18,12 @@
       "description": "Verwalten Sie in Dokumentzeilen wählbare Schraubenoptionen."
     },
     "baski": {
-      "title": "Druck-Definitionen",
-      "description": "Verwalten Sie in Dokumentzeilen wählbare Druckoptionen."
+      "title": "Druckdefinitionen",
+      "description": "Verwalten Sie Druckoptionen, die in Belegzeilen ausgewählt werden können."
+    },
+    "koliBaski": {
+      "title": "Verpackungsdruckdefinitionen",
+      "description": "Verwalten Sie Verpackungsdruckoptionen, die im Angebotskopf ausgewählt und an die Netsis-Kopfbeschreibung gesendet werden."
     }
   },
   "table": {

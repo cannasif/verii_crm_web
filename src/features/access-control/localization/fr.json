@@ -254,6 +254,14 @@
     "title": "Journaux d’audit",
     "description": "Suivez qui a exécuté des actions critiques, avec quelle trace et quel résultat.",
     "search": "Rechercher dans les journaux d’audit...",
+    "results": {
+      "success": "Succès",
+      "succeeded": "Réussi",
+      "warning": "Avertissement",
+      "partial": "Partiel",
+      "error": "Erreur",
+      "failed": "Échec"
+    },
     "filters": {
       "result": "Résultat",
       "actionType": "Action",
@@ -335,179 +343,180 @@
     "visibilityPolicies": "Politiques de visibilité",
     "userVisibilityAssignments": "Attributions de visibilité utilisateur",
     "auditLogs": "Journaux d’audit",
+    "visibilitySimulator": "Simulateur de visibilité",
     "accessControlGuide": "Guide du contrôle d’accès"
   },
   "guide": {
-    "title": "Access Control Guide",
-    "description": "This guide explains what each access-control screen does and what each setting changes. The goal is to make the system understandable even for someone who is seeing the model for the first time.",
+    "title": "Guide de contrôle d'accès",
+    "description": "Ce guide explique ce que fait chaque écran de contrôle d'accès et ce que chaque paramètre modifie. L'objectif est de rendre le système compréhensible même pour quelqu'un qui découvre le modèle pour la première fois.",
     "hero": {
-      "coreLogicLabel": "Core Logic",
-      "coreLogicValue": "Permissions allow, visibility limits.",
-      "finalCheckLabel": "Final Check",
-      "finalCheckValue": "Validate in simulator."
+      "coreLogicLabel": "Logique principale",
+      "coreLogicValue": "Les autorisations permettent, la visibilité limite.",
+      "finalCheckLabel": "Vérification finale",
+      "finalCheckValue": "Valider dans le simulateur."
     },
-    "quickRulesTitle": "Five Core Rules",
+    "quickRulesTitle": "Cinq règles fondamentales",
     "quickRules": [
-      "Page permission and record visibility are different concerns. A user may open a page but still see only a subset of records.",
-      "Permission Groups decide which pages and actions the user can access.",
-      "Visibility Policies decide which records inside those pages the user can see.",
-      "User Group Assignments attach groups. User Visibility Assignments attach visibility exceptions for a specific user.",
-      "Do not publish a visibility rule without checking the result in Visibility Simulator."
+      "L'autorisation de la page et la visibilité des enregistrements sont des concepts différents. Un utilisateur peut ouvrir une page mais ne voir qu'un sous-ensemble d'enregistrements.",
+      "Les groupes d'autorisations décident à quelles pages et actions l'utilisateur peut accéder.",
+      "Les politiques de visibilité décident quels enregistrements à l'intérieur de ces pages l'utilisateur peut voir.",
+      "Les attributions d'utilisateurs aux groupes associent les groupes. Les attributions de visibilité utilisateur associent des exceptions de visibilité pour un utilisateur spécifique.",
+      "Ne publiez pas de règle de visibilité sans avoir vérifié le résultat dans le Simulateur de visibilité."
     ],
-    "screensTitle": "What Does Each Screen Do?",
+    "screensTitle": "À quoi sert chaque écran ?",
     "pageCards": [
       {
         "id": "permissionGroups",
-        "title": "Permission Groups",
-        "summary": "This screen controls which modules a user can open and which actions they can perform.",
+        "title": "Groupes de permissions",
+        "summary": "Cet écran contrôle quels modules un utilisateur peut ouvrir et quelles actions il peut effectuer.",
         "bullets": [
-          "If a user should open Quotations, they need a view permission such as `sales.quotations.view`.",
-          "If they should create quotations, the same group also needs `sales.quotations.create`.",
-          "If they should update or delete, the related update or delete permissions are also required.",
-          "These permissions open the page and action gates; they do not define record-level visibility by themselves."
+          "Si un utilisateur doit ouvrir des Devis, il a besoin d'une permission de lecture comme `sales.quotations.view`.",
+          "S'il doit créer des devis, le même groupe a également besoin de `sales.quotations.create`.",
+          "S'il doit mettre à jour ou supprimer, les autorisations de mise à jour ou de suppression associées sont également requises.",
+          "Ces permissions ouvrent l'accès aux pages et aux actions ; elles ne définissent pas la visibilité au niveau de l'enregistrement par elles-mêmes."
         ]
       },
       {
         "id": "userGroupAssignments",
-        "title": "User Group Assignments",
-        "summary": "This screen attaches one or more permission groups to a user.",
+        "title": "Attributions d'utilisateurs aux groupes",
+        "summary": "Cet écran attribue un ou plusieurs groupes de permissions à un utilisateur.",
         "bullets": [
-          "You select a user first, then attach the groups that user should inherit.",
-          "When a user has multiple groups, permissions are merged.",
-          "A wrong group assignment can expose pages the user was never meant to access.",
-          "This screen is usually the main role distribution area: sales rep, manager, operations, system admin."
+          "Vous sélectionnez d'abord un utilisateur, puis vous attachez les groupes que cet utilisateur doit hériter.",
+          "Lorsqu'un utilisateur appartient à plusieurs groupes, les permissions sont fusionnées.",
+          "Une mauvaise attribution de groupe peut exposer des pages auxquelles l'utilisateur n'était pas censé accéder.",
+          "Cet écran est généralement la principale zone de distribution des rôles : commercial, manager, opérations, administrateur système."
         ]
       },
       {
         "id": "visibilityPolicies",
-        "title": "Visibility Policies",
-        "summary": "This screen defines who can see records such as quotations, activities, demands, and orders.",
+        "title": "Politiques de visibilité",
+        "summary": "Cet écran définit qui peut voir les enregistrements tels que les devis, les activités, les demandes et les commandes.",
         "bullets": [
-          "Even if the user can enter the page, this policy layer still decides which records are visible.",
-          "The selected scope changes behavior: own records only, team scope, company-wide scope, and similar patterns.",
-          "Different entities such as quotations and activities can use different visibility models.",
-          "If a policy is active but attached to the wrong entity, the expected result will never appear."
+          "Même si l'utilisateur peut entrer sur la page, cette couche de politique décide toujours quels enregistrements sont visibles.",
+          "La portée sélectionnée modifie le comportement : propres enregistrements uniquement, portée de l'équipe, portée à l'échelle de l'entreprise et modèles similaires.",
+          "Différentes entités telles que les devis et les activités peuvent utiliser des modèles de visibilité différents.",
+          "Si une politique est active mais attachée à la mauvaise entité, le résultat attendu n'apparaîtra jamais."
         ]
       },
       {
         "id": "userVisibilityAssignments",
-        "title": "User Visibility Assignments",
-        "summary": "This screen is for user-specific visibility exceptions.",
+        "title": "Attributions de visibilité utilisateur",
+        "summary": "Cet écran est destiné aux exceptions de visibilité spécifiques à un utilisateur.",
         "bullets": [
-          "Use it when the standard policy is not enough and one user needs a different visibility model.",
-          "It is ideal for exceptions without changing the company-wide rule.",
-          "This screen does not grant page access; it only changes record visibility."
+          "Utilisez-le lorsque la politique standard ne suffit pas et qu'un utilisateur a besoin d'un modèle de visibilité différent.",
+          "Il est idéal pour les exceptions sans changer la règle à l'échelle de l'entreprise.",
+          "Cet écran n'accorde pas l'accès à la page ; il ne modifie que la visibilité des enregistrements."
         ]
       },
       {
         "id": "visibilitySimulator",
-        "title": "Visibility Simulator",
-        "summary": "This screen shows what the system will really expose for a selected user and entity.",
+        "title": "Simulateur de visibilité",
+        "summary": "Cet écran montre ce que le système exposera réellement pour un utilisateur et une entité sélectionnés.",
         "bullets": [
-          "If you are unsure about a rule, select the user and entity and inspect the visible users and the audit result.",
-          "If you enter a concrete record id, the simulation becomes record-specific.",
-          "Approval overrides and audit entries are surfaced here as well.",
-          "This is the safest place to validate the final behavior before relying on a policy in production."
+          "Si vous n'êtes pas sûr d'une règle, sélectionnez l'utilisateur et l'entité et inspectez les utilisateurs visibles ainsi que le résultat de l'audit.",
+          "Si vous entrez un identifiant d'enregistrement concret, la simulation devient spécifique à l'enregistrement.",
+          "Les dérogations d'approbation et les entrées d'audit y sont également affichées.",
+          "C'est l'endroit le plus sûr pour valider le comportement final avant de s'appuyer sur une politique en production."
         ]
       },
       {
         "id": "permissionDefinitions",
-        "title": "Permission Definitions",
-        "summary": "This screen is no longer an operational dependency for day-to-day administration.",
+        "title": "Définitions des permissions",
+        "summary": "Cet écran n'est plus une dépendance opérationnelle pour l'administration au quotidien.",
         "bullets": [
-          "Permission codes are now handled through an automatic synchronization flow.",
-          "The main operational surfaces are Permission Groups and the assignment screens.",
-          "The catalog remains useful as a reference for understanding the underlying permission model."
+          "Les codes de permission sont désormais gérés par un flux de synchronisation automatique.",
+          "Les principales surfaces opérationnelles sont les Groupes de permissions et les écrans d'attribution.",
+          "Le catalogue reste utile comme référence pour comprendre le modèle de permissions sous-jacent."
         ]
       }
     ],
-    "scenariosTitle": "Scenario-Based Examples",
-    "expectedResultLabel": "Expected Result",
+    "scenariosTitle": "Exemples basés sur des scénarios",
+    "expectedResultLabel": "Résultat attendu",
     "scenarios": [
       {
         "id": "s1",
-        "title": "Scenario 1: Sales rep should only see their own quotations",
-        "target": "The user should open quotations, maybe create them, but not see other people’s records.",
+        "title": "Scénario 1 : Le commercial ne doit voir que ses propres devis",
+        "target": "L'utilisateur doit pouvoir ouvrir les devis, peut-être les créer, mais ne pas voir les enregistrements des autres.",
         "steps": [
-          "Add `sales.quotations.view` and, if needed, `sales.quotations.create` to the relevant permission group.",
-          "Assign that group to the sales rep from User Group Assignments.",
-          "Create a quotation visibility policy that limits access to the user’s own records.",
-          "Attach that policy to the user if a user-level assignment is needed."
+          "Ajoutez `sales.quotations.view` et, si nécessaire, `sales.quotations.create` au groupe de permissions pertinent.",
+          "Attribuez ce groupe au commercial depuis les Attributions d'utilisateurs aux groupes.",
+          "Créez une politique de visibilité des devis qui limite l'accès aux seuls enregistrements de l'utilisateur.",
+          "Attachez cette politique à l'utilisateur si une attribution au niveau de l'utilisateur est nécessaire."
         ],
-        "result": "The user opens the quotations page and can work there, but the list is still limited to their allowed records."
+        "result": "L'utilisateur ouvre la page des devis et peut y travailler, mais la liste est toujours limitée à ses enregistrements autorisés."
       },
       {
         "id": "s2",
-        "title": "Scenario 2: Sales manager should see team activities",
-        "target": "The manager should monitor team activity without seeing unrelated company-wide records.",
+        "title": "Scénario 2 : Le responsable commercial doit voir les activités de l'équipe",
+        "target": "Le manager doit surveiller l'activité de l'équipe sans voir les enregistrements non liés à l'échelle de l'entreprise.",
         "steps": [
-          "Add `activity.activity-management.view` to the manager group.",
-          "Add update permission too if the manager should edit activities.",
-          "Create an activity visibility policy with a team-oriented scope.",
-          "Assign that policy to the manager or the relevant users."
+          "Ajoutez `activity.activity-management.view` au groupe du manager.",
+          "Ajoutez également l'autorisation de mise à jour si le manager doit modifier les activités.",
+          "Créez une politique de visibilité des activités avec une portée orientée vers l'équipe.",
+          "Attribuez cette politique au manager ou aux utilisateurs concernés."
         ],
-        "result": "The manager can open activities and see the team scope, but not unrelated records."
+        "result": "Le manager peut ouvrir les activités et voir la portée de l'équipe, mais pas les enregistrements non liés."
       },
       {
         "id": "s3",
-        "title": "Scenario 3: User may view orders but must not create them",
-        "target": "The page should open, but the create flow should remain closed.",
+        "title": "Scénario 3 : L'utilisateur peut consulter les commandes mais ne doit pas en créer",
+        "target": "La page doit s'ouvrir, mais le flux de création doit rester fermé.",
         "steps": [
-          "Grant `sales.orders.view`.",
-          "Do not grant `sales.orders.create`.",
-          "Assign the group to the user."
+          "Accordez `sales.orders.view`.",
+          "N'accordez pas `sales.orders.create`.",
+          "Attribuez le groupe à l'utilisateur."
         ],
-        "result": "The user can browse order data but cannot create a new order."
+        "result": "L'utilisateur peut parcourir les données de commande mais ne peut pas créer de nouvelle commande."
       },
       {
         "id": "s4",
-        "title": "Scenario 4: Explain why a quotation becomes visible during approval",
-        "target": "Understand a special visibility result through audit evidence instead of guesswork.",
+        "title": "Scénario 4 : Expliquer pourquoi un devis devient visible pendant l'approbation",
+        "target": "Comprendre un résultat de visibilité spécial grâce aux preuves d'audit au lieu de deviner.",
         "steps": [
-          "Open Visibility Simulator and select the user.",
-          "Choose Quotation and enter the record id.",
-          "Review preview data and audit entries."
+          "Ouvrez le Simulateur de visibilité et sélectionnez l'utilisateur.",
+          "Choisissez Devis et entrez l'ID de l'enregistrement.",
+          "Passez en revue les données d'aperçu et les entrées d'audit."
         ],
-        "result": "If approval override logic is involved, the simulator shows that evidence directly."
+        "result": "Si une logique de dérogation d'approbation est impliquée, le simulateur affiche directement cette preuve."
       }
     ],
-    "mistakesTitle": "Common Mistakes",
+    "mistakesTitle": "Erreurs courantes",
     "mistakes": [
-      "Defining visibility without granting page permission. Result: the user cannot even open the page.",
-      "Granting page permission without considering visibility. Result: the user may see too many records.",
-      "Ignoring merged permissions when a user belongs to multiple groups.",
-      "Publishing a policy without testing it in the simulator.",
-      "Mixing up entity types such as quotation, activity, demand, and order."
+      "Définir la visibilité sans accorder la permission de page. Résultat : l'utilisateur ne peut même pas ouvrir la page.",
+      "Accorder la permission de page sans tenir compte de la visibilité. Résultat : l'utilisateur peut voir trop d'enregistrements.",
+      "Ignorer les permissions fusionnées lorsqu'un utilisateur appartient à plusieurs groupes.",
+      "Publier une politique sans la tester dans le simulateur.",
+      "Confondre les types d'entités tels que devis, activité, demande et commande."
     ],
-    "checklistTitle": "Recommended Setup Order",
+    "checklistTitle": "Ordre de configuration recommandé",
     "checklist": [
-      "First define which page the user must access.",
-      "Then define which actions they must perform on that page.",
-      "Then restrict which records they are allowed to see.",
-      "Use user-level visibility assignments only when you need a specific exception.",
-      "Validate the final result in Visibility Simulator."
+      "Définissez d'abord à quelle page l'utilisateur doit accéder.",
+      "Ensuite, définissez quelles actions il doit effectuer sur cette page.",
+      "Puis, restreignez les enregistrements qu'il est autorisé à voir.",
+      "Utilisez les attributions de visibilité au niveau de l'utilisateur uniquement lorsque vous avez besoin d'une exception spécifique.",
+      "Validez le résultat final dans le Simulateur de visibilité."
     ],
-    "faqTitle": "Frequently Asked Questions",
+    "faqTitle": "Foire aux questions",
     "faqs": [
       {
         "id": "faq1",
-        "question": "A user can open quotations but sees no records. Why?",
-        "answer": "Page permission is likely correct, but the visibility layer is restricting records too much or has not been assigned correctly."
+        "question": "Un utilisateur peut ouvrir les devis mais ne voit aucun enregistrement. Pourquoi ?",
+        "answer": "La permission de la page est probablement correcte, mais la couche de visibilité restreint trop les enregistrements ou n'a pas été attribuée correctement."
       },
       {
         "id": "faq2",
-        "question": "A user cannot create quotations. Why?",
-        "answer": "The usual cause is a missing `sales.quotations.create` permission. View opens the page; create opens the creation action."
+        "question": "Un utilisateur ne peut pas créer de devis. Pourquoi ?",
+        "answer": "La cause habituelle est une permission `sales.quotations.create` manquante. La vue ouvre la page ; la création ouvre l'action de création."
       },
       {
         "id": "faq3",
-        "question": "A user sees too many records. Where should I start?",
-        "answer": "Check assigned permission groups first, then entity-specific visibility policies and user visibility assignments, and finally verify the behavior in the simulator."
+        "question": "Un utilisateur voit trop d'enregistrements. Par où dois-je commencer ?",
+        "answer": "Vérifiez d'abord les groupes de permissions attribués, puis les politiques de visibilité spécifiques à l'entité et les attributions de visibilité de l'utilisateur, et vérifiez enfin le comportement dans le simulateur."
       }
     ],
     "footer": {
-      "title": "Short decision rule",
-      "body": "If a user cannot perform an action, start with Permission Groups. If a user sees too many or too few records, start with Visibility. Always verify the final decision in Visibility Simulator."
+      "title": "Règle de décision courte",
+      "body": "Si un utilisateur ne peut pas effectuer une action, commencez par les Groupes de permissions. Si un utilisateur voit trop ou trop peu d'enregistrements, commencez par la Visibilité. Vérifiez toujours la décision finale dans le Simulateur de visibilité."
     }
   }
 }

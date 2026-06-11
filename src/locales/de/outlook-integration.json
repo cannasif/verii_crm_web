@@ -1,13 +1,13 @@
 {
   "page": {
     "connectionTitle": "Outlook-Verbindung",
-    "connectionDescription": "Connect your Outlook account to CRM and manage calendar and mail integration.",
+    "connectionDescription": "Verbinden Sie Ihr Outlook-Konto mit dem CRM und verwalten Sie die Kalender- und E-Mail-Integration.",
     "syncTitle": "Outlook-Synchronisierung",
-    "syncDescription": "Monitor sync scope and permissions from this screen.",
+    "syncDescription": "Überwachen Sie den Synchronisationsbereich und die Berechtigungen von diesem Bildschirm aus.",
     "logsTitle": "Outlook-Protokolle",
-    "logsDescription": "Outlook integration logs are listed on this page.",
+    "logsDescription": "Protokolle der Outlook-Integration werden auf dieser Seite aufgelistet.",
     "authInformationTitle": "Outlook-Auth-Informationen",
-    "authInformationDescription": "Follow Outlook OAuth setup and required permission steps from this page."
+    "authInformationDescription": "Folgen Sie den Schritten zur Einrichtung von Outlook OAuth und den erforderlichen Berechtigungen auf dieser Seite."
   },
   "connection": {
     "statusCardTitle": "Verbindungsstatus",
@@ -24,34 +24,34 @@
     "connectError": "Outlook authorize URL could not be fetched.",
     "disconnectSuccess": "Outlook connection removed.",
     "disconnectError": "Outlook connection could not be removed.",
-    "oauthNotConfiguredWarning": "Outlook OAuth is not configured. Your admin must complete steps on 'Outlook-Auth-Informationen'."
+    "oauthNotConfiguredWarning": "Outlook OAuth ist nicht konfiguriert. Ihr Administrator muss die Schritte unter 'Outlook-Auth-Informationen' abschließen."
   },
   "authInformation": {
-    "currentStatusTitle": "Current Status",
-    "currentStatusDescription": "This page shows required setup details for Outlook OAuth.",
-    "currentStatusHint": "Tenant-level Outlook OAuth settings endpoint is not enabled in API yet, so this page is guide-only for now.",
-    "setupGuideTitle": "Outlook OAuth Setup Guide",
-    "setupGuideDescription": "Erstellen an application registration in Microsoft Entra Admin Center, then configure callback and permissions.",
-    "setupStep1": "Microsoft Entra öffnen Admin Center and select the correct tenant.",
-    "setupStep2": "Erstellen a web app registration from App registrations > Neu registration.",
-    "setupStep3": "In Authentication, Hinzufügen the callback URL below as Redirect URI (Web).",
-    "setupStep4": "In API permissions, Hinzufügen Calendar and Mail permissions and grant admin consent.",
-    "setupStep5": "Once backend enables Outlook OAuth tenant settings endpoint, Speichern Client ID/Secret in the related screen.",
-    "callbackLabel": "Callback-URL",
+    "currentStatusTitle": "Aktueller Status",
+    "currentStatusDescription": "Diese Seite zeigt die erforderlichen Setup-Details für Outlook OAuth.",
+    "currentStatusHint": "Der Endpunkt für mandantenbasierte Outlook OAuth-Einstellungen ist in der API noch nicht aktiviert, daher dient diese Seite vorerst nur als Anleitung.",
+    "setupGuideTitle": "Outlook OAuth-Installationsanleitung",
+    "setupGuideDescription": "Erstellen Sie eine Anwendungsregistrierung im Microsoft Entra Admin Center und konfigurieren Sie dann Rückruf und Berechtigungen.",
+    "setupStep1": "Öffnen Sie das Microsoft Entra Admin Center und wählen Sie den richtigen Mandanten.",
+    "setupStep2": "Erstellen Sie eine Web-App-Registrierung unter App-Registrierungen > Neue Registrierung.",
+    "setupStep3": "Fügen Sie unter Authentifizierung die unten stehende Rückruf-URL als Weiterleitungs-URI (Web) hinzu.",
+    "setupStep4": "Fügen Sie unter API-Berechtigungen Kalender- und E-Mail-Berechtigungen hinzu und erteilen Sie die Administratorzustimmung.",
+    "setupStep5": "Sobald das Backend den Endpunkt für mandantenbasierte Outlook OAuth-Einstellungen aktiviert, speichern Sie Client-ID/Secret auf dem entsprechenden Bildschirm.",
+    "callbackLabel": "Rückruf-URL",
     "consoleLinkLabel": "Microsoft Entra öffnen",
     "permissionTitle": "Empfohlene Berechtigungen",
-    "permissionHint": "Calendar.ReadWrite for calendar and Mail.Senden for email are the minimum suggested scopes."
+    "permissionHint": "Calendar.ReadWrite für Kalender und Mail.Send für E-Mails sind die empfohlenen Mindestberechtigungen."
   },
   "sync": {
-    "scopeCardTitle": "Sync Status and Permissions",
-    "statusLabel": "Connection",
+    "scopeCardTitle": "Synchronisationsstatus und Berechtigungen",
+    "statusLabel": "Verbindung",
     "connected": "Verbunden",
     "notConnected": "Nicht verbunden",
-    "scopeLabel": "Active Scope",
-    "flowCardTitle": "Sync Scope",
-    "flowMeeting": "Meeting activities are synchronized to Outlook Calendar.",
-    "flowCall": "Call activities are synchronized to Outlook Calendar.",
-    "flowPlaceholder": "Detailed sync settings will be available in the next release.",
+    "scopeLabel": "Aktiver Bereich",
+    "flowCardTitle": "Synchronisationsbereich",
+    "flowMeeting": "Meeting-Aktivitäten werden mit dem Outlook-Kalender synchronisiert.",
+    "flowCall": "Anruf-Aktivitäten werden mit dem Outlook-Kalender synchronisiert.",
+    "flowPlaceholder": "Detaillierte Synchronisationseinstellungen werden in der nächsten Version verfügbar sein.",
     "loading": "Lädt..."
   },
   "filters": "Filter",
@@ -92,7 +92,7 @@
     "actions": "Aktionen",
     "viewDetails": "Details anzeigen",
     "detailsTitle": "Protokolldetails",
-    "detailsDescription": "Detailed information about the selected Outlook integration log entry.",
+    "detailsDescription": "Detaillierte Informationen zum ausgewählten Outlook-Integrationsprotokolleintrag.",
     "columns": {
       "date": "Datum",
       "operation": "Vorgang",

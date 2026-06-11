@@ -116,7 +116,10 @@
     "assignedGroups": "Assigned Permission Groups",
     "noUsers": "No users found",
     "noGroups": "No permission groups available",
-    "selectAll": "Select all"
+    "selectAll": "Select all",
+    "status": "Status",
+    "unsavedChanges": "Unsaved",
+    "upToDate": "Up to date"
   },
   "common": {
     "cancel": "Cancel",

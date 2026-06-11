@@ -1,144 +1,148 @@
 {
   "page": {
-    "connectionTitle": "WhatsApp Integration",
-    "connectionDescription": "Manage Meta WhatsApp Cloud API settings, verify webhook connectivity, and send test messages."
+    "connectionTitle": "Integración de WhatsApp",
+    "connectionDescription": "Administre la configuración de Meta WhatsApp Cloud API, verifique la conectividad del webhook y envíe mensajes de prueba."
   },
   "settings": {
-    "title": "Connection Settings",
-    "configured": "Ready",
-    "notConfigured": "Missing",
-    "enabled": "Enable integration",
-    "enabledDescription": "When enabled, webhook and test sends use these settings.",
-    "displayName": "Display Name",
-    "graphApiVersion": "Graph API Version",
-    "phoneNumberId": "Phone Number ID",
-    "businessAccountId": "Business Account ID",
-    "verifyToken": "Webhook Verify Token",
-    "accessToken": "Access Token",
-    "appSecret": "App Secret",
-    "keepCurrent": "Current value will be kept",
-    "save": "Save Settings",
-    "saveSuccess": "WhatsApp settings saved.",
-    "saveError": "WhatsApp settings could not be saved."
+    "title": "Configuración de conexión",
+    "configured": "Listo",
+    "notConfigured": "Falta",
+    "enabled": "Habilitar integración",
+    "enabledDescription": "Cuando está habilitado, el webhook y los envíos de prueba usan esta configuración.",
+    "displayName": "Nombre para mostrar",
+    "graphApiVersion": "Versión de Graph API",
+    "phoneNumberId": "ID de número de teléfono",
+    "businessAccountId": "ID de cuenta comercial",
+    "verifyToken": "Token de verificación de webhook",
+    "accessToken": "Token de acceso",
+    "appSecret": "Secreto de la aplicación",
+    "keepCurrent": "Se mantendrá el valor actual",
+    "save": "Guardar configuración",
+    "saveSuccess": "Configuración de WhatsApp guardada.",
+    "saveError": "No se pudo guardar la configuración de WhatsApp."
   },
   "webhook": {
     "title": "Webhook",
-    "url": "Meta Webhook URL",
-    "lastInbound": "Last inbound webhook",
-    "lastOutbound": "Last outbound message"
+    "url": "URL de Webhook de Meta",
+    "lastInbound": "Último webhook entrante",
+    "lastOutbound": "Último mensaje saliente"
   },
   "test": {
-    "title": "Test Message",
-    "phone": "Phone",
-    "message": "Message",
-    "defaultMessage": "This is a V3RII CRM WhatsApp test message.",
-    "send": "Send Test",
-    "sendSuccess": "WhatsApp test message sent.",
-    "sendError": "WhatsApp test message could not be sent."
+    "title": "Mensaje de prueba",
+    "phone": "Teléfono",
+    "message": "Mensaje",
+    "defaultMessage": "Este es un mensaje de prueba de WhatsApp de V3RII CRM.",
+    "send": "Enviar prueba",
+    "sendSuccess": "Mensaje de prueba de WhatsApp enviado.",
+    "sendError": "No se pudo enviar el mensaje de prueba de WhatsApp."
   },
   "logs": {
-    "title": "WhatsApp Logs",
-    "description": "Monitor webhook, test message, and future quote flow records.",
-    "tableTitle": "Operation Records",
-    "searchPlaceholder": "Search phone, message, or operation...",
-    "errorsOnly": "Errors only",
-    "directionAll": "All directions",
-    "inbound": "Inbound",
-    "outbound": "Outbound",
-    "success": "Success",
+    "title": "Registros de WhatsApp",
+    "description": "Supervise los registros del webhook, los mensajes de prueba y el flujo de cotizaciones futuras.",
+    "tableTitle": "Registros de operaciones",
+    "searchPlaceholder": "Buscar teléfono, mensaje u operación...",
+    "errorsOnly": "Solo errores",
+    "directionAll": "Todas las direcciones",
+    "inbound": "Entrante",
+    "outbound": "Saliente",
+    "success": "Éxito",
     "error": "Error",
-    "empty": "No records found.",
-    "total": "{{count}} records",
+    "empty": "No se encontraron registros.",
+    "total": "{{count}} registros",
     "columns": {
-      "date": "Date",
-      "direction": "Direction",
-      "operation": "Operation",
-      "phone": "Phone",
-      "message": "Message",
-      "status": "Status"
+      "date": "Fecha",
+      "direction": "Dirección",
+      "operation": "Operación",
+      "phone": "Teléfono",
+      "message": "Mensaje",
+      "status": "Estado"
     }
   },
   "drafts": {
-    "title": "WhatsApp Quote Drafts",
-    "description": "Review carts created by customers through WhatsApp before creating CRM quotations.",
-    "tableTitle": "Representative Review Queue",
-    "searchPlaceholder": "Search phone, customer, or message...",
-    "empty": "No drafts found.",
-    "total": "{{count}} drafts",
-    "customerMessage": "Customer message",
-    "mainLine": "Main product",
-    "relatedLine": "Related product",
+    "title": "Borradores de cotización de WhatsApp",
+    "description": "Revise los carritos creados por los clientes a través de WhatsApp antes de crear cotizaciones en el CRM.",
+    "tableTitle": "Cola de revisión del representante",
+    "searchPlaceholder": "Buscar teléfono, cliente o mensaje...",
+    "empty": "No se encontraron borradores.",
+    "total": "{{count}} borradores",
+    "customerMessage": "Mensaje del cliente",
+    "mainLine": "Producto principal",
+    "relatedLine": "Producto relacionado",
     "status": {
-      "WaitingRepresentativeReview": "Representative review"
+      "WaitingRepresentativeReview": "Revisión del representante"
     },
     "columns": {
-      "createdDate": "Date",
-      "phone": "Phone",
-      "customer": "Customer",
-      "status": "Status",
-      "lineCount": "Lines",
-      "grandTotal": "Grand Total"
+      "createdDate": "Fecha",
+      "phone": "Teléfono",
+      "customer": "Cliente",
+      "status": "Estado",
+      "lineCount": "Líneas",
+      "grandTotal": "Gran total"
     },
     "lineColumns": {
-      "code": "Code",
+      "code": "Código",
       "name": "Stock",
-      "quantity": "Quantity",
-      "unitPrice": "Unit Price",
+      "quantity": "Cantidad",
+      "unitPrice": "Precio unitario",
       "total": "Total",
-      "type": "Type"
+      "type": "Tipo"
     },
     "actions": {
-      "title": "Representative quote action",
-      "description": "Convert the draft into a CRM quotation and optionally send it to the customer through WhatsApp with a PDF.",
-      "representativeId": "Representative ID",
-      "customer": "Customer",
-      "selectCustomer": "Select customer",
-      "paymentType": "Payment type",
-      "selectPaymentType": "Select payment type",
-      "documentSerial": "Document serial type",
-      "selectDocumentSerial": "Select document serial type",
-      "offerType": "Quote type",
-      "domestic": "Domestic",
-      "foreign": "Foreign",
-      "currency": "Currency",
-      "offerDate": "Quote date",
-      "deliveryDate": "Delivery date",
-      "descriptionField": "Internal description",
-      "customerMessageField": "Customer message",
-      "sendAfterConvert": "Send WhatsApp after conversion",
-      "attachPdf": "Attach PDF",
-      "convertAndSend": "Convert and send",
-      "sendAgain": "Send again on WhatsApp",
-      "createdQuotation": "Quotation #{{id}}",
-      "loading": "Loading...",
-      "convertSuccess": "WhatsApp draft was moved into the quote flow.",
-      "convertError": "WhatsApp draft could not be converted.",
-      "sendSuccess": "Quotation was sent through WhatsApp.",
-      "sendError": "Quotation could not be sent through WhatsApp."
+      "title": "Acción de cotización del representante",
+      "description": "Convierta el borrador en una cotización de CRM y, opcionalmente, envíelo al cliente a través de WhatsApp con un PDF.",
+      "representativeId": "ID de representante",
+      "customer": "Cliente",
+      "selectCustomer": "Seleccionar cliente",
+      "paymentType": "Tipo de pago",
+      "selectPaymentType": "Seleccionar tipo de pago",
+      "documentSerial": "Tipo de serie de documento",
+      "selectDocumentSerial": "Seleccionar tipo de serie de documento",
+      "offerType": "Tipo de cotización",
+      "domestic": "Nacional",
+      "foreign": "Extranjero",
+      "currency": "Moneda",
+      "offerDate": "Fecha de cotización",
+      "deliveryDate": "Fecha de entrega",
+      "descriptionField": "Descripción interna",
+      "customerMessageField": "Mensaje del cliente",
+      "sendAfterConvert": "Enviar WhatsApp después de la conversión",
+      "attachPdf": "Adjuntar PDF",
+      "convertAndSend": "Convertir y enviar",
+      "sendAgain": "Enviar de nuevo en WhatsApp",
+      "createdQuotation": "Cotización #{{id}}",
+      "loading": "Cargando...",
+      "convertSuccess": "El borrador de WhatsApp se movió al flujo de cotización.",
+      "convertError": "El borrador de WhatsApp no se pudo convertir.",
+      "sendSuccess": "La cotización se envió a través de WhatsApp.",
+      "sendError": "La cotización no se pudo enviar a través de WhatsApp."
     }
   },
+  "quotationSend": {
+    "sendSuccess": "La cotización se envió como PDF a través de WhatsApp.",
+    "sendError": "La cotización no se pudo enviar a través de WhatsApp."
+  },
   "flow": {
-    "title": "WhatsApp Quote Flow",
-    "description": "A safe module plan for customers to request quotes from their phone.",
+    "title": "Flujo de cotización de WhatsApp",
+    "description": "Un plan de módulo seguro para que los clientes soliciten cotizaciones desde su teléfono.",
     "steps": {
       "inbound": {
-        "title": "1. Message Intake",
-        "text": "Incoming customer messages are received through webhook, signature-checked, and logged as raw events."
+        "title": "1. Recepción de mensajes",
+        "text": "Los mensajes entrantes de los clientes se reciben a través del webhook, se verifica su firma y se registran como eventos sin procesar."
       },
       "intent": {
-        "title": "2. Intent and Stock Selection",
-        "text": "Customers are guided through catalog or stock branches; free text is not converted into orders directly."
+        "title": "2. Intención y selección de stock",
+        "text": "Se guía a los clientes a través del catálogo o ramas de stock; el texto libre no se convierte directamente en pedidos."
       },
       "quote": {
-        "title": "3. Quote Draft",
-        "text": "Selections create a CRM quote draft; no final document is created before representative review."
+        "title": "3. Borrador de cotización",
+        "text": "Las selecciones crean un borrador de cotización de CRM; no se crea ningún documento final antes de la revisión del representante."
       },
       "handoff": {
-        "title": "4. Representative Approval",
-        "text": "Price, discount, delivery, and customer checks are completed before the quote is sent back."
+        "title": "4. Aprobación del representante",
+        "text": "Los controles de precio, descuento, entrega y cliente se completan antes de devolver la cotización."
       }
     },
-    "nextPhaseTitle": "Next Phase",
-    "nextPhaseText": "This phase opens the foundation. Conversation flow, catalog selections, quote drafts, and WhatsApp template sends will be added in a separate controlled phase."
+    "nextPhaseTitle": "Siguiente fase",
+    "nextPhaseText": "Esta fase abre la base. El flujo de conversación, las selecciones de catálogo, los borradores de cotización y los envíos de plantillas de WhatsApp se agregarán en una fase controlada por separado."
   }
 }

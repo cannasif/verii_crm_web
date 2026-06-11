@@ -256,16 +256,15 @@ export function DataTableActionBar({
         )}
         {leftSlot}
 
-        <div className="ml-auto flex shrink-0 items-center gap-2">
+        <div className="ml-auto flex shrink-0 items-center gap-2 relative">
           <div className="hidden sm:flex items-center gap-2">
             <Button
               variant={appliedFilterCount > 0 ? 'default' : 'outline'}
               size="sm"
-              className={`h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${
-                appliedFilterCount > 0
-                  ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
-                  : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
-              }`}
+              className={`h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm ${appliedFilterCount > 0
+                ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
+                : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
+                }`}
               onClick={() => setShowFilters(true)}
             >
               <Filter className="mr-2 h-4 w-4" />
@@ -309,102 +308,102 @@ export function DataTableActionBar({
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onSelect={() => {
-                setShowFilters(true);
-                setMobileMenuOpen(false);
-              }}
-            >
-              <Filter className="mr-2 h-4 w-4" />
-              {t('filters', { ns: 'common' })}
-              {appliedFilterCount > 0 ? (
-                <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-pink-500/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-pink-700 dark:text-pink-300">
-                  {appliedFilterCount}
-                </span>
-              ) : null}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              className="cursor-pointer"
-              onSelect={() => {
-                setColumnsOpen(true);
-                setMobileMenuOpen(false);
-              }}
-            >
-              <Columns3 className="mr-2 h-4 w-4" />
-              {t('common.editColumns')}
-            </DropdownMenuItem>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger className="cursor-pointer">
-                <FileDown className="mr-2 h-4 w-4" />
-                {t('export', { ns: 'common', defaultValue: 'Çıktı Al' })}
-              </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent>
-                <GridExportMenuItems
-                  fileName={exportFileName}
-                  columns={exportColumns}
-                  rows={exportRows}
-                  getExportData={getExportData}
-                  translationNamespace={translationNamespace}
-                  onActionComplete={() => setMobileMenuOpen(false)}
-                />
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
-          </DropdownMenuContent>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={() => {
+                  setShowFilters(true);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <Filter className="mr-2 h-4 w-4" />
+                {t('filters', { ns: 'common' })}
+                {appliedFilterCount > 0 ? (
+                  <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-pink-500/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-pink-700 dark:text-pink-300">
+                    {appliedFilterCount}
+                  </span>
+                ) : null}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="cursor-pointer"
+                onSelect={() => {
+                  setColumnsOpen(true);
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <Columns3 className="mr-2 h-4 w-4" />
+                {t('common.editColumns')}
+              </DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="cursor-pointer">
+                  <FileDown className="mr-2 h-4 w-4" />
+                  {t('export', { ns: 'common', defaultValue: 'Çıktı Al' })}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <GridExportMenuItems
+                    fileName={exportFileName}
+                    columns={exportColumns}
+                    rows={exportRows}
+                    getExportData={getExportData}
+                    translationNamespace={translationNamespace}
+                    onActionComplete={() => setMobileMenuOpen(false)}
+                  />
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </DropdownMenuContent>
           </DropdownMenu>
+
+          <Popover open={showFilters} onOpenChange={setShowFilters}>
+            <PopoverTrigger asChild>
+              <div className="absolute right-0 sm:right-48 bottom-0 w-px h-px min-w-0 min-h-0 pointer-events-none opacity-0" aria-hidden />
+            </PopoverTrigger>
+            <PopoverContent side="bottom" align="end" className="w-[560px] max-w-[95vw] p-0 rounded-2xl overflow-hidden">
+              <div className="flex items-center justify-between p-3 border-b border-white/5">
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                  {resolveAdvancedFilterTitle()}
+                </h3>
+                <button
+                  onClick={() => setShowFilters(false)}
+                  className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  aria-label={t('common.close')}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+              <div className="p-3 overflow-y-auto max-h-[420px]">
+                <AdvancedFilter
+                  columns={filterColumns}
+                  defaultColumn={defaultFilterColumn}
+                  draftRows={draftFilterRows}
+                  onDraftRowsChange={onDraftFilterRowsChange}
+                  filterLogic={filterLogic}
+                  onFilterLogicChange={onFilterLogicChange}
+                  onSearch={() => {
+                    onApplyFilters();
+                    setShowFilters(false);
+                  }}
+                  onClear={onClearFilters}
+                  translationNamespace={translationNamespace}
+                  embedded
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
+
+          <ColumnPreferencesPopover
+            pageKey={pageKey}
+            userId={userId}
+            columns={columns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={onVisibleColumnsChange}
+            onColumnOrderChange={onColumnOrderChange}
+            open={columnsOpen}
+            onOpenChange={setColumnsOpen}
+            triggerClassName="absolute right-0 sm:right-8 bottom-0 w-px h-px min-w-0 min-h-0 pointer-events-none opacity-0 !border-0 !p-0 !m-0 overflow-hidden"
+          />
         </div>
       </div>
-
-      <Popover open={showFilters} onOpenChange={setShowFilters}>
-        <PopoverTrigger asChild>
-          <span className="sr-only" aria-hidden tabIndex={-1} />
-        </PopoverTrigger>
-        <PopoverContent side="bottom" align="end" className="w-[560px] max-w-[95vw] p-0 rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between p-3 border-b border-white/5">
-            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-              {resolveAdvancedFilterTitle()}
-            </h3>
-            <button
-              onClick={() => setShowFilters(false)}
-              className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
-              aria-label={t('common.close')}
-            >
-              <X size={16} />
-            </button>
-          </div>
-          <div className="p-3 overflow-y-auto max-h-[420px]">
-            <AdvancedFilter
-              columns={filterColumns}
-              defaultColumn={defaultFilterColumn}
-              draftRows={draftFilterRows}
-              onDraftRowsChange={onDraftFilterRowsChange}
-              filterLogic={filterLogic}
-              onFilterLogicChange={onFilterLogicChange}
-              onSearch={() => {
-                onApplyFilters();
-                setShowFilters(false);
-              }}
-              onClear={onClearFilters}
-              translationNamespace={translationNamespace}
-              embedded
-            />
-          </div>
-        </PopoverContent>
-      </Popover>
-
-      <ColumnPreferencesPopover
-        pageKey={pageKey}
-        userId={userId}
-        columns={columns}
-        visibleColumns={visibleColumns}
-        columnOrder={columnOrder}
-        onVisibleColumnsChange={onVisibleColumnsChange}
-        onColumnOrderChange={onColumnOrderChange}
-        open={columnsOpen}
-        onOpenChange={setColumnsOpen}
-        triggerClassName="hidden"
-      />
     </div>
   );
 }

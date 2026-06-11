@@ -237,6 +237,11 @@
     "viewDetails": "View details",
     "detailsTitle": "Log details",
     "detailsDescription": "Detailed information about the selected Google integration log entry.",
+    "severities": {
+      "info": "Info",
+      "warning": "Warning",
+      "error": "Error"
+    },
     "columns": {
       "date": "Date",
       "operation": "Operation",

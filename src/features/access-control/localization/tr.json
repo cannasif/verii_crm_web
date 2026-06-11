@@ -254,6 +254,14 @@
     "title": "Audit Kayıtları",
     "description": "Kritik işlemlerin kim tarafından, hangi trace ile ve nasıl sonuçlandığını izleyin.",
     "search": "Audit kaydı ara...",
+    "results": {
+      "success": "Başarılı",
+      "succeeded": "Başarılı",
+      "warning": "Uyarı",
+      "partial": "Kısmi",
+      "error": "Hata",
+      "failed": "Başarısız"
+    },
     "filters": {
       "result": "Sonuç",
       "actionType": "Aksiyon",
@@ -335,6 +343,7 @@
     "visibilityPolicies": "Görünürlük Politikaları",
     "userVisibilityAssignments": "Kullanıcı Görünürlük Atamaları",
     "auditLogs": "Audit Kayıtları",
+    "visibilitySimulator": "Görünürlük Simülatörü",
     "accessControlGuide": "Erişim kontrolü rehberi"
   },
   "guide": {

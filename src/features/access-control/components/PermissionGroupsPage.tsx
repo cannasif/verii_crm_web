@@ -12,6 +12,8 @@ import {
   type DataTableGridColumn,
 } from '@/components/shared';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
+import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -70,6 +72,12 @@ export function PermissionGroupsPage(): ReactElement {
   const [itemToDelete, setItemToDelete] = useState<PermissionGroupDto | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
   const [columnOrder, setColumnOrder] = useState<string[]>(['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+
+  useEffect(() => {
+    setPageNumber(1);
+  }, [pageSize, searchTerm, appliedFilterRows]);
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, ['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
@@ -77,12 +85,15 @@ export function PermissionGroupsPage(): ReactElement {
     setColumnOrder(prefs.order);
   }, [user?.id]);
 
+  const backendFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
+
   const { data, isLoading } = usePermissionGroupsQuery({
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
     sortBy: 'updatedDate',
     sortDirection: 'desc',
+    filters: backendFilters.length > 0 ? backendFilters : undefined,
   });
 
   const createMutation = useCreatePermissionGroupMutation();
@@ -187,7 +198,17 @@ export function PermissionGroupsPage(): ReactElement {
     { key: 'permissionCount', label: t('permissionGroups.table.permissionCount') },
   ];
 
-  const filterColumns = useMemo(() => [], []);
+  const filterColumns = useMemo<FilterColumnConfig[]>(() => [
+    { value: 'name', type: 'string', labelKey: 'permissionGroups.table.name' },
+    { value: 'isSystemAdmin', type: 'boolean', labelKey: 'permissionGroups.table.isSystemAdmin' },
+    { value: 'isActive', type: 'boolean', labelKey: 'permissionGroups.table.isActive' },
+  ], []);
+
+  const appliedFilterCount = useMemo(
+    () => appliedFilterRows.filter((r) => r.value.trim() !== '').length,
+    [appliedFilterRows]
+  );
+
   const exportColumns = baseColumns;
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
@@ -363,12 +384,15 @@ export function PermissionGroupsPage(): ReactElement {
             exportRows={exportRows}
             filterColumns={filterColumns}
             defaultFilterColumn="name"
-            draftFilterRows={[]}
-            onDraftFilterRowsChange={() => { }}
-            onApplyFilters={() => { }}
-            onClearFilters={() => { }}
+            draftFilterRows={draftFilterRows}
+            onDraftFilterRowsChange={setDraftFilterRows}
+            onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setAppliedFilterRows([]);
+            }}
             translationNamespace="access-control"
-            appliedFilterCount={0}
+            appliedFilterCount={appliedFilterCount}
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}

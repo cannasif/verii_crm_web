@@ -116,7 +116,10 @@
     "assignedGroups": "Grupos de permisos asignados",
     "noUsers": "No se encontraron usuarios",
     "noGroups": "No hay grupos de permisos disponibles",
-    "selectAll": "Seleccionar todo"
+    "selectAll": "Seleccionar todo",
+    "status": "Estado",
+    "unsavedChanges": "No guardado",
+    "upToDate": "Actualizado"
   },
   "common": {
     "cancel": "Cancelar",

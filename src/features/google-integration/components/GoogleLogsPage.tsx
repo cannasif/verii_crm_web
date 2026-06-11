@@ -171,7 +171,7 @@ export function GoogleLogsPage(): ReactElement {
         createdDate: new Date(log.createdDate).toLocaleString(),
         operation: log.operation,
         isSuccess: log.isSuccess ? t('logs.success') : t('logs.failed'),
-        severity: log.severity,
+        severity: log.severity ? t(`logs.severities.${log.severity.toLowerCase()}`, { defaultValue: log.severity }) : '-',
         message: log.message ?? '-',
         errorCode: log.errorCode ?? '-',
         userId: log.userId ?? '-',
@@ -189,7 +189,7 @@ export function GoogleLogsPage(): ReactElement {
         createdDate: new Date(log.createdDate).toLocaleString(),
         operation: log.operation,
         isSuccess: log.isSuccess ? t('logs.success') : t('logs.failed'),
-        severity: log.severity,
+        severity: log.severity ? t(`logs.severities.${log.severity.toLowerCase()}`, { defaultValue: log.severity }) : '-',
         message: log.message ?? '-',
         errorCode: log.errorCode ?? '-',
         userId: log.userId ?? '-',
@@ -235,7 +235,11 @@ export function GoogleLogsPage(): ReactElement {
         <Badge variant="destructive">{t('logs.failed')}</Badge>
       );
     }
-    if (key === 'severity') return <Badge variant="secondary">{log.severity}</Badge>;
+    if (key === 'severity') {
+      const severityKey = log.severity?.toLowerCase();
+      const translatedSeverity = severityKey ? t(`logs.severities.${severityKey}`, { defaultValue: log.severity }) : '-';
+      return <Badge variant="secondary">{translatedSeverity}</Badge>;
+    }
     if (key === 'message') return log.message || '-';
     if (key === 'errorCode') return log.errorCode || '-';
     if (key === 'userId') return log.userId ?? '-';
@@ -450,7 +454,7 @@ export function GoogleLogsPage(): ReactElement {
                     {t('logs.columns.severity')}
                   </span>
                   <Badge variant="secondary" className="w-fit">
-                    {selectedLog.severity}
+                    {selectedLog.severity ? t(`logs.severities.${selectedLog.severity.toLowerCase()}`, { defaultValue: selectedLog.severity }) : '-'}
                   </Badge>
                 </div>
                 <div className="flex flex-col gap-1">

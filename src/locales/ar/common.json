@@ -130,7 +130,7 @@
       "page": "صفحة {{current}} من {{total}}"
     },
     "filters": "تصفية مفصلة",
-    "total": "Toplam",
+    "total": "الإجمالي",
     "advancedFilter": {
       "title": "تصفية متقدمة",
       "add": "إضافة فلتر",

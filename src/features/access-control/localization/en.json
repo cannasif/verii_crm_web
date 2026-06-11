@@ -254,6 +254,14 @@
     "title": "Audit logs",
     "description": "Track who performed critical actions, under which trace, and how they ended.",
     "search": "Search audit logs...",
+    "results": {
+      "success": "Success",
+      "succeeded": "Succeeded",
+      "warning": "Warning",
+      "partial": "Partial",
+      "error": "Error",
+      "failed": "Failed"
+    },
     "filters": {
       "result": "Result",
       "actionType": "Action",
@@ -335,6 +343,7 @@
     "visibilityPolicies": "Visibility policies",
     "userVisibilityAssignments": "User visibility assignments",
     "auditLogs": "Audit logs",
+    "visibilitySimulator": "Visibility Simulator",
     "accessControlGuide": "Access control guide"
   },
   "guide": {
