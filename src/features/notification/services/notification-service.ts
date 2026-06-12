@@ -25,6 +25,7 @@ const ACCESS_CONTROL_QUERY_ROOTS = new Set([
   'permissions',
   'users',
   'auth',
+  'salesmen360',
 ]);
 
 class NotificationService {

@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUIStore } from '@/stores/ui-store';
@@ -15,6 +15,20 @@ import { visibilityPolicyApi } from '../api/visibilityPolicyApi';
 import { useCrudPermissions } from '../hooks/useCrudPermissions';
 import { getVisibilityScopeMeta, VISIBILITY_ENTITY_OPTIONS } from '../utils/visibility-options';
 import type { UserVisibilityPolicyDto, VisibilityPolicyDto } from '../types/access-control.types';
+
+const VISIBILITY_AFFECTED_QUERY_PREFIXES = [
+  'activityManagement.',
+  'demand.',
+  'quotation.',
+  'order.',
+  'approval.',
+] as const;
+
+const VISIBILITY_AFFECTED_QUERY_ROOTS = new Set([
+  'auth',
+  'permissions',
+  'salesmen360',
+]);
 
 export function UserVisibilityAssignmentsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
@@ -54,10 +68,26 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
       }),
   });
 
+  const invalidateVisibilityDependentQueries = useCallback(async () => {
+    await queryClient.invalidateQueries({
+      predicate: (query) => {
+        const [root] = query.queryKey;
+        if (typeof root !== 'string') return false;
+
+        return (
+          VISIBILITY_AFFECTED_QUERY_ROOTS.has(root) ||
+          VISIBILITY_AFFECTED_QUERY_PREFIXES.some((prefix) => root.startsWith(prefix))
+        );
+      },
+      refetchType: 'active',
+    });
+  }, [queryClient]);
+
   const createMutation = useMutation({
     mutationFn: userVisibilityPolicyApi.create,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['user-visibility-policies', selectedUserId] });
+      await invalidateVisibilityDependentQueries();
     },
   });
 
@@ -66,6 +96,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
       userVisibilityPolicyApi.update(id, { visibilityPolicyId }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['user-visibility-policies', selectedUserId] });
+      await invalidateVisibilityDependentQueries();
     },
   });
 
@@ -73,6 +104,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
     mutationFn: userVisibilityPolicyApi.delete,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['user-visibility-policies', selectedUserId] });
+      await invalidateVisibilityDependentQueries();
     },
   });
 
