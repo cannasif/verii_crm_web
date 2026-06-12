@@ -34,6 +34,7 @@
     "customer": "Müşteri",
     "customerCode": "Cari Kodu",
     "representative": "Satış Temsilcisi",
+    "koliBaski": "Koli Baskı",
     "offerDate": "Sipariş Tarihi",
     "validUntil": "Geçerlilik",
     "currency": "Para Birimi",
@@ -95,6 +96,9 @@
     "descriptionPlaceholder": "Açıklama giriniz",
     "projectCode": "Proje Kodu",
     "projectCodePlaceholder": "Proje kodunu girin",
+    "koliBaski": "Koli Baskı",
+    "koliBaskiPlaceholder": "Koli baskı seçin",
+    "koliBaskiSearchPlaceholder": "Koli baskı ara...",
     "offerNo": "Sipariş No",
     "offerNoPlaceholder": "Sipariş numarası",
     "currencyChange": {
