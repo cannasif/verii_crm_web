@@ -16,8 +16,9 @@ export const createOrderSchema = z.object({
       .number()
       .nullable()
       .refine((v) => v != null && v >= 1, { message: 'Sipariş seri no seçilmelidir' }),
-    offerType: z.enum([OfferType.YURTICI, OfferType.YURTDISI], { error: 'Teklif tipi seçilmelidir' }),
+    offerType: z.enum([OfferType.YURTICI, OfferType.YURTDISI], { error: 'Sipariş tipi seçilmelidir' }),
     deliveryMethod: z.string().nullable().optional(),
+    koliBaskiDefinitionId: z.number().nullable().optional(),
     offerDate: z.string().nullable().optional(),
     offerNo: z.string().max(50, 'Sipariş no en fazla 50 karakter olabilir').nullable().optional(),
     revisionNo: z.string().max(50, 'Revizyon no en fazla 50 karakter olabilir').nullable().optional(),

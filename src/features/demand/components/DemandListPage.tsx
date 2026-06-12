@@ -63,6 +63,7 @@ type DemandColumnKey =
   | 'PotentialCustomerName'
   | 'ErpCustomerCode'
   | 'RepresentativeName'
+  | 'KoliBaskiDefinitionName'
   | 'OfferDate'
   | 'ValidUntil'
   | 'Currency'
@@ -88,6 +89,7 @@ const DEMAND_COLUMN_CONFIG: readonly DemandColumnConfig[] = [
   { key: 'PotentialCustomerName', labelKey: 'demand.list.customer', fallbackLabel: 'Müşteri', filterType: 'string' },
   { key: 'ErpCustomerCode', labelKey: 'demand.list.customerCode', fallbackLabel: 'Cari Kodu', filterType: 'string' },
   { key: 'RepresentativeName', labelKey: 'demand.list.representative', fallbackLabel: 'Temsilci', filterType: 'string' },
+  { key: 'KoliBaskiDefinitionName', labelKey: 'demand.list.koliBaski', fallbackLabel: 'Koli Baskı', filterType: 'string' },
   { key: 'OfferDate', labelKey: 'demand.list.offerDate', fallbackLabel: 'Tarih', filterType: 'date' },
   { key: 'ValidUntil', labelKey: 'demand.list.validUntil', fallbackLabel: 'Geçerlilik', filterType: 'date' },
   { key: 'Currency', labelKey: 'demand.list.currency', fallbackLabel: 'Para Birimi', filterType: 'string' },
@@ -292,6 +294,7 @@ export function DemandListPage(): ReactElement {
         PotentialCustomerName: demand.potentialCustomerName ?? '-',
         ErpCustomerCode: demand.erpCustomerCode ?? '-',
         RepresentativeName: demand.representativeName ?? '-',
+        KoliBaskiDefinitionName: demand.koliBaskiDefinitionName ?? '-',
         OfferDate: demand.offerDate ? new Date(demand.offerDate).toLocaleDateString(i18n.language) : '-',
         ValidUntil: demand.validUntil ? new Date(demand.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(demand),
@@ -338,6 +341,7 @@ export function DemandListPage(): ReactElement {
         PotentialCustomerName: demand.potentialCustomerName ?? '-',
         ErpCustomerCode: demand.erpCustomerCode ?? '-',
         RepresentativeName: demand.representativeName ?? '-',
+        KoliBaskiDefinitionName: demand.koliBaskiDefinitionName ?? '-',
         OfferDate: demand.offerDate ? new Date(demand.offerDate).toLocaleDateString(i18n.language) : '-',
         ValidUntil: demand.validUntil ? new Date(demand.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(demand),
@@ -411,6 +415,7 @@ export function DemandListPage(): ReactElement {
     if (key === 'PotentialCustomerName') return demand.potentialCustomerName || '-';
     if (key === 'ErpCustomerCode') return demand.erpCustomerCode || '-';
     if (key === 'RepresentativeName') return demand.representativeName || '-';
+    if (key === 'KoliBaskiDefinitionName') return demand.koliBaskiDefinitionName || '-';
     if (key === 'OfferDate') return formatDate(demand.offerDate);
     if (key === 'ValidUntil') return formatDate(demand.validUntil);
     if (key === 'Currency') return getCurrencyLabel(demand);

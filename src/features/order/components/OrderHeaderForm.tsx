@@ -45,6 +45,7 @@ import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
+import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import type { KurDto } from '@/services/erp-types';
 import { ExchangeRateDialog } from './ExchangeRateDialog';
@@ -133,6 +134,7 @@ export function OrderHeaderForm({
   const watchedOfferType = form.watch('order.offerType');
 
   const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, true);
+  const { koliBaskiOptions, isLoading: isKoliBaskiOptionsLoading } = useWindoDefinitionOptions();
   const deliveryMethodDropdown = useSalesTypeOptionsInfinite(
     deliveryMethodSearchTerm,
     !!watchedOfferType,
@@ -853,6 +855,31 @@ export function OrderHeaderForm({
                     )}
                   />
                 </div>
+                <FormField
+                  control={form.control}
+                  name="order.koliBaskiDefinitionId"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0 relative group">
+                      <FormLabel className={styles.label}>
+                        <Layers className="h-3.5 w-3.5" />
+                        {t('order:header.koliBaski', { defaultValue: 'Koli Baskı' })}
+                      </FormLabel>
+                      <div className="relative">
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
+                        <VoiceSearchCombobox
+                          className={cn("h-11 w-full pl-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-within:ring-4 focus-within:ring-pink-500/10 focus-within:border-pink-500 [&_*]:pl-8")}
+                          value={field.value ? String(field.value) : ''}
+                          onSelect={(value) => field.onChange(value ? Number(value) : null)}
+                          options={koliBaskiOptions.map((option) => ({ value: String(option.id), label: option.name }))}
+                          placeholder={isKoliBaskiOptionsLoading ? t('common.loading', { defaultValue: 'Yükleniyor...' }) : t('order:header.koliBaskiPlaceholder', { defaultValue: 'Koli baskı seçin' })}
+                          searchPlaceholder={t('order:header.koliBaskiSearchPlaceholder', { defaultValue: 'Koli baskı ara...' })}
+                          disabled={readOnly || isKoliBaskiOptionsLoading}
+                        />
+                      </div>
+                      <FormMessage className="mt-1.5" />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="order.description"

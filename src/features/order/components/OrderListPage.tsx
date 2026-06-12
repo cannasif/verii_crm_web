@@ -63,6 +63,7 @@ type OrderColumnKey =
   | 'PotentialCustomerName'
   | 'ErpCustomerCode'
   | 'RepresentativeName'
+  | 'KoliBaskiDefinitionName'
   | 'OfferDate'
   | 'ValidUntil'
   | 'Currency'
@@ -88,6 +89,7 @@ const ORDER_COLUMN_CONFIG: readonly OrderColumnConfig[] = [
   { key: 'PotentialCustomerName', labelKey: 'order.list.customer', fallbackLabel: 'Müşteri', filterType: 'string' },
   { key: 'ErpCustomerCode', labelKey: 'order.list.customerCode', fallbackLabel: 'Cari Kodu', filterType: 'string' },
   { key: 'RepresentativeName', labelKey: 'order.list.representative', fallbackLabel: 'Temsilci', filterType: 'string' },
+  { key: 'KoliBaskiDefinitionName', labelKey: 'order.list.koliBaski', fallbackLabel: 'Koli Baskı', filterType: 'string' },
   { key: 'OfferDate', labelKey: 'order.list.offerDate', fallbackLabel: 'Tarih', filterType: 'date' },
   { key: 'ValidUntil', labelKey: 'order.list.validUntil', fallbackLabel: 'Geçerlilik', filterType: 'date' },
   { key: 'Currency', labelKey: 'order.list.currency', fallbackLabel: 'Para Birimi', filterType: 'string' },
@@ -306,6 +308,7 @@ export function OrderListPage(): ReactElement {
         PotentialCustomerName: order.potentialCustomerName ?? '-',
         ErpCustomerCode: order.erpCustomerCode ?? '-',
         RepresentativeName: order.representativeName ?? '-',
+        KoliBaskiDefinitionName: order.koliBaskiDefinitionName ?? '-',
         OfferDate: order.offerDate ? new Date(order.offerDate).toLocaleDateString(i18n.language) : '-',
         ValidUntil: order.validUntil ? new Date(order.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(order),
@@ -343,6 +346,7 @@ export function OrderListPage(): ReactElement {
         PotentialCustomerName: order.potentialCustomerName ?? '-',
         ErpCustomerCode: order.erpCustomerCode ?? '-',
         RepresentativeName: order.representativeName ?? '-',
+        KoliBaskiDefinitionName: order.koliBaskiDefinitionName ?? '-',
         OfferDate: order.offerDate ? new Date(order.offerDate).toLocaleDateString(i18n.language) : '-',
         ValidUntil: order.validUntil ? new Date(order.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(order),
@@ -411,6 +415,7 @@ export function OrderListPage(): ReactElement {
     if (key === 'PotentialCustomerName') return order.potentialCustomerName || '-';
     if (key === 'ErpCustomerCode') return order.erpCustomerCode || '-';
     if (key === 'RepresentativeName') return order.representativeName || '-';
+    if (key === 'KoliBaskiDefinitionName') return order.koliBaskiDefinitionName || '-';
     if (key === 'OfferDate') return formatDate(order.offerDate);
     if (key === 'ValidUntil') return formatDate(order.validUntil);
     if (key === 'Currency') return getCurrencyLabel(order);

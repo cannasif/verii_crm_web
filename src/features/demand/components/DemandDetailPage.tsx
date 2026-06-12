@@ -65,6 +65,13 @@ function parsePersistedId(formId: string | number | undefined, prefix: string): 
   return null;
 }
 
+function addDaysToDateOnly(dateValue: string, days: number): string {
+  const date = new Date(`${dateValue}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return dateValue;
+  date.setDate(date.getDate() + days);
+  return date.toISOString().split('T')[0];
+}
+
 export function DemandDetailPage(): ReactElement {
   const { t } = useTranslation(['demand', 'common']);
   const { canUpdate } = useCrudPermissions('sales.demands.update');
@@ -94,6 +101,7 @@ export function DemandDetailPage(): ReactElement {
   const notesInitializedRef = useRef(false);
   const exchangeRatesInitializedRef = useRef(false);
   const formInitializedRef = useRef(false);
+  const offerDateSyncInitializedRef = useRef(false);
   const [activeTab, setActiveTab] = useState('detail');
   const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
   const demandStatus = Number((demand as { status?: number; Status?: number })?.status ?? (demand as { status?: number; Status?: number })?.Status);
@@ -112,7 +120,9 @@ export function DemandDetailPage(): ReactElement {
         offerType: DEFAULT_OFFER_TYPE,
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
+        deliveryDate: addDaysToDateOnly(new Date().toISOString().split('T')[0], 21),
         representativeId: null,
+        koliBaskiDefinitionId: null,
       },
     },
   });
@@ -165,10 +175,12 @@ export function DemandDetailPage(): ReactElement {
           revisionId: demand.revisionId || null,
           generalDiscountRate: demand.generalDiscountRate ?? null,
           generalDiscountAmount: demand.generalDiscountAmount ?? null,
+          koliBaskiDefinitionId: demand.koliBaskiDefinitionId ?? (raw.KoliBaskiDefinitionId as number) ?? null,
           deliveryMethod: deliveryMethodValue,
         },
       });
       formInitializedRef.current = true;
+      offerDateSyncInitializedRef.current = false;
     }
   }, [demand, form]);
 
@@ -177,6 +189,7 @@ export function DemandDetailPage(): ReactElement {
     notesInitializedRef.current = false;
     exchangeRatesInitializedRef.current = false;
     formInitializedRef.current = false;
+    offerDateSyncInitializedRef.current = false;
   }, [demandId]);
 
   useEffect(() => {
@@ -214,6 +227,12 @@ export function DemandDetailPage(): ReactElement {
           description1: line.description1 || null,
           description2: line.description2 || null,
           description3: line.description3 || null,
+          profilDefinitionId: line.profilDefinitionId ?? null,
+          demirDefinitionId: line.demirDefinitionId ?? null,
+          vidaDefinitionId: line.vidaDefinitionId ?? null,
+          vidaDefinitionName: line.vidaDefinitionName ?? null,
+          baskiDefinitionId: line.baskiDefinitionId ?? null,
+          baskiDefinitionName: line.baskiDefinitionName ?? null,
           pricingRuleHeaderId: line.pricingRuleHeaderId || null,
           imagePath: line.imagePath || null,
           relatedStockId: line.relatedStockId || null,
@@ -263,6 +282,20 @@ export function DemandDetailPage(): ReactElement {
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedRepresentativeId = form.watch('demand.representativeId');
   const watchedOfferDate = form.watch('demand.offerDate');
+
+  useEffect(() => {
+    if (!watchedOfferDate || isReadOnly) return;
+
+    if (!offerDateSyncInitializedRef.current) {
+      offerDateSyncInitializedRef.current = true;
+      return;
+    }
+
+    form.setValue('demand.deliveryDate', addDaysToDateOnly(watchedOfferDate, 21), {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  }, [form, isReadOnly, watchedOfferDate]);
 
   const customerCode = useMemo(() => {
     if (watchedErpCustomerCode) {
@@ -318,8 +351,10 @@ export function DemandDetailPage(): ReactElement {
 
     try {
       const linesToSend = lines.map((line) => {
-        const { id, isEditing, ...lineData } = line;
-        const { relatedLines, ...cleanLineData } = lineData as DemandLineFormState & { relatedLines?: unknown[] };
+        const { id, isEditing, relatedLines, vidaDefinitionName, baskiDefinitionName, ...cleanLineData } =
+          line as DemandLineFormState & { relatedLines?: unknown[] };
+        void vidaDefinitionName;
+        void baskiDefinitionName;
         return {
           ...cleanLineData,
           id: parsePersistedId(id, 'line'),
@@ -329,6 +364,10 @@ export function DemandDetailPage(): ReactElement {
           description1: cleanLineData.description1 || null,
           description2: cleanLineData.description2 || null,
           description3: cleanLineData.description3 || null,
+          profilDefinitionId: cleanLineData.profilDefinitionId ?? null,
+          demirDefinitionId: cleanLineData.demirDefinitionId ?? null,
+          vidaDefinitionId: cleanLineData.vidaDefinitionId ?? null,
+          baskiDefinitionId: cleanLineData.baskiDefinitionId ?? null,
           pricingRuleHeaderId: cleanLineData.pricingRuleHeaderId && cleanLineData.pricingRuleHeaderId > 0 ? cleanLineData.pricingRuleHeaderId : null,
           relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : null,
           erpProjectCode: cleanLineData.projectCode ?? null,
@@ -382,6 +421,7 @@ export function DemandDetailPage(): ReactElement {
         revisionId: (data.demand.revisionId && data.demand.revisionId > 0) ? data.demand.revisionId : null,
         generalDiscountRate: data.demand.generalDiscountRate ?? null,
         generalDiscountAmount: data.demand.generalDiscountAmount ?? null,
+        koliBaskiDefinitionId: (data.demand.koliBaskiDefinitionId && data.demand.koliBaskiDefinitionId > 0) ? data.demand.koliBaskiDefinitionId : null,
         salesTypeDefinitionId: data.demand.deliveryMethod ? Number(data.demand.deliveryMethod) : null,
         erpProjectCode: data.demand.projectCode ?? null,
       };

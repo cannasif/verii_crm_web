@@ -38,6 +38,13 @@ const CREATE_SECTION_HEADER_CLASSNAME =
 const CREATE_HEADER_FORM_SURFACE_CLASSNAME =
   '[&_label]:text-slate-800 dark:[&_label]:text-slate-200 [&_input]:border-slate-500/70 [&_input]:bg-white [&_input]:shadow-sm [&_input]:placeholder:text-slate-400 [&_input]:focus-visible:border-pink-500/85 [&_input]:focus-visible:ring-pink-200/70 dark:[&_input]:border-white/20 dark:[&_input]:bg-[#120d1d] dark:[&_input]:placeholder:text-slate-500 dark:[&_input]:focus-visible:border-pink-400/60 dark:[&_input]:focus-visible:ring-pink-400/20 [&_textarea]:border-slate-500/70 [&_textarea]:bg-white [&_textarea]:shadow-sm [&_textarea]:placeholder:text-slate-400 [&_textarea]:focus-visible:border-pink-500/85 [&_textarea]:focus-visible:ring-pink-200/70 dark:[&_textarea]:border-white/20 dark:[&_textarea]:bg-[#120d1d] dark:[&_textarea]:placeholder:text-slate-500 dark:[&_textarea]:focus-visible:border-pink-400/60 dark:[&_textarea]:focus-visible:ring-pink-400/20 [&_[data-slot=select-trigger]]:border-slate-500/70 [&_[data-slot=select-trigger]]:bg-white [&_[data-slot=select-trigger]]:shadow-sm dark:[&_[data-slot=select-trigger]]:border-white/20 dark:[&_[data-slot=select-trigger]]:bg-[#120d1d]';
 
+function addDaysToDateOnly(dateValue: string, days: number): string {
+  const date = new Date(`${dateValue}T12:00:00`);
+  if (Number.isNaN(date.getTime())) return dateValue;
+  date.setDate(date.getDate() + days);
+  return date.toISOString().split('T')[0];
+}
+
 function extractOrderCreateErrorMessage(error: unknown, fallback: string): string {
   if (!(error instanceof Error)) {
     return fallback;
@@ -112,9 +119,11 @@ export function OrderCreateForm(): ReactElement {
         offerType: DEFAULT_OFFER_TYPE,
         currency: '',
         offerDate: new Date().toISOString().split('T')[0],
+        deliveryDate: addDaysToDateOnly(new Date().toISOString().split('T')[0], 21),
         representativeId: user?.id || null,
         generalDiscountRate: null,
         generalDiscountAmount: null,
+        koliBaskiDefinitionId: null,
       },
     },
   });
@@ -175,6 +184,22 @@ export function OrderCreateForm(): ReactElement {
     [orderFormSlice, watchedCurrency, t],
   );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
+  const offerDateSyncInitializedRef = useRef(false);
+
+  useEffect(() => {
+    if (!watchedOfferDate) return;
+    if (!offerDateSyncInitializedRef.current) {
+      offerDateSyncInitializedRef.current = true;
+      return;
+    }
+    const nextDeliveryDate = addDaysToDateOnly(watchedOfferDate, 21);
+    if (form.getValues('order.deliveryDate') !== nextDeliveryDate) {
+      form.setValue('order.deliveryDate', nextDeliveryDate, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  }, [watchedOfferDate, form]);
 
   const { calculateLineTotals } = useOrderCalculations();
   const { data: erpRates = [] } = useExchangeRate();
@@ -292,6 +317,7 @@ export function OrderCreateForm(): ReactElement {
         generalDiscountRate: data.order.generalDiscountRate ?? null,
         generalDiscountAmount: data.order.generalDiscountAmount ?? null,
         salesTypeDefinitionId: data.order.deliveryMethod ? Number(data.order.deliveryMethod) : null,
+        koliBaskiDefinitionId: (data.order.koliBaskiDefinitionId && data.order.koliBaskiDefinitionId > 0) ? data.order.koliBaskiDefinitionId : null,
         erpProjectCode: data.order.projectCode ?? null,
       };
 
