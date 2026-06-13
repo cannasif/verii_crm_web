@@ -1,6 +1,6 @@
 export { PageToolbar } from './PageToolbar';
 export { AdvancedFilter } from './AdvancedFilter';
-export { ColumnPreferencesPopover } from './ColumnPreferencesPopover';
+export { ColumnPreferencesPopover, ColumnPreferencesPanel } from './ColumnPreferencesPopover';
 export type { ColumnDef } from './ColumnPreferencesPopover';
 export { GridExportMenu } from './GridExportMenu';
 export { DataTableActionBar } from './DataTableActionBar';

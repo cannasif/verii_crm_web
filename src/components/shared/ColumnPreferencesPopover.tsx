@@ -17,7 +17,7 @@ export interface ColumnDef {
   label: string;
 }
 
-interface ColumnPreferencesPopoverProps {
+interface ColumnPreferencesPanelProps {
   pageKey: string;
   userId?: number;
   columns: ColumnDef[];
@@ -25,12 +25,9 @@ interface ColumnPreferencesPopoverProps {
   columnOrder: string[];
   onVisibleColumnsChange: (visible: string[]) => void;
   onColumnOrderChange: (order: string[]) => void;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  triggerClassName?: string;
 }
 
-export function ColumnPreferencesPopover({
+export function ColumnPreferencesPanel({
   pageKey,
   userId,
   columns,
@@ -38,21 +35,8 @@ export function ColumnPreferencesPopover({
   columnOrder,
   onVisibleColumnsChange,
   onColumnOrderChange,
-  open: controlledOpen,
-  onOpenChange,
-  triggerClassName,
-}: ColumnPreferencesPopoverProps): ReactElement {
+}: ColumnPreferencesPanelProps): ReactElement {
   const { t } = useTranslation();
-  const [internalOpen, setInternalOpen] = useState(false);
-  const isControlled = controlledOpen !== undefined;
-  const open = isControlled ? controlledOpen : internalOpen;
-
-  const setOpen = (nextOpen: boolean): void => {
-    if (!isControlled) {
-      setInternalOpen(nextOpen);
-    }
-    onOpenChange?.(nextOpen);
-  };
   const columnMap = useMemo(() => new Map(columns.map((c) => [c.key, c])), [columns]);
 
   const displayColumns = columnOrder.filter((k) => visibleColumns.includes(k));
@@ -84,10 +68,141 @@ export function ColumnPreferencesPopover({
   };
 
   return (
+    <div className="p-2 space-y-2">
+      <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
+        {t('common.visibleColumns')}
+      </div>
+      <div className="space-y-1 max-h-48 overflow-y-auto">
+        {displayColumns.map((key) => {
+          const col = columnMap.get(key);
+          if (!col) return null;
+          const isId = key === ID_COLUMN_KEY;
+          const idx = displayColumns.indexOf(key);
+          return (
+            <div
+              key={key}
+              className="flex items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-white/5 group"
+            >
+              <div className="flex items-center gap-1 flex-1 min-w-0">
+                {!isId && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100"
+                      onClick={() => moveColumn(key, 'up')}
+                      disabled={idx <= 1}
+                    >
+                      <ArrowUp className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100"
+                      onClick={() => moveColumn(key, 'down')}
+                      disabled={idx >= displayColumns.length - 1}
+                    >
+                      <ArrowDown className="h-3.5 w-3.5" />
+                    </Button>
+                  </>
+                )}
+                <span className="text-sm truncate">{col.label}</span>
+              </div>
+              {!isId && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 shrink-0 text-slate-400 hover:text-destructive"
+                  onClick={() => toggleColumn(key)}
+                  title={t('common.hide')}
+                >
+                  <EyeOff className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      {hiddenColumns.length > 0 && (
+        <>
+          <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5 pt-2 border-t border-slate-100 dark:border-white/10">
+            {t('common.hiddenColumns')}
+          </div>
+          <div className="space-y-1">
+            {hiddenColumns.map((key) => {
+              const col = columnMap.get(key);
+              if (!col) return null;
+              return (
+                <div
+                  key={key}
+                  className="flex items-center justify-between rounded-lg px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-white/5"
+                >
+                  <span className="text-sm text-slate-500 dark:text-slate-400 truncate">
+                    {col.label}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 shrink-0"
+                    onClick={() => toggleColumn(key)}
+                    title={t('common.visibleColumns')}
+                  >
+                    <Eye className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+interface ColumnPreferencesPopoverProps {
+  pageKey: string;
+  userId?: number;
+  columns: ColumnDef[];
+  visibleColumns: string[];
+  columnOrder: string[];
+  onVisibleColumnsChange: (visible: string[]) => void;
+  onColumnOrderChange: (order: string[]) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  triggerClassName?: string;
+  triggerVariant?: 'default' | 'outline' | 'secondary' | 'ghost' | 'link' | 'destructive';
+}
+
+export function ColumnPreferencesPopover({
+  pageKey,
+  userId,
+  columns,
+  visibleColumns,
+  columnOrder,
+  onVisibleColumnsChange,
+  onColumnOrderChange,
+  open: controlledOpen,
+  onOpenChange,
+  triggerClassName,
+  triggerVariant = 'outline',
+}: ColumnPreferencesPopoverProps): ReactElement {
+  const { t } = useTranslation();
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+
+  const setOpen = (nextOpen: boolean): void => {
+    if (!isControlled) {
+      setInternalOpen(nextOpen);
+    }
+    onOpenChange?.(nextOpen);
+  };
+
+  return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant={triggerVariant}
           size="sm"
           className={cn(
             'h-9 border-dashed border-slate-300 dark:border-white/20 bg-transparent hover:bg-slate-50 dark:hover:bg-white/5 text-xs sm:text-sm',
@@ -99,94 +214,15 @@ export function ColumnPreferencesPopover({
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-72 p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50">
-        <div className="p-2 space-y-2">
-          <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5">
-            {t('common.visibleColumns')}
-          </div>
-          <div className="space-y-1 max-h-48 overflow-y-auto">
-            {displayColumns.map((key) => {
-              const col = columnMap.get(key);
-              if (!col) return null;
-              const isId = key === ID_COLUMN_KEY;
-              const idx = displayColumns.indexOf(key);
-              return (
-                <div
-                  key={key}
-                  className="flex items-center gap-1 rounded-lg px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-white/5 group"
-                >
-                  <div className="flex items-center gap-1 flex-1 min-w-0">
-                    {!isId && (
-                      <>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100"
-                          onClick={() => moveColumn(key, 'up')}
-                          disabled={idx <= 1}
-                        >
-                          <ArrowUp className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 shrink-0 opacity-0 group-hover:opacity-100"
-                          onClick={() => moveColumn(key, 'down')}
-                          disabled={idx >= displayColumns.length - 1}
-                        >
-                          <ArrowDown className="h-3.5 w-3.5" />
-                        </Button>
-                      </>
-                    )}
-                    <span className="text-sm truncate">{col.label}</span>
-                  </div>
-                  {!isId && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 shrink-0 text-slate-400 hover:text-destructive"
-                      onClick={() => toggleColumn(key)}
-                      title={t('common.hide')}
-                    >
-                      <EyeOff className="h-3.5 w-3.5" />
-                    </Button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          {hiddenColumns.length > 0 && (
-            <>
-              <div className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1.5 pt-2 border-t border-slate-100 dark:border-white/10">
-                {t('common.hiddenColumns')}
-              </div>
-              <div className="space-y-1">
-                {hiddenColumns.map((key) => {
-                  const col = columnMap.get(key);
-                  if (!col) return null;
-                  return (
-                    <div
-                      key={key}
-                      className="flex items-center justify-between rounded-lg px-2 py-1.5 hover:bg-slate-50 dark:hover:bg-white/5"
-                    >
-                      <span className="text-sm text-slate-500 dark:text-slate-400 truncate">
-                        {col.label}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 shrink-0"
-                        onClick={() => toggleColumn(key)}
-                        title={t('common.visibleColumns')}
-                      >
-                        <Eye className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          )}
-        </div>
+        <ColumnPreferencesPanel
+          pageKey={pageKey}
+          userId={userId}
+          columns={columns}
+          visibleColumns={visibleColumns}
+          columnOrder={columnOrder}
+          onVisibleColumnsChange={onVisibleColumnsChange}
+          onColumnOrderChange={onColumnOrderChange}
+        />
       </PopoverContent>
     </Popover>
   );
