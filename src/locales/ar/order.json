@@ -41,16 +41,20 @@
     "grandTotal": "الإجمالي الكلي",
     "status": "الحالة",
     "erpIntegrated": "تم التكامل بنجاح",
-    "erpNotIntegrated": "غير متكامل"
+    "erpNotIntegrated": "غير متكامل",
+    "isERPIntegrated": "متكامل مع ERP",
+    "erpIntegrationNumber": "رقم تكامل ERP",
+    "lastSyncDate": "تاريخ ERP",
+    "countTriedBy": "محاولات ERP"
   },
   "detail": {
-    "title": "تفاصيل عرض السعر",
-    "subtitle": "Sipariş bilgilerini, onay akışını ve raporları görüntüleyin",
-    "notFound": "Sipariş bulunamadı",
-    "revisionNo": "Revizyon No",
-    "tabDetail": "Detay",
-    "tabApprovalFlow": "Onay Akışı",
-    "tabReport": "Rapor"
+    "title": "تفاصيل الطلب",
+    "subtitle": "عرض معلومات الطلب وسير الموافقة والتقارير",
+    "notFound": "الطلب غير موجود",
+    "revisionNo": "رقم المراجعة",
+    "tabDetail": "تفاصيل",
+    "tabApprovalFlow": "سير الموافقة",
+    "tabReport": "تقرير"
   },
   "create": {
     "title": "إنشاء عرض سعر جديد",
@@ -151,7 +155,7 @@
     },
     "max200Chars": "Maksimum 200 karakter",
     "addLine": "إضافة بند",
-    "noItems": "Henüz satır bulunmuyor",
+    "noItems": "لا توجد سطور بعد",
     "groupCode": "Grup Kodu",
     "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
     "relatedStocks": "Bağlı Stoklar",
@@ -178,6 +182,13 @@
     "searchWindoProfile": "ابحث عن مقطع...",
     "searchWindoRebar": "ابحث عن قضيب...",
     "searchWindoScrew": "ابحث عن مسمار...",
+    "windoPrintLabel": "طباعة",
+    "selectWindoPrint": "حدد طباعة",
+    "searchWindoPrint": "ابحث عن طباعة...",
+    "addNewProfile": "إضافة ملف تعريف جديد",
+    "addNewRebar": "إضافة حديد جديد",
+    "addNewScrew": "إضافة برغي جديد",
+    "addNewPrint": "إضافة طباعة جديدة",
     "windoNoneSelected": "لا شيء",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -208,10 +219,10 @@
     "totalVat": "إجمالي الضريبة",
     "grandTotal": "الإجمالي الكلي",
     "orderTotalAnalysis": "تحليل إجمالي الطلب",
-    "generalDiscount": "Genel İskonto",
-    "generalDiscountRate": "Genel İskonto Oranı",
-    "generalDiscountAmount": "Genel İskonto Tutarı",
-    "generalDiscountHelp": "Bu alan tüm sipariş toplamına uygulanacak genel iskontoyu ifade eder."
+    "generalDiscount": "الخصم العام",
+    "generalDiscountRate": "نسبة الخصم العام",
+    "generalDiscountAmount": "مبلغ الخصم العام",
+    "generalDiscountHelp": "يمثل هذا الحقل الخصم العام الذي سيتم تطبيقه على إجمالي مبلغ الطلب."
   },
   "offerType": {
     "domestic": "محلي",
@@ -265,10 +276,10 @@
   },
   "loadError": "Veriler yüklenirken hata oluştu.",
   "approval": {
-    "approve": "Onayla",
-    "reject": "Reddet",
-    "sending": "Gönderiliyor...",
-    "sendForApproval": "Onaya Gönder",
+    "approve": "موافقة",
+    "reject": "رفض",
+    "sending": "جاري الإرسال...",
+    "sendForApproval": "إرسال للموافقة",
     "approveSuccess": "Sipariş başarıyla onaylandı.",
     "approveError": "Sipariş onaylanamadı.",
     "rejectSuccess": "Sipariş reddedildi.",
@@ -325,5 +336,24 @@
     "stepOrder": "Adım Sırası",
     "approvedBy": "Onaylayan",
     "actionDate": "İşlem Tarihi"
+  },
+  "exportPreview": {
+    "trigger": "معاينة ومشاركة",
+    "title": "معاينة ومشاركة",
+    "subtitle": "راجع ملف PDF؛ قم بتنزيله أو مشاركته.",
+    "close": "إغلاق",
+    "loading": "جارٍ تحضير ملف PDF...",
+    "error": "تعذر إنشاء ملف PDF. يرجى المحاولة مرة أخرى.",
+    "download": "تنزيل",
+    "errorDismiss": "إغلاق",
+    "downloadFileName": "order.pdf"
+  },
+  "customerCancel": {
+    "button": "إلغاء العميل",
+    "title": "إلغاء العميل",
+    "description": "أنت على وشك وضع علامة على هذا الطلب كملغى من قبل العميل.",
+    "reasonLabel": "سبب الإلغاء",
+    "reasonPlaceholder": "اكتب سبب إلغاء العميل...",
+    "confirmButton": "إلغاء"
   }
 }

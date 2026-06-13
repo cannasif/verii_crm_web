@@ -42,7 +42,11 @@
     "grandTotal": "Genel Toplam",
     "status": "Durum",
     "erpIntegrated": "Entegrasyon oldu",
-    "erpNotIntegrated": "Entegrasyon olmadı"
+    "erpNotIntegrated": "Entegrasyon olmadı",
+    "isERPIntegrated": "Netsis/ERP",
+    "erpIntegrationNumber": "Netsis No",
+    "lastSyncDate": "Netsis Tarihi",
+    "countTriedBy": "ERP Deneme"
   },
   "detail": {
     "title": "Talep Detayı",
@@ -188,7 +192,11 @@
     "searchWindoRebar": "Demir ara...",
     "searchWindoScrew": "Vida ara...",
     "searchWindoPrint": "Baskı ara...",
-    "windoNoneSelected": "Seçim yok",
+    "addNewProfile": "Yeni profil ekle",
+    "addNewRebar": "Yeni demir ekle",
+    "addNewScrew": "Yeni vida ekle",
+    "addNewPrint": "Yeni baskı ekle",
+    "windoNoneSelected": "Seçilmedi",
     "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
@@ -345,5 +353,13 @@
       "maxLengthError": "Her not en fazla 100 karakter olabilir. Lütfen kontrol edin.",
       "noteLabel": "Not"
     }
+  },
+  "customerCancel": {
+    "button": "Müşteri İptali",
+    "title": "Müşteri iptali",
+    "description": "Bu talebi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.",
+    "reasonLabel": "İptal nedeni",
+    "reasonPlaceholder": "Müşterinin iptal nedenini yazın...",
+    "confirmButton": "İptal Et"
   }
 }

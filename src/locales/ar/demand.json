@@ -42,7 +42,11 @@
     "grandTotal": "المجموع الكلي",
     "status": "الحالة",
     "erpIntegrated": "تم التكامل",
-    "erpNotIntegrated": "لم يتم التكامل"
+    "erpNotIntegrated": "لم يتم التكامل",
+    "isERPIntegrated": "متكامل مع ERP",
+    "erpIntegrationNumber": "رقم تكامل ERP",
+    "lastSyncDate": "تاريخ ERP",
+    "countTriedBy": "محاولات ERP"
   },
   "detail": {
     "title": "تفاصيل الطلب",
@@ -185,6 +189,13 @@
     "searchWindoProfile": "بحث عن الملف الشخصي...",
     "searchWindoRebar": "بحث عن التسليح...",
     "searchWindoScrew": "بحث عن البرغي...",
+    "windoPrintLabel": "طباعة",
+    "selectWindoPrint": "حدد طباعة",
+    "searchWindoPrint": "ابحث عن طباعة...",
+    "addNewProfile": "إضافة ملف تعريف جديد",
+    "addNewRebar": "إضافة حديد جديد",
+    "addNewScrew": "إضافة برغي جديد",
+    "addNewPrint": "إضافة طباعة جديدة",
     "windoNoneSelected": "لا يوجد",
     "lineDetailPair": "{{label}}: {{value}}"
   },

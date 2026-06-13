@@ -1161,7 +1161,7 @@ export function QuotationDetailPage(): ReactElement {
                     ) : (
                       <XCircle className="h-4 w-4 mr-2" />
                     )}
-                    {t('customerCancel.button', { defaultValue: 'Müşteri İptali' })}
+                    {t('quotation:customerCancel.button', { defaultValue: 'Müşteri İptali' })}
                   </Button>
                 )}
 
@@ -1238,14 +1238,14 @@ export function QuotationDetailPage(): ReactElement {
         open={customerCancellationOpen}
         onOpenChange={setCustomerCancellationOpen}
         isPending={cancelByCustomerMutation.isPending}
-        title={t('customerCancel.title', { defaultValue: 'Müşteri iptali' })}
-        description={t('customerCancel.description', {
+        title={t('quotation:customerCancel.title', { defaultValue: 'Müşteri iptali' })}
+        description={t('quotation:customerCancel.description', {
           defaultValue: 'Bu teklifi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.',
         })}
-        reasonLabel={t('customerCancel.reasonLabel', { defaultValue: 'İptal nedeni' })}
-        reasonPlaceholder={t('customerCancel.reasonPlaceholder', { defaultValue: 'Müşterinin iptal nedenini yazın...' })}
+        reasonLabel={t('quotation:customerCancel.reasonLabel', { defaultValue: 'İptal nedeni' })}
+        reasonPlaceholder={t('quotation:customerCancel.reasonPlaceholder', { defaultValue: 'Müşterinin iptal nedenini yazın...' })}
         cancelLabel={t('common.cancel', { ns: 'common' })}
-        confirmLabel={t('customerCancel.confirmButton', { defaultValue: 'İptal Et' })}
+        confirmLabel={t('quotation:customerCancel.confirmButton', { defaultValue: 'İptal Et' })}
         onConfirm={handleCancelByCustomer}
       />
 

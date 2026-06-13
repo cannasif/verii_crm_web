@@ -42,7 +42,11 @@
     "grandTotal": "Grand Total",
     "status": "Status",
     "erpIntegrated": "Integration completed",
-    "erpNotIntegrated": "Not integrated"
+    "erpNotIntegrated": "Not integrated",
+    "isERPIntegrated": "ERP Integrated",
+    "erpIntegrationNumber": "ERP Number",
+    "lastSyncDate": "ERP Date",
+    "countTriedBy": "ERP Retry"
   },
   "detail": {
     "title": "Demand Detail",
@@ -188,6 +192,10 @@
     "searchWindoRebar": "Search rebar...",
     "searchWindoScrew": "Search screw...",
     "searchWindoPrint": "Search print...",
+    "addNewProfile": "Add new profile",
+    "addNewRebar": "Add new rebar",
+    "addNewScrew": "Add new screw",
+    "addNewPrint": "Add new print",
     "windoNoneSelected": "None",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -345,5 +353,13 @@
       "maxLengthError": "Each note can be at most 100 characters. Please check.",
       "noteLabel": "Note"
     }
+  },
+  "customerCancel": {
+    "button": "Customer Cancel",
+    "title": "Customer cancellation",
+    "description": "You are about to mark this demand as cancelled by the customer.",
+    "reasonLabel": "Cancellation reason",
+    "reasonPlaceholder": "Write the customer's cancellation reason...",
+    "confirmButton": "Cancel"
   }
 }

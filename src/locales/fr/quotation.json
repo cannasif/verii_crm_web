@@ -43,7 +43,11 @@
     "validUntil": "Valable jusqu’au",
     "revisionNo": "Revizyon No",
     "erpIntegrated": "Intégration terminée",
-    "erpNotIntegrated": "Non intégré"
+    "erpNotIntegrated": "Non intégré",
+    "isERPIntegrated": "ERP Intégré",
+    "erpIntegrationNumber": "Numéro ERP",
+    "lastSyncDate": "Date ERP",
+    "countTriedBy": "Tentatives ERP"
   },
   "detail": {
     "title": "Détail du Devis",
@@ -102,6 +106,9 @@
     "documentDetail": "Détails du document",
     "projectCode": "Code projet",
     "projectCodePlaceholder": "Saisir le code projet",
+    "koliBaski": "Impression d'emballage",
+    "koliBaskiPlaceholder": "Sélectionner impression d'emballage",
+    "koliBaskiSearchPlaceholder": "Rechercher impression d'emballage...",
     "currencyNameFallback": "Devise {{code}}",
     "financialCardTitle": "Finances",
     "exchangeRatesLink": "Taux",
@@ -181,6 +188,13 @@
     "searchWindoProfile": "Rechercher un profil...",
     "searchWindoRebar": "Rechercher une armature...",
     "searchWindoScrew": "Rechercher une vis...",
+    "windoPrintLabel": "Impression",
+    "selectWindoPrint": "Sélectionner une impression",
+    "searchWindoPrint": "Rechercher une impression...",
+    "addNewProfile": "Ajouter un nouveau profil",
+    "addNewRebar": "Ajouter une nouvelle armature",
+    "addNewScrew": "Ajouter une nouvelle vis",
+    "addNewPrint": "Ajouter une nouvelle impression",
     "windoNoneSelected": "Aucun",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -356,5 +370,13 @@
     "rejectTitle": "Rejeter le devis",
     "rejectDescription": "Saisissez la raison du refus.",
     "rejectReasonPlaceholder": "Raison du refus"
+  },
+  "customerCancel": {
+    "button": "Annulation Client",
+    "title": "Annulation client",
+    "description": "Vous êtes sur le point de marquer ce devis comme annulé par le client.",
+    "reasonLabel": "Motif d'annulation",
+    "reasonPlaceholder": "Écrivez le motif d'annulation du client...",
+    "confirmButton": "Annuler"
   }
 }

@@ -45,6 +45,11 @@
     "dateDash": "-"
   },
   "dialog": {
+    "addNewProfile": "Add new profile",
+    "addNewRebar": "Add new rebar",
+    "addNewScrew": "Add new screw",
+    "addNewPrint": "Add new print",
+    "addNewKoliBaski": "Add new package print",
     "editTitle": "Edit {{section}}",
     "addTitle": "Add {{section}}",
     "nameLabel": "Name",

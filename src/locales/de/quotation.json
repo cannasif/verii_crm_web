@@ -43,7 +43,11 @@
     "validUntil": "Gültig bis",
     "revisionNo": "Revizyon No",
     "erpIntegrated": "Integration abgeschlossen",
-    "erpNotIntegrated": "Nicht integriert"
+    "erpNotIntegrated": "Nicht integriert",
+    "isERPIntegrated": "ERP integriert",
+    "erpIntegrationNumber": "ERP-Nummer",
+    "lastSyncDate": "ERP-Datum",
+    "countTriedBy": "ERP-Wiederholungen"
   },
   "detail": {
     "title": "Angebotsdetails",
@@ -102,6 +106,9 @@
     "documentDetail": "Belegdetails",
     "projectCode": "Projektcode",
     "projectCodePlaceholder": "Projektcode eingeben",
+    "koliBaski": "Verpackungsdruck",
+    "koliBaskiPlaceholder": "Verpackungsdruck auswählen",
+    "koliBaskiSearchPlaceholder": "Verpackungsdruck suchen...",
     "currencyNameFallback": "Währung {{code}}",
     "financialCardTitle": "Finanzen",
     "exchangeRatesLink": "Kurse",
@@ -181,6 +188,13 @@
     "searchWindoProfile": "Profil suchen...",
     "searchWindoRebar": "Rebar suchen...",
     "searchWindoScrew": "Schraube suchen...",
+    "windoPrintLabel": "Druck",
+    "selectWindoPrint": "Druck auswählen",
+    "searchWindoPrint": "Druck suchen...",
+    "addNewProfile": "Neues Profil hinzufügen",
+    "addNewRebar": "Neues Eisen hinzufügen",
+    "addNewScrew": "Neue Schraube hinzufügen",
+    "addNewPrint": "Neuen Druck hinzufügen",
     "windoNoneSelected": "Keine",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -356,5 +370,13 @@
     "rejectTitle": "Angebot ablehnen",
     "rejectDescription": "Bitte geben Sie den Ablehnungsgrund ein.",
     "rejectReasonPlaceholder": "Ablehnungsgrund"
+  },
+  "customerCancel": {
+    "button": "Kundenstornierung",
+    "title": "Kundenstornierung",
+    "description": "Sie sind im Begriff, dieses Angebot als vom Kunden storniert zu markieren.",
+    "reasonLabel": "Stornierungsgrund",
+    "reasonPlaceholder": "Grund für die Stornierung durch den Kunden eingeben...",
+    "confirmButton": "Stornieren"
   }
 }

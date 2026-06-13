@@ -41,16 +41,20 @@
     "grandTotal": "Total Général",
     "status": "Statut",
     "erpIntegrated": "Intégration terminée",
-    "erpNotIntegrated": "Non intégré"
+    "erpNotIntegrated": "Non intégré",
+    "isERPIntegrated": "ERP Intégré",
+    "erpIntegrationNumber": "Numéro ERP",
+    "lastSyncDate": "Date ERP",
+    "countTriedBy": "Tentatives ERP"
   },
   "detail": {
-    "title": "Détail du Devis",
-    "subtitle": "Sipariş bilgilerini, onay akışını ve raporları görüntüleyin",
-    "notFound": "Sipariş bulunamadı",
-    "revisionNo": "Revizyon No",
-    "tabDetail": "Detay",
-    "tabApprovalFlow": "Onay Akışı",
-    "tabReport": "Rapor"
+    "title": "Détails de la Commande",
+    "subtitle": "Afficher les informations de la commande, le flux d'approbation et les rapports",
+    "notFound": "Commande introuvable",
+    "revisionNo": "N° de Révision",
+    "tabDetail": "Détail",
+    "tabApprovalFlow": "Flux d'approbation",
+    "tabReport": "Rapport"
   },
   "create": {
     "title": "Créer Nouveau Devis",
@@ -151,7 +155,7 @@
     },
     "max200Chars": "Maksimum 200 karakter",
     "addLine": "Ajouter une ligne",
-    "noItems": "Henüz satır bulunmuyor",
+    "noItems": "Pas encore de lignes",
     "groupCode": "Grup Kodu",
     "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
     "relatedStocks": "Bağlı Stoklar",
@@ -178,6 +182,13 @@
     "searchWindoProfile": "Rechercher un profil...",
     "searchWindoRebar": "Rechercher une armature...",
     "searchWindoScrew": "Rechercher une vis...",
+    "windoPrintLabel": "Impression",
+    "selectWindoPrint": "Sélectionner une impression",
+    "searchWindoPrint": "Rechercher une impression...",
+    "addNewProfile": "Ajouter un nouveau profil",
+    "addNewRebar": "Ajouter une nouvelle armature",
+    "addNewScrew": "Ajouter une nouvelle vis",
+    "addNewPrint": "Ajouter une nouvelle impression",
     "windoNoneSelected": "Aucun",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -208,10 +219,10 @@
     "totalVat": "Total TVA",
     "grandTotal": "Total Général",
     "orderTotalAnalysis": "Analyse du total de commande",
-    "generalDiscount": "Genel İskonto",
-    "generalDiscountRate": "Genel İskonto Oranı",
-    "generalDiscountAmount": "Genel İskonto Tutarı",
-    "generalDiscountHelp": "Bu alan tüm sipariş toplamına uygulanacak genel iskontoyu ifade eder."
+    "generalDiscount": "Remise Générale",
+    "generalDiscountRate": "Taux de Remise Générale",
+    "generalDiscountAmount": "Montant de Remise Générale",
+    "generalDiscountHelp": "Ce champ représente la remise générale à appliquer au montant total de la commande."
   },
   "offerType": {
     "domestic": "National",
@@ -265,10 +276,10 @@
   },
   "loadError": "Veriler yüklenirken hata oluştu.",
   "approval": {
-    "approve": "Onayla",
-    "reject": "Reddet",
-    "sending": "Gönderiliyor...",
-    "sendForApproval": "Onaya Gönder",
+    "approve": "Approuver",
+    "reject": "Rejeter",
+    "sending": "Envoi...",
+    "sendForApproval": "Envoyer pour approbation",
     "approveSuccess": "Sipariş başarıyla onaylandı.",
     "approveError": "Sipariş onaylanamadı.",
     "rejectSuccess": "Sipariş reddedildi.",
@@ -325,5 +336,24 @@
     "stepOrder": "Adım Sırası",
     "approvedBy": "Onaylayan",
     "actionDate": "İşlem Tarihi"
+  },
+  "exportPreview": {
+    "trigger": "Aperçu & Partager",
+    "title": "Aperçu & Partager",
+    "subtitle": "Vérifiez le PDF ; téléchargez-le ou partagez-le.",
+    "close": "Fermer",
+    "loading": "Préparation du PDF...",
+    "error": "Impossible de générer le PDF. Veuillez réessayer.",
+    "download": "Télécharger",
+    "errorDismiss": "Fermer",
+    "downloadFileName": "commande.pdf"
+  },
+  "customerCancel": {
+    "button": "Annulation Client",
+    "title": "Annulation Client",
+    "description": "Vous êtes sur le point de marquer cette commande comme annulée par le client.",
+    "reasonLabel": "Motif d'annulation",
+    "reasonPlaceholder": "Écrivez le motif d'annulation du client...",
+    "confirmButton": "Annuler"
   }
 }

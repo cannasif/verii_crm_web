@@ -43,7 +43,11 @@
     "validUntil": "Valido fino a",
     "revisionNo": "Revizyon No",
     "erpIntegrated": "Integrazione completata",
-    "erpNotIntegrated": "Non integrato"
+    "erpNotIntegrated": "Non integrato",
+    "isERPIntegrated": "ERP integrato",
+    "erpIntegrationNumber": "Numero ERP",
+    "lastSyncDate": "Data ERP",
+    "countTriedBy": "Tentativi ERP"
   },
   "detail": {
     "title": "Dettaglio Preventivo",
@@ -102,6 +106,9 @@
     "documentDetail": "Dettagli documento",
     "projectCode": "Codice progetto",
     "projectCodePlaceholder": "Inserisci il codice progetto",
+    "koliBaski": "Stampa imballaggio",
+    "koliBaskiPlaceholder": "Seleziona stampa imballaggio",
+    "koliBaskiSearchPlaceholder": "Cerca stampa imballaggio...",
     "currencyNameFallback": "Valuta {{code}}",
     "financialCardTitle": "Finanziario",
     "exchangeRatesLink": "Cambi",
@@ -181,6 +188,13 @@
     "searchWindoProfile": "Cerca profilo...",
     "searchWindoRebar": "Cerca tondino...",
     "searchWindoScrew": "Cerca vite...",
+    "windoPrintLabel": "Stampa",
+    "selectWindoPrint": "Seleziona stampa",
+    "searchWindoPrint": "Cerca stampa...",
+    "addNewProfile": "Aggiungi nuovo profilo",
+    "addNewRebar": "Aggiungi nuova armatura",
+    "addNewScrew": "Aggiungi nuova vite",
+    "addNewPrint": "Aggiungi nuova stampa",
     "windoNoneSelected": "Nessuno",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -356,5 +370,13 @@
     "rejectTitle": "Rifiuta offerta",
     "rejectDescription": "Inserisci il motivo del rifiuto.",
     "rejectReasonPlaceholder": "Motivo del rifiuto"
+  },
+  "customerCancel": {
+    "button": "Annullamento Cliente",
+    "title": "Annullamento cliente",
+    "description": "Stai per contrassegnare questo preventivo come annullato dal cliente.",
+    "reasonLabel": "Motivo annullamento",
+    "reasonPlaceholder": "Scrivi il motivo dell'annullamento del cliente...",
+    "confirmButton": "Annulla"
   }
 }

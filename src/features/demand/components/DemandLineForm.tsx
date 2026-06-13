@@ -145,7 +145,7 @@ export function DemandLineForm({
   imageUploadScope = 'demand-line',
   imageUploadExtras,
 }: DemandLineFormProps): ReactElement {
-  const { t } = useTranslation(['demand', 'common']);
+  const { t } = useTranslation(['demand', 'common', 'quotation']);
   const queryClient = useQueryClient();
   const { calculateLineTotals } = useDemandCalculations();
   const [productDialogOpen, setProductDialogOpen] = useState(false);
@@ -1154,7 +1154,7 @@ export function DemandLineForm({
                   {t('lines.stock')} ({bulkDraftLines.length})
                 </span>
                 <span className="inline-flex items-center rounded-full border border-pink-300/70 dark:border-pink-700/50 bg-white/90 dark:bg-pink-900/30 px-2.5 py-1 text-[11px] font-bold text-pink-700 dark:text-pink-300">
-                  {t('quotation.lines.grandTotal')}: {formatCurrency(bulkDraftGrandTotal, currencyCode)}
+                  {t('quotation:lines.grandTotal')}: {formatCurrency(bulkDraftGrandTotal, currencyCode)}
                 </span>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -1263,7 +1263,7 @@ export function DemandLineForm({
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Package className="h-4 w-4 text-purple-500" />
-            {t('quotation.lines.unit')}
+            {t('quotation:lines.unit')}
           </label>
           <Input
             value={formData.unit || '-'}
@@ -1374,8 +1374,8 @@ export function DemandLineForm({
                 <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h4 className="text-sm font-bold text-red-800 dark:text-red-300">{t('quotation.lines.approvalNeeded')}</h4>
-                <p className="text-xs text-red-600 dark:text-red-400 mt-1">{t('quotation.lines.discountLimitExceeded')}</p>
+                <h4 className="text-sm font-bold text-red-800 dark:text-red-300">{t('quotation:lines.approvalNeeded')}</h4>
+                <p className="text-xs text-red-600 dark:text-red-400 mt-1">{t('quotation:lines.discountLimitExceeded')}</p>
               </div>
             </div>
           )}
@@ -1582,27 +1582,27 @@ export function DemandLineForm({
 
           <div className="bg-slate-50 dark:bg-white/[0.03] rounded-2xl p-5 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
             <div className="flex justify-between items-center text-sm gap-4">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation.lines.subtotal')}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation:lines.subtotal')}</span>
               <span className="font-semibold text-slate-700 dark:text-slate-200">
                 {formatCurrency(formData.lineTotal || 0, currencyCode)}
               </span>
             </div>
             <div className="flex justify-between items-center text-sm gap-4">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation.lines.totalDiscount')}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation:lines.totalDiscount')}</span>
               <span className="font-semibold text-red-500 dark:text-red-400">
                 {hasDiscount ? '-' : ''}
                 {formatCurrency(totalDiscount, currencyCode)}
               </span>
             </div>
             <div className="flex justify-between items-center text-sm gap-4">
-              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation.lines.vatAmount')}</span>
+              <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation:lines.vatAmount')}</span>
               <span className="font-semibold text-slate-700 dark:text-slate-200">
                 {formatCurrency(formData.vatAmount || 0, currencyCode)}
               </span>
             </div>
             <div className="h-px bg-slate-200 dark:bg-white/10 my-2 border-dashed" />
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-              <span className="text-base font-bold text-slate-900 dark:text-white">{t('quotation.lines.grandTotal')}</span>
+              <span className="text-base font-bold text-slate-900 dark:text-white">{t('quotation:lines.grandTotal')}</span>
               <span className="text-2xl font-black tracking-tight text-orange-600 dark:text-orange-500">
                 {formatCurrency(formData.lineGrandTotal, currencyCode)}
               </span>
@@ -1649,13 +1649,13 @@ export function DemandLineForm({
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 dark:text-slate-400">{t('quotation.lines.netPrice')}:</span>
+                        <span className="text-slate-500 dark:text-slate-400">{t('quotation:lines.netPrice')}:</span>
                         <span className="ml-2 font-semibold text-emerald-600 dark:text-emerald-400">
                           {formatCurrency(relatedLine.lineTotal || 0, currencyCode)}
                         </span>
                       </div>
                       <div>
-                        <span className="text-slate-500 dark:text-slate-400">{t('quotation.lines.lineTotal')}:</span>
+                        <span className="text-slate-500 dark:text-slate-400">{t('quotation:lines.lineTotal')}:</span>
                         <span className="ml-2 font-semibold text-orange-600 dark:text-orange-400">
                           {formatCurrency(relatedLine.lineGrandTotal || 0, currencyCode)}
                         </span>

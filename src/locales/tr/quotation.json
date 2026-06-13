@@ -45,7 +45,11 @@
     "validUntil": "Geçerlilik",
     "revisionNo": "Revizyon No",
     "erpIntegrated": "Entegrasyon oldu",
-    "erpNotIntegrated": "Entegrasyon olmadı"
+    "erpNotIntegrated": "Entegrasyon olmadı",
+    "isERPIntegrated": "Netsis/ERP",
+    "erpIntegrationNumber": "Netsis No",
+    "lastSyncDate": "Netsis Tarihi",
+    "countTriedBy": "ERP Deneme"
   },
   "date": "Tarih",
   "offerNo": "Teklif No",
@@ -199,6 +203,10 @@
     "windoKoliBaskiLabel": "Koli Baskı",
     "koliBaskiHeaderHint": "Teklif üst bilgisi",
     "addNewKoliBaski": "Yeni koli baskı ekle",
+    "addNewProfile": "Yeni profil ekle",
+    "addNewRebar": "Yeni demir ekle",
+    "addNewScrew": "Yeni vida ekle",
+    "addNewPrint": "Yeni baskı ekle",
     "windoNoneSelected": "Seçim yok",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -370,5 +378,13 @@
         "info": "Teklif kaydedildikten sonra otomatik olarak onay sürecine gönderilecektir"
       }
     }
+  },
+  "customerCancel": {
+    "button": "Müşteri İptali",
+    "title": "Müşteri iptali",
+    "description": "Bu teklifi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.",
+    "reasonLabel": "İptal nedeni",
+    "reasonPlaceholder": "Müşterinin iptal nedenini yazın...",
+    "confirmButton": "İptal Et"
   }
 }

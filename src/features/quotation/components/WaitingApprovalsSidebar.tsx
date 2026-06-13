@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Clock, FileText } from 'lucide-react';
+import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
 
 export function WaitingApprovalsSidebar(): ReactElement {
   const { t, i18n } = useTranslation(['quotation', 'common']);
@@ -89,7 +90,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
                 variant={approval.status === 1 ? 'default' : 'secondary'}
                 className="ml-2 shrink-0"
               >
-                {approval.statusName || t('waitingApprovals.waiting')}
+                {getApprovalStatusTranslationKey(approval.status) ? t(`approval.status.${getApprovalStatusTranslationKey(approval.status)}`) : (approval.statusName || t('waitingApprovals.waiting'))}
               </Badge>
             </div>
             <div className="text-xs text-muted-foreground w-full">

@@ -44,7 +44,11 @@
     "validUntil": "Valid Until",
     "revisionNo": "Revision no.",
     "erpIntegrated": "Integration completed",
-    "erpNotIntegrated": "Not integrated"
+    "erpNotIntegrated": "Not integrated",
+    "isERPIntegrated": "ERP Integrated",
+    "erpIntegrationNumber": "ERP Number",
+    "lastSyncDate": "ERP Date",
+    "countTriedBy": "ERP Retry"
   },
   "detail": {
     "title": "Quotation details",
@@ -191,7 +195,11 @@
     "windoKoliBaskiLabel": "Package print",
     "koliBaskiHeaderHint": "Quotation header",
     "addNewKoliBaski": "Add new package print",
-    "windoNoneSelected": "None",
+    "addNewProfile": "Add new profile",
+    "addNewRebar": "Add new rebar",
+    "addNewScrew": "Add new screw",
+    "addNewPrint": "Add new print",
+    "windoNoneSelected": "None selected",
     "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
@@ -365,5 +373,13 @@
   "export": "Export",
   "exportPdf": "Export PDF",
   "shareMail": "Share by Mail",
-  "shareWhatsapp": "Share by WhatsApp"
+  "shareWhatsapp": "Share by WhatsApp",
+  "customerCancel": {
+    "button": "Customer Cancel",
+    "title": "Customer cancellation",
+    "description": "You are about to mark this quotation as cancelled by the customer.",
+    "reasonLabel": "Cancellation reason",
+    "reasonPlaceholder": "Write the customer's cancellation reason...",
+    "confirmButton": "Cancel"
+  }
 }

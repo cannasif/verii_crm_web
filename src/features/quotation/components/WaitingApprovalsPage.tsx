@@ -40,6 +40,7 @@ import { useApproveAction } from '../hooks/useApproveAction';
 import { useRejectAction } from '../hooks/useRejectAction';
 import { QUOTATION_QUERY_KEYS } from '../utils/query-keys';
 import type { ApprovalActionGetDto } from '../types/quotation-types';
+import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
 
 const PAGE_KEY = 'quotation-waiting-approvals';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -297,9 +298,10 @@ export function WaitingApprovalsPage(): ReactElement {
     if (key === 'ApprovedByUserFullName') return approval.approvedByUserFullName || '-';
     if (key === 'ActionDate') return formatDate(approval.actionDate);
     if (key === 'Status') {
+      const statusKey = getApprovalStatusTranslationKey(approval.status);
       return (
         <Badge variant={approval.status === 1 ? 'default' : 'secondary'}>
-          {approval.statusName || t('waitingApprovals.waiting')}
+          {statusKey ? t(`approval.status.${statusKey}`) : (approval.statusName || t('waitingApprovals.waiting'))}
         </Badge>
       );
     }

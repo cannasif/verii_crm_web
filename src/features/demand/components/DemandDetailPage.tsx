@@ -774,7 +774,7 @@ export function DemandDetailPage(): ReactElement {
                     ) : (
                       <XCircle className="h-4 w-4 mr-2" />
                     )}
-                    {t('customerCancel.button', { defaultValue: 'Müşteri İptali' })}
+                    {t('demand:customerCancel.button', { defaultValue: 'Müşteri İptali' })}
                   </Button>
                 )}
               </div>
@@ -795,14 +795,14 @@ export function DemandDetailPage(): ReactElement {
         open={customerCancellationOpen}
         onOpenChange={setCustomerCancellationOpen}
         isPending={cancelByCustomerMutation.isPending}
-        title={t('customerCancel.title', { defaultValue: 'Müşteri iptali' })}
-        description={t('customerCancel.description', {
+        title={t('demand:customerCancel.title', { defaultValue: 'Müşteri iptali' })}
+        description={t('demand:customerCancel.description', {
           defaultValue: 'Bu talebi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.',
         })}
-        reasonLabel={t('customerCancel.reasonLabel', { defaultValue: 'İptal nedeni' })}
-        reasonPlaceholder={t('customerCancel.reasonPlaceholder', { defaultValue: 'Müşterinin iptal nedenini yazın...' })}
+        reasonLabel={t('demand:customerCancel.reasonLabel', { defaultValue: 'İptal nedeni' })}
+        reasonPlaceholder={t('demand:customerCancel.reasonPlaceholder', { defaultValue: 'Müşterinin iptal nedenini yazın...' })}
         cancelLabel={t('common.cancel', { ns: 'common' })}
-        confirmLabel={t('customerCancel.confirmButton', { defaultValue: 'İptal Et' })}
+        confirmLabel={t('demand:customerCancel.confirmButton', { defaultValue: 'İptal Et' })}
         onConfirm={handleCancelByCustomer}
       />
     </div>

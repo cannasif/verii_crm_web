@@ -45,6 +45,11 @@
     "dateDash": "-"
   },
   "dialog": {
+    "addNewProfile": "Agregar nuevo perfil",
+    "addNewRebar": "Agregar nueva armadura",
+    "addNewScrew": "Agregar nuevo tornillo",
+    "addNewPrint": "Agregar nueva impresión",
+    "addNewKoliBaski": "Agregar nueva impresión de embalaje",
     "editTitle": "Editar {{section}}",
     "addTitle": "Añadir {{section}}",
     "nameLabel": "Nombre",

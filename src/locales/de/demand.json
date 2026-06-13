@@ -42,7 +42,11 @@
     "grandTotal": "Gesamtsumme",
     "status": "Status",
     "erpIntegrated": "Integration erfolgreich",
-    "erpNotIntegrated": "Nicht integriert"
+    "erpNotIntegrated": "Nicht integriert",
+    "isERPIntegrated": "ERP integriert",
+    "erpIntegrationNumber": "ERP-Nummer",
+    "lastSyncDate": "ERP-Datum",
+    "countTriedBy": "ERP-Wiederholungen"
   },
   "detail": {
     "title": "Anforderungsdetails",
@@ -185,6 +189,13 @@
     "searchWindoProfile": "Profil suchen...",
     "searchWindoRebar": "Armierung suchen...",
     "searchWindoScrew": "Schraube suchen...",
+    "windoPrintLabel": "Druck",
+    "selectWindoPrint": "Druck auswählen",
+    "searchWindoPrint": "Druck suchen...",
+    "addNewProfile": "Neues Profil hinzufügen",
+    "addNewRebar": "Neues Eisen hinzufügen",
+    "addNewScrew": "Neue Schraube hinzufügen",
+    "addNewPrint": "Neuen Druck hinzufügen",
     "windoNoneSelected": "Keine Auswahl",
     "lineDetailPair": "{{label}}: {{value}}"
   },

@@ -45,6 +45,11 @@
     "dateDash": "-"
   },
   "dialog": {
+    "addNewProfile": "إضافة ملف تعريف جديد",
+    "addNewRebar": "إضافة حديد جديد",
+    "addNewScrew": "إضافة برغي جديد",
+    "addNewPrint": "إضافة طباعة جديدة",
+    "addNewKoliBaski": "إضافة طباعة تغليف جديدة",
     "editTitle": "تعديل {{section}}",
     "addTitle": "إضافة {{section}}",
     "nameLabel": "الاسم",

@@ -41,7 +41,11 @@
     "grandTotal": "Gesamtsumme",
     "status": "Status",
     "erpIntegrated": "Integration abgeschlossen",
-    "erpNotIntegrated": "Nicht integriert"
+    "erpNotIntegrated": "Nicht integriert",
+    "isERPIntegrated": "ERP integriert",
+    "erpIntegrationNumber": "ERP-Nummer",
+    "lastSyncDate": "ERP-Datum",
+    "countTriedBy": "ERP-Wiederholungen"
   },
   "detail": {
     "title": "Bestelldetails",
@@ -151,7 +155,7 @@
     },
     "max200Chars": "Maksimum 200 karakter",
     "addLine": "Zeile hinzufügen",
-    "noItems": "Henüz satır bulunmuyor",
+    "noItems": "Noch keine Zeilen",
     "groupCode": "Grup Kodu",
     "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
     "relatedStocks": "Bağlı Stoklar",
@@ -178,6 +182,13 @@
     "searchWindoProfile": "Profil suchen...",
     "searchWindoRebar": "Rebar suchen...",
     "searchWindoScrew": "Schraube suchen...",
+    "windoPrintLabel": "Druck",
+    "selectWindoPrint": "Druck auswählen",
+    "searchWindoPrint": "Druck suchen...",
+    "addNewProfile": "Neues Profil hinzufügen",
+    "addNewRebar": "Neues Eisen hinzufügen",
+    "addNewScrew": "Neue Schraube hinzufügen",
+    "addNewPrint": "Neuen Druck hinzufügen",
     "windoNoneSelected": "Keine",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -208,10 +219,10 @@
     "totalVat": "Gesamt MwSt.",
     "grandTotal": "Gesamtsumme",
     "orderTotalAnalysis": "Bestellsummen-Analyse",
-    "generalDiscount": "Genel İskonto",
-    "generalDiscountRate": "Genel İskonto Oranı",
-    "generalDiscountAmount": "Genel İskonto Tutarı",
-    "generalDiscountHelp": "Bu alan tüm sipariş toplamına uygulanacak genel iskontoyu ifade eder."
+    "generalDiscount": "Allgemeiner Rabatt",
+    "generalDiscountRate": "Allgemeiner Rabattsatz",
+    "generalDiscountAmount": "Allgemeiner Rabattbetrag",
+    "generalDiscountHelp": "Dieses Feld stellt den allgemeinen Rabatt dar, der auf den Gesamtbestellbetrag angewendet werden soll."
   },
   "offerType": {
     "domestic": "Inland",
@@ -265,10 +276,10 @@
   },
   "loadError": "Veriler yüklenirken hata oluştu.",
   "approval": {
-    "approve": "Onayla",
-    "reject": "Reddet",
-    "sending": "Gönderiliyor...",
-    "sendForApproval": "Onaya Gönder",
+    "approve": "Genehmigen",
+    "reject": "Ablehnen",
+    "sending": "Wird gesendet...",
+    "sendForApproval": "Zur Genehmigung senden",
     "approveSuccess": "Sipariş başarıyla onaylandı.",
     "approveError": "Sipariş onaylanamadı.",
     "rejectSuccess": "Sipariş reddedildi.",
@@ -325,5 +336,24 @@
     "stepOrder": "Adım Sırası",
     "approvedBy": "Onaylayan",
     "actionDate": "İşlem Tarihi"
+  },
+  "exportPreview": {
+    "trigger": "Vorschau & Teilen",
+    "title": "Vorschau & Teilen",
+    "subtitle": "Überprüfen Sie das PDF; laden Sie es herunter oder teilen Sie es.",
+    "close": "Schließen",
+    "loading": "PDF wird vorbereitet...",
+    "error": "PDF konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+    "download": "Herunterladen",
+    "errorDismiss": "Schließen",
+    "downloadFileName": "bestellung.pdf"
+  },
+  "customerCancel": {
+    "button": "Kundenstornierung",
+    "title": "Kundenstornierung",
+    "description": "Sie sind dabei, diese Bestellung als vom Kunden storniert zu markieren.",
+    "reasonLabel": "Stornierungsgrund",
+    "reasonPlaceholder": "Geben Sie den Stornierungsgrund des Kunden ein...",
+    "confirmButton": "Stornieren"
   }
 }

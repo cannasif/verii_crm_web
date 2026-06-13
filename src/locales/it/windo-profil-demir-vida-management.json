@@ -45,6 +45,11 @@
     "dateDash": "-"
   },
   "dialog": {
+    "addNewProfile": "Aggiungi nuovo profilo",
+    "addNewRebar": "Aggiungi nuova armatura",
+    "addNewScrew": "Aggiungi nuova vite",
+    "addNewPrint": "Aggiungi nuova stampa",
+    "addNewKoliBaski": "Aggiungi nuova stampa imballaggio",
     "editTitle": "Modifica {{section}}",
     "addTitle": "Aggiungi {{section}}",
     "nameLabel": "Nome",

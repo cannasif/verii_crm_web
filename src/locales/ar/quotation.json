@@ -43,7 +43,11 @@
     "validUntil": "صالح حتى",
     "revisionNo": "Revizyon No",
     "erpIntegrated": "تم التكامل بنجاح",
-    "erpNotIntegrated": "غير متكامل"
+    "erpNotIntegrated": "غير متكامل",
+    "isERPIntegrated": "متكامل مع ERP",
+    "erpIntegrationNumber": "رقم تكامل ERP",
+    "lastSyncDate": "تاريخ ERP",
+    "countTriedBy": "محاولات ERP"
   },
   "detail": {
     "title": "تفاصيل عرض السعر",
@@ -102,6 +106,9 @@
     "documentDetail": "تفاصيل المستند",
     "projectCode": "رمز المشروع",
     "projectCodePlaceholder": "أدخل رمز المشروع",
+    "koliBaski": "طباعة التغليف",
+    "koliBaskiPlaceholder": "حدد طباعة التغليف",
+    "koliBaskiSearchPlaceholder": "البحث عن طباعة التغليف...",
     "currencyNameFallback": "العملة {{code}}",
     "financialCardTitle": "مالي",
     "exchangeRatesLink": "أسعار الصرف",
@@ -181,6 +188,13 @@
     "searchWindoProfile": "ابحث عن مقطع...",
     "searchWindoRebar": "ابحث عن قضيب...",
     "searchWindoScrew": "ابحث عن مسمار...",
+    "windoPrintLabel": "طباعة",
+    "selectWindoPrint": "حدد طباعة",
+    "searchWindoPrint": "ابحث عن طباعة...",
+    "addNewProfile": "إضافة ملف تعريف جديد",
+    "addNewRebar": "إضافة حديد جديد",
+    "addNewScrew": "إضافة برغي جديد",
+    "addNewPrint": "إضافة طباعة جديدة",
     "windoNoneSelected": "لا شيء",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -356,5 +370,13 @@
     "rejectTitle": "رفض عرض",
     "rejectDescription": "أدخل سبب الرفض.",
     "rejectReasonPlaceholder": "سبب الرفض"
+  },
+  "customerCancel": {
+    "button": "إلغاء العميل",
+    "title": "إلغاء العميل",
+    "description": "أنت على وشك وضع علامة على هذا العرض كملغى من قبل العميل.",
+    "reasonLabel": "سبب الإلغاء",
+    "reasonPlaceholder": "اكتب سبب إلغاء العميل...",
+    "confirmButton": "إلغاء"
   }
 }

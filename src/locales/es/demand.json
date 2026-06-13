@@ -42,7 +42,11 @@
     "grandTotal": "Total General",
     "status": "Estado",
     "erpIntegrated": "Integración completada",
-    "erpNotIntegrated": "No integrado"
+    "erpNotIntegrated": "No integrado",
+    "isERPIntegrated": "ERP integrado",
+    "erpIntegrationNumber": "Número ERP",
+    "lastSyncDate": "Fecha ERP",
+    "countTriedBy": "Reintentos ERP"
   },
   "detail": {
     "title": "Detalle de la Solicitud",
@@ -185,6 +189,13 @@
     "searchWindoProfile": "Buscar perfil...",
     "searchWindoRebar": "Buscar armadura...",
     "searchWindoScrew": "Buscar tornillo...",
+    "windoPrintLabel": "Impresión",
+    "selectWindoPrint": "Seleccionar impresión",
+    "searchWindoPrint": "Buscar impresión...",
+    "addNewProfile": "Añadir nuevo perfil",
+    "addNewRebar": "Añadir nueva armadura",
+    "addNewScrew": "Añadir nuevo tornillo",
+    "addNewPrint": "Añadir nueva impresión",
     "windoNoneSelected": "Ninguno",
     "lineDetailPair": "{{label}}: {{value}}"
   },

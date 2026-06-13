@@ -41,7 +41,11 @@
     "grandTotal": "Totale Generale",
     "status": "Stato",
     "erpIntegrated": "Integrazione completata",
-    "erpNotIntegrated": "Non integrato"
+    "erpNotIntegrated": "Non integrato",
+    "isERPIntegrated": "ERP integrato",
+    "erpIntegrationNumber": "Numero ERP",
+    "lastSyncDate": "Data ERP",
+    "countTriedBy": "Tentativi ERP"
   },
   "detail": {
     "title": "Dettaglio Ordine",
@@ -151,7 +155,7 @@
     },
     "max200Chars": "Maksimum 200 karakter",
     "addLine": "Aggiungi riga",
-    "noItems": "Henüz satır bulunmuyor",
+    "noItems": "Ancora nessuna riga",
     "groupCode": "Grup Kodu",
     "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
     "relatedStocks": "Bağlı Stoklar",
@@ -178,6 +182,13 @@
     "searchWindoProfile": "Cerca profilo...",
     "searchWindoRebar": "Cerca tondino...",
     "searchWindoScrew": "Cerca vite...",
+    "windoPrintLabel": "Stampa",
+    "selectWindoPrint": "Seleziona stampa",
+    "searchWindoPrint": "Cerca stampa...",
+    "addNewProfile": "Aggiungi nuovo profilo",
+    "addNewRebar": "Aggiungi nuova armatura",
+    "addNewScrew": "Aggiungi nuova vite",
+    "addNewPrint": "Aggiungi nuova stampa",
     "windoNoneSelected": "Nessuno",
     "lineDetailPair": "{{label}}: {{value}}"
   },
@@ -265,10 +276,10 @@
   },
   "loadError": "Veriler yüklenirken hata oluştu.",
   "approval": {
-    "approve": "Onayla",
-    "reject": "Reddet",
-    "sending": "Gönderiliyor...",
-    "sendForApproval": "Onaya Gönder",
+    "approve": "Approva",
+    "reject": "Rifiuta",
+    "sending": "Invio in corso...",
+    "sendForApproval": "Invia per l'approvazione",
     "approveSuccess": "Sipariş başarıyla onaylandı.",
     "approveError": "Sipariş onaylanamadı.",
     "rejectSuccess": "Sipariş reddedildi.",
@@ -325,5 +336,24 @@
     "stepOrder": "Adım Sırası",
     "approvedBy": "Onaylayan",
     "actionDate": "İşlem Tarihi"
+  },
+  "exportPreview": {
+    "trigger": "Anteprima e Condividi",
+    "title": "Anteprima e condividi",
+    "subtitle": "Controlla il PDF; scaricalo o condividilo.",
+    "close": "Chiudi",
+    "loading": "Preparazione PDF...",
+    "error": "Impossibile generare il PDF. Riprova.",
+    "download": "Scarica",
+    "errorDismiss": "Chiudi",
+    "downloadFileName": "ordine.pdf"
+  },
+  "customerCancel": {
+    "button": "Cancellazione Cliente",
+    "title": "Cancellazione Cliente",
+    "description": "Stai per contrassegnare questo ordine come annullato dal cliente.",
+    "reasonLabel": "Motivo della cancellazione",
+    "reasonPlaceholder": "Scrivi il motivo della cancellazione del cliente...",
+    "confirmButton": "Annulla"
   }
 }

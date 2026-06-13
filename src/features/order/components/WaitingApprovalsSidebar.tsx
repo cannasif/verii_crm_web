@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Clock, FileText } from 'lucide-react';
+import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
 
 export function WaitingApprovalsSidebar(): ReactElement {
   const { t, i18n } = useTranslation();
@@ -102,7 +103,7 @@ export function WaitingApprovalsSidebar(): ReactElement {
                   : 'border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400'
                   }`}
               >
-                {approval.statusName || t('order.waitingApprovals.waiting')}
+                {getApprovalStatusTranslationKey(approval.status) ? t(`approval.status.${getApprovalStatusTranslationKey(approval.status)}`) : (approval.statusName || t('order.waitingApprovals.waiting'))}
               </Badge>
             </div>
             <div className="flex flex-col gap-0.5 text-xs font-medium text-slate-400 dark:text-slate-500 w-full">

@@ -45,6 +45,11 @@
     "dateDash": "-"
   },
   "dialog": {
+    "addNewProfile": "Yeni profil ekle",
+    "addNewRebar": "Yeni demir ekle",
+    "addNewScrew": "Yeni vida ekle",
+    "addNewPrint": "Yeni baskı ekle",
+    "addNewKoliBaski": "Yeni koli baskı ekle",
     "editTitle": "{{section}} güncelle",
     "addTitle": "{{section}} ekle",
     "nameLabel": "Ad",

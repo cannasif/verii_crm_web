@@ -41,7 +41,11 @@
     "grandTotal": "Grand Total",
     "status": "Status",
     "erpIntegrated": "Integration completed",
-    "erpNotIntegrated": "Not integrated"
+    "erpNotIntegrated": "Not integrated",
+    "isERPIntegrated": "ERP Integrated",
+    "erpIntegrationNumber": "ERP Number",
+    "lastSyncDate": "ERP Date",
+    "countTriedBy": "ERP Retry"
   },
   "detail": {
     "title": "Order Detail",
@@ -152,7 +156,7 @@
     "approvalRequired": "Approval Required",
     "max200Chars": "Maximum 200 characters",
     "addLine": "Add Line",
-    "noItems": "Henüz satır bulunmuyor",
+    "noItems": "No lines yet",
     "groupCode": "Grup Kodu",
     "requiredFieldsMissing": "Lütfen zorunlu alanları doldurun.",
     "relatedStocks": "Bağlı Stoklar",
@@ -181,7 +185,11 @@
     "searchWindoRebar": "Search rebar...",
     "searchWindoScrew": "Search screw...",
     "searchWindoPrint": "Search print...",
-    "windoNoneSelected": "None",
+    "addNewProfile": "Add new profile",
+    "addNewRebar": "Add new rebar",
+    "addNewScrew": "Add new screw",
+    "addNewPrint": "Add new print",
+    "windoNoneSelected": "None selected",
     "lineDetailPair": "{{label}}: {{value}}"
   },
   "exchangeRates": {
@@ -382,5 +390,13 @@
     "grandTotalWithVat": "Grand total (incl. VAT)",
     "footerNote": "This document was prepared for order confirmation.",
     "draftWatermark": "DRAFT"
+  },
+  "customerCancel": {
+    "button": "Customer Cancel",
+    "title": "Customer cancellation",
+    "description": "You are about to mark this order as cancelled by the customer.",
+    "reasonLabel": "Cancellation reason",
+    "reasonPlaceholder": "Write the customer's cancellation reason...",
+    "confirmButton": "Cancel"
   }
 }

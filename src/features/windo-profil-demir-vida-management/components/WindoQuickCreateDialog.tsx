@@ -81,13 +81,16 @@ export function WindoQuickCreateDialog({
     },
   });
 
-  const title = useMemo(
-    () =>
-      i18n.language.startsWith('tr')
-        ? `Yeni ${label} ekle`
-        : `Add new ${label.toLowerCase()}`,
-    [i18n.language, label]
-  );
+  const title = useMemo(() => {
+    switch (kind) {
+      case 'profil': return t('dialog.addNewProfile', { ns: windoNs, defaultValue: 'Yeni profil ekle' });
+      case 'demir': return t('dialog.addNewRebar', { ns: windoNs, defaultValue: 'Yeni demir ekle' });
+      case 'vida': return t('dialog.addNewScrew', { ns: windoNs, defaultValue: 'Yeni vida ekle' });
+      case 'baski': return t('dialog.addNewPrint', { ns: windoNs, defaultValue: 'Yeni baskı ekle' });
+      case 'koliBaski': return t('dialog.addNewKoliBaski', { ns: windoNs, defaultValue: 'Yeni koli baskı ekle' });
+      default: return '';
+    }
+  }, [kind, t]);
 
   const handleSubmit = async (): Promise<void> => {
     const trimmedName = name.trim();

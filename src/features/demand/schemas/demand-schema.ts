@@ -16,7 +16,7 @@ export const createDemandSchema = z.object({
       .number()
       .nullable()
       .refine((v) => v != null && v >= 1, { message: 'Talep seri no seçilmelidir' }),
-    offerType: z.enum([OfferType.YURTICI, OfferType.YURTDISI], { error: 'Talep tipi seçilmelidir' }),
+    offerType: z.enum([OfferType.YURTICI, OfferType.YURTDISI], { error: 'offerType.requiredMessage' }),
     deliveryMethod: z.string().nullable().optional(),
     koliBaskiDefinitionId: z.number().nullable().optional(),
     offerDate: z.string().nullable().optional(),

@@ -49,6 +49,7 @@ import {
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
 import { ManagementDataTableChrome } from '@/components/shared';
+import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
 
 export function WaitingApprovalsPage(): ReactElement {
   const { t, i18n } = useTranslation(['demand', 'common']);
@@ -276,7 +277,7 @@ export function WaitingApprovalsPage(): ReactElement {
                                   : "bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300"
                               )}
                             >
-                              {approval.statusName || t('waitingApprovals.waiting')}
+                              {getApprovalStatusTranslationKey(approval.status) ? t(`approval.status.${getApprovalStatusTranslationKey(approval.status)}`) : (approval.statusName || t('waitingApprovals.waiting'))}
                             </Badge>
                           </TableCell>
                           
