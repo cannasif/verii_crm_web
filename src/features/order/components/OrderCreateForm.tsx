@@ -8,13 +8,16 @@ import { useCreateOrderBulk } from '../hooks/useCreateOrderBulk';
 import { usePriceRuleOfOrder } from '../hooks/usePriceRuleOfOrder';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
+import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
+import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
+import { useOrderPdfExportPreview } from '../hooks/useOrderPdfExportPreview';
 import { OrderHeaderForm } from './OrderHeaderForm';
 import { OrderLineTable } from './OrderLineTable';
 import { OrderSummaryCard } from './OrderSummaryCard';
 import { Button } from '@/components/ui/button';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
-import { Save, X, FileText, Layers, Calculator } from 'lucide-react';
+import { Save, X, Eye, FileText, Layers, Calculator } from 'lucide-react';
 import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderLineFormState, OrderExchangeRateFormState, OrderBulkCreateDto, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/order-types';
@@ -184,7 +187,25 @@ export function OrderCreateForm(): ReactElement {
     [orderFormSlice, watchedCurrency, t],
   );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
+  const { data: selectedCustomer } = useCustomer(
+    watchedCustomerId ?? 0,
+    Boolean(watchedCustomerId && watchedCustomerId > 0),
+  );
+  const { currencyOptions } = useCurrencyOptions();
   const offerDateSyncInitializedRef = useRef(false);
+
+  const currencyCode = useMemo(() => {
+    const found = currencyOptions.find((opt) => opt.dovizTipi === watchedCurrency);
+    return found?.code || 'TRY';
+  }, [watchedCurrency, currencyOptions]);
+
+  const pdfExport = useOrderPdfExportPreview({
+    lines,
+    orderFormSlice,
+    currencyCode,
+    customerOptions,
+    selectedCustomer,
+  });
 
   useEffect(() => {
     if (!watchedOfferDate) return;
@@ -502,6 +523,8 @@ export function OrderCreateForm(): ReactElement {
                       customerId={watchedCustomerId}
                       erpCustomerCode={watchedErpCustomerCode}
                       representativeId={watchedRepresentativeId}
+                      buildExportPdfBlob={pdfExport.buildExportPdfBlob}
+                      exportPdfFileName={pdfExport.shareFileName}
                     />
                   </div>
                 </div>
@@ -541,6 +564,17 @@ export function OrderCreateForm(): ReactElement {
               <X className="mr-2 h-4 w-4" />
               {t('cancel')}
             </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={pdfExport.openPdfExportPreview}
+              className="group w-full sm:w-auto"
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              {t('exportPreview.trigger')}
+            </Button>
+
             <FormSubmitTooltipWrap
               schema={createOrderSchema}
               value={orderSchemaPayload}
@@ -563,6 +597,8 @@ export function OrderCreateForm(): ReactElement {
           </div>
         </form>
       </FormProvider>
+
+      {pdfExport.renderPdfExportDialogs()}
     </div>
   );
 }

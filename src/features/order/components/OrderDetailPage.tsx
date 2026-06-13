@@ -14,6 +14,8 @@ import { useUpdateOrderNotesList } from '../hooks/useUpdateOrderNotesList';
 import { usePriceRuleOfOrder } from '../hooks/usePriceRuleOfOrder';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
+import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
+import { useOrderPdfExportPreview } from '../hooks/useOrderPdfExportPreview';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
@@ -23,9 +25,10 @@ import {
   DOCUMENT_DETAIL_BUTTON_APPROVAL,
   DOCUMENT_DETAIL_BUTTON_BASE,
   DOCUMENT_DETAIL_BUTTON_DANGER,
+  DOCUMENT_DETAIL_BUTTON_PREVIEW,
 } from '@/lib/document-detail-button-styles';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Layers, Loader2, FileCheck, FileText, XCircle } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText, XCircle, Eye } from 'lucide-react';
 import { OrderApprovalFlowTab } from './OrderApprovalFlowTab';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
@@ -282,6 +285,31 @@ export function OrderDetailPage(): ReactElement {
   const watchedErpCustomerCode = form.watch('order.erpCustomerCode');
   const watchedRepresentativeId = form.watch('order.representativeId');
   const watchedOfferDate = form.watch('order.offerDate');
+  const orderFormSlice = form.watch('order');
+
+  const currencyCode = useMemo(() => {
+    const found = currencyOptions.find((opt) => opt.dovizTipi === watchedCurrency);
+    return found?.code || 'TRY';
+  }, [watchedCurrency, currencyOptions]);
+
+  const { data: selectedCustomer } = useCustomer(
+    watchedCustomerId ?? 0,
+    Boolean(watchedCustomerId && watchedCustomerId > 0),
+  );
+
+  const pdfShareFileName = `siparis-${order?.offerNo || 'detay'}.pdf`;
+
+  const pdfExport = useOrderPdfExportPreview({
+    lines,
+    orderFormSlice,
+    currencyCode,
+    customerOptions,
+    selectedCustomer,
+    order,
+    orderId,
+    detailShareFileName: pdfShareFileName,
+    emptyLinesToastTitle: t('order.update.error'),
+  });
 
   useEffect(() => {
     if (!watchedOfferDate || isReadOnly) return;
@@ -720,6 +748,8 @@ export function OrderDetailPage(): ReactElement {
                       representativeId={watchedRepresentativeId}
                       orderId={orderId}
                       enabled={linesEnabled}
+                      buildExportPdfBlob={pdfExport.buildExportPdfBlob}
+                      exportPdfFileName={pdfShareFileName}
                     />
                     </div>
                   </section>
@@ -743,6 +773,15 @@ export function OrderDetailPage(): ReactElement {
               </div>
 
               <div className="flex flex-wrap items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+                <Button
+                  type="button"
+                  onClick={pdfExport.openPdfExportPreview}
+                  className={`group ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_PREVIEW}`}
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  {t('order.exportPreview.trigger')}
+                </Button>
+
                 {orderStatus === 0 && !isReadOnly && (
                   <Button
                     type="button"
@@ -789,9 +828,15 @@ export function OrderDetailPage(): ReactElement {
         </TabsContent>
 
         <TabsContent value="report" className="mt-6 focus-visible:outline-none">
-          <ReportTemplateTab entityId={orderId} ruleType={DocumentRuleType.Order} />
+          <ReportTemplateTab
+            entityId={orderId}
+            ruleType={DocumentRuleType.Order}
+            builtInTemplates={pdfExport.reportBuiltInTemplates}
+          />
         </TabsContent>
       </Tabs>
+
+      {pdfExport.renderPdfExportDialogs()}
 
       <CustomerCancellationDialog
         open={customerCancellationOpen}

@@ -275,6 +275,7 @@
     "rejectError": "Sipariş reddedilemedi.",
     "startSuccess": "Onay süreci başlatıldı.",
     "startError": "Onay süreci başlatılamadı.",
+    "approverNotFound": "Non è stato trovato un approvatore per l'importo di questo ordine. Verificare il flusso di approvazione e i limiti dei ruoli.",
     "rejectTitle": "Siparişi Reddet",
     "rejectDescription": "Siparişi reddetme nedeninizi girin.",
     "rejectReasonPlaceholder": "Red nedeni",

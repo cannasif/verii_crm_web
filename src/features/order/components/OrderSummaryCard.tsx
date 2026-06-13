@@ -171,7 +171,7 @@ export function OrderSummaryCard({
               <dt className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-tight">
                 {t('order.summary.subtotal')}
               </dt>
-              <dd className="font-bold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right text-sm">
+              <dd className="font-bold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right text-sm whitespace-nowrap shrink-0">
                 {formatCurrency(totals.netTotal, currencyCode)}
               </dd>
             </div>
@@ -181,7 +181,7 @@ export function OrderSummaryCard({
                 <dt className="text-xs text-red-500 dark:text-red-400 font-bold uppercase tracking-tight">
                   {t('order.summary.generalDiscount')}
                 </dt>
-                <dd className="font-bold text-red-600 dark:text-red-400 font-mono tabular-nums text-right text-sm">
+                <dd className="font-bold text-red-600 dark:text-red-400 font-mono tabular-nums text-right text-sm whitespace-nowrap shrink-0">
                   -{formatCurrency(totals.generalDiscountAmount, currencyCode)}
                 </dd>
               </div>
@@ -191,7 +191,7 @@ export function OrderSummaryCard({
               <dt className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-tight">
                 {t('order.summary.totalVat')}
               </dt>
-              <dd className="font-bold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right text-sm">
+              <dd className="font-bold text-zinc-900 dark:text-zinc-100 font-mono tabular-nums text-right text-sm whitespace-nowrap shrink-0">
                 {formatCurrency(totals.totalVatAfterDiscount, currencyCode)}
               </dd>
             </div>
@@ -202,7 +202,7 @@ export function OrderSummaryCard({
                   <Wallet className="h-4 w-4 text-pink-500" />
                   {t('order.summary.grandTotal')}
                 </span>
-                <span className="font-black text-zinc-900 dark:text-white font-mono tabular-nums text-right text-lg text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-purple-600">
+                <span className="font-black text-zinc-900 dark:text-white font-mono tabular-nums text-right text-lg whitespace-nowrap shrink-0 text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-purple-600">
                   {formatCurrency(totals.grandTotalAfterDiscount, currencyCode)}
                 </span>
               </div>

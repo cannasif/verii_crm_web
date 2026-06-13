@@ -71,7 +71,7 @@
     "helpTriggerLabel": "Usage tips",
     "helpStep1": "Search the customer field or use the address-book icon for advanced selection.",
     "helpStep2": "Complete representative, currency, shipping address, and payment details.",
-    "helpStep3": "Add products in the lines section; verify rates and discounts.",
+    "helpStep3": "Add line items; use Preview to check the PDF.",
     "helpStep4": "Review totals in the right-hand summary, then click Save."
   },
   "header": {
@@ -278,6 +278,7 @@
     "rejectError": "Order could not be rejected.",
     "startSuccess": "Approval flow started.",
     "startError": "Approval flow could not be started.",
+    "approverNotFound": "No approver was found for this order amount. Check the approval flow setup and role amount limits.",
     "rejectTitle": "Reject order",
     "rejectDescription": "Enter the reason for rejection.",
     "rejectReasonPlaceholder": "Reason for rejection",
@@ -327,5 +328,59 @@
     "stepOrder": "Step",
     "approvedBy": "Approved by",
     "actionDate": "Action date"
+  },
+  "shareWhatsapp": "Share via WhatsApp",
+  "shareMail": "Share via email",
+  "share": {
+    "mailSubject": "Order sharing",
+    "mailBody": "Please review the order details.",
+    "whatsappMessage": "Sharing the order details with you.",
+    "nativeOpened": "Share sheet opened.",
+    "nativeWhatsappFallback": "PDF downloaded. WhatsApp opened; attach the file to the chat.",
+    "nativeMailFallback": "PDF downloaded. Mail compose opened for {{email}}; attach the downloaded PDF.",
+    "nativeMailSentApi": "Order PDF sent to {{email}}.",
+    "nativeMailSendFailed": "Email could not be sent.",
+    "nativeEmailRequired": "No email found for the customer or contact.",
+    "nativeEmailInvalid": "Enter a valid email address."
+  },
+  "shareWhatsappDialog": {
+    "phoneRequired": "No phone number found for the customer or contact.",
+    "customerRequired": "Select a customer before sharing."
+  },
+  "shareMailDialog": {
+    "customerRequired": "Select a customer before sharing."
+  },
+  "exportPreview": {
+    "trigger": "Preview & Share",
+    "title": "Preview & share",
+    "subtitle": "Review the PDF; download or share via WhatsApp and email.",
+    "close": "Close",
+    "loading": "Preparing PDF...",
+    "error": "PDF could not be generated. Please try again.",
+    "download": "Download",
+    "errorDismiss": "Close",
+    "downloadFileName": "order.pdf"
+  },
+  "pdfExportTemplate": {
+    "builtInTemplateTitle": "V3RII Ready Template (Preview)",
+    "documentTitle": "ORDER",
+    "metaDate": "Date",
+    "metaOrderNo": "Order No",
+    "notSpecified": "—",
+    "senderLabel": "Order From",
+    "recipientLabel": "Order To",
+    "lineImage": "Image",
+    "unitPriceNet": "Net unit",
+    "lineDiscount": "Discount",
+    "vatRate": "VAT %",
+    "priceDetail": "Price detail",
+    "grossTotal": "Gross total",
+    "lineDiscountTotal": "Line discount",
+    "generalDiscount": "General discount",
+    "netSubtotal": "Net subtotal",
+    "totalVat": "VAT",
+    "grandTotalWithVat": "Grand total (incl. VAT)",
+    "footerNote": "This document was prepared for order confirmation.",
+    "draftWatermark": "DRAFT"
   }
 }

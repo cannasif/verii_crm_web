@@ -5,8 +5,8 @@
   },
   "erpOrder": {
     "title": "ERP Sipariş Listesi",
-    "description": "Netsis üzerinde login kullanıcınıza bağlı görünen sipariş üst kayıtlarını ve kalemlerini izleyin.",
-    "currentUserScope": "Login kullanıcı kapsamı",
+    "description": "Netsis üzerinde giriş yapan kullanıcı kapsamında görünen sipariş üst kayıtlarını ve kalemlerini izleyin.",
+    "currentUserScope": "Giriş yapan kullanıcı esaslıdır",
     "searchPlaceholder": "Sipariş no, cari, plasiyer veya tarih ara...",
     "loading": "ERP siparişleri yükleniyor...",
     "loadError": "ERP siparişleri yüklenemedi.",

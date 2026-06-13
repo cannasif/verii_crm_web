@@ -221,6 +221,8 @@ interface OrderLineTableProps {
   representativeId?: number | null;
   orderId?: number | null;
   enabled?: boolean;
+  buildExportPdfBlob?: (options: { draft: boolean }) => Promise<Blob>;
+  exportPdfFileName?: string;
 }
 
 export function OrderLineTable({
@@ -235,6 +237,8 @@ export function OrderLineTable({
   representativeId,
   orderId,
   enabled = true,
+  buildExportPdfBlob,
+  exportPdfFileName,
 }: OrderLineTableProps): ReactElement {
   const linesEditable = enabled;
   const { t } = useTranslation();
@@ -737,6 +741,34 @@ export function OrderLineTable({
   };
 
   const handleExportPDF = async (): Promise<void> => {
+    if (buildExportPdfBlob) {
+      if (lines.length === 0) {
+        toast.error(t('order.error'), {
+          description: t('order.lines.required'),
+        });
+        return;
+      }
+
+      try {
+        const blob = await buildExportPdfBlob({ draft: false });
+        const fileName = exportPdfFileName ?? 'siparis-kalemleri.pdf';
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = fileName;
+        anchor.rel = 'noopener';
+        anchor.click();
+        URL.revokeObjectURL(url);
+      } catch {
+        toast.error(t('order.error'), {
+          description: t('order.exportPreview.error', {
+            defaultValue: 'PDF oluşturulurken bir hata oluştu.',
+          }),
+        });
+      }
+      return;
+    }
+
     await exportDocumentLineTablePdf({
       fileName: 'siparis-kalemleri.pdf',
       title: t('order.lines.title'),

@@ -275,6 +275,7 @@
     "rejectError": "Sipariş reddedilemedi.",
     "startSuccess": "Onay süreci başlatıldı.",
     "startError": "Onay süreci başlatılamadı.",
+    "approverNotFound": "لم يتم العثور على معتمد لهذا مبلغ الطلب. تحقق من مسار الموافقة وحدود مبالغ الأدوار.",
     "rejectTitle": "Siparişi Reddet",
     "rejectDescription": "Siparişi reddetme nedeninizi girin.",
     "rejectReasonPlaceholder": "Red nedeni",

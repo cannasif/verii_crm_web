@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import type { ApiResponse } from '@/types/api';
 import { orderApi } from '../api/order-api';
 import { queryKeys } from '../utils/query-keys';
+import { resolveStartApprovalFlowErrorMessage } from '@/lib/resolve-start-approval-flow-error-message';
 
 export const useStartApprovalFlow = (): UseMutationResult<ApiResponse<boolean>, Error, { entityId: number; documentType: number; totalAmount: number }, unknown> => {
   const queryClient = useQueryClient();
@@ -22,26 +23,9 @@ export const useStartApprovalFlow = (): UseMutationResult<ApiResponse<boolean>, 
       toast.success(t('order.approval.startSuccess'));
     },
     onError: (error: Error) => {
-      let errorMessage = t('order.approval.startError');
-      
-      if (error.message) {
-        try {
-          const parsedError = JSON.parse(error.message);
-          if (parsedError?.errors && Array.isArray(parsedError.errors) && parsedError.errors.length > 0) {
-            errorMessage = parsedError.errors.join(', ');
-          } else if (parsedError?.message) {
-            errorMessage = parsedError.message;
-          } else if (parsedError?.exceptionMessage) {
-            errorMessage = parsedError.exceptionMessage;
-          } else {
-            errorMessage = error.message;
-          }
-        } catch {
-          errorMessage = error.message;
-        }
-      }
-      
-      toast.error(errorMessage);
+      toast.error(
+        resolveStartApprovalFlowErrorMessage(error, (key) => t(key), 'order.approval'),
+      );
     },
   });
 };

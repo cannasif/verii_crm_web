@@ -72,7 +72,7 @@
     "helpTriggerLabel": "Kullanım ipuçları",
     "helpStep1": "Müşteri alanında yazarak arayın veya rehber ikonundan gelişmiş seçim yapın.",
     "helpStep2": "Temsilci, para birimi, sevk adresi ve ödeme bilgilerini tamamlayın.",
-    "helpStep3": "Satırlar bölümünden ürünleri ekleyin; kur ve iskonto alanlarını kontrol edin.",
+    "helpStep3": "Satırlara ürün ekleyin; önizleme ile PDF kontrol edebilirsiniz.",
     "helpStep4": "Sağdaki özetten toplamları kontrol edin ve Kaydet ile kaydedin."
   },
   "header": {
@@ -217,6 +217,7 @@
     "rejectError": "Sipariş reddedilemedi.",
     "startSuccess": "Onay süreci başlatıldı.",
     "startError": "Onay süreci başlatılamadı.",
+    "approverNotFound": "Bu sipariş tutarı için uygun onaycı bulunamadı. Onay akışı tanımını ve onay rolü tutar limitlerini kontrol edin.",
     "rejectTitle": "Siparişi Reddet",
     "rejectDescription": "Siparişi reddetme nedeninizi girin.",
     "rejectReasonPlaceholder": "Red nedeni",
@@ -345,5 +346,59 @@
     "description": "Bu siparişi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.",
     "reasonPlaceholder": "Müşterinin iptal nedenini yazın...",
     "confirmButton": "İptal Et"
+  },
+  "shareWhatsapp": "WhatsApp ile Paylaş",
+  "shareMail": "E-posta ile Paylaş",
+  "share": {
+    "mailSubject": "Sipariş paylaşımı",
+    "mailBody": "Sipariş detaylarını inceler misiniz?",
+    "whatsappMessage": "Sipariş detaylarını sizinle paylaşıyorum.",
+    "nativeOpened": "Paylaşım ekranı açıldı.",
+    "nativeWhatsappFallback": "PDF indirildi. WhatsApp açıldı; dosyayı sohbete ekleyin.",
+    "nativeMailFallback": "PDF indirildi. {{email}} adresiyle mail penceresi açıldı; indirilen PDF'i ek olarak ekleyin.",
+    "nativeMailSentApi": "Sipariş PDF ekiyle {{email}} adresine gönderildi.",
+    "nativeMailSendFailed": "E-posta gönderilemedi.",
+    "nativeEmailRequired": "Müşteri veya kontak için kayıtlı e-posta bulunamadı.",
+    "nativeEmailInvalid": "Geçerli bir e-posta adresi girin."
+  },
+  "shareWhatsappDialog": {
+    "phoneRequired": "Müşteri veya kontak için kayıtlı telefon bulunamadı.",
+    "customerRequired": "Paylaşım için önce müşteri seçmelisiniz."
+  },
+  "shareMailDialog": {
+    "customerRequired": "Paylaşım için önce müşteri seçmelisiniz."
+  },
+  "exportPreview": {
+    "trigger": "Önizle ve Paylaş",
+    "title": "Önizle ve paylaş",
+    "subtitle": "PDF'i inceleyin; indirin veya WhatsApp ve e-posta ile paylaşın.",
+    "close": "Kapat",
+    "loading": "PDF hazırlanıyor...",
+    "error": "PDF oluşturulamadı. Lütfen tekrar deneyin.",
+    "download": "Bilgisayara indir",
+    "errorDismiss": "Kapat",
+    "downloadFileName": "siparis.pdf"
+  },
+  "pdfExportTemplate": {
+    "builtInTemplateTitle": "V3RII Hazır Şablon (Önizleme)",
+    "documentTitle": "SİPARİŞ",
+    "metaDate": "Tarih",
+    "metaOrderNo": "Sipariş No",
+    "notSpecified": "—",
+    "senderLabel": "Sipariş Veren",
+    "recipientLabel": "Sipariş Verilen",
+    "lineImage": "Görsel",
+    "unitPriceNet": "Net Birim",
+    "lineDiscount": "İskonto",
+    "vatRate": "KDV %",
+    "priceDetail": "Fiyat Detayı",
+    "grossTotal": "Brüt Toplam",
+    "lineDiscountTotal": "Satır İskontosu",
+    "generalDiscount": "Genel İskonto",
+    "netSubtotal": "Net Ara Toplam",
+    "totalVat": "KDV",
+    "grandTotalWithVat": "Genel Toplam (KDV Dahil)",
+    "footerNote": "Bu belge sipariş onayı için hazırlanmıştır.",
+    "draftWatermark": "TASLAK"
   }
 }
