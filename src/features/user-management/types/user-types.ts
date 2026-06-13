@@ -67,22 +67,23 @@ export interface UserFormData {
 export const userFormSchema = z.object({
   username: z
     .string()
-    .min(1, 'userManagement.form.username.required')
-    .max(50, 'userManagement.form.username.maxLength'),
+    .min(1, 'form.usernameRequired')
+    .max(50, 'form.usernameMaxLength'),
   email: z
     .string()
-    .email('userManagement.form.email.invalid')
-    .min(1, 'userManagement.form.email.required'),
-  password: z
-    .string()
-    .min(8, 'userManagement.form.password.minLength')
-    .max(100, 'userManagement.form.password.maxLength')
-    .optional()
-    .or(z.literal('')),
-  firstName: z.string().max(50, 'userManagement.form.firstName.maxLength').optional(),
-  lastName: z.string().max(50, 'userManagement.form.lastName.maxLength').optional(),
-  phoneNumber: z.string().max(20, 'userManagement.form.phoneNumber.maxLength').optional(),
-  roleId: z.number().min(1, 'userManagement.form.roleRequired'),
+    .email('form.emailInvalid')
+    .min(1, 'form.emailRequired'),
+  password: z.union([
+    z.literal(''),
+    z
+      .string()
+      .min(8, 'form.passwordMinLength')
+      .max(100, 'form.passwordMaxLength'),
+  ]),
+  firstName: z.string().max(50, 'form.firstNameMaxLength').optional(),
+  lastName: z.string().max(50, 'form.lastNameMaxLength').optional(),
+  phoneNumber: z.string().max(20, 'form.phoneNumberMaxLength').optional(),
+  roleId: z.number().min(1, 'form.roleRequired'),
   managerUserId: z.number().nullable().optional(),
   isActive: z.boolean().optional(),
   permissionGroupIds: z.array(z.number()).optional(),
@@ -90,11 +91,11 @@ export const userFormSchema = z.object({
 
 export const userUpdateFormSchema = z.object({
   username: z.string().optional(),
-  email: z.string().email('userManagement.form.email.invalid').optional(),
+  email: z.string().email('form.emailInvalid').optional(),
   firstName: z.string().max(50).optional(),
   lastName: z.string().max(50).optional(),
   phoneNumber: z.string().max(20).optional(),
-  roleId: z.number().min(1, 'userManagement.form.roleRequired').optional().nullable(),
+  roleId: z.number().min(1, 'form.roleRequired').optional().nullable(),
   managerUserId: z.number().nullable().optional(),
   isActive: z.boolean().optional(),
   permissionGroupIds: z.array(z.number()).optional(),

@@ -4,6 +4,10 @@ import { DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } fr
 import { Button } from '@/components/ui/button';
 import type { UserDto } from '../types/user-types';
 import { Edit2 } from 'lucide-react';
+import {
+  MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME,
+  MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME,
+} from '@/lib/management-list-layout';
 
 type UserColumnKey = keyof UserDto | 'status';
 
@@ -11,6 +15,7 @@ export interface ColumnDef<T> {
   key: keyof T | 'status';
   label: string;
   className?: string;
+  headClassName?: string;
 }
 
 const SORT_MAP: Record<string, string> = {
@@ -25,13 +30,18 @@ const SORT_MAP: Record<string, string> = {
 };
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<UserDto>[] => [
-  { key: 'id', label: t('userManagement.table.id'), className: 'w-[80px]' },
+  {
+    key: 'id',
+    label: t('userManagement.table.id'),
+    headClassName: MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME,
+    className: MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME,
+  },
   { key: 'username', label: t('userManagement.table.username'), className: 'min-w-[120px]' },
   { key: 'email', label: t('userManagement.table.email'), className: 'min-w-[180px]' },
   { key: 'fullName', label: t('userManagement.table.fullName'), className: 'min-w-[140px]' },
   { key: 'managerFullName', label: t('userManagement.table.manager'), className: 'min-w-[160px]' },
   { key: 'role', label: t('userManagement.table.role'), className: 'w-[120px]' },
-  { key: 'status', label: t('userManagement.table.status'), className: 'w-[180px]' },
+  { key: 'status', label: t('userManagement.table.status'), className: 'w-[140px]' },
   { key: 'creationTime', label: t('userManagement.table.createdDate'), className: 'w-[120px]' },
 ];
 

@@ -7,8 +7,13 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucid
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import {
+  getUserActiveStatusBadgeClassName,
+  getUserRoleBadgeClassName,
+  USER_CONFIRMED_BADGE_CLASSNAME,
+} from '../utils/user-table-visuals';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
@@ -24,7 +29,6 @@ import { UserStats } from './UserStats';
 import { UserTable, getColumnsConfig } from './UserTable';
 import { UserForm } from './UserForm';
 import { useUserList } from '../hooks/useUserList';
-import { useUpdateUser } from '../hooks/useUpdateUser';
 import type { UserDto } from '../types/user-types';
 import type { UserFormSchema, UserUpdateFormSchema } from '../types/user-types';
 import type { CreateUserDto, UpdateUserDto } from '../types/user-types';
@@ -63,7 +67,6 @@ export function UserManagementPage(): ReactElement {
 
   const createUser = useCreateUser();
   const updateUser = useUpdateUserMutation();
-  const updateUserStatus = useUpdateUser();
   const queryClient = useQueryClient();
   const { canCreate, canUpdate } = useCrudPermissions('users.user-management.view');
   const permissionGroupCrud = useCrudPermissions('access-control.permission-groups.view');
@@ -258,14 +261,6 @@ export function UserManagementPage(): ReactElement {
     setEditingUser(null);
   };
 
-  const handleStatusChange = async (user: UserDto, checked: boolean): Promise<void> => {
-    if (!canUpdate) return;
-    await updateUserStatus.mutateAsync({
-      id: user.id,
-      data: { isActive: checked },
-    });
-  };
-
   const handleSortChange = (newSortBy: string, newSortDirection: 'asc' | 'desc'): void => {
     setSortBy(newSortBy);
     setSortDirection(newSortDirection);
@@ -281,6 +276,7 @@ export function UserManagementPage(): ReactElement {
       tableColumns.map((c) => ({
         key: c.key as UserColumnKey,
         label: c.label,
+        headClassName: c.headClassName,
         cellClassName: c.className,
       })),
     [tableColumns]
@@ -373,17 +369,21 @@ export function UserManagementPage(): ReactElement {
               renderCell={(row, key) => {
                 if (key === 'status') {
                   return (
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        checked={row.isActive}
-                        onCheckedChange={(checked) => handleStatusChange(row, checked)}
-                        disabled={!canUpdate || updateUserStatus.isPending}
-                      />
-                      <span className="text-sm text-muted-foreground">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          'text-xs font-medium shadow-none',
+                          getUserActiveStatusBadgeClassName(row.isActive)
+                        )}
+                      >
                         {row.isActive ? t('table.active') : t('table.inactive')}
-                      </span>
+                      </Badge>
                       {row.isEmailConfirmed && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge
+                          variant="outline"
+                          className={cn('text-xs font-medium shadow-none', USER_CONFIRMED_BADGE_CLASSNAME)}
+                        >
                           {t('table.confirmed')}
                         </Badge>
                       )}
@@ -392,8 +392,24 @@ export function UserManagementPage(): ReactElement {
                 }
                 const val = row[key as keyof UserDto];
                 if (val == null) return '-';
-                if (key === 'id') return `#${val}`;
-                if (key === 'role') return <Badge variant="outline">{row.role || '-'}</Badge>;
+                if (key === 'id') {
+                  return (
+                    <span className="tabular-nums leading-none">{`#${val}`}</span>
+                  );
+                }
+                if (key === 'role') {
+                  return (
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        'text-xs font-medium shadow-none',
+                        getUserRoleBadgeClassName(row.role)
+                      )}
+                    >
+                      {row.role || '-'}
+                    </Badge>
+                  );
+                }
                 if (key === 'creationTime') return row.creationTime ? new Date(row.creationTime).toLocaleDateString(i18n.language) : '-';
                 return String(val ?? '');
               }}

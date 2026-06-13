@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect } from 'react';
+import { type ReactElement, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +40,10 @@ import { useUserManagerOptionsQuery } from '../hooks/useUserManagerOptionsQuery'
 import { useUserPermissionGroupsForForm } from '../hooks/useUserPermissionGroupsForForm';
 import { UserFormPermissionGroupSelect } from './UserFormPermissionGroupSelect';
 import { User, Mail, Lock, Phone, Shield, Activity, X, Users } from 'lucide-react';
+import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
+import { isZodFieldRequired } from '@/lib/zod-required';
+import { getZodValidationMessages } from '@/lib/zod-validation-hint';
+import { cn } from '@/lib/utils';
 
 interface UserFormProps {
   open: boolean;
@@ -50,18 +54,29 @@ interface UserFormProps {
   canManagePermissionGroups?: boolean;
 }
 
-const INPUT_STYLE = `
-  h-11 rounded-lg
-  bg-slate-50 dark:bg-white/5
-  border border-slate-200 dark:border-white/10
-  text-slate-900 dark:text-white text-sm
-  placeholder:text-slate-400 dark:placeholder:text-slate-500
-  focus-visible:bg-white dark:focus-visible:bg-white/5
-  focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
-  transition-all duration-200 w-full
-`;
+const INPUT_FIELD_CLASSNAME = cn(
+  'h-11 w-full rounded-lg text-sm transition-all duration-200',
+  'bg-slate-50 dark:bg-white/5',
+  'border border-slate-200 dark:border-white/10',
+  'text-slate-900 dark:text-white',
+  'placeholder:text-slate-400 dark:placeholder:text-slate-500',
+  'focus-visible:bg-white dark:focus-visible:bg-white/5',
+  'focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0',
+  'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
+  'dark:aria-invalid:border-destructive dark:aria-invalid:ring-destructive/30'
+);
 
 const LABEL_STYLE = 'text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2';
+
+const FORM_MESSAGE_SLOT_CLASSNAME = 'min-h-5';
+
+function FormMessageSlot(): ReactElement {
+  return (
+    <div className={FORM_MESSAGE_SLOT_CLASSNAME}>
+      <FormMessage className="text-xs leading-snug" />
+    </div>
+  );
+}
 
 const EMPTY_ROLE_OPTIONS: RoleOption[] = [];
 
@@ -112,6 +127,22 @@ export function UserForm({
     },
   });
   const isFormValid = form.formState.isValid;
+  const watchedValues = form.watch();
+  const activeSchema = useMemo(
+    () => (isEditMode ? userUpdateFormSchema : userFormSchema),
+    [isEditMode]
+  );
+
+  const saveManualHintLines = useMemo(() => {
+    if (isFormValid) return [];
+    return getZodValidationMessages(activeSchema, watchedValues).map((message) =>
+      t(message, { defaultValue: message })
+    );
+  }, [activeSchema, isFormValid, t, watchedValues]);
+
+  const handleInvalidSubmit = (): void => {
+    void form.trigger();
+  };
 
   useEffect(() => {
     if (!open) {
@@ -241,14 +272,17 @@ export function UserForm({
 
         <div className="flex-1 overflow-y-auto p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <FormField
                   control={form.control}
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}>
+                      <FormLabel
+                        className={LABEL_STYLE}
+                        required={isZodFieldRequired(activeSchema, 'username')}
+                      >
                         <User size={16} className="text-pink-500" /> {t('form.username')}
                       </FormLabel>
                       <FormControl>
@@ -257,10 +291,10 @@ export function UserForm({
                           placeholder={t('form.usernamePlaceholder')}
                           maxLength={50}
                           disabled={isEditMode}
-                          className={INPUT_STYLE}
+                          className={INPUT_FIELD_CLASSNAME}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessageSlot />
                     </FormItem>
                   )}
                 />
@@ -270,7 +304,10 @@ export function UserForm({
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}>
+                      <FormLabel
+                        className={LABEL_STYLE}
+                        required={isZodFieldRequired(activeSchema, 'email')}
+                      >
                         <Mail size={16} className="text-pink-500" /> {t('form.email')}
                       </FormLabel>
                       <FormControl>
@@ -278,10 +315,10 @@ export function UserForm({
                           {...field}
                           type="email"
                           placeholder={t('form.emailPlaceholder')}
-                          className={INPUT_STYLE}
+                          className={INPUT_FIELD_CLASSNAME}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessageSlot />
                     </FormItem>
                   )}
                 />
@@ -301,10 +338,10 @@ export function UserForm({
                           {...field}
                           type="password"
                           placeholder={t('form.passwordPlaceholder')}
-                          className={INPUT_STYLE}
+                          className={INPUT_FIELD_CLASSNAME}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessageSlot />
                     </FormItem>
                   )}
                 />
@@ -324,10 +361,10 @@ export function UserForm({
                           {...field}
                           placeholder={t('form.firstNamePlaceholder')}
                           maxLength={50}
-                          className={INPUT_STYLE}
+                          className={INPUT_FIELD_CLASSNAME}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessageSlot />
                     </FormItem>
                   )}
                 />
@@ -345,10 +382,10 @@ export function UserForm({
                           {...field}
                           placeholder={t('form.lastNamePlaceholder')}
                           maxLength={50}
-                          className={INPUT_STYLE}
+                          className={INPUT_FIELD_CLASSNAME}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessageSlot />
                     </FormItem>
                   )}
                 />
@@ -368,10 +405,10 @@ export function UserForm({
                           {...field}
                           placeholder={t('form.phoneNumberPlaceholder')}
                           maxLength={20}
-                          className={INPUT_STYLE}
+                          className={INPUT_FIELD_CLASSNAME}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessageSlot />
                     </FormItem>
                   )}
                 />
@@ -381,9 +418,11 @@ export function UserForm({
                   name="roleId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className={LABEL_STYLE}>
+                      <FormLabel
+                        className={LABEL_STYLE}
+                        required={isZodFieldRequired(activeSchema, 'roleId')}
+                      >
                         <Shield size={16} className="text-pink-500" /> {t('form.role')}
-                        {!isEditMode && <span className="text-destructive ml-1">*</span>}
                       </FormLabel>
                       <Select
                         value={field.value ? String(field.value) : ''}
@@ -391,7 +430,7 @@ export function UserForm({
                         disabled={isLoading}
                       >
                         <FormControl>
-                          <SelectTrigger className={INPUT_STYLE}>
+                          <SelectTrigger className={INPUT_FIELD_CLASSNAME}>
                             <SelectValue
                               placeholder={t('form.rolePlaceholder')}
                             />
@@ -405,7 +444,7 @@ export function UserForm({
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage />
+                      <FormMessageSlot />
                     </FormItem>
                   )}
                 />
@@ -425,7 +464,7 @@ export function UserForm({
                       disabled={isLoading}
                     >
                       <FormControl>
-                        <SelectTrigger className={INPUT_STYLE}>
+                        <SelectTrigger className={INPUT_FIELD_CLASSNAME}>
                           <SelectValue placeholder={t('form.managerPlaceholder')} />
                         </SelectTrigger>
                       </FormControl>
@@ -438,7 +477,7 @@ export function UserForm({
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
+                    <FormMessageSlot />
                   </FormItem>
                 )}
               />
@@ -459,7 +498,7 @@ export function UserForm({
                           disabled={isLoading}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessageSlot />
                     </FormItem>
                   )}
                 />
@@ -495,15 +534,21 @@ export function UserForm({
                 >
                   {t('form.cancel')}
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isLoading || !isFormValid}
-                  className="h-11 px-8 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                <FormSubmitTooltipWrap
+                  schema={activeSchema}
+                  value={watchedValues}
+                  isValid={isFormValid}
+                  isPending={isLoading}
+                  manualHintLines={saveManualHintLines}
                 >
-                  {isLoading
-                    ? t('form.saving')
-                    : t('form.save')}
-                </Button>
+                  <Button
+                    type="submit"
+                    disabled={isLoading || !isFormValid}
+                    className="h-11 px-8 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md transition-all duration-200"
+                  >
+                    {isLoading ? t('form.saving') : t('form.save')}
+                  </Button>
+                </FormSubmitTooltipWrap>
               </div>
             </form>
           </Form>
