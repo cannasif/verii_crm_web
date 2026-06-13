@@ -66,6 +66,7 @@
     "demandCreateWizard": "Create New Demand",
     "quotationCreateWizard": "Create New Quotation",
     "orderCreateWizard": "Create New Order",
+    "erpOrderList": "ERP Order List",
     "activities": "Planning",
     "activityManagement": "Activity Management"
   }

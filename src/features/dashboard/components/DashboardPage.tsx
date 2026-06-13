@@ -17,6 +17,7 @@ import {
   CalendarPlus,
   Pencil,
   Eye,
+  Database,
 } from 'lucide-react';
 
 import {
@@ -173,7 +174,7 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/orders/create')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 transition-all duration-200 hover:bg-stone-200/60 dark:hover:bg-pink-500/10 focus:bg-stone-200/60 dark:focus:bg-pink-500/10 outline-none"
+                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-stone-200/60 dark:hover:bg-pink-500/10 focus:bg-stone-200/60 dark:focus:bg-pink-500/10 outline-none"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
@@ -181,6 +182,20 @@ export function DashboardPage(): ReactElement {
                   </div>
                   <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
                     {t('sidebar.orderCreateWizard')}
+                  </span>
+                </div>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem
+                onClick={() => navigate('/orders/erp')}
+                className="group cursor-pointer rounded-lg py-2.5 px-2 transition-all duration-200 hover:bg-stone-200/60 dark:hover:bg-pink-500/10 focus:bg-stone-200/60 dark:focus:bg-pink-500/10 outline-none"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                    <Database size={16} />
+                  </div>
+                  <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                    {t('sidebar.erpOrderList')}
                   </span>
                 </div>
               </DropdownMenuItem>
