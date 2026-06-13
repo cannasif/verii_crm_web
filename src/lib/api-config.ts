@@ -94,6 +94,10 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
     baseUrl: normalizeAppBasePath(import.meta.env.BASE_URL || '/'),
   };
 
+  if (import.meta.env.DEV && isValidApiUrl(import.meta.env.VITE_API_URL)) {
+    return fallbackConfig;
+  }
+
   try {
     const response = await fetch(toBaseRelativePath(RUNTIME_CONFIG_FILE_NAME), {
       cache: 'no-cache',

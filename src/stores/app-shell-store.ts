@@ -152,7 +152,7 @@ export const useAppShellStore = create<AppShellStoreState>()(
         }
 
         const promise = (async () => {
-          const summary = await userDetailApi.getByUserId(userId);
+          const summary = await userDetailApi.getByUserId(userId).catch(() => null);
           get().setUserSummary(userId, summary);
           return summary;
         })().finally(() => {
