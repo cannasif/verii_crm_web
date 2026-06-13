@@ -6,7 +6,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Edit2, Loader2, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { Edit2, Eye, Layers, Loader2, Plus, RefreshCw, ShieldCheck, Trash2 } from 'lucide-react';
 import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
@@ -20,9 +20,17 @@ import {
 } from '@/lib/management-list-layout';
 import { visibilityPolicyApi } from '../api/visibilityPolicyApi';
 import { VisibilityPolicyForm } from './VisibilityPolicyForm';
+import { AccessControlBooleanBadge } from './AccessControlBooleanBadge';
+import { VisibilityEntityCell } from './VisibilityEntityCell';
 import type { CreateVisibilityPolicySchema } from '../schemas/visibility-policy-schema';
 import type { PagedRequest, VisibilityPolicyDto } from '../types/access-control.types';
 import { getVisibilityEntityMeta, getVisibilityScopeMeta } from '../utils/visibility-options';
+import { getVisibilityScopeBadgeClassName } from '../utils/visibility-entity-visuals';
+import {
+  ACCESS_CONTROL_HEADER_CARD_CLASSNAME,
+  ACCESS_CONTROL_STAT_CARD_CLASSNAME,
+} from '../utils/access-control-layout';
+import { cn } from '@/lib/utils';
 import { useCrudPermissions } from '../hooks/useCrudPermissions';
 
 const PAGE_KEY = 'visibility-policies';
@@ -100,13 +108,16 @@ export function VisibilityPoliciesPage(): ReactElement {
   const totalCount = data?.totalCount ?? 0;
   const totalPages = data?.totalPages ?? 1;
 
+  const activeCount = useMemo(() => items.filter((item) => item.isActive).length, [items]);
+  const entityTypeCount = useMemo(() => new Set(items.map((item) => item.entityType)).size, [items]);
+
   const columns: DataTableGridColumn<VisibilityPolicyColumnKey>[] = useMemo(
     () => [
       { key: 'code', label: t('visibilityPolicies.table.code'), cellClassName: 'font-mono text-sm' },
       { key: 'name', label: t('visibilityPolicies.table.name') },
       { key: 'entityLabel', label: t('visibilityPolicies.table.entityType') },
-      { key: 'scopeLabel', label: t('visibilityPolicies.table.scopeType') },
-      { key: 'isActive', label: t('visibilityPolicies.table.isActive') },
+      { key: 'scopeLabel', label: t('visibilityPolicies.table.scopeType'), cellClassName: 'text-center' },
+      { key: 'isActive', label: t('visibilityPolicies.table.isActive'), cellClassName: 'text-center' },
     ],
     [t]
   );
@@ -149,44 +160,74 @@ export function VisibilityPoliciesPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{t('visibilityPolicies.title')}</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">{t('visibilityPolicies.description')}</p>
-        </div>
-        {canCreate && (
-          <Button
-            onClick={() => {
-              setEditingItem(null);
-              setFormOpen(true);
-            }}
-            className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
-          >
-            <Plus size={18} className="mr-2" />
-            {t('visibilityPolicies.add')}
-          </Button>
-        )}
-      </div>
+      <div className={ACCESS_CONTROL_HEADER_CARD_CLASSNAME}>
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-500/5 blur-[80px] dark:bg-pink-500/10" />
+        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-orange-500/5 blur-[80px] dark:bg-orange-500/10" />
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
-          <CardContent className="p-5">
-            <div className="text-sm text-slate-500">{t('visibilityPolicies.stats.total')}</div>
-            <div className="mt-2 text-3xl font-black text-slate-900 dark:text-white">{totalCount}</div>
-          </CardContent>
-        </Card>
-        <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
-          <CardContent className="p-5">
-            <div className="text-sm text-slate-500">{t('visibilityPolicies.stats.active')}</div>
-            <div className="mt-2 text-3xl font-black text-slate-900 dark:text-white">{items.filter((item) => item.isActive).length}</div>
-          </CardContent>
-        </Card>
-        <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
-          <CardContent className="p-5">
-            <div className="text-sm text-slate-500">{t('visibilityPolicies.stats.entities')}</div>
-            <div className="mt-2 text-3xl font-black text-slate-900 dark:text-white">{new Set(items.map((item) => item.entityType)).size}</div>
-          </CardContent>
-        </Card>
+        <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white md:text-4xl">
+              {t('visibilityPolicies.title')}
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm font-medium text-slate-500 dark:text-slate-400">
+              {t('visibilityPolicies.description')}
+            </p>
+          </div>
+          {canCreate && (
+            <Button
+              onClick={() => {
+                setEditingItem(null);
+                setFormOpen(true);
+              }}
+              className="h-12 shrink-0 border-0 bg-linear-to-r from-pink-600 to-orange-600 px-8 text-white shadow-lg shadow-pink-500/25 transition-all hover:scale-105 active:scale-95"
+            >
+              <Plus size={20} className="mr-2" />
+              {t('visibilityPolicies.add')}
+            </Button>
+          )}
+        </div>
+
+        <div className="relative z-10 mt-8 grid gap-4 sm:grid-cols-3">
+          <div className={ACCESS_CONTROL_STAT_CARD_CLASSNAME}>
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl border border-pink-100 bg-pink-100 p-3 text-pink-600 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-400">
+                <Eye className="size-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                  {t('visibilityPolicies.stats.total')}
+                </p>
+                <p className="mt-1 text-2xl font-black leading-none text-slate-900 dark:text-white">{totalCount}</p>
+              </div>
+            </div>
+          </div>
+          <div className={ACCESS_CONTROL_STAT_CARD_CLASSNAME}>
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl border border-emerald-100 bg-emerald-100 p-3 text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+                <ShieldCheck className="size-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                  {t('visibilityPolicies.stats.active')}
+                </p>
+                <p className="mt-1 text-2xl font-black leading-none text-slate-900 dark:text-white">{activeCount}</p>
+              </div>
+            </div>
+          </div>
+          <div className={ACCESS_CONTROL_STAT_CARD_CLASSNAME}>
+            <div className="flex items-center gap-4">
+              <div className="rounded-xl border border-orange-100 bg-orange-100 p-3 text-orange-600 dark:border-orange-500/20 dark:bg-orange-500/10 dark:text-orange-400">
+                <Layers className="size-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                  {t('visibilityPolicies.stats.entities')}
+                </p>
+                <p className="mt-1 text-2xl font-black leading-none text-slate-900 dark:text-white">{entityTypeCount}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
@@ -247,14 +288,38 @@ export function VisibilityPoliciesPage(): ReactElement {
                 renderCell={(row, key) => {
                   if (key === 'entityLabel') {
                     const entity = getVisibilityEntityMeta(row.entityType);
-                    return entity ? t(entity.labelKey, { defaultValue: entity.fallback }) : row.entityType;
+                    const label = entity
+                      ? t(entity.labelKey, { defaultValue: entity.fallback })
+                      : row.entityType;
+                    return <VisibilityEntityCell entityType={row.entityType} label={label} />;
                   }
                   if (key === 'scopeLabel') {
                     const scope = getVisibilityScopeMeta(row.scopeType);
-                    return scope ? t(scope.labelKey, { defaultValue: scope.fallback }) : row.scopeType;
+                    const label = scope
+                      ? t(scope.labelKey, { defaultValue: scope.fallback })
+                      : String(row.scopeType);
+                    return (
+                      <div className="flex justify-center">
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide',
+                            getVisibilityScopeBadgeClassName(row.scopeType)
+                          )}
+                        >
+                          {label}
+                        </Badge>
+                      </div>
+                    );
                   }
                   if (key === 'isActive') {
-                    return <Badge variant={row.isActive ? 'default' : 'secondary'}>{row.isActive ? t('common.yes') : t('common.no')}</Badge>;
+                    return (
+                      <AccessControlBooleanBadge
+                        value={row.isActive}
+                        yesLabel={t('common.yes')}
+                        noLabel={t('common.no')}
+                      />
+                    );
                   }
                   return String(row[key as keyof VisibilityPolicyDto] ?? '-');
                 }}

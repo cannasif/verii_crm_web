@@ -28,7 +28,8 @@
     },
     "userVisibilityAssignment": {
       "user": "Görünürlük kapsamını düzenlemek istediğiniz kullanıcıyı seçin.",
-      "policy": "Her entity için tek bir aktif görünürlük politikası seçin. İsterseniz boş bırakabilirsiniz."
+      "policy": "Her entity için tek bir aktif görünürlük politikası seçin. İsterseniz boş bırakabilirsiniz.",
+      "save": "Dropdown'daki değişiklikler kaydedilmeden uygulanmaz. Kaydet ve Uygula ile tüm kartlardaki seçimler birlikte gönderilir."
     }
   },
   "permissionDefinitions": {
@@ -201,6 +202,15 @@
     "assignedPolicies": "Atanan Policy",
     "status": "Durum",
     "ready": "Güncel",
+    "unsavedChanges": "Kaydedilmedi",
+    "unsavedChangesCount": "{{count}} modül kaydedilmeyi bekliyor",
+    "upToDate": "Güncel",
+    "pendingChange": "Kaydedilecek",
+    "unsavedCardHint": "Seçimin henüz kaydedilmedi. Onaylamak için Kaydet'e basın.",
+    "saveEntity": "Kaydet",
+    "revert": "İptal",
+    "moduleSectionTitle": "Modül görünürlüğü",
+    "moduleSectionDescription": "Her modül için policy seçin ve kart üzerinden kaydedin.",
     "unassigned": "Atama yok",
     "cardDescription": "{{entity}} kayıtları için bu kullanıcıya uygulanacak görünürlük policy'sini seçin.",
     "selectPolicyPlaceholder": "Policy seçin",
@@ -248,7 +258,10 @@
       "update": "Güncelleme",
       "delete": "Silme",
       "approve": "Onay"
-    }
+    },
+    "visibleUsersShowing": "{{from}}-{{to}} / {{total}} kullanıcı",
+    "visibleUsersPage": "Sayfa {{page}} / {{totalPages}}",
+    "noVisibleUsers": "Kapsama giren kullanıcı bulunamadı"
   },
   "auditLogs": {
     "title": "Audit Kayıtları",

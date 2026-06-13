@@ -4,13 +4,22 @@ import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
-import { CheckCircle2, ShieldCheck, UserRound } from 'lucide-react';
+import { CheckCircle2, Loader2, ShieldCheck, Sparkles, UserRound } from 'lucide-react';
 import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useUserPermissionGroupsQuery } from '../hooks/useUserPermissionGroupsQuery';
 import { useSetUserPermissionGroupsMutation } from '../hooks/useSetUserPermissionGroupsMutation';
 import { useCrudPermissions } from '../hooks/useCrudPermissions';
 import { PermissionGroupMultiSelect } from './PermissionGroupMultiSelect';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
+import {
+  ACCESS_CONTROL_HEADER_CARD_CLASSNAME,
+  ACCESS_CONTROL_STAT_CARD_CLASSNAME,
+  ACCESS_CONTROL_WORKSPACE_CLASSNAME,
+} from '../utils/access-control-layout';
+import { cn } from '@/lib/utils';
+
+const INNER_PANEL_CLASSNAME =
+  'rounded-xl border border-slate-200 bg-white/90 p-4 dark:border-white/10 dark:bg-[#180F22]';
 
 export function UserGroupAssignmentsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
@@ -52,38 +61,41 @@ export function UserGroupAssignmentsPage(): ReactElement {
     setHasChanges(false);
   };
 
+  const selectedUserLabel = useMemo(() => {
+    const option = userDropdown.options.find((item) => item.value === String(selectedUserId));
+    return option?.label ?? (selectedUserId != null ? `#${selectedUserId}` : '-');
+  }, [selectedUserId, userDropdown.options]);
 
-  const headerCardStyle = `
-    overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 
-    bg-white/80 dark:bg-[#180F22] backdrop-blur-md p-6 shadow-xl 
-    transition-all duration-300 relative
-  `;
+  const handleRevert = (): void => {
+    setSelectedGroupIds(parsedServerGroupIds.length > 0 ? [...parsedServerGroupIds] : []);
+    setHasChanges(false);
+  };
 
-  const statCardStyle = `
-    rounded-2xl border border-slate-200 dark:border-white/10 
-    bg-white/90 dark:bg-[#1E1627] p-5 shadow-sm 
-    transition-all duration-300 hover:shadow-md group
-  `;
+  const headerCardStyle = ACCESS_CONTROL_HEADER_CARD_CLASSNAME;
+  const statCardStyle = ACCESS_CONTROL_STAT_CARD_CLASSNAME;
 
   return (
     <div className="w-full space-y-6">
       <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.userGroupAssignments'), isActive: true }]} />
       <div className={headerCardStyle}>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/5 dark:bg-pink-500/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/5 dark:bg-orange-500/10 blur-[80px] rounded-full -ml-20 -mb-20 pointer-events-none" />
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10" />
-        <div className="min-w-0"></div>
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-500/5 blur-[80px] dark:bg-pink-500/10" />
+        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-orange-500/5 blur-[80px] dark:bg-orange-500/10" />
 
-        <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-900 dark:text-white transition-colors">
-          {t('userGroupAssignments.title')}
-        </h1>
-        <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300 transition-colors">
-          {t('userGroupAssignments.description')}
-        </p>
-        <p className="mt-3 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-          <FieldHelpTooltip text={t('help.userAssignment.systemAdminNote')} side="right" />
-          <span className="italic">{t('help.userAssignment.systemAdminNote')}</span>
-        </p>
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-pink-600 dark:text-pink-400">
+            <Sparkles className="size-3.5" />
+            {t('sidebar.accessControl')}
+          </div>
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+            {t('userGroupAssignments.title')}
+          </h1>
+          <p className="mt-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+            {t('userGroupAssignments.description')}
+          </p>
+          <p className="mt-3 flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+            <FieldHelpTooltip text={t('help.userAssignment.systemAdminNote')} side="right" />
+            <span className="italic">{t('help.userAssignment.systemAdminNote')}</span>
+          </p>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-3 relative z-10">
           <div className={statCardStyle}>
@@ -95,9 +107,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
                 <p className="text-[11px] font-black uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">
                   {t('userGroupAssignments.selectUser')}
                 </p>
-                <p className="mt-1 text-sm font-black text-slate-900 dark:text-white">
-                  {selectedUserId != null ? `#${selectedUserId}` : '-'}
-                </p>
+                <p className="mt-1 truncate text-sm font-black text-slate-900 dark:text-white">{selectedUserLabel}</p>
               </div>
             </div>
           </div>
@@ -116,7 +126,14 @@ export function UserGroupAssignmentsPage(): ReactElement {
           </div>
           <div className={statCardStyle}>
             <div className="flex items-center gap-4">
-              <div className="rounded-xl bg-orange-100 p-3 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 border border-orange-100 dark:border-orange-500/20">
+              <div
+                className={cn(
+                  'rounded-xl border p-3',
+                  hasChanges
+                    ? 'border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300'
+                    : 'border-orange-100 bg-orange-100 text-orange-600 dark:border-orange-500/20 dark:bg-orange-500/10 dark:text-orange-400'
+                )}
+              >
                 <CheckCircle2 className="size-4" />
               </div>
               <div>
@@ -130,16 +147,15 @@ export function UserGroupAssignmentsPage(): ReactElement {
             </div>
           </div>
         </div>
+        </div>
       </div>
 
-      <div className="mt-5 rounded-[2rem] border border-slate-200 bg-slate-50/80 p-6 border border-slate-200 dark:border-white/10  dark:bg-[#1E1627]">
-        <div>
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <label className="text-sm font-medium flex items-center gap-1">
-              {t('userGroupAssignments.selectUser')}
-              <FieldHelpTooltip text={t('help.userAssignment.user')} />
-            </label>
-          </div>
+      <div className={ACCESS_CONTROL_WORKSPACE_CLASSNAME}>
+        <div className={INNER_PANEL_CLASSNAME}>
+          <label className="mb-3 flex items-center gap-1 text-sm font-semibold text-slate-800 dark:text-slate-100">
+            {t('userGroupAssignments.selectUser')}
+            <FieldHelpTooltip text={t('help.userAssignment.user')} />
+          </label>
           <VoiceSearchCombobox
             options={userDropdown.options}
             value={selectedUserId?.toString() ?? ''}
@@ -155,13 +171,16 @@ export function UserGroupAssignmentsPage(): ReactElement {
         </div>
 
         {selectedUserId != null && (
-          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 border border-slate-200 dark:border-white/10  dark:bg-[#180F22]">
-            <label className="mb-3 flex items-center gap-1 text-sm font-medium">
+          <div className={cn(INNER_PANEL_CLASSNAME, 'mt-4')}>
+            <label className="mb-3 flex items-center gap-1 text-sm font-semibold text-slate-800 dark:text-slate-100">
               {t('userGroupAssignments.assignedGroups')}
               <FieldHelpTooltip text={t('help.userAssignment.groups')} />
             </label>
             {userGroupsLoading ? (
-              <div className="py-8 text-center text-slate-500">{t('common.loading')}</div>
+              <div className="flex items-center justify-center gap-2 py-10 text-sm text-slate-500 dark:text-slate-400">
+                <Loader2 className="size-4 animate-spin" />
+                {t('common.loading')}
+              </div>
             ) : (
               <>
                 <PermissionGroupMultiSelect
@@ -170,12 +189,20 @@ export function UserGroupAssignmentsPage(): ReactElement {
                   disabled={setUserGroups.isPending || !canUpdate}
                 />
                 {hasChanges && canUpdate && (
-                  <div className="mt-4 flex items-center justify-end gap-1">
-                    <FieldHelpTooltip text={t('help.userAssignment.save')} side="top" />
+                  <div className="mt-4 flex items-center justify-end gap-2 border-t border-slate-200/80 pt-4 dark:border-white/10">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleRevert}
+                      disabled={setUserGroups.isPending}
+                      className="rounded-xl border-rose-200/80 text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:border-rose-500/30 dark:text-rose-300 dark:hover:bg-rose-500/10"
+                    >
+                      {t('userVisibilityAssignments.revert', { defaultValue: 'İptal' })}
+                    </Button>
                     <Button
                       onClick={handleSave}
                       disabled={setUserGroups.isPending}
-                      className="rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 hover:text-white"
+                      className="rounded-xl border-0 bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 hover:text-white"
                     >
                       {setUserGroups.isPending ? t('common.saving') : t('common.save')}
                     </Button>
@@ -192,8 +219,13 @@ export function UserGroupAssignmentsPage(): ReactElement {
         )}
 
         {!selectedUserId && !userDropdown.isLoading && (
-          <div className="py-12 text-center text-slate-500 dark:text-slate-400">
-            {t('userGroupAssignments.selectUserHint')}
+          <div className="mt-4 flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white/50 py-14 text-center dark:border-white/10 dark:bg-white/[0.02]">
+            <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#180F22]">
+              <UserRound className="size-7 text-slate-400 dark:text-slate-500" />
+            </div>
+            <p className="mt-3 text-sm font-medium text-slate-600 dark:text-slate-300">
+              {t('userGroupAssignments.selectUserHint')}
+            </p>
           </div>
         )}
       </div>

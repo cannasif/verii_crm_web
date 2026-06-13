@@ -28,7 +28,8 @@
     },
     "userVisibilityAssignment": {
       "user": "Select the user whose entity visibility you want to manage.",
-      "policy": "Choose one active visibility policy per entity or leave it empty."
+      "policy": "Choose one active visibility policy per entity or leave it empty.",
+      "save": "Dropdown changes are not applied until you save. Save and apply sends all card selections together."
     }
   },
   "permissionDefinitions": {
@@ -201,6 +202,15 @@
     "assignedPolicies": "Assigned policies",
     "status": "Status",
     "ready": "Up to date",
+    "unsavedChanges": "Unsaved",
+    "unsavedChangesCount": "{{count}} module(s) waiting to be saved",
+    "upToDate": "Up to date",
+    "pendingChange": "Pending save",
+    "unsavedCardHint": "Your selection is not saved yet. Press Save to apply.",
+    "saveEntity": "Save",
+    "revert": "Cancel",
+    "moduleSectionTitle": "Module visibility",
+    "moduleSectionDescription": "Select a policy for each module and save from the card.",
     "unassigned": "Unassigned",
     "cardDescription": "Choose the visibility policy that will be applied to {{entity}} records for this user.",
     "selectPolicyPlaceholder": "Select policy",
@@ -248,7 +258,10 @@
       "update": "Update",
       "delete": "Delete",
       "approve": "Approve"
-    }
+    },
+    "visibleUsersShowing": "{{from}}-{{to}} of {{total}} users",
+    "visibleUsersPage": "Page {{page}} / {{totalPages}}",
+    "noVisibleUsers": "No users in scope"
   },
   "auditLogs": {
     "title": "Audit logs",

@@ -40,9 +40,15 @@ import { useCrudPermissions } from '../hooks/useCrudPermissions';
 import { useMyPermissionsQuery } from '../hooks/useMyPermissionsQuery';
 import { PermissionGroupForm } from './PermissionGroupForm';
 import { GroupPermissionsPanel } from './GroupPermissionsPanel';
+import { AccessControlBooleanBadge } from './AccessControlBooleanBadge';
 import type { PermissionGroupDto } from '../types/access-control.types';
 import type { CreatePermissionGroupSchema } from '../schemas/permission-group-schema';
 import { ensurePermissionDefinitionsSynced } from '../utils/permission-definition-sync';
+import {
+  ACCESS_CONTROL_HEADER_CARD_CLASSNAME,
+  ACCESS_CONTROL_STAT_CARD_CLASSNAME,
+} from '../utils/access-control-layout';
+import { cn } from '@/lib/utils';
 
 const EMPTY_ITEMS: PermissionGroupDto[] = [];
 const PAGE_KEY = 'permission-groups';
@@ -224,9 +230,9 @@ export function PermissionGroupsPage(): ReactElement {
   const columns: DataTableGridColumn<PermissionGroupColumnKey>[] = useMemo(
     () => [
       { key: 'name', label: t('permissionGroups.table.name'), cellClassName: 'font-medium' },
-      { key: 'isSystemAdmin', label: t('permissionGroups.table.isSystemAdmin') },
-      { key: 'isActive', label: t('permissionGroups.table.isActive') },
-      { key: 'permissionCount', label: t('permissionGroups.table.permissionCount') },
+      { key: 'isSystemAdmin', label: t('permissionGroups.table.isSystemAdmin'), cellClassName: 'text-center' },
+      { key: 'isActive', label: t('permissionGroups.table.isActive'), cellClassName: 'text-center' },
+      { key: 'permissionCount', label: t('permissionGroups.table.permissionCount'), cellClassName: 'text-center' },
     ],
     [t]
   );
@@ -275,17 +281,8 @@ export function PermissionGroupsPage(): ReactElement {
     </div>
   );
 
-  const headerCardStyle = `
-    overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 
-    bg-white/80 dark:bg-[#180F22] backdrop-blur-md p-6 shadow-xl 
-    transition-all duration-300 relative
-  `;
-
-  const statCardStyle = `
-    rounded-2xl border border-slate-200 dark:border-white/10 
-    bg-white/90 dark:bg-[#1E1627] p-5 shadow-sm 
-    transition-all duration-300 hover:shadow-md group
-  `;
+  const headerCardStyle = ACCESS_CONTROL_HEADER_CARD_CLASSNAME;
+  const statCardStyle = ACCESS_CONTROL_STAT_CARD_CLASSNAME;
 
   return (
     <div className="w-full space-y-6">
@@ -427,32 +424,37 @@ export function PermissionGroupsPage(): ReactElement {
                 renderCell={(row, key) => {
                   if (key === 'name') return <span className="font-medium">{row.name}</span>;
                   if (key === 'isSystemAdmin') {
-                    return row.isSystemAdmin ? (
-                      <div className="inline-flex items-center justify-center px-2 py-1 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black text-[12px] capitalize opacity-70 shadow-sm transition-all dark:opacity-100 dark:bg-white dark:from-white dark:to-white dark:text-black">
-                        {t('common.yes')}
-                      </div>
-                    ) : (
-                      <div className="inline-flex items-center justify-center px-2 py-1 rounded-xl bg-slate-100 text-slate-500 font-bold text-[12px] capitalize tracking-wider dark:bg-slate-800 dark:text-slate-400">
-                        {t('common.no')}
-                      </div>
+                    return (
+                      <AccessControlBooleanBadge
+                        value={row.isSystemAdmin}
+                        yesLabel={t('common.yes')}
+                        noLabel={t('common.no')}
+                        variant="admin"
+                      />
                     );
                   }
                   if (key === 'isActive') {
-                    return row.isActive ? (
-                      <div className="inline-flex items-center justify-center px-2 py-1 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black text-[12px] capitalize opacity-70 shadow-sm transition-all dark:opacity-100 dark:bg-white dark:from-white dark:to-white dark:text-black">
-                        {t('common.yes')}
-                      </div>
-                    ) : (
-                      <div className="inline-flex items-center justify-center px-2 py-1 rounded-xl bg-slate-100 text-slate-500 font-bold text-[12px] capitalize tracking-wider dark:bg-slate-800 dark:text-slate-400">
-                        {t('common.no')}
-                      </div>
+                    return (
+                      <AccessControlBooleanBadge
+                        value={row.isActive}
+                        yesLabel={t('common.yes')}
+                        noLabel={t('common.no')}
+                      />
                     );
                   }
                   if (key === 'permissionCount') {
+                    const count = row.permissionDefinitionIds?.length ?? row.permissionCodes?.length ?? 0;
                     return (
-                      <Badge variant="secondary" className="font-bold">
-                        {row.permissionDefinitionIds?.length ?? row.permissionCodes?.length ?? 0}
-                      </Badge>
+                      <div className="flex justify-center">
+                        <Badge
+                          variant="outline"
+                          className={cn(
+                            'min-w-[2rem] justify-center rounded-full border-sky-200/80 bg-sky-50 px-2.5 py-0.5 font-bold text-sky-700 dark:border-sky-500/30 dark:bg-sky-500/15 dark:text-sky-300'
+                          )}
+                        >
+                          {count}
+                        </Badge>
+                      </div>
                     );
                   }
                   return '-';
