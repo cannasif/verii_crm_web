@@ -817,7 +817,7 @@ export function OutlookCustomerMailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-0.75rem)] sm:w-[calc(100vw-2rem)] max-w-[900px] p-0 overflow-hidden bg-white dark:bg-[#100c1c] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl flex flex-col max-h-[min(92dvh,900px)] sm:max-h-[92vh] rounded-2xl">
+      <DialogContent className="w-[calc(100vw-0.75rem)] sm:w-[calc(100vw-2rem)] !max-w-[1200px] p-0 overflow-hidden bg-white dark:bg-[#100c1c] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl flex flex-col max-h-[min(92dvh,900px)] sm:max-h-[92vh] rounded-2xl">
 
         <DialogHeader className="shrink-0 px-5 pt-5 pb-4 sm:px-6 sm:pt-6 sm:pb-5 border-b border-slate-100 dark:border-white/6">
           <div className="flex items-start gap-3 pr-8">
@@ -1030,11 +1030,10 @@ export function OutlookCustomerMailDialog({
                                 key={item.key}
                                 type="button"
                                 onClick={() => handleTemplateChange(item.key)}
-                                className={`rounded-full px-3 py-1 text-xs font-medium border transition-all ${
-                                  templateKey === item.key
+                                className={`rounded-full px-3 py-1 text-xs font-medium border transition-all ${templateKey === item.key
                                     ? 'bg-sky-600 border-sky-600 text-white shadow-sm'
                                     : 'bg-white dark:bg-white/4 border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:border-sky-400 hover:text-sky-700 dark:hover:text-sky-300'
-                                }`}
+                                  }`}
                               >
                                 {t(`mailDialog.templateNames.${item.key}`)}
                               </button>
@@ -1124,11 +1123,10 @@ export function OutlookCustomerMailDialog({
                                       key={item.id}
                                       type="button"
                                       onClick={() => setSelectedPdfTemplateId(String(item.id))}
-                                      className={`rounded-xl border px-3 py-3 text-left transition-all ${
-                                        isSelected
+                                      className={`rounded-xl border px-3 py-3 text-left transition-all ${isSelected
                                           ? 'border-violet-500 bg-violet-50 dark:bg-violet-950/30 shadow-sm'
                                           : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/4 hover:border-violet-300 dark:hover:border-violet-700'
-                                      }`}
+                                        }`}
                                     >
                                       <div className="flex items-start justify-between gap-2">
                                         <div className="min-w-0">
@@ -1142,11 +1140,10 @@ export function OutlookCustomerMailDialog({
                                           </div>
                                         </div>
                                         <span
-                                          className={`mt-0.5 inline-flex h-4 w-4 shrink-0 rounded-full border ${
-                                            isSelected
+                                          className={`mt-0.5 inline-flex h-4 w-4 shrink-0 rounded-full border ${isSelected
                                               ? 'border-violet-500 bg-violet-500 shadow-[0_0_0_3px_rgba(139,92,246,0.18)]'
                                               : 'border-slate-300 dark:border-slate-600'
-                                          }`}
+                                            }`}
                                         />
                                       </div>
                                     </button>
@@ -1160,10 +1157,10 @@ export function OutlookCustomerMailDialog({
                             <div className="rounded-lg border border-dashed border-slate-200 dark:border-white/10 px-3 py-2.5 text-xs text-slate-500 dark:text-slate-400">
                               {selectedPdfTemplateId
                                 ? t('mailDialog.selectedPdfTemplateSummary', {
-                                    name:
-                                      availablePdfTemplates.find((item) => String(item.id) === selectedPdfTemplateId)?.title ??
-                                      '-',
-                                  })
+                                  name:
+                                    availablePdfTemplates.find((item) => String(item.id) === selectedPdfTemplateId)?.title ??
+                                    '-',
+                                })
                                 : t('mailDialog.pdfTemplatePlaceholder')}
                             </div>
                             <div className="flex items-end">
