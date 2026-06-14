@@ -1,8 +1,7 @@
 import { type ReactElement, type ReactNode, useEffect, useMemo, useState, useRef } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -448,10 +447,13 @@ export function ActivityForm({
     }
   };
 
-  const handleInvalidSubmit = (): void => {
-    toast.error(t('error'), {
-      description: t('validationError'),
-    });
+  const handleInvalidSubmit = (errors: FieldErrors<ActivityFormSchema>): void => {
+    setActiveTab('details');
+    const fieldNames = Object.keys(errors);
+    const firstField = fieldNames[0] as keyof ActivityFormSchema | undefined;
+    if (firstField) {
+      form.setFocus(firstField);
+    }
   };
 
   const addPresetReminder = (offsetMinutes: number): void => {
@@ -463,13 +465,13 @@ export function ActivityForm({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false} className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl">
-        <DialogHeader className="px-6 py-4 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between shrink-0">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shrink-0">
-              <Calendar size={20} className="text-white" />
+        <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-white/95 dark:bg-[#130822]/95 shrink-0">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg shadow-pink-500/20 shrink-0">
+              <Calendar size={24} className="text-white" />
             </div>
-            <div className="min-w-0">
-              <DialogTitle className="text-lg font-semibold text-slate-900 dark:text-white truncate">
+            <div className="min-w-0 space-y-1">
+              <DialogTitle className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white truncate">
                 {activity ? t('edit') : t('create')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm truncate">
@@ -916,8 +918,8 @@ export function ActivityForm({
                     >
                       <Button
                         type="submit"
-                        disabled={isSubmitting || !isFormValid}
-                        className="h-11 w-full px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md sm:w-auto"
+                        disabled={isSubmitting}
+                        className="h-11 w-full px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-black shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 sm:w-auto"
                       >
                         {isSubmitting ? t('saving', { ns: 'common' }) : activity ? t('update', { ns: 'common' }) : t('save', { ns: 'common' })}
                       </Button>

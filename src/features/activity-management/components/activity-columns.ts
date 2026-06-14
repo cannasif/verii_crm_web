@@ -1,4 +1,5 @@
 import type { TFunction } from 'i18next';
+import { MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME, MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME } from '@/lib/management-list-layout';
 import type { ActivityDto } from '../types/activity-types';
 
 const AM_NS = 'activity-management' as const;
@@ -12,11 +13,19 @@ export interface ActivityColumnDef<T> {
   key: keyof T | string;
   label: string;
   className?: string;
+  headClassName?: string;
 }
+
+const idColumnSurface = MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME;
 
 export function getActivityColumns(t: TFunction): ActivityColumnDef<ActivityDto>[] {
   return [
-    { key: 'id', label: ta(t, 'id'), className: 'font-medium w-[48px] md:w-[60px]' },
+    {
+      key: 'id',
+      label: ta(t, 'id'),
+      headClassName: idColumnSurface,
+      className: MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME,
+    },
     {
       key: 'subject',
       label: ta(t, 'subject'),
