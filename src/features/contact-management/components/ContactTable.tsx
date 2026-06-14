@@ -12,7 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { MANAGEMENT_DATA_GRID_CLASSNAME } from '@/lib/management-list-layout';
+import { MANAGEMENT_DATA_GRID_CLASSNAME, MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME, MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME } from '@/lib/management-list-layout';
 import { useDeleteContact } from '../hooks/useDeleteContact';
 import type { ContactDto } from '../types/contact-types';
 import {
@@ -35,6 +35,7 @@ export interface ColumnDef<T> {
   label: string;
   type: 'text' | 'email' | 'phone' | 'mobile' | 'date' | 'user' | 'customer' | 'title' | 'status' | 'salutation';
   className?: string;
+  headClassName?: string;
 }
 
 type ContactColumnKey = keyof ContactDto;
@@ -75,8 +76,16 @@ interface ContactTableProps {
   onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
+const idColumnSurface = MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME;
+
 export const getColumnsConfig = (t: TFunction): ColumnDef<ContactDto>[] => [
-  { key: 'id', label: t('table.id'), type: 'text', className: 'font-medium w-[60px] md:w-[80px]' },
+  {
+    key: 'id',
+    label: t('table.id'),
+    type: 'text',
+    headClassName: idColumnSurface,
+    className: MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME,
+  },
   { key: 'salutation', label: t('table.salutation'), type: 'salutation', className: 'w-[96px] md:w-[120px]' },
   { key: 'fullName', label: t('table.fullName'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[160px] md:min-w-[200px]' },
   { key: 'email', label: t('table.email'), type: 'email', className: 'min-w-[160px] md:min-w-[200px] break-all' },

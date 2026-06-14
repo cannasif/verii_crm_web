@@ -165,12 +165,28 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   } else if (typeof body === "string" && body.startsWith("activityManagement.")) {
     const activityKey = body.replace(/^activityManagement\./, "")
     text = t(activityKey, { ns: "activity-management", defaultValue: t(body) })
+  } else if (typeof body === "string" && body.startsWith("contactManagement.")) {
+    const contactKey = body.replace(/^contactManagement\./, "")
+    text = t(contactKey, { ns: "contact-management", defaultValue: t(body) })
+  } else if (typeof body === "string" && body.startsWith("customerTypeManagement.")) {
+    const customerTypeKey = body.replace(/^customerTypeManagement\./, "")
+    text = t(customerTypeKey, { ns: "customer-type-management", defaultValue: t(body) })
   } else if (typeof body === "string" && body.startsWith("form.")) {
     const userManagementText = t(body, { ns: "user-management", defaultValue: "" })
     if (userManagementText && userManagementText !== body) {
       text = userManagementText
     } else {
-      text = t(body, { ns: "customer-management", defaultValue: body })
+      const contactManagementText = t(body, { ns: "contact-management", defaultValue: "" })
+      if (contactManagementText && contactManagementText !== body) {
+        text = contactManagementText
+      } else {
+        const customerTypeManagementText = t(body, { ns: "customer-type-management", defaultValue: "" })
+        if (customerTypeManagementText && customerTypeManagementText !== body) {
+          text = customerTypeManagementText
+        } else {
+          text = t(body, { ns: "customer-management", defaultValue: body })
+        }
+      }
     }
   } else if (
     typeof body === "string" &&

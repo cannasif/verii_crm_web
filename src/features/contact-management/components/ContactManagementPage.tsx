@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Eye, EyeOff, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,6 +23,7 @@ import { ContactStats } from './ContactStats';
 import { useCreateContact } from '../hooks/useCreateContact';
 import { useUpdateContact } from '../hooks/useUpdateContact';
 import { useContactList } from '../hooks/useContactList';
+import { useContactStats } from '../hooks/useContactStats';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
@@ -76,6 +77,11 @@ export function ContactManagementPage(): ReactElement {
   const [formOpen, setFormOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<ContactDto | null>(null);
   const [quickActivityContact, setQuickActivityContact] = useState<ContactDto | null>(null);
+  const [showStats, setShowStats] = useState(() => {
+    const userId = useAuthStore.getState().user?.id;
+    const stored = localStorage.getItem(`contact-management-show-stats-${userId || 'default'}`);
+    return stored !== null ? stored === 'true' : true;
+  });
 
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
@@ -110,10 +116,16 @@ export function ContactManagementPage(): ReactElement {
   }, [t, setPageTitle]);
 
   useEffect(() => {
+    localStorage.setItem(`contact-management-show-stats-${user?.id || 'default'}`, String(showStats));
+  }, [showStats, user?.id]);
+
+  useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
     setVisibleColumns(prefs.visibleKeys);
     setColumnOrder(prefs.order);
   }, [user?.id, defaultColumnKeys]);
+
+  const { data: contactStats, isLoading: isStatsLoading } = useContactStats();
 
   const { data: apiResponse, isLoading } = useContactList({
     pageNumber,
@@ -309,6 +321,7 @@ export function ContactManagementPage(): ReactElement {
       tableColumns.map((c) => ({
         key: c.key as ContactColumnKey,
         label: c.label,
+        headClassName: c.headClassName,
         cellClassName: c.className,
       })),
     [tableColumns]
@@ -316,26 +329,40 @@ export function ContactManagementPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2 pb-4">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
-            {t('menu')}
-          </h1>
-          <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
-            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
-            {t('description')}
-          </p>
+      <div className="space-y-3">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-2">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
+              {t('menu')}
+            </h1>
+            <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
+              <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+              {t('description')}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowStats((prev) => !prev)}
+              className="h-12 px-5 border-slate-200 dark:border-zinc-800 text-zinc-700 dark:text-zinc-300 rounded-2xl hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all duration-300 active:scale-[0.98]"
+            >
+              {showStats ? <EyeOff size={18} className="mr-2" /> : <Eye size={18} className="mr-2" />}
+              {showStats
+                ? t('hideStats', { defaultValue: 'İstatistikleri Gizle' })
+                : t('showStats', { defaultValue: 'İstatistikleri Göster' })}
+            </Button>
+            <Button
+              onClick={handleAddClick}
+              className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            >
+              <Plus size={20} className="mr-2 stroke-[3px]" />
+              {t('addButton')}
+            </Button>
+          </div>
         </div>
-        <Button
-          onClick={handleAddClick}
-          className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
-        >
-          <Plus size={20} className="mr-2 stroke-[3px]" />
-          {t('addButton')}
-        </Button>
-      </div>
 
-      <ContactStats />
+        {showStats && <ContactStats stats={contactStats} isLoading={isStatsLoading} />}
+      </div>
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>

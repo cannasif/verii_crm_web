@@ -1,6 +1,5 @@
 import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useContactStats } from '../hooks/useContactStats';
 import { Users, CheckCircle2, Zap } from 'lucide-react';
 import {
   Card,
@@ -8,20 +7,26 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import type { ContactStats as ContactStatsData } from '../hooks/useContactStats';
 
-export function ContactStats(): ReactElement {
-  const { t } = useTranslation();
-  const { data: stats, isLoading } = useContactStats();
+const CONTACT_NS = 'contact-management' as const;
 
-  // Yükleme Durumu (Skeleton)
+interface ContactStatsProps {
+  stats?: ContactStatsData;
+  isLoading?: boolean;
+}
+
+export function ContactStats({ stats, isLoading = false }: ContactStatsProps): ReactElement {
+  const { t } = useTranslation([CONTACT_NS, 'common']);
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="bg-white/50 dark:bg-[#1a1025]/40 border border-slate-200 dark:border-white/5 shadow-sm">
+          <Card key={i} className="border-slate-300/80 bg-stone-50/95 shadow-sm ring-1 ring-slate-200/60 dark:border-white/5 dark:bg-[#1a1025]/40 dark:ring-0">
             <CardHeader>
               <CardTitle className="text-sm font-medium text-slate-400">
-                {t('contactManagement.loading')}
+                {t('loading', { ns: CONTACT_NS })}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -37,65 +42,66 @@ export function ContactStats(): ReactElement {
     return <></>;
   }
 
-  // ORTAK TASARIM DEĞİŞKENLERİ (CustomerStats ile birebir uyumlu)
   const cardStyle = `
-    bg-white/60 dark:bg-[#1a1025]/40 
-    border shadow-sm
-    backdrop-blur-md 
-    transition-all duration-300 
+    bg-stone-50/95 dark:bg-[#1a1025]/40
+    border border-slate-300/80 dark:border-white/5
+    shadow-sm ring-1 ring-slate-200/60 dark:ring-0
+    hover:border-slate-400/70 hover:shadow-md dark:hover:border-pink-500/30
+    hover:bg-stone-100/90 dark:hover:bg-[#1a1025]/80
+    backdrop-blur-md
+    transition-all duration-300
     group relative overflow-hidden
-    p-4 rounded-2xl flex flex-col justify-between
   `;
 
-  const glowStyle = "absolute inset-0 bg-linear-to-r from-pink-50/0 to-orange-50/0 dark:from-pink-500/0 dark:to-orange-500/0 group-hover:from-pink-50/50 group-hover:to-orange-50/50 dark:group-hover:from-pink-500/5 dark:group-hover:to-orange-500/5 transition-all duration-500 pointer-events-none";
+  const glowStyle =
+    'absolute inset-0 bg-linear-to-r from-pink-50/0 to-orange-50/0 dark:from-pink-500/0 dark:to-orange-500/0 group-hover:from-pink-50/50 group-hover:to-orange-50/50 dark:group-hover:from-pink-500/5 dark:group-hover:to-orange-500/5 transition-all duration-500 pointer-events-none';
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-
-      <div className={`${cardStyle} border-blue-400 dark:border-blue-400/50 `}>
+      <Card className={cardStyle}>
         <div className={glowStyle} />
-        <div className="flex justify-between items-start relative z-10">
-          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('contactManagement.stats.totalContacts')}
-          </span>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+          <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            {t('stats.totalContacts', { ns: CONTACT_NS })}
+          </CardTitle>
           <div className="p-2 bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 rounded-lg shadow-sm border border-blue-100 dark:border-blue-500/20">
             <Users size={18} />
           </div>
-        </div>
-        <div className="mt-2 relative z-10">
-          <div className="text-2xl font-bold text-slate-800 dark:text-white">{stats.totalContacts}</div>
-        </div>
-      </div>
+        </CardHeader>
+        <CardContent className="relative z-10">
+          <div className="text-3xl font-bold text-slate-800 dark:text-white">{stats.totalContacts}</div>
+        </CardContent>
+      </Card>
 
-      <div className={`${cardStyle} border-green-400 dark:border-green-400/50`}>
+      <Card className={cardStyle}>
         <div className={glowStyle} />
-        <div className="flex justify-between items-start relative z-10">
-          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('contactManagement.stats.activeContacts')}
-          </span>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+          <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            {t('stats.activeContacts', { ns: CONTACT_NS })}
+          </CardTitle>
           <div className="p-2 bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400 rounded-lg shadow-sm border border-green-100 dark:border-green-500/20">
             <CheckCircle2 size={18} />
           </div>
-        </div>
-        <div className="mt-2 relative z-10">
-          <div className="text-2xl font-bold text-slate-800 dark:text-white">{stats.activeContacts}</div>
-        </div>
-      </div>
+        </CardHeader>
+        <CardContent className="relative z-10">
+          <div className="text-3xl font-bold text-slate-800 dark:text-white">{stats.activeContacts}</div>
+        </CardContent>
+      </Card>
 
-      <div className={`${cardStyle} border-orange-400 dark:border-orange-400/50`}>
+      <Card className={cardStyle}>
         <div className={glowStyle} />
-        <div className="flex justify-between items-start relative z-10">
-          <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-            {t('contactManagement.stats.newThisMonth')}
-          </span>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
+          <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            {t('stats.newThisMonth', { ns: CONTACT_NS })}
+          </CardTitle>
           <div className="p-2 bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 rounded-lg shadow-sm border border-orange-100 dark:border-orange-500/20">
             <Zap size={18} />
           </div>
-        </div>
-        <div className="mt-2 relative z-10">
-          <div className="text-2xl font-bold text-slate-800 dark:text-white">{stats.newThisMonth}</div>
-        </div>
-      </div>
+        </CardHeader>
+        <CardContent className="relative z-10">
+          <div className="text-3xl font-bold text-slate-800 dark:text-white">{stats.newThisMonth}</div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

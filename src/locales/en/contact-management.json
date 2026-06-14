@@ -1,6 +1,8 @@
 {
   "menu": "Customer Contact Management",
-  "description": "Manage and edit customer contacts",
+  "description": "Manage and edit communications of people linked to customers",
+  "showStats": "Show Statistics",
+  "hideStats": "Hide Statistics",
   "addButton": "Add New Contact",
   "advancedFilter": {
     "columnFullName": "Full Name",

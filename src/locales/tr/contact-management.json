@@ -1,6 +1,8 @@
 {
   "menu": "Müşteri İletişim Yönetimi",
-  "description": "Müşteri iletişimlerini yönetin ve düzenleyin",
+  "description": "Müşterilere bağlı kişilerin iletişimlerini yönetin ve düzenleyin",
+  "showStats": "İstatistikleri Göster",
+  "hideStats": "İstatistikleri Gizle",
   "addButton": "Yeni İletişim Ekle",
   "quickActivity": "Hızlı Aktivite",
   "advancedFilter": {

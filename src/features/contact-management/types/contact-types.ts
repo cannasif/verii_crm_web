@@ -84,54 +84,101 @@ export interface ContactFormData {
   titleId?: number | null;
 }
 
+function normalizeEmailInput(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+  return value.trim();
+}
+
+function normalizePhoneInput(value: unknown): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  let result = '';
+  const cleaned = value.replace(/[^\d+]/g, '');
+
+  for (const char of cleaned) {
+    if (char === '+') {
+      if (result.length === 0) {
+        result += char;
+      }
+      continue;
+    }
+    result += char;
+  }
+
+  return result;
+}
+
 export const contactFormSchema = z.object({
   salutation: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
   firstName: z
     .string()
-    .min(1, 'contactManagement.form.firstNameRequired')
-    .max(100, 'contactManagement.form.fullName.maxLength'),
+    .min(1, 'form.firstNameRequired')
+    .max(100, 'form.fullNameMaxLength'),
   middleName: z
     .string()
-    .max(100, 'contactManagement.form.middleNameMaxLength')
+    .max(100, 'form.middleNameMaxLength')
     .optional()
     .or(z.literal('')),
   lastName: z
     .string()
-    .min(1, 'contactManagement.form.lastNameRequired')
-    .max(100, 'contactManagement.form.fullName.maxLength'),
+    .min(1, 'form.lastNameRequired')
+    .max(100, 'form.fullNameMaxLength'),
   fullName: z
     .string()
-    .max(250, 'contactManagement.form.fullName.maxLength')
+    .max(250, 'form.fullNameMaxLength')
     .optional()
     .or(z.literal('')),
-  email: z
-    .string()
-    .email('contactManagement.form.email.invalid')
-    .max(100, 'contactManagement.form.email.maxLength')
-    .optional()
-    .or(z.literal('')),
-  phone: z
-    .string()
-    .max(20, 'contactManagement.form.phone.maxLength')
-    .optional()
-    .or(z.literal('')),
-  mobile: z
-    .string()
-    .max(20, 'contactManagement.form.mobile.maxLength')
-    .optional()
-    .or(z.literal('')),
+  email: z.preprocess(
+    normalizeEmailInput,
+    z.union([
+      z.literal(''),
+      z
+        .string()
+        .max(100, 'form.emailMaxLength')
+        .superRefine((value, context) => {
+          if (value.length < 3) {
+            return;
+          }
+          const isValidEmail = z.string().email().safeParse(value).success;
+          if (!isValidEmail) {
+            context.addIssue({
+              code: 'custom',
+              message: 'form.emailInvalid',
+            });
+          }
+        }),
+    ])
+  ),
+  phone: z.preprocess(
+    normalizePhoneInput,
+    z.union([
+      z.literal(''),
+      z.string().max(20, 'form.phoneMaxLength'),
+    ])
+  ),
+  mobile: z.preprocess(
+    normalizePhoneInput,
+    z.union([
+      z.literal(''),
+      z.string().max(20, 'form.mobileMaxLength'),
+    ])
+  ),
   notes: z
     .string()
-    .max(250, 'contactManagement.form.notes.maxLength')
+    .max(250, 'form.notesMaxLength')
     .optional()
     .or(z.literal('')),
   customerId: z
     .number()
-    .min(1, 'contactManagement.form.customerRequired'),
+    .min(1, 'form.customerRequired'),
   titleId: z
     .number()
     .optional()
     .nullable(),
 });
 
-export type ContactFormSchema = z.infer<typeof contactFormSchema>;
+export type ContactFormSchema = z.output<typeof contactFormSchema>;

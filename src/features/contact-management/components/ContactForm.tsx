@@ -1,12 +1,12 @@
-import { type ReactElement, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
+import { useForm, type FieldErrors, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
 import { X } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -37,6 +37,7 @@ import {
 import { contactFormSchema, SALUTATION_TYPE, type ContactFormSchema } from '../types/contact-types';
 import type { ContactDto } from '../types/contact-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import { buildContactInputClassName, sanitizePhoneValue, useFieldShake } from '../utils/contact-form-ui';
 import {
   AddTeamIcon,
   UserCircleIcon,
@@ -89,6 +90,8 @@ const DROPDOWN_ITEM_STYLE = `
 
 const LABEL_STYLE = "text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide ml-1 mb-2 flex items-center gap-2";
 
+const CONTACT_NS = 'contact-management' as const;
+
 export function ContactForm({
   open,
   onOpenChange,
@@ -96,14 +99,20 @@ export function ContactForm({
   contact,
   isLoading = false,
 }: ContactFormProps): ReactElement {
-  const { t } = useTranslation();
+  const { t } = useTranslation([CONTACT_NS, 'common']);
+  const tf = useCallback(
+    (key: string, options?: Record<string, unknown>): string =>
+      t(`form.${key}`, { ns: CONTACT_NS, ...options }),
+    [t]
+  );
+  const { triggerShake, isShaking } = useFieldShake();
   const [customerSearchTerm, setCustomerSearchTerm] = useState('');
   const [titleSearchTerm, setTitleSearchTerm] = useState('');
   const customerDropdown = useCustomerOptionsInfinite(customerSearchTerm, open);
   const titleDropdown = useTitleOptionsInfinite(titleSearchTerm, open);
 
   const form = useForm<ContactFormSchema>({
-    resolver: zodResolver(contactFormSchema),
+    resolver: zodResolver(contactFormSchema) as Resolver<ContactFormSchema>,
     mode: 'onChange',
     reValidateMode: 'onChange',
     defaultValues: {
@@ -120,9 +129,11 @@ export function ContactForm({
       titleId: 0,
     },
   });
-  const isFormValid = form.formState.isValid;
-
   useEffect(() => {
+    if (!open) {
+      return;
+    }
+
     if (contact) {
       form.reset({
         salutation: contact.salutation ?? SALUTATION_TYPE.None,
@@ -137,35 +148,65 @@ export function ContactForm({
         customerId: contact.customerId,
         titleId: contact.titleId ?? 0,
       });
-    } else {
-      form.reset({
-        salutation: SALUTATION_TYPE.None,
-        firstName: '',
-        middleName: '',
-        lastName: '',
-        fullName: '',
-        email: '',
-        phone: '',
-        mobile: '',
-        notes: '',
-        customerId: 0,
-        titleId: 0,
-      });
+      return;
     }
-  }, [contact, form]);
+
+    form.reset({
+      salutation: SALUTATION_TYPE.None,
+      firstName: '',
+      middleName: '',
+      lastName: '',
+      fullName: '',
+      email: '',
+      phone: '',
+      mobile: '',
+      notes: '',
+      customerId: 0,
+      titleId: 0,
+    });
+  }, [open, contact?.id, contact, form]);
+
+  const handlePhoneFieldChange = useCallback(
+    (
+      fieldName: 'phone' | 'mobile',
+      rawValue: string,
+      maxLength: number,
+      overflowMessage: string,
+      onChange: (value: string) => void
+    ): void => {
+      const { next, overflowAttempt } = sanitizePhoneValue(rawValue, maxLength);
+      onChange(next);
+
+      if (overflowAttempt) {
+        form.setError(fieldName, { type: 'manual', message: overflowMessage });
+        triggerShake(fieldName);
+        void form.trigger(fieldName);
+        return;
+      }
+
+      if (form.formState.errors[fieldName]?.type === 'manual') {
+        form.clearErrors(fieldName);
+        void form.trigger(fieldName);
+      }
+    },
+    [form, triggerShake]
+  );
 
   const handleSubmit = async (data: ContactFormSchema): Promise<void> => {
     await onSubmit(data);
     if (!isLoading) {
-      form.reset();
       onOpenChange(false);
     }
   };
 
-  const handleInvalidSubmit = (): void => {
-    toast.error('Hata', {
-      description: 'Zorunlu alanlar doldurulmadı.',
-    });
+  const handleInvalidSubmit = (errors: FieldErrors<ContactFormSchema>): void => {
+    const fieldNames = Object.keys(errors);
+    fieldNames.forEach((fieldName) => triggerShake(fieldName));
+
+    const firstField = fieldNames[0] as keyof ContactFormSchema | undefined;
+    if (firstField) {
+      form.setFocus(firstField);
+    }
   };
 
   return (
@@ -177,9 +218,14 @@ export function ContactForm({
             <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg shadow-pink-500/20 shrink-0">
               <AddTeamIcon size={24} className="text-white" />
             </div>
-            <DialogTitle className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
-              {contact ? t('contactManagement.form.editContact') : t('contactManagement.form.addContact')}
-            </DialogTitle>
+            <div className="space-y-1">
+              <DialogTitle className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
+                {contact ? tf('editContact') : tf('addContact')}
+              </DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm">
+                {contact ? tf('editDescription') : tf('addDescription')}
+              </DialogDescription>
+            </div>
           </div>
           <Button
             variant="ghost"
@@ -200,14 +246,25 @@ export function ContactForm({
                 <FormField
                   control={form.control}
                   name="firstName"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'firstName')}>
                         <UserCircleIcon size={16} className="text-pink-500" />
-                        {t('contactManagement.form.firstName')}
+                        {tf('firstName')}
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.firstNamePlaceholder')} maxLength={100} />
+                        <Input
+                          {...field}
+                          className={buildContactInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('firstName'))}
+                          placeholder={tf('firstNamePlaceholder')}
+                          maxLength={100}
+                          onChange={(event) => {
+                            field.onChange(event);
+                            if (event.target.value.trim()) {
+                              form.clearErrors('firstName');
+                            }
+                          }}
+                        />
                       </FormControl>
                       <FormMessage className="text-xs" />
                     </FormItem>
@@ -221,7 +278,7 @@ export function ContactForm({
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
                         <UserCircleIcon size={16} className="text-pink-500" />
-                        {t('contactManagement.form.salutation')}
+                        {tf('salutation')}
                       </FormLabel>
                       <Select
                         onValueChange={(value) => field.onChange(Number(value))}
@@ -229,15 +286,15 @@ export function ContactForm({
                       >
                         <FormControl>
                           <SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}>
-                            <SelectValue placeholder={t('contactManagement.form.selectSalutation')} />
+                            <SelectValue placeholder={tf('selectSalutation')} />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className={DROPDOWN_CONTENT_STYLE}>
-                          <SelectItem value={String(SALUTATION_TYPE.None)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationNone')}</SelectItem>
-                          <SelectItem value={String(SALUTATION_TYPE.Mr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMr')}</SelectItem>
-                          <SelectItem value={String(SALUTATION_TYPE.Ms)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMs')}</SelectItem>
-                          <SelectItem value={String(SALUTATION_TYPE.Mrs)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationMrs')}</SelectItem>
-                          <SelectItem value={String(SALUTATION_TYPE.Dr)} className={DROPDOWN_ITEM_STYLE}>{t('contactManagement.form.salutationDr')}</SelectItem>
+                          <SelectItem value={String(SALUTATION_TYPE.None)} className={DROPDOWN_ITEM_STYLE}>{tf('salutationNone')}</SelectItem>
+                          <SelectItem value={String(SALUTATION_TYPE.Mr)} className={DROPDOWN_ITEM_STYLE}>{tf('salutationMr')}</SelectItem>
+                          <SelectItem value={String(SALUTATION_TYPE.Ms)} className={DROPDOWN_ITEM_STYLE}>{tf('salutationMs')}</SelectItem>
+                          <SelectItem value={String(SALUTATION_TYPE.Mrs)} className={DROPDOWN_ITEM_STYLE}>{tf('salutationMrs')}</SelectItem>
+                          <SelectItem value={String(SALUTATION_TYPE.Dr)} className={DROPDOWN_ITEM_STYLE}>{tf('salutationDr')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage className="text-xs" />
@@ -248,14 +305,25 @@ export function ContactForm({
                 <FormField
                   control={form.control}
                   name="lastName"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'lastName')}>
                         <UserCircleIcon size={16} className="text-pink-500" />
-                        {t('contactManagement.form.lastName')}
+                        {tf('lastName')}
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.lastNamePlaceholder')} maxLength={100} />
+                        <Input
+                          {...field}
+                          className={buildContactInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('lastName'))}
+                          placeholder={tf('lastNamePlaceholder')}
+                          maxLength={100}
+                          onChange={(event) => {
+                            field.onChange(event);
+                            if (event.target.value.trim()) {
+                              form.clearErrors('lastName');
+                            }
+                          }}
+                        />
                       </FormControl>
                       <FormMessage className="text-xs" />
                     </FormItem>
@@ -309,24 +377,30 @@ export function ContactForm({
                 <FormField
                   control={form.control}
                   name="customerId"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'customerId')}>
                         <Building03Icon size={16} className="text-pink-500" />
-                        {t('contactManagement.form.customer')}
+                        {tf('customer')}
                       </FormLabel>
                       <VoiceSearchCombobox
                         options={customerDropdown.options}
                         value={field.value && field.value !== 0 ? field.value.toString() : ''}
-                        onSelect={(value) => field.onChange(value ? Number(value) : 0)}
+                        onSelect={(value) => {
+                          const nextValue = value ? Number(value) : 0;
+                          field.onChange(nextValue);
+                          if (nextValue > 0) {
+                            form.clearErrors('customerId');
+                          }
+                        }}
                         onDebouncedSearchChange={setCustomerSearchTerm}
                         onFetchNextPage={customerDropdown.fetchNextPage}
                         hasNextPage={customerDropdown.hasNextPage}
                         isLoading={customerDropdown.isLoading}
                         isFetchingNextPage={customerDropdown.isFetchingNextPage}
-                        placeholder={t('contactManagement.form.selectCustomer')}
+                        placeholder={tf('selectCustomer')}
                         searchPlaceholder={t('common.search')}
-                        className={INPUT_STYLE}
+                        className={buildContactInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('customerId'))}
                       />
                       <FormMessage className="text-xs" />
                     </FormItem>
@@ -336,14 +410,30 @@ export function ContactForm({
                 <FormField
                   control={form.control}
                   name="mobile"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
                         <SmartPhone01Icon size={16} className="text-pink-500" />
-                        {t('contactManagement.form.mobile')}
+                        {tf('mobile')}
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.mobilePlaceholderExample')} maxLength={20} />
+                        <Input
+                          {...field}
+                          inputMode="tel"
+                          autoComplete="off"
+                          className={buildContactInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('mobile'))}
+                          placeholder={tf('mobilePlaceholderExample')}
+                          maxLength={20}
+                          onChange={(event) =>
+                            handlePhoneFieldChange(
+                              'mobile',
+                              event.target.value,
+                              20,
+                              tf('mobileMaxLength'),
+                              field.onChange
+                            )
+                          }
+                        />
                       </FormControl>
                       <FormMessage className="text-xs" />
                     </FormItem>
@@ -353,14 +443,30 @@ export function ContactForm({
                 <FormField
                   control={form.control}
                   name="phone"
-                  render={({ field }) => (
+                  render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
                         <Call02Icon size={16} className="text-pink-500" />
-                        {t('contactManagement.form.phone')}
+                        {tf('phone')}
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} className={INPUT_STYLE} placeholder={t('contactManagement.form.phonePlaceholderExample')} maxLength={20} />
+                        <Input
+                          {...field}
+                          inputMode="tel"
+                          autoComplete="off"
+                          className={buildContactInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('phone'))}
+                          placeholder={tf('phonePlaceholderExample')}
+                          maxLength={20}
+                          onChange={(event) =>
+                            handlePhoneFieldChange(
+                              'phone',
+                              event.target.value,
+                              20,
+                              tf('phoneMaxLength'),
+                              field.onChange
+                            )
+                          }
+                        />
                       </FormControl>
                       <FormMessage className="text-xs" />
                     </FormItem>
@@ -371,14 +477,27 @@ export function ContactForm({
                   <FormField
                     control={form.control}
                     name="email"
-                    render={({ field }) => (
+                    render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
                           <Mail01Icon size={16} className="text-pink-500" />
-                          {t('contactManagement.form.email')}
+                          {tf('email')}
                         </FormLabel>
                         <FormControl>
-                          <Input {...field} type="email" className={INPUT_STYLE} placeholder={t('contactManagement.form.emailPlaceholderExample')} maxLength={100} />
+                          <Input
+                            {...field}
+                            type="email"
+                            autoComplete="off"
+                            className={buildContactInputClassName(INPUT_STYLE, !!fieldState.error, isShaking('email'))}
+                            placeholder={tf('emailPlaceholderExample')}
+                            maxLength={100}
+                            onChange={(event) => {
+                              field.onChange(event);
+                              if (form.formState.errors.email) {
+                                void form.trigger('email');
+                              }
+                            }}
+                          />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
@@ -423,15 +542,15 @@ export function ContactForm({
             disabled={isLoading}
             className="w-full sm:w-auto h-12 rounded-xl border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 font-semibold transition-all"
           >
-            {t('contactManagement.cancel')}
+            {t('cancel', { ns: CONTACT_NS })}
           </Button>
           <Button
             type="submit"
             form="contact-form"
-            disabled={isLoading || !isFormValid}
+            disabled={isLoading}
             className="w-full sm:w-auto h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-black rounded-xl shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
-            {isLoading ? t('contactManagement.saving') : t('contactManagement.save')}
+            {isLoading ? t('saving', { ns: CONTACT_NS }) : t('save', { ns: CONTACT_NS })}
           </Button>
         </DialogFooter>
 
