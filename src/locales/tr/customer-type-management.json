@@ -1,6 +1,8 @@
 {
   "menu": "Müşteri Tipi Yönetimi",
   "description": "Müşteri tiplerini yönetin ve düzenleyin",
+  "showStats": "İstatistikleri Göster",
+  "hideStats": "İstatistikleri Gizle",
   "addButton": "Yeni Müşteri Tipi Ekle",
   "loading": "Yükleniyor...",
   "error": "Hata oluştu",

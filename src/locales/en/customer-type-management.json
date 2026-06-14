@@ -1,6 +1,8 @@
 {
   "menu": "Customer Type Management",
   "description": "Manage and edit customer types",
+  "showStats": "Show Statistics",
+  "hideStats": "Hide Statistics",
   "addButton": "Add New Customer Type",
   "loading": "Loading...",
   "noData": "No data found",

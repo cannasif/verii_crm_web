@@ -35,11 +35,11 @@ export interface CustomerTypeFormData {
 export const customerTypeFormSchema = z.object({
   name: z
     .string()
-    .min(1, 'customerTypeManagement.form.nameRequired')
-    .max(100, 'customerTypeManagement.form.nameMaxLength'),
+    .min(1, 'form.nameRequired')
+    .max(100, 'form.nameMaxLength'),
   description: z
     .string()
-    .max(500, 'customerTypeManagement.form.descriptionMaxLength')
+    .max(500, 'form.descriptionMaxLength')
     .optional()
     .or(z.literal('')),
 });

@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { MANAGEMENT_DATA_GRID_CLASSNAME } from '@/lib/management-list-layout';
+import { MANAGEMENT_DATA_GRID_CLASSNAME, MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME, MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME } from '@/lib/management-list-layout';
 import { useDeleteCustomerType } from '../hooks/useDeleteCustomerType';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import type { CustomerTypeDto } from '../types/customer-type-types';
@@ -25,6 +25,7 @@ export interface ColumnDef<T> {
   label: string;
   type: 'text' | 'date' | 'user' | 'badge' | 'description';
   className?: string;
+  headClassName?: string;
 }
 
 type CustomerTypeColumnKey = keyof CustomerTypeDto;
@@ -64,8 +65,16 @@ interface CustomerTypeTableProps {
   onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
+const idColumnSurface = MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME;
+
 export const getColumnsConfig = (t: TFunction): ColumnDef<CustomerTypeDto>[] => [
-  { key: 'id', label: t('table.id'), type: 'text', className: 'font-medium w-[50px] md:w-[70px]' },
+  {
+    key: 'id',
+    label: t('table.id'),
+    type: 'text',
+    headClassName: idColumnSurface,
+    className: MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME,
+  },
   { key: 'name', label: t('table.name'), type: 'badge', className: 'font-semibold text-slate-900 dark:text-white min-w-[140px] md:min-w-[180px]' },
   { key: 'description', label: t('table.description'), type: 'description', className: 'min-w-[180px] md:min-w-[220px] max-w-[300px]' },
   { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
