@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import {
@@ -65,7 +65,6 @@ export function PaymentTypeForm({
       description: '',
     },
   });
-  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (paymentType) {
@@ -86,6 +85,14 @@ export function PaymentTypeForm({
     if (!isLoading) {
       form.reset();
       onOpenChange(false);
+    }
+  };
+
+  const handleInvalidSubmit = (errors: FieldErrors<PaymentTypeFormSchema>): void => {
+    const fieldNames = Object.keys(errors);
+    const firstField = fieldNames[0] as keyof PaymentTypeFormSchema | undefined;
+    if (firstField) {
+      form.setFocus(firstField);
     }
   };
 
@@ -119,7 +126,7 @@ export function PaymentTypeForm({
 
         <div className="flex-1 overflow-y-auto p-6 sm:p-8">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="grid md:grid-cols-2 gap-6">
+            <form onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="grid md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -178,8 +185,8 @@ export function PaymentTypeForm({
             {t('paymentTypeManagement.cancel')}
           </Button>
           <Button
-            onClick={form.handleSubmit(handleSubmit)}
-            disabled={isLoading || !isFormValid}
+            onClick={form.handleSubmit(handleSubmit, handleInvalidSubmit)}
+            disabled={isLoading}
             className="h-12 px-10 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading ? (

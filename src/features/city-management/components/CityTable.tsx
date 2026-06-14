@@ -16,18 +16,20 @@ import type { CityDto } from '../types/city-types';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { MANAGEMENT_LIST_ID_COLUMN_DEF } from '@/lib/management-list-layout';
 
 export interface ColumnDef<T> {
   key: keyof T;
   label: string;
   type: 'text' | 'date' | 'user' | 'id' | 'country';
   className?: string;
+  headClassName?: string;
 }
 
 type CityColumnKey = keyof CityDto;
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<CityDto>[] => [
-  { key: 'id', label: t('table.id'), type: 'id', className: 'w-[60px] md:w-[80px]' },
+  { key: 'id', label: t('table.id'), type: 'id', ...MANAGEMENT_LIST_ID_COLUMN_DEF },
   { key: 'name', label: t('table.name'), type: 'text', className: 'min-w-[140px] md:min-w-[200px] font-medium' },
   { key: 'erpCode', label: t('table.erpCode'), type: 'text', className: 'w-[100px] md:w-[140px]' },
   { key: 'countryName', label: t('table.countryName'), type: 'country', className: 'min-w-[140px] md:min-w-[180px]' },

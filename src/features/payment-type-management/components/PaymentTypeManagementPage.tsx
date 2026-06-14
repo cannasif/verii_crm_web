@@ -10,7 +10,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useQueryClient } from '@tanstack/react-query';
-import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { DataTableActionBar, ManagementListPageHeader, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
@@ -20,6 +20,7 @@ import {
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+  ADD_BUTTON_CLASS,
 } from '@/lib/management-list-layout';
 import { PAYMENT_TYPE_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { PaymentTypeTable, getColumnsConfig } from './PaymentTypeTable';
@@ -248,6 +249,7 @@ export function PaymentTypeManagementPage(): ReactElement {
       tableColumns.map((c) => ({
         key: c.key as PaymentTypeColumnKey,
         label: c.label,
+        headClassName: c.headClassName,
         cellClassName: c.className,
       })),
     [tableColumns]
@@ -319,23 +321,17 @@ export function PaymentTypeManagementPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('title')}
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('headerDescription')}
-          </p>
-        </div>
-        <Button
-          onClick={handleAddClick}
-          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
-        >
-          <Plus size={18} className="mr-2" />
-          {t('create', { defaultValue: t('common.create') })}
-        </Button>
-      </div>
+      <ManagementListPageHeader
+        title={t('title')}
+        description={t('headerDescription')}
+        backLabel={t('common.back', { ns: 'common', defaultValue: 'Geri' })}
+        actions={
+          <Button onClick={handleAddClick} className={ADD_BUTTON_CLASS}>
+            <Plus size={20} className="mr-2 stroke-[3px]" />
+            {t('create', { defaultValue: t('common.create') })}
+          </Button>
+        }
+      />
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>

@@ -16,11 +16,13 @@ import type { ApprovalRoleDto } from '../types/approval-role-types';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { MANAGEMENT_LIST_ID_COLUMN_DEF } from '@/lib/management-list-layout';
 
 export interface ColumnDef<T> {
   key: keyof T | 'actions';
   label: string;
   className?: string;
+  headClassName?: string;
 }
 
 const SORT_MAP: Record<string, string> = {
@@ -35,7 +37,7 @@ const SORT_MAP: Record<string, string> = {
 type ApprovalRoleColumnKey = keyof ApprovalRoleDto;
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalRoleDto>[] => [
-  { key: 'id', label: t('approvalRole.table.id'), className: 'w-[100px]' },
+  { key: 'id', label: t('approvalRole.table.id'), ...MANAGEMENT_LIST_ID_COLUMN_DEF },
   { key: 'approvalRoleGroupName', label: t('approvalRole.table.approvalRoleGroupName'), className: 'min-w-[180px]' },
   { key: 'name', label: t('approvalRole.table.name'), className: 'min-w-[160px]' },
   { key: 'maxAmount', label: t('approvalRole.table.maxAmount'), className: 'w-[140px]' },

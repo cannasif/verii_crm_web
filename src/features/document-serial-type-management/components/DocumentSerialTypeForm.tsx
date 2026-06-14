@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import {
@@ -89,7 +89,6 @@ export function DocumentSerialTypeForm({
       serialIncrement: 1,
     },
   });
-  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (documentSerialType) {
@@ -122,6 +121,14 @@ export function DocumentSerialTypeForm({
     if (!isLoading) {
       form.reset();
       onOpenChange(false);
+    }
+  };
+
+  const handleInvalidSubmit = (errors: FieldErrors<DocumentSerialTypeFormSchema>): void => {
+    const fieldNames = Object.keys(errors);
+    const firstField = fieldNames[0] as keyof DocumentSerialTypeFormSchema | undefined;
+    if (firstField) {
+      form.setFocus(firstField);
     }
   };
 
@@ -159,7 +166,7 @@ export function DocumentSerialTypeForm({
 
         <div className="flex-1 overflow-y-auto p-6 sm:p-8">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
@@ -396,8 +403,8 @@ export function DocumentSerialTypeForm({
             {t('common.cancel', { ns: 'common' })}
           </Button>
           <Button
-            onClick={form.handleSubmit(handleSubmit)}
-            disabled={isLoading || !isFormValid}
+            onClick={form.handleSubmit(handleSubmit, handleInvalidSubmit)}
+            disabled={isLoading}
             className="h-12 px-10 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading ? (

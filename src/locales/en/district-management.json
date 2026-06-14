@@ -2,6 +2,8 @@
   "menu": "District Management",
   "description": "Manage and edit districts",
   "addButton": "Add New District",
+  "showStats": "Show statistics",
+  "hideStats": "Hide statistics",
   "listTitle": "District List",
   "listDescription": "You can manage all registered districts in the system here.",
   "loading": "Loading...",

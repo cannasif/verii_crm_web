@@ -16,17 +16,19 @@ import type { ApprovalFlowDto } from '../types/approval-flow-types';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { MANAGEMENT_LIST_ID_COLUMN_DEF } from '@/lib/management-list-layout';
 
 export interface ColumnDef<T> {
   key: keyof T | 'actions';
   label: string;
   className?: string;
+  headClassName?: string;
 }
 
 type ApprovalFlowColumnKey = keyof ApprovalFlowDto;
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalFlowDto>[] => [
-  { key: 'id', label: t('approvalFlow.table.id'), className: 'w-[100px]' },
+  { key: 'id', label: t('approvalFlow.table.id'), ...MANAGEMENT_LIST_ID_COLUMN_DEF },
   { key: 'documentType', label: t('approvalFlow.table.documentType'), className: 'min-w-[150px]' },
   { key: 'description', label: t('approvalFlow.table.description'), className: 'min-w-[200px] max-w-[300px]' },
   { key: 'isActive', label: t('approvalFlow.table.isActive'), className: 'w-[120px]' },

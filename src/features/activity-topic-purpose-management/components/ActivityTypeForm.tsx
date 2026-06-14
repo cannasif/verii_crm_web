@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import {
@@ -67,7 +67,6 @@ export function ActivityTypeForm({
       description: '',
     },
   });
-  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (activityType) {
@@ -88,6 +87,14 @@ export function ActivityTypeForm({
     if (!isLoading) {
       form.reset();
       onOpenChange(false);
+    }
+  };
+
+  const handleInvalidSubmit = (errors: FieldErrors<ActivityTypeFormSchema>): void => {
+    const fieldNames = Object.keys(errors);
+    const firstField = fieldNames[0] as keyof ActivityTypeFormSchema | undefined;
+    if (firstField) {
+      form.setFocus(firstField);
     }
   };
 
@@ -130,7 +137,7 @@ export function ActivityTypeForm({
           <Form {...form}>
             <form
               id="activity-topic-form"
-              onSubmit={form.handleSubmit(handleSubmit)}
+              onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)}
               className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500"
             >
               <FormField
@@ -194,7 +201,7 @@ export function ActivityTypeForm({
           <Button
             type="submit"
             form="activity-topic-form"
-            disabled={isLoading || !isFormValid}
+            disabled={isLoading}
             className="h-12 px-10 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading ? (

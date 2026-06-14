@@ -74,6 +74,8 @@
   "menu": "User Management",
   "description": "Manage and edit users",
   "addButton": "Add New User",
+  "showStats": "Show statistics",
+  "hideStats": "Hide statistics",
   "table": {
     "id": "ID",
     "username": "Username",

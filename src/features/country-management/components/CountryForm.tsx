@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import {
@@ -72,7 +72,6 @@ export function CountryForm({
       erpCode: '',
     },
   });
-  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (country) {
@@ -122,6 +121,14 @@ export function CountryForm({
     }
   };
 
+  const handleInvalidSubmit = (errors: FieldErrors<CountryFormSchema>): void => {
+    const fieldNames = Object.keys(errors);
+    const firstField = fieldNames[0] as keyof CountryFormSchema | undefined;
+    if (firstField) {
+      form.setFocus(firstField);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(50vw-2rem)] !max-w-[96vw] xl:max-w-[600px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white/90 dark:bg-[#130822]/90 border border-slate-200/60 dark:border-white/10 shadow-2xl rounded-[2.5rem]">
@@ -156,7 +163,7 @@ export function CountryForm({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <form onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="flex-1 flex flex-col min-h-0 overflow-hidden">
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
               <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'header')} className="w-full flex-1 flex flex-col min-h-0">
 
@@ -247,7 +254,7 @@ export function CountryForm({
               </Button>
               <Button
                 type="submit"
-                disabled={isLoading || !isFormValid}
+                disabled={isLoading}
                 className="h-12 px-10 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
-import { DataTableGrid, DataTableActionBar, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
+import { DataTableGrid, DataTableActionBar, ManagementDataTableChrome, ManagementListPageHeader, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +39,7 @@ import {
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  MANAGEMENT_LIST_ID_COLUMN_DEF,
 } from '@/lib/management-list-layout';
 
 import { cn } from '@/lib/utils';
@@ -133,12 +134,13 @@ export function StockListPage(): ReactElement {
         ...col,
         headClassName: cn(
           'py-3 text-[11px] font-bold uppercase tracking-[0.1em] px-4',
+          col.key === 'Id' ? MANAGEMENT_LIST_ID_COLUMN_DEF.headClassName : '',
           col.key === 'unit' ? 'text-center w-[120px]' : '',
         ),
         cellClassName: cn(
           'py-2.5 transition-all duration-300 px-4',
           col.key === 'Id'
-            ? 'font-medium text-slate-500 w-[80px]'
+            ? MANAGEMENT_LIST_ID_COLUMN_DEF.className
             : col.key === 'ErpStockCode'
               ? 'font-semibold text-slate-900 dark:text-white'
               : col.key === 'StockName'
@@ -490,20 +492,17 @@ export function StockListPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('list.title')}
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('list.description')}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {canCreateMirrorStock ? <StockMirrorCreateDialog /> : null}
-          <StockBulkImageImportDialog />
-        </div>
-      </div>
+      <ManagementListPageHeader
+        title={t('list.title')}
+        description={t('list.description')}
+        backLabel={t('common.back', { ns: 'common', defaultValue: 'Geri' })}
+        actions={
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {canCreateMirrorStock ? <StockMirrorCreateDialog /> : null}
+            <StockBulkImageImportDialog />
+          </div>
+        }
+      />
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
           <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
             <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>

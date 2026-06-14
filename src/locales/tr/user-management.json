@@ -74,6 +74,8 @@
   "menu": "Kullanıcı Yönetimi",
   "description": "Kullanıcıları yönetin ve düzenleyin",
   "addButton": "Yeni Kullanıcı Ekle",
+  "showStats": "İstatistikleri Göster",
+  "hideStats": "İstatistikleri Gizle",
   "table": {
     "id": "ID",
     "username": "Kullanıcı Adı",

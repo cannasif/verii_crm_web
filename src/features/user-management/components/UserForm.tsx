@@ -543,7 +543,7 @@ export function UserForm({
                 >
                   <Button
                     type="submit"
-                    disabled={isLoading || !isFormValid}
+                    disabled={isLoading}
                     className="h-11 px-8 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md transition-all duration-200"
                   >
                     {isLoading ? t('form.saving') : t('form.save')}

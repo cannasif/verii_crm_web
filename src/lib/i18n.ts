@@ -159,7 +159,13 @@ function rebuildLanguageResources(lang: string): void {
     for (const [otherNs, scopedBundle] of Object.entries(scopedBundleByNs)) {
       if (otherNs === ns) continue;
       (baseCompatibility as Record<string, unknown>)[otherNs] = scopedBundle;
-      (baseCompatibility as Record<string, unknown>)[toCamelCase(otherNs)] = scopedBundle;
+      const camelOtherNs = toCamelCase(otherNs);
+      if (camelOtherNs !== otherNs) {
+        const existingAtCamel = (baseCompatibility as Record<string, unknown>)[camelOtherNs];
+        if (existingAtCamel === undefined || isPlainObject(existingAtCamel)) {
+          (baseCompatibility as Record<string, unknown>)[camelOtherNs] = scopedBundle;
+        }
+      }
       hoistFeatureRootsIntoBundle(baseCompatibility as Record<string, unknown>, otherNs, scopedBundle);
     }
 

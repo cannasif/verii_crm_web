@@ -16,17 +16,19 @@ import type { ApprovalUserRoleDto } from '../types/approval-user-role-types';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { MANAGEMENT_LIST_ID_COLUMN_DEF } from '@/lib/management-list-layout';
 
 export interface ColumnDef<T> {
   key: keyof T | 'actions';
   label: string;
   className?: string;
+  headClassName?: string;
 }
 
 type ApprovalUserRoleColumnKey = keyof ApprovalUserRoleDto;
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalUserRoleDto>[] => [
-  { key: 'id', label: t('approvalUserRole.table.id'), className: 'w-[100px]' },
+  { key: 'id', label: t('approvalUserRole.table.id'), ...MANAGEMENT_LIST_ID_COLUMN_DEF },
   { key: 'userFullName', label: t('approvalUserRole.table.userFullName'), className: 'min-w-[200px]' },
   { key: 'approvalRoleName', label: t('approvalUserRole.table.approvalRoleName'), className: 'min-w-[200px]' },
   { key: 'createdDate', label: t('approvalUserRole.table.createdDate'), className: 'w-[160px]' },

@@ -16,11 +16,13 @@ import type { ApprovalRoleGroupDto } from '../types/approval-role-group-types';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { MANAGEMENT_LIST_ID_COLUMN_DEF } from '@/lib/management-list-layout';
 
 export interface ColumnDef<T> {
   key: keyof T | 'actions';
   label: string;
   className?: string;
+  headClassName?: string;
 }
 
 type ApprovalRoleGroupColumnKey = keyof ApprovalRoleGroupDto;
@@ -62,7 +64,7 @@ interface ApprovalRoleGroupTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalRoleGroupDto>[] => [
-  { key: 'id', label: t('approvalRoleGroup.table.id'), className: 'w-[50px]' },
+  { key: 'id', label: t('approvalRoleGroup.table.id'), ...MANAGEMENT_LIST_ID_COLUMN_DEF },
   { key: 'name', label: t('approvalRoleGroup.table.name'), className: 'w-[200px]' },
   { key: 'createdDate', label: t('approvalRoleGroup.table.createdDate'), className: 'w-[160px]' },
   { key: 'createdByFullUser', label: t('approvalRoleGroup.table.createdBy'), className: 'w-[160px]' },

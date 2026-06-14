@@ -15,6 +15,7 @@ import { useDeleteActivityType } from '../hooks/useDeleteActivityType';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import type { ActivityTypeDto } from '../types/activity-type-types';
 import { Edit2, Trash2, FileText, Calendar, User, ListTodo } from 'lucide-react';
+import { MANAGEMENT_LIST_ID_COLUMN_DEF } from '@/lib/management-list-layout';
 import { Alert02Icon } from 'hugeicons-react';
 
 export interface ColumnDef<T> {
@@ -22,6 +23,7 @@ export interface ColumnDef<T> {
   label: string;
   type: 'text' | 'date' | 'user' | 'description';
   className?: string;
+  headClassName?: string;
 }
 
 type ActivityTypeColumnKey = keyof ActivityTypeDto;
@@ -62,7 +64,7 @@ interface ActivityTypeTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ActivityTypeDto>[] => [
-  { key: 'id', label: t('table.id'), type: 'text', className: 'font-medium w-[80px]' },
+  { key: 'id', label: t('table.id'), type: 'text', ...MANAGEMENT_LIST_ID_COLUMN_DEF },
   { key: 'name', label: t('table.name'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[200px]' },
   { key: 'description', label: t('table.description'), type: 'description', className: 'min-w-[250px]' },
   { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'whitespace-nowrap' },

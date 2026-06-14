@@ -56,6 +56,8 @@
   },
   "description": "Ünvanları yönetin ve düzenleyin",
   "addButton": "Yeni Ünvan Ekle",
+  "showStats": "İstatistikleri Göster",
+  "hideStats": "İstatistikleri Gizle",
   "messages": {
     "deleteSuccess": "Ünvan başarıyla silindi",
     "deleteError": "Ünvan silinemedi"

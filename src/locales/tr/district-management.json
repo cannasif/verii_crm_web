@@ -2,6 +2,8 @@
   "menu": "İlçe Yönetimi",
   "description": "İlçeleri yönetin ve düzenleyin",
   "addButton": "Yeni İlçe Ekle",
+  "showStats": "İstatistikleri Göster",
+  "hideStats": "İstatistikleri Gizle",
   "listTitle": "İlçe Listesi",
   "listDescription": "Sistemdeki kayıtlı tüm ilçeleri buradan yönetebilirsiniz.",
   "loading": "Yükleniyor...",

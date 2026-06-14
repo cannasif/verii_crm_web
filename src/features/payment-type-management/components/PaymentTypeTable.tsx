@@ -16,12 +16,14 @@ import type { PaymentTypeDto } from '../types/payment-type-types';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { MANAGEMENT_LIST_ID_COLUMN_DEF } from '@/lib/management-list-layout';
 
 export interface ColumnDef<T> {
   key: keyof T | 'status';
   label: string;
   type: 'text' | 'date' | 'status' | 'code' | 'id';
   className?: string;
+  headClassName?: string;
 }
 
 type PaymentTypeColumnKey = keyof PaymentTypeDto | 'status';
@@ -63,7 +65,7 @@ interface PaymentTypeTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<PaymentTypeDto>[] => [
-  { key: 'id', label: t('table.id'), type: 'id', className: 'w-[100px]' },
+  { key: 'id', label: t('table.id'), type: 'id', ...MANAGEMENT_LIST_ID_COLUMN_DEF },
   { key: 'name', label: t('table.name'), type: 'text', className: 'min-w-[200px] font-medium' },
   { key: 'description', label: t('table.description'), type: 'text', className: 'min-w-[200px] max-w-[300px]' },
   { key: 'createdDate', label: t('createdDate'), type: 'date', className: 'w-[160px]' },

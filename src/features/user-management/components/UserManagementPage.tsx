@@ -5,7 +5,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { DataTableActionBar, ManagementListPageHeader, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -15,6 +15,7 @@ import {
   USER_CONFIRMED_BADGE_CLASSNAME,
 } from '../utils/user-table-visuals';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import { useManagementShowStats } from '@/lib/use-management-show-stats';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -22,6 +23,7 @@ import {
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
+  ADD_BUTTON_CLASS,
 } from '@/lib/management-list-layout';
 
 import { USER_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
@@ -56,6 +58,7 @@ export function UserManagementPage(): ReactElement {
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserDto | null>(null);
+  const [showStats, setShowStats] = useManagementShowStats(PAGE_KEY, user?.id);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
@@ -284,30 +287,27 @@ export function UserManagementPage(): ReactElement {
 
   return (
     <div className="w-full space-y-6 relative">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-            {t('menu')}
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium transition-colors mt-1">
-            {t('description')}
-          </p>
-        </div>
-        {canCreate && (
-          <Button
-            onClick={handleAddClick}
-            className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11
-            opacity-90 grayscale-[0]
-            dark:opacity-100 dark:grayscale-0
-            "
-          >
-            <Plus size={18} className="mr-2" />
-            {t('addButton')}
-          </Button>
-        )}
-      </div>
+      <div className="space-y-3">
+        <ManagementListPageHeader
+          title={t('menu')}
+          description={t('description')}
+          backLabel={t('common.back', { ns: 'common', defaultValue: 'Geri' })}
+          showStats={showStats}
+          onToggleStats={() => setShowStats((prev) => !prev)}
+          showStatsLabel={t('showStats', { defaultValue: 'İstatistikleri Göster' })}
+          hideStatsLabel={t('hideStats', { defaultValue: 'İstatistikleri Gizle' })}
+          actions={
+            canCreate ? (
+              <Button onClick={handleAddClick} className={ADD_BUTTON_CLASS}>
+                <Plus size={20} className="mr-2 stroke-[3px]" />
+                {t('addButton')}
+              </Button>
+            ) : null
+          }
+        />
 
-      <UserStats />
+        {showStats && <UserStats />}
+      </div>
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>

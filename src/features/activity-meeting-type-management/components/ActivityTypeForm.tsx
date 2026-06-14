@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import {
@@ -70,7 +70,6 @@ export function ActivityTypeForm({
       description: '',
     },
   });
-  const isFormValid = form.formState.isValid;
 
   useEffect(() => {
     if (activityType) {
@@ -91,6 +90,14 @@ export function ActivityTypeForm({
     if (!isLoading) {
       form.reset();
       onOpenChange(false);
+    }
+  };
+
+  const handleInvalidSubmit = (errors: FieldErrors<ActivityTypeFormSchema>): void => {
+    const fieldNames = Object.keys(errors);
+    const firstField = fieldNames[0] as keyof ActivityTypeFormSchema | undefined;
+    if (firstField) {
+      form.setFocus(firstField);
     }
   };
 
@@ -129,7 +136,7 @@ export function ActivityTypeForm({
 
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
-            <form id="activity-type-form" onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <form id="activity-type-form" onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-6">
 
               <div className="grid grid-cols-1 gap-5">
 
@@ -197,7 +204,7 @@ export function ActivityTypeForm({
           <Button
             type="submit"
             form="activity-type-form"
-            disabled={isLoading || !isFormValid}
+            disabled={isLoading}
             className="w-full sm:w-auto h-11 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md hover:shadow-lg transition-all opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
 
           >
