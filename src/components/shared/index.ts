@@ -23,6 +23,8 @@ export { DescriptionCell } from './DescriptionCell';
 export { DocumentDetailPageHeader } from './DocumentDetailPageHeader';
 export type { DocumentDetailPageHeaderProps } from './DocumentDetailPageHeader';
 export { DocumentBackButton } from './DocumentBackButton';
+export { ManagementListPageHeader } from './ManagementListPageHeader';
+export type { ManagementListPageHeaderProps } from './ManagementListPageHeader';
 export { DocumentDetailStatusAlerts } from './DocumentDetailStatusAlerts';
 export type { DocumentDetailKind } from './DocumentDetailStatusAlerts';
 export { ConvertToOrderConfirmDialog } from './ConvertToOrderConfirmDialog';
@@ -32,3 +34,15 @@ export { DocumentListIdCell } from './DocumentListIdCell';
 export { DocumentListOfferNoCell } from './DocumentListOfferNoCell';
 export { DocumentApprovalStatusFilter } from './DocumentApprovalStatusFilter';
 export { ErpIntegrationPill } from './ErpIntegrationPill';
+export {
+  WaitingApprovalsPageShell,
+  WaitingApprovalsSidebar,
+  WaitingApprovalsRejectDialog,
+  WaitingApprovalsActionButtons,
+  WaitingApprovalsStatusBadge,
+  WaitingApprovalsTableEmptyState,
+  WaitingApprovalsTableLoadingState,
+  WAITING_APPROVALS_TABLE_CELL_CLASSNAME,
+  WAITING_APPROVALS_TABLE_HEAD_CLASSNAME,
+} from './waiting-approvals';
+export type { WaitingApprovalSidebarItem } from './waiting-approvals';

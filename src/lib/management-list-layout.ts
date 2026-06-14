@@ -30,6 +30,14 @@ export const MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME = cn(
   'border-r border-slate-200/90 dark:border-white/[0.08]'
 );
 
+export const MANAGEMENT_LIST_ID_COLUMN_DEF = {
+  headClassName: MANAGEMENT_LIST_ID_COLUMN_HEAD_CLASSNAME,
+  className: MANAGEMENT_LIST_ID_COLUMN_CELL_CLASSNAME,
+} as const;
+
+export const ADD_BUTTON_CLASS =
+  'h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0';
+
 /** DataTableGrid sarmalayıcı — thead / hücre border ve hover (müşteri listesi). */
 export const MANAGEMENT_DATA_GRID_CLASSNAME = cn(
   'management-data-grid rounded-md',
