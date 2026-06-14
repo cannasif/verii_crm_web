@@ -421,10 +421,18 @@ export function OutlookCustomerMailDialog({
     ]
   );
 
+  const isInitializedRef = useRef(false);
+
   useEffect(() => {
     if (!open) {
+      isInitializedRef.current = false;
       return;
     }
+
+    if (isInitializedRef.current) {
+      return;
+    }
+    isInitializedRef.current = true;
 
     const next = selectedTemplate.build(contextValues);
     setActiveTab('compose');
@@ -485,7 +493,8 @@ export function OutlookCustomerMailDialog({
 
     setSelectedFiles(initialAttachmentFiles ?? []);
     autoAttachAttemptedRef.current = false;
-  }, [open, selectedTemplate, contextValues, initialAttachmentFiles]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initialAttachmentFiles, moduleKey, recordId]);
 
   useEffect(() => {
     if (!open) return;
