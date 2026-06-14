@@ -1,11 +1,10 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useWaitingApprovals } from '../hooks/useWaitingApprovals';
 import { useApproveAction } from '../hooks/useApproveAction';
 import { useRejectAction } from '../hooks/useRejectAction';
 import { useUIStore } from '@/stores/ui-store';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Table,
@@ -16,31 +15,18 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  ArrowLeft, 
-  Clock, 
-  Check, 
-  X, 
-  ClipboardList, 
-  User, 
-  CalendarDays, 
-  ShieldAlert, 
-  Hash, 
-  ListOrdered 
-} from 'lucide-react';
-import { WaitingApprovalsSidebar } from './WaitingApprovalsSidebar';
-import type { ApprovalActionGetDto } from '../types/demand-types';
-import { cn } from '@/lib/utils';
+  ManagementDataTableChrome,
+  WaitingApprovalsActionButtons,
+  WaitingApprovalsPageShell,
+  WaitingApprovalsRejectDialog,
+  WaitingApprovalsSidebar,
+  WaitingApprovalsStatusBadge,
+  WaitingApprovalsTableEmptyState,
+  WaitingApprovalsTableLoadingState,
+  WAITING_APPROVALS_TABLE_CELL_CLASSNAME,
+  WAITING_APPROVALS_TABLE_HEAD_CLASSNAME,
+  type WaitingApprovalSidebarItem,
+} from '@/components/shared';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -48,11 +34,20 @@ import {
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
-import { ManagementDataTableChrome } from '@/components/shared';
+import { cn } from '@/lib/utils';
+import {
+  CalendarDays,
+  ClipboardList,
+  Clock,
+  Hash,
+  ListOrdered,
+  User,
+} from 'lucide-react';
+import type { ApprovalActionGetDto } from '../types/demand-types';
 import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
 
 export function WaitingApprovalsPage(): ReactElement {
-  const { t, i18n } = useTranslation(['demand', 'common']);
+  const { t, i18n } = useTranslation(['demand', 'common', 'approval']);
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const { data: approvals, isLoading } = useWaitingApprovals();
@@ -64,37 +59,16 @@ export function WaitingApprovalsPage(): ReactElement {
 
   useEffect(() => {
     setPageTitle(t('waitingApprovals.title'));
-    return () => {
-      setPageTitle(null);
-    };
+    return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
-  const handleRowClick = (approvalRequestId: number): void => {
-    navigate(`/demands/${approvalRequestId}`);
-  };
+  const approveLabel = t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' });
+  const rejectLabel = t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' });
 
-  const handleApprove = (e: React.MouseEvent, approval: ApprovalActionGetDto): void => {
-    e.stopPropagation();
-    approveAction.mutate({ approvalActionId: approval.id });
-  };
-
-  const handleRejectClick = (e: React.MouseEvent, approval: ApprovalActionGetDto): void => {
-    e.stopPropagation();
-    setSelectedApproval(approval);
-    setRejectReason('');
-    setRejectDialogOpen(true);
-  };
-
-  const handleRejectConfirm = (): void => {
-    if (selectedApproval) {
-      rejectAction.mutate({
-        approvalActionId: selectedApproval.id,
-        rejectReason: rejectReason || null,
-      });
-      setRejectDialogOpen(false);
-      setSelectedApproval(null);
-      setRejectReason('');
-    }
+  const getStatusLabel = (status: number, statusName?: string | null): string => {
+    const statusKey = getApprovalStatusTranslationKey(status);
+    if (statusKey) return t(`approval.status.${statusKey}`, { ns: 'approval' });
+    return statusName || t('waitingApprovals.waiting');
   };
 
   const formatDate = (dateString: string): string => {
@@ -107,298 +81,228 @@ export function WaitingApprovalsPage(): ReactElement {
     });
   };
 
-  const headStyle =
-    'whitespace-nowrap py-3 align-middle text-slate-600 dark:text-slate-300';
-  const cellStyle = 'text-slate-600 dark:text-slate-400 text-sm py-3 align-middle';
+  const sidebarItems = useMemo<WaitingApprovalSidebarItem[]>(
+    () =>
+      (approvals ?? []).map((approval) => ({
+        id: approval.id,
+        approvalRequestId: approval.approvalRequestId,
+        status: approval.status,
+        title: approval.approvalRequestDescription || t('untitled', { defaultValue: 'İsimsiz Talep' }),
+        stepOrder: approval.stepOrder,
+        approvedByUserFullName: approval.approvedByUserFullName,
+        actionDate: approval.actionDate,
+      })),
+    [approvals, t],
+  );
+
+  const handleRowClick = (approvalRequestId: number): void => {
+    navigate(`/demands/${approvalRequestId}`);
+  };
+
+  const handleApprove = (event: React.MouseEvent, approval: ApprovalActionGetDto): void => {
+    event.stopPropagation();
+    approveAction.mutate({ approvalActionId: approval.id });
+  };
+
+  const handleRejectClick = (event: React.MouseEvent, approval: ApprovalActionGetDto): void => {
+    event.stopPropagation();
+    setSelectedApproval(approval);
+    setRejectReason('');
+    setRejectDialogOpen(true);
+  };
+
+  const handleRejectConfirm = (): void => {
+    if (!selectedApproval) return;
+    rejectAction.mutate({
+      approvalActionId: selectedApproval.id,
+      rejectReason: rejectReason || null,
+    });
+    setRejectDialogOpen(false);
+    setSelectedApproval(null);
+    setRejectReason('');
+  };
+
+  const handleRejectCancel = (): void => {
+    setRejectDialogOpen(false);
+    setSelectedApproval(null);
+    setRejectReason('');
+  };
+
+  const pendingCountLabel = approvals
+    ? `${approvals.length} adet bekleyen onay`
+    : t('loading');
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto pb-10 px-4 md:px-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      
-      {/* Şık Sayfa Başlığı */}
-      <div className="relative mb-8 pt-6">
-        <div className="absolute left-0 top-6 hidden lg:block">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => navigate('/demands/create')}
-            className="group h-11 w-11 rounded-xl bg-white/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/10 hover:border-indigo-500/50 hover:shadow-[0_0_20px_-5px_rgba(99,102,241,0.3)] transition-all duration-300"
-          >
-            <ArrowLeft className="h-5 w-5 text-zinc-500 group-hover:text-indigo-600 transition-colors" />
-          </Button>
-        </div>
-
-        <div className="flex flex-col items-center justify-center text-center px-4">
-          <div className="lg:hidden self-start mb-4">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => navigate('/demands/create')}
-              className="rounded-lg border-zinc-200 dark:border-zinc-800"
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              {t('back')}
-            </Button>
-          </div>
-
-          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/20 mb-4">
-            <ClipboardList className="h-6 w-6 text-white" />
-          </div>
-          
-          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-            {t('waitingApprovals.title')}
-          </h1>
-          <p className="text-sm md:text-base text-slate-500 dark:text-slate-400 mt-2 max-w-2xl mx-auto">
-            İşlem bekleyen onay taleplerinizi buradan görüntüleyebilir ve yönetebilirsiniz.
-          </p>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-        <div className="lg:col-span-1 xl:sticky xl:top-6">
-          <WaitingApprovalsSidebar />
-        </div>
-
-        <div className="lg:col-span-3">
-          <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
-            <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
-              <CardTitle
-                className={cn(MANAGEMENT_LIST_CARD_TITLE_CLASSNAME, 'flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3')}
-              >
-                <span className="inline-flex items-center gap-2">
-                  <Clock className="h-5 w-5 shrink-0" />
-                  {t('waitingApprovals.list')}
-                </span>
-                <span className="text-sm font-normal text-slate-500 dark:text-slate-400">
-                  {approvals ? `${approvals.length} adet bekleyen onay` : t('loading')}
-                </span>
-              </CardTitle>
-            </CardHeader>
-
-            <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
-              {isLoading ? (
-                /* Şık Skeleton Yükleme Durumu */
-                <div className="p-6 space-y-4">
-                  <div className="flex items-center gap-4 border-b border-slate-100 dark:border-white/5 pb-4">
-                     <Skeleton className="h-6 w-12 bg-slate-200 dark:bg-white/10" />
-                     <Skeleton className="h-6 w-48 bg-slate-200 dark:bg-white/10" />
-                     <Skeleton className="h-6 w-24 bg-slate-200 dark:bg-white/10" />
-                  </div>
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="flex items-center gap-4 py-3">
-                      <Skeleton className="h-5 w-16 bg-slate-100 dark:bg-white/5" />
-                      <Skeleton className="h-5 w-full max-w-[200px] bg-slate-100 dark:bg-white/5" />
-                      <Skeleton className="h-5 w-32 bg-slate-100 dark:bg-white/5" />
-                      <Skeleton className="h-5 w-24 bg-slate-100 dark:bg-white/5" />
-                    </div>
-                  ))}
-                </div>
-              ) : !approvals || approvals.length === 0 ? (
-                /* Premium Empty State */
-                <div className="flex flex-col items-center justify-center py-24 px-4 m-6 border border-dashed border-slate-200 dark:border-white/10 rounded-2xl bg-slate-50/50 dark:bg-white/5 text-center">
-                  <div className="w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mb-6 ring-1 ring-emerald-100 dark:ring-emerald-500/20">
-                    <Check className="h-10 w-10 text-emerald-500" />
-                  </div>
-                  <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                    Harika! Bekleyen onay yok.
-                  </h4>
-                  <p className="text-sm text-slate-500 max-w-sm mx-auto">
-                    {t('waitingApprovals.noApprovals')}
-                  </p>
-                </div>
-              ) : (
-                <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-                  <ManagementDataTableChrome>
-                  <div className="w-full overflow-x-auto custom-scrollbar">
-                  <Table className="min-w-[1000px] w-full caption-bottom text-sm whitespace-nowrap">
-                    <TableHeader>
-                      <TableRow className="border-none hover:bg-transparent">
-                        <TableHead className={cn(headStyle, 'pl-6')}>{t('waitingApprovals.requestId')}</TableHead>
-                        <TableHead className={headStyle}>{t('waitingApprovals.description')}</TableHead>
-                        <TableHead className={cn(headStyle, 'text-center')}>{t('waitingApprovals.stepOrder')}</TableHead>
-                        <TableHead className={headStyle}>{t('waitingApprovals.approvedBy')}</TableHead>
-                        <TableHead className={headStyle}>{t('waitingApprovals.actionDate')}</TableHead>
-                        <TableHead className={headStyle}>{t('waitingApprovals.status')}</TableHead>
-                        <TableHead className={cn(headStyle, 'text-right pr-6')}>{t('actions')}</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {approvals.map((approval) => (
-                        <TableRow
-                          key={approval.id}
-                          className="group cursor-pointer border-none"
-                          onClick={() => handleRowClick(approval.approvalRequestId)}
-                        >
-                          {/* ID Badge */}
-                          <TableCell className={cn(cellStyle, "pl-6")}>
-                            <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/10 px-2 py-1 rounded-md text-[11px] font-mono text-slate-700 dark:text-slate-300 w-fit font-bold">
-                              <Hash size={12} className="opacity-50" />
-                              {approval.approvalRequestId}
-                            </div>
-                          </TableCell>
-                          
-                          <TableCell className={cn(cellStyle, "font-bold text-slate-900 dark:text-white")}>
-                            {approval.approvalRequestDescription || '-'}
-                          </TableCell>
-                          
-                          <TableCell className={cn(cellStyle, "text-center")}>
-                            <div className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2.5 py-1 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300">
-                              <ListOrdered size={12} className="text-indigo-500" />
-                              {approval.stepOrder}
-                            </div>
-                          </TableCell>
-                          
-                          <TableCell className={cellStyle}>
-                            <div className="flex items-center gap-2">
-                              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-white/10 text-slate-500">
-                                <User className="h-3 w-3" />
-                              </div>
-                              <span className="font-medium text-slate-700 dark:text-slate-300">
-                                {approval.approvedByUserFullName || '-'}
-                              </span>
-                            </div>
-                          </TableCell>
-                          
-                          <TableCell className={cellStyle}>
-                            <div className="flex items-center gap-2 text-xs">
-                              <CalendarDays className="h-3.5 w-3.5 text-indigo-500/50 shrink-0" />
-                              <span>{formatDate(approval.actionDate)}</span>
-                            </div>
-                          </TableCell>
-                          
-                          <TableCell className={cellStyle}>
-                            <Badge
-                              variant="outline"
-                              className={cn(
-                                "px-2.5 py-1 font-semibold text-[11px] uppercase tracking-wider shadow-sm border-0",
-                                approval.status === 1 
-                                  ? "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400" 
-                                  : "bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300"
-                              )}
-                            >
-                              {getApprovalStatusTranslationKey(approval.status) ? t(`approval.status.${getApprovalStatusTranslationKey(approval.status)}`) : (approval.statusName || t('waitingApprovals.waiting'))}
-                            </Badge>
-                          </TableCell>
-                          
-                          <TableCell className={cn(cellStyle, "text-right pr-6")}>
-                            {/* Hover Reveal Buttons */}
-                            <div className="flex justify-end gap-2 opacity-100 transition-opacity duration-200">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => handleApprove(e, approval)}
-                                disabled={approveAction.isPending || rejectAction.isPending}
-                                className="h-8 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 dark:hover:bg-emerald-500/20"
-                                title={t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' })}
-                              >
-                                <Check className="h-4 w-4 sm:mr-1.5" />
-                                <span className="hidden sm:inline font-bold">
-                                  {t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' })}
-                                </span>
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => handleRejectClick(e, approval)}
-                                disabled={approveAction.isPending || rejectAction.isPending}
-                                className="h-8 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
-                                title={t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' })}
-                              >
-                                <X className="h-4 w-4 sm:mr-1.5" />
-                                <span className="hidden sm:inline font-bold">
-                                  {t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' })}
-                                </span>
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  </div>
-                  </ManagementDataTableChrome>
-                </div>
+    <>
+      <WaitingApprovalsPageShell
+        title={t('waitingApprovals.title')}
+        subtitle={t('waitingApprovals.pageSubtitle', {
+          defaultValue: 'İşlem bekleyen onay taleplerinizi buradan görüntüleyebilir ve yönetebilirsiniz.',
+        })}
+        backLabel={t('back')}
+        onBack={() => navigate('/demands')}
+        icon={ClipboardList}
+        sidebar={
+          <WaitingApprovalsSidebar
+            title={t('waitingApprovals.title')}
+            noApprovalsText={t('waitingApprovals.noApprovals')}
+            emptyStateTitle={t('waitingApprovals.emptyStateTitle', { defaultValue: 'İşlem Yok' })}
+            isLoading={isLoading}
+            items={sidebarItems}
+            onItemClick={(item) => handleRowClick(item.approvalRequestId)}
+            stepOrderLabel={t('waitingApprovals.stepOrder')}
+            approvedByLabel={t('waitingApprovals.approvedBy')}
+            actionDateLabel={t('waitingApprovals.actionDate')}
+            getStatusLabel={getStatusLabel}
+            formatDate={formatDate}
+          />
+        }
+      >
+        <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+          <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+            <CardTitle
+              className={cn(
+                MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+                'flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3',
               )}
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+            >
+              <span className="inline-flex items-center gap-2">
+                <Clock className="h-5 w-5 shrink-0" />
+                {t('waitingApprovals.list')}
+              </span>
+              <span className="text-sm font-normal text-slate-500 dark:text-slate-400">
+                {pendingCountLabel}
+              </span>
+            </CardTitle>
+          </CardHeader>
 
-      {/* Premium Modal (Dialog) Tasarımı */}
-      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
-        <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
-          <DialogHeader className="flex flex-col items-center gap-4 text-center pb-6 pt-10 px-6">
-            <div className="h-20 w-20 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center mb-2 animate-in zoom-in duration-300">
-              <ShieldAlert size={36} className="text-rose-600 dark:text-rose-500" />
-            </div>
-            <div className="space-y-2">
-              <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
-                {t('waitingApprovals.rejectTitle')}
-              </DialogTitle>
-              <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto text-sm leading-relaxed">
-                {t('waitingApprovals.rejectDescription')}
-              </DialogDescription>
-            </div>
-          </DialogHeader>
-          
-          <div className="p-6 pt-2">
-            <div className="space-y-3">
-              <label className="text-sm font-bold text-slate-700 dark:text-slate-300 ml-1">
-                Ret Gerekçesi
-              </label>
-              <Textarea
-                placeholder={t('waitingApprovals.rejectReasonPlaceholder')}
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                maxLength={500}
-                rows={4}
-                className="resize-none rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#0f0a18] text-sm shadow-sm focus-visible:ring-rose-500"
+          <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+            {isLoading ? (
+              <WaitingApprovalsTableLoadingState />
+            ) : !approvals || approvals.length === 0 ? (
+              <WaitingApprovalsTableEmptyState
+                title={t('waitingApprovals.emptyStateTitle', { defaultValue: 'Harika! Bekleyen onay yok.' })}
+                description={t('waitingApprovals.noApprovals')}
               />
-              <div className="flex justify-end">
-                <span className="text-xs text-slate-400">
-                  {rejectReason.length}/500
-                </span>
+            ) : (
+              <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+                <ManagementDataTableChrome>
+                  <div className="w-full overflow-x-auto custom-scrollbar">
+                    <Table className="min-w-[1000px] w-full caption-bottom text-sm whitespace-nowrap">
+                      <TableHeader>
+                        <TableRow className="border-none hover:bg-transparent">
+                          <TableHead className={cn(WAITING_APPROVALS_TABLE_HEAD_CLASSNAME, 'pl-6')}>
+                            {t('waitingApprovals.requestId')}
+                          </TableHead>
+                          <TableHead className={WAITING_APPROVALS_TABLE_HEAD_CLASSNAME}>
+                            {t('waitingApprovals.description')}
+                          </TableHead>
+                          <TableHead className={cn(WAITING_APPROVALS_TABLE_HEAD_CLASSNAME, 'text-center')}>
+                            {t('waitingApprovals.stepOrder')}
+                          </TableHead>
+                          <TableHead className={WAITING_APPROVALS_TABLE_HEAD_CLASSNAME}>
+                            {t('waitingApprovals.approvedBy')}
+                          </TableHead>
+                          <TableHead className={WAITING_APPROVALS_TABLE_HEAD_CLASSNAME}>
+                            {t('waitingApprovals.actionDate')}
+                          </TableHead>
+                          <TableHead className={WAITING_APPROVALS_TABLE_HEAD_CLASSNAME}>
+                            {t('waitingApprovals.status')}
+                          </TableHead>
+                          <TableHead className={cn(WAITING_APPROVALS_TABLE_HEAD_CLASSNAME, 'text-right pr-6')}>
+                            {t('actions')}
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {approvals.map((approval) => (
+                          <TableRow
+                            key={approval.id}
+                            className="group cursor-pointer border-none"
+                            onClick={() => handleRowClick(approval.approvalRequestId)}
+                          >
+                            <TableCell className={cn(WAITING_APPROVALS_TABLE_CELL_CLASSNAME, 'pl-6')}>
+                              <div className="flex items-center gap-1 bg-slate-100 dark:bg-white/10 px-2 py-1 rounded-md text-[11px] font-mono text-slate-700 dark:text-slate-300 w-fit font-bold">
+                                <Hash size={12} className="opacity-50" />
+                                {approval.approvalRequestId}
+                              </div>
+                            </TableCell>
+
+                            <TableCell className={cn(WAITING_APPROVALS_TABLE_CELL_CLASSNAME, 'font-bold text-slate-900 dark:text-white')}>
+                              {approval.approvalRequestDescription || '-'}
+                            </TableCell>
+
+                            <TableCell className={cn(WAITING_APPROVALS_TABLE_CELL_CLASSNAME, 'text-center')}>
+                              <div className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2.5 py-1 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300">
+                                <ListOrdered size={12} className="text-pink-500" />
+                                {approval.stepOrder}
+                              </div>
+                            </TableCell>
+
+                            <TableCell className={WAITING_APPROVALS_TABLE_CELL_CLASSNAME}>
+                              <div className="flex items-center gap-2">
+                                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 dark:bg-white/10 text-slate-500">
+                                  <User className="h-3 w-3" />
+                                </div>
+                                <span className="font-medium text-slate-700 dark:text-slate-300">
+                                  {approval.approvedByUserFullName || '-'}
+                                </span>
+                              </div>
+                            </TableCell>
+
+                            <TableCell className={WAITING_APPROVALS_TABLE_CELL_CLASSNAME}>
+                              <div className="flex items-center gap-2 text-xs">
+                                <CalendarDays className="h-3.5 w-3.5 text-pink-500/50 shrink-0" />
+                                <span>{formatDate(approval.actionDate)}</span>
+                              </div>
+                            </TableCell>
+
+                            <TableCell className={WAITING_APPROVALS_TABLE_CELL_CLASSNAME}>
+                              <WaitingApprovalsStatusBadge
+                                status={approval.status}
+                                label={getStatusLabel(approval.status, approval.statusName)}
+                              />
+                            </TableCell>
+
+                            <TableCell className={cn(WAITING_APPROVALS_TABLE_CELL_CLASSNAME, 'text-right pr-6')}>
+                              <WaitingApprovalsActionButtons
+                                approveLabel={approveLabel}
+                                rejectLabel={rejectLabel}
+                                isPending={approveAction.isPending || rejectAction.isPending}
+                                onApprove={(event) => handleApprove(event, approval)}
+                                onReject={(event) => handleRejectClick(event, approval)}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </ManagementDataTableChrome>
               </div>
-            </div>
-          </div>
-          
-          <DialogFooter className="flex flex-row gap-3 justify-center p-6 bg-slate-50/50 dark:bg-[#1a1025]/50 border-t border-slate-100 dark:border-white/5">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                setRejectDialogOpen(false);
-                setSelectedApproval(null);
-                setRejectReason('');
-              }}
-              disabled={rejectAction.isPending}
-              className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
-            >
-              {t('cancel')}
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={handleRejectConfirm}
-              disabled={rejectAction.isPending}
-              className="flex-1 h-12 rounded-xl bg-linear-to-r from-rose-600 to-red-700 hover:from-rose-700 hover:to-red-800 text-white border-0 shadow-lg shadow-rose-500/20 transition-all hover:scale-[1.02] font-bold"
-            >
-              {rejectAction.isPending ? (
-                <span className="flex items-center gap-2">
-                  <span className="h-4 w-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                  {t('loading')}
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <X className="h-4 w-4" />
-                  {t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' })}
-                </span>
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+            )}
+          </CardContent>
+        </Card>
+      </WaitingApprovalsPageShell>
+
+      <WaitingApprovalsRejectDialog
+        open={rejectDialogOpen}
+        onOpenChange={setRejectDialogOpen}
+        title={t('waitingApprovals.rejectTitle', { defaultValue: t('approval.rejectTitle') })}
+        description={t('waitingApprovals.rejectDescription', { defaultValue: t('approval.rejectDescription') })}
+        reasonLabel={t('waitingApprovals.rejectReasonLabel', { defaultValue: 'Ret Gerekçesi' })}
+        reasonPlaceholder={t('waitingApprovals.rejectReasonPlaceholder', {
+          defaultValue: t('approval.rejectReasonPlaceholder'),
+        })}
+        cancelLabel={t('cancel')}
+        confirmLabel={rejectLabel}
+        loadingLabel={t('loading')}
+        rejectReason={rejectReason}
+        onRejectReasonChange={setRejectReason}
+        onConfirm={handleRejectConfirm}
+        onCancel={handleRejectCancel}
+        isPending={rejectAction.isPending}
+      />
+    </>
   );
 }

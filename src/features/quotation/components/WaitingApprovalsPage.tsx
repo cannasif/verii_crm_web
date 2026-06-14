@@ -2,7 +2,7 @@ import { type ReactElement, useCallback, useEffect, useMemo, useState } from 're
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowDown, ArrowLeft, ArrowUp, ArrowUpDown, Check, Clock, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Clock, FileText } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
@@ -20,20 +20,15 @@ import {
   DataTableGrid,
   DataTableActionBar,
   ManagementDataTableChrome,
+  WaitingApprovalsActionButtons,
+  WaitingApprovalsPageShell,
+  WaitingApprovalsRejectDialog,
+  WaitingApprovalsSidebar,
+  WaitingApprovalsStatusBadge,
   type DataTableGridColumn,
+  type WaitingApprovalSidebarItem,
 } from '@/components/shared';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
 import { quotationApi } from '../api/quotation-api';
 import { useWaitingApprovals } from '../hooks/useWaitingApprovals';
 import { useApproveAction } from '../hooks/useApproveAction';
@@ -93,7 +88,7 @@ function resolveLabel(
 }
 
 export function WaitingApprovalsPage(): ReactElement {
-  const { t, i18n } = useTranslation(['quotation', 'common']);
+  const { t, i18n } = useTranslation(['quotation', 'common', 'approval']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
@@ -118,13 +113,36 @@ export function WaitingApprovalsPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
+  const approveLabel = t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' });
+  const rejectLabel = t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' });
+
+  const getStatusLabel = (status: number, statusName?: string | null): string => {
+    const statusKey = getApprovalStatusTranslationKey(status);
+    if (statusKey) return t(`approval.status.${statusKey}`, { ns: 'approval' });
+    return statusName || t('waitingApprovals.waiting');
+  };
+
+  const formatDate = useCallback(
+    (dateString?: string | null): string => {
+      if (!dateString) return '-';
+      return new Date(dateString).toLocaleDateString(i18n.language, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    },
+    [i18n.language],
+  );
+
   const baseColumns = useMemo(
     () =>
       WAITING_APPROVAL_COLUMN_CONFIG.map((col) => ({
         key: col.key,
         label: resolveLabel(t, col.labelKey, col.fallbackLabel),
       })),
-    [t]
+    [t],
   );
 
   const columns = useMemo<DataTableGridColumn<WaitingApprovalColumnKey>[]>(
@@ -140,7 +158,7 @@ export function WaitingApprovalsPage(): ReactElement {
               : undefined,
         sortable: true,
       })),
-    [baseColumns]
+    [baseColumns],
   );
 
   const defaultColumnKeys = useMemo(() => baseColumns.map((col) => col.key), [baseColumns]);
@@ -165,6 +183,13 @@ export function WaitingApprovalsPage(): ReactElement {
     filters: appliedFilters.length > 0 ? appliedFilters : undefined,
   });
 
+  const sidebarQuery = useWaitingApprovals({
+    pageNumber: 1,
+    pageSize: 10,
+    sortBy: 'ActionDate',
+    sortDirection: 'desc',
+  });
+
   const pagedData = waitingApprovalsQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;
@@ -174,6 +199,30 @@ export function WaitingApprovalsPage(): ReactElement {
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
   const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
 
+  const sidebarItems = useMemo<WaitingApprovalSidebarItem[]>(() => {
+    const list = sidebarQuery.data?.data ?? [];
+    return list.map((approval) => {
+      const metaParts = [
+        approval.quotationCustomerName,
+        [approval.quotationRevisionNo, approval.quotationGrandTotalDisplay].filter(Boolean).join(' • '),
+      ].filter(Boolean) as string[];
+
+      return {
+        id: approval.id,
+        approvalRequestId: approval.approvalRequestId,
+        status: approval.status,
+        title:
+          approval.quotationOfferNo ||
+          approval.approvalRequestDescription ||
+          `#${approval.approvalRequestId}`,
+        stepOrder: approval.stepOrder,
+        approvedByUserFullName: approval.approvedByUserFullName,
+        actionDate: approval.actionDate,
+        metaLines: metaParts.length > 0 ? metaParts : undefined,
+      };
+    });
+  }, [sidebarQuery.data?.data]);
+
   const filterColumns = useMemo<FilterColumnConfig[]>(
     () =>
       WAITING_APPROVAL_COLUMN_CONFIG.map((col) => ({
@@ -181,21 +230,7 @@ export function WaitingApprovalsPage(): ReactElement {
         type: col.filterType,
         labelKey: col.labelKey,
       })),
-    []
-  );
-
-  const formatDate = useCallback(
-    (dateString?: string | null): string => {
-      if (!dateString) return '-';
-      return new Date(dateString).toLocaleDateString(i18n.language, {
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    },
-    [i18n.language]
+    [],
   );
 
   const exportColumns = useMemo(
@@ -204,7 +239,7 @@ export function WaitingApprovalsPage(): ReactElement {
         const column = baseColumns.find((item) => item.key === key);
         return { key, label: column?.label ?? key };
       }),
-    [baseColumns, orderedVisibleColumns]
+    [baseColumns, orderedVisibleColumns],
   );
 
   const exportRows = useMemo<Record<string, unknown>[]>(
@@ -223,7 +258,7 @@ export function WaitingApprovalsPage(): ReactElement {
         ActionDate: formatDate(approval.actionDate),
         Status: approval.statusName ?? t('waitingApprovals.waiting'),
       })),
-    [currentPageRows, formatDate, t]
+    [currentPageRows, formatDate, t],
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
@@ -283,9 +318,17 @@ export function WaitingApprovalsPage(): ReactElement {
     );
   };
 
-  const getQuotationTargetId = (approval: ApprovalActionGetDto): number => approval.entityId || approval.approvalRequestId;
+  const getQuotationTargetId = (approval: ApprovalActionGetDto): number =>
+    approval.entityId || approval.approvalRequestId;
 
-  const renderCell = (approval: ApprovalActionGetDto, key: WaitingApprovalColumnKey): ReactElement | string | number => {
+  const navigateToQuotation = (approval: ApprovalActionGetDto): void => {
+    navigate(`/quotations/${getQuotationTargetId(approval)}`);
+  };
+
+  const renderCell = (
+    approval: ApprovalActionGetDto,
+    key: WaitingApprovalColumnKey,
+  ): ReactElement | string | number => {
     if (key === 'QuotationOwnerName') return approval.quotationOwnerName || '-';
     if (key === 'QuotationOfferNo') return approval.quotationOfferNo || '-';
     if (key === 'QuotationRevisionNo') return approval.quotationRevisionNo || '-';
@@ -294,15 +337,21 @@ export function WaitingApprovalsPage(): ReactElement {
     if (key === 'QuotationGrandTotal') return approval.quotationGrandTotalDisplay || '-';
     if (key === 'ApprovalRequestId') return `#${approval.approvalRequestId}`;
     if (key === 'ApprovalRequestDescription') return approval.approvalRequestDescription || '-';
-    if (key === 'StepOrder') return <Badge variant="outline">{approval.stepOrder}</Badge>;
+    if (key === 'StepOrder') {
+      return (
+        <span className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-2.5 py-1 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300">
+          {approval.stepOrder}
+        </span>
+      );
+    }
     if (key === 'ApprovedByUserFullName') return approval.approvedByUserFullName || '-';
     if (key === 'ActionDate') return formatDate(approval.actionDate);
     if (key === 'Status') {
-      const statusKey = getApprovalStatusTranslationKey(approval.status);
       return (
-        <Badge variant={approval.status === 1 ? 'default' : 'secondary'}>
-          {statusKey ? t(`approval.status.${statusKey}`) : (approval.statusName || t('waitingApprovals.waiting'))}
-        </Badge>
+        <WaitingApprovalsStatusBadge
+          status={approval.status}
+          label={getStatusLabel(approval.status, approval.statusName)}
+        />
       );
     }
 
@@ -331,35 +380,27 @@ export function WaitingApprovalsPage(): ReactElement {
     setRejectReason('');
   };
 
+  const handleRejectCancel = (): void => {
+    setRejectDialogOpen(false);
+    setSelectedApproval(null);
+    setRejectReason('');
+  };
+
   const renderActionsCell = (approval: ApprovalActionGetDto): ReactElement => (
-    <div className="flex justify-center gap-2">
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={(event) => {
-          event.stopPropagation();
-          handleApprove(approval);
-        }}
-        disabled={approveAction.isPending || rejectAction.isPending}
-        className="h-8 gap-1.5 rounded-lg border-0 bg-emerald-50 px-3 font-medium text-emerald-700 shadow-none transition-colors hover:bg-emerald-100 hover:text-emerald-800 disabled:opacity-50 dark:bg-emerald-500/15 dark:text-emerald-400 dark:hover:bg-emerald-500/25 dark:hover:text-emerald-300"
-      >
-        <Check className="h-4 w-4" />
-        {t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' })}
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={(event) => {
-          event.stopPropagation();
-          handleRejectClick(approval);
-        }}
-        disabled={approveAction.isPending || rejectAction.isPending}
-        className="h-8 gap-1.5 rounded-lg border border-red-200/70 bg-red-50/90 px-3 font-medium text-red-600 shadow-none transition-colors hover:bg-red-100 hover:text-red-700 disabled:opacity-50 dark:border-red-500/25 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20 dark:hover:text-red-300"
-      >
-        <X className="h-4 w-4" />
-        {t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' })}
-      </Button>
-    </div>
+    <WaitingApprovalsActionButtons
+      approveLabel={approveLabel}
+      rejectLabel={rejectLabel}
+      isPending={approveAction.isPending || rejectAction.isPending}
+      onApprove={(event) => {
+        event.stopPropagation();
+        handleApprove(approval);
+      }}
+      onReject={(event) => {
+        event.stopPropagation();
+        handleRejectClick(approval);
+      }}
+      className="flex justify-center gap-2"
+    />
   );
 
   const handleGridRefresh = useCallback(async (): Promise<void> => {
@@ -371,166 +412,183 @@ export function WaitingApprovalsPage(): ReactElement {
     await queryClient.invalidateQueries({ queryKey: [QUOTATION_QUERY_KEYS.WAITING_APPROVALS] });
   }, [queryClient]);
 
+  const pendingCountLabel =
+    totalCount > 0
+      ? `${totalCount} adet bekleyen onay`
+      : waitingApprovalsQuery.isLoading
+        ? t('loading')
+        : t('waitingApprovals.noApprovals');
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Button variant="outline" onClick={() => navigate('/quotations')}>
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          {t('back')}
-        </Button>
-      </div>
-
-      <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
-        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
-          <CardTitle className={cn(MANAGEMENT_LIST_CARD_TITLE_CLASSNAME, 'flex items-center gap-2')}>
-            <Clock className="h-5 w-5" />
-            {t('waitingApprovals.title')}
-          </CardTitle>
-          <DataTableActionBar
-            pageKey={PAGE_KEY}
-            userId={user?.id}
-            columns={baseColumns}
-            visibleColumns={visibleColumns}
-            columnOrder={columnOrder}
-            onVisibleColumnsChange={setVisibleColumns}
-            onColumnOrderChange={(newVisibleOrder) => {
-              setColumnOrder((currentOrder) => {
-                const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
-                const finalOrder = [...newVisibleOrder, ...hiddenCols];
-                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
-                return finalOrder;
-              });
+    <>
+      <WaitingApprovalsPageShell
+        title={t('waitingApprovals.title')}
+        subtitle={t('waitingApprovals.description')}
+        backLabel={t('back', { ns: 'common' })}
+        onBack={() => navigate('/quotations')}
+        icon={FileText}
+        sidebar={
+          <WaitingApprovalsSidebar
+            title={t('waitingApprovals.title')}
+            noApprovalsText={t('waitingApprovals.noApprovals')}
+            emptyStateTitle={t('waitingApprovals.emptyStateTitle', { defaultValue: 'İşlem Yok' })}
+            isLoading={sidebarQuery.isLoading}
+            items={sidebarItems}
+            onItemClick={(item) => {
+              const approval = sidebarQuery.data?.data?.find((row) => row.id === item.id);
+              if (approval) {
+                navigateToQuotation(approval);
+              } else {
+                navigate(`/quotations/${item.approvalRequestId}`);
+              }
             }}
-            exportFileName="quotation-waiting-approvals"
-            exportColumns={exportColumns}
-            exportRows={exportRows}
-            getExportData={getExportData}
-            filterColumns={filterColumns}
-            defaultFilterColumn="QuotationOfferNo"
-            draftFilterRows={draftFilterRows}
-            onDraftFilterRowsChange={setDraftFilterRows}
-            onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
-            onClearFilters={() => {
-              setDraftFilterRows([]);
-              setAppliedFilterRows([]);
-              setSearchResetKey((prev) => prev + 1);
-            }}
-            translationNamespace="quotation"
-            appliedFilterCount={appliedFilters.length}
-            search={{
-              onSearchChange: setSearchTerm,
-              placeholder: t('common.search', { ns: 'common' }),
-              minLength: 1,
-              resetKey: searchResetKey,
-            }}
-            refresh={{
-              onRefresh: () => {
-                void handleGridRefresh();
-              },
-              isLoading: waitingApprovalsQuery.isFetching,
-              cooldownSeconds: 60,
-              label: t('list.refresh', { defaultValue: 'Yenile' }),
-            }}
+            stepOrderLabel={t('waitingApprovals.stepOrder')}
+            approvedByLabel={t('waitingApprovals.approvedBy')}
+            actionDateLabel={t('waitingApprovals.actionDate')}
+            getStatusLabel={getStatusLabel}
+            formatDate={(date) => formatDate(date)}
           />
-        </CardHeader>
-        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
-          <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-            <ManagementDataTableChrome>
-              <DataTableGrid<ApprovalActionGetDto, WaitingApprovalColumnKey>
-                columns={columns}
-                visibleColumnKeys={orderedVisibleColumns}
-                rows={currentPageRows}
-                rowKey={(row) => String(row.id)}
-                renderCell={renderCell}
-                sortBy={sortBy}
-                sortDirection={sortDirection}
-                onSort={onSort}
-                renderSortIcon={renderSortIcon}
-                isLoading={waitingApprovalsQuery.isLoading || waitingApprovalsQuery.isFetching}
-                isError={waitingApprovalsQuery.isError}
-                loadingText={t('loading')}
-                errorText={t('loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-                emptyText={t('waitingApprovals.noApprovals')}
-                minTableWidthClassName="min-w-[1500px]"
-                showActionsColumn
-                actionsHeaderLabel={t('actions')}
-                renderActionsCell={renderActionsCell}
-                iconOnlyActions={false}
-                rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
-                onRowClick={(approval) => navigate(`/quotations/${getQuotationTargetId(approval)}`)}
-                onRowDoubleClick={(approval) => navigate(`/quotations/${getQuotationTargetId(approval)}`)}
-                pageSize={pageSize}
-                pageSizeOptions={PAGE_SIZE_OPTIONS}
-                onPageSizeChange={setPageSize}
-                pageNumber={pageNumber}
-                totalPages={totalPages}
-                hasPreviousPage={hasPreviousPage}
-                hasNextPage={hasNextPage}
-                onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-                onNextPage={() => setPageNumber((prev) => prev + 1)}
-                previousLabel={t('previous')}
-                nextLabel={t('next')}
-                paginationInfoText={t('common.paginationInfo', {
-                  ns: 'common',
-                  start: startRow,
-                  end: endRow,
-                  total: totalCount,
-                })}
-                disablePaginationButtons={waitingApprovalsQuery.isFetching}
-                centerColumnHeaders
-                onColumnOrderChange={(newVisibleOrder) => {
-                  setColumnOrder((currentOrder) => {
-                    const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
-                    const finalOrder = [...newVisibleOrder, ...hiddenCols];
-                    saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
-                    return finalOrder;
-                  });
-                }}
-              />
-            </ManagementDataTableChrome>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('waitingApprovals.rejectTitle')}</DialogTitle>
-            <DialogDescription>{t('waitingApprovals.rejectDescription')}</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <Textarea
-              placeholder={t('waitingApprovals.rejectReasonPlaceholder')}
-              value={rejectReason}
-              onChange={(event) => setRejectReason(event.target.value)}
-              maxLength={500}
-              rows={4}
-            />
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setRejectDialogOpen(false);
-                setSelectedApproval(null);
-                setRejectReason('');
+        }
+      >
+        <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+          <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+            <CardTitle
+              className={cn(
+                MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+                'flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3',
+              )}
+            >
+              <span className="inline-flex items-center gap-2">
+                <Clock className="h-5 w-5 shrink-0" />
+                {t('waitingApprovals.list')}
+              </span>
+              <span className="text-sm font-normal text-slate-500 dark:text-slate-400">
+                {pendingCountLabel}
+              </span>
+            </CardTitle>
+            <DataTableActionBar
+              pageKey={PAGE_KEY}
+              userId={user?.id}
+              columns={baseColumns}
+              visibleColumns={visibleColumns}
+              columnOrder={columnOrder}
+              onVisibleColumnsChange={setVisibleColumns}
+              onColumnOrderChange={(newVisibleOrder) => {
+                setColumnOrder((currentOrder) => {
+                  const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                  const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                  saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                  return finalOrder;
+                });
               }}
-              disabled={rejectAction.isPending}
-            >
-              {t('cancel')}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleRejectConfirm}
-              disabled={rejectAction.isPending}
-            >
-              {rejectAction.isPending
-                ? t('loading')
-                : t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' })}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+              exportFileName="quotation-waiting-approvals"
+              exportColumns={exportColumns}
+              exportRows={exportRows}
+              getExportData={getExportData}
+              filterColumns={filterColumns}
+              defaultFilterColumn="QuotationOfferNo"
+              draftFilterRows={draftFilterRows}
+              onDraftFilterRowsChange={setDraftFilterRows}
+              onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+              onClearFilters={() => {
+                setDraftFilterRows([]);
+                setAppliedFilterRows([]);
+                setSearchResetKey((prev) => prev + 1);
+              }}
+              translationNamespace="quotation"
+              appliedFilterCount={appliedFilters.length}
+              search={{
+                onSearchChange: setSearchTerm,
+                placeholder: t('common.search', { ns: 'common' }),
+                minLength: 1,
+                resetKey: searchResetKey,
+              }}
+              refresh={{
+                onRefresh: () => {
+                  void handleGridRefresh();
+                },
+                isLoading: waitingApprovalsQuery.isFetching,
+                cooldownSeconds: 60,
+                label: t('list.refresh', { defaultValue: 'Yenile' }),
+              }}
+            />
+          </CardHeader>
+          <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+            <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+              <ManagementDataTableChrome>
+                <DataTableGrid<ApprovalActionGetDto, WaitingApprovalColumnKey>
+                  columns={columns}
+                  visibleColumnKeys={orderedVisibleColumns}
+                  rows={currentPageRows}
+                  rowKey={(row) => String(row.id)}
+                  renderCell={renderCell}
+                  sortBy={sortBy}
+                  sortDirection={sortDirection}
+                  onSort={onSort}
+                  renderSortIcon={renderSortIcon}
+                  isLoading={waitingApprovalsQuery.isLoading || waitingApprovalsQuery.isFetching}
+                  isError={waitingApprovalsQuery.isError}
+                  loadingText={t('loading')}
+                  errorText={t('loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                  emptyText={t('waitingApprovals.noApprovals')}
+                  minTableWidthClassName="min-w-[1500px]"
+                  showActionsColumn
+                  actionsHeaderLabel={t('actions')}
+                  renderActionsCell={renderActionsCell}
+                  iconOnlyActions={false}
+                  rowClassName="cursor-pointer hover:bg-muted/50 transition-colors"
+                  onRowClick={navigateToQuotation}
+                  onRowDoubleClick={navigateToQuotation}
+                  pageSize={pageSize}
+                  pageSizeOptions={PAGE_SIZE_OPTIONS}
+                  onPageSizeChange={setPageSize}
+                  pageNumber={pageNumber}
+                  totalPages={totalPages}
+                  hasPreviousPage={hasPreviousPage}
+                  hasNextPage={hasNextPage}
+                  onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                  onNextPage={() => setPageNumber((prev) => prev + 1)}
+                  previousLabel={t('previous')}
+                  nextLabel={t('next')}
+                  paginationInfoText={t('common.paginationInfo', {
+                    ns: 'common',
+                    start: startRow,
+                    end: endRow,
+                    total: totalCount,
+                  })}
+                  disablePaginationButtons={waitingApprovalsQuery.isFetching}
+                  centerColumnHeaders
+                  onColumnOrderChange={(newVisibleOrder) => {
+                    setColumnOrder((currentOrder) => {
+                      const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                      const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                      saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                      return finalOrder;
+                    });
+                  }}
+                />
+              </ManagementDataTableChrome>
+            </div>
+          </CardContent>
+        </Card>
+      </WaitingApprovalsPageShell>
+
+      <WaitingApprovalsRejectDialog
+        open={rejectDialogOpen}
+        onOpenChange={setRejectDialogOpen}
+        title={t('waitingApprovals.rejectTitle')}
+        description={t('waitingApprovals.rejectDescription')}
+        reasonLabel={t('waitingApprovals.rejectReasonLabel', { defaultValue: 'Ret Gerekçesi' })}
+        reasonPlaceholder={t('waitingApprovals.rejectReasonPlaceholder')}
+        cancelLabel={t('cancel')}
+        confirmLabel={rejectLabel}
+        loadingLabel={t('loading')}
+        rejectReason={rejectReason}
+        onRejectReasonChange={setRejectReason}
+        onConfirm={handleRejectConfirm}
+        onCancel={handleRejectCancel}
+        isPending={rejectAction.isPending}
+      />
+    </>
   );
 }

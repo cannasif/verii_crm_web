@@ -287,10 +287,12 @@
   "waitingApprovals": {
     "title": "Bekleyen Sipariş Onayları",
     "description": "Onay bekleyen sipariş kayıtlarını görüntüleyin.",
+    "emptyStateTitle": "İşlem Yok",
     "list": "Bekleyen Onay Listesi",
     "waiting": "Bekliyor",
     "noApprovals": "Bekleyen onay kaydı bulunamadı.",
     "requestId": "Talep No",
+    "description": "Açıklama",
     "status": "Durum",
     "stepOrder": "Adım Sırası",
     "approvedBy": "Onaylayan",

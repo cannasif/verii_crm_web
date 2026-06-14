@@ -335,6 +335,8 @@
   },
   "waitingApprovals": {
     "title": "Bekleyen Onay Talepleri",
+    "pageSubtitle": "İşlem bekleyen onay taleplerinizi buradan görüntüleyebilir ve yönetebilirsiniz.",
+    "emptyStateTitle": "İşlem Yok",
     "list": "Bekleyen Onay Listesi",
     "noApprovals": "Bekleyen onay bulunamadı.",
     "requestId": "Talep No",
