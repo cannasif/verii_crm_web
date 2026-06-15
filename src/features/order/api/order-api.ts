@@ -4,6 +4,7 @@ import { mapPricingRuleLinesFromApi } from '@/lib/map-pricing-rule-line-from-api
 import type {
   OrderBulkCreateDto,
   OrderGetDto,
+  CreateOrderDto,
   CreateOrderLineDto,
   PriceOfProductDto,
   PriceOfProductRequestDto,
@@ -13,6 +14,7 @@ import type {
   ApproveActionDto,
   RejectActionDto,
   OrderExchangeRateGetDto,
+  OrderExchangeRateCreateDto,
   OrderLineGetDto,
   OrderNotesGetDto,
   UpdateOrderNotesListDto,
@@ -76,6 +78,14 @@ export const orderApi = {
       return response.data;
     }
     throw new Error(response.message || 'Sipariş detayı yüklenemedi');
+  },
+
+  updateHeader: async (id: number, data: CreateOrderDto): Promise<ApiResponse<OrderGetDto>> => {
+    const response = await api.put<ApiResponse<OrderGetDto>>(`/api/order/${id}`, data);
+    if (!response.success) {
+      throw new Error(response.message || response.exceptionMessage || 'Sipariş başlığı güncellenemedi');
+    }
+    return response;
   },
 
   canEdit: async (id: number): Promise<boolean> => {
@@ -435,6 +445,40 @@ export const orderApi = {
     const response = await api.delete<ApiResponse<unknown> | undefined>(`/api/OrderLine/${id}`);
     if (response != null && response.success === false) {
       throw new Error(response.message || 'Satır silinirken bir hata oluştu');
+    }
+  },
+
+  createOrderExchangeRate: async (
+    dto: OrderExchangeRateCreateDto
+  ): Promise<OrderExchangeRateGetDto> => {
+    const response = await api.post<ApiResponse<OrderExchangeRateGetDto>>(
+      '/api/OrderExchangeRate',
+      dto
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Döviz kuru eklenirken bir hata oluştu');
+  },
+
+  updateOrderExchangeRate: async (
+    id: number,
+    dto: OrderExchangeRateCreateDto
+  ): Promise<OrderExchangeRateGetDto> => {
+    const response = await api.put<ApiResponse<OrderExchangeRateGetDto>>(
+      `/api/OrderExchangeRate/${id}`,
+      dto
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Döviz kuru güncellenirken bir hata oluştu');
+  },
+
+  deleteOrderExchangeRate: async (id: number): Promise<void> => {
+    const response = await api.delete<ApiResponse<unknown> | undefined>(`/api/OrderExchangeRate/${id}`);
+    if (response != null && response.success === false) {
+      throw new Error(response.message || 'Döviz kuru silinirken bir hata oluştu');
     }
   },
 

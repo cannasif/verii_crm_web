@@ -9,7 +9,6 @@ import { useStartApprovalFlow } from '../hooks/useStartApprovalFlow';
 import { useDemandExchangeRates } from '../hooks/useDemandExchangeRates';
 import { useDemandLines } from '../hooks/useDemandLines';
 import { useDemandNotes } from '../hooks/useDemandNotes';
-import { useUpdateDemandBulk } from '../hooks/useUpdateDemandBulk';
 import { useUpdateDemandNotesList } from '../hooks/useUpdateDemandNotesList';
 import { usePriceRuleOfDemand } from '../hooks/usePriceRuleOfDemand';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
@@ -30,7 +29,8 @@ import { DemandApprovalFlowTab } from './DemandApprovalFlowTab';
 import { DemandReportTab } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
-import type { DemandLineFormState, DemandExchangeRateFormState, DemandBulkCreateDto, CreateDemandDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/demand-types';
+import type { CreateDemandLineDto, DemandExchangeRateCreateDto, DemandLineFormState, DemandExchangeRateFormState, CreateDemandDto, PricingRuleLineGetDto, UserDiscountLimitDto, DemandLineGetDto } from '../types/demand-types';
+import { demandApi } from '../api/demand-api';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
@@ -85,7 +85,6 @@ export function DemandDetailPage(): ReactElement {
   const { data: exchangeRatesData = [], isLoading: isLoadingExchangeRates } = useDemandExchangeRates(demandId);
   const { data: linesData = [], isLoading: isLoadingLines } = useDemandLines(demandId);
   const { data: notesData, isLoading: isLoadingNotes } = useDemandNotes(demandId);
-  const updateMutation = useUpdateDemandBulk();
   const updateNotesMutation = useUpdateDemandNotesList(demandId);
   const startApprovalFlow = useStartApprovalFlow();
   const cancelByCustomerMutation = useCancelDemandByCustomer();
@@ -96,6 +95,7 @@ export function DemandDetailPage(): ReactElement {
   const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const linesInitializedRef = useRef(false);
   const notesInitializedRef = useRef(false);
@@ -428,14 +428,6 @@ export function DemandDetailPage(): ReactElement {
         erpProjectCode: data.demand.projectCode ?? null,
       };
 
-      const payload: DemandBulkCreateDto = {
-        demand: demandData,
-        lines: linesToSend,
-        exchangeRates: exchangeRatesToSend,
-      };
-
-      const result = await updateMutation.mutateAsync({ id: demandId, data: payload });
-
       const notesList = demandNotesDtoToNotesList(quotationNotes);
       if (notesList.length > 15) {
         toast.error(t('update.error'), {
@@ -443,15 +435,59 @@ export function DemandDetailPage(): ReactElement {
         });
         return;
       }
+
+      setIsUpdating(true);
+
+      const persistedLineIds = new Set(
+        linesData.map((line) => line.id).filter((id): id is number => Number.isFinite(id) && id > 0)
+      );
+      const currentPersistedLineIds = new Set(
+        linesToSend
+          .map((line) => (typeof line.id === 'number' ? line.id : null))
+          .filter((id): id is number => Number.isFinite(id ?? 0) && (id ?? 0) > 0)
+      );
+      const deletedLineIds = [...persistedLineIds].filter((id) => !currentPersistedLineIds.has(id));
+      const newLines = linesToSend
+        .filter((line) => !(typeof line.id === 'number' && line.id > 0))
+        .map(({ id: _id, ...line }) => line as CreateDemandLineDto);
+      const updatedLines = linesToSend
+        .filter((line) => typeof line.id === 'number' && line.id > 0)
+        .map((line) => ({
+          ...line,
+          id: line.id as number,
+          demandId,
+          createdAt: linesData.find((existing) => existing.id === line.id)?.createdAt ?? new Date().toISOString(),
+        })) as DemandLineGetDto[];
+
+      const rateRows = exchangeRatesToSend ?? [];
+      const persistedRateIds = new Set(
+        exchangeRatesData.map((rate) => rate.id).filter((id): id is number => Number.isFinite(id) && id > 0)
+      );
+      const currentPersistedRateIds = new Set(
+        rateRows
+          .map((rate) => rate.id ?? null)
+          .filter((id): id is number => Number.isFinite(id ?? 0) && (id ?? 0) > 0)
+      );
+      const deletedRateIds = [...persistedRateIds].filter((id) => !currentPersistedRateIds.has(id));
+      const newRates = rateRows
+        .filter((rate) => !rate.id || rate.id <= 0)
+        .map(({ id: _id, ...rate }) => rate as DemandExchangeRateCreateDto);
+      const updatedRates = rateRows
+        .filter((rate) => rate.id && rate.id > 0)
+        .map((rate) => ({ id: rate.id as number, dto: { ...rate, id: undefined } as DemandExchangeRateCreateDto }));
+
+      await demandApi.updateHeader(demandId, demandData);
+      await Promise.all(deletedLineIds.map((lineId) => demandApi.deleteDemandLine(lineId)));
+      if (updatedLines.length > 0) await demandApi.updateDemandLines(updatedLines);
+      if (newLines.length > 0) await demandApi.createDemandLines(newLines);
+      await Promise.all(deletedRateIds.map((rateId) => demandApi.deleteDemandExchangeRate(rateId)));
+      await Promise.all(updatedRates.map((rate) => demandApi.updateDemandExchangeRate(rate.id, rate.dto)));
+      await Promise.all(newRates.map((rate) => demandApi.createDemandExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
-      if (result.success && result.data) {
-        toast.success(t('update.success'), {
-          description: t('update.successMessage'),
-        });
-      } else {
-        throw new Error(result.message || t('update.errorMessage'));
-      }
+      toast.success(t('update.success'), {
+        description: t('update.successMessage'),
+      });
     } catch (error: unknown) {
       let errorMessage = t('update.errorMessage');
       if (error instanceof Error) {
@@ -468,6 +504,8 @@ export function DemandDetailPage(): ReactElement {
         description: errorMessage,
         duration: 10000,
       });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -747,7 +785,7 @@ export function DemandDetailPage(): ReactElement {
                   <Button
                     type="button"
                     onClick={handleStartApprovalFlow}
-                    disabled={startApprovalFlow.isPending || !demand}
+                    disabled={isUpdating || startApprovalFlow.isPending || !demand}
                     className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_APPROVAL}`}
                   >
                     {startApprovalFlow.isPending ? (
@@ -768,7 +806,7 @@ export function DemandDetailPage(): ReactElement {
                   <Button
                     type="button"
                     onClick={() => setCustomerCancellationOpen(true)}
-                    disabled={cancelByCustomerMutation.isPending || !demand}
+                    disabled={isUpdating || cancelByCustomerMutation.isPending || !demand}
                     className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_DANGER}`}
                   >
                     {cancelByCustomerMutation.isPending ? (

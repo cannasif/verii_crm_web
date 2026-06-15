@@ -9,7 +9,6 @@ import { useStartApprovalFlow } from '../hooks/useStartApprovalFlow';
 import { useQuotationExchangeRates } from '../hooks/useQuotationExchangeRates';
 import { useQuotationLines } from '../hooks/useQuotationLines';
 import { useQuotationNotes } from '../hooks/useQuotationNotes';
-import { useUpdateQuotationBulk } from '../hooks/useUpdateQuotationBulk';
 import { useUpdateQuotationNotesList } from '../hooks/useUpdateQuotationNotesList';
 import { usePriceRuleOfQuotation } from '../hooks/usePriceRuleOfQuotation';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
@@ -49,7 +48,8 @@ import {
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
-import type { QuotationLineFormState, QuotationExchangeRateFormState, QuotationBulkCreateDto, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto, QuotationNotesDto } from '../types/quotation-types';
+import type { CreateQuotationLineDto, QuotationExchangeRateCreateDto, QuotationLineFormState, QuotationExchangeRateFormState, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto, QuotationNotesDto, QuotationLineGetDto } from '../types/quotation-types';
+import { quotationApi } from '../api/quotation-api';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import { createEmptyQuotationNotes } from './QuotationNotesDialog';
 import { quotationNotesGetDtoToDto, quotationNotesDtoToNotesList } from '../utils/quotation-payload-mapper';
@@ -116,7 +116,6 @@ export function QuotationDetailPage(): ReactElement {
   const { data: exchangeRatesData = [], isLoading: isLoadingExchangeRates } = useQuotationExchangeRates(quotationId);
   const { data: linesData = [], isLoading: isLoadingLines } = useQuotationLines(quotationId);
   const { data: notesData, isLoading: isLoadingNotes } = useQuotationNotes(quotationId);
-  const updateMutation = useUpdateQuotationBulk();
   const updateNotesMutation = useUpdateQuotationNotesList(quotationId);
   const startApprovalFlow = useStartApprovalFlow();
   const cancelByCustomerMutation = useCancelQuotationByCustomer();
@@ -128,6 +127,7 @@ export function QuotationDetailPage(): ReactElement {
   const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const linesInitializedRef = useRef(false);
   const exchangeRatesInitializedRef = useRef(false);
@@ -719,22 +719,66 @@ export function QuotationDetailPage(): ReactElement {
         erpProjectCode: data.quotation.projectCode ?? null,
       };
 
-      const payload: QuotationBulkCreateDto = {
-        quotation: quotationData,
-        lines: linesToSend,
-        exchangeRates: exchangeRatesToSend,
-        quotationNotes,
-      };
+      setIsUpdating(true);
 
-      const result = await updateMutation.mutateAsync({ id: quotationId, data: payload });
+      const persistedLineIds = new Set(
+        linesData.map((line) => line.id).filter((id): id is number => Number.isFinite(id) && id > 0)
+      );
+      const currentPersistedLineIds = new Set(
+        linesToSend
+          .map((line) => line.id ?? null)
+          .filter((id): id is number => Number.isFinite(id ?? 0) && (id ?? 0) > 0)
+      );
+      const deletedLineIds = [...persistedLineIds].filter((id) => !currentPersistedLineIds.has(id));
+      const newLines = linesToSend
+        .filter((line) => !line.id || line.id <= 0)
+        .map(({ id: _id, ...line }) => line as CreateQuotationLineDto);
+      const updatedLines = linesToSend
+        .filter((line) => line.id && line.id > 0)
+        .map((line) => ({
+          ...line,
+          id: line.id as number,
+          quotationId,
+          createdAt: linesData.find((existing) => existing.id === line.id)?.createdAt ?? new Date().toISOString(),
+        })) as QuotationLineGetDto[];
 
-      if (result.success && result.data) {
-        toast.success(t('update.success'), {
-          description: t('update.successMessage'),
+      const rateRows = exchangeRatesToSend ?? [];
+      const persistedRateIds = new Set(
+        exchangeRatesData.map((rate) => rate.id).filter((id): id is number => Number.isFinite(id) && id > 0)
+      );
+      const currentPersistedRateIds = new Set(
+        rateRows
+          .map((rate) => rate.id ?? null)
+          .filter((id): id is number => Number.isFinite(id ?? 0) && (id ?? 0) > 0)
+      );
+      const deletedRateIds = [...persistedRateIds].filter((id) => !currentPersistedRateIds.has(id));
+      const newRates = rateRows
+        .filter((rate) => !rate.id || rate.id <= 0)
+        .map(({ id: _id, ...rate }) => rate as QuotationExchangeRateCreateDto);
+      const updatedRates = rateRows
+        .filter((rate) => rate.id && rate.id > 0)
+        .map((rate) => ({ id: rate.id as number, dto: { ...rate, id: undefined } as QuotationExchangeRateCreateDto }));
+
+      const notesList = quotationNotesDtoToNotesList(quotationNotes);
+      if (notesList.length > 15) {
+        toast.error(t('update.error'), {
+          description: t('quotation.notes.maxCountError'),
         });
-      } else {
-        throw new Error(result.message || t('update.errorMessage'));
+        return;
       }
+
+      await quotationApi.updateHeader(quotationId, quotationData);
+      await Promise.all(deletedLineIds.map((lineId) => quotationApi.deleteQuotationLine(lineId)));
+      if (updatedLines.length > 0) await quotationApi.updateQuotationLines(updatedLines);
+      if (newLines.length > 0) await quotationApi.createQuotationLines(newLines);
+      await Promise.all(deletedRateIds.map((rateId) => quotationApi.deleteQuotationExchangeRate(rateId)));
+      await Promise.all(updatedRates.map((rate) => quotationApi.updateQuotationExchangeRate(rate.id, rate.dto)));
+      await Promise.all(newRates.map((rate) => quotationApi.createQuotationExchangeRate(rate)));
+      await updateNotesMutation.mutateAsync({ notes: notesList });
+
+      toast.success(t('update.success'), {
+        description: t('update.successMessage'),
+      });
     } catch (error: unknown) {
       let errorMessage = t('update.errorMessage');
       if (error instanceof Error) {
@@ -751,6 +795,8 @@ export function QuotationDetailPage(): ReactElement {
         description: errorMessage,
         duration: 10000,
       });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -1057,16 +1103,16 @@ export function QuotationDetailPage(): ReactElement {
                     schema={createQuotationSchema}
                     value={quotationSchemaPayload}
                     isValid={isFormValid}
-                    isPending={updateMutation.isPending}
+                    isPending={isUpdating}
                     manualHintLines={saveManualHintLines}
                   >
                     <Button
                       type="submit"
-                      disabled={updateMutation.isPending || !isFormValid}
+                      disabled={isUpdating || !isFormValid}
                       className={`group sm:min-w-[140px] ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_SAVE}`}
                     >
                       <Save className="mr-2 h-4 w-4" />
-                      {updateMutation.isPending
+                      {isUpdating
                         ? t('saving')
                         : t('update.saveButton', { defaultValue: 'Güncellemeyi Kaydet' })
                       }

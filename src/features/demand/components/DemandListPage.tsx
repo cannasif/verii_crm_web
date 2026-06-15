@@ -45,6 +45,11 @@ import {
 } from '@/features/approval/utils/resolve-document-status';
 import { filterDocumentsByApprovalStatus } from '@/features/approval/utils/filter-documents-by-status';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
+import {
+  getErpCleanupDescription,
+  getErpCleanupLabel,
+  getErpCleanupTone,
+} from '@/features/sales-documents/utils/erp-cleanup-status';
 import { useCreateRevisionOfDemand } from '../hooks/useCreateRevisionOfDemand';
 const GoogleCustomerMailDialog = lazy(() =>
   import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
@@ -70,6 +75,7 @@ type DemandColumnKey =
   | 'GrandTotal'
   | 'IsERPIntegrated'
   | 'ERPIntegrationNumber'
+  | 'ErpCleanupStatus'
   | 'LastSyncDate'
   | 'CountTriedBy'
   | 'Status';
@@ -96,6 +102,7 @@ const DEMAND_COLUMN_CONFIG: readonly DemandColumnConfig[] = [
   { key: 'GrandTotal', labelKey: 'demand.list.grandTotal', fallbackLabel: 'Toplam', filterType: 'number' },
   { key: 'IsERPIntegrated', labelKey: 'demand.list.isERPIntegrated', fallbackLabel: 'Netsis', filterType: 'boolean' },
   { key: 'ERPIntegrationNumber', labelKey: 'demand.list.erpIntegrationNumber', fallbackLabel: 'Netsis No', filterType: 'string' },
+  { key: 'ErpCleanupStatus', labelKey: 'demand.list.erpCleanupStatus', fallbackLabel: 'ERP İşlem Durumu', filterType: 'number' },
   { key: 'LastSyncDate', labelKey: 'demand.list.lastSyncDate', fallbackLabel: 'Netsis Tarihi', filterType: 'date' },
   { key: 'CountTriedBy', labelKey: 'demand.list.countTriedBy', fallbackLabel: 'ERP Deneme', filterType: 'number' },
   { key: 'Status', labelKey: 'demand.list.status', fallbackLabel: 'Durum', filterType: 'number' },
@@ -421,6 +428,17 @@ export function DemandListPage(): ReactElement {
     if (key === 'Currency') return getCurrencyLabel(demand);
     if (key === 'GrandTotal') return getGrandTotalLabel(demand);
     if (key === 'IsERPIntegrated') {
+      const cleanupLabel = getErpCleanupLabel(demand, t);
+      if (cleanupLabel) {
+        return (
+          <ErpIntegrationPill
+            integrated={false}
+            tone={getErpCleanupTone(demand)}
+            label={cleanupLabel}
+          />
+        );
+      }
+
       return (
         <ErpIntegrationPill
           integrated={demand.isERPIntegrated === true}
@@ -428,7 +446,19 @@ export function DemandListPage(): ReactElement {
         />
       );
     }
-    if (key === 'ERPIntegrationNumber') return demand.erpIntegrationNumber || '-';
+    if (key === 'ERPIntegrationNumber') return demand.erpIntegrationNumber || demand.originalDocumentNumber || '-';
+    if (key === 'ErpCleanupStatus') {
+      const cleanupDescription = getErpCleanupDescription(demand, t);
+      if (!cleanupDescription) return <span className="text-muted-foreground text-sm">-</span>;
+      return (
+        <span
+          className="inline-flex max-w-[260px] items-center rounded-lg border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[11px] font-semibold leading-snug text-amber-700 dark:border-amber-400/25 dark:bg-amber-500/15 dark:text-amber-300"
+          title={cleanupDescription}
+        >
+          {cleanupDescription}
+        </span>
+      );
+    }
     if (key === 'LastSyncDate') return formatDate(demand.lastSyncDate);
     if (key === 'CountTriedBy') return demand.countTriedBy ?? 0;
     if (key === 'Status') {

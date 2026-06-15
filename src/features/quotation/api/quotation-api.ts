@@ -13,12 +13,14 @@ import type {
   ApproveActionDto,
   RejectActionDto,
   QuotationExchangeRateGetDto,
+  QuotationExchangeRateCreateDto,
   QuotationLineGetDto,
   ApprovalStatus,
   ApprovalScopeUserDto,
   QuotationApprovalFlowReportDto,
   QuotationNotesGetDto,
   UpdateQuotationNotesListDto,
+  UpdateQuotationDto,
 } from '../types/quotation-types';
 
 export const quotationApi = {
@@ -76,6 +78,14 @@ export const quotationApi = {
       return response.data;
     }
     throw new Error(response.message || 'Teklif detayı yüklenemedi');
+  },
+
+  updateHeader: async (id: number, data: UpdateQuotationDto): Promise<ApiResponse<QuotationGetDto>> => {
+    const response = await api.put<ApiResponse<QuotationGetDto>>(`/api/quotation/${id}`, data);
+    if (!response.success) {
+      throw new Error(response.message || response.exceptionMessage || 'Teklif başlığı güncellenemedi');
+    }
+    return response;
   },
 
   canEdit: async (id: number): Promise<boolean> => {
@@ -457,6 +467,40 @@ export const quotationApi = {
     const response = await api.delete<ApiResponse<unknown> | undefined>(`/api/QuotationLine/${id}`);
     if (response != null && response.success === false) {
       throw new Error(response.message || 'Satır silinirken bir hata oluştu');
+    }
+  },
+
+  createQuotationExchangeRate: async (
+    dto: QuotationExchangeRateCreateDto
+  ): Promise<QuotationExchangeRateGetDto> => {
+    const response = await api.post<ApiResponse<QuotationExchangeRateGetDto>>(
+      '/api/QuotationExchangeRate',
+      dto
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Döviz kuru eklenirken bir hata oluştu');
+  },
+
+  updateQuotationExchangeRate: async (
+    id: number,
+    dto: QuotationExchangeRateCreateDto
+  ): Promise<QuotationExchangeRateGetDto> => {
+    const response = await api.put<ApiResponse<QuotationExchangeRateGetDto>>(
+      `/api/QuotationExchangeRate/${id}`,
+      dto
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Döviz kuru güncellenirken bir hata oluştu');
+  },
+
+  deleteQuotationExchangeRate: async (id: number): Promise<void> => {
+    const response = await api.delete<ApiResponse<unknown> | undefined>(`/api/QuotationExchangeRate/${id}`);
+    if (response != null && response.success === false) {
+      throw new Error(response.message || 'Döviz kuru silinirken bir hata oluştu');
     }
   },
 

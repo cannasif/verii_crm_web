@@ -5593,5 +5593,13 @@
     "countTriedByTooltip": "Netsis/ERP'ye aktarım deneme sayısı. Entegrasyon kolonu yalnızca sonucu gösterir.",
     "openDetailHint": "Çift tıklayarak detaya gidin",
     "statusUnknown": "Durum bilinmiyor"
+  },
+  "erpCleanup": {
+    "status": {
+      "cleanedForRevision": "Revizyon için ERP kaydı temizlendi",
+      "cleanupFailed": "ERP kaydı temizlenemedi"
+    },
+    "originalDocumentNumberValue": "Eski ERP No: {{value}}",
+    "reasonValue": "Neden: {{value}}"
   }
 }

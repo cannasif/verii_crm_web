@@ -19,6 +19,7 @@ export const ApprovalStatus = {
 } as const;
 
 export type ApprovalStatus = typeof ApprovalStatus[keyof typeof ApprovalStatus];
+export type ErpCleanupStatus = 0 | 1 | 2;
 
 export { OfferType, type OfferTypeValue, DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 
@@ -291,6 +292,12 @@ export interface QuotationGetDto {
   erpIntegrationNumber?: string | null;
   lastSyncDate?: string | null;
   countTriedBy?: number | null;
+  erpCleanupStatus?: ErpCleanupStatus | number | null;
+  erpCleanupSourceDocumentId?: number | null;
+  erpCleanupLogId?: number | null;
+  isCreatedFromErpCleanup?: boolean;
+  erpCleanupReason?: string | null;
+  originalDocumentNumber?: string | null;
   createdAt: string;
   updatedAt?: string | null;
   createdBy?: string | null;

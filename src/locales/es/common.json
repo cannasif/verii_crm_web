@@ -5641,5 +5641,13 @@
     "openDetailHint": "Doble clic para abrir el detalle",
     "statusUnknown": "Estado desconocido"
   },
+  "erpCleanup": {
+    "status": {
+      "cleanedForRevision": "Registro ERP limpiado para revisión",
+      "cleanupFailed": "No se pudo limpiar el registro ERP"
+    },
+    "originalDocumentNumberValue": "ERP anterior No: {{value}}",
+    "reasonValue": "Motivo: {{value}}"
+  },
   "exportPreparing": "Hazırlanıyor..."
 }

@@ -9,7 +9,6 @@ import { useStartApprovalFlow } from '../hooks/useStartApprovalFlow';
 import { useOrderExchangeRates } from '../hooks/useOrderExchangeRates';
 import { useOrderLines } from '../hooks/useOrderLines';
 import { useOrderNotes } from '../hooks/useOrderNotes';
-import { useUpdateOrderBulk } from '../hooks/useUpdateOrderBulk';
 import { useUpdateOrderNotesList } from '../hooks/useUpdateOrderNotesList';
 import { usePriceRuleOfOrder } from '../hooks/usePriceRuleOfOrder';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
@@ -33,7 +32,8 @@ import { OrderApprovalFlowTab } from './OrderApprovalFlowTab';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
-import type { OrderLineFormState, OrderExchangeRateFormState, OrderBulkCreateDto, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/order-types';
+import type { CreateOrderLineDto, OrderExchangeRateCreateDto, OrderLineFormState, OrderExchangeRateFormState, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto, OrderLineGetDto } from '../types/order-types';
+import { orderApi } from '../api/order-api';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
@@ -88,7 +88,6 @@ export function OrderDetailPage(): ReactElement {
   const { data: exchangeRatesData = [], isLoading: isLoadingExchangeRates } = useOrderExchangeRates(orderId);
   const { data: linesData = [], isLoading: isLoadingLines } = useOrderLines(orderId);
   const { data: notesData, isLoading: isLoadingNotes } = useOrderNotes(orderId);
-  const updateMutation = useUpdateOrderBulk();
   const updateNotesMutation = useUpdateOrderNotesList(orderId);
   const startApprovalFlow = useStartApprovalFlow();
   const cancelByCustomerMutation = useCancelOrderByCustomer();
@@ -99,6 +98,7 @@ export function OrderDetailPage(): ReactElement {
   const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const linesInitializedRef = useRef(false);
   const notesInitializedRef = useRef(false);
@@ -456,14 +456,6 @@ export function OrderDetailPage(): ReactElement {
         erpProjectCode: data.order.projectCode ?? null,
       };
 
-      const payload: OrderBulkCreateDto = {
-        order: orderData,
-        lines: linesToSend,
-        exchangeRates: exchangeRatesToSend,
-      };
-
-      const result = await updateMutation.mutateAsync({ id: orderId, data: payload });
-
       const notesList = orderNotesDtoToNotesList(quotationNotes);
       if (notesList.length > 15) {
         toast.error(t('order.update.error'), {
@@ -471,15 +463,59 @@ export function OrderDetailPage(): ReactElement {
         });
         return;
       }
+
+      setIsUpdating(true);
+
+      const persistedLineIds = new Set(
+        linesData.map((line) => line.id).filter((id): id is number => Number.isFinite(id) && id > 0)
+      );
+      const currentPersistedLineIds = new Set(
+        linesToSend
+          .map((line) => (typeof line.id === 'number' ? line.id : null))
+          .filter((id): id is number => Number.isFinite(id ?? 0) && (id ?? 0) > 0)
+      );
+      const deletedLineIds = [...persistedLineIds].filter((id) => !currentPersistedLineIds.has(id));
+      const newLines = linesToSend
+        .filter((line) => !(typeof line.id === 'number' && line.id > 0))
+        .map(({ id: _id, ...line }) => line as CreateOrderLineDto);
+      const updatedLines = linesToSend
+        .filter((line) => typeof line.id === 'number' && line.id > 0)
+        .map((line) => ({
+          ...line,
+          id: line.id as number,
+          orderId,
+          createdAt: linesData.find((existing) => existing.id === line.id)?.createdAt ?? new Date().toISOString(),
+        })) as OrderLineGetDto[];
+
+      const rateRows = exchangeRatesToSend ?? [];
+      const persistedRateIds = new Set(
+        exchangeRatesData.map((rate) => rate.id).filter((id): id is number => Number.isFinite(id) && id > 0)
+      );
+      const currentPersistedRateIds = new Set(
+        rateRows
+          .map((rate) => rate.id ?? null)
+          .filter((id): id is number => Number.isFinite(id ?? 0) && (id ?? 0) > 0)
+      );
+      const deletedRateIds = [...persistedRateIds].filter((id) => !currentPersistedRateIds.has(id));
+      const newRates = rateRows
+        .filter((rate) => !rate.id || rate.id <= 0)
+        .map(({ id: _id, ...rate }) => rate as OrderExchangeRateCreateDto);
+      const updatedRates = rateRows
+        .filter((rate) => rate.id && rate.id > 0)
+        .map((rate) => ({ id: rate.id as number, dto: { ...rate, id: undefined } as OrderExchangeRateCreateDto }));
+
+      await orderApi.updateHeader(orderId, orderData);
+      await Promise.all(deletedLineIds.map((lineId) => orderApi.deleteOrderLine(lineId)));
+      if (updatedLines.length > 0) await orderApi.updateOrderLines(updatedLines);
+      if (newLines.length > 0) await orderApi.createOrderLines(newLines);
+      await Promise.all(deletedRateIds.map((rateId) => orderApi.deleteOrderExchangeRate(rateId)));
+      await Promise.all(updatedRates.map((rate) => orderApi.updateOrderExchangeRate(rate.id, rate.dto)));
+      await Promise.all(newRates.map((rate) => orderApi.createOrderExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
-      if (result.success && result.data) {
-        toast.success(t('order.update.success'), {
-          description: t('order.update.successMessage'),
-        });
-      } else {
-        throw new Error(result.message || t('order.update.errorMessage'));
-      }
+      toast.success(t('order.update.success'), {
+        description: t('order.update.successMessage'),
+      });
     } catch (error: unknown) {
       let errorMessage = t('order.update.errorMessage');
       if (error instanceof Error) {
@@ -496,6 +532,8 @@ export function OrderDetailPage(): ReactElement {
         description: errorMessage,
         duration: 10000,
       });
+    } finally {
+      setIsUpdating(false);
     }
   };
 
@@ -788,7 +826,7 @@ export function OrderDetailPage(): ReactElement {
                   <Button
                     type="button"
                     onClick={handleStartApprovalFlow}
-                    disabled={startApprovalFlow.isPending || !order}
+                    disabled={isUpdating || startApprovalFlow.isPending || !order}
                     className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_APPROVAL}`}
                   >
                     {startApprovalFlow.isPending ? (
@@ -809,7 +847,7 @@ export function OrderDetailPage(): ReactElement {
                   <Button
                     type="button"
                     onClick={() => setCustomerCancellationOpen(true)}
-                    disabled={cancelByCustomerMutation.isPending || !order}
+                    disabled={isUpdating || cancelByCustomerMutation.isPending || !order}
                     className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_DANGER}`}
                   >
                     {cancelByCustomerMutation.isPending ? (

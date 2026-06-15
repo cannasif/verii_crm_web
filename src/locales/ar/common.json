@@ -5641,5 +5641,13 @@
     "openDetailHint": "انقر نقرًا مزدوجًا لفتح التفاصيل",
     "statusUnknown": "حالة غير معروفة"
   },
+  "erpCleanup": {
+    "status": {
+      "cleanedForRevision": "تم تنظيف سجل ERP للمراجعة",
+      "cleanupFailed": "تعذر تنظيف سجل ERP"
+    },
+    "originalDocumentNumberValue": "رقم ERP السابق: {{value}}",
+    "reasonValue": "السبب: {{value}}"
+  },
   "exportPreparing": "Hazırlanıyor..."
 }

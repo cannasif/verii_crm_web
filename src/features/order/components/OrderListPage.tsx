@@ -45,6 +45,11 @@ import {
 } from '@/features/approval/utils/resolve-document-status';
 import { filterDocumentsByApprovalStatus } from '@/features/approval/utils/filter-documents-by-status';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
+import {
+  getErpCleanupDescription,
+  getErpCleanupLabel,
+  getErpCleanupTone,
+} from '@/features/sales-documents/utils/erp-cleanup-status';
 import { useCreateRevisionOfOrder } from '../hooks/useCreateRevisionOfOrder';
 const GoogleCustomerMailDialog = lazy(() =>
   import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
@@ -70,6 +75,7 @@ type OrderColumnKey =
   | 'GrandTotal'
   | 'IsERPIntegrated'
   | 'ERPIntegrationNumber'
+  | 'ErpCleanupStatus'
   | 'LastSyncDate'
   | 'CountTriedBy'
   | 'Status';
@@ -96,6 +102,7 @@ const ORDER_COLUMN_CONFIG: readonly OrderColumnConfig[] = [
   { key: 'GrandTotal', labelKey: 'order.list.grandTotal', fallbackLabel: 'Toplam', filterType: 'number' },
   { key: 'IsERPIntegrated', labelKey: 'order.list.isERPIntegrated', fallbackLabel: 'Netsis', filterType: 'boolean' },
   { key: 'ERPIntegrationNumber', labelKey: 'order.list.erpIntegrationNumber', fallbackLabel: 'Netsis No', filterType: 'string' },
+  { key: 'ErpCleanupStatus', labelKey: 'order.list.erpCleanupStatus', fallbackLabel: 'ERP İşlem Durumu', filterType: 'number' },
   { key: 'LastSyncDate', labelKey: 'order.list.lastSyncDate', fallbackLabel: 'Netsis Tarihi', filterType: 'date' },
   { key: 'CountTriedBy', labelKey: 'order.list.countTriedBy', fallbackLabel: 'ERP Deneme', filterType: 'number' },
   { key: 'Status', labelKey: 'order.list.status', fallbackLabel: 'Durum', filterType: 'number' },
@@ -421,6 +428,17 @@ export function OrderListPage(): ReactElement {
     if (key === 'Currency') return getCurrencyLabel(order);
     if (key === 'GrandTotal') return getGrandTotalLabel(order);
     if (key === 'IsERPIntegrated') {
+      const cleanupLabel = getErpCleanupLabel(order, t);
+      if (cleanupLabel) {
+        return (
+          <ErpIntegrationPill
+            integrated={false}
+            tone={getErpCleanupTone(order)}
+            label={cleanupLabel}
+          />
+        );
+      }
+
       return (
         <ErpIntegrationPill
           integrated={order.isERPIntegrated === true}
@@ -428,7 +446,19 @@ export function OrderListPage(): ReactElement {
         />
       );
     }
-    if (key === 'ERPIntegrationNumber') return order.erpIntegrationNumber || '-';
+    if (key === 'ERPIntegrationNumber') return order.erpIntegrationNumber || order.originalDocumentNumber || '-';
+    if (key === 'ErpCleanupStatus') {
+      const cleanupDescription = getErpCleanupDescription(order, t);
+      if (!cleanupDescription) return <span className="text-muted-foreground text-sm">-</span>;
+      return (
+        <span
+          className="inline-flex max-w-[260px] items-center rounded-lg border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[11px] font-semibold leading-snug text-amber-700 dark:border-amber-400/25 dark:bg-amber-500/15 dark:text-amber-300"
+          title={cleanupDescription}
+        >
+          {cleanupDescription}
+        </span>
+      );
+    }
     if (key === 'LastSyncDate') return formatDate(order.lastSyncDate);
     if (key === 'CountTriedBy') return order.countTriedBy ?? 0;
     if (key === 'Status') {
