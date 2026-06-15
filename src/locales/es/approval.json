@@ -50,7 +50,8 @@
     "approved": "Aprobado",
     "rejected": "Rechazado",
     "closed": "Cerrado",
-    "customerCancelled": "Cancelado por el cliente"
+    "customerCancelled": "Cancelado por el cliente",
+    "salespersonClosedForRevision": "Cerrado por el vendedor para revisión"
   },
   "closedReason": "Este registro se cerró porque se aprobó otro registro con el mismo número de oferta.",
   "statusFilterLabel": "Estado de aprobación",

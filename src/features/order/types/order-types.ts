@@ -14,6 +14,7 @@ export const ApprovalStatus = {
   Rejected: 3,
   Closed: 4,
   CustomerCancelled: 5,
+  SalespersonClosedForRevision: 6,
 } as const;
 
 export type ApprovalStatus = typeof ApprovalStatus[keyof typeof ApprovalStatus];

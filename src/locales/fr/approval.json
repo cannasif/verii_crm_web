@@ -50,7 +50,8 @@
     "approved": "Approuvé",
     "rejected": "Rejeté",
     "closed": "Fermé",
-    "customerCancelled": "Annulé par le client"
+    "customerCancelled": "Annulé par le client",
+    "salespersonClosedForRevision": "Fermé par le commercial pour révision"
   },
   "closedReason": "Cet enregistrement a été fermé car un autre enregistrement avec le même numéro d'offre a été approuvé.",
   "statusFilterLabel": "Statut d'approbation",

@@ -50,7 +50,8 @@
     "approved": "Genehmigt",
     "rejected": "Abgelehnt",
     "closed": "Geschlossen",
-    "customerCancelled": "Vom Kunden storniert"
+    "customerCancelled": "Vom Kunden storniert",
+    "salespersonClosedForRevision": "Vom Vertriebsmitarbeiter zur Revision geschlossen"
   },
   "closedReason": "Dieser Datensatz wurde geschlossen, weil ein anderer Datensatz mit derselben Angebotsnummer genehmigt wurde.",
   "statusFilterLabel": "Genehmigungsstatus",

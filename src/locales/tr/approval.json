@@ -50,7 +50,8 @@
     "approved": "Onaylandı",
     "rejected": "Reddedildi",
     "closed": "Kapandı",
-    "customerCancelled": "Müşteri tarafından iptal edildi"
+    "customerCancelled": "Müşteri tarafından iptal edildi",
+    "salespersonClosedForRevision": "Plasiyer revizyon için kapattı"
   },
   "closedReason": "Bu kayıt aynı teklif numarasında başka bir kayıt onaylandığı için kapatıldı.",
   "statusFilterLabel": "Onay durumu",
