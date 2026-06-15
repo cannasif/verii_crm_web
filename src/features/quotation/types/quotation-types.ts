@@ -145,6 +145,7 @@ export interface CreateQuotationLineDto {
   vidaDefinitionName?: string | null;
   baskiDefinitionId?: number | null;
   baskiDefinitionName?: string | null;
+  baskiAciklama?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -182,6 +183,7 @@ export interface UpdateQuotationLineDto {
   vidaDefinitionName?: string | null;
   baskiDefinitionId?: number | null;
   baskiDefinitionName?: string | null;
+  baskiAciklama?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -222,6 +224,7 @@ export interface QuotationLineGetDto {
   vidaDefinitionName?: string | null;
   baskiDefinitionId?: number | null;
   baskiDefinitionName?: string | null;
+  baskiAciklama?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;

@@ -108,6 +108,7 @@ export interface CreateDemandLineDto {
   vidaDefinitionName?: string | null;
   baskiDefinitionId?: number | null;
   baskiDefinitionName?: string | null;
+  baskiAciklama?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -145,6 +146,7 @@ export interface UpdateDemandLineDto {
   vidaDefinitionName?: string | null;
   baskiDefinitionId?: number | null;
   baskiDefinitionName?: string | null;
+  baskiAciklama?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;
@@ -185,6 +187,7 @@ export interface DemandLineGetDto {
   vidaDefinitionName?: string | null;
   baskiDefinitionId?: number | null;
   baskiDefinitionName?: string | null;
+  baskiAciklama?: string | null;
   pricingRuleHeaderId?: number | null;
   projectCode?: string | null;
   erpProjectCode?: string | null;

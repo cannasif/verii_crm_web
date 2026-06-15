@@ -155,6 +155,7 @@ function dtoToFormState(dto: QuotationLineGetDto, index: number): QuotationLineF
     vidaDefinitionName: dto.vidaDefinitionName ?? null,
     baskiDefinitionId: dto.baskiDefinitionId ?? null,
     baskiDefinitionName: dto.baskiDefinitionName ?? null,
+    baskiAciklama: dto.baskiAciklama ?? null,
     pricingRuleHeaderId: dto.pricingRuleHeaderId ?? null,
     projectCode: dto.erpProjectCode ?? dto.projectCode ?? null,
     imagePath: dto.imagePath ?? null,
@@ -199,6 +200,7 @@ function toUpdateDto(line: QuotationLineFormState, quotationId: number): Quotati
     vidaDefinitionName: line.vidaDefinitionName ?? null,
     baskiDefinitionId: line.baskiDefinitionId ?? null,
     baskiDefinitionName: line.baskiDefinitionName ?? null,
+    baskiAciklama: line.baskiAciklama ?? null,
     pricingRuleHeaderId: line.pricingRuleHeaderId ?? null,
     projectCode: line.projectCode ?? null,
     erpProjectCode: line.projectCode ?? null,
@@ -1024,7 +1026,7 @@ export function QuotationLineTable({
                                 </div>
                               )}
 
-                              {(line.description1 || line.description2 || line.description3 || line.profilDefinitionId || line.demirDefinitionId || line.vidaDefinitionId || line.baskiDefinitionId) && (
+                              {(line.description1 || line.description2 || line.description3 || line.profilDefinitionId || line.demirDefinitionId || line.vidaDefinitionId || line.baskiDefinitionId || line.baskiAciklama) && (
                                 <div className="space-y-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">
                                   {line.description1 && (
                                     <div className="line-clamp-1">
@@ -1079,6 +1081,14 @@ export function QuotationLineTable({
                                       {t('lines.lineDetailPair', {
                                         label: t('lines.windoPrintLabel', { defaultValue: 'Baskı' }),
                                         value: line.baskiDefinitionName ?? baskiMap[line.baskiDefinitionId] ?? `#${line.baskiDefinitionId}`,
+                                      })}
+                                    </div>
+                                  )}
+                                  {line.baskiAciklama && (
+                                    <div className="line-clamp-1">
+                                      {t('lines.lineDetailPair', {
+                                        label: t('lines.windoPrintDescriptionLabel', { defaultValue: 'Baskı açıklaması' }),
+                                        value: line.baskiAciklama,
                                       })}
                                     </div>
                                   )}

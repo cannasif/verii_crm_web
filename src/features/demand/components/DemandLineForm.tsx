@@ -1508,6 +1508,13 @@ export function DemandLineForm({
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
                 />
+                <Input
+                  value={formData.baskiAciklama ?? ''}
+                  onChange={(event) => handleFieldChange('baskiAciklama', event.target.value.slice(0, 50) || null)}
+                  maxLength={50}
+                  placeholder={t('lines.windoPrintDescriptionPlaceholder', { defaultValue: 'Baskı açıklaması (max 50 karakter)' })}
+                  className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
+                />
                 <Button
                   type="button"
                   variant="ghost"

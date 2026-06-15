@@ -207,6 +207,7 @@ export function DemandCreateForm(): ReactElement {
           description1: cleanLineData.description1 || null,
           description2: cleanLineData.description2 || null,
           description3: cleanLineData.description3 || null,
+          baskiAciklama: cleanLineData.baskiAciklama?.trim() || null,
           pricingRuleHeaderId: cleanLineData.pricingRuleHeaderId && cleanLineData.pricingRuleHeaderId > 0 ? cleanLineData.pricingRuleHeaderId : null,
           projectCode: cleanLineData.projectCode || null,
           relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : null,
