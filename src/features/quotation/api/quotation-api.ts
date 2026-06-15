@@ -21,6 +21,7 @@ import type {
   QuotationNotesGetDto,
   UpdateQuotationNotesListDto,
   UpdateQuotationDto,
+  QuotationErpCleanupRecreateDto,
 } from '../types/quotation-types';
 
 export const quotationApi = {
@@ -571,6 +572,40 @@ export const quotationApi = {
             payload.exceptionMessage ||
             payload.errors?.find((item) => typeof item === 'string' && item.trim().length > 0) ||
             'Teklif siparişe aktarılamadı';
+          throw new Error(userMessage);
+        }
+      }
+      throw error;
+    }
+  },
+
+  cleanupErpAndCreateCopy: async (
+    quotationId: number,
+    data: QuotationErpCleanupRecreateDto
+  ): Promise<ApiResponse<QuotationGetDto>> => {
+    try {
+      const response = await api.post<ApiResponse<QuotationGetDto>>(
+        `/api/quotation/${quotationId}/erp-cleanup-recreate`,
+        data
+      );
+      if (!response.success) {
+        throw new Error(response.message || response.exceptionMessage || 'ERP kaydı temizlenemedi');
+      }
+      return response;
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'response' in error) {
+        const axiosError = error as { response?: { data?: unknown; status?: number } };
+        if (axiosError.response?.data) {
+          const payload = axiosError.response.data as {
+            message?: string;
+            exceptionMessage?: string;
+            errors?: string[];
+          };
+          const userMessage =
+            payload.message ||
+            payload.exceptionMessage ||
+            payload.errors?.find((item) => typeof item === 'string' && item.trim().length > 0) ||
+            'ERP kaydı temizlenemedi';
           throw new Error(userMessage);
         }
       }

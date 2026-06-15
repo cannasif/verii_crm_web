@@ -1,5 +1,5 @@
 import { type MouseEvent, type ReactElement } from 'react';
-import { Edit2, GitBranchPlus, Mail, ShoppingCart } from 'lucide-react';
+import { Edit2, GitBranchPlus, Mail, RotateCcw, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -17,15 +17,19 @@ export interface DocumentListRowActionsProps {
   outlookLabel: string;
   reviseLabel: string;
   convertToOrderLabel?: string;
+  erpCleanupLabel?: string;
   onDetail: () => void;
   onGmail: (event: MouseEvent<HTMLButtonElement>) => void;
   onOutlook: (event: MouseEvent<HTMLButtonElement>) => void;
   onRevise?: (event: MouseEvent<HTMLButtonElement>) => void;
   onConvertToOrder?: (event: MouseEvent<HTMLButtonElement>) => void;
+  onErpCleanup?: (event: MouseEvent<HTMLButtonElement>) => void;
   isRevisePending?: boolean;
   isConvertToOrderPending?: boolean;
+  isErpCleanupPending?: boolean;
   showRevise?: boolean;
   showConvertToOrder?: boolean;
+  showErpCleanup?: boolean;
   convertToOrderDisabled?: boolean;
   className?: string;
 }
@@ -73,15 +77,19 @@ export function DocumentListRowActions({
   outlookLabel,
   reviseLabel,
   convertToOrderLabel,
+  erpCleanupLabel,
   onDetail,
   onGmail,
   onOutlook,
   onRevise,
   onConvertToOrder,
+  onErpCleanup,
   isRevisePending = false,
   isConvertToOrderPending = false,
+  isErpCleanupPending = false,
   showRevise = false,
   showConvertToOrder = false,
+  showErpCleanup = false,
   convertToOrderDisabled = false,
   className,
 }: DocumentListRowActionsProps): ReactElement {
@@ -158,6 +166,17 @@ export function DocumentListRowActions({
           }
         >
           <ShoppingCart className={cn('h-4 w-4', isConvertToOrderPending && !convertToOrderDisabled && 'animate-pulse')} />
+        </ActionIconButton>
+      ) : null}
+
+      {showErpCleanup && onErpCleanup && erpCleanupLabel ? (
+        <ActionIconButton
+          label={erpCleanupLabel}
+          onClick={onErpCleanup}
+          disabled={isErpCleanupPending}
+          className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-500/10"
+        >
+          <RotateCcw className={cn('h-4 w-4', isErpCleanupPending && 'animate-spin')} />
         </ActionIconButton>
       ) : null}
     </div>

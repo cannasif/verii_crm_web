@@ -31,6 +31,15 @@ import {
 } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { useQuotationList } from '../hooks/useQuotationList';
 import { quotationApi } from '../api/quotation-api';
 import { QUOTATION_QUERY_KEYS } from '../utils/query-keys';
@@ -51,6 +60,7 @@ import {
   getErpCleanupTone,
 } from '@/features/sales-documents/utils/erp-cleanup-status';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
+import { useCleanupQuotationErpAndCreateCopy } from '../hooks/useCleanupQuotationErpAndCreateCopy';
 const GoogleCustomerMailDialog = lazy(() =>
   import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
 );
@@ -128,6 +138,7 @@ export function QuotationListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
   const createRevisionMutation = useCreateRevisionOfQuotation();
+  const cleanupErpMutation = useCleanupQuotationErpAndCreateCopy();
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -156,6 +167,9 @@ export function QuotationListPage(): ReactElement {
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
   const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState<QuotationGetDto | null>(null);
+  const [erpCleanupQuotation, setErpCleanupQuotation] = useState<QuotationGetDto | null>(null);
+  const [erpCleanupReason, setErpCleanupReason] = useState('');
+  const [erpCleanupNote, setErpCleanupNote] = useState('');
 
   const countTriedByTooltip = t('documentList.countTriedByTooltip', {
     ns: 'common',
@@ -278,6 +292,16 @@ export function QuotationListPage(): ReactElement {
     [t]
   );
 
+  const getErpIntegrationExportLabel = useCallback(
+    (quotation: QuotationGetDto): string => getErpCleanupLabel(quotation, t) || getErpIntegrationLabel(quotation.isERPIntegrated),
+    [getErpIntegrationLabel, t]
+  );
+
+  const getErpDocumentNumber = useCallback(
+    (quotation: QuotationGetDto): string => quotation.erpIntegrationNumber || quotation.originalDocumentNumber || '-',
+    []
+  );
+
   const getApprovalStatusLabel = useCallback(
     (status: number | null | undefined): string => {
       if (typeof status !== 'number') {
@@ -310,13 +334,13 @@ export function QuotationListPage(): ReactElement {
         ValidUntil: quotation.validUntil ? new Date(quotation.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(quotation),
         GrandTotal: getGrandTotalLabel(quotation),
-        IsERPIntegrated: getErpIntegrationLabel(quotation.isERPIntegrated),
-        ERPIntegrationNumber: quotation.erpIntegrationNumber ?? '-',
+        IsERPIntegrated: getErpIntegrationExportLabel(quotation),
+        ERPIntegrationNumber: getErpDocumentNumber(quotation),
         LastSyncDate: quotation.lastSyncDate ? new Date(quotation.lastSyncDate).toLocaleDateString(i18n.language) : '-',
         CountTriedBy: quotation.countTriedBy ?? 0,
         Status: getApprovalStatusLabel(resolveDocumentApprovalStatus(quotation as unknown as Record<string, unknown>)),
       })),
-    [currentPageRows, i18n.language, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel]
+    [currentPageRows, i18n.language, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationExportLabel, getErpDocumentNumber, getApprovalStatusLabel]
   );
 
   const exportColumns = useMemo(
@@ -357,14 +381,14 @@ export function QuotationListPage(): ReactElement {
         ValidUntil: quotation.validUntil ? new Date(quotation.validUntil).toLocaleDateString(i18n.language) : '-',
         Currency: getCurrencyLabel(quotation),
         GrandTotal: getGrandTotalLabel(quotation),
-        IsERPIntegrated: getErpIntegrationLabel(quotation.isERPIntegrated),
-        ERPIntegrationNumber: quotation.erpIntegrationNumber ?? '-',
+        IsERPIntegrated: getErpIntegrationExportLabel(quotation),
+        ERPIntegrationNumber: getErpDocumentNumber(quotation),
         LastSyncDate: quotation.lastSyncDate ? new Date(quotation.lastSyncDate).toLocaleDateString(i18n.language) : '-',
         CountTriedBy: quotation.countTriedBy ?? 0,
         Status: getApprovalStatusLabel(resolveDocumentApprovalStatus(quotation as unknown as Record<string, unknown>)),
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, approvalStatusFilter, i18n.language, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, approvalStatusFilter, i18n.language, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationExportLabel, getErpDocumentNumber, getApprovalStatusLabel]);
 
   useEffect(() => {
     setPageNumber(1);
@@ -450,7 +474,7 @@ export function QuotationListPage(): ReactElement {
         />
       );
     }
-    if (key === 'ERPIntegrationNumber') return quotation.erpIntegrationNumber || quotation.originalDocumentNumber || '-';
+    if (key === 'ERPIntegrationNumber') return getErpDocumentNumber(quotation);
     if (key === 'ErpCleanupStatus') {
       const cleanupDescription = getErpCleanupDescription(quotation, t);
       if (!cleanupDescription) return <span className="text-muted-foreground text-sm">-</span>;
@@ -524,6 +548,36 @@ export function QuotationListPage(): ReactElement {
     setOutlookMailDialogOpen(true);
   };
 
+  const handleOpenErpCleanupDialog = (event: React.MouseEvent, quotation: QuotationGetDto): void => {
+    event.stopPropagation();
+    setErpCleanupQuotation(quotation);
+    setErpCleanupReason('');
+    setErpCleanupNote('');
+  };
+
+  const handleConfirmErpCleanup = async (): Promise<void> => {
+    const reason = erpCleanupReason.trim();
+    if (!erpCleanupQuotation || !reason) {
+      return;
+    }
+
+    const result = await cleanupErpMutation.mutateAsync({
+      quotationId: erpCleanupQuotation.id,
+      data: {
+        cleanupReason: reason,
+        cleanupNote: erpCleanupNote.trim() || null,
+      },
+    });
+
+    setErpCleanupQuotation(null);
+    setErpCleanupReason('');
+    setErpCleanupNote('');
+
+    if (result.success && result.data?.id) {
+      navigate(`/quotations/${result.data.id}`);
+    }
+  };
+
   const renderActionsCell = (quotation: QuotationGetDto): ReactElement => {
     const resolvedStatus = resolveDocumentApprovalStatus(quotation as unknown as Record<string, unknown>);
 
@@ -534,6 +588,7 @@ export function QuotationListPage(): ReactElement {
       gmailLabel={t('list.sendGmail', { defaultValue: 'Gmail Gönder' })}
       outlookLabel={t('list.sendOutlook', { defaultValue: 'Outlook Gönder' })}
       reviseLabel={t('list.revise', { defaultValue: 'Revize Et' })}
+      erpCleanupLabel={t('list.erpCleanupAction', { defaultValue: 'ERP kaydını sil ve revize kopya oluştur' })}
       onDetail={() => navigate(`/quotations/${quotation.id}`)}
       onGmail={(event) => handleOpenMailDialog(event, quotation)}
       onOutlook={(event) => handleOpenOutlookMailDialog(event, quotation)}
@@ -541,7 +596,10 @@ export function QuotationListPage(): ReactElement {
         void handleRevision(event, quotation.id);
       }}
       isRevisePending={createRevisionMutation.isPending}
+      onErpCleanup={(event) => handleOpenErpCleanupDialog(event, quotation)}
+      isErpCleanupPending={cleanupErpMutation.isPending}
       showRevise={resolvedStatus === 0 || resolvedStatus === 3}
+      showErpCleanup={quotation.isERPIntegrated === true && Boolean(quotation.erpIntegrationNumber)}
     />
     );
   };
@@ -733,6 +791,84 @@ export function QuotationListPage(): ReactElement {
             />
           ) : null}
         </Suspense>
+        <Dialog
+          open={Boolean(erpCleanupQuotation)}
+          onOpenChange={(open) => {
+            if (!open && !cleanupErpMutation.isPending) {
+              setErpCleanupQuotation(null);
+              setErpCleanupReason('');
+              setErpCleanupNote('');
+            }
+          }}
+        >
+          <DialogContent className="sm:max-w-lg">
+            <DialogHeader>
+              <DialogTitle>
+                {t('list.erpCleanupDialogTitle', { defaultValue: 'ERP kaydını sil ve revize kopya oluştur' })}
+              </DialogTitle>
+              <DialogDescription>
+                {t('list.erpCleanupDialogDescription', {
+                  defaultValue:
+                    'Bu işlem Netsis sipariş kaydını siler, mevcut teklifi geçmiş ERP numarasıyla işaretler ve CRM içinde yeni bir teklif kopyası oluşturur.',
+                })}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm font-medium text-amber-800 dark:text-amber-200">
+                {t('list.erpCleanupDocumentNumber', {
+                  defaultValue: 'Silinecek Netsis No: {{value}}',
+                  value: erpCleanupQuotation ? getErpDocumentNumber(erpCleanupQuotation) : '-',
+                })}
+              </div>
+              <label className="space-y-2 text-sm font-semibold">
+                <span>{t('list.erpCleanupReason', { defaultValue: 'Silme / revize nedeni' })}</span>
+                <Textarea
+                  value={erpCleanupReason}
+                  onChange={(event) => setErpCleanupReason(event.target.value)}
+                  maxLength={500}
+                  placeholder={t('list.erpCleanupReasonPlaceholder', {
+                    defaultValue: 'Örn: Satışçı tarafından revize için ERP kaydı iptal edildi.',
+                  })}
+                  disabled={cleanupErpMutation.isPending}
+                  className="min-h-24"
+                />
+              </label>
+              <label className="space-y-2 text-sm font-semibold">
+                <span>{t('list.erpCleanupNote', { defaultValue: 'Ek not' })}</span>
+                <Textarea
+                  value={erpCleanupNote}
+                  onChange={(event) => setErpCleanupNote(event.target.value)}
+                  maxLength={2000}
+                  placeholder={t('list.erpCleanupNotePlaceholder', { defaultValue: 'İsteğe bağlı açıklama' })}
+                  disabled={cleanupErpMutation.isPending}
+                  className="min-h-20"
+                />
+              </label>
+            </div>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setErpCleanupQuotation(null)}
+                disabled={cleanupErpMutation.isPending}
+              >
+                {t('common.cancel', { ns: 'common', defaultValue: 'İptal' })}
+              </Button>
+              <Button
+                type="button"
+                onClick={() => {
+                  void handleConfirmErpCleanup();
+                }}
+                disabled={cleanupErpMutation.isPending || erpCleanupReason.trim().length === 0}
+                className="bg-linear-to-r from-pink-600 to-orange-600 text-white hover:text-white"
+              >
+                {cleanupErpMutation.isPending
+                  ? t('common.processing', { ns: 'common', defaultValue: 'İşleniyor...' })
+                  : t('list.erpCleanupConfirm', { defaultValue: 'ERP kaydını sil ve kopya oluştur' })}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

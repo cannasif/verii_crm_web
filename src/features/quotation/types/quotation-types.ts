@@ -111,6 +111,11 @@ export interface CreateQuotationDto {
 
 export type UpdateQuotationDto = CreateQuotationDto;
 
+export interface QuotationErpCleanupRecreateDto {
+  cleanupReason: string;
+  cleanupNote?: string | null;
+}
+
 export interface QuotationDto {
   id: number;
   generalDiscountRate?: number | null;
