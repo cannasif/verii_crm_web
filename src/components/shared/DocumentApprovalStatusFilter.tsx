@@ -90,7 +90,7 @@ const STATUS_FILTER_OPTIONS: readonly StatusFilterOption[] = [
   {
     value: String(ApprovalStatus.SalespersonClosedForRevision),
     translationKey: 'salespersonClosedForRevision',
-    defaultLabel: 'Plasiyer revizyon için kapattı',
+    defaultLabel: 'ERP kaydı revizyon için plasiyer tarafından kapatıldı',
     Icon: Archive,
     activeClassName:
       'border-orange-400/50 bg-orange-500/15 text-orange-700 shadow-sm shadow-orange-500/10 dark:text-orange-300',

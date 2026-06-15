@@ -46,7 +46,7 @@ export function ApprovalStatusBadge({
             resolvedStatus === ApprovalStatusEnum.CustomerCancelled
               ? 'Müşteri tarafından iptal edildi'
               : resolvedStatus === ApprovalStatusEnum.SalespersonClosedForRevision
-                ? 'Plasiyer revizyon için kapattı'
+                ? 'ERP kaydı revizyon için plasiyer tarafından kapatıldı'
               : undefined,
         })
       : t('status.waiting');

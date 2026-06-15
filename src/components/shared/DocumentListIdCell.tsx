@@ -91,7 +91,7 @@ export function DocumentListIdCell({
             resolvedStatus === ApprovalStatusEnum.CustomerCancelled
               ? 'Müşteri tarafından iptal edildi'
               : resolvedStatus === ApprovalStatusEnum.SalespersonClosedForRevision
-                ? 'Plasiyer revizyon için kapattı'
+                ? 'ERP kaydı revizyon için plasiyer tarafından kapatıldı'
               : undefined,
         })
       : t('documentList.statusUnknown', { ns: 'common', defaultValue: 'Durum bilinmiyor' });

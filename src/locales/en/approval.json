@@ -51,7 +51,7 @@
     "rejected": "Rejected",
     "closed": "Closed",
     "customerCancelled": "Cancelled by customer",
-    "salespersonClosedForRevision": "Closed by salesperson for revision"
+    "salespersonClosedForRevision": "ERP record closed by salesperson for revision"
   },
   "closedReason": "This record was closed because another record with the same offer number was approved.",
   "statusFilterLabel": "Approval status",
