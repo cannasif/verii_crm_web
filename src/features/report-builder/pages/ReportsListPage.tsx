@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -51,6 +51,13 @@ export function ReportsListPage(): ReactElement {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [reportPendingDelete, setReportPendingDelete] = useState<{ id: number; name: string } | null>(null);
   const error = queryError?.message ?? null;
+
+  useEffect(() => {
+    if (window.innerWidth < 640 && myReportsViewLayout !== 'list') {
+      setMyReportsViewLayout('list');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleAddToDashboard = (reportId: number): void => {
     if (!userId) return;
@@ -155,7 +162,7 @@ export function ReportsListPage(): ReactElement {
   return (
     <div className="w-full px-6 pt-0 pb-8 space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col gap-6 pt-6">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 items-start">
           <div className="flex items-center gap-4">
             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
               <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -209,36 +216,34 @@ export function ReportsListPage(): ReactElement {
                 className="h-12 border-0 bg-transparent pl-11 text-base font-medium placeholder:font-normal placeholder:text-slate-400 focus-visible:ring-0"
               />
             </div>
-            {isMyReports ? (
-              <div
-                className="flex shrink-0 items-center rounded-xl border border-slate-200/90 bg-white/80 p-0.5 dark:border-white/10 dark:bg-white/5"
-                role="group"
-                aria-label={t('common.reportBuilder.reportsViewModeLabel')}
+            <div
+              className="flex shrink-0 items-center rounded-xl border border-slate-200/90 bg-white/80 p-0.5 dark:border-white/10 dark:bg-white/5"
+              role="group"
+              aria-label={t('common.reportBuilder.reportsViewModeLabel')}
+            >
+              <Button
+                type="button"
+                variant={myReportsViewLayout === 'cards' ? 'secondary' : 'ghost'}
+                size="sm"
+                className="h-10 gap-1.5 rounded-lg px-3"
+                aria-pressed={myReportsViewLayout === 'cards'}
+                onClick={() => setMyReportsViewLayout('cards')}
               >
-                <Button
-                  type="button"
-                  variant={myReportsViewLayout === 'cards' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="h-10 gap-1.5 rounded-lg px-3"
-                  aria-pressed={myReportsViewLayout === 'cards'}
-                  onClick={() => setMyReportsViewLayout('cards')}
-                >
-                  <LayoutGrid className="size-4" />
-                  <span className="hidden font-semibold sm:inline">{t('common.reportBuilder.reportsViewCards')}</span>
-                </Button>
-                <Button
-                  type="button"
-                  variant={myReportsViewLayout === 'list' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="h-10 gap-1.5 rounded-lg px-3"
-                  aria-pressed={myReportsViewLayout === 'list'}
-                  onClick={() => setMyReportsViewLayout('list')}
-                >
-                  <List className="size-4" />
-                  <span className="hidden font-semibold sm:inline">{t('common.reportBuilder.reportsViewList')}</span>
-                </Button>
-              </div>
-            ) : null}
+                <LayoutGrid className="size-4" />
+                <span className="hidden font-semibold sm:inline">{t('common.reportBuilder.reportsViewCards')}</span>
+              </Button>
+              <Button
+                type="button"
+                variant={myReportsViewLayout === 'list' ? 'secondary' : 'ghost'}
+                size="sm"
+                className="h-10 gap-1.5 rounded-lg px-3"
+                aria-pressed={myReportsViewLayout === 'list'}
+                onClick={() => setMyReportsViewLayout('list')}
+              >
+                <List className="size-4" />
+                <span className="hidden font-semibold sm:inline">{t('common.reportBuilder.reportsViewList')}</span>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -264,7 +269,7 @@ export function ReportsListPage(): ReactElement {
         </Card>
       )}
 
-      {!loading && items.length > 0 && isMyReports && myReportsViewLayout === 'list' ? (
+      {!loading && items.length > 0 && myReportsViewLayout === 'list' ? (
         <div
           className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-slate-950/50"
           role="list"
@@ -293,7 +298,7 @@ export function ReportsListPage(): ReactElement {
                 key={r.id}
                 role="listitem"
                 className="group relative flex min-h-11 cursor-pointer items-center gap-2 border-b border-slate-200/90 px-2 py-1 last:border-b-0 hover:bg-slate-50 dark:border-white/10 dark:hover:bg-white/[0.04] sm:gap-3 sm:px-3 sm:py-1.5"
-                onClick={() => navigate(`/reports/my/${r.id}`)}
+                onClick={() => navigate(isMyReports ? `/reports/my/${r.id}` : `/reports/${r.id}`)}
               >
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-transparent text-muted-foreground transition-colors group-hover:border-slate-200 group-hover:bg-white dark:group-hover:border-white/10 dark:group-hover:bg-white/5">
                   <LayoutGrid className="size-4" />
@@ -324,48 +329,110 @@ export function ReportsListPage(): ReactElement {
                     )}
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="size-8 rounded-md hover:bg-pink-50 hover:text-pink-600 dark:hover:bg-pink-500/10 dark:hover:text-pink-400"
-                      onClick={() => handleAddToDashboard(r.id)}
-                    >
-                      <Plus className="size-4" />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="size-8 rounded-md hover:bg-slate-100 dark:hover:bg-white/10"
-                      onClick={() => navigate('/')}
-                    >
-                      <ExternalLink className="size-4" />
-                    </Button>
-                    {r.canManage !== false ? (
+                    {isMyReports ? (
                       <>
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          disabled={pendingId === r.id}
-                          className="size-8 rounded-md hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
-                          onClick={() => navigate(`/reports/${r.id}/edit`)}
+                          className="size-8 rounded-md hover:bg-pink-50 hover:text-pink-600 dark:hover:bg-pink-500/10 dark:hover:text-pink-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToDashboard(r.id);
+                          }}
                         >
-                          <Pencil className="size-4" />
+                          <Plus className="size-4" />
                         </Button>
                         <Button
                           type="button"
                           variant="ghost"
                           size="icon"
-                          disabled={pendingId !== null || confirmingDelete}
-                          className="size-8 rounded-md text-red-500/80 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10"
-                          onClick={() => requestDeleteReport({ id: r.id, name: r.name })}
+                          className="size-8 rounded-md hover:bg-slate-100 dark:hover:bg-white/10"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/');
+                          }}
                         >
-                          <Trash2 className="size-4" />
+                          <ExternalLink className="size-4" />
                         </Button>
+                        {r.canManage !== false ? (
+                          <>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              disabled={pendingId === r.id}
+                              className="size-8 rounded-md hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/reports/${r.id}/edit`);
+                              }}
+                            >
+                              <Pencil className="size-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              disabled={pendingId !== null || confirmingDelete}
+                              className="size-8 rounded-md text-red-500/80 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                requestDeleteReport({ id: r.id, name: r.name });
+                              }}
+                            >
+                              <Trash2 className="size-4" />
+                            </Button>
+                          </>
+                        ) : null}
                       </>
-                    ) : null}
+                    ) : (
+                      <>
+                        {r.canManage !== false ? (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            disabled={pendingId === r.id}
+                            className="size-8 rounded-md hover:bg-indigo-50 hover:text-indigo-600 dark:hover:bg-indigo-500/10 dark:hover:text-indigo-400"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/reports/${r.id}/edit`);
+                            }}
+                          >
+                            <Pencil className="size-4" />
+                          </Button>
+                        ) : null}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          disabled={pendingId === r.id}
+                          className="size-8 rounded-md hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            void handleDuplicate(r.id);
+                          }}
+                        >
+                          {pendingId === r.id ? <Loader2 className="size-4 animate-spin" /> : <Copy className="size-4" />}
+                        </Button>
+                        {r.canManage !== false ? (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            disabled={pendingId !== null || confirmingDelete}
+                            className="size-8 rounded-md text-red-500/80 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              requestDeleteReport({ id: r.id, name: r.name });
+                            }}
+                          >
+                            <Trash2 className="size-4" />
+                          </Button>
+                        ) : null}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

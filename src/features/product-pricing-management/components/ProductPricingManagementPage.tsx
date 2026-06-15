@@ -330,6 +330,7 @@ export function ProductPricingManagementPage(): ReactElement {
           <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('table.title')}</CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
+            compactSearchOnMobile={true}
             userId={user?.id}
             columns={baseColumns}
             visibleColumns={visibleColumns}

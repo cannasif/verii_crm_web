@@ -31,7 +31,7 @@ export function WhatsappFlowPage(): ReactElement {
         {steps.map((step) => {
           const Icon = step.icon;
           return (
-            <Card key={step.title} className="rounded-2xl border-white/60 bg-white/75 shadow-sm backdrop-blur-xl">
+            <Card key={step.title} className="rounded-2xl border-white/60 bg-white/75 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-none">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Icon className="h-5 w-5 text-emerald-600" />
@@ -44,7 +44,7 @@ export function WhatsappFlowPage(): ReactElement {
         })}
       </div>
 
-      <Card className="rounded-2xl border-emerald-100 bg-gradient-to-br from-emerald-50 to-white shadow-sm">
+      <Card className="rounded-2xl border-emerald-100 bg-gradient-to-br from-emerald-50 to-white shadow-sm dark:border-emerald-500/20 dark:from-emerald-500/10 dark:to-transparent dark:shadow-none">
         <CardHeader>
           <CardTitle>{t('flow.nextPhaseTitle')}</CardTitle>
         </CardHeader>

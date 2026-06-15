@@ -225,7 +225,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
             children: [
               { title: t('sidebar.mailSettings'), href: '/users/mail-settings' },
               {
-                title: t('menu', { ns: 'hangfire-monitoring', defaultValue: 'Hangfire İzleme' }),
+                title: t('sidebar.hangfireMonitoring', { defaultValue: 'Hangfire İzleme' }),
                 href: '/hangfire-monitoring',
               },
             ],

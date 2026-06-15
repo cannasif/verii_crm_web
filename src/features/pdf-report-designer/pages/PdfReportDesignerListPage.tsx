@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import {
   Plus,
   Edit2,
@@ -32,11 +33,9 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
-  RefreshCw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { cn } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DataTableActionBar,
@@ -52,7 +51,6 @@ import {
   MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
-  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
@@ -449,10 +447,14 @@ export function PdfReportDesignerListPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('pdfReportDesigner.searchPlaceholder')}
             onSearchChange={setSearchTerm}
-            leftSlot={
-              <>
+            refresh={{
+              isLoading: isLoading || isFetching,
+              onRefresh: () => void handleRefresh(),
+            }}
+            mobileMoreOptionsSlot={
+              <div className="px-2 py-2 flex flex-col gap-2 sm:hidden" onPointerDown={(e) => e.stopPropagation()}>
                 <Select value={selectedRuleType} onValueChange={setSelectedRuleType}>
-                  <SelectTrigger className="h-9 w-[220px] border-slate-200/60 bg-white/50 shadow-sm backdrop-blur-xs transition-all duration-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
+                  <SelectTrigger className="h-9 w-full border-slate-200/60 bg-white/50 shadow-sm">
                     <SelectValue placeholder={t('pdfReportDesigner.filterAllDocumentTypes')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -465,7 +467,7 @@ export function PdfReportDesignerListPage(): ReactElement {
                   </SelectContent>
                 </Select>
                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                  <SelectTrigger className="h-9 w-[200px] border-slate-200/60 bg-white/50 shadow-sm backdrop-blur-xs transition-all duration-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
+                  <SelectTrigger className="h-9 w-full border-slate-200/60 bg-white/50 shadow-sm">
                     <SelectValue placeholder={t('pdfReportDesigner.filterAllStatuses')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -474,23 +476,38 @@ export function PdfReportDesignerListPage(): ReactElement {
                     <SelectItem value="inactive">{t('pdfReportDesigner.statusInactive')}</SelectItem>
                   </SelectContent>
                 </Select>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={cn(
-                    MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
-                    "border-slate-200/60 bg-white/50 font-semibold text-slate-600 transition-all duration-300 hover:bg-white hover:text-slate-900 dark:border-white/5 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
-                  )}
-                  onClick={() => void handleRefresh()}
-                  disabled={isLoading || isFetching}
-                >
-                  {isLoading || isFetching ? (
-                    <Loader2 className="mr-2 size-3.5 animate-spin" />
-                  ) : (
-                    <RefreshCw className="mr-2 size-3.5 opacity-70" />
-                  )}
-                  {t('common.refresh')}
-                </Button>
+                <DropdownMenuSeparator className="mt-2 -mx-2" />
+              </div>
+            }
+            leftSlot={
+              <>
+                <div className="max-sm:hidden">
+                  <Select value={selectedRuleType} onValueChange={setSelectedRuleType}>
+                    <SelectTrigger className="h-9 w-[220px] border-slate-200/60 bg-white/50 shadow-sm backdrop-blur-xs transition-all duration-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
+                    <SelectValue placeholder={t('pdfReportDesigner.filterAllDocumentTypes')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t('pdfReportDesigner.filterAllDocumentTypes')}</SelectItem>
+                      {Object.entries(RULE_TYPE_LABEL_KEYS).map(([value, labelKey]) => (
+                        <SelectItem key={value} value={value}>
+                          {t(labelKey)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="max-sm:hidden">
+                  <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                    <SelectTrigger className="h-9 w-[200px] border-slate-200/60 bg-white/50 shadow-sm backdrop-blur-xs transition-all duration-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
+                      <SelectValue placeholder={t('pdfReportDesigner.filterAllStatuses')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{t('pdfReportDesigner.filterAllStatuses')}</SelectItem>
+                      <SelectItem value="active">{t('pdfReportDesigner.statusActive')}</SelectItem>
+                      <SelectItem value="inactive">{t('pdfReportDesigner.statusInactive')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </>
             }
           />

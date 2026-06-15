@@ -1590,21 +1590,24 @@ export function DailyTasksPage(): ReactElement {
                 <Button variant="ghost" size="sm" onClick={() => setStatusFilter('all')} className={filterButtonStyle(statusFilter === 'all')}>
                   {t('dailyTasks.all')}
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Scheduled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Scheduled))}>
-                  <Clock size={12} className="mr-1" /> {t('dailyTasks.pending')}
+                <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Scheduled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Scheduled)) + ' w-[88px]'} title={t('dailyTasks.pending')}>
+                  <Clock size={12} className="shrink-0" />
+                  <span className="hidden sm:inline ml-1">{t('dailyTasks.pending')}</span>
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Cancelled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Cancelled))}>
-                  <PauseCircle size={12} className="mr-1" /> {t('statusCanceled', { ns: 'activity-management' })}
+                <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Cancelled))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Cancelled)) + ' w-[88px]'} title={t('statusCanceled', { ns: 'activity-management' })}>
+                  <PauseCircle size={12} className="shrink-0" />
+                  <span className="hidden sm:inline ml-1">{t('statusCanceled', { ns: 'activity-management' })}</span>
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Completed))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Completed))}>
-                  <CheckCircle2 size={12} className="mr-1" /> {t('dailyTasks.completed')}
+                <Button variant="ghost" size="sm" onClick={() => setStatusFilter(String(ActivityStatus.Completed))} className={filterButtonStyle(statusFilter === String(ActivityStatus.Completed)) + ' w-[88px]'} title={t('dailyTasks.completed')}>
+                  <CheckCircle2 size={12} className="shrink-0" />
+                  <span className="hidden sm:inline ml-1">{t('dailyTasks.completed')}</span>
                 </Button>
               </div>
             </div>
 
             {activeTab === 'tasks' ? (
               <div className="my-1 flex h-10 w-full min-w-0 items-center gap-2 rounded-xl border border-slate-300/80 bg-white px-2 py-1.5 shadow-sm dark:border-white/10 dark:bg-white/5">
-                <div className="flex w-full flex-wrap items-center gap-2">
+                <div className="flex w-full items-center gap-1 sm:gap-2 overflow-hidden">
                   <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-md" onClick={handlePreviousTasksWeek}>
                     <ChevronLeft size={14} />
                   </Button>
@@ -1615,12 +1618,12 @@ export function DailyTasksPage(): ReactElement {
                       if (!e.target.value) return;
                       setTasksWeekStart(normalizeToMonday(parseDateKey(e.target.value)));
                     }}
-                    className="h-8 min-w-[180px] flex-1 rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
+                    className="h-8 w-0 flex-1 min-w-0 sm:min-w-[180px] rounded-lg border-slate-300 bg-white text-xs dark:border-white/10 dark:bg-white/5"
                   />
                   <Button type="button" variant="ghost" size="icon" className="h-8 w-8 shrink-0 rounded-md" onClick={handleNextTasksWeek}>
                     <ChevronRight size={14} />
                   </Button>
-                  <Button type="button" variant="outline" size="sm" className="h-8 rounded-lg text-xs sm:ml-auto" onClick={handleCurrentTasksWeek}>
+                  <Button type="button" variant="outline" size="sm" className="h-8 shrink-0 rounded-lg text-xs sm:ml-auto" onClick={handleCurrentTasksWeek}>
                     {t('dailyTasks.thisWeek', { defaultValue: 'Bu Hafta' })}
                   </Button>
                 </div>

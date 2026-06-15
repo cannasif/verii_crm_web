@@ -1419,6 +1419,7 @@
     "userVisibilityAssignments": "User Visibility Assignments",
     "visibilitySimulator": "Visibility Simulator",
     "auditLogs": "Audit Logs",
+    "hangfireMonitoring": "Hangfire Monitoring",
     "salesManagement": "Sales Management",
     "demands": "Requests",
     "demandCreateWizard": "Create New Request",
@@ -5593,6 +5594,36 @@
     "countTriedByTooltip": "Number of attempts to transfer this record to Netsis/ERP. The integration column shows only the outcome.",
     "openDetailHint": "Double-click to open details",
     "statusUnknown": "Status unknown"
+  },
+  "erpCleanupLogs": {
+    "subtitle": "Traceable records of ERP record clear/copy operations on demands, offers and orders.",
+    "listTitle": "Log List",
+    "searchPlaceholder": "Search by document no, ERP no or reason...",
+    "loadingText": "Loading ERP record cleanup logs...",
+    "errorText": "Failed to load logs.",
+    "emptyText": "No ERP record cleanup logs yet.",
+    "columns": {
+      "date": "Date",
+      "documentType": "Document Type",
+      "sourceDocumentNumber": "Old Document No",
+      "erpDocumentNumber": "ERP No",
+      "newDocumentNumber": "New Document No",
+      "overallStatus": "Status",
+      "erpDeleteStatus": "ERP Delete",
+      "requestedByUserFullName": "Processed By",
+      "cleanupReason": "Reason"
+    },
+    "documentTypes": {
+      "demand": "Demand",
+      "offer": "Offer",
+      "order": "Order"
+    },
+    "statuses": {
+      "notStarted": "Not Started",
+      "pending": "Pending",
+      "success": "Success",
+      "error": "Error"
+    }
   },
   "erpCleanup": {
     "status": {

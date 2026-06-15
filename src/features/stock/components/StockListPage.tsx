@@ -327,37 +327,37 @@ export function StockListPage(): ReactElement {
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
     const list = hasCodeFilterSelection
       ? (
-          await fetchStockListWithCodeFilters(
-            appliedSpecialCodeSelections,
-            (params) =>
-              stockApi.getList({
-                pageNumber: params.pageNumber,
-                pageSize: params.pageSize,
-                search: params.search ?? '',
-                sortBy: params.sortBy ?? 'Id',
-                sortDirection: params.sortDirection ?? 'desc',
-                filterLogic: params.filterLogic ?? 'and',
-                filters: params.filters,
-              }),
-            {
-              pageNumber: 1,
-              pageSize: 2000,
-              search: searchTerm || undefined,
-              additionalFilters: appliedFilters,
-            },
-          )
-        ).data
-      : await fetchAllPagedData({
-          fetchPage: (exportPageNumber, exportPageSize) =>
+        await fetchStockListWithCodeFilters(
+          appliedSpecialCodeSelections,
+          (params) =>
             stockApi.getList({
-              pageNumber: exportPageNumber,
-              pageSize: exportPageSize,
-              search: searchTerm || undefined,
-              sortBy,
-              sortDirection,
-              ...filtersParam,
+              pageNumber: params.pageNumber,
+              pageSize: params.pageSize,
+              search: params.search ?? '',
+              sortBy: params.sortBy ?? 'Id',
+              sortDirection: params.sortDirection ?? 'desc',
+              filterLogic: params.filterLogic ?? 'and',
+              filters: params.filters,
             }),
-        });
+          {
+            pageNumber: 1,
+            pageSize: 2000,
+            search: searchTerm || undefined,
+            additionalFilters: appliedFilters,
+          },
+        )
+      ).data
+      : await fetchAllPagedData({
+        fetchPage: (exportPageNumber, exportPageSize) =>
+          stockApi.getList({
+            pageNumber: exportPageNumber,
+            pageSize: exportPageSize,
+            search: searchTerm || undefined,
+            sortBy,
+            sortDirection,
+            ...filtersParam,
+          }),
+      });
     return {
       columns: exportColumns,
       rows: list.map((stock: StockGetDto) => ({
@@ -504,324 +504,326 @@ export function StockListPage(): ReactElement {
         }
       />
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
-          <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
-            <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
-              {t('list.cardTitle', { defaultValue: 'Stok Yönetimi' })}
-            </CardTitle>
-            <DataTableActionBar
-              pageKey={PAGE_KEY}
-              userId={user?.id}
-              columns={baseColumns}
-              visibleColumns={visibleColumns}
-              columnOrder={columnOrder}
-              onVisibleColumnsChange={setVisibleColumns}
-              onColumnOrderChange={(newVisibleOrder) => {
-                setColumnOrder((currentOrder) => {
-                  const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
-                  const finalOrder = [...newVisibleOrder, ...hiddenCols];
-                  saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
-                  return finalOrder;
-                });
-              }}
-              exportFileName="stock-list"
-              exportColumns={exportColumns}
-              exportRows={exportRows}
-              getExportData={getExportData}
-              filterColumns={filterColumns}
-              defaultFilterColumn="StockName"
-              draftFilterRows={draftFilterRows}
-              onDraftFilterRowsChange={setDraftFilterRows}
-              filterLogic={filterLogic}
-              onFilterLogicChange={setFilterLogic}
-              onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
-              onClearFilters={() => {
-                setDraftFilterRows([]);
-                setAppliedFilterRows([]);
-                setFilterLogic('and');
-                setSearchResetKey((value) => value + 1);
-              }}
-              additionalFilterActions={
-                <StockListCodeFilterPopover
-                  draftSelections={draftSpecialCodeSelections}
-                  onDraftSelectionsChange={setDraftSpecialCodeSelections}
-                  appliedSelections={appliedSpecialCodeSelections}
-                  onApply={handleApplySpecialCodeFilters}
-                  onClearApplied={handleClearSpecialCodeFilters}
-                />
-              }
-              translationNamespace="stock"
-              appliedFilterCount={appliedFilters.length}
-              search={{
-                onSearchChange: setSearchTerm,
-                placeholder: t('common.search'),
-                minLength: 1,
-                resetKey: searchResetKey,
-              }}
-              refresh={{
-                onRefresh: () => {
-                  void handleGridRefresh();
-                },
-                isLoading: stockQuery.isFetching,
-                cooldownSeconds: 60,
-                label: resolveLabel(t, 'list.refresh', 'Yenile'),
-              }}
-              leftSlot={
-                <div
-                  className="flex shrink-0 gap-0.5 rounded-lg border border-slate-300/90 bg-slate-50 p-0.5 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none"
-                  role="group"
-                  aria-label={t('list.viewModeGroupLabel')}
+        <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+            {t('list.cardTitle', { defaultValue: 'Stok Yönetimi' })}
+          </CardTitle>
+          <DataTableActionBar
+            pageKey={PAGE_KEY}
+            userId={user?.id}
+            columns={baseColumns}
+            visibleColumns={visibleColumns}
+            columnOrder={columnOrder}
+            onVisibleColumnsChange={setVisibleColumns}
+            onColumnOrderChange={(newVisibleOrder) => {
+              setColumnOrder((currentOrder) => {
+                const hiddenCols = currentOrder.filter((k) => !newVisibleOrder.includes(k));
+                const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                return finalOrder;
+              });
+            }}
+            exportFileName="stock-list"
+            exportColumns={exportColumns}
+            exportRows={exportRows}
+            getExportData={getExportData}
+            filterColumns={filterColumns}
+            defaultFilterColumn="StockName"
+            draftFilterRows={draftFilterRows}
+            onDraftFilterRowsChange={setDraftFilterRows}
+            filterLogic={filterLogic}
+            onFilterLogicChange={setFilterLogic}
+            onApplyFilters={() => setAppliedFilterRows(draftFilterRows)}
+            onClearFilters={() => {
+              setDraftFilterRows([]);
+              setAppliedFilterRows([]);
+              setFilterLogic('and');
+              setSearchResetKey((value) => value + 1);
+            }}
+            additionalFilterActions={
+              <StockListCodeFilterPopover
+                draftSelections={draftSpecialCodeSelections}
+                onDraftSelectionsChange={setDraftSpecialCodeSelections}
+                appliedSelections={appliedSpecialCodeSelections}
+                onApply={handleApplySpecialCodeFilters}
+                onClearApplied={handleClearSpecialCodeFilters}
+              />
+            }
+            translationNamespace="stock"
+            appliedFilterCount={appliedFilters.length}
+            search={{
+              onSearchChange: setSearchTerm,
+              placeholder: t('common.search'),
+              minLength: 1,
+              resetKey: searchResetKey,
+              className: 'max-w-[110px] sm:max-w-none',
+              wrapperClassName: 'max-sm:flex-none',
+            }}
+            refresh={{
+              onRefresh: () => {
+                void handleGridRefresh();
+              },
+              isLoading: stockQuery.isFetching,
+              cooldownSeconds: 60,
+              label: resolveLabel(t, 'list.refresh', 'Yenile'),
+            }}
+            leftSlot={
+              <div
+                className="flex shrink-0 gap-0.5 rounded-lg border border-slate-300/90 bg-slate-50 p-0.5 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none"
+                role="group"
+                aria-label={t('list.viewModeGroupLabel')}
+              >
+                <Button
+                  type="button"
+                  variant={listLayout === 'table' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className={cn(
+                    'h-8 rounded-md px-2 text-slate-600 dark:text-slate-300 sm:h-8 sm:rounded-lg sm:px-2.5',
+                    listLayout === 'table' &&
+                    'border border-pink-500/30 bg-pink-500/15 text-pink-700 shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-pink-100'
+                  )}
+                  onClick={() => persistListLayout('table')}
+                  aria-pressed={listLayout === 'table'}
+                  title={t('list.viewModeTable')}
                 >
-                  <Button
-                    type="button"
-                    variant={listLayout === 'table' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className={cn(
-                      'h-8 rounded-md px-2 text-slate-600 dark:text-slate-300 sm:h-8 sm:rounded-lg sm:px-2.5',
-                      listLayout === 'table' &&
-                        'border border-pink-500/30 bg-pink-500/15 text-pink-700 shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-pink-100'
-                    )}
-                    onClick={() => persistListLayout('table')}
-                    aria-pressed={listLayout === 'table'}
-                    title={t('list.viewModeTable')}
-                  >
-                    <List className="h-4 w-4" />
-                    <span className="ml-1.5 hidden text-xs font-medium sm:inline">{t('list.viewModeTable')}</span>
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={listLayout === 'grid' ? 'secondary' : 'ghost'}
-                    size="sm"
-                    className={cn(
-                      'h-8 rounded-md px-2 text-slate-600 dark:text-slate-300 sm:h-8 sm:rounded-lg sm:px-2.5',
-                      listLayout === 'grid' &&
-                        'border border-pink-500/30 bg-pink-500/15 text-pink-700 shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-pink-100'
-                    )}
-                    onClick={() => persistListLayout('grid')}
-                    aria-pressed={listLayout === 'grid'}
-                    title={t('list.viewModeGrid')}
-                  >
-                    <LayoutGrid className="h-4 w-4" />
-                    <span className="ml-1.5 hidden text-xs font-medium sm:inline">{t('list.viewModeGrid')}</span>
-                  </Button>
+                  <List className="h-4 w-4" />
+                  <span className="ml-1.5 hidden text-xs font-medium sm:inline">{t('list.viewModeTable')}</span>
+                </Button>
+                <Button
+                  type="button"
+                  variant={listLayout === 'grid' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className={cn(
+                    'h-8 rounded-md px-2 text-slate-600 dark:text-slate-300 sm:h-8 sm:rounded-lg sm:px-2.5',
+                    listLayout === 'grid' &&
+                    'border border-pink-500/30 bg-pink-500/15 text-pink-700 shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-pink-100'
+                  )}
+                  onClick={() => persistListLayout('grid')}
+                  aria-pressed={listLayout === 'grid'}
+                  title={t('list.viewModeGrid')}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                  <span className="ml-1.5 hidden text-xs font-medium sm:inline">{t('list.viewModeGrid')}</span>
+                </Button>
+              </div>
+            }
+          />
+        </CardHeader>
+        <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+          {listLayout === 'table' ? (
+            <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+              <ManagementDataTableChrome>
+                <DataTableGrid<StockGetDto, StockColumnKey>
+                  columns={columns}
+                  visibleColumnKeys={orderedVisibleColumns}
+                  rows={currentPageRows}
+                  rowKey={(row) => row.id}
+                  renderCell={renderCell}
+                  sortBy={sortBy}
+                  sortDirection={sortDirection}
+                  onSort={onSort}
+                  renderSortIcon={renderSortIcon}
+                  isLoading={stockQuery.isLoading || stockQuery.isFetching}
+                  isError={stockQuery.isError}
+                  loadingText={t('list.loading', { defaultValue: 'Yükleniyor...' })}
+                  errorText={t('list.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                  emptyText={t('list.noData', { defaultValue: 'Kayıt bulunamadı.' })}
+                  minTableWidthClassName="min-w-[1020px]"
+                  showActionsColumn
+                  actionsHeaderLabel={t('list.actions')}
+                  renderActionsCell={(stock) => (
+                    <div className="flex justify-end gap-2 opacity-100 transition-opacity pr-4">
+                      {canCreateErpStock && !stock.isERPIntegrated ? (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
+                          disabled={createErpStock.isPending}
+                          aria-label={t('list.createErpStock')}
+                          title={t('list.createErpStock')}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            createErpStock.mutate(stock.id);
+                          }}
+                        >
+                          <CloudUpload className="h-4 w-4" />
+                        </Button>
+                      ) : null}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={cn(
+                          'h-8 w-8 text-slate-400 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-500/10',
+                          stock.isFavorite && 'text-pink-600 dark:text-pink-400'
+                        )}
+                        disabled={toggleStockFavorite.isPending}
+                        aria-label={stock.isFavorite ? t('list.removeFavorite') : t('list.addFavorite')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleStockFavorite.mutate({
+                            stockId: stock.id,
+                            data: { isFavorite: !stock.isFavorite },
+                          });
+                        }}
+                      >
+                        <Heart className={cn('h-4 w-4', stock.isFavorite && 'fill-current')} />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigateToStockDetail(stock.id);
+                        }}
+                      >
+                        <Eye size={16} />
+                      </Button>
+                    </div>
+                  )}
+                  rowClassName="group"
+                  pageSize={pageSize}
+                  pageSizeOptions={PAGE_SIZE_OPTIONS}
+                  onPageSizeChange={setPageSize}
+                  pageNumber={pageNumber}
+                  totalPages={totalPages}
+                  hasPreviousPage={hasPreviousPage}
+                  hasNextPage={hasNextPage}
+                  onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                  onNextPage={() => setPageNumber((prev) => prev + 1)}
+                  previousLabel={t('list.previous')}
+                  nextLabel={t('list.next')}
+                  paginationInfoText={t('common.paginationInfo', {
+                    start: startRow,
+                    end: endRow,
+                    total: totalCount,
+                    ns: 'common',
+                  })}
+                  disablePaginationButtons={stockQuery.isFetching}
+                  centerColumnHeaders
+                  onColumnOrderChange={(newVisibleOrder) => {
+                    setColumnOrder((currentOrder) => {
+                      const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
+                      const finalOrder = [...newVisibleOrder, ...hiddenCols];
+                      saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
+                      return finalOrder;
+                    });
+                  }}
+                />
+              </ManagementDataTableChrome>
+            </div>
+          ) : (
+            <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+              <div className="relative overflow-hidden rounded-md">
+                <div
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.08),transparent_55%)]"
+                  aria-hidden
+                />
+                <div className="relative max-h-[min(70vh,calc(100svh-16rem))] overflow-y-auto px-1 pt-1.5 sm:px-2 sm:pt-2">
+                  {stockQuery.isLoading ? (
+                    <div className="grid grid-cols-1 gap-2.5 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
+                      {Array.from({ length: Math.min(pageSize, 10) }).map((_, i) => (
+                        <div
+                          key={`grid-skel-${i}`}
+                          className="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm dark:border-white/10 dark:bg-white/[0.03]"
+                        >
+                          <Skeleton className="aspect-[16/9] w-full rounded-none bg-slate-200/70 dark:bg-white/10" />
+                          <div className="space-y-2 p-2.5">
+                            <Skeleton className="h-3 w-2/3 bg-slate-200/70 dark:bg-white/10" />
+                            <Skeleton className="h-4 w-full bg-slate-200/70 dark:bg-white/10" />
+                            <Skeleton className="h-3 w-1/2 bg-slate-200/70 dark:bg-white/10" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                  {!stockQuery.isLoading && stockQuery.isError ? (
+                    <div className="py-12 text-center text-sm text-red-600 dark:text-red-400">
+                      {t('list.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
+                    </div>
+                  ) : null}
+                  {!stockQuery.isLoading && !stockQuery.isError && currentPageRows.length === 0 ? (
+                    <div className="py-12 text-center text-sm text-muted-foreground">
+                      {t('list.noData', { defaultValue: 'Kayıt bulunamadı.' })}
+                    </div>
+                  ) : null}
+                  {!stockQuery.isLoading && !stockQuery.isError && currentPageRows.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-2.5 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
+                      {(currentPageRows as StockGetWithMainImageDto[]).map((stock) => (
+                        <StockGridCard
+                          key={stock.id}
+                          stock={stock}
+                          onNavigateDetail={navigateToStockDetail}
+                          onToggleFavorite={(stockId, next) => {
+                            toggleStockFavorite.mutate({ stockId, data: { isFavorite: next } });
+                          }}
+                          isFavoritePending={toggleStockFavorite.isPending}
+                          favoriteLabelOn={t('list.removeFavorite')}
+                          favoriteLabelOff={t('list.addFavorite')}
+                          detailLabel={t('list.viewDetail')}
+                        />
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
-              }
-            />
-          </CardHeader>
-          <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
-            {listLayout === 'table' ? (
-              <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-                <ManagementDataTableChrome>
-                  <DataTableGrid<StockGetDto, StockColumnKey>
-                    columns={columns}
-                    visibleColumnKeys={orderedVisibleColumns}
-                    rows={currentPageRows}
-                    rowKey={(row) => row.id}
-                    renderCell={renderCell}
-                    sortBy={sortBy}
-                    sortDirection={sortDirection}
-                    onSort={onSort}
-                    renderSortIcon={renderSortIcon}
-                    isLoading={stockQuery.isLoading || stockQuery.isFetching}
-                    isError={stockQuery.isError}
-                    loadingText={t('list.loading', { defaultValue: 'Yükleniyor...' })}
-                    errorText={t('list.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-                    emptyText={t('list.noData', { defaultValue: 'Kayıt bulunamadı.' })}
-                    minTableWidthClassName="min-w-[1020px]"
-                    showActionsColumn
-                    actionsHeaderLabel={t('list.actions')}
-                    renderActionsCell={(stock) => (
-                      <div className="flex justify-end gap-2 opacity-100 transition-opacity pr-4">
-                        {canCreateErpStock && !stock.isERPIntegrated ? (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-500/10"
-                            disabled={createErpStock.isPending}
-                            aria-label={t('list.createErpStock')}
-                            title={t('list.createErpStock')}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              createErpStock.mutate(stock.id);
-                            }}
-                          >
-                            <CloudUpload className="h-4 w-4" />
-                          </Button>
-                        ) : null}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className={cn(
-                            'h-8 w-8 text-slate-400 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-500/10',
-                            stock.isFavorite && 'text-pink-600 dark:text-pink-400'
-                          )}
-                          disabled={toggleStockFavorite.isPending}
-                          aria-label={stock.isFavorite ? t('list.removeFavorite') : t('list.addFavorite')}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleStockFavorite.mutate({
-                              stockId: stock.id,
-                              data: { isFavorite: !stock.isFavorite },
-                            });
-                          }}
-                        >
-                          <Heart className={cn('h-4 w-4', stock.isFavorite && 'fill-current')} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-500/10"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigateToStockDetail(stock.id);
-                          }}
-                        >
-                          <Eye size={16} />
-                        </Button>
-                      </div>
-                    )}
-                    rowClassName="group"
-                    pageSize={pageSize}
-                    pageSizeOptions={PAGE_SIZE_OPTIONS}
-                    onPageSizeChange={setPageSize}
-                    pageNumber={pageNumber}
-                    totalPages={totalPages}
-                    hasPreviousPage={hasPreviousPage}
-                    hasNextPage={hasNextPage}
-                    onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-                    onNextPage={() => setPageNumber((prev) => prev + 1)}
-                    previousLabel={t('list.previous')}
-                    nextLabel={t('list.next')}
-                    paginationInfoText={t('common.paginationInfo', {
+              </div>
+              <div className="mt-1 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/90 px-3 pb-6 pt-3 sm:px-4 dark:border-white/10">
+                <div className="flex min-w-0 flex-wrap items-center gap-3">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 border-slate-300 bg-white px-3 shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
+                      >
+                        <span>{pageSize}</span>
+                        <ChevronDown className="ml-1 h-3.5 w-3.5" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-24">
+                      {PAGE_SIZE_OPTIONS.map((size) => (
+                        <DropdownMenuItem key={size} onClick={() => setPageSize(size)}>
+                          {size}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <div className="text-xs text-muted-foreground">
+                    {t('common.paginationInfo', {
                       start: startRow,
                       end: endRow,
                       total: totalCount,
                       ns: 'common',
                     })}
-                    disablePaginationButtons={stockQuery.isFetching}
-                    centerColumnHeaders
-                    onColumnOrderChange={(newVisibleOrder) => {
-                      setColumnOrder((currentOrder) => {
-                        const hiddenCols = currentOrder.filter((k) => !(newVisibleOrder as string[]).includes(k));
-                        const finalOrder = [...newVisibleOrder, ...hiddenCols];
-                        saveColumnPreferences(PAGE_KEY, user?.id, { visibleKeys: visibleColumns, order: finalOrder });
-                        return finalOrder;
-                      });
-                    }}
-                  />
-                </ManagementDataTableChrome>
-              </div>
-            ) : (
-              <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
-                <div className="relative overflow-hidden rounded-md">
-                  <div
-                    className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.08),transparent_55%)]"
-                    aria-hidden
-                  />
-                  <div className="relative max-h-[min(70vh,calc(100svh-16rem))] overflow-y-auto px-1 pt-1.5 sm:px-2 sm:pt-2">
-                    {stockQuery.isLoading ? (
-                      <div className="grid grid-cols-1 gap-2.5 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
-                        {Array.from({ length: Math.min(pageSize, 10) }).map((_, i) => (
-                          <div
-                            key={`grid-skel-${i}`}
-                            className="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm dark:border-white/10 dark:bg-white/[0.03]"
-                          >
-                            <Skeleton className="aspect-[16/9] w-full rounded-none bg-slate-200/70 dark:bg-white/10" />
-                            <div className="space-y-2 p-2.5">
-                              <Skeleton className="h-3 w-2/3 bg-slate-200/70 dark:bg-white/10" />
-                              <Skeleton className="h-4 w-full bg-slate-200/70 dark:bg-white/10" />
-                              <Skeleton className="h-3 w-1/2 bg-slate-200/70 dark:bg-white/10" />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
-                    {!stockQuery.isLoading && stockQuery.isError ? (
-                      <div className="py-12 text-center text-sm text-red-600 dark:text-red-400">
-                        {t('list.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
-                      </div>
-                    ) : null}
-                    {!stockQuery.isLoading && !stockQuery.isError && currentPageRows.length === 0 ? (
-                      <div className="py-12 text-center text-sm text-muted-foreground">
-                        {t('list.noData', { defaultValue: 'Kayıt bulunamadı.' })}
-                      </div>
-                    ) : null}
-                    {!stockQuery.isLoading && !stockQuery.isError && currentPageRows.length > 0 ? (
-                      <div className="grid grid-cols-1 gap-2.5 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
-                        {(currentPageRows as StockGetWithMainImageDto[]).map((stock) => (
-                          <StockGridCard
-                            key={stock.id}
-                            stock={stock}
-                            onNavigateDetail={navigateToStockDetail}
-                            onToggleFavorite={(stockId, next) => {
-                              toggleStockFavorite.mutate({ stockId, data: { isFavorite: next } });
-                            }}
-                            isFavoritePending={toggleStockFavorite.isPending}
-                            favoriteLabelOn={t('list.removeFavorite')}
-                            favoriteLabelOff={t('list.addFavorite')}
-                            detailLabel={t('list.viewDetail')}
-                          />
-                        ))}
-                      </div>
-                    ) : null}
                   </div>
                 </div>
-                <div className="mt-1 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/90 px-3 pb-6 pt-3 sm:px-4 dark:border-white/10">
-                  <div className="flex min-w-0 flex-wrap items-center gap-3">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8 border-slate-300 bg-white px-3 shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
-                        >
-                          <span>{pageSize}</span>
-                          <ChevronDown className="ml-1 h-3.5 w-3.5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="start" className="w-24">
-                        {PAGE_SIZE_OPTIONS.map((size) => (
-                          <DropdownMenuItem key={size} onClick={() => setPageSize(size)}>
-                            {size}
-                          </DropdownMenuItem>
-                        ))}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                    <div className="text-xs text-muted-foreground">
-                      {t('common.paginationInfo', {
-                        start: startRow,
-                        end: endRow,
-                        total: totalCount,
-                        ns: 'common',
-                      })}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
-                      onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-                      disabled={!hasPreviousPage || stockQuery.isFetching}
-                    >
-                      {t('list.previous')}
-                    </Button>
-                    <span className="px-2 text-xs text-muted-foreground">
-                      {pageNumber} / {Math.max(totalPages, 1)}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
-                      onClick={() => setPageNumber((prev) => prev + 1)}
-                      disabled={!hasNextPage || stockQuery.isFetching}
-                    >
-                      {t('list.next')}
-                    </Button>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
+                    onClick={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
+                    disabled={!hasPreviousPage || stockQuery.isFetching}
+                  >
+                    {t('list.previous')}
+                  </Button>
+                  <span className="px-2 text-xs text-muted-foreground">
+                    {pageNumber} / {Math.max(totalPages, 1)}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
+                    onClick={() => setPageNumber((prev) => prev + 1)}
+                    disabled={!hasNextPage || stockQuery.isFetching}
+                  >
+                    {t('list.next')}
+                  </Button>
                 </div>
               </div>
-            )}
-          </CardContent>
+            </div>
+          )}
+        </CardContent>
       </Card>
     </div>
   );
