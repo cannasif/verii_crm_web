@@ -25,7 +25,6 @@ import {
 } from '@/components/ui/form';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import {
-  useCustomerOptionsInfinite,
   useCountryOptionsInfinite,
   useCityOptionsInfinite,
   useDistrictOptionsInfinite,
@@ -66,7 +65,6 @@ export function ShippingAddressForm({
   isLoading = false,
 }: ShippingAddressFormProps): ReactElement {
   const { t } = useTranslation();
-  const [customerSearchTerm, setCustomerSearchTerm] = useState('');
   const [countrySearchTerm, setCountrySearchTerm] = useState('');
   const [citySearchTerm, setCitySearchTerm] = useState('');
   const [districtSearchTerm, setDistrictSearchTerm] = useState('');
@@ -82,7 +80,7 @@ export function ShippingAddressForm({
       contactPerson: '',
       phone: '',
       notes: '',
-      customerId: 0,
+      customerId: undefined,
       countryId: undefined,
       cityId: undefined,
       districtId: undefined,
@@ -95,7 +93,6 @@ export function ShippingAddressForm({
   const watchedCountryId = form.watch('countryId');
   const watchedCityId = form.watch('cityId');
 
-  const customerDropdown = useCustomerOptionsInfinite(customerSearchTerm, open);
   const countryDropdown = useCountryOptionsInfinite(countrySearchTerm, open);
   const cityDropdown = useCityOptionsInfinite(citySearchTerm, open, watchedCountryId ?? undefined);
   const districtDropdown = useDistrictOptionsInfinite(districtSearchTerm, open, watchedCityId ?? undefined);
@@ -109,7 +106,7 @@ export function ShippingAddressForm({
         contactPerson: shippingAddress.contactPerson || '',
         phone: shippingAddress.phone || '',
         notes: shippingAddress.notes || '',
-        customerId: shippingAddress.customerId,
+        customerId: undefined,
         countryId: shippingAddress.countryId || undefined,
         cityId: shippingAddress.cityId || undefined,
         districtId: shippingAddress.districtId || undefined,
@@ -197,34 +194,6 @@ export function ShippingAddressForm({
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
             <form id="shipping-address-form" onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-
-              <FormField
-                control={form.control}
-                name="customerId"
-                render={({ field }) => (
-                  <FormItem className="space-y-0">
-                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(shippingAddressFormSchema, 'customerId')}>
-                      <User size={11} className="text-pink-500 shrink-0" />
-                      {t('shippingAddressManagement.customerId')}
-                    </FormLabel>
-                    <VoiceSearchCombobox
-                      options={customerDropdown.options}
-                      value={field.value && field.value !== 0 ? field.value.toString() : ''}
-                      onSelect={(value) => field.onChange(value && value !== '' ? parseInt(value) : undefined)}
-                      onDebouncedSearchChange={setCustomerSearchTerm}
-                      onFetchNextPage={customerDropdown.fetchNextPage}
-                      hasNextPage={customerDropdown.hasNextPage}
-                      isLoading={customerDropdown.isLoading}
-                      isFetchingNextPage={customerDropdown.isFetchingNextPage}
-                      placeholder={t('shippingAddressManagement.selectCustomer')}
-                      searchPlaceholder={t('shippingAddressManagement.searchCustomer')}
-                      className={INPUT_STYLE}
-                      modal={true}
-                    />
-                    <FormMessage className="text-red-500 text-[10px] mt-1" />
-                  </FormItem>
-                )}
-              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField

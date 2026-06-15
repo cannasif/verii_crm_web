@@ -3,12 +3,17 @@ import { z } from 'zod';
 export interface ShippingAddressDto {
   id: number;
   name?: string;
+  erpShippingCode?: string | null;
+  erpMainCustomerCode?: string | null;
+  branchCode?: number | null;
+  isErpMirror?: boolean;
+  lastSyncDate?: string | null;
   address: string;
   postalCode?: string;
   contactPerson?: string;
   phone?: string;
   notes?: string;
-  customerId: number;
+  customerId?: number | null;
   customerName?: string;
   countryId?: number;
   countryName?: string;
@@ -37,7 +42,7 @@ export interface CreateShippingAddressDto {
   contactPerson?: string;
   phone?: string;
   notes?: string;
-  customerId: number;
+  customerId?: number | null;
   countryId?: number;
   cityId?: number;
   districtId?: number;
@@ -51,7 +56,7 @@ export interface UpdateShippingAddressDto {
   contactPerson?: string;
   phone?: string;
   notes?: string;
-  customerId: number;
+  customerId?: number | null;
   countryId?: number;
   cityId?: number;
   districtId?: number;
@@ -73,7 +78,7 @@ export interface ShippingAddressFormData {
   contactPerson?: string;
   phone?: string;
   notes?: string;
-  customerId: number;
+  customerId?: number | null;
   countryId?: number;
   cityId?: number;
   districtId?: number;
@@ -110,9 +115,7 @@ export const shippingAddressFormSchema = z.object({
     .max(100, 'shippingAddressManagement.notesMaxLength')
     .optional()
     .nullable(),
-  customerId: z
-    .number()
-    .min(1, 'shippingAddressManagement.customerIdRequired'),
+  customerId: z.number().optional().nullable(),
   countryId: z
     .number()
     .optional()

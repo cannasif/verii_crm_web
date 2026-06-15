@@ -304,7 +304,11 @@ export interface Customer {
 export interface ShippingAddress {
   id: number;
   addressText: string;
-  customerId: number;
+  customerId?: number | null;
+  name?: string | null;
+  customerName?: string | null;
+  erpShippingCode?: string | null;
+  erpMainCustomerCode?: string | null;
 }
 
 export interface User {
