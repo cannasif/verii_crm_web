@@ -5596,7 +5596,7 @@
   },
   "erpCleanup": {
     "status": {
-      "cleanedForRevision": "ERP record cleared for revision",
+      "cleanedForRevision": "ERP record closed by salesperson for revision",
       "cleanupFailed": "ERP record could not be cleared"
     },
     "originalDocumentNumberValue": "Previous ERP No: {{value}}",

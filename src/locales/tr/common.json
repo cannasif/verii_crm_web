@@ -5596,7 +5596,7 @@
   },
   "erpCleanup": {
     "status": {
-      "cleanedForRevision": "Revizyon için ERP kaydı temizlendi",
+      "cleanedForRevision": "ERP kaydı revizyon için plasiyer tarafından kapatıldı",
       "cleanupFailed": "ERP kaydı temizlenemedi"
     },
     "originalDocumentNumberValue": "Eski ERP No: {{value}}",

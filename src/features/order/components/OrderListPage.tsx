@@ -31,6 +31,15 @@ import {
 } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 import { useOrderList } from '../hooks/useOrderList';
 import { orderApi } from '../api/order-api';
 import { QUOTATION_QUERY_KEYS } from '../utils/query-keys';
@@ -51,6 +60,7 @@ import {
   getErpCleanupTone,
 } from '@/features/sales-documents/utils/erp-cleanup-status';
 import { useCreateRevisionOfOrder } from '../hooks/useCreateRevisionOfOrder';
+import { useCleanupOrderErpAndCreateCopy } from '../hooks/useCleanupOrderErpAndCreateCopy';
 const GoogleCustomerMailDialog = lazy(() =>
   import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
 );
@@ -128,6 +138,7 @@ export function OrderListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
   const createRevisionMutation = useCreateRevisionOfOrder();
+  const cleanupErpMutation = useCleanupOrderErpAndCreateCopy();
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -156,6 +167,9 @@ export function OrderListPage(): ReactElement {
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
   const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderGetDto | null>(null);
+  const [erpCleanupOrder, setErpCleanupOrder] = useState<OrderGetDto | null>(null);
+  const [erpCleanupReason, setErpCleanupReason] = useState('');
+  const [erpCleanupNote, setErpCleanupNote] = useState('');
 
   const countTriedByTooltip = t('documentList.countTriedByTooltip', {
     ns: 'common',
@@ -306,6 +320,11 @@ export function OrderListPage(): ReactElement {
     [t]
   );
 
+  const getErpDocumentNumber = useCallback(
+    (order: OrderGetDto): string => order.erpIntegrationNumber || order.originalDocumentNumber || '-',
+    []
+  );
+
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
       currentPageRows.map((order) => ({
@@ -321,7 +340,7 @@ export function OrderListPage(): ReactElement {
         Currency: getCurrencyLabel(order),
         GrandTotal: getGrandTotalLabel(order),
         IsERPIntegrated: getErpIntegrationLabel(order.isERPIntegrated),
-        ERPIntegrationNumber: order.erpIntegrationNumber ?? '-',
+        ERPIntegrationNumber: order.erpIntegrationNumber || order.originalDocumentNumber || '-',
         LastSyncDate: order.lastSyncDate ? new Date(order.lastSyncDate).toLocaleDateString(i18n.language) : '-',
         CountTriedBy: order.countTriedBy ?? 0,
         Status: getApprovalStatusLabel(resolveDocumentApprovalStatus(order as unknown as Record<string, unknown>)),
@@ -359,7 +378,7 @@ export function OrderListPage(): ReactElement {
         Currency: getCurrencyLabel(order),
         GrandTotal: getGrandTotalLabel(order),
         IsERPIntegrated: getErpIntegrationLabel(order.isERPIntegrated),
-        ERPIntegrationNumber: order.erpIntegrationNumber ?? '-',
+        ERPIntegrationNumber: order.erpIntegrationNumber || order.originalDocumentNumber || '-',
         LastSyncDate: order.lastSyncDate ? new Date(order.lastSyncDate).toLocaleDateString(i18n.language) : '-',
         CountTriedBy: order.countTriedBy ?? 0,
         Status: getApprovalStatusLabel(resolveDocumentApprovalStatus(order as unknown as Record<string, unknown>)),
@@ -519,6 +538,36 @@ export function OrderListPage(): ReactElement {
     setOutlookMailDialogOpen(true);
   };
 
+  const handleOpenErpCleanupDialog = (event: React.MouseEvent, order: OrderGetDto): void => {
+    event.stopPropagation();
+    setErpCleanupOrder(order);
+    setErpCleanupReason('');
+    setErpCleanupNote('');
+  };
+
+  const handleConfirmErpCleanup = async (): Promise<void> => {
+    const reason = erpCleanupReason.trim();
+    if (!erpCleanupOrder || !reason) {
+      return;
+    }
+
+    const result = await cleanupErpMutation.mutateAsync({
+      orderId: erpCleanupOrder.id,
+      data: {
+        cleanupReason: reason,
+        cleanupNote: erpCleanupNote.trim() || null,
+      },
+    });
+
+    setErpCleanupOrder(null);
+    setErpCleanupReason('');
+    setErpCleanupNote('');
+
+    if (result.success && result.data?.id) {
+      navigate(`/orders/${result.data.id}`);
+    }
+  };
+
   const renderActionsCell = (order: OrderGetDto): ReactElement => {
     const resolvedStatus = resolveDocumentApprovalStatus(order as unknown as Record<string, unknown>);
 
@@ -529,6 +578,7 @@ export function OrderListPage(): ReactElement {
       gmailLabel={t('google-integration:mailDialog.openButton')}
       outlookLabel={t('outlook-integration:mailDialog.openButton')}
       reviseLabel={t('list.revise', { defaultValue: 'Revize Et' })}
+      erpCleanupLabel={t('list.erpCleanupAction', { defaultValue: 'ERP kaydını sil ve revize kopya oluştur' })}
       onDetail={() => navigate(`/orders/${order.id}`)}
       onGmail={(event) => handleOpenMailDialog(event, order)}
       onOutlook={(event) => handleOpenOutlookMailDialog(event, order)}
@@ -536,7 +586,10 @@ export function OrderListPage(): ReactElement {
         void handleRevision(event, order.id);
       }}
       isRevisePending={createRevisionMutation.isPending}
+      onErpCleanup={(event) => handleOpenErpCleanupDialog(event, order)}
+      isErpCleanupPending={cleanupErpMutation.isPending}
       showRevise={resolvedStatus === 0 || resolvedStatus === 3}
+      showErpCleanup={order.isERPIntegrated === true && Boolean(order.erpIntegrationNumber)}
     />
     );
   };
@@ -729,6 +782,84 @@ export function OrderListPage(): ReactElement {
           />
         ) : null}
       </Suspense>
+      <Dialog
+        open={Boolean(erpCleanupOrder)}
+        onOpenChange={(open) => {
+          if (!open && !cleanupErpMutation.isPending) {
+            setErpCleanupOrder(null);
+            setErpCleanupReason('');
+            setErpCleanupNote('');
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              {t('list.erpCleanupDialogTitle', { defaultValue: 'ERP kaydını sil ve revize kopya oluştur' })}
+            </DialogTitle>
+            <DialogDescription>
+              {t('list.erpCleanupDialogDescription', {
+                defaultValue:
+                  'Bu işlem Netsis sipariş kaydını siler, mevcut siparişi geçmiş ERP numarasıyla işaretler ve CRM içinde yeni bir sipariş kopyası oluşturur.',
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm font-medium text-amber-800 dark:text-amber-200">
+              {t('list.erpCleanupDocumentNumber', {
+                defaultValue: 'Silinecek Netsis No: {{value}}',
+                value: erpCleanupOrder ? getErpDocumentNumber(erpCleanupOrder) : '-',
+              })}
+            </div>
+            <label className="space-y-2 text-sm font-semibold">
+              <span>{t('list.erpCleanupReason', { defaultValue: 'Silme / revize nedeni' })}</span>
+              <Textarea
+                value={erpCleanupReason}
+                onChange={(event) => setErpCleanupReason(event.target.value)}
+                maxLength={500}
+                placeholder={t('list.erpCleanupReasonPlaceholder', {
+                  defaultValue: 'Örn: Satışçı tarafından revize için ERP kaydı iptal edildi.',
+                })}
+                disabled={cleanupErpMutation.isPending}
+                className="min-h-24"
+              />
+            </label>
+            <label className="space-y-2 text-sm font-semibold">
+              <span>{t('list.erpCleanupNote', { defaultValue: 'Ek not' })}</span>
+              <Textarea
+                value={erpCleanupNote}
+                onChange={(event) => setErpCleanupNote(event.target.value)}
+                maxLength={2000}
+                placeholder={t('list.erpCleanupNotePlaceholder', { defaultValue: 'İsteğe bağlı açıklama' })}
+                disabled={cleanupErpMutation.isPending}
+                className="min-h-20"
+              />
+            </label>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setErpCleanupOrder(null)}
+              disabled={cleanupErpMutation.isPending}
+            >
+              {t('common.cancel', { ns: 'common', defaultValue: 'İptal' })}
+            </Button>
+            <Button
+              type="button"
+              onClick={() => {
+                void handleConfirmErpCleanup();
+              }}
+              disabled={cleanupErpMutation.isPending || erpCleanupReason.trim().length === 0}
+              className="bg-linear-to-r from-pink-600 to-orange-600 text-white hover:text-white"
+            >
+              {cleanupErpMutation.isPending
+                ? t('common.processing', { ns: 'common', defaultValue: 'İşleniyor...' })
+                : t('list.erpCleanupConfirm', { defaultValue: 'ERP kaydını sil ve kopya oluştur' })}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

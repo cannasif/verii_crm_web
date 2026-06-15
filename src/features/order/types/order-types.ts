@@ -271,6 +271,11 @@ export interface OrderGetDto {
   exchangeRates?: OrderExchangeRateGetDto[];
 }
 
+export interface OrderErpCleanupRecreateDto {
+  cleanupReason: string;
+  cleanupNote?: string | null;
+}
+
 export interface OrderExchangeRateGetDto {
   id: number;
   orderId: number;

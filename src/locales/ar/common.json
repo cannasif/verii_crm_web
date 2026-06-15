@@ -5643,7 +5643,7 @@
   },
   "erpCleanup": {
     "status": {
-      "cleanedForRevision": "تم تنظيف سجل ERP للمراجعة",
+      "cleanedForRevision": "تم إغلاق سجل ERP بواسطة مندوب المبيعات للمراجعة",
       "cleanupFailed": "تعذر تنظيف سجل ERP"
     },
     "originalDocumentNumberValue": "رقم ERP السابق: {{value}}",

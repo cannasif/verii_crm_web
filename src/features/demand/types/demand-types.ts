@@ -271,6 +271,11 @@ export interface DemandGetDto {
   exchangeRates?: DemandExchangeRateGetDto[];
 }
 
+export interface DemandErpCleanupRecreateDto {
+  cleanupReason: string;
+  cleanupNote?: string | null;
+}
+
 export interface DemandExchangeRateGetDto {
   id: number;
   demandId: number;

@@ -29,7 +29,7 @@ export function getErpCleanupLabel(
 
   if (status === ERP_CLEANUP_STATUS.ErpRecordCleanedAndCopyCreated) {
     return translate('common:erpCleanup.status.cleanedForRevision', {
-      defaultValue: 'Revizyon için ERP kaydı temizlendi',
+      defaultValue: 'ERP kaydı revizyon için plasiyer tarafından kapatıldı',
     });
   }
 
