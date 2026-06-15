@@ -54,11 +54,6 @@ import {
 } from '@/features/approval/utils/resolve-document-status';
 import { filterDocumentsByApprovalStatus } from '@/features/approval/utils/filter-documents-by-status';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
-import {
-  getErpCleanupDescription,
-  getErpCleanupLabel,
-  getErpCleanupTone,
-} from '@/features/sales-documents/utils/erp-cleanup-status';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
 import { useCleanupQuotationErpAndCreateCopy } from '../hooks/useCleanupQuotationErpAndCreateCopy';
 const GoogleCustomerMailDialog = lazy(() =>
@@ -85,7 +80,6 @@ type QuotationColumnKey =
   | 'GrandTotal'
   | 'IsERPIntegrated'
   | 'ERPIntegrationNumber'
-  | 'ErpCleanupStatus'
   | 'LastSyncDate'
   | 'CountTriedBy'
   | 'Status';
@@ -112,7 +106,6 @@ const QUOTATION_COLUMN_CONFIG: readonly QuotationColumnConfig[] = [
   { key: 'GrandTotal', labelKey: 'quotation.list.grandTotal', fallbackLabel: 'Toplam', filterType: 'number' },
   { key: 'IsERPIntegrated', labelKey: 'quotation.list.isERPIntegrated', fallbackLabel: 'Netsis', filterType: 'boolean' },
   { key: 'ERPIntegrationNumber', labelKey: 'quotation.list.erpIntegrationNumber', fallbackLabel: 'Netsis No', filterType: 'string' },
-  { key: 'ErpCleanupStatus', labelKey: 'quotation.list.erpCleanupStatus', fallbackLabel: 'ERP İşlem Durumu', filterType: 'number' },
   { key: 'LastSyncDate', labelKey: 'quotation.list.lastSyncDate', fallbackLabel: 'Netsis Tarihi', filterType: 'date' },
   { key: 'CountTriedBy', labelKey: 'quotation.list.countTriedBy', fallbackLabel: 'ERP Deneme', filterType: 'number' },
   { key: 'Status', labelKey: 'quotation.list.status', fallbackLabel: 'Durum', filterType: 'number' },
@@ -293,12 +286,12 @@ export function QuotationListPage(): ReactElement {
   );
 
   const getErpIntegrationExportLabel = useCallback(
-    (quotation: QuotationGetDto): string => getErpCleanupLabel(quotation, t) || getErpIntegrationLabel(quotation.isERPIntegrated),
-    [getErpIntegrationLabel, t]
+    (quotation: QuotationGetDto): string => getErpIntegrationLabel(quotation.isERPIntegrated),
+    [getErpIntegrationLabel]
   );
 
   const getErpDocumentNumber = useCallback(
-    (quotation: QuotationGetDto): string => quotation.erpIntegrationNumber || quotation.originalDocumentNumber || '-',
+    (quotation: QuotationGetDto): string => quotation.erpIntegrationNumber || '-',
     []
   );
 
@@ -456,17 +449,6 @@ export function QuotationListPage(): ReactElement {
     if (key === 'Currency') return getCurrencyLabel(quotation);
     if (key === 'GrandTotal') return getGrandTotalLabel(quotation);
     if (key === 'IsERPIntegrated') {
-      const cleanupLabel = getErpCleanupLabel(quotation, t);
-      if (cleanupLabel) {
-        return (
-          <ErpIntegrationPill
-            integrated={false}
-            tone={getErpCleanupTone(quotation)}
-            label={cleanupLabel}
-          />
-        );
-      }
-
       return (
         <ErpIntegrationPill
           integrated={quotation.isERPIntegrated === true}
@@ -475,18 +457,6 @@ export function QuotationListPage(): ReactElement {
       );
     }
     if (key === 'ERPIntegrationNumber') return getErpDocumentNumber(quotation);
-    if (key === 'ErpCleanupStatus') {
-      const cleanupDescription = getErpCleanupDescription(quotation, t);
-      if (!cleanupDescription) return <span className="text-muted-foreground text-sm">-</span>;
-      return (
-        <span
-          className="inline-flex max-w-[260px] items-center rounded-lg border border-amber-500/20 bg-amber-500/10 px-2 py-1 text-[11px] font-semibold leading-snug text-amber-700 dark:border-amber-400/25 dark:bg-amber-500/15 dark:text-amber-300"
-          title={cleanupDescription}
-        >
-          {cleanupDescription}
-        </span>
-      );
-    }
     if (key === 'LastSyncDate') return formatDate(quotation.lastSyncDate);
     if (key === 'CountTriedBy') return quotation.countTriedBy ?? 0;
     if (key === 'Status') {
