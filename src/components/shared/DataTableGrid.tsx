@@ -282,6 +282,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   }, [visibleColumnKeys]);
 
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+  const [actionsColumnWidth, setActionsColumnWidth] = useState<number | null>(null);
   const [resizingKey, setResizingKey] = useState<string | null>(null);
   const resizeStateRef = useRef<{ key: string; startX: number; startWidth: number } | null>(null);
 
@@ -289,6 +290,8 @@ export function DataTableGrid<TRow, TKey extends string>({
 
   const startResizing = useCallback((clientX: number, key: TKey) => {
     const snapshotWidths: Record<string, number> = {};
+    let currentActionsWidth: number | null = null;
+    
     if (theadRowRef.current) {
       theadRowRef.current
         .querySelectorAll<HTMLTableCellElement>('th[data-col-key]')
@@ -296,10 +299,18 @@ export function DataTableGrid<TRow, TKey extends string>({
           const colKey = th.getAttribute('data-col-key');
           if (colKey) snapshotWidths[colKey] = th.getBoundingClientRect().width;
         });
+        
+      const actionsTh = theadRowRef.current.querySelector<HTMLTableCellElement>('th[data-col-actions="true"]');
+      if (actionsTh) {
+        currentActionsWidth = actionsTh.getBoundingClientRect().width;
+      }
     }
 
     const startWidth = snapshotWidths[key] ?? (columnWidths[key] ?? DEFAULT_COL_WIDTH);
     setColumnWidths(prev => ({ ...prev, ...snapshotWidths }));
+    if (currentActionsWidth !== null) {
+      setActionsColumnWidth(currentActionsWidth);
+    }
     resizeStateRef.current = { key, startX: clientX, startWidth };
     setResizingKey(key);
   }, [columnWidths]);
@@ -486,7 +497,10 @@ export function DataTableGrid<TRow, TKey extends string>({
                   />
                 ))}
                 {showActionsColumn && (
-                  <col style={{ width: `${ACTIONS_COL_WIDTH}px`, minWidth: `${ACTIONS_COL_WIDTH}px` }} />
+                  <col style={{ 
+                    width: `${actionsColumnWidth ?? ACTIONS_COL_WIDTH}px`, 
+                    minWidth: `${actionsColumnWidth ?? ACTIONS_COL_WIDTH}px` 
+                  }} />
                 )}
               </colgroup>
             )}
@@ -521,6 +535,7 @@ export function DataTableGrid<TRow, TKey extends string>({
                 </SortableContext>
                 {showActionsColumn && (
                   <TableHead
+                    data-col-actions="true"
                     className={cn(
                       iconOnlyActions ? 'w-[84px]' : 'min-w-[280px]',
                       centerColumnHeaders ? 'text-center' : (iconOnlyActions ? 'text-center' : 'text-right')
