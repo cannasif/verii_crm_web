@@ -109,10 +109,10 @@ export function OrderDetailPage(): ReactElement {
   const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
   const orderStatus = Number((order as { status?: number; Status?: number })?.status ?? (order as { status?: number; Status?: number })?.Status);
   const isApprovalWaiting = orderStatus === 1;
-  const isReadOnlyByStatus = orderStatus === 2 || orderStatus === 3 || orderStatus === 4 || orderStatus === 5;
+  const isReadOnlyByStatus = [2, 3, 4, 5, 6, 7].includes(orderStatus);
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
   const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
-  const canCancelByCustomer = canUpdate && !order?.isERPIntegrated && orderStatus !== 4 && orderStatus !== 5;
+  const canCancelByCustomer = canUpdate && !order?.isERPIntegrated && ![4, 5, 6, 7].includes(orderStatus);
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
 

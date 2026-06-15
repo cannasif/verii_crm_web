@@ -143,10 +143,10 @@ export function QuotationDetailPage(): ReactElement {
   const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
   const quotationStatus = Number((quotation as { status?: number; Status?: number })?.status ?? (quotation as { status?: number; Status?: number })?.Status);
   const isApprovalWaiting = quotationStatus === 1;
-  const isReadOnlyByStatus = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4 || quotationStatus === 5;
+  const isReadOnlyByStatus = [2, 3, 4, 5, 6, 7].includes(quotationStatus);
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
   const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
-  const canCancelByCustomer = canUpdate && !quotation?.isERPIntegrated && quotationStatus !== 4 && quotationStatus !== 5;
+  const canCancelByCustomer = canUpdate && !quotation?.isERPIntegrated && ![4, 5, 6, 7].includes(quotationStatus);
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
   const form = useForm<CreateQuotationSchema>({

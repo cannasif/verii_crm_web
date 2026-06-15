@@ -106,10 +106,10 @@ export function DemandDetailPage(): ReactElement {
   const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
   const demandStatus = Number((demand as { status?: number; Status?: number })?.status ?? (demand as { status?: number; Status?: number })?.Status);
   const isApprovalWaiting = demandStatus === 1;
-  const isReadOnlyByStatus = demandStatus === 2 || demandStatus === 3 || demandStatus === 4 || demandStatus === 5;
+  const isReadOnlyByStatus = [2, 3, 4, 5, 6, 7].includes(demandStatus);
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
   const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
-  const canCancelByCustomer = canUpdate && !demand?.isERPIntegrated && demandStatus !== 4 && demandStatus !== 5;
+  const canCancelByCustomer = canUpdate && !demand?.isERPIntegrated && ![4, 5, 6, 7].includes(demandStatus);
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
 
