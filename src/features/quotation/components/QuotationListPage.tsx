@@ -22,7 +22,6 @@ import {
   DataTableActionBar,
   DocumentApprovalStatusFilter,
   DocumentBackButton,
-  ConvertToOrderConfirmDialog,
   DocumentListIdCell,
   DocumentListOfferNoCell,
   DocumentListRowActions,
@@ -47,7 +46,6 @@ import {
 import { filterDocumentsByApprovalStatus } from '@/features/approval/utils/filter-documents-by-status';
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
-import { useConvertQuotationToOrder } from '../hooks/useConvertQuotationToOrder';
 const GoogleCustomerMailDialog = lazy(() =>
   import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
 );
@@ -123,7 +121,6 @@ export function QuotationListPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
   const createRevisionMutation = useCreateRevisionOfQuotation();
-  const convertToOrderMutation = useConvertQuotationToOrder();
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -152,7 +149,6 @@ export function QuotationListPage(): ReactElement {
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
   const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState<QuotationGetDto | null>(null);
-  const [convertConfirmQuotationId, setConvertConfirmQuotationId] = useState<number | null>(null);
 
   const countTriedByTooltip = t('documentList.countTriedByTooltip', {
     ns: 'common',
@@ -498,25 +494,6 @@ export function QuotationListPage(): ReactElement {
     setOutlookMailDialogOpen(true);
   };
 
-  const executeConvertToOrder = async (quotationId: number): Promise<void> => {
-    try {
-      await convertToOrderMutation.mutateAsync(quotationId);
-      setConvertConfirmQuotationId(null);
-      await handleRefresh();
-    } catch {
-      void 0;
-    }
-  };
-
-  const handleConvertToOrder = (event: React.MouseEvent, quotation: QuotationGetDto): void => {
-    event.stopPropagation();
-    if (quotation.isERPIntegrated) {
-      setConvertConfirmQuotationId(quotation.id);
-      return;
-    }
-    void executeConvertToOrder(quotation.id);
-  };
-
   const renderActionsCell = (quotation: QuotationGetDto): ReactElement => {
     const resolvedStatus = resolveDocumentApprovalStatus(quotation as unknown as Record<string, unknown>);
 
@@ -527,21 +504,14 @@ export function QuotationListPage(): ReactElement {
       gmailLabel={t('list.sendGmail', { defaultValue: 'Gmail Gönder' })}
       outlookLabel={t('list.sendOutlook', { defaultValue: 'Outlook Gönder' })}
       reviseLabel={t('list.revise', { defaultValue: 'Revize Et' })}
-      convertToOrderLabel={t('list.convertToOrder', { defaultValue: 'Siparişe Aktar' })}
       onDetail={() => navigate(`/quotations/${quotation.id}`)}
       onGmail={(event) => handleOpenMailDialog(event, quotation)}
       onOutlook={(event) => handleOpenOutlookMailDialog(event, quotation)}
       onRevise={(event) => {
         void handleRevision(event, quotation.id);
       }}
-      onConvertToOrder={(event) => {
-        handleConvertToOrder(event, quotation);
-      }}
       isRevisePending={createRevisionMutation.isPending}
-      isConvertToOrderPending={convertToOrderMutation.isPending}
       showRevise={resolvedStatus === 0 || resolvedStatus === 3}
-      showConvertToOrder={resolvedStatus === 2 || resolvedStatus === 5}
-      convertToOrderDisabled={resolvedStatus !== 2}
     />
     );
   };
@@ -733,20 +703,6 @@ export function QuotationListPage(): ReactElement {
             />
           ) : null}
         </Suspense>
-        <ConvertToOrderConfirmDialog
-          open={convertConfirmQuotationId != null}
-          onOpenChange={(open) => {
-            if (!open) {
-              setConvertConfirmQuotationId(null);
-            }
-          }}
-          onConfirm={() => {
-            if (convertConfirmQuotationId != null) {
-              void executeConvertToOrder(convertConfirmQuotationId);
-            }
-          }}
-          isPending={convertToOrderMutation.isPending}
-        />
       </div>
     </div>
   );

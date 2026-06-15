@@ -23,12 +23,10 @@ import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
 import { DocumentDetailStatusAlerts } from '@/components/shared/DocumentDetailStatusAlerts';
-import { ConvertToOrderConfirmDialog } from '@/components/shared/ConvertToOrderConfirmDialog';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import {
   DOCUMENT_DETAIL_BUTTON_APPROVAL,
   DOCUMENT_DETAIL_BUTTON_BASE,
-  DOCUMENT_DETAIL_BUTTON_CONVERT,
   DOCUMENT_DETAIL_BUTTON_DANGER,
   DOCUMENT_DETAIL_BUTTON_PREVIEW,
   DOCUMENT_DETAIL_BUTTON_REVISE,
@@ -36,7 +34,7 @@ import {
 } from '@/lib/document-detail-button-styles';
 import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Layers, Loader2, FileCheck, FileText, Save, Eye, ShoppingCart, XCircle, GitBranchPlus } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText, Save, Eye, XCircle, GitBranchPlus } from 'lucide-react';
 import { QuotationApprovalFlowTab } from './QuotationApprovalFlowTab';
 import { QuotationPdfExportPreviewDialog } from './QuotationPdfExportPreviewDialog';
 import { QuotationWhatsappSendDialog } from './QuotationWhatsappSendDialog';
@@ -66,7 +64,6 @@ import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { useCanEditQuotation } from '../hooks/useCanEditQuotation';
-import { useConvertQuotationToOrder } from '../hooks/useConvertQuotationToOrder';
 import { useCancelQuotationByCustomer } from '../hooks/useCancelQuotationByCustomer';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
 
@@ -122,7 +119,6 @@ export function QuotationDetailPage(): ReactElement {
   const updateMutation = useUpdateQuotationBulk();
   const updateNotesMutation = useUpdateQuotationNotesList(quotationId);
   const startApprovalFlow = useStartApprovalFlow();
-  const convertToOrderMutation = useConvertQuotationToOrder();
   const cancelByCustomerMutation = useCancelQuotationByCustomer();
   const createRevisionMutation = useCreateRevisionOfQuotation();
   const { data: customerOptions = [] } = useCustomerOptions();
@@ -145,7 +141,6 @@ export function QuotationDetailPage(): ReactElement {
   const [googleMailOpen, setGoogleMailOpen] = useState(false);
   const [outlookMailOpen, setOutlookMailOpen] = useState(false);
   const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
-  const [convertConfirmOpen, setConvertConfirmOpen] = useState(false);
   const quotationStatus = Number((quotation as { status?: number; Status?: number })?.status ?? (quotation as { status?: number; Status?: number })?.Status);
   const isApprovalWaiting = quotationStatus === 1;
   const isReadOnlyByStatus = quotationStatus === 2 || quotationStatus === 3 || quotationStatus === 4 || quotationStatus === 5;
@@ -830,25 +825,6 @@ export function QuotationDetailPage(): ReactElement {
     });
   };
 
-  const handleConvertToOrder = async (): Promise<void> => {
-    if (!quotation) return;
-
-    const result = await convertToOrderMutation.mutateAsync(quotation.id);
-    setConvertConfirmOpen(false);
-    if (result.success && result.data) {
-      navigate(`/orders/${result.data}`);
-    }
-  };
-
-  const requestConvertToOrder = (): void => {
-    if (!quotation) return;
-    if (quotation.isERPIntegrated) {
-      setConvertConfirmOpen(true);
-      return;
-    }
-    void handleConvertToOrder();
-  };
-
   const handleRevision = async (): Promise<void> => {
     if (!quotation) return;
     try {
@@ -1167,26 +1143,6 @@ export function QuotationDetailPage(): ReactElement {
                   </Button>
                 )}
 
-                {quotationStatus === 2 && (
-                  <Button
-                    type="button"
-                    onClick={requestConvertToOrder}
-                    disabled={convertToOrderMutation.isPending || !quotation}
-                    className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_CONVERT}`}
-                  >
-                    {convertToOrderMutation.isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        {t('list.convertToOrderPending', { defaultValue: 'Siparişe aktarılıyor...' })}
-                      </>
-                    ) : (
-                      <>
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        {t('list.convertToOrder', { defaultValue: 'Siparişe Aktar' })}
-                      </>
-                    )}
-                  </Button>
-                )}
               </div>
             </form>
           </FormProvider>
@@ -1226,15 +1182,6 @@ export function QuotationDetailPage(): ReactElement {
       />
 
       {prepDialog}
-
-      <ConvertToOrderConfirmDialog
-        open={convertConfirmOpen}
-        onOpenChange={setConvertConfirmOpen}
-        onConfirm={() => {
-          void handleConvertToOrder();
-        }}
-        isPending={convertToOrderMutation.isPending}
-      />
 
       <CustomerCancellationDialog
         open={customerCancellationOpen}
