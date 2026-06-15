@@ -12,7 +12,7 @@ const APPROVAL_STATUS_KEYS = [
 export type ApprovalStatusTranslationKey = (typeof APPROVAL_STATUS_KEYS)[number];
 
 export function getApprovalStatusTranslationKey(status: number): ApprovalStatusTranslationKey | null {
-  if (status < 0 || status > 6) {
+  if (!Number.isInteger(status) || status < 0 || status >= APPROVAL_STATUS_KEYS.length) {
     return null;
   }
   return APPROVAL_STATUS_KEYS[status];

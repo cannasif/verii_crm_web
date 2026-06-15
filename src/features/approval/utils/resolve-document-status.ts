@@ -5,6 +5,9 @@ export type DocumentApprovalStatusRecord = {
   CancellationReason?: unknown;
 };
 
+const MIN_APPROVAL_STATUS = 0;
+const MAX_APPROVAL_STATUS = 7;
+
 export function resolveDocumentApprovalStatus(record: DocumentApprovalStatusRecord): number | null {
   const raw = record.status ?? record.Status;
   if (raw == null || raw === '') {
@@ -12,7 +15,7 @@ export function resolveDocumentApprovalStatus(record: DocumentApprovalStatusReco
   }
 
   const numeric = typeof raw === 'number' ? raw : Number(raw);
-  if (!Number.isFinite(numeric) || numeric < 0 || numeric > 5) {
+  if (!Number.isInteger(numeric) || numeric < MIN_APPROVAL_STATUS || numeric > MAX_APPROVAL_STATUS) {
     return null;
   }
 
