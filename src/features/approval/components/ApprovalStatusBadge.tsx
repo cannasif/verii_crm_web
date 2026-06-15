@@ -27,6 +27,8 @@ const STATUS_PILL_CLASS: Record<ApprovalStatus, string> = {
     'border-rose-500/30 bg-rose-500/10 text-rose-800 dark:border-rose-400/35 dark:bg-rose-500/15 dark:text-rose-200',
   [ApprovalStatusEnum.SalespersonClosedForRevision]:
     'border-orange-500/30 bg-orange-500/10 text-orange-800 dark:border-orange-400/35 dark:bg-orange-500/15 dark:text-orange-200',
+  [ApprovalStatusEnum.SupersededByApprovedRevision]:
+    'border-indigo-500/30 bg-indigo-500/10 text-indigo-800 dark:border-indigo-400/35 dark:bg-indigo-500/15 dark:text-indigo-200',
 };
 
 export function ApprovalStatusBadge({
@@ -47,6 +49,8 @@ export function ApprovalStatusBadge({
               ? 'Müşteri tarafından iptal edildi'
               : resolvedStatus === ApprovalStatusEnum.SalespersonClosedForRevision
                 ? 'ERP kaydı revizyon için plasiyer tarafından kapatıldı'
+                : resolvedStatus === ApprovalStatusEnum.SupersededByApprovedRevision
+                  ? 'Onaylanan revizyon nedeniyle kapatıldı'
               : undefined,
         })
       : t('status.waiting');

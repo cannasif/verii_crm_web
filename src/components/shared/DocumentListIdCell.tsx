@@ -58,6 +58,11 @@ const STATUS_ICON_CONFIG: Record<ApprovalStatus, StatusIconConfig> = {
     buttonClass: 'hover:bg-orange-50 dark:hover:bg-orange-500/10 text-orange-600 hover:text-orange-700 dark:text-orange-400 dark:hover:text-orange-300',
     iconClass: 'text-orange-600 dark:text-orange-400',
   },
+  [ApprovalStatusEnum.SupersededByApprovedRevision]: {
+    Icon: Archive,
+    buttonClass: 'hover:bg-indigo-50 dark:hover:bg-indigo-500/10 text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300',
+    iconClass: 'text-indigo-600 dark:text-indigo-400',
+  },
 };
 
 interface DocumentListIdCellProps {
@@ -92,6 +97,8 @@ export function DocumentListIdCell({
               ? 'Müşteri tarafından iptal edildi'
               : resolvedStatus === ApprovalStatusEnum.SalespersonClosedForRevision
                 ? 'ERP kaydı revizyon için plasiyer tarafından kapatıldı'
+                : resolvedStatus === ApprovalStatusEnum.SupersededByApprovedRevision
+                  ? 'Onaylanan revizyon nedeniyle kapatıldı'
               : undefined,
         })
       : t('documentList.statusUnknown', { ns: 'common', defaultValue: 'Durum bilinmiyor' });

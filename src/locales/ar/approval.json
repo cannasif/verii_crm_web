@@ -51,7 +51,8 @@
     "rejected": "مرفوض",
     "closed": "مغلق",
     "customerCancelled": "ألغاه العميل",
-    "salespersonClosedForRevision": "أغلقه مندوب المبيعات للمراجعة"
+    "salespersonClosedForRevision": "أغلقه مندوب المبيعات للمراجعة",
+    "supersededByApprovedRevision": "تم إغلاقه لاعتماد مراجعة أخرى"
   },
   "closedReason": "تم إغلاق هذا السجل لأن سجلاً آخر بنفس رقم العرض تمت الموافقة عليه.",
   "statusFilterLabel": "حالة الموافقة",

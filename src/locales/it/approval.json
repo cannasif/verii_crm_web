@@ -51,7 +51,8 @@
     "rejected": "Rifiutato",
     "closed": "Chiuso",
     "customerCancelled": "Annullato dal cliente",
-    "salespersonClosedForRevision": "Chiuso dal venditore per revisione"
+    "salespersonClosedForRevision": "Chiuso dal venditore per revisione",
+    "supersededByApprovedRevision": "Chiuso perché è stata approvata un'altra revisione"
   },
   "closedReason": "Questo record è stato chiuso perché un altro record con lo stesso numero di offerta è stato approvato.",
   "statusFilterLabel": "Stato approvazione",

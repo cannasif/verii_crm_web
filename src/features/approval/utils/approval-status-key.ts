@@ -6,6 +6,7 @@ const APPROVAL_STATUS_KEYS = [
   'closed',
   'customerCancelled',
   'salespersonClosedForRevision',
+  'supersededByApprovedRevision',
 ] as const;
 
 export type ApprovalStatusTranslationKey = (typeof APPROVAL_STATUS_KEYS)[number];

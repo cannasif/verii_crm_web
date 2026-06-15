@@ -97,6 +97,16 @@ const STATUS_FILTER_OPTIONS: readonly StatusFilterOption[] = [
     inactiveClassName:
       'border-slate-200/70 bg-white/60 text-slate-600 hover:border-slate-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-white/20 dark:hover:bg-white/10',
   },
+  {
+    value: String(ApprovalStatus.SupersededByApprovedRevision),
+    translationKey: 'supersededByApprovedRevision',
+    defaultLabel: 'Onaylanan revizyon nedeniyle kapatıldı',
+    Icon: Archive,
+    activeClassName:
+      'border-indigo-400/50 bg-indigo-500/15 text-indigo-700 shadow-sm shadow-indigo-500/10 dark:text-indigo-300',
+    inactiveClassName:
+      'border-slate-200/70 bg-white/60 text-slate-600 hover:border-slate-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-white/20 dark:hover:bg-white/10',
+  },
 ];
 
 function getOptionLabel(

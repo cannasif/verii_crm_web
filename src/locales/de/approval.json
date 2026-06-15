@@ -51,7 +51,8 @@
     "rejected": "Abgelehnt",
     "closed": "Geschlossen",
     "customerCancelled": "Vom Kunden storniert",
-    "salespersonClosedForRevision": "Vom Vertriebsmitarbeiter zur Revision geschlossen"
+    "salespersonClosedForRevision": "Vom Vertriebsmitarbeiter zur Revision geschlossen",
+    "supersededByApprovedRevision": "Geschlossen, weil eine andere Revision genehmigt wurde"
   },
   "closedReason": "Dieser Datensatz wurde geschlossen, weil ein anderer Datensatz mit derselben Angebotsnummer genehmigt wurde.",
   "statusFilterLabel": "Genehmigungsstatus",

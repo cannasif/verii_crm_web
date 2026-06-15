@@ -51,7 +51,8 @@
     "rejected": "Reddedildi",
     "closed": "Kapandı",
     "customerCancelled": "Müşteri tarafından iptal edildi",
-    "salespersonClosedForRevision": "ERP kaydı revizyon için plasiyer tarafından kapatıldı"
+    "salespersonClosedForRevision": "ERP kaydı revizyon için plasiyer tarafından kapatıldı",
+    "supersededByApprovedRevision": "Onaylanan revizyon nedeniyle kapatıldı"
   },
   "closedReason": "Bu kayıt aynı teklif numarasında başka bir kayıt onaylandığı için kapatıldı.",
   "statusFilterLabel": "Onay durumu",
