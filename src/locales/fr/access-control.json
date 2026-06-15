@@ -97,7 +97,7 @@
         "read": "Voir",
         "update": "Mettre à jour",
         "delete": "Supprimer",
-        "other": "Autre"
+        "other": "Autorisations d’opération"
       }
     },
     "delete": {

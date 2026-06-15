@@ -9,6 +9,7 @@ import {
   getPermissionPlatform,
   getPermissionSubjectDisplayLabel,
   isLeafPermissionCode,
+  PERMISSION_OTHER_OPERATION_CODES,
   translatePermissionLabel,
 } from '../utils/permission-config';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
@@ -57,7 +58,7 @@ export function PermissionDefinitionMultiSelect({
           aliases: ['delete', 'remove'],
         },
         other: {
-          label: translatePermissionLabel(t, 'permissionGroups.permissionsPanel.actions.other', 'Other'),
+          label: translatePermissionLabel(t, 'permissionGroups.permissionsPanel.actions.other', 'Operation permissions'),
           aliases: [],
         },
       }) as const,
@@ -91,6 +92,10 @@ export function PermissionDefinitionMultiSelect({
 
   const getActionKey = useCallback(
     (code: string): keyof typeof actionMeta => {
+      if (PERMISSION_OTHER_OPERATION_CODES.has(code)) {
+        return 'other';
+      }
+
       const parts = code.split('.').filter(Boolean);
       const action = (parts[parts.length - 1] ?? '').toLowerCase();
       const matched = (Object.keys(actionMeta) as Array<keyof typeof actionMeta>).find(

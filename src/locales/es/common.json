@@ -1432,6 +1432,7 @@
     "waitingApprovalOrders": "Pedidos pendientes de aprobación",
     "orderList": "Lista de pedidos",
     "erpOrderList": "Lista de pedidos ERP",
+    "erpDocumentCleanupLogs": "Registros de limpieza ERP",
     "productAndStock": "Productos y existencias",
     "reportsList": "Lista",
     "reportsCreate": "Crear nuevo",

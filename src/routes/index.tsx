@@ -60,6 +60,7 @@ const DemandWaitingApprovalsPage = lazyImport(() => import('@/features/demand'),
 const OrderCreateForm = lazyImport(() => import('@/features/order'), 'OrderCreateForm');
 const OrderDetailPage = lazyImport(() => import('@/features/order'), 'OrderDetailPage');
 const ErpOrderListPage = lazyImport(() => import('@/features/order'), 'ErpOrderListPage');
+const ErpDocumentCleanupLogPage = lazyImport(() => import('@/features/order'), 'ErpDocumentCleanupLogPage');
 const OrderListPage = lazyImport(() => import('@/features/order'), 'OrderListPage');
 const OrderWaitingApprovalsPage = lazyImport(() => import('@/features/order'), 'WaitingApprovalsPage');
 const PricingRuleManagementPage = lazyImport(() => import('@/features/pricing-rule'), 'PricingRuleManagementPage');
@@ -188,6 +189,7 @@ export function createAppRouter() {
         { path: 'orders', element: <OrderListPage /> },
         { path: 'orders/create', element: <OrderCreateForm /> },
         { path: 'orders/erp', element: <ErpOrderListPage /> },
+        { path: 'sales/erp-cleanup-logs', element: <ErpDocumentCleanupLogPage /> },
         { path: 'orders/waiting-approvals', element: <OrderWaitingApprovalsPage /> },
         { path: 'orders/:id', element: <OrderDetailPage /> },
         { path: 'pricing-rules', element: <PricingRuleManagementPage /> },

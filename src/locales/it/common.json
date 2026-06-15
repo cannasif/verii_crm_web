@@ -1432,6 +1432,7 @@
     "waitingApprovalOrders": "Ordini in attesa di approvazione",
     "orderList": "Elenco ordini",
     "erpOrderList": "Elenco ordini ERP",
+    "erpDocumentCleanupLogs": "Log pulizia registrazioni ERP",
     "productAndStock": "Prodotti e Stock",
     "reportsList": "Elenco",
     "reportsCreate": "Crea nuovo",

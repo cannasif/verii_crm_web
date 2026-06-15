@@ -97,7 +97,7 @@
         "read": "Lesen",
         "update": "Aktualisieren",
         "delete": "Löschen",
-        "other": "Sonstiges"
+        "other": "Aktionsberechtigungen"
       }
     },
     "delete": {

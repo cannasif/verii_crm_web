@@ -1431,6 +1431,7 @@
     "waitingApprovalOrders": "Onay Bekleyen Siparişler",
     "orderList": "Sipariş Listesi",
     "erpOrderList": "ERP Sipariş Listesi",
+    "erpDocumentCleanupLogs": "ERP Kayıt Temizleme Logları",
     "productAndStock": "Ürünler ve Stok",
     "reportsList": "Liste",
     "reportsCreate": "Yeni Oluştur",

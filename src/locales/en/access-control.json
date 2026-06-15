@@ -97,7 +97,7 @@
         "read": "Read",
         "update": "Update",
         "delete": "Delete",
-        "other": "Other"
+        "other": "Operation Permissions"
       }
     },
     "delete": {

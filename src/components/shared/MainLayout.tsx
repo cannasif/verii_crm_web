@@ -77,6 +77,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
               { title: t('sidebar.waitingApprovalOrders'), href: '/orders/waiting-approvals' },
               { title: t('sidebar.orderList'), href: '/orders' },
               { title: t('sidebar.erpOrderList'), href: '/orders/erp' },
+              { title: t('sidebar.erpDocumentCleanupLogs', { defaultValue: 'ERP Kayıt Temizleme Logları' }), href: '/sales/erp-cleanup-logs' },
             ],
           },
         ],

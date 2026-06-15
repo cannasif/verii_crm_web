@@ -1432,6 +1432,7 @@
     "waitingApprovalOrders": "Bestellungen müssen noch genehmigt werden",
     "orderList": "Bestellliste",
     "erpOrderList": "ERP-Bestellliste",
+    "erpDocumentCleanupLogs": "ERP-Bereinigungsprotokolle",
     "productAndStock": "Produkte & Lagerbestand",
     "reportsList": "Liste",
     "reportsCreate": "Neu erstellen",

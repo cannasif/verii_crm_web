@@ -1432,6 +1432,7 @@
     "waitingApprovalOrders": "الطلبات في انتظار الموافقة",
     "orderList": "قائمة الطلبات",
     "erpOrderList": "قائمة طلبات ERP",
+    "erpDocumentCleanupLogs": "سجلات تنظيف قيود ERP",
     "productAndStock": "المنتجات والمخزون",
     "reportsList": "قائمة",
     "reportsCreate": "إنشاء جديد",

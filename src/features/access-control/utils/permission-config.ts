@@ -30,6 +30,7 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/orders/waiting-approvals': 'sales.orders.view',
   '/orders/erp': 'sales.erp-orders.view',
   '/orders/:id': 'sales.orders.update',
+  '/sales/erp-cleanup-logs': 'sales-documents.erp-cleanup-delete',
 
   '/customer-management': 'customers.customer-management.view',
   '/customers/conflict-inbox': 'customers.conflict-inbox.view',
@@ -142,6 +143,7 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/orders\/erp(\/|$)/, permission: 'sales.erp-orders.view' },
   { pattern: /^\/orders\/[^/]+(\/|$)/, permission: 'sales.orders.update' },
   { pattern: /^\/orders(\/|$)/, permission: 'sales.orders.view' },
+  { pattern: /^\/sales\/erp-cleanup-logs(\/|$)/, permission: 'sales-documents.erp-cleanup-delete' },
 
   { pattern: /^\/customer-management(\/|$)/, permission: 'customers.customer-management.view' },
   { pattern: /^\/customers\/conflict-inbox(\/|$)/, permission: 'customers.conflict-inbox.view' },
@@ -233,6 +235,7 @@ export function isLeafPermissionCode(code: string): boolean {
   if (code === 'customers.erp-create') return true;
   if (code === 'stocks.mirror-create') return true;
   if (code === 'stocks.erp-create') return true;
+  if (code === 'sales-documents.erp-cleanup-delete') return true;
   return code.split('.').filter(Boolean).length >= 3;
 }
 
@@ -243,6 +246,7 @@ type CrudAction = (typeof CRUD_ACTIONS)[number];
 // Keep their selectable permissions aligned with the API endpoints they expose.
 const PERMISSION_ACTION_OVERRIDES: Record<string, readonly CrudAction[]> = {
   'sales.erp-orders': ['view'],
+  'sales-documents.erp-cleanup': ['delete'],
   'access-control.user-group-assignments': ['view', 'update'],
   'access-control.visibility-simulator': ['view'],
   'access-control.audit-logs': ['view'],
@@ -299,6 +303,7 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: s
   'sales.quotations.view': { key: 'sidebar.proposals', fallback: 'Teklifler' },
   'sales.orders.view': { key: 'sidebar.orders', fallback: 'Siparisler' },
   'sales.erp-orders.view': { key: 'sidebar.erpOrderList', fallback: 'ERP Siparis Listesi' },
+  'sales-documents.erp-cleanup-delete': { key: 'sidebar.erpDocumentCleanupLogs', fallback: 'ERP Kaydı Silme' },
 
   'customers.customer-management.view': { key: 'sidebar.customerManagement', fallback: 'Musteri Yonetimi' },
   'customers.erp-create': { fallback: 'ERP Müşteri Kaydı Oluşturma' },
@@ -313,8 +318,16 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: s
   'activity.daily-tasks.view': { key: 'sidebar.dailyTasks', fallback: 'Gunluk Isler' },
   'activity.activity-management.view': { key: 'sidebar.activityManagement', fallback: 'Aktivite Yonetimi' },
   'activity.activity-type-management.view': { key: 'sidebar.activityTypeManagement', fallback: 'Aktivite Tipleri' },
+  'activity.images.view': { fallback: 'Aktivite Görselleri' },
+  'activity.images.create': { fallback: 'Aktivite Görseli Ekleme' },
+  'activity.images.update': { fallback: 'Aktivite Görseli Güncelleme' },
+  'activity.images.delete': { fallback: 'Aktivite Görseli Silme' },
 
   'stock.stocks.view': { key: 'sidebar.stockManagement', fallback: 'Stok Yonetimi' },
+  'stock.images.view': { fallback: 'Stok Resimleri' },
+  'stock.images.create': { fallback: 'Stok Resmi Ekleme' },
+  'stock.images.update': { fallback: 'Stok Resmi Güncelleme' },
+  'stock.images.delete': { fallback: 'Stok Resmi Silme' },
   'stocks.mirror-create': { fallback: 'Mirror Stok Açma' },
   'stocks.erp-create': { fallback: 'ERP Stok Kaydı Oluşturma' },
 
@@ -473,6 +486,7 @@ export function getPermissionDisplayLabel(
 export const PERMISSION_MODULE_DISPLAY: Record<string, { key: string; fallback: string }> = {
   dashboard: { key: 'sidebar.home', fallback: 'Home' },
   sales: { key: 'sidebar.salesManagement', fallback: 'Sales' },
+  'sales-documents': { key: 'sidebar.salesManagement', fallback: 'Sales' },
   customers: { key: 'sidebar.customers', fallback: 'Customers' },
   customer360: { key: 'customer360.title', fallback: 'Customer 360' },
   salesmen360: { key: 'sidebar.salesKpi', fallback: 'Sales KPI' },
@@ -517,9 +531,20 @@ export function getPermissionPlatform(_code: string, availableOnWeb: boolean, av
 }
 const EXTRA_PERMISSION_CODES = [
   'customers.erp-create',
+  'sales-documents.erp-cleanup-delete',
+  'activity.images.create',
+  'activity.images.update',
+  'activity.images.delete',
+  'stock.images.create',
+  'stock.images.update',
+  'stock.images.delete',
   'stocks.mirror-create',
   'stocks.erp-create',
 ] as const;
+
+export const PERMISSION_OTHER_OPERATION_CODES = new Set<string>([
+  'sales-documents.erp-cleanup-delete',
+]);
 
 export const PERMISSION_CODE_CATALOG: string[] = Array.from(
   new Set(

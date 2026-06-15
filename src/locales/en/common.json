@@ -1431,6 +1431,7 @@
     "waitingApprovalOrders": "Orders Pending Approval",
     "orderList": "Order List",
     "erpOrderList": "ERP Order List",
+    "erpDocumentCleanupLogs": "ERP Record Cleanup Logs",
     "productAndStock": "Products and Stock",
     "reportsList": "List",
     "reportsCreate": "Create New",
