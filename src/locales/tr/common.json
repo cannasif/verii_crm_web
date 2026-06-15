@@ -1419,6 +1419,7 @@
     "userVisibilityAssignments": "Kullanıcı Görünürlük Atamaları",
     "visibilitySimulator": "Görünürlük Simülatörü",
     "auditLogs": "Audit Kayıtları",
+    "hangfireMonitoring": "Hangfire İzleme",
     "salesManagement": "Satış Yönetimi",
     "demands": "Talepler",
     "demandCreateWizard": "Yeni Talep Oluştur",
@@ -5593,6 +5594,36 @@
     "countTriedByTooltip": "Netsis/ERP'ye aktarım deneme sayısı. Entegrasyon kolonu yalnızca sonucu gösterir.",
     "openDetailHint": "Çift tıklayarak detaya gidin",
     "statusUnknown": "Durum bilinmiyor"
+  },
+  "erpCleanupLogs": {
+    "subtitle": "Talep, teklif ve siparişlerde ERP kaydı temizleme/kopyalama operasyonlarının izlenebilir kayıtları.",
+    "listTitle": "Log Listesi",
+    "searchPlaceholder": "Belge no, ERP no veya neden ara...",
+    "loadingText": "ERP kayıt temizleme logları yükleniyor...",
+    "errorText": "Loglar yüklenemedi.",
+    "emptyText": "Henüz ERP kayıt temizleme logu yok.",
+    "columns": {
+      "date": "Tarih",
+      "documentType": "Belge Tipi",
+      "sourceDocumentNumber": "Eski Belge No",
+      "erpDocumentNumber": "ERP No",
+      "newDocumentNumber": "Yeni Belge No",
+      "overallStatus": "Durum",
+      "erpDeleteStatus": "ERP Silme",
+      "requestedByUserFullName": "İşlemi Yapan",
+      "cleanupReason": "Silme Nedeni"
+    },
+    "documentTypes": {
+      "demand": "Talep",
+      "offer": "Teklif",
+      "order": "Sipariş"
+    },
+    "statuses": {
+      "notStarted": "Başlamadı",
+      "pending": "Bekliyor",
+      "success": "Başarılı",
+      "error": "Hatalı"
+    }
   },
   "erpCleanup": {
     "status": {

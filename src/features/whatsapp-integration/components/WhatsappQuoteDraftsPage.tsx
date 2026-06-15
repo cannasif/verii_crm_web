@@ -149,7 +149,7 @@ function WhatsappQuoteDraftActionPanel({ draft }: { draft: WhatsappQuoteDraftDto
   };
 
   return (
-    <div className="rounded-xl border bg-white p-4 shadow-sm">
+    <div className="rounded-xl border bg-white p-4 shadow-sm dark:bg-zinc-900/40 dark:border-white/10 dark:shadow-none">
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h3 className="font-semibold text-slate-950">{t('drafts.actions.title')}</h3>
@@ -330,7 +330,7 @@ export function WhatsappQuoteDraftsPage(): ReactElement {
         <p className="text-muted-foreground mt-1">{t('drafts.description')}</p>
       </div>
 
-      <Card className="rounded-2xl border-white/60 bg-white/75 shadow-sm backdrop-blur-xl">
+      <Card className="rounded-2xl border-white/60 bg-white/75 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-none">
         <CardHeader>
           <CardTitle>{t('drafts.tableTitle')}</CardTitle>
         </CardHeader>
@@ -399,14 +399,14 @@ export function WhatsappQuoteDraftsPage(): ReactElement {
                         </TableRow>
                         {isExpanded ? (
                           <TableRow key={`${draft.id}-details`}>
-                            <TableCell colSpan={7} className="bg-slate-50/80 p-0">
+                            <TableCell colSpan={7} className="bg-slate-50/80 p-0 dark:bg-white/[0.04]">
                               <div className="space-y-3 p-4">
                                 {draft.customerMessage ? (
                                   <p className="text-sm text-muted-foreground">
                                     <span className="font-medium text-foreground">{t('drafts.customerMessage')}:</span> {draft.customerMessage}
                                   </p>
                                 ) : null}
-                                <div className="overflow-x-auto rounded-lg border bg-white">
+                                <div className="overflow-x-auto rounded-lg border bg-white dark:bg-transparent dark:border-white/10">
                                   <Table>
                                     <TableHeader>
                                       <TableRow>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw, List, FileText, ShoppingCart, TrendingUp, CheckCircle2, XCircle, Calendar, Building2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Plus, List, FileText, ShoppingCart, TrendingUp, CheckCircle2, XCircle, Calendar, Building2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,6 @@ import {
   MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
-  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
 
 import { pricingRuleQueryKeys } from '../utils/query-keys';
@@ -277,6 +276,7 @@ export function PricingRuleManagementPage(): ReactElement {
           <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('table.title', { defaultValue: t('list.title') })}</CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
+            compactSearchOnMobile={true}
             userId={user?.id}
             columns={baseColumns}
             visibleColumns={visibleColumns}
@@ -298,43 +298,35 @@ export function PricingRuleManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
+            refresh={{
+              onRefresh: () => {
+                void handleRefresh();
+              },
+              isLoading,
+              cooldownSeconds: 60,
+              label: resolveLabel(t, 'common.refresh', 'Yenile'),
+            }}
             leftSlot={
-              <>
-                <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl overflow-x-auto">
-                  {(['all', 'active', 'inactive'] as const).map((filter) => (
-                    <Button
-                      key={filter}
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setActiveFilter(filter)}
-                      className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${activeFilter === filter
-                        ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                        }`}
-                    >
-                      {filter === 'all'
-                        ? t('common.all')
-                        : filter === 'active'
-                          ? t('status.active')
-                          : t('status.inactive')}
-                    </Button>
-                  ))}
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
-                  onClick={() => handleRefresh()}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                  )}
-                  {resolveLabel(t, 'common.refresh', 'Yenile')}
-                </Button>
-              </>
+              <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl overflow-x-auto">
+                {(['all', 'active', 'inactive'] as const).map((filter) => (
+                  <Button
+                    key={filter}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveFilter(filter)}
+                    className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${activeFilter === filter
+                      ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                      }`}
+                  >
+                    {filter === 'all'
+                      ? t('common.all')
+                      : filter === 'active'
+                        ? t('status.active')
+                        : t('status.inactive')}
+                  </Button>
+                ))}
+              </div>
             }
           />
         </CardHeader>

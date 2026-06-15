@@ -1613,20 +1613,20 @@ export function ReportBuilderPage(): ReactElement {
               ) : null}
             </div>
 
-            <div className="ml-auto flex flex-wrap items-center gap-2">
+            <div className="ml-auto flex flex-wrap items-center gap-2 max-sm:ml-0 max-sm:w-full">
               {/* Mode Switching Tabs */}
-              <div className="flex items-center gap-3">
+              <div className="flex flex-wrap items-center gap-3 max-sm:w-full max-sm:flex-col max-sm:items-stretch">
                 {/* Main Builder Mode: Basic vs Advanced */}
                 <div
                   role="tablist"
                   aria-label={t('common.reportBuilder.modeTabGroupLabel')}
-                  className="flex items-center gap-1 rounded-xl border border-slate-200/60 bg-slate-100/50 p-1 dark:border-white/5 dark:bg-white/5 backdrop-blur-md shadow-sm"
+                  className="flex items-center gap-1 rounded-xl border border-slate-200/60 bg-slate-100/50 p-1 dark:border-white/5 dark:bg-white/5 backdrop-blur-md shadow-sm shrink-0 max-sm:w-full"
                 >
                   <button
                     type="button"
                     onClick={() => setBuilderMode('basic')}
                     className={cn(
-                      "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
+                      "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300 whitespace-nowrap max-sm:flex-1 max-sm:justify-center",
                       builderMode === 'basic'
                         ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                         : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
@@ -1634,15 +1634,15 @@ export function ReportBuilderPage(): ReactElement {
                     role="tab"
                     aria-selected={builderMode === 'basic'}
                   >
-                    <LayoutTemplate className={cn("size-3.5 transition-transform group-hover:scale-110", builderMode === 'basic' ? "fill-white/20" : "opacity-70")} />
-                    {t('common.reportBuilder.basicMode')}
+                    <LayoutTemplate className={cn("size-3.5 shrink-0 transition-transform group-hover:scale-110", builderMode === 'basic' ? "fill-white/20" : "opacity-70")} />
+                    <span>{t('common.reportBuilder.basicMode')}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setBuilderMode('advanced')}
                     className={cn(
-                      "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
+                      "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300 whitespace-nowrap max-sm:flex-1 max-sm:justify-center",
                       builderMode === 'advanced'
                         ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                         : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
@@ -1650,8 +1650,8 @@ export function ReportBuilderPage(): ReactElement {
                     role="tab"
                     aria-selected={builderMode === 'advanced'}
                   >
-                    <Zap className={cn("size-3.5 transition-transform group-hover:scale-110", builderMode === 'advanced' ? "fill-white/20" : "opacity-70")} />
-                    {t('common.reportBuilder.advancedMode')}
+                    <Zap className={cn("size-3.5 shrink-0 transition-transform group-hover:scale-110", builderMode === 'advanced' ? "fill-white/20" : "opacity-70")} />
+                    <span>{t('common.reportBuilder.advancedMode')}</span>
                   </button>
                 </div>
 
@@ -1660,13 +1660,13 @@ export function ReportBuilderPage(): ReactElement {
                   <div
                     role="tablist"
                     aria-label={t('common.reportBuilder.workspaceTabGroupLabel')}
-                    className="flex items-center gap-1 rounded-xl border border-slate-200/60 bg-slate-100/50 p-1 dark:border-white/5 dark:bg-white/5 backdrop-blur-md shadow-sm animate-in fade-in slide-in-from-left-2 duration-300"
+                    className="flex items-center gap-1 rounded-xl border border-slate-200/60 bg-slate-100/50 p-1 dark:border-white/5 dark:bg-white/5 backdrop-blur-md shadow-sm animate-in fade-in slide-in-from-left-2 duration-300 shrink-0 max-sm:w-full"
                   >
                     <button
                       type="button"
                       onClick={() => setAdvancedWorkspaceMode('guided')}
                       className={cn(
-                        "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
+                        "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300 whitespace-nowrap max-sm:flex-1 max-sm:justify-center",
                         advancedWorkspaceMode === 'guided'
                           ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                           : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
@@ -1674,15 +1674,15 @@ export function ReportBuilderPage(): ReactElement {
                       role="tab"
                       aria-selected={advancedWorkspaceMode === 'guided'}
                     >
-                      <Sparkles className={cn("size-3.5 transition-transform group-hover:scale-110", advancedWorkspaceMode === 'guided' ? "fill-white/20" : "opacity-70")} />
-                      {t('common.reportBuilder.advancedWorkspaceModes.guided')}
+                      <Sparkles className={cn("size-3.5 shrink-0 transition-transform group-hover:scale-110", advancedWorkspaceMode === 'guided' ? "fill-white/20" : "opacity-70")} />
+                      <span>{t('common.reportBuilder.advancedWorkspaceModes.guided')}</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setAdvancedWorkspaceMode('expert')}
                       className={cn(
-                        "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300",
+                        "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300 whitespace-nowrap max-sm:flex-1 max-sm:justify-center",
                         advancedWorkspaceMode === 'expert'
                           ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                           : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
@@ -1690,8 +1690,8 @@ export function ReportBuilderPage(): ReactElement {
                       role="tab"
                       aria-selected={advancedWorkspaceMode === 'expert'}
                     >
-                      <Settings2 className={cn("size-3.5 transition-transform group-hover:scale-110", advancedWorkspaceMode === 'expert' ? "fill-white/20" : "opacity-70")} />
-                      {t('common.reportBuilder.advancedWorkspaceModes.expert')}
+                      <Settings2 className={cn("size-3.5 shrink-0 transition-transform group-hover:scale-110", advancedWorkspaceMode === 'expert' ? "fill-white/20" : "opacity-70")} />
+                      <span>{t('common.reportBuilder.advancedWorkspaceModes.expert')}</span>
                     </button>
                   </div>
                 ) : null}

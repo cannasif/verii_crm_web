@@ -30,29 +30,29 @@ type CleanupLogColumnKey =
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 const EMPTY_ROWS: ErpDocumentCleanupLog[] = [];
 
-function getDocumentTypeLabel(type: ErpCleanupDocumentType): string {
+function getDocumentTypeLabel(type: ErpCleanupDocumentType, t: any): string {
   switch (type) {
     case 1:
-      return 'Talep';
+      return t('erpCleanupLogs.documentTypes.demand', { defaultValue: 'Talep' });
     case 2:
-      return 'Teklif';
+      return t('erpCleanupLogs.documentTypes.offer', { defaultValue: 'Teklif' });
     case 3:
-      return 'Sipariş';
+      return t('erpCleanupLogs.documentTypes.order', { defaultValue: 'Sipariş' });
     default:
       return '-';
   }
 }
 
-function getStatusLabel(status: ErpCleanupOperationStatus): string {
+function getStatusLabel(status: ErpCleanupOperationStatus, t: any): string {
   switch (status) {
     case 0:
-      return 'Başlamadı';
+      return t('erpCleanupLogs.statuses.notStarted', { defaultValue: 'Başlamadı' });
     case 1:
-      return 'Bekliyor';
+      return t('erpCleanupLogs.statuses.pending', { defaultValue: 'Bekliyor' });
     case 2:
-      return 'Başarılı';
+      return t('erpCleanupLogs.statuses.success', { defaultValue: 'Başarılı' });
     case 3:
-      return 'Hatalı';
+      return t('erpCleanupLogs.statuses.error', { defaultValue: 'Hatalı' });
     default:
       return '-';
   }
@@ -103,17 +103,17 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
 
   const columns = useMemo<DataTableGridColumn<CleanupLogColumnKey>[]>(
     () => [
-      { key: 'createdDate', label: 'Tarih', sortable: false, cellClassName: 'whitespace-nowrap' },
-      { key: 'documentType', label: 'Belge Tipi', sortable: false },
-      { key: 'sourceDocumentNumber', label: 'Eski Belge No', sortable: false },
-      { key: 'erpDocumentNumber', label: 'ERP No', sortable: false },
-      { key: 'newDocumentNumber', label: 'Yeni Belge No', sortable: false },
-      { key: 'overallStatus', label: 'Durum', sortable: false },
-      { key: 'erpDeleteStatus', label: 'ERP Silme', sortable: false },
-      { key: 'requestedByUserFullName', label: 'İşlemi Yapan', sortable: false },
-      { key: 'cleanupReason', label: 'Silme Nedeni', sortable: false, cellClassName: 'min-w-[240px]' },
+      { key: 'createdDate', label: t('erpCleanupLogs.columns.date', { defaultValue: 'Tarih' }), sortable: false, cellClassName: 'whitespace-nowrap' },
+      { key: 'documentType', label: t('erpCleanupLogs.columns.documentType', { defaultValue: 'Belge Tipi' }), sortable: false },
+      { key: 'sourceDocumentNumber', label: t('erpCleanupLogs.columns.sourceDocumentNumber', { defaultValue: 'Eski Belge No' }), sortable: false },
+      { key: 'erpDocumentNumber', label: t('erpCleanupLogs.columns.erpDocumentNumber', { defaultValue: 'ERP No' }), sortable: false },
+      { key: 'newDocumentNumber', label: t('erpCleanupLogs.columns.newDocumentNumber', { defaultValue: 'Yeni Belge No' }), sortable: false },
+      { key: 'overallStatus', label: t('erpCleanupLogs.columns.overallStatus', { defaultValue: 'Durum' }), sortable: false },
+      { key: 'erpDeleteStatus', label: t('erpCleanupLogs.columns.erpDeleteStatus', { defaultValue: 'ERP Silme' }), sortable: false },
+      { key: 'requestedByUserFullName', label: t('erpCleanupLogs.columns.requestedByUserFullName', { defaultValue: 'İşlemi Yapan' }), sortable: false },
+      { key: 'cleanupReason', label: t('erpCleanupLogs.columns.cleanupReason', { defaultValue: 'Silme Nedeni' }), sortable: false, cellClassName: 'min-w-[240px]' },
     ],
-    []
+    [t]
   );
 
   const renderCell = (row: ErpDocumentCleanupLog, key: CleanupLogColumnKey): React.ReactNode => {
@@ -121,11 +121,11 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
       case 'createdDate':
         return formatDate(row.createdDate);
       case 'documentType':
-        return <Badge variant="outline">{getDocumentTypeLabel(row.documentType)}</Badge>;
+        return <Badge variant="outline">{getDocumentTypeLabel(row.documentType, t)}</Badge>;
       case 'overallStatus':
-        return <Badge variant={getStatusVariant(row.overallStatus)}>{getStatusLabel(row.overallStatus)}</Badge>;
+        return <Badge variant={getStatusVariant(row.overallStatus)}>{getStatusLabel(row.overallStatus, t)}</Badge>;
       case 'erpDeleteStatus':
-        return <Badge variant={getStatusVariant(row.erpDeleteStatus)}>{getStatusLabel(row.erpDeleteStatus)}</Badge>;
+        return <Badge variant={getStatusVariant(row.erpDeleteStatus)}>{getStatusLabel(row.erpDeleteStatus, t)}</Badge>;
       case 'sourceDocumentNumber':
         return row.sourceDocumentNumber || row.sourceDocumentId;
       case 'newDocumentNumber':
@@ -149,7 +149,7 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
             {t('sidebar.erpDocumentCleanupLogs', { defaultValue: 'ERP Kayıt Temizleme Logları' })}
           </h1>
           <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
-            Talep, teklif ve siparişlerde ERP kaydı temizleme/kopyalama operasyonlarının izlenebilir kayıtları.
+            {t('erpCleanupLogs.subtitle', { defaultValue: 'Talep, teklif ve siparişlerde ERP kaydı temizleme/kopyalama operasyonlarının izlenebilir kayıtları.' })}
           </p>
         </div>
         <Button
@@ -159,13 +159,13 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
           className="h-11 rounded-xl font-bold"
         >
           <RotateCw className="mr-2 size-4" />
-          Yenile
+          {t('common.refresh', { defaultValue: 'Yenile' })}
         </Button>
       </div>
 
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
-          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>Log Listesi</CardTitle>
+          <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('erpCleanupLogs.listTitle', { defaultValue: 'Log Listesi' })}</CardTitle>
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
           <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -180,7 +180,7 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
                     setAppliedSearch(search.trim());
                   }
                 }}
-                placeholder="Belge no, ERP no veya neden ara..."
+                placeholder={t('erpCleanupLogs.searchPlaceholder', { defaultValue: 'Belge no, ERP no veya neden ara...' })}
                 className="h-11 rounded-xl pl-9"
               />
             </div>
@@ -191,7 +191,7 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
               }}
               className="h-11 rounded-xl font-bold"
             >
-              Ara
+              {t('common.search', { defaultValue: 'Ara' })}
             </Button>
           </div>
 
@@ -203,9 +203,9 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
             renderCell={renderCell}
             isLoading={logsQuery.isLoading}
             isError={logsQuery.isError}
-            loadingText="ERP kayıt temizleme logları yükleniyor..."
-            errorText={logsQuery.error instanceof Error ? logsQuery.error.message : 'Loglar yüklenemedi.'}
-            emptyText="Henüz ERP kayıt temizleme logu yok."
+            loadingText={t('erpCleanupLogs.loadingText', { defaultValue: 'ERP kayıt temizleme logları yükleniyor...' })}
+            errorText={logsQuery.error instanceof Error ? logsQuery.error.message : t('erpCleanupLogs.errorText', { defaultValue: 'Loglar yüklenemedi.' })}
+            emptyText={t('erpCleanupLogs.emptyText', { defaultValue: 'Henüz ERP kayıt temizleme logu yok.' })}
             minTableWidthClassName="min-w-[1180px]"
             pageSize={pageSize}
             pageSizeOptions={PAGE_SIZE_OPTIONS}
@@ -219,9 +219,9 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
             hasNextPage={pageNumber < totalPages}
             onPreviousPage={() => setPageNumber((current) => Math.max(1, current - 1))}
             onNextPage={() => setPageNumber((current) => Math.min(totalPages, current + 1))}
-            previousLabel="Önceki"
-            nextLabel="Sonraki"
-            paginationInfoText={`Sayfa ${pageNumber} / ${totalPages} • Toplam ${totalCount}`}
+            previousLabel={t('common.previous', { defaultValue: 'Önceki' })}
+            nextLabel={t('common.next', { defaultValue: 'Sonraki' })}
+            paginationInfoText={t('common.paginationInfoDetailed', { defaultValue: `Sayfa ${pageNumber} / ${totalPages} • Toplam ${totalCount}`, pageNumber, totalPages, totalCount })}
             disablePaginationButtons={logsQuery.isFetching}
           />
         </CardContent>

@@ -53,7 +53,7 @@ export function WhatsappLogsPage(): ReactElement {
         <p className="text-muted-foreground mt-1">{t('logs.description')}</p>
       </div>
 
-      <Card className="rounded-2xl border-white/60 bg-white/75 shadow-sm backdrop-blur-xl">
+      <Card className="rounded-2xl border-white/60 bg-white/75 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-none">
         <CardHeader>
           <CardTitle>{t('logs.tableTitle')}</CardTitle>
         </CardHeader>

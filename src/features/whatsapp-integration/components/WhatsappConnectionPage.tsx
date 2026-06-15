@@ -84,7 +84,7 @@ export function WhatsappConnectionPage(): ReactElement {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Card className="rounded-2xl border-white/60 bg-white/75 shadow-sm backdrop-blur-xl lg:col-span-2">
+        <Card className="rounded-2xl border-white/60 bg-white/75 shadow-sm backdrop-blur-xl lg:col-span-2 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center justify-between gap-3">
               <span className="flex items-center gap-2">
@@ -104,7 +104,7 @@ export function WhatsappConnectionPage(): ReactElement {
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between rounded-xl border bg-muted/30 p-4">
+                <div className="flex items-center justify-between rounded-xl border bg-muted/30 p-4 dark:border-white/10 dark:bg-white/5">
                   <div>
                     <p className="font-medium">{t('settings.enabled')}</p>
                     <p className="text-sm text-muted-foreground">{t('settings.enabledDescription')}</p>
@@ -157,7 +157,11 @@ export function WhatsappConnectionPage(): ReactElement {
                   </div>
                 </div>
 
-                <Button onClick={handleSave} disabled={updateSettingsMutation.isPending} className="min-w-40">
+                <Button
+                  onClick={handleSave}
+                  disabled={updateSettingsMutation.isPending}
+                  className="min-w-40 bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                >
                   {updateSettingsMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {t('settings.save')}
                 </Button>
@@ -166,7 +170,7 @@ export function WhatsappConnectionPage(): ReactElement {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl border-emerald-100 bg-gradient-to-br from-emerald-50 to-white shadow-sm">
+        <Card className="rounded-2xl border-emerald-100 bg-gradient-to-br from-emerald-50 to-white shadow-sm dark:border-emerald-500/20 dark:from-emerald-500/10 dark:to-transparent dark:shadow-none">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-emerald-600" />
@@ -190,7 +194,7 @@ export function WhatsappConnectionPage(): ReactElement {
         </Card>
       </div>
 
-      <Card className="rounded-2xl border-white/60 bg-white/75 shadow-sm backdrop-blur-xl">
+      <Card className="rounded-2xl border-white/60 bg-white/75 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-none">
         <CardHeader>
           <CardTitle>{t('test.title')}</CardTitle>
         </CardHeader>
@@ -203,7 +207,11 @@ export function WhatsappConnectionPage(): ReactElement {
             <Label>{t('test.message')}</Label>
             <Textarea value={testMessage} onChange={(event) => setTestMessage(event.target.value)} rows={2} />
           </div>
-          <Button onClick={handleSendTest} disabled={!configured || testMessageMutation.isPending}>
+          <Button
+            onClick={handleSendTest}
+            disabled={!configured || testMessageMutation.isPending}
+            className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0 disabled:opacity-50 dark:disabled:opacity-50 disabled:pointer-events-none"
+          >
             {testMessageMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {t('test.send')}
           </Button>

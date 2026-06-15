@@ -28,6 +28,7 @@ export interface DataTableSearchConfig {
   onSearchChange?: (value: string) => void;
   placeholder?: string;
   className?: string;
+  wrapperClassName?: string;
   debounceMs?: number;
   minLength?: number;
   resetKey?: string | number;
@@ -72,6 +73,8 @@ export interface DataTableActionBarProps {
   searchDebounceMs?: number;
   leftSlot?: React.ReactNode;
   additionalFilterActions?: React.ReactNode;
+  compactSearchOnMobile?: boolean;
+  mobileMoreOptionsSlot?: React.ReactNode;
 }
 
 export function DataTableActionBar({
@@ -105,6 +108,8 @@ export function DataTableActionBar({
   searchDebounceMs = 700,
   leftSlot,
   additionalFilterActions,
+  compactSearchOnMobile = false,
+  mobileMoreOptionsSlot,
 }: DataTableActionBarProps): ReactElement {
   const { t } = useTranslation([translationNamespace, 'common']);
   const MISSING_TRANSLATION = 'Çeviri eksik';
@@ -118,6 +123,9 @@ export function DataTableActionBar({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [internalSearchValue, setInternalSearchValue] = useState(search?.defaultValue ?? '');
   const [legacyDisplayValue, setLegacyDisplayValue] = useState(searchValue ?? '');
+  const [isMobileSearchActive, setIsMobileSearchActive] = useState(() => {
+    return compactSearchOnMobile && Boolean(searchValue || search?.defaultValue || search?.value);
+  });
   const [refreshCooldownUntil, setRefreshCooldownUntil] = useState<number | null>(null);
   const [refreshNow, setRefreshNow] = useState(() => Date.now());
   const lastEmittedLegacyRef = useRef(searchValue ?? '');
@@ -251,8 +259,28 @@ export function DataTableActionBar({
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
       <div className="flex w-full min-w-0 items-center gap-2">
+        {compactSearchOnMobile && shouldRenderSearch && !isMobileSearchActive && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="sm:hidden shrink-0 h-9 w-9 border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent"
+            onClick={() => setIsMobileSearchActive(true)}
+            aria-label={resolvedSearchPlaceholder}
+          >
+            <Search className="h-4 w-4" />
+          </Button>
+        )}
+
         {shouldRenderSearch && (
-          <div className="group/search relative min-w-0 flex-1 sm:max-w-xs">
+          <div
+            className={cn(
+              'group/search relative min-w-0 sm:max-w-xs',
+              compactSearchOnMobile
+                ? (isMobileSearchActive ? 'flex-1 flex' : 'hidden sm:flex flex-1')
+                : 'flex flex-1',
+              search?.wrapperClassName
+            )}
+          >
             <Search
               className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within/search:text-pink-500 dark:text-slate-500 dark:group-focus-within/search:text-pink-400"
               aria-hidden
@@ -264,37 +292,56 @@ export function DataTableActionBar({
               className={cn(
                 resolvedSearchClassName,
                 'w-full border-slate-300 bg-white pl-9 shadow-sm transition-all dark:border-white/15 dark:bg-transparent dark:shadow-none',
+                compactSearchOnMobile && isMobileSearchActive && 'pr-8',
                 'focus:border-pink-500 focus:ring-[3px] focus:ring-pink-500/15',
                 'focus-visible:border-pink-500 focus-visible:ring-[3px] focus-visible:ring-pink-500/15',
                 'dark:focus:border-pink-500/60 dark:focus:ring-pink-500/10',
                 'dark:focus-visible:border-pink-500/60 dark:focus-visible:ring-pink-500/10'
               )}
             />
+            {compactSearchOnMobile && isMobileSearchActive && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute right-0 top-0 h-full w-8 px-0 hover:bg-transparent sm:hidden"
+                onClick={() => {
+                  handleSearchInputChange('');
+                  setIsMobileSearchActive(false);
+                }}
+              >
+                <X className="h-4 w-4 text-slate-400" />
+              </Button>
+            )}
           </div>
         )}
-        {refresh && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="shrink-0 border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
-            onClick={handleRefresh}
-            disabled={isRefreshDisabled}
-          >
-            <RefreshCw className={`h-4 w-4 sm:mr-2 ${refresh?.isLoading ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">
-              {refreshRemainingSeconds > 0 ? `${refreshLabel} (${refreshRemainingSeconds}s)` : refreshLabel}
-            </span>
-          </Button>
-        )}
-        {leftSlot}
 
-        <div className="ml-auto flex shrink-0 items-center gap-2">
+        <div className={cn("flex min-w-0 items-center gap-2 flex-1", compactSearchOnMobile && isMobileSearchActive ? "hidden sm:flex" : "flex")}>
+          {refresh && (
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                "shrink-0 border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none",
+                compactSearchOnMobile && "max-sm:h-9 max-sm:w-9 max-sm:px-0"
+              )}
+              onClick={handleRefresh}
+              disabled={isRefreshDisabled}
+            >
+              <RefreshCw className={cn("h-4 w-4", compactSearchOnMobile ? "max-sm:mr-0 mr-2" : "mr-2", refresh?.isLoading && 'animate-spin')} />
+              <span className={cn(compactSearchOnMobile && "hidden sm:inline")}>
+                {refreshRemainingSeconds > 0 ? `${refreshLabel} (${refreshRemainingSeconds}s)` : refreshLabel}
+              </span>
+            </Button>
+          )}
+          {leftSlot}
+
+          <div className="ml-auto flex shrink-0 items-center gap-2 relative">
           <Popover open={showFilters} onOpenChange={handleFilterOpenChange}>
             <PopoverTrigger asChild>
               <Button
                 variant={showFilters || appliedFilterCount > 0 ? 'default' : 'outline'}
                 size="sm"
-                className={cn(filterButtonClassName, 'hidden sm:inline-flex')}
+                className={cn(filterButtonClassName, 'max-sm:absolute max-sm:opacity-0 max-sm:pointer-events-none max-sm:right-0 sm:inline-flex')}
               >
                 <Filter className="mr-2 h-4 w-4" />
                 {t('filters', { ns: 'common' })}
@@ -344,7 +391,7 @@ export function DataTableActionBar({
               <Button
                 variant={columnsOpen ? 'default' : 'outline'}
                 size="sm"
-                className={cn(columnsButtonClassName, 'hidden sm:inline-flex')}
+                className={cn(columnsButtonClassName, 'max-sm:absolute max-sm:opacity-0 max-sm:pointer-events-none max-sm:right-0 sm:inline-flex')}
               >
                 <Columns3 className="mr-2 h-4 w-4" />
                 {t('common.editColumns')}
@@ -386,12 +433,14 @@ export function DataTableActionBar({
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52">
+            <DropdownMenuContent align="end" className="w-52" onCloseAutoFocus={(e) => e.preventDefault()}>
+              {mobileMoreOptionsSlot}
               <DropdownMenuItem
                 className="cursor-pointer"
-                onSelect={() => {
-                  setShowFilters(true);
+                onSelect={(e) => {
+                  e.preventDefault();
                   setMobileMenuOpen(false);
+                  setTimeout(() => setShowFilters(true), 150);
                 }}
               >
                 <Filter className="mr-2 h-4 w-4" />
@@ -404,9 +453,10 @@ export function DataTableActionBar({
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer"
-                onSelect={() => {
-                  setColumnsOpen(true);
+                onSelect={(e) => {
+                  e.preventDefault();
                   setMobileMenuOpen(false);
+                  setTimeout(() => setColumnsOpen(true), 150);
                 }}
               >
                 <Columns3 className="mr-2 h-4 w-4" />
@@ -430,6 +480,7 @@ export function DataTableActionBar({
               </DropdownMenuSub>
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
         </div>
       </div>
     </div>
