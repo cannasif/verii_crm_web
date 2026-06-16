@@ -293,6 +293,8 @@ function drawInfoChip(
 
 const HEADER_NAME_LINE_HEIGHT = 4.6;
 const HEADER_NAME_MAX_LINES = 2;
+const HEADER_META_ROW_HEIGHT = 4.5;
+const HEADER_CARD_BOTTOM_PADDING = 4.5;
 
 function measureHeaderNameLines(
   doc: jsPDF,
@@ -386,7 +388,7 @@ function drawHeader(
   const dividerY = nameStartY + nameBlockHeight + 1.8;
   const dateY = dividerY + 3.2;
   const offerNoY = dateY + 5;
-  const cardH = Math.max(32, offerNoY + 3 - cardY);
+  const cardH = Math.max(32, offerNoY + HEADER_META_ROW_HEIGHT + HEADER_CARD_BOTTOM_PADDING - cardY);
 
   doc.setFillColor(255, 255, 255);
   doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);

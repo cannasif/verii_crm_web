@@ -19,8 +19,10 @@ import {
   buildPreviewPdfDocumentFooterDetails,
   buildPreviewPdfDocumentFooterLabels,
   buildPreviewPdfLineDetailLabels,
+  resolvePreviewPdfShippingAddressText,
 } from '@/features/quotation/utils/build-preview-pdf-footer-details';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
+import { useShippingAddresses } from '../hooks/useShippingAddresses';
 import type { CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderGetDto, OrderLineFormState } from '../types/order-types';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
@@ -79,6 +81,10 @@ export function useOrderPdfExportPreview({
   const { t, i18n } = useTranslation('order');
   const branch = useAuthStore((state) => state.branch);
   const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
+  const previewCustomerId = orderFormSlice.potentialCustomerId ?? order?.potentialCustomerId ?? undefined;
+  const { data: shippingAddresses = [] } = useShippingAddresses(
+    previewCustomerId != null && previewCustomerId > 0 ? previewCustomerId : undefined,
+  );
 
   const [pdfExportOpen, setPdfExportOpen] = useState(false);
   const [whatsappShareOpen, setWhatsappShareOpen] = useState(false);
@@ -133,6 +139,11 @@ export function useOrderPdfExportPreview({
           koliBaskiName,
           description: oc.description ?? order?.description ?? null,
           structuredNotes: quotationNotesDtoToNotesList(quotationNotes),
+          shippingAddressText: resolvePreviewPdfShippingAddressText({
+            shippingAddressId: oc.shippingAddressId ?? order?.shippingAddressId ?? null,
+            shippingAddressText: order?.shippingAddressText ?? null,
+            shippingAddresses,
+          }),
         },
         buildPreviewPdfDocumentFooterLabels(t),
       );
@@ -172,6 +183,7 @@ export function useOrderPdfExportPreview({
       baskiMap,
       koliBaskiMap,
       quotationNotes,
+      shippingAddresses,
     ],
   );
 

@@ -22,6 +22,7 @@ import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPage
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
 import { DocumentDetailStatusAlerts } from '@/components/shared/DocumentDetailStatusAlerts';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
+import { SendForApprovalHintWrap } from '@/components/shared/SendForApprovalHintWrap';
 import {
   DOCUMENT_DETAIL_BUTTON_APPROVAL,
   DOCUMENT_DETAIL_BUTTON_BASE,
@@ -894,24 +895,26 @@ export function OrderDetailPage(): ReactElement {
                 </Button>
 
                 {orderStatus === 0 && !isReadOnly && (
-                  <Button
-                    type="button"
-                    onClick={handleStartApprovalFlow}
-                    disabled={isUpdating || startApprovalFlow.isPending || !order}
-                    className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_APPROVAL}`}
-                  >
-                    {startApprovalFlow.isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        {t('order.approval.sending')}
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4 mr-2" />
-                        {t('order.approval.sendForApproval')}
-                      </>
-                    )}
-                  </Button>
+                  <SendForApprovalHintWrap documentType="order">
+                    <Button
+                      type="button"
+                      onClick={handleStartApprovalFlow}
+                      disabled={isUpdating || startApprovalFlow.isPending || !order}
+                      className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_APPROVAL}`}
+                    >
+                      {startApprovalFlow.isPending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {t('order.approval.sending')}
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 mr-2" />
+                          {t('order.approval.sendForApproval')}
+                        </>
+                      )}
+                    </Button>
+                  </SendForApprovalHintWrap>
                 )}
 
                 {canCancelByCustomer && (
