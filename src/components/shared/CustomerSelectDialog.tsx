@@ -12,6 +12,12 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { CustomerDto } from '@/features/customer-management/types/customer-types';
+import {
+  resolveCustomerSelectKind,
+  resolveErpCustomerCodeForSelection,
+} from '@/features/customer-management/utils/customer-integration';
+
+export { resolveCustomerSelectKind } from '@/features/customer-management/utils/customer-integration';
 import { cn } from '@/lib/utils';
 import {
   Phone, Mail, ChevronRight, Search, Mic, Building2, UserRound, X, MapPin,
@@ -45,14 +51,6 @@ interface CustomerSelectDialogProps {
   onSelect: (result: CustomerSelectionResult) => void;
   className?: string;
   contextUserId?: number | null;
-}
-
-/** ERP: entegre veya ERP müşteri kodu dolu; aksi halde potansiyel. */
-export function resolveCustomerSelectKind(c: CustomerDto): 'erp' | 'crm' {
-  if (c.isIntegrated === true) return 'erp';
-  const code = c.customerCode != null ? String(c.customerCode).trim() : '';
-  if (code.length > 0) return 'erp';
-  return 'crm';
 }
 
 interface CustomerCardProps {
@@ -357,13 +355,9 @@ export function CustomerSelectDialog({
   );
 
   const handleCustomerSelect = (customer: CustomerDto & { type: 'erp' | 'crm' }): void => {
-    const code =
-      customer.customerCode != null && String(customer.customerCode).trim() !== ''
-        ? String(customer.customerCode).trim()
-        : undefined;
     onSelect({
       customerId: customer.id,
-      erpCustomerCode: code,
+      erpCustomerCode: resolveErpCustomerCodeForSelection(customer),
       customerName: customer.name,
     });
     onOpenChange(false);

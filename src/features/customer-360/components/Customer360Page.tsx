@@ -1159,7 +1159,7 @@ function CustomerHeroCard({
   const phone = sanitizePhone(customer?.phone) ?? sanitizePhone(customer?.phone2);
   const location = [customer?.cityName, customer?.countryName].filter(Boolean).join(', ');
   const createdYear = customer?.createdDate ? new Date(customer.createdDate).getFullYear() : null;
-  const isIntegrated = Boolean(customer?.isERPIntegrated || customer?.isIntegrated || code);
+  const isIntegrated = Boolean(customer?.isERPIntegrated || customer?.isIntegrated);
   const noneLabel = tc('hero.none');
   const creditLimitLabel =
     customer?.creditLimit != null

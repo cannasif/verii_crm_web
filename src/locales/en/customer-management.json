@@ -37,6 +37,7 @@
     "editDescription": "Edit customer information",
     "customerCode": "Customer Code",
     "customerCodePlaceholder": "Enter customer code (optional)",
+    "customerCodeHint": "This code may be used as the ERP account code during integration. Until integration is complete, the customer remains a potential customer. Use Create ERP Customer after saving to open in ERP.",
     "customerCodeMaxLength": "Customer code must be at most 100 characters",
     "name": "Customer Name",
     "namePlaceholder": "Enter customer name",

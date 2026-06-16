@@ -34,6 +34,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import { customerFormSchema, type CustomerFormData, type CustomerDto } from '../types/customer-types';
 import { isZodFieldRequired } from '@/lib/zod-required';
@@ -323,6 +324,9 @@ export function CustomerForm({
                         onFocus={() => blockUntilNameFilled('customerCode')}
                       />
                     </FormControl>
+                    <FormDescription className="text-xs text-slate-500 dark:text-slate-400">
+                      {tf('customerCodeHint')}
+                    </FormDescription>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />

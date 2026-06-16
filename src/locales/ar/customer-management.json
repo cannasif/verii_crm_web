@@ -36,6 +36,7 @@
     "editDescription": "تحرير معلومات العميل",
     "customerCode": "رمز العميل",
     "customerCodePlaceholder": "أدخل رمز العميل (اختياري)",
+    "customerCodeHint": "يمكن استخدام هذا الرمز كرمز حساب ERP عند التكامل. يبقى العميل محتملاً حتى اكتمال التكامل. استخدم إنشاء عميل ERP بعد الحفظ.",
     "customerCodeMaxLength": "يجب أن يكون رمز العميل 100 حرف كحد أقصى",
     "name": "اسم العميل",
     "namePlaceholder": "أدخل اسم العميل",

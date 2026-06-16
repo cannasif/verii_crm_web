@@ -115,6 +115,7 @@
     "editDescription": "Müşteri bilgilerini düzenleyin",
     "customerCode": "Müşteri Kodu",
     "customerCodePlaceholder": "Müşteri kodunu girin (opsiyonel)",
+    "customerCodeHint": "ERP entegrasyonunda cari kodu olarak kullanılabilir. Entegrasyon tamamlanana kadar müşteri potansiyel olarak kalır. ERP'ye açmak için kayıt sonrası ERP Müşterisi Oluştur kullanın.",
     "customerCodeMaxLength": "Müşteri kodu en fazla 100 karakter olabilir",
     "name": "Müşteri Adı",
     "namePlaceholder": "Müşteri adını girin",

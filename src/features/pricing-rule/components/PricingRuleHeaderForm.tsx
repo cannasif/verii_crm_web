@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/form';
 import { useCustomersForPricingRule } from '../hooks/useCustomersForPricingRule';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared';
+import { formatCustomerSelectLabel } from '@/features/customer-management/utils/customer-integration';
 import { PricingRuleType, type PricingRuleFormSchema } from '../types/pricing-rule-types';
 import { Button } from '@/components/ui/button';
 import { type ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
@@ -60,9 +61,7 @@ export function PricingRuleHeaderForm(): ReactElement {
 
   const selectedCustomer = customers?.find((c) => c.id === customerId);
   const displayValue = selectedCustomer
-    ? (selectedCustomer.customerCode?.trim()
-      ? `ERP: ${selectedCustomer.customerCode} - ${selectedCustomer.name}`
-      : `CRM: ${selectedCustomer.name}`)
+    ? formatCustomerSelectLabel(selectedCustomer)
     : erpCustomerCode
       ? `ERP: ${erpCustomerCode}`
       : '';

@@ -36,6 +36,7 @@
     "editDescription": "Modifier les informations du client",
     "customerCode": "Code Client",
     "customerCodePlaceholder": "Entrer le code client (optionnel)",
+    "customerCodeHint": "Ce code peut servir de code compte ERP lors de l'intégration. Jusqu'à l'intégration, le client reste potentiel. Utilisez Créer client ERP après l'enregistrement.",
     "customerCodeMaxLength": "Le code client ne peut pas dépasser 100 caractères",
     "name": "Nom du Client",
     "namePlaceholder": "Entrer le nom du client",

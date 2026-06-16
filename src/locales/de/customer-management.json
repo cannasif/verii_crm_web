@@ -37,6 +37,7 @@
     "editDescription": "Kundeninformationen bearbeiten",
     "customerCode": "Kundencode",
     "customerCodePlaceholder": "Kundencode eingeben (optional)",
+    "customerCodeHint": "Dieser Code kann bei der ERP-Integration als Debitorenkonto verwendet werden. Bis zur Integration bleibt der Kunde ein potenzieller Kunde. Nach dem Speichern ERP-Kunde erstellen verwenden.",
     "customerCodeMaxLength": "Kundencode darf maximal 100 Zeichen lang sein",
     "name": "Kundenname",
     "namePlaceholder": "Kundenname eingeben",
