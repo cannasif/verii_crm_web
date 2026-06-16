@@ -13,6 +13,8 @@
   "cityId": "City",
   "districtId": "District",
   "customerName": "Customer Name",
+  "erpShippingCode": "ERP Shipping Customer Code",
+  "erpMainCustomerCode": "ERP Main Customer Code",
   "countryName": "Country Name",
   "cityName": "City Name",
   "districtName": "District Name",
@@ -84,9 +86,13 @@
   "description": "Manage and edit shipping addresses",
   "advancedFilter": {
     "columnCustomerName": "Customer Name",
+    "columnErpShippingCode": "ERP Shipping Customer Code",
+    "columnErpMainCustomerCode": "ERP Main Customer Code",
     "columnName": "Address Name",
     "columnPostalCode": "Postal Code",
-    "columnPhone": "Phone"
+    "columnPhone": "Phone",
+    "columnCityName": "City Name",
+    "columnDistrictName": "District Name"
   },
   "error": "An error occurred"
 }

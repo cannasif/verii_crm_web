@@ -13,6 +13,8 @@
   "cityId": "Ville",
   "districtId": "District",
   "customerName": "Nom du client",
+  "erpShippingCode": "Code client de livraison ERP",
+  "erpMainCustomerCode": "Code client principal ERP",
   "countryName": "Nom du pays",
   "cityName": "Nom de la ville",
   "districtName": "Nom du district",
@@ -84,9 +86,13 @@
   "description": "Gérer et éditer les adresses de livraison",
   "advancedFilter": {
     "columnCustomerName": "Nom du client",
+    "columnErpShippingCode": "Code client de livraison ERP",
+    "columnErpMainCustomerCode": "Code client principal ERP",
     "columnName": "Nom de l'adresse",
     "columnPostalCode": "Code postal",
-    "columnPhone": "Téléphone"
+    "columnPhone": "Téléphone",
+    "columnCityName": "Nom de la ville",
+    "columnDistrictName": "Nom du district"
   },
   "error": "Une erreur est survenue"
 }

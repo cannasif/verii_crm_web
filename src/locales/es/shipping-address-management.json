@@ -13,6 +13,8 @@
   "cityId": "Ciudad",
   "districtId": "Distrito",
   "customerName": "Nombre del Cliente",
+  "erpShippingCode": "Código de cliente de envío ERP",
+  "erpMainCustomerCode": "Código de cliente principal ERP",
   "countryName": "Nombre del País",
   "cityName": "Nombre de la Ciudad",
   "districtName": "Nombre del Distrito",
@@ -84,9 +86,13 @@
   "description": "Gestionar y editar direcciones de envío",
   "advancedFilter": {
     "columnCustomerName": "Nombre del cliente",
+    "columnErpShippingCode": "Código de cliente de envío ERP",
+    "columnErpMainCustomerCode": "Código de cliente principal ERP",
     "columnName": "Nombre de dirección",
     "columnPostalCode": "Código Postal",
-    "columnPhone": "Teléfono"
+    "columnPhone": "Teléfono",
+    "columnCityName": "Nombre de la ciudad",
+    "columnDistrictName": "Nombre del distrito"
   },
   "error": "Se produjo un error"
 }

@@ -63,12 +63,14 @@ interface ShippingAddressTableProps {
 
 export const getColumnsConfig = (t: TFunction): ColumnConfig[] => [
   { key: 'customerName', label: t('customerName'), visible: true },
+  { key: 'erpShippingCode', label: t('erpShippingCode'), visible: true },
+  { key: 'erpMainCustomerCode', label: t('erpMainCustomerCode'), visible: true },
   { key: 'name', label: t('name'), visible: true },
   { key: 'address', label: t('address'), visible: true },
   { key: 'postalCode', label: t('postalCode'), visible: false },
   { key: 'contactPerson', label: t('contactPerson'), visible: true },
   { key: 'phone', label: t('phone'), visible: true },
-  { key: 'location', label: t('location'), visible: false },
+  { key: 'location', label: t('location'), visible: true },
   { key: 'isDefault', label: t('isDefaultShort'), visible: true },
   { key: 'isActive', label: t('common.status'), visible: true },
   { key: 'createdDate', label: t('createdDate'), visible: true },
