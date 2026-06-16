@@ -16,6 +16,8 @@
   "cityId": "Şehir",
   "districtId": "İlçe",
   "customerName": "Müşteri Adı",
+  "erpShippingCode": "ERP Sevk Cari Kodu",
+  "erpMainCustomerCode": "ERP Ana Cari Kodu",
   "countryName": "Ülke Adı",
   "cityName": "Şehir Adı",
   "districtName": "İlçe Adı",
@@ -28,9 +30,13 @@
   "actions": "İşlemler",
   "advancedFilter": {
     "columnCustomerName": "Müşteri Adı",
+    "columnErpShippingCode": "ERP Sevk Cari Kodu",
+    "columnErpMainCustomerCode": "ERP Ana Cari Kodu",
     "columnName": "Adres Adı",
     "columnPostalCode": "Posta Kodu",
-    "columnPhone": "Telefon"
+    "columnPhone": "Telefon",
+    "columnCityName": "Şehir Adı",
+    "columnDistrictName": "İlçe Adı"
   },
   "search": "Ara",
   "refresh": "Yenile",

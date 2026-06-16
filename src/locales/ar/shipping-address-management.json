@@ -13,6 +13,8 @@
   "cityId": "المدينة",
   "districtId": "المنطقة",
   "customerName": "اسم العميل",
+  "erpShippingCode": "رمز عميل الشحن في ERP",
+  "erpMainCustomerCode": "رمز العميل الرئيسي في ERP",
   "countryName": "اسم البلد",
   "cityName": "اسم المدينة",
   "districtName": "اسم المنطقة",
@@ -84,9 +86,13 @@
   "description": "إدارة وتحرير عناوين الشحن",
   "advancedFilter": {
     "columnCustomerName": "اسم العميل",
+    "columnErpShippingCode": "رمز عميل الشحن في ERP",
+    "columnErpMainCustomerCode": "رمز العميل الرئيسي في ERP",
     "columnName": "اسم العنوان",
     "columnPostalCode": "الرمز البريدي",
-    "columnPhone": "الهاتف"
+    "columnPhone": "الهاتف",
+    "columnCityName": "اسم المدينة",
+    "columnDistrictName": "اسم المنطقة"
   },
   "error": "حدث خطأ"
 }

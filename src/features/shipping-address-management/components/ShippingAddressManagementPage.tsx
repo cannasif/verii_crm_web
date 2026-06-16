@@ -113,6 +113,8 @@ export function ShippingAddressManagementPage(): ReactElement {
             c.name,
             c.address,
             c.customerName,
+            c.erpShippingCode,
+            c.erpMainCustomerCode,
             c.contactPerson,
             c.phone,
             c.countryName,
@@ -272,6 +274,14 @@ export function ShippingAddressManagementPage(): ReactElement {
     switch (key) {
       case 'customerName':
         return <span className="font-medium text-slate-700 dark:text-slate-300">{row.customerName || '-'}</span>;
+      case 'erpShippingCode':
+        return row.erpShippingCode ? (
+          <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-200">{row.erpShippingCode}</span>
+        ) : '-';
+      case 'erpMainCustomerCode':
+        return row.erpMainCustomerCode ? (
+          <span className="font-mono text-xs font-semibold text-slate-600 dark:text-slate-300">{row.erpMainCustomerCode}</span>
+        ) : '-';
       case 'name':
         return row.name || '-';
       case 'address':

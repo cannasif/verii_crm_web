@@ -13,6 +13,8 @@
   "cityId": "Stadt",
   "districtId": "Bezirk",
   "customerName": "Kundenname",
+  "erpShippingCode": "ERP-Lieferkundencode",
+  "erpMainCustomerCode": "ERP-Hauptkundencode",
   "countryName": "Ländername",
   "cityName": "Stadtname",
   "districtName": "Bezirksname",
@@ -84,9 +86,13 @@
   "description": "Versandadressen verwalten und bearbeiten",
   "advancedFilter": {
     "columnCustomerName": "Kundenname",
+    "columnErpShippingCode": "ERP-Lieferkundencode",
+    "columnErpMainCustomerCode": "ERP-Hauptkundencode",
     "columnName": "Adressname",
     "columnPostalCode": "Postleitzahl",
-    "columnPhone": "Telefon"
+    "columnPhone": "Telefon",
+    "columnCityName": "Stadtname",
+    "columnDistrictName": "Bezirksname"
   },
   "error": "Fehler ist aufgetreten"
 }
