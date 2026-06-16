@@ -42,8 +42,14 @@ import {
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
+import {
+  mapCustomerToComboboxOption,
+  resolveCustomerFieldDisplayValue,
+  type CustomerComboboxOption,
+} from '@/features/customer-management/utils/customer-integration';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
+import { useDocumentSerialAutoFill } from '@/features/document-serial-type-management/hooks/useDocumentSerialAutoFill';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import type { KurDto } from '@/services/erp-types';
@@ -103,6 +109,7 @@ export function DemandHeaderForm({
   const form = useFormContext<CreateDemandSchema>();
   const { data: erpRates = [] } = useExchangeRate();
   const user = useAuthStore((state) => state.user);
+  const branch = useAuthStore((state) => state.branch);
 
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
   const [exchangeRateDialogOpen, setExchangeRateDialogOpen] = useState(false);
@@ -130,6 +137,7 @@ export function DemandHeaderForm({
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedCurrency = form.watch('demand.currency');
   const watchedRepresentativeId = form.watch('demand.representativeId');
+  const watchedDocumentSerialTypeId = form.watch('demand.documentSerialTypeId');
   const prevRepresentativeIdRef = useRef<number | null | undefined>(watchedRepresentativeId);
   const watchedOfferType = form.watch('demand.offerType');
 
@@ -154,7 +162,7 @@ export function DemandHeaderForm({
     data: customerOptions = [],
     isFetched: hasCustomerOptionsLoaded,
   } = useCustomerOptions(watchedRepresentativeId);
-  const shouldFetchCustomer = Boolean(watchedCustomerId && !watchedErpCustomerCode);
+  const shouldFetchCustomer = Boolean(watchedCustomerId && watchedCustomerId > 0);
   const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
   const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
   
@@ -169,28 +177,28 @@ export function DemandHeaderForm({
     PricingRuleType.Demand
   );
 
-  const customerDisplayValue = useMemo(() => {
-    if (!watchedCustomerId && !watchedErpCustomerCode) return '';
-    if (customer) {
-      return customer.customerCode?.trim()
-        ? `ERP: ${customer.customerCode} - ${customer.name}`
-        : `CRM: ${customer.name}`;
-    }
-    const matchedOption = customerOptions.find(
-      (option) =>
-        (watchedCustomerId != null && option.id === watchedCustomerId) ||
-        (!!watchedErpCustomerCode && option.customerCode === watchedErpCustomerCode)
-    );
-    if (matchedOption) {
-      return matchedOption.customerCode?.trim()
-        ? `ERP: ${matchedOption.customerCode} - ${matchedOption.name}`
-        : `CRM: ${matchedOption.name}`;
-    }
-    if (watchedErpCustomerCode) {
-      return `ERP: ${watchedErpCustomerCode}`;
-    }
-    return `ID: ${watchedCustomerId}`;
-  }, [watchedCustomerId, watchedErpCustomerCode, customer, customerOptions]);
+  const { handleDocumentSerialTypeSelect, handleOfferNoChange } = useDocumentSerialAutoFill({
+    rootKey: 'demand',
+    ruleType: PricingRuleType.Demand,
+    documentId: demandId,
+    readOnly,
+    availableDocumentSerialTypes,
+    watchedDocumentSerialTypeId,
+    watchedRepresentativeId,
+    userId: user?.id,
+    branchCode: branch?.code ?? branch?.id,
+  });
+
+  const customerDisplayValue = useMemo(
+    () =>
+      resolveCustomerFieldDisplayValue({
+        customerId: watchedCustomerId,
+        erpCustomerCode: watchedErpCustomerCode,
+        customer,
+        customerOptions,
+      }),
+    [watchedCustomerId, watchedErpCustomerCode, customer, customerOptions]
+  );
 
   useEffect(() => {
     setCustomerSearchQuery(customerDisplayValue);
@@ -232,19 +240,10 @@ export function DemandHeaderForm({
     watchedRepresentativeId,
   ]);
 
-  const allCustomerOptions = useMemo(() => {
-    return customerOptions.map((c) => ({
-      value: `customer-${c.id}`,
-      label: c.customerCode?.trim()
-        ? `ERP: ${c.customerCode} - ${c.name}`
-        : `CRM: ${c.name}`,
-      type: (c.customerCode?.trim() ? 'erp' : 'crm') as 'erp' | 'crm',
-      id: c.id,
-      code: c.customerCode ?? undefined,
-      customerTypeId: c.customerTypeId,
-      name: c.name,
-    }));
-  }, [customerOptions]);
+  const allCustomerOptions = useMemo(
+    () => customerOptions.map((customerOption) => mapCustomerToComboboxOption(customerOption)),
+    [customerOptions]
+  );
 
   const filteredCustomerOptions = useMemo(() => {
     let options = allCustomerOptions;
@@ -263,7 +262,7 @@ export function DemandHeaderForm({
       .slice(0, 50);
   }, [allCustomerOptions, customerSearchQuery, customerTypeId, watchedCustomerId, watchedErpCustomerCode]);
 
-  const handleComboboxSelect = (option: (typeof allCustomerOptions)[0]): void => {
+  const handleComboboxSelect = (option: CustomerComboboxOption): void => {
     form.setValue('demand.potentialCustomerId', option.id);
     form.setValue('demand.erpCustomerCode', option.code ?? null);
     setCustomerComboboxOpen(false);
@@ -825,10 +824,38 @@ export function DemandHeaderForm({
                                 .filter((d) => d.serialPrefix?.trim() !== '')
                                 .map((d) => ({ value: d.id.toString(), label: d.serialPrefix || String(d.id) }))}
                               value={field.value?.toString() || ''}
-                              onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                              onSelect={(value) => {
+                                handleDocumentSerialTypeSelect(value ? Number(value) : null);
+                              }}
                               placeholder={t('select')}
                               className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                               disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
+                            />
+                          </FormControl>
+                        </div>
+                        <FormMessage className="mt-1" />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                {showDocumentSerialType && (
+                  <FormField
+                    control={form.control}
+                    name="demand.offerNo"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0 relative group">
+                        <FormLabel className={styles.label}>{t('demand:header.offerNo')}</FormLabel>
+                        <div className="relative">
+                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><FileText className="h-4 w-4" /></div>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              value={field.value ?? ''}
+                              onChange={(event) => handleOfferNoChange(event.target.value)}
+                              placeholder={t('demand:header.offerNoPlaceholder')}
+                              className={cn(styles.inputBase, 'pl-10 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500')}
+                              disabled={readOnly}
+                              maxLength={50}
                             />
                           </FormControl>
                         </div>

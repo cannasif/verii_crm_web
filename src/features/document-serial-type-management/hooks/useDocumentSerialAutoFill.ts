@@ -1,0 +1,182 @@
+import { useCallback, useEffect, useRef } from 'react';
+import { useFormContext } from 'react-hook-form';
+import type { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import type { DocumentSerialTypeGetDto } from '../types/document-serial-type-types';
+import { formatSuggestedDocumentNumber } from '../utils/format-suggested-document-number';
+import {
+  getLastDocumentSerialTypeId,
+  saveLastDocumentSerialTypeId,
+} from '../utils/document-serial-preference-store';
+
+export type SalesDocumentSerialRootKey = 'demand' | 'quotation' | 'order';
+
+interface UseDocumentSerialAutoFillParams {
+  rootKey: SalesDocumentSerialRootKey;
+  ruleType: PricingRuleType;
+  documentId?: number | null;
+  readOnly?: boolean;
+  availableDocumentSerialTypes: DocumentSerialTypeGetDto[];
+  watchedDocumentSerialTypeId?: number | null;
+  watchedRepresentativeId?: number | null;
+  userId?: string | number | null;
+  branchCode?: string | number | null;
+}
+
+interface UseDocumentSerialAutoFillReturn {
+  handleDocumentSerialTypeSelect: (documentSerialTypeId: number | null) => void;
+  handleOfferNoChange: (value: string) => void;
+}
+
+export function useDocumentSerialAutoFill({
+  rootKey,
+  ruleType,
+  documentId,
+  readOnly = false,
+  availableDocumentSerialTypes,
+  watchedDocumentSerialTypeId,
+  watchedRepresentativeId,
+  userId,
+  branchCode,
+}: UseDocumentSerialAutoFillParams): UseDocumentSerialAutoFillReturn {
+  const form = useFormContext();
+  const offerNoEditedRef = useRef(false);
+  const lastAppliedSerialTypeIdRef = useRef<number | null>(null);
+  const isCreateMode = documentId == null || documentId <= 0;
+
+  const serialTypeField = `${rootKey}.documentSerialTypeId`;
+  const offerNoField = `${rootKey}.offerNo`;
+
+  const applySuggestedOfferNo = useCallback(
+    (serialType: DocumentSerialTypeGetDto): void => {
+      if (readOnly || !isCreateMode || offerNoEditedRef.current) return;
+
+      form.setValue(offerNoField, formatSuggestedDocumentNumber(serialType), {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    },
+    [form, isCreateMode, offerNoField, readOnly],
+  );
+
+  const handleDocumentSerialTypeSelect = useCallback(
+    (documentSerialTypeId: number | null): void => {
+      form.setValue(serialTypeField, documentSerialTypeId, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+
+      if (!documentSerialTypeId || documentSerialTypeId <= 0) {
+        lastAppliedSerialTypeIdRef.current = null;
+        return;
+      }
+
+      const serialType = availableDocumentSerialTypes.find((item) => item.id === documentSerialTypeId);
+      if (!serialType) return;
+
+      if (isCreateMode && !readOnly) {
+        saveLastDocumentSerialTypeId(
+          ruleType,
+          userId,
+          branchCode,
+          watchedRepresentativeId ?? null,
+          documentSerialTypeId,
+        );
+      }
+
+      if (lastAppliedSerialTypeIdRef.current !== documentSerialTypeId) {
+        lastAppliedSerialTypeIdRef.current = documentSerialTypeId;
+        if (!offerNoEditedRef.current) {
+          applySuggestedOfferNo(serialType);
+        }
+      }
+    },
+    [
+      applySuggestedOfferNo,
+      availableDocumentSerialTypes,
+      branchCode,
+      form,
+      isCreateMode,
+      readOnly,
+      ruleType,
+      serialTypeField,
+      userId,
+      watchedRepresentativeId,
+    ],
+  );
+
+  const handleOfferNoChange = useCallback((value: string): void => {
+    offerNoEditedRef.current = true;
+    form.setValue(offerNoField, value, { shouldDirty: true, shouldValidate: true });
+  }, [form, offerNoField]);
+
+  useEffect(() => {
+    if (readOnly || !isCreateMode) return;
+    if (!watchedRepresentativeId || watchedRepresentativeId <= 0) return;
+    if (availableDocumentSerialTypes.length === 0) return;
+
+    const currentSerialTypeId = form.getValues(serialTypeField) as number | null | undefined;
+    if (currentSerialTypeId != null && currentSerialTypeId > 0) {
+      const existingSerialType = availableDocumentSerialTypes.find((item) => item.id === currentSerialTypeId);
+      const currentOfferNo = String(form.getValues(offerNoField) ?? '').trim();
+      if (existingSerialType && !currentOfferNo && !offerNoEditedRef.current) {
+        lastAppliedSerialTypeIdRef.current = currentSerialTypeId;
+        applySuggestedOfferNo(existingSerialType);
+      }
+      return;
+    }
+
+    const preferredId = getLastDocumentSerialTypeId(
+      ruleType,
+      userId,
+      branchCode,
+      watchedRepresentativeId,
+    );
+    const preferredSerialType = preferredId
+      ? availableDocumentSerialTypes.find((item) => item.id === preferredId)
+      : undefined;
+    const fallbackSerialType =
+      preferredSerialType
+      ?? (availableDocumentSerialTypes.length === 1 ? availableDocumentSerialTypes[0] : undefined);
+
+    if (fallbackSerialType) {
+      handleDocumentSerialTypeSelect(fallbackSerialType.id);
+    }
+  }, [
+    applySuggestedOfferNo,
+    availableDocumentSerialTypes,
+    branchCode,
+    form,
+    handleDocumentSerialTypeSelect,
+    isCreateMode,
+    offerNoField,
+    readOnly,
+    ruleType,
+    serialTypeField,
+    userId,
+    watchedRepresentativeId,
+  ]);
+
+  useEffect(() => {
+    if (!watchedDocumentSerialTypeId || watchedDocumentSerialTypeId <= 0) return;
+    if (lastAppliedSerialTypeIdRef.current === watchedDocumentSerialTypeId) return;
+
+    const serialType = availableDocumentSerialTypes.find((item) => item.id === watchedDocumentSerialTypeId);
+    if (!serialType) return;
+
+    lastAppliedSerialTypeIdRef.current = watchedDocumentSerialTypeId;
+    if (isCreateMode && !readOnly && !offerNoEditedRef.current) {
+      applySuggestedOfferNo(serialType);
+    }
+  }, [
+    applySuggestedOfferNo,
+    availableDocumentSerialTypes,
+    isCreateMode,
+    readOnly,
+    watchedDocumentSerialTypeId,
+  ]);
+
+  return {
+    handleDocumentSerialTypeSelect,
+    handleOfferNoChange,
+  };
+}

@@ -44,9 +44,15 @@ import {
 } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
+import {
+  mapCustomerToComboboxOption,
+  resolveCustomerFieldDisplayValue,
+  type CustomerComboboxOption,
+} from '@/features/customer-management/utils/customer-integration';
 import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
+import { useDocumentSerialAutoFill } from '@/features/document-serial-type-management/hooks/useDocumentSerialAutoFill';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import type { KurDto } from '@/services/erp-types';
@@ -104,6 +110,7 @@ export function QuotationHeaderForm({
   const form = useFormContext<CreateQuotationSchema>();
   const { data: erpRates = [] } = useExchangeRate();
   const user = useAuthStore((state) => state.user);
+  const branch = useAuthStore((state) => state.branch);
   
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
   const [exchangeRateDialogOpen, setExchangeRateDialogOpen] = useState(false);
@@ -176,33 +183,33 @@ export function QuotationHeaderForm({
     PricingRuleType.Quotation
   );
 
+  const { handleDocumentSerialTypeSelect, handleOfferNoChange } = useDocumentSerialAutoFill({
+    rootKey: 'quotation',
+    ruleType: PricingRuleType.Quotation,
+    documentId: quotationId,
+    readOnly,
+    availableDocumentSerialTypes,
+    watchedDocumentSerialTypeId,
+    watchedRepresentativeId,
+    userId: user?.id,
+    branchCode: branch?.code ?? branch?.id,
+  });
+
   const selectedSerialType = useMemo(() => 
     availableDocumentSerialTypes.find(t => t.id === Number(watchedDocumentSerialTypeId)),
     [availableDocumentSerialTypes, watchedDocumentSerialTypeId]
   );
 
-  const customerDisplayValue = useMemo(() => {
-    if (!watchedCustomerId && !watchedErpCustomerCode) return '';
-    if (customer) {
-      return customer.customerCode?.trim()
-        ? `ERP: ${customer.customerCode} - ${customer.name}`
-        : `CRM: ${customer.name}`;
-    }
-    const matchedOption = customerOptions.find(
-      (option) =>
-        (watchedCustomerId != null && option.id === watchedCustomerId) ||
-        (!!watchedErpCustomerCode && option.customerCode === watchedErpCustomerCode)
-    );
-    if (matchedOption) {
-      return matchedOption.customerCode?.trim()
-        ? `ERP: ${matchedOption.customerCode} - ${matchedOption.name}`
-        : `CRM: ${matchedOption.name}`;
-    }
-    if (watchedErpCustomerCode) {
-      return `ERP: ${watchedErpCustomerCode}`;
-    }
-    return `ID: ${watchedCustomerId}`;
-  }, [watchedCustomerId, watchedErpCustomerCode, customer, customerOptions]);
+  const customerDisplayValue = useMemo(
+    () =>
+      resolveCustomerFieldDisplayValue({
+        customerId: watchedCustomerId,
+        erpCustomerCode: watchedErpCustomerCode,
+        customer,
+        customerOptions,
+      }),
+    [watchedCustomerId, watchedErpCustomerCode, customer, customerOptions]
+  );
 
   useEffect(() => {
     setCustomerSearchQuery(customerDisplayValue);
@@ -244,21 +251,10 @@ export function QuotationHeaderForm({
     watchedRepresentativeId,
   ]);
 
-  const allCustomerOptions = useMemo(() => {
-    return customerOptions.map((c) => ({
-      value: `customer-${c.id}`,
-      label: c.customerCode?.trim()
-        ? `ERP: ${c.customerCode} - ${c.name}`
-        : `CRM: ${c.name}`,
-      type: (c.customerCode?.trim() ? 'erp' : 'crm') as 'erp' | 'crm',
-      id: c.id,
-      code: c.customerCode ?? undefined,
-      customerTypeId: c.customerTypeId,
-      name: c.name,
-      phone: c.phone,
-      email: c.email
-    }));
-  }, [customerOptions]);
+  const allCustomerOptions = useMemo(
+    () => customerOptions.map((customerOption) => mapCustomerToComboboxOption(customerOption)),
+    [customerOptions]
+  );
 
   const filteredCustomerOptions = useMemo(() => {
     let options = allCustomerOptions;
@@ -275,7 +271,7 @@ export function QuotationHeaderForm({
     ).slice(0, 50);
   }, [allCustomerOptions, customerSearchQuery, selectedSerialType, watchedCustomerId, watchedErpCustomerCode]);
 
-  const handleComboboxSelect = (option: (typeof allCustomerOptions)[0]) => {
+  const handleComboboxSelect = (option: CustomerComboboxOption): void => {
     form.setValue('quotation.potentialCustomerId', option.id);
     form.setValue('quotation.erpCustomerCode', option.code ?? null);
     setCustomerComboboxOpen(false);
@@ -838,10 +834,38 @@ export function QuotationHeaderForm({
                                 .filter((d) => d.serialPrefix?.trim() !== '')
                                 .map((d) => ({ value: d.id.toString(), label: d.serialPrefix || String(d.id) }))}
                               value={field.value?.toString() || ''}
-                              onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                              onSelect={(value) => {
+                                handleDocumentSerialTypeSelect(value ? Number(value) : null);
+                              }}
                               placeholder={t('select')}
                               className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                               disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
+                            />
+                          </FormControl>
+                        </div>
+                        <FormMessage className="mt-1" />
+                      </FormItem>
+                    )}
+                  />
+                )}
+                {showDocumentSerialType && (
+                  <FormField
+                    control={form.control}
+                    name="quotation.offerNo"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0 relative group">
+                        <FormLabel className={styles.label}>{t('quotation:header.offerNo')}</FormLabel>
+                        <div className="relative">
+                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><FileText className="h-4 w-4" /></div>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              value={field.value ?? ''}
+                              onChange={(event) => handleOfferNoChange(event.target.value)}
+                              placeholder={t('quotation:header.offerNoPlaceholder')}
+                              className={cn(styles.inputBase, 'pl-10 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500')}
+                              disabled={readOnly}
+                              maxLength={50}
                             />
                           </FormControl>
                         </div>
