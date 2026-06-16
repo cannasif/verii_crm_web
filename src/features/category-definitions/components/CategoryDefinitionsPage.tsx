@@ -64,6 +64,7 @@ import type { CatalogCategoryCreateDto, CatalogCategoryUpdateDto, CatalogStockHi
 import { CreateCatalogDialog } from './CreateCatalogDialog';
 import { CreateCategoryDialog } from './CreateCategoryDialog';
 import { CategoryRuleDialog } from './CategoryRuleDialog';
+import { getLocalizedStockName } from '@/features/stock/utils/localized-stock-name';
 
 function getCatalogTypeTranslationKey(catalogType: number): string {
   switch (catalogType) {
@@ -92,7 +93,7 @@ function getCurrentPath(stack: CatalogCategoryNodeDto[], selectedLeaf: CatalogCa
 }
 
 export function CategoryDefinitionsPage(): ReactElement {
-  const { t } = useTranslation(['category-definitions', 'common']);
+  const { t, i18n } = useTranslation(['category-definitions', 'common']);
   const { setPageTitle } = useUIStore();
   const [activeTab, setActiveTab] = useState<'summary' | 'stocks' | 'favorites' | 'rules' | 'tips'>('summary');
   const [selectedCatalogId, setSelectedCatalogId] = useState<number | null>(null);
@@ -1053,7 +1054,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                         <div key={stock.stockId} className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-[#1E1627] shadow-sm hover:border-pink-500/30 transition-all">
                           <div className="flex items-start justify-between gap-4">
                             <div>
-                              <div className="font-bold text-base text-slate-800 dark:text-white">{stock.stockName}</div>
+                              <div className="font-bold text-base text-slate-800 dark:text-white">{getLocalizedStockName(stock, i18n.language)}</div>
                               <div className="mt-1 font-mono text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400">#{stock.erpStockCode}</div>
                             </div>
                             <div className="flex flex-col items-end gap-2">
@@ -1135,7 +1136,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                         <div key={stock.stockId} className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-[#1E1627] shadow-sm hover:border-pink-500/30 transition-all">
                           <div className="flex items-start justify-between gap-4">
                             <div>
-                              <div className="font-bold text-base text-slate-800 dark:text-white">{stock.stockName}</div>
+                              <div className="font-bold text-base text-slate-800 dark:text-white">{getLocalizedStockName(stock, i18n.language)}</div>
                               <div className="mt-1 font-mono text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400">#{stock.erpStockCode}</div>
                             </div>
                             <Button

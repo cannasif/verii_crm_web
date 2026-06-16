@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, Box, Image as ImageIcon, Layers, Info, PackageOpen, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useStockDetail } from '../hooks/useStockDetail';
+import { getLocalizedStockName } from '../utils/localized-stock-name';
 import { StockBasicInfo } from './StockBasicInfo';
 import { StockWarehouseBalances } from './StockWarehouseBalances';
 import { clearPerfMarks, perfMark, perfMeasureOnNextPaint } from '@/lib/perf-metrics';
@@ -31,7 +32,7 @@ const StockRelationList = lazy(() =>
 );
 
 export function StockDetailPage(): ReactElement {
-  const { t } = useTranslation(['stock', 'common']);
+  const { t, i18n } = useTranslation(['stock', 'common']);
   const { canCreate, canUpdate } = useCrudPermissions('stock.stocks.view');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -126,7 +127,7 @@ export function StockDetailPage(): ReactElement {
             
             <div className="space-y-1">
                 <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-white flex items-center gap-3">
-                    {stock.stockName}
+                    {getLocalizedStockName(stock, i18n.language)}
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800">
                         <ShieldCheck className="w-3 h-3 mr-1" />
                         {t('common.active', { ns: 'common', defaultValue: 'Aktif' })}

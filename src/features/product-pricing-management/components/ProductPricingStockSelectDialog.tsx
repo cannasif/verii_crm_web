@@ -11,6 +11,7 @@ import { Search, Package, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useStockList } from '@/features/stock/hooks/useStockList';
 import type { StockGetDto } from '@/features/stock/types';
+import { getLocalizedStockName, getLocalizedStockSearchTerms } from '@/features/stock/utils/localized-stock-name';
 
 export interface ProductPricingStockSelectionResult {
   code: string;
@@ -31,7 +32,7 @@ export function ProductPricingStockSelectDialog({
   onSelect,
   excludeProductCodes,
 }: ProductPricingStockSelectDialogProps): ReactElement {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: stocksData, isLoading } = useStockList({
@@ -55,9 +56,10 @@ export function ProductPricingStockSelectDialog({
   const filteredStocks = useMemo((): StockGetDto[] => {
     if (!searchQuery.trim()) return availableStocks;
     const q = searchQuery.toLowerCase().trim();
-    return availableStocks.filter(
-      (s) =>
-        s.stockName?.toLowerCase().includes(q) ||
+    return availableStocks.filter((s) => {
+      const searchTerms = getLocalizedStockSearchTerms(s, i18n.language);
+      return (
+        searchTerms.some((term) => term.toLowerCase().includes(q)) ||
         s.erpStockCode?.toLowerCase().includes(q) ||
         s.grupKodu?.toLowerCase().includes(q) ||
         s.grupAdi?.toLowerCase().includes(q) ||
@@ -66,13 +68,14 @@ export function ProductPricingStockSelectDialog({
         s.kod2?.toLowerCase().includes(q) ||
         s.kod2Adi?.toLowerCase().includes(q) ||
         s.ureticiKodu?.toLowerCase().includes(q)
-    );
-  }, [availableStocks, searchQuery]);
+      );
+    });
+  }, [availableStocks, searchQuery, i18n.language]);
 
   const handleSelect = (stock: StockGetDto): void => {
     onSelect({
       code: stock.erpStockCode,
-      name: stock.stockName ?? '',
+      name: getLocalizedStockName(stock, i18n.language),
       groupCode: stock.grupKodu,
     });
     onOpenChange(false);
@@ -147,7 +150,7 @@ export function ProductPricingStockSelectDialog({
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-semibold text-sm text-slate-900 dark:text-white truncate">
-                      {stock.stockName ?? t('productPricingManagement.unnamedStock')}
+                      {getLocalizedStockName(stock, i18n.language) || t('productPricingManagement.unnamedStock')}
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-xs font-mono text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-white/5 px-1.5 py-0.5 rounded">

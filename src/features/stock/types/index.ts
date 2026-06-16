@@ -2,6 +2,7 @@ export interface StockGetDto {
   id: number;
   erpStockCode: string;
   stockName: string;
+  englishStockName?: string | null;
   unit?: string;
   balance?: number | null;
   balanceText?: string | null;
@@ -120,6 +121,7 @@ export interface StockRelationUpdateDto {
 export interface StockCreateDto {
   erpStockCode: string;
   stockName: string;
+  englishStockName?: string | null;
   unit?: string;
   ureticiKodu?: string;
   grupKodu?: string;
@@ -140,6 +142,7 @@ export interface StockCreateDto {
 export interface StockUpdateDto {
   erpStockCode: string;
   stockName: string;
+  englishStockName?: string | null;
   unit?: string;
   ureticiKodu?: string;
   grupKodu?: string;

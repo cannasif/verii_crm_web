@@ -20,6 +20,7 @@ import { useToggleStockFavorite } from '../hooks/useToggleStockFavorite';
 import { useCreateErpStock } from '../hooks/useCreateErpStock';
 import { stockApi } from '../api/stock-api';
 import { STOCK_QUERY_KEYS } from '../utils/query-keys';
+import { getLocalizedStockName } from '../utils/localized-stock-name';
 import type { StockGetDto, StockGetWithMainImageDto } from '../types';
 import { StockGridCard } from './StockGridCard';
 import { StockWarehouseBalanceBadge } from './StockWarehouseBalanceBadge';
@@ -89,7 +90,7 @@ function resolveLabel(
 }
 
 export function StockListPage(): ReactElement {
-  const { t } = useTranslation(['stock', 'common']);
+  const { t, i18n } = useTranslation(['stock', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
@@ -318,10 +319,10 @@ export function StockListPage(): ReactElement {
       currentPageRows.map((stock) => ({
         Id: `#${stock.id}`,
         ErpStockCode: stock.erpStockCode ?? '-',
-        StockName: stock.stockName ?? '-',
+        StockName: getLocalizedStockName(stock, i18n.language) || '-',
         unit: stock.unit ?? '-',
       })),
-    [currentPageRows]
+    [currentPageRows, i18n.language]
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
@@ -363,7 +364,7 @@ export function StockListPage(): ReactElement {
       rows: list.map((stock: StockGetDto) => ({
         Id: `#${stock.id}`,
         ErpStockCode: stock.erpStockCode ?? '-',
-        StockName: stock.stockName ?? '-',
+        StockName: getLocalizedStockName(stock, i18n.language) || '-',
         unit: stock.unit ?? '-',
       })),
     };
@@ -376,6 +377,7 @@ export function StockListPage(): ReactElement {
     hasCodeFilterSelection,
     appliedSpecialCodeSelections,
     appliedFilters,
+    i18n.language,
   ]);
 
   useEffect(() => {
@@ -426,7 +428,7 @@ export function StockListPage(): ReactElement {
       );
     }
     if (key === 'StockName') {
-      const text = stock.stockName || '-';
+      const text = getLocalizedStockName(stock, i18n.language) || '-';
       return (
         <span
           data-no-drag-scroll="true"

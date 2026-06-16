@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner'; 
 import type { StockGetDto } from '../types';
+import { getLocalizedStockName } from '../utils/localized-stock-name';
 import { cn } from '@/lib/utils';
 
 interface StockBasicInfoProps {
@@ -61,7 +62,7 @@ export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
 
             <InfoItem 
                 label={t('stock.detail.stockName')} 
-                value={stock.stockName} 
+                value={getLocalizedStockName(stock, i18n.language)} 
                 icon={Tag}
                 featured
                 className="md:col-span-2"

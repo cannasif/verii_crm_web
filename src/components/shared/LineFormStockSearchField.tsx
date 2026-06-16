@@ -25,6 +25,7 @@ import {
   type RelatedStockSelectionConfirmItem,
 } from '@/components/shared/RelatedStocksSelectionDialog';
 import type { StockGetDto } from '@/features/stock/types';
+import { getLocalizedStockName } from '@/features/stock/utils/localized-stock-name';
 import { cn } from '@/lib/utils';
 
 const INLINE_STOCK_SEARCH_DEBOUNCE_MS = 400;
@@ -44,7 +45,7 @@ export function LineFormStockSearchField({
   placeholder,
   inputClassName,
 }: LineFormStockSearchFieldProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const [draftQuery, setDraftQuery] = useState(productCode || '');
   const [stockPopoverOpen, setStockPopoverOpen] = useState(false);
   const [relatedDialogOpen, setRelatedDialogOpen] = useState(false);
@@ -97,7 +98,7 @@ export function LineFormStockSearchField({
       await onSelectResult({
         id: stock.id,
         code: stock.erpStockCode,
-        name: stock.stockName,
+        name: getLocalizedStockName(stock, i18n.language),
         unit: stock.unit,
         groupCode: stock.grupKodu,
       });
@@ -106,7 +107,7 @@ export function LineFormStockSearchField({
       pickBusyRef.current = false;
       setPickBusy(false);
     }
-  }, [onSelectResult]);
+  }, [onSelectResult, i18n.language]);
 
   const handlePickStock = useCallback(
     async (stock: StockGetDto): Promise<void> => {
@@ -140,7 +141,7 @@ export function LineFormStockSearchField({
       await onSelectResult({
         id: pendingRelatedStock.id,
         code: pendingRelatedStock.erpStockCode,
-        name: pendingRelatedStock.stockName,
+        name: getLocalizedStockName(pendingRelatedStock, i18n.language),
         unit: pendingRelatedStock.unit,
         groupCode: pendingRelatedStock.grupKodu,
         relatedStockIds,
@@ -262,7 +263,7 @@ export function LineFormStockSearchField({
                             {stock.erpStockCode}
                           </span>
                           <span className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
-                            {stock.stockName}
+                            {getLocalizedStockName(stock, i18n.language)}
                           </span>
                         </div>
                       </CommandItem>

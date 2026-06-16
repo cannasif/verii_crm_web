@@ -56,6 +56,7 @@ import { stockApi } from '@/features/stock/api/stock-api';
 import { StockWarehouseBalanceBadge } from '@/features/stock/components/StockWarehouseBalanceBadge';
 import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto } from '@/features/stock/types';
 import { getImageUrl } from '@/features/stock/utils/image-url';
+import { getLocalizedStockName, getLocalizedStockSearchTerms } from '@/features/stock/utils/localized-stock-name';
 import {
   fetchPricingRuleCampaignStockData,
   type PricingRuleCampaignLineDisplay,
@@ -101,6 +102,7 @@ function mapStockGetToCatalogItem(stock: StockGetDto): CatalogStockItemDto {
     stockId: stock.id,
     erpStockCode: stock.erpStockCode ?? '',
     stockName: stock.stockName ?? '',
+    englishStockName: stock.englishStockName ?? null,
     unit: stock.unit,
     grupKodu: stock.grupKodu,
     grupAdi: stock.grupAdi,
@@ -367,7 +369,7 @@ export function CatalogStockSelectDialog({
   pricingRuleCustomerId,
   pricingRuleErpCustomerCode,
 }: CatalogStockSelectDialogProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
   const [selectedCatalog, setSelectedCatalog] = useState<ProductCatalogDto | null>(null);
   const [navigationPath, setNavigationPath] = useState<CatalogCategoryNodeDto[]>([]);
   const [selectedLeafCategory, setSelectedLeafCategory] = useState<CatalogCategoryNodeDto | null>(null);
@@ -587,9 +589,13 @@ export function CatalogStockSelectDialog({
       return campaignCatalogItems;
     }
     return campaignCatalogItems.filter((s) =>
-      matchesSearchTerm(debouncedStockSearch, [s.erpStockCode, s.stockName, s.grupKodu]),
+      matchesSearchTerm(debouncedStockSearch, [
+        s.erpStockCode,
+        ...getLocalizedStockSearchTerms(s, i18n.language),
+        s.grupKodu,
+      ]),
     );
-  }, [campaignCatalogItems, debouncedStockSearch]);
+  }, [campaignCatalogItems, debouncedStockSearch, i18n.language]);
   const campaignDisplayItems = useMemo((): CatalogStockItemDto[] => {
     return campaignSearchFilteredItems.slice(0, loadedStockCount);
   }, [campaignSearchFilteredItems, loadedStockCount]);
@@ -1014,7 +1020,7 @@ export function CatalogStockSelectDialog({
   const toSelectionResult = (stock: CatalogStockItemDto): ProductSelectionResult => ({
     id: stock.stockId,
     code: stock.erpStockCode,
-    name: stock.stockName,
+    name: getLocalizedStockName(stock, i18n.language),
     unit: stock.unit ?? undefined,
     groupCode: stock.grupKodu ?? undefined,
   });
@@ -1349,7 +1355,7 @@ export function CatalogStockSelectDialog({
                     <td className="border-r border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
                       <div className="min-w-0 text-left">
                         <span className="line-clamp-2 text-sm font-medium leading-relaxed tracking-tight text-slate-900 dark:text-slate-100">
-                          {stock.stockName}
+                          {getLocalizedStockName(stock, i18n.language)}
                         </span>
                         {stockBrowseMode === 'campaign' ? (
                           <CatalogCampaignPricingRow
@@ -1473,7 +1479,7 @@ export function CatalogStockSelectDialog({
                       <>
                         <img
                           src={imageUrl}
-                          alt={stock.stockName}
+                          alt={getLocalizedStockName(stock, i18n.language)}
                           loading="lazy"
                           className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                         />
@@ -1563,7 +1569,7 @@ export function CatalogStockSelectDialog({
                     </div>
 
                     <h3 className="line-clamp-2 min-h-[2.2em] text-[12.5px] font-medium leading-snug tracking-tight text-slate-800 dark:text-slate-100">
-                      {stock.stockName}
+                      {getLocalizedStockName(stock, i18n.language)}
                     </h3>
 
                     {stockBrowseMode === 'campaign' ? (

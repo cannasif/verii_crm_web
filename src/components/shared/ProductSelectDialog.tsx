@@ -17,6 +17,7 @@ import { StockWarehouseBalanceBadge } from '@/features/stock/components/StockWar
 import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } from './RelatedStocksSelectionDialog';
 import { cn } from '@/lib/utils';
 import type { StockGetDto, StockGetWithMainImageDto } from '@/features/stock/types';
+import { getLocalizedStockName } from '@/features/stock/utils/localized-stock-name';
 import { useDropdownInfiniteSearch } from '@/hooks/useDropdownInfiniteSearch';
 import { dropdownApi } from '@/components/shared/dropdown/dropdown-api';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -116,7 +117,8 @@ function ProductSelectCatalogStockCard({
   alreadyInDraft = false,
   alreadyOnDocumentLine = false,
 }: ProductSelectStockItemProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  const displayStockName = getLocalizedStockName(stock, i18n.language);
   const watermark = (stock.erpStockCode ?? '').slice(0, 2).toUpperCase() || '·';
   const relCount = stock.parentRelations?.length ?? 0;
   const imageUrl = resolveProductSelectStockImageUrl(stock);
@@ -151,7 +153,7 @@ function ProductSelectCatalogStockCard({
           <>
             <img
               src={imageUrl}
-              alt={stock.stockName}
+              alt={displayStockName}
               loading="lazy"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             />
@@ -241,7 +243,7 @@ function ProductSelectCatalogStockCard({
         </div>
 
         <h3 className="line-clamp-2 min-h-[2.2em] text-[12.5px] font-medium leading-snug tracking-tight text-slate-800 dark:text-slate-100">
-          {stock.stockName}
+          {displayStockName}
         </h3>
 
         <div className="mt-auto flex w-fit max-w-full pt-1">
@@ -284,7 +286,7 @@ function ProductSelectCatalogStockList({
   documentLinesList,
   onStockClick,
 }: ProductSelectCatalogStockListProps): ReactElement {
-  const { t } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none">
@@ -320,6 +322,7 @@ function ProductSelectCatalogStockList({
               const inOpeningDraft = stockMatchesDraftSnapshot(stock, draftSnapshotList);
               const onDocumentLine = stockMatchesDraftSnapshot(stock, documentLinesList);
               const relCount = stock.parentRelations?.length ?? 0;
+              const displayStockName = getLocalizedStockName(stock, i18n.language);
 
               return (
                 <tr
@@ -377,7 +380,7 @@ function ProductSelectCatalogStockList({
                   <td className="border-r border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
                     <div className="min-w-0 text-left">
                       <span className="line-clamp-2 text-sm font-medium leading-relaxed tracking-tight text-slate-900 dark:text-slate-100">
-                        {stock.stockName}
+                        {displayStockName}
                       </span>
                     </div>
                   </td>
@@ -602,7 +605,7 @@ export function ProductSelectDialog({
     const result: ProductSelectionResult = {
       id: stock.id,
       code: stock.erpStockCode,
-      name: stock.stockName,
+      name: getLocalizedStockName(stock, i18n.language),
       unit: stock.unit,
       groupCode: stock.grupKodu,
     };
@@ -636,7 +639,7 @@ export function ProductSelectDialog({
       const result: ProductSelectionResult = {
         id: selectedStock.id,
         code: selectedStock.erpStockCode,
-        name: selectedStock.stockName,
+        name: getLocalizedStockName(selectedStock, i18n.language),
         unit: selectedStock.unit,
         groupCode: selectedStock.grupKodu,
         relatedStockIds,

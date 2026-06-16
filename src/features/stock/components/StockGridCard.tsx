@@ -1,9 +1,11 @@
 import { type ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Eye, Heart, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { StockGetWithMainImageDto } from '../types';
 import { getImageUrl } from '../utils/image-url';
+import { getLocalizedStockName } from '../utils/localized-stock-name';
 import { StockWarehouseBalanceBadge } from './StockWarehouseBalanceBadge';
 
 export type StockGridCardProps = {
@@ -25,6 +27,8 @@ export function StockGridCard({
   favoriteLabelOff,
   detailLabel,
 }: StockGridCardProps): ReactElement {
+  const { i18n } = useTranslation();
+  const displayStockName = getLocalizedStockName(stock, i18n.language);
   const relative = stock.mainImage?.filePath?.trim() ?? '';
   const imageUrl = relative ? getImageUrl(relative) : null;
   const watermark = (stock.erpStockCode ?? '').slice(0, 2).toUpperCase() || '·';
@@ -79,7 +83,7 @@ export function StockGridCard({
           <>
             <img
               src={imageUrl}
-              alt={stock.stockName ?? ''}
+              alt={displayStockName}
               loading="lazy"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             />
@@ -143,7 +147,7 @@ export function StockGridCard({
             onNavigateDetail(stock.id);
           }}
         >
-          {stock.stockName}
+          {displayStockName}
         </h3>
 
         <div className="flex flex-wrap items-center gap-1.5 pt-0.5">

@@ -32,6 +32,7 @@ import { Check, ChevronsUpDown, PackagePlus, Box, FileText, Scale, AlertCircle, 
 import { useStockRelationCreate } from '../hooks/useStockRelationCreate';
 import { useStockList } from '../hooks/useStockList';
 import { stockRelationSchema, type StockRelationFormSchema } from '../types/schemas';
+import { getLocalizedStockName } from '../utils/localized-stock-name';
 import { cn } from '@/lib/utils';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
@@ -40,7 +41,7 @@ interface StockRelationFormProps {
 }
 
 export function StockRelationForm({ stockId }: StockRelationFormProps): ReactElement {
-  const { t } = useTranslation(['stock', 'common']);
+  const { t, i18n } = useTranslation(['stock', 'common']);
   const createRelation = useStockRelationCreate();
   const [openCombobox, setOpenCombobox] = useState(false);
   
@@ -115,7 +116,10 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                       )}
                     >
                       {field.value
-                        ? stocks.find((stock) => stock.id === field.value)?.stockName
+                        ? getLocalizedStockName(
+                            stocks.find((stock) => stock.id === field.value) ?? { stockName: '' },
+                            i18n.language,
+                          )
                         : t('relations.selectStock')}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -131,9 +135,11 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                         <CommandGroup className="max-h-[240px] overflow-y-auto p-1">
                         {stocks
                             .filter(stock => stock.id !== stockId)
-                            .map((stock) => (
+                            .map((stock) => {
+                              const displayStockName = getLocalizedStockName(stock, i18n.language);
+                              return (
                             <CommandItem
-                                value={stock.stockName}
+                                value={displayStockName}
                                 key={stock.id}
                                 onSelect={() => {
                                     form.setValue("relatedStockId", stock.id);
@@ -142,7 +148,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                                 className="flex items-center justify-between py-2.5 px-3 rounded-lg cursor-pointer aria-selected:bg-pink-50 dark:aria-selected:bg-pink-900/20 aria-selected:text-pink-900 dark:aria-selected:text-pink-100 mb-1"
                             >
                                 <div className="flex flex-col gap-0.5">
-                                    <span className="font-medium text-sm">{stock.stockName}</span>
+                                    <span className="font-medium text-sm">{displayStockName}</span>
                                     <span className="text-[10px] text-muted-foreground font-mono bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded w-fit">
                                         {stock.erpStockCode}
                                     </span>
@@ -154,7 +160,8 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                                     )}
                                 />
                             </CommandItem>
-                        ))}
+                              );
+                            })}
                         </CommandGroup>
                     </CommandList>
                   </Command>
