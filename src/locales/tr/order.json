@@ -277,6 +277,7 @@
     "error": "Revizyon kaydı oluşturulamadı."
   },
   "update": {
+    "saveButton": "Güncellemeyi Kaydet",
     "success": "Sipariş güncellendi.",
     "successMessage": "Sipariş bilgileri başarıyla güncellendi.",
     "error": "Sipariş güncellenemedi.",

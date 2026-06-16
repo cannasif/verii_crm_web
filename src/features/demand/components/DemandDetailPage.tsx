@@ -1,5 +1,6 @@
-import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -18,19 +19,23 @@ import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
 import { DocumentDetailStatusAlerts } from '@/components/shared/DocumentDetailStatusAlerts';
+import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import {
   DOCUMENT_DETAIL_BUTTON_APPROVAL,
   DOCUMENT_DETAIL_BUTTON_BASE,
   DOCUMENT_DETAIL_BUTTON_DANGER,
+  DOCUMENT_DETAIL_BUTTON_SAVE,
 } from '@/lib/document-detail-button-styles';
+import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Layers, Loader2, FileCheck, FileText, XCircle } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText, XCircle, Save } from 'lucide-react';
 import { DemandApprovalFlowTab } from './DemandApprovalFlowTab';
 import { DemandReportTab } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
 import type { CreateDemandLineDto, DemandExchangeRateCreateDto, DemandLineFormState, DemandExchangeRateFormState, CreateDemandDto, PricingRuleLineGetDto, UserDiscountLimitDto, DemandLineGetDto } from '../types/demand-types';
 import { demandApi } from '../api/demand-api';
+import { DEMAND_QUERY_KEYS, queryKeys } from '../utils/query-keys';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
@@ -40,6 +45,10 @@ import { DemandLineTable } from './DemandLineTable';
 import { DemandSummaryCard } from './DemandSummaryCard';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
+import {
+  fetchLocalizedStockMapByErpCodes,
+  localizeLoadedLineProductName,
+} from '@/features/stock/utils/localized-stock-name';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { resolveWatchedDocumentCurrency } from '@/lib/line-unit-price-currency';
@@ -73,12 +82,18 @@ function addDaysToDateOnly(dateValue: string, days: number): string {
 }
 
 export function DemandDetailPage(): ReactElement {
-  const { t } = useTranslation(['demand', 'common']);
+  const { t, i18n } = useTranslation(['demand', 'common']);
   const { canUpdate } = useCrudPermissions('sales.demands.update');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const demandId = id ? parseInt(id, 10) : 0;
+
+  const handleBackToList = useCallback(async (): Promise<void> => {
+    await queryClient.refetchQueries({ queryKey: [DEMAND_QUERY_KEYS.DEMANDS] });
+    navigate('/demands');
+  }, [queryClient, navigate]);
 
   const { data: demand, isLoading } = useDemand(demandId);
   const { data: canEditWhileWaiting = false, isLoading: isLoadingCanEdit } = useCanEditDemand(demandId);
@@ -115,6 +130,8 @@ export function DemandDetailPage(): ReactElement {
 
   const form = useForm<CreateDemandSchema>({
     resolver: zodResolver(createDemandSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       demand: {
         offerType: DEFAULT_OFFER_TYPE,
@@ -126,6 +143,7 @@ export function DemandDetailPage(): ReactElement {
       },
     },
   });
+  const { isValid: isFormValid } = useFormState({ control: form.control });
 
   // Başlık Ayarı
   useEffect(() => {
@@ -201,7 +219,16 @@ export function DemandDetailPage(): ReactElement {
   }, [demandId, notesData]);
 
   useEffect(() => {
-    if (linesData && linesData.length > 0 && !linesInitializedRef.current) {
+    if (!linesData || linesData.length === 0 || linesInitializedRef.current) return;
+
+    let cancelled = false;
+
+    const loadLines = async (): Promise<void> => {
+      const stockByCode = await fetchLocalizedStockMapByErpCodes(
+        linesData.map((line) => line.productCode ?? '')
+      );
+      if (cancelled) return;
+
       const formattedLines: DemandLineFormState[] = linesData.map((line, index) => {
         const amounts = calculateLineTotalsAmounts(
           line.unitPrice,
@@ -215,7 +242,7 @@ export function DemandDetailPage(): ReactElement {
           id: line.id && line.id > 0 ? `line-${line.id}-${index}` : `line-temp-${index}`,
           isEditing: false,
           productCode: line.productCode || '',
-          productName: line.productName,
+          productName: localizeLoadedLineProductName(line, stockByCode, i18n.language),
           groupCode: line.groupCode || null,
           quantity: line.quantity,
           unitPrice: line.unitPrice,
@@ -245,8 +272,14 @@ export function DemandDetailPage(): ReactElement {
       });
       setLines(formattedLines);
       linesInitializedRef.current = true;
-    }
-  }, [linesData]);
+    };
+
+    void loadLines();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [linesData, i18n.language]);
 
   const { calculateLineTotals } = useDemandCalculations();
   const { data: erpRates = [] } = useExchangeRate();
@@ -283,6 +316,18 @@ export function DemandDetailPage(): ReactElement {
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedRepresentativeId = form.watch('demand.representativeId');
   const watchedOfferDate = form.watch('demand.offerDate');
+  const demandFormSlice = form.watch('demand');
+
+  const demandSchemaPayload = useMemo(
+    () => ({ demand: demandFormSlice }),
+    [demandFormSlice],
+  );
+
+  const saveManualHintLines = useMemo(
+    () =>
+      buildHeaderSaveRequiredHintLines(demandFormSlice, (key) => t(key, { ns: 'common' }), watchedCurrency),
+    [demandFormSlice, watchedCurrency, t],
+  );
 
   useEffect(() => {
     if (!watchedOfferDate || isReadOnly) return;
@@ -485,6 +530,11 @@ export function DemandDetailPage(): ReactElement {
       await Promise.all(newRates.map((rate) => demandApi.createDemandExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: [DEMAND_QUERY_KEYS.DEMANDS] }),
+        queryClient.refetchQueries({ queryKey: queryKeys.demand(demandId) }),
+      ]);
+
       toast.success(t('update.success'), {
         description: t('update.successMessage'),
       });
@@ -596,7 +646,7 @@ export function DemandDetailPage(): ReactElement {
         <p className="text-lg font-medium text-muted-foreground mb-4">
           {t('detail.notFound')}
         </p>
-        <Button variant="outline" onClick={() => navigate('/demands')}>
+        <Button variant="outline" onClick={() => void handleBackToList()}>
           {t('backToDemands')}
         </Button>
       </div>
@@ -617,7 +667,7 @@ export function DemandDetailPage(): ReactElement {
             ) : null}
           </>
         }
-        onBack={() => navigate('/demands')}
+        onBack={() => void handleBackToList()}
         backLabel={t('backToDemands')}
       />
 
@@ -781,6 +831,27 @@ export function DemandDetailPage(): ReactElement {
               </div>
 
               <div className="flex flex-wrap items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+                {!isReadOnly && (
+                  <FormSubmitTooltipWrap
+                    schema={createDemandSchema}
+                    value={demandSchemaPayload}
+                    isValid={isFormValid}
+                    isPending={isUpdating}
+                    manualHintLines={saveManualHintLines}
+                  >
+                    <Button
+                      type="submit"
+                      disabled={isUpdating || !isFormValid}
+                      className={`group sm:min-w-[140px] ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_SAVE}`}
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      {isUpdating
+                        ? t('saving')
+                        : t('update.saveButton', { defaultValue: 'Güncellemeyi Kaydet' })}
+                    </Button>
+                  </FormSubmitTooltipWrap>
+                )}
+
                 {demandStatus === 0 && !isReadOnly && (
                   <Button
                     type="button"

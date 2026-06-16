@@ -1,4 +1,5 @@
 import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
@@ -45,11 +46,18 @@ import {
   buildQuotationPreviewPdfBlob,
   type QuotationPreviewPdfLabels,
 } from '../utils/build-quotation-preview-pdf';
+import {
+  buildPreviewPdfDocumentFooterDetails,
+  buildPreviewPdfDocumentFooterLabels,
+  buildPreviewPdfLineDetailLabels,
+} from '../utils/build-preview-pdf-footer-details';
+import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
 import type { CreateQuotationLineDto, QuotationExchangeRateCreateDto, QuotationLineFormState, QuotationExchangeRateFormState, CreateQuotationDto, PricingRuleLineGetDto, UserDiscountLimitDto, QuotationNotesDto, QuotationLineGetDto } from '../types/quotation-types';
 import { quotationApi } from '../api/quotation-api';
+import { QUOTATION_QUERY_KEYS, queryKeys } from '../utils/query-keys';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import { createEmptyQuotationNotes } from './QuotationNotesDialog';
 import { quotationNotesGetDtoToDto, quotationNotesDtoToNotesList } from '../utils/quotation-payload-mapper';
@@ -58,6 +66,10 @@ import { QuotationLineTable } from './QuotationLineTable';
 import { QuotationSummaryCard } from './QuotationSummaryCard';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
+import {
+  fetchLocalizedStockMapByErpCodes,
+  localizeLoadedLineProductName,
+} from '@/features/stock/utils/localized-stock-name';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -107,9 +119,15 @@ export function QuotationDetailPage(): ReactElement {
   const { id: paramId } = useParams<{ id: string }>();
   const location = useLocation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const quotationIdFromPath = parseQuotationIdFromPath(location.pathname);
   const quotationId = quotationIdFromPath > 0 ? quotationIdFromPath : (paramId ? parseInt(paramId, 10) : 0) || 0;
+
+  const handleBackToList = useCallback(async (): Promise<void> => {
+    await queryClient.refetchQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] });
+    navigate('/quotations');
+  }, [queryClient, navigate]);
 
   const { data: quotation, isLoading } = useQuotation(quotationId);
   const { data: canEditWhileWaiting = false, isLoading: isLoadingCanEdit } = useCanEditQuotation(quotationId);
@@ -121,6 +139,7 @@ export function QuotationDetailPage(): ReactElement {
   const cancelByCustomerMutation = useCancelQuotationByCustomer();
   const createRevisionMutation = useCreateRevisionOfQuotation();
   const { data: customerOptions = [] } = useCustomerOptions();
+  const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
 
   const [lines, setLines] = useState<QuotationLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<QuotationExchangeRateFormState[]>([]);
@@ -263,53 +282,69 @@ export function QuotationDetailPage(): ReactElement {
     if (!quotationId || quotationId < 1) return;
     if (!linesData || linesData.length === 0) return;
     if (linesInitializedRef.current) return;
-    const backendId = (line: { id?: number }): number =>
-      Number((line as { id?: number; Id?: number }).id ?? (line as { id?: number; Id?: number }).Id ?? 0);
-    const formattedLines: QuotationLineFormState[] = linesData.map((line, index) => {
-      const idNum = backendId(line);
-      const amounts = calculateLineTotalsAmounts(
-        line.unitPrice,
-        line.quantity,
-        line.discountRate1,
-        line.discountRate2,
-        line.discountRate3,
-        line.vatRate,
+
+    let cancelled = false;
+
+    const loadLines = async (): Promise<void> => {
+      const stockByCode = await fetchLocalizedStockMapByErpCodes(
+        linesData.map((line) => line.productCode ?? '')
       );
-      return {
-        id: idNum > 0 ? `line-${idNum}-${index}` : `line-temp-${index}`,
-        isEditing: false,
-        productCode: line.productCode || '',
-        productName: line.productName,
-        groupCode: line.groupCode || null,
-        quantity: line.quantity,
-        unitPrice: line.unitPrice,
-        discountRate1: line.discountRate1,
-        discountRate2: line.discountRate2,
-        discountRate3: line.discountRate3,
-        vatRate: line.vatRate,
-        description: line.description || null,
-        description1: line.description1 || null,
-        description2: line.description2 || null,
-        description3: line.description3 || null,
-        profilDefinitionId: line.profilDefinitionId ?? null,
-        demirDefinitionId: line.demirDefinitionId ?? null,
-        vidaDefinitionId: line.vidaDefinitionId ?? null,
-        vidaDefinitionName: line.vidaDefinitionName ?? null,
-        baskiDefinitionId: line.baskiDefinitionId ?? null,
-        baskiDefinitionName: line.baskiDefinitionName ?? null,
-        baskiAciklama: line.baskiAciklama ?? null,
-        pricingRuleHeaderId: line.pricingRuleHeaderId || null,
-        imagePath: line.imagePath || null,
-        relatedStockId: line.relatedStockId || null,
-        relatedProductKey: line.relatedProductKey || null,
-        isMainRelatedProduct: line.isMainRelatedProduct || false,
-        approvalStatus: line.approvalStatus,
-        ...amounts,
-      };
-    });
-    setLines(formattedLines);
-    linesInitializedRef.current = true;
-  }, [quotationId, linesData]);
+      if (cancelled) return;
+
+      const backendId = (line: { id?: number }): number =>
+        Number((line as { id?: number; Id?: number }).id ?? (line as { id?: number; Id?: number }).Id ?? 0);
+      const formattedLines: QuotationLineFormState[] = linesData.map((line, index) => {
+        const idNum = backendId(line);
+        const amounts = calculateLineTotalsAmounts(
+          line.unitPrice,
+          line.quantity,
+          line.discountRate1,
+          line.discountRate2,
+          line.discountRate3,
+          line.vatRate,
+        );
+        return {
+          id: idNum > 0 ? `line-${idNum}-${index}` : `line-temp-${index}`,
+          isEditing: false,
+          productCode: line.productCode || '',
+          productName: localizeLoadedLineProductName(line, stockByCode, i18n.language),
+          groupCode: line.groupCode || null,
+          quantity: line.quantity,
+          unitPrice: line.unitPrice,
+          discountRate1: line.discountRate1,
+          discountRate2: line.discountRate2,
+          discountRate3: line.discountRate3,
+          vatRate: line.vatRate,
+          description: line.description || null,
+          description1: line.description1 || null,
+          description2: line.description2 || null,
+          description3: line.description3 || null,
+          profilDefinitionId: line.profilDefinitionId ?? null,
+          demirDefinitionId: line.demirDefinitionId ?? null,
+          vidaDefinitionId: line.vidaDefinitionId ?? null,
+          vidaDefinitionName: line.vidaDefinitionName ?? null,
+          baskiDefinitionId: line.baskiDefinitionId ?? null,
+          baskiDefinitionName: line.baskiDefinitionName ?? null,
+          baskiAciklama: line.baskiAciklama ?? null,
+          pricingRuleHeaderId: line.pricingRuleHeaderId || null,
+          imagePath: line.imagePath || null,
+          relatedStockId: line.relatedStockId || null,
+          relatedProductKey: line.relatedProductKey || null,
+          isMainRelatedProduct: line.isMainRelatedProduct || false,
+          approvalStatus: line.approvalStatus,
+          ...amounts,
+        };
+      });
+      setLines(formattedLines);
+      linesInitializedRef.current = true;
+    };
+
+    void loadLines();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [quotationId, linesData, i18n.language]);
 
   const { calculateLineTotals } = useQuotationCalculations();
   const { data: erpRates = [] } = useExchangeRate();
@@ -422,6 +457,22 @@ export function QuotationDetailPage(): ReactElement {
       draftWatermark: t('pdfExportTemplate.draftWatermark'),
     };
 
+    const koliBaskiId = qc.koliBaskiDefinitionId ?? quotation?.koliBaskiDefinitionId ?? null;
+    const koliBaskiName =
+      quotation?.koliBaskiDefinitionName?.trim()
+      || (koliBaskiId != null && koliBaskiId > 0 ? koliBaskiMap[koliBaskiId] : null)
+      || null;
+
+    const footerDetails = buildPreviewPdfDocumentFooterDetails(
+      {
+        koliBaskiName,
+        description: qc.description ?? quotation?.description ?? null,
+        structuredNotes: quotationNotesDtoToNotesList(quotationNotes),
+      },
+      buildPreviewPdfDocumentFooterLabels(t),
+    );
+    const lineDetailLabels = buildPreviewPdfLineDetailLabels(t);
+
     return buildQuotationPreviewPdfBlob({
       lines,
       currencyCode,
@@ -434,6 +485,9 @@ export function QuotationDetailPage(): ReactElement {
       generalDiscountRate: qc.generalDiscountRate ?? quotation?.generalDiscountRate ?? null,
       generalDiscountAmount: qc.generalDiscountAmount ?? quotation?.generalDiscountAmount ?? null,
       labels,
+      footerDetails,
+      lineDetailLabels,
+      lineDetailMaps: { profilMap, demirMap, vidaMap, baskiMap },
       draft: options?.draft ?? false,
     });
   }, [
@@ -446,6 +500,12 @@ export function QuotationDetailPage(): ReactElement {
     lines,
     currencyCode,
     branch,
+    profilMap,
+    demirMap,
+    vidaMap,
+    baskiMap,
+    koliBaskiMap,
+    quotationNotes,
   ]);
 
   const reportBuiltInTemplates = useMemo(
@@ -776,6 +836,11 @@ export function QuotationDetailPage(): ReactElement {
       await Promise.all(newRates.map((rate) => quotationApi.createQuotationExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] }),
+        queryClient.refetchQueries({ queryKey: queryKeys.quotation(quotationId) }),
+      ]);
+
       toast.success(t('update.success'), {
         description: t('update.successMessage'),
       });
@@ -911,7 +976,7 @@ export function QuotationDetailPage(): ReactElement {
         <p className="text-lg font-medium text-muted-foreground mb-4">
           {t('detail.notFound')}
         </p>
-        <Button variant="outline" onClick={() => navigate('/quotations')}>
+        <Button variant="outline" onClick={() => void handleBackToList()}>
           {t('backToQuotations')}
         </Button>
       </div>
@@ -932,7 +997,7 @@ export function QuotationDetailPage(): ReactElement {
             ) : null}
           </>
         }
-        onBack={() => navigate('/quotations')}
+        onBack={() => void handleBackToList()}
         backLabel={t('backToQuotations')}
       />
 

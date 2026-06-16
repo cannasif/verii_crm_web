@@ -322,6 +322,7 @@
     "errorTitle": "Hata Oluştu"
   },
   "update": {
+    "saveButton": "Güncellemeyi Kaydet",
     "success": "Talep güncellendi.",
     "successMessage": "Talep başarıyla güncellendi.",
     "error": "Talep güncellenemedi.",

@@ -318,6 +318,7 @@
     "error": "Revision could not be created."
   },
   "update": {
+    "saveButton": "Save Changes",
     "success": "Order updated.",
     "successMessage": "Order saved successfully.",
     "error": "Order could not be updated.",

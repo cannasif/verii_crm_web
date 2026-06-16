@@ -322,6 +322,7 @@
     "errorTitle": "An error occurred"
   },
   "update": {
+    "saveButton": "Save Changes",
     "success": "Demand updated.",
     "successMessage": "Demand updated successfully.",
     "error": "Demand could not be updated.",

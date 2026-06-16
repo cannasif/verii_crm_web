@@ -1,5 +1,6 @@
-import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
-import { useForm, FormProvider } from 'react-hook-form';
+import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -20,20 +21,24 @@ import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
 import { DocumentDetailStatusAlerts } from '@/components/shared/DocumentDetailStatusAlerts';
+import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import {
   DOCUMENT_DETAIL_BUTTON_APPROVAL,
   DOCUMENT_DETAIL_BUTTON_BASE,
   DOCUMENT_DETAIL_BUTTON_DANGER,
   DOCUMENT_DETAIL_BUTTON_PREVIEW,
+  DOCUMENT_DETAIL_BUTTON_SAVE,
 } from '@/lib/document-detail-button-styles';
+import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Layers, Loader2, FileCheck, FileText, XCircle, Eye } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText, XCircle, Eye, Save } from 'lucide-react';
 import { OrderApprovalFlowTab } from './OrderApprovalFlowTab';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
 import type { CreateOrderLineDto, OrderExchangeRateCreateDto, OrderLineFormState, OrderExchangeRateFormState, CreateOrderDto, PricingRuleLineGetDto, UserDiscountLimitDto, OrderLineGetDto } from '../types/order-types';
 import { orderApi } from '../api/order-api';
+import { QUOTATION_QUERY_KEYS, queryKeys } from '../utils/query-keys';
 import { DEFAULT_OFFER_TYPE, normalizeOfferType } from '@/types/offer-type';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { createEmptyQuotationNotes } from '@/features/quotation/components/QuotationNotesDialog';
@@ -43,6 +48,10 @@ import { OrderLineTable } from './OrderLineTable';
 import { OrderSummaryCard } from './OrderSummaryCard';
 import { useOrderCalculations } from '../hooks/useOrderCalculations';
 import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
+import {
+  fetchLocalizedStockMapByErpCodes,
+  localizeLoadedLineProductName,
+} from '@/features/stock/utils/localized-stock-name';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { resolveWatchedDocumentCurrency } from '@/lib/line-unit-price-currency';
@@ -76,12 +85,18 @@ function addDaysToDateOnly(dateValue: string, days: number): string {
 }
 
 export function OrderDetailPage(): ReactElement {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { canUpdate } = useCrudPermissions('sales.orders.update');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const orderId = id ? parseInt(id, 10) : 0;
+
+  const handleBackToList = useCallback(async (): Promise<void> => {
+    await queryClient.refetchQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] });
+    navigate('/orders');
+  }, [queryClient, navigate]);
 
   const { data: order, isLoading } = useOrder(orderId);
   const { data: canEditWhileWaiting = false, isLoading: isLoadingCanEdit } = useCanEditOrder(orderId);
@@ -118,6 +133,8 @@ export function OrderDetailPage(): ReactElement {
 
   const form = useForm<CreateOrderSchema>({
     resolver: zodResolver(createOrderSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
     defaultValues: {
       order: {
         offerType: DEFAULT_OFFER_TYPE,
@@ -129,6 +146,7 @@ export function OrderDetailPage(): ReactElement {
       },
     },
   });
+  const { isValid: isFormValid } = useFormState({ control: form.control });
 
   // Başlık Ayarı
   useEffect(() => {
@@ -204,7 +222,16 @@ export function OrderDetailPage(): ReactElement {
   }, [orderId, notesData]);
 
   useEffect(() => {
-    if (linesData && linesData.length > 0 && !linesInitializedRef.current) {
+    if (!linesData || linesData.length === 0 || linesInitializedRef.current) return;
+
+    let cancelled = false;
+
+    const loadLines = async (): Promise<void> => {
+      const stockByCode = await fetchLocalizedStockMapByErpCodes(
+        linesData.map((line) => line.productCode ?? '')
+      );
+      if (cancelled) return;
+
       const formattedLines: OrderLineFormState[] = linesData.map((line, index) => {
         const amounts = calculateLineTotalsAmounts(
           line.unitPrice,
@@ -218,7 +245,7 @@ export function OrderDetailPage(): ReactElement {
           id: line.id && line.id > 0 ? `line-${line.id}-${index}` : `line-temp-${index}`,
           isEditing: false,
           productCode: line.productCode || '',
-          productName: line.productName,
+          productName: localizeLoadedLineProductName(line, stockByCode, i18n.language),
           groupCode: line.groupCode || null,
           quantity: line.quantity,
           unitPrice: line.unitPrice,
@@ -248,8 +275,14 @@ export function OrderDetailPage(): ReactElement {
       });
       setLines(formattedLines);
       linesInitializedRef.current = true;
-    }
-  }, [linesData]);
+    };
+
+    void loadLines();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [linesData, i18n.language]);
 
   const { calculateLineTotals } = useOrderCalculations();
   const { data: erpRates = [] } = useExchangeRate();
@@ -288,6 +321,17 @@ export function OrderDetailPage(): ReactElement {
   const watchedOfferDate = form.watch('order.offerDate');
   const orderFormSlice = form.watch('order');
 
+  const orderSchemaPayload = useMemo(
+    () => ({ order: orderFormSlice }),
+    [orderFormSlice],
+  );
+
+  const saveManualHintLines = useMemo(
+    () =>
+      buildHeaderSaveRequiredHintLines(orderFormSlice, (key) => t(key, { ns: 'common' }), watchedCurrency),
+    [orderFormSlice, watchedCurrency, t],
+  );
+
   const currencyCode = useMemo(() => {
     const found = currencyOptions.find((opt) => opt.dovizTipi === watchedCurrency);
     return found?.code || 'TRY';
@@ -308,6 +352,7 @@ export function OrderDetailPage(): ReactElement {
     selectedCustomer,
     order,
     orderId,
+    quotationNotes,
     detailShareFileName: pdfShareFileName,
     emptyLinesToastTitle: t('order.update.error'),
   });
@@ -513,6 +558,11 @@ export function OrderDetailPage(): ReactElement {
       await Promise.all(newRates.map((rate) => orderApi.createOrderExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] }),
+        queryClient.refetchQueries({ queryKey: queryKeys.order(orderId) }),
+      ]);
+
       toast.success(t('order.update.success'), {
         description: t('order.update.successMessage'),
       });
@@ -626,7 +676,7 @@ export function OrderDetailPage(): ReactElement {
         <p className="text-lg font-medium text-muted-foreground mb-4">
           {t('order.detail.notFound')}
         </p>
-        <Button variant="outline" onClick={() => navigate('/orders')}>
+        <Button variant="outline" onClick={() => void handleBackToList()}>
           {t('order.backToOrders')}
         </Button>
       </div>
@@ -647,7 +697,7 @@ export function OrderDetailPage(): ReactElement {
             ) : null}
           </>
         }
-        onBack={() => navigate('/orders')}
+        onBack={() => void handleBackToList()}
         backLabel={t('order.backToOrders')}
       />
 
@@ -813,6 +863,27 @@ export function OrderDetailPage(): ReactElement {
               </div>
 
               <div className="flex flex-wrap items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+                {!isReadOnly && (
+                  <FormSubmitTooltipWrap
+                    schema={createOrderSchema}
+                    value={orderSchemaPayload}
+                    isValid={isFormValid}
+                    isPending={isUpdating}
+                    manualHintLines={saveManualHintLines}
+                  >
+                    <Button
+                      type="submit"
+                      disabled={isUpdating || !isFormValid}
+                      className={`group sm:min-w-[140px] ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_SAVE}`}
+                    >
+                      <Save className="mr-2 h-4 w-4" />
+                      {isUpdating
+                        ? t('order.saving')
+                        : t('order.update.saveButton', { defaultValue: 'Güncellemeyi Kaydet' })}
+                    </Button>
+                  </FormSubmitTooltipWrap>
+                )}
+
                 <Button
                   type="button"
                   onClick={pdfExport.openPdfExportPreview}
