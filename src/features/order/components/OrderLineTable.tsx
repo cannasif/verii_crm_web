@@ -949,7 +949,7 @@ export function OrderLineTable({
               <table className="w-auto caption-bottom text-sm min-w-[1380px] whitespace-nowrap">
                 <thead className="[&_tr]:border-b">
                   <tr className={cn("hover:bg-transparent border-b", styles.tableHeadRow)}>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>{t('order.lines.stock')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap sticky left-0 z-20 bg-zinc-50 dark:bg-zinc-900 shadow-[1px_0_0_0_theme(colors.zinc.200)] dark:shadow-[1px_0_0_0_theme(colors.zinc.800)]", styles.tableHead, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>{t('order.lines.stock')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('order.lines.unitPrice')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('order.lines.quantity')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('order.lines.discount1')}</th>
@@ -979,12 +979,12 @@ export function OrderLineTable({
                       <tr
                         key={line.id}
                         className={cn(
-                          "border-b transition-colors",
+                          "border-b transition-colors group",
                           styles.tableRow,
                           hasApprovalWarning && "bg-amber-50/60 dark:bg-amber-950/20 border-l-4 border-l-amber-500"
                         )}
                       >
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>
+                        <td className={cn("p-2 align-middle whitespace-nowrap sticky left-0 z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/40 shadow-[1px_0_0_0_theme(colors.zinc.200)] dark:shadow-[1px_0_0_0_theme(colors.zinc.800)]", styles.tableCell, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>
                           <div className="flex gap-3 min-w-0 w-full overflow-hidden">
                             {hasLineImage ? (
                               <img
