@@ -352,6 +352,10 @@ export function OrderLineForm({
   }, [currency]);
 
   useEffect(() => {
+    if (!line.productCode?.trim() && formData.productCode?.trim()) {
+      return;
+    }
+
     setFormData(line);
     setQuantityInputValue(formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit));
     unitPriceInput.resetInputCurrencyToDocument();

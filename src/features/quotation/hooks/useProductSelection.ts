@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { quotationApi } from '../api/quotation-api';
 import { stockApi } from '@/features/stock/api/stock-api';
+import { getLocalizedStockName, resolveDocumentLineProductName } from '@/features/stock/utils/localized-stock-name';
 import { useQuotationCalculations } from './useQuotationCalculations';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
@@ -38,7 +39,7 @@ export function useProductSelection({
   const { calculateLineTotals } = useQuotationCalculations();
   const { currencyOptions } = useCurrencyOptions();
   const { data: erpRates = [] } = useExchangeRate();
-  const { t } = useTranslation(['quotation', 'common']);
+  const { t, i18n } = useTranslation(['quotation', 'common']);
 
   const createEmptyLine = useCallback(
     (product: ProductSelectionResult): QuotationLineFormState => {
@@ -105,10 +106,16 @@ export function useProductSelection({
 
   const handleProductSelectWithRelatedStocks = useCallback(
     async (product: ProductSelectionResult, relatedStockIds: number[]): Promise<QuotationLineFormState[]> => {
+      const resolvedMainProductName = await resolveDocumentLineProductName(product, i18n.language);
+      const productWithResolvedName: ProductSelectionResult = {
+        ...product,
+        name: resolvedMainProductName,
+      };
+
       const requests: Array<{ productCode: string; groupCode: string }> = [
         {
-          productCode: product.code,
-          groupCode: product.groupCode || '',
+          productCode: productWithResolvedName.code,
+          groupCode: productWithResolvedName.groupCode || '',
         },
       ];
 
@@ -130,7 +137,7 @@ export function useProductSelection({
         const prices = await quotationApi.getPriceOfProduct(requests);
 
         const lines: QuotationLineFormState[] = [];
-        const mainStockId = product.id || null;
+        const mainStockId = productWithResolvedName.id || null;
         const relatedProductKey = createClientId();
 
         for (let i = 0; i < requests.length; i++) {
@@ -138,8 +145,8 @@ export function useProductSelection({
           const productCode = request.productCode;
           const isMainProduct = i === 0;
 
-          let productName = isMainProduct ? product.name : '';
-          const vatRate = product.vatRate || 20;
+          let productName = isMainProduct ? resolvedMainProductName : '';
+          const vatRate = productWithResolvedName.vatRate || 20;
           const relatedStockId: number | null = mainStockId;
 
           let relatedStockIdFromArray: number | undefined;
@@ -149,7 +156,7 @@ export function useProductSelection({
             try {
               const relatedStock = relatedStockIdFromArray != null ? await stockApi.getById(relatedStockIdFromArray) : null;
               if (relatedStock) {
-                productName = relatedStock.stockName;
+                productName = getLocalizedStockName(relatedStock, i18n.language);
               }
             } catch {
               void 0;
@@ -159,7 +166,7 @@ export function useProductSelection({
           const lineQty = isMainProduct
             ? 1
             : relatedStockIdFromArray != null
-              ? getRelatedQuantityPerMainUnit(product, relatedStockIdFromArray)
+              ? getRelatedQuantityPerMainUnit(productWithResolvedName, relatedStockIdFromArray)
               : 1;
 
           const priceData = prices.find((p) => p.productCode === productCode);
@@ -170,7 +177,7 @@ export function useProductSelection({
               productId: null,
               productCode,
               productName,
-              unit: isMainProduct ? (product.unit ?? null) : null,
+              unit: isMainProduct ? (productWithResolvedName.unit ?? null) : null,
               groupCode: request.groupCode || null,
               quantity: lineQty,
               unitPrice: 0,
@@ -205,7 +212,7 @@ export function useProductSelection({
             productId: null,
             productCode,
             productName,
-            unit: isMainProduct ? (product.unit ?? null) : null,
+            unit: isMainProduct ? (productWithResolvedName.unit ?? null) : null,
             groupCode: priceData.groupCode || request.groupCode || null,
             quantity: lineQty,
             unitPrice: converted.unitPrice,
@@ -238,28 +245,33 @@ export function useProductSelection({
         if (error instanceof Error && error.message === 'ZERO_RATE') {
           throw error;
         }
-        const baseLine = createEmptyLine(product);
+        const baseLine = createEmptyLine(productWithResolvedName);
         return [calculateLineTotals(baseLine)];
       }
     },
-    [convertPriceData, createEmptyLine, calculateLineTotals]
+    [convertPriceData, createEmptyLine, calculateLineTotals, i18n.language]
   );
 
   const handleProductSelect = useCallback(
     async (product: ProductSelectionResult): Promise<QuotationLineFormState> => {
-      const baseLine = createEmptyLine(product);
-      const hasRelatedStocks = product.relatedStockIds && product.relatedStockIds.length > 0;
+      const resolvedProductName = await resolveDocumentLineProductName(product, i18n.language);
+      const productWithResolvedName: ProductSelectionResult = {
+        ...product,
+        name: resolvedProductName,
+      };
+      const baseLine = createEmptyLine(productWithResolvedName);
+      const hasRelatedStocks = productWithResolvedName.relatedStockIds && productWithResolvedName.relatedStockIds.length > 0;
 
-      if (hasRelatedStocks && product.relatedStockIds) {
-        const allLines = await handleProductSelectWithRelatedStocks(product, product.relatedStockIds);
+      if (hasRelatedStocks && productWithResolvedName.relatedStockIds) {
+        const allLines = await handleProductSelectWithRelatedStocks(productWithResolvedName, productWithResolvedName.relatedStockIds);
         return allLines[0] || baseLine;
       }
 
       try {
         const prices = await quotationApi.getPriceOfProduct([
           {
-            productCode: product.code,
-            groupCode: product.groupCode || '',
+            productCode: productWithResolvedName.code,
+            groupCode: productWithResolvedName.groupCode || '',
           },
         ]);
 
@@ -267,16 +279,16 @@ export function useProductSelection({
           return calculateLineTotals(baseLine);
         }
 
-        const selectedPrice = prices.find((p) => p.productCode === product.code) || prices[0];
+        const selectedPrice = prices.find((p) => p.productCode === productWithResolvedName.code) || prices[0];
         if (!selectedPrice) {
           return calculateLineTotals(baseLine);
         }
 
-        const converted = convertPriceData(selectedPrice, product.code, 1);
+        const converted = convertPriceData(selectedPrice, productWithResolvedName.code, 1);
 
         const updatedLine: QuotationLineFormState = {
           ...baseLine,
-          groupCode: selectedPrice.groupCode || product.groupCode || null,
+          groupCode: selectedPrice.groupCode || productWithResolvedName.groupCode || null,
           unitPrice: converted.unitPrice,
           discountRate1: converted.discountRate1,
           discountRate2: converted.discountRate2,
@@ -292,7 +304,7 @@ export function useProductSelection({
         return calculateLineTotals(baseLine);
       }
     },
-    [convertPriceData, createEmptyLine, calculateLineTotals, handleProductSelectWithRelatedStocks]
+    [convertPriceData, createEmptyLine, calculateLineTotals, handleProductSelectWithRelatedStocks, i18n.language]
   );
 
   return {
