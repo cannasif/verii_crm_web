@@ -4894,6 +4894,28 @@
       "2": "Abrir pedido en Netsis",
       "3": "Abrir factura de venta en Netsis",
       "4": "Abrir pedido y factura de venta en Netsis"
+    },
+    "ApprovalCompletionHintTriggerLabel": "Información de la acción tras la aprobación",
+    "DemandActionTooltips": {
+      "1": "Cuando se completen todos los pasos de aprobación, la solicitud permanecerá solo en estado aprobado.",
+      "2": "Cuando se completen todos los pasos de aprobación, el sistema creará un registro de solicitud en Netsis.",
+      "3": "Cuando se completen todos los pasos de aprobación, se creará un registro de oferta en CRM.",
+      "4": "Cuando se completen todos los pasos de aprobación, el sistema creará un registro de solicitud en Netsis.",
+      "5": "Cuando se completen todos los pasos de aprobación, se abrirá una solicitud en Netsis y se creará una oferta en CRM."
+    },
+    "QuotationActionTooltips": {
+      "1": "Cuando se completen todos los pasos de aprobación, la oferta permanecerá solo en estado aprobado.",
+      "2": "Cuando se completen todos los pasos de aprobación, el sistema creará un registro de oferta en Netsis.",
+      "3": "Cuando se completen todos los pasos de aprobación, se creará un registro de pedido en CRM.",
+      "4": "Cuando se completen todos los pasos de aprobación, el sistema creará un registro de pedido en Netsis.",
+      "5": "Cuando se completen todos los pasos de aprobación, se abrirá una oferta en Netsis y se creará un pedido en CRM.",
+      "6": "Cuando se completen todos los pasos de aprobación, se creará un pedido en CRM y un registro de pedido en Netsis."
+    },
+    "OrderActionTooltips": {
+      "1": "Cuando se completen todos los pasos de aprobación, el pedido permanecerá solo en estado aprobado.",
+      "2": "Cuando se completen todos los pasos de aprobación, el sistema creará un registro de pedido en Netsis.",
+      "3": "Cuando se completen todos los pasos de aprobación, el sistema creará una factura de venta en Netsis.",
+      "4": "Cuando se completen todos los pasos de aprobación, se crearán un pedido y una factura de venta en Netsis."
     }
   },
   "lineFormPreferences": {

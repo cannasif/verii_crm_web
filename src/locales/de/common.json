@@ -4851,6 +4851,28 @@
       "2": "Auftrag in Netsis öffnen",
       "3": "Verkaufsrechnung in Netsis öffnen",
       "4": "Auftrag und Verkaufsrechnung in Netsis öffnen"
+    },
+    "ApprovalCompletionHintTriggerLabel": "Information zur Aktion nach Genehmigung",
+    "DemandActionTooltips": {
+      "1": "Wenn alle Genehmigungsschritte abgeschlossen sind, bleibt die Anfrage nur im Status Genehmigt.",
+      "2": "Wenn alle Genehmigungsschritte abgeschlossen sind, erstellt das System einen Anfragedatensatz in Netsis.",
+      "3": "Wenn alle Genehmigungsschritte abgeschlossen sind, wird ein Angebotsdatensatz im CRM erstellt.",
+      "4": "Wenn alle Genehmigungsschritte abgeschlossen sind, erstellt das System einen Anfragedatensatz in Netsis.",
+      "5": "Wenn alle Genehmigungsschritte abgeschlossen sind, wird eine Anfrage in Netsis geöffnet und ein Angebot im CRM erstellt."
+    },
+    "QuotationActionTooltips": {
+      "1": "Wenn alle Genehmigungsschritte abgeschlossen sind, bleibt das Angebot nur im Status Genehmigt.",
+      "2": "Wenn alle Genehmigungsschritte abgeschlossen sind, erstellt das System einen Angebotsdatensatz in Netsis.",
+      "3": "Wenn alle Genehmigungsschritte abgeschlossen sind, wird ein Auftragsdatensatz im CRM erstellt.",
+      "4": "Wenn alle Genehmigungsschritte abgeschlossen sind, erstellt das System einen Auftragsdatensatz in Netsis.",
+      "5": "Wenn alle Genehmigungsschritte abgeschlossen sind, wird ein Angebot in Netsis geöffnet und ein Auftrag im CRM erstellt.",
+      "6": "Wenn alle Genehmigungsschritte abgeschlossen sind, wird ein Auftrag im CRM erstellt und ein Auftragsdatensatz in Netsis geöffnet."
+    },
+    "OrderActionTooltips": {
+      "1": "Wenn alle Genehmigungsschritte abgeschlossen sind, bleibt der Auftrag nur im Status Genehmigt.",
+      "2": "Wenn alle Genehmigungsschritte abgeschlossen sind, erstellt das System einen Auftragsdatensatz in Netsis.",
+      "3": "Wenn alle Genehmigungsschritte abgeschlossen sind, erstellt das System eine Verkaufsrechnung in Netsis.",
+      "4": "Wenn alle Genehmigungsschritte abgeschlossen sind, werden ein Auftrag und eine Verkaufsrechnung in Netsis erstellt."
     }
   },
   "lineFormPreferences": {

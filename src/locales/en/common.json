@@ -4848,6 +4848,28 @@
       "2": "Open order in Netsis",
       "3": "Open sales invoice in Netsis",
       "4": "Open order and sales invoice in Netsis"
+    },
+    "ApprovalCompletionHintTriggerLabel": "Post-approval action information",
+    "DemandActionTooltips": {
+      "1": "When all approval steps are completed, the demand will remain in approved status only.",
+      "2": "When all approval steps are completed, the system will create a demand record in Netsis.",
+      "3": "When all approval steps are completed, a quotation record will be created in CRM.",
+      "4": "When all approval steps are completed, the system will create a demand record in Netsis.",
+      "5": "When all approval steps are completed, a demand will be opened in Netsis and a quotation will be created in CRM."
+    },
+    "QuotationActionTooltips": {
+      "1": "When all approval steps are completed, the quotation will remain in approved status only.",
+      "2": "When all approval steps are completed, the system will create a quotation record in Netsis.",
+      "3": "When all approval steps are completed, an order record will be created in CRM.",
+      "4": "When all approval steps are completed, the system will create an order record in Netsis.",
+      "5": "When all approval steps are completed, a quotation will be opened in Netsis and an order will be created in CRM.",
+      "6": "When all approval steps are completed, an order will be created in CRM and an order record will be opened in Netsis."
+    },
+    "OrderActionTooltips": {
+      "1": "When all approval steps are completed, the order will remain in approved status only.",
+      "2": "When all approval steps are completed, the system will create an order record in Netsis.",
+      "3": "When all approval steps are completed, the system will create a sales invoice in Netsis.",
+      "4": "When all approval steps are completed, an order and sales invoice will be created in Netsis."
     }
   },
   "lineFormPreferences": {

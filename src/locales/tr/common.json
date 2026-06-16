@@ -4776,6 +4776,28 @@
       "3": "Netsis'te satış faturası aç",
       "4": "Netsis'te sipariş ve satış faturası aç"
     },
+    "ApprovalCompletionHintTriggerLabel": "Onay sonrası işlem bilgisi",
+    "DemandActionTooltips": {
+      "1": "Tüm onay adımları tamamlandığında talep yalnızca onaylandı statüsünde kalır.",
+      "2": "Tüm onay adımları tamamlandığında sistem Netsis'te talep kaydı açar.",
+      "3": "Tüm onay adımları tamamlandığında CRM'de teklif kaydı oluşturulur.",
+      "4": "Tüm onay adımları tamamlandığında sistem Netsis'te talep kaydı açar.",
+      "5": "Tüm onay adımları tamamlandığında Netsis'te talep açılır ve CRM'de teklif oluşturulur."
+    },
+    "QuotationActionTooltips": {
+      "1": "Tüm onay adımları tamamlandığında teklif yalnızca onaylandı statüsünde kalır.",
+      "2": "Tüm onay adımları tamamlandığında sistem Netsis'te teklif kaydı açar.",
+      "3": "Tüm onay adımları tamamlandığında CRM'de sipariş kaydı oluşturulur.",
+      "4": "Tüm onay adımları tamamlandığında sistem Netsis'te sipariş kaydı açar.",
+      "5": "Tüm onay adımları tamamlandığında Netsis'te teklif açılır ve CRM'de sipariş oluşturulur.",
+      "6": "Tüm onay adımları tamamlandığında CRM'de sipariş oluşturulur ve Netsis'te sipariş kaydı açar."
+    },
+    "OrderActionTooltips": {
+      "1": "Tüm onay adımları tamamlandığında sipariş yalnızca onaylandı statüsünde kalır.",
+      "2": "Tüm onay adımları tamamlandığında sistem Netsis'te sipariş kaydı açar.",
+      "3": "Tüm onay adımları tamamlandığında sistem Netsis'te satış faturası açar.",
+      "4": "Tüm onay adımları tamamlandığında Netsis'te sipariş ve satış faturası açılır."
+    },
     "ErpConnection": {
       "Title": "Netsis Rest bağlantı testi",
       "Description": "Netsis REST bağlantısını, login/token alma ve yenileme akışını bu ekrandan kontrol edin.",

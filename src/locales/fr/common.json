@@ -4849,6 +4849,28 @@
       "2": "Ouvrir la commande dans Netsis",
       "3": "Ouvrir la facture de vente dans Netsis",
       "4": "Ouvrir la commande et la facture de vente dans Netsis"
+    },
+    "ApprovalCompletionHintTriggerLabel": "Informations sur l'action après approbation",
+    "DemandActionTooltips": {
+      "1": "Lorsque toutes les étapes d'approbation sont terminées, la demande restera uniquement au statut approuvé.",
+      "2": "Lorsque toutes les étapes d'approbation sont terminées, le système créera un enregistrement de demande dans Netsis.",
+      "3": "Lorsque toutes les étapes d'approbation sont terminées, un enregistrement de devis sera créé dans le CRM.",
+      "4": "Lorsque toutes les étapes d'approbation sont terminées, le système créera un enregistrement de demande dans Netsis.",
+      "5": "Lorsque toutes les étapes d'approbation sont terminées, une demande sera ouverte dans Netsis et un devis sera créé dans le CRM."
+    },
+    "QuotationActionTooltips": {
+      "1": "Lorsque toutes les étapes d'approbation sont terminées, le devis restera uniquement au statut approuvé.",
+      "2": "Lorsque toutes les étapes d'approbation sont terminées, le système créera un enregistrement de devis dans Netsis.",
+      "3": "Lorsque toutes les étapes d'approbation sont terminées, un enregistrement de commande sera créé dans le CRM.",
+      "4": "Lorsque toutes les étapes d'approbation sont terminées, le système créera un enregistrement de commande dans Netsis.",
+      "5": "Lorsque toutes les étapes d'approbation sont terminées, un devis sera ouvert dans Netsis et une commande sera créée dans le CRM.",
+      "6": "Lorsque toutes les étapes d'approbation sont terminées, une commande sera créée dans le CRM et un enregistrement de commande sera ouvert dans Netsis."
+    },
+    "OrderActionTooltips": {
+      "1": "Lorsque toutes les étapes d'approbation sont terminées, la commande restera uniquement au statut approuvé.",
+      "2": "Lorsque toutes les étapes d'approbation sont terminées, le système créera un enregistrement de commande dans Netsis.",
+      "3": "Lorsque toutes les étapes d'approbation sont terminées, le système créera une facture de vente dans Netsis.",
+      "4": "Lorsque toutes les étapes d'approbation sont terminées, une commande et une facture de vente seront créées dans Netsis."
     }
   },
   "lineFormPreferences": {

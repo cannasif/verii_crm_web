@@ -4923,6 +4923,28 @@
       "2": "Apri ordine in Netsis",
       "3": "Apri fattura di vendita in Netsis",
       "4": "Apri ordine e fattura di vendita in Netsis"
+    },
+    "ApprovalCompletionHintTriggerLabel": "Informazioni sull'azione dopo l'approvazione",
+    "DemandActionTooltips": {
+      "1": "Quando tutti i passaggi di approvazione saranno completati, la richiesta resterà solo nello stato approvato.",
+      "2": "Quando tutti i passaggi di approvazione saranno completati, il sistema creerà un record di richiesta in Netsis.",
+      "3": "Quando tutti i passaggi di approvazione saranno completati, verrà creato un record di preventivo nel CRM.",
+      "4": "Quando tutti i passaggi di approvazione saranno completati, il sistema creerà un record di richiesta in Netsis.",
+      "5": "Quando tutti i passaggi di approvazione saranno completati, verrà aperta una richiesta in Netsis e creato un preventivo nel CRM."
+    },
+    "QuotationActionTooltips": {
+      "1": "Quando tutti i passaggi di approvazione saranno completati, il preventivo resterà solo nello stato approvato.",
+      "2": "Quando tutti i passaggi di approvazione saranno completati, il sistema creerà un record di preventivo in Netsis.",
+      "3": "Quando tutti i passaggi di approvazione saranno completati, verrà creato un record ordine nel CRM.",
+      "4": "Quando tutti i passaggi di approvazione saranno completati, il sistema creerà un record ordine in Netsis.",
+      "5": "Quando tutti i passaggi di approvazione saranno completati, verrà aperto un preventivo in Netsis e creato un ordine nel CRM.",
+      "6": "Quando tutti i passaggi di approvazione saranno completati, verrà creato un ordine nel CRM e aperto un record ordine in Netsis."
+    },
+    "OrderActionTooltips": {
+      "1": "Quando tutti i passaggi di approvazione saranno completati, l'ordine resterà solo nello stato approvato.",
+      "2": "Quando tutti i passaggi di approvazione saranno completati, il sistema creerà un record ordine in Netsis.",
+      "3": "Quando tutti i passaggi di approvazione saranno completati, il sistema creerà una fattura di vendita in Netsis.",
+      "4": "Quando tutti i passaggi di approvazione saranno completati, verranno creati un ordine e una fattura di vendita in Netsis."
     }
   },
   "lineFormPreferences": {

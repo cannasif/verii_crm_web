@@ -24,6 +24,7 @@ import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPage
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
 import { DocumentDetailStatusAlerts } from '@/components/shared/DocumentDetailStatusAlerts';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
+import { SendForApprovalHintWrap } from '@/components/shared/SendForApprovalHintWrap';
 import {
   DOCUMENT_DETAIL_BUTTON_APPROVAL,
   DOCUMENT_DETAIL_BUTTON_BASE,
@@ -50,8 +51,10 @@ import {
   buildPreviewPdfDocumentFooterDetails,
   buildPreviewPdfDocumentFooterLabels,
   buildPreviewPdfLineDetailLabels,
+  resolvePreviewPdfShippingAddressText,
 } from '../utils/build-preview-pdf-footer-details';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
+import { useShippingAddresses } from '../hooks/useShippingAddresses';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
@@ -397,6 +400,10 @@ export function QuotationDetailPage(): ReactElement {
     Boolean(watchedCustomerId && watchedCustomerId > 0)
   );
   const quotationFormSlice = form.watch('quotation');
+  const previewCustomerId = quotationFormSlice.potentialCustomerId ?? quotation?.potentialCustomerId ?? undefined;
+  const { data: shippingAddresses = [] } = useShippingAddresses(
+    previewCustomerId != null && previewCustomerId > 0 ? previewCustomerId : undefined,
+  );
   const quotationSchemaPayload = useMemo(
     () => ({ quotation: quotationFormSlice }),
     [quotationFormSlice],
@@ -468,6 +475,11 @@ export function QuotationDetailPage(): ReactElement {
         koliBaskiName,
         description: qc.description ?? quotation?.description ?? null,
         structuredNotes: quotationNotesDtoToNotesList(quotationNotes),
+        shippingAddressText: resolvePreviewPdfShippingAddressText({
+          shippingAddressId: qc.shippingAddressId ?? quotation?.shippingAddressId ?? null,
+          shippingAddressText: quotation?.shippingAddressText ?? null,
+          shippingAddresses,
+        }),
       },
       buildPreviewPdfDocumentFooterLabels(t),
     );
@@ -506,6 +518,7 @@ export function QuotationDetailPage(): ReactElement {
     baskiMap,
     koliBaskiMap,
     quotationNotes,
+    shippingAddresses,
   ]);
 
   const reportBuiltInTemplates = useMemo(
@@ -1218,24 +1231,26 @@ export function QuotationDetailPage(): ReactElement {
                 )}
 
                 {quotationStatus === 0 && !isReadOnly && (
-                  <Button
-                    type="button"
-                    onClick={handleStartApprovalFlow}
-                    disabled={startApprovalFlow.isPending || !quotation}
-                    className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_APPROVAL}`}
-                  >
-                    {startApprovalFlow.isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        {t('approval.sending')}
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4 mr-2" />
-                        {t('approval.sendForApproval')}
-                      </>
-                    )}
-                  </Button>
+                  <SendForApprovalHintWrap documentType="quotation">
+                    <Button
+                      type="button"
+                      onClick={handleStartApprovalFlow}
+                      disabled={startApprovalFlow.isPending || !quotation}
+                      className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_APPROVAL}`}
+                    >
+                      {startApprovalFlow.isPending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {t('approval.sending')}
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 mr-2" />
+                          {t('approval.sendForApproval')}
+                        </>
+                      )}
+                    </Button>
+                  </SendForApprovalHintWrap>
                 )}
 
                 {canCancelByCustomer && (
