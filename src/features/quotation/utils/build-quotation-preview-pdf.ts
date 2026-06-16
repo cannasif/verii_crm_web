@@ -3,6 +3,16 @@ import { getLineUnitDiscountBreakdown } from '@/lib/line-discount-display';
 import { getImageUrl } from '@/lib/image-url';
 import { formatCurrency } from './format-currency';
 import {
+  buildPreviewPdfLineDetailRows,
+  computePreviewPdfTableRowHeight,
+  drawPreviewPdfProductCodeCellContent,
+  drawPreviewPdfProductNameCellContent,
+  drawPreviewPdfProductNameOnlyCellContent,
+  type PreviewPdfFooterDetailRow,
+  type PreviewPdfLineDetailLabels,
+  type PreviewPdfLineDetailMaps,
+} from './build-preview-pdf-footer-details';
+import {
   QUOTATION_EXPORT_PDF_FONT,
   registerQuotationExportPdfFont,
 } from './quotation-export-pdf-font';
@@ -25,6 +35,16 @@ export interface QuotationPreviewPdfLine {
   lineGrandTotal?: number;
   imagePath?: string | null;
   pendingImagePreviewUrl?: string | null;
+  description1?: string | null;
+  description2?: string | null;
+  description3?: string | null;
+  profilDefinitionId?: number | null;
+  demirDefinitionId?: number | null;
+  vidaDefinitionId?: number | null;
+  vidaDefinitionName?: string | null;
+  baskiDefinitionId?: number | null;
+  baskiDefinitionName?: string | null;
+  baskiAciklama?: string | null;
 }
 
 export interface QuotationPreviewPdfLabels {
@@ -66,6 +86,9 @@ export interface BuildQuotationPreviewPdfParams {
   generalDiscountRate?: number | null;
   generalDiscountAmount?: number | null;
   labels: QuotationPreviewPdfLabels;
+  footerDetails?: PreviewPdfFooterDetailRow[];
+  lineDetailLabels?: PreviewPdfLineDetailLabels;
+  lineDetailMaps?: PreviewPdfLineDetailMaps;
   draft?: boolean;
 }
 
@@ -77,7 +100,6 @@ const GRAD_TO: [number, number, number] = [255, 172, 36];
 const INK: [number, number, number] = [42, 27, 42];
 const MUTED: [number, number, number] = [120, 102, 116];
 const BORDER: [number, number, number] = [228, 214, 223];
-const ROW_ALT: [number, number, number] = [252, 247, 250];
 const PANEL_HEAD: [number, number, number] = [252, 235, 242];
 const HEAD_GUIDE: [number, number, number] = [150, 110, 138];
 
@@ -348,6 +370,89 @@ function drawHeader(
   return cardY + cardH + 8;
 }
 
+function drawFooterDetailsPanel(
+  doc: jsPDF,
+  bodyFont: string,
+  footerTop: number,
+  cardH: number,
+  rows: PreviewPdfFooterDetailRow[],
+): void {
+  const rightCardW = 88;
+  const gap = 6;
+  const leftCardW = CONTENT_W - rightCardW - gap;
+  const leftCardX = M;
+  const paddingX = 5;
+  const paddingTop = 5;
+  const maxTextWidth = leftCardW - paddingX * 2;
+  const rowGap = 1.2;
+
+  doc.setFillColor(255, 255, 255);
+  doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(leftCardX, footerTop, leftCardW, cardH, 2.5, 2.5, 'FD');
+
+  let rowY = footerTop + paddingTop;
+  rows.forEach((row) => {
+    if (row.isSectionHeader) {
+      doc.setFont(bodyFont, 'bold');
+      doc.setFontSize(7.5);
+      doc.setTextColor(NAVY[0], NAVY[1], NAVY[2]);
+      const headerLines = doc.splitTextToSize(row.label, maxTextWidth) as string[];
+      headerLines.forEach((line) => {
+        doc.text(line, leftCardX + paddingX, rowY);
+        rowY += 4.2;
+      });
+      rowY += rowGap;
+      return;
+    }
+
+    doc.setFont(bodyFont, 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
+    const labelLine = `${row.label}:`;
+    doc.text(labelLine, leftCardX + paddingX, rowY);
+
+    doc.setFont(bodyFont, 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(INK[0], INK[1], INK[2]);
+    const valueLines = doc.splitTextToSize(row.value, maxTextWidth) as string[];
+    valueLines.forEach((line, index) => {
+      doc.text(line, leftCardX + paddingX, rowY + 3.8 + index * 3.6);
+    });
+    rowY += 3.8 + valueLines.length * 3.6 + rowGap;
+  });
+}
+
+function estimateFooterDetailsPanelHeight(
+  doc: jsPDF,
+  bodyFont: string,
+  rows: PreviewPdfFooterDetailRow[],
+  leftCardW: number,
+): number {
+  const paddingX = 5;
+  const paddingTop = 5;
+  const paddingBottom = 5;
+  const maxTextWidth = leftCardW - paddingX * 2;
+  const rowGap = 1.2;
+  let height = paddingTop + paddingBottom;
+
+  doc.setFont(bodyFont, 'normal');
+  rows.forEach((row) => {
+    if (row.isSectionHeader) {
+      doc.setFontSize(7.5);
+      const headerLines = doc.splitTextToSize(row.label, maxTextWidth) as string[];
+      height += headerLines.length * 4.2 + rowGap;
+      return;
+    }
+
+    doc.setFontSize(8);
+    const valueLines = doc.splitTextToSize(row.value, maxTextWidth) as string[];
+    height += 3.8 + valueLines.length * 3.6 + rowGap;
+  });
+
+  return Math.max(height, 24);
+}
+
 function drawFooter(
   doc: jsPDF,
   bodyFont: string,
@@ -373,12 +478,32 @@ function drawFooter(
   const grandH = 12;
   const cardH = headerH + detailRows.length * rowH + 4 + grandH + 3;
 
+  const footerDetails = params.footerDetails ?? [];
+  const rightCardW = 88;
+  const gap = 6;
+  const leftCardW = CONTENT_W - rightCardW - gap;
+  const leftPanelHeight =
+    footerDetails.length > 0
+      ? estimateFooterDetailsPanelHeight(doc, bodyFont, footerDetails, leftCardW)
+      : 0;
+  const combinedFooterHeight = Math.max(cardH, leftPanelHeight);
+
   const pageBottom = doc.internal.pageSize.getHeight() - 16;
   let footerTop = startY + 8;
-  if (footerTop + cardH > pageBottom) {
+  if (footerTop + combinedFooterHeight > pageBottom) {
     doc.addPage();
     doc.setFont(bodyFont, 'normal');
     footerTop = 20;
+  }
+
+  if (footerDetails.length > 0) {
+    drawFooterDetailsPanel(
+      doc,
+      bodyFont,
+      footerTop,
+      Math.max(cardH, leftPanelHeight),
+      footerDetails,
+    );
   }
 
   doc.setFillColor(255, 255, 255);
@@ -489,6 +614,26 @@ export async function buildQuotationPreviewPdfBlob(
   const lineImageDataUrls = await Promise.all(params.lines.map((line) => resolveLineImageDataUrl(line)));
   const hasAnyLineImage = lineImageDataUrls.some(Boolean);
   const productCodeColumnIndex = hasAnyLineImage ? 1 : 0;
+  const productNameColumnIndex = hasAnyLineImage ? 2 : 1;
+  const hasLineDetailConfig = Boolean(params.lineDetailLabels && params.lineDetailMaps);
+  const lineDetailBlocks: PreviewPdfFooterDetailRow[][] = params.lines.map((line) => {
+    if (!hasLineDetailConfig || !params.lineDetailLabels || !params.lineDetailMaps) return [];
+    return buildPreviewPdfLineDetailRows(line, params.lineDetailLabels, params.lineDetailMaps);
+  });
+
+  const productCodeColWidth = hasAnyLineImage ? 28 : 32;
+  const productNameColWidth = hasAnyLineImage ? CONTENT_W - (16 + 28 + 18 + 26 + 28) : CONTENT_W - (32 + 18 + 28 + 30);
+  const tableRowHeights = params.lines.map((line, index) =>
+    computePreviewPdfTableRowHeight(
+      doc,
+      bodyFont,
+      line.productName?.trim() ?? '',
+      line.productCode?.trim() ?? '',
+      lineDetailBlocks[index] ?? [],
+      productNameColWidth,
+      productCodeColWidth,
+    ),
+  );
 
   const tableStartY = drawHeader(doc, bodyFont, params, offerDateStr, offerNoDisplay);
 
@@ -542,12 +687,13 @@ export async function buildQuotationPreviewPdfBlob(
       font: bodyFont,
       fontStyle: 'normal',
       fontSize: 8,
-      cellPadding: { top: 3.4, right: 3, bottom: 3.4, left: 3 },
+      cellPadding: { top: 2.5, right: 3, bottom: 2.5, left: 3 },
       lineColor: BORDER,
       lineWidth: 0.25,
       textColor: INK,
+      fillColor: 255,
       overflow: 'linebreak',
-      valign: 'middle',
+      valign: 'top',
       minCellHeight: hasAnyLineImage ? 16 : 0,
     },
     headStyles: {
@@ -563,32 +709,79 @@ export async function buildQuotationPreviewPdfBlob(
       cellPadding: { top: 3.5, right: 2, bottom: 3.5, left: 2 },
     },
     columnStyles,
-    alternateRowStyles: { fillColor: ROW_ALT },
     didParseCell: (data) => {
-      if (data.section === 'body' && data.column.index === productCodeColumnIndex) {
-        const raw = Array.isArray(data.cell.text) ? data.cell.text.join('') : String(data.cell.text);
-        if (raw.length > 22) {
-          data.cell.styles.fontSize = 6;
-        } else if (raw.length > 16) {
-          data.cell.styles.fontSize = 6.8;
-        }
+      if (data.section !== 'body') return;
+
+      const rowHeight = tableRowHeights[data.row.index] ?? 7.5;
+      data.cell.styles.valign = 'top';
+      data.cell.styles.minCellHeight = rowHeight;
+      data.cell.styles.fillColor = 255;
+      data.cell.styles.cellPadding = { top: 2.5, right: 3, bottom: 2.5, left: 3 };
+
+      if (
+        data.column.index === productCodeColumnIndex
+        || data.column.index === productNameColumnIndex
+      ) {
+        data.cell.text = [];
       }
     },
     didDrawCell: (data) => {
-      if (!hasAnyLineImage || data.section !== 'body' || data.column.index !== 0) return;
+      if (data.section !== 'body') return;
 
-      const imageDataUrl = lineImageDataUrls[data.row.index];
-      if (!imageDataUrl) return;
+      if (hasAnyLineImage && data.column.index === 0) {
+        const imageDataUrl = lineImageDataUrls[data.row.index];
+        if (!imageDataUrl) return;
 
-      const padding = 1.6;
-      const size = Math.min(12, data.cell.width - padding * 2, data.cell.height - padding * 2);
-      const x = data.cell.x + (data.cell.width - size) / 2;
-      const y = data.cell.y + (data.cell.height - size) / 2;
+        const padding = 1.6;
+        const size = Math.min(12, data.cell.width - padding * 2, data.cell.height - padding * 2);
+        const x = data.cell.x + (data.cell.width - size) / 2;
+        const y = data.cell.y + (data.cell.height - size) / 2;
 
-      doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);
-      doc.setLineWidth(0.2);
-      doc.roundedRect(x - 0.4, y - 0.4, size + 0.8, size + 0.8, 0.8, 0.8, 'S');
-      doc.addImage(imageDataUrl, getImageFormat(imageDataUrl), x, y, size, size, undefined, 'FAST');
+        doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);
+        doc.setLineWidth(0.2);
+        doc.roundedRect(x - 0.4, y - 0.4, size + 0.8, size + 0.8, 0.8, 0.8, 'S');
+        doc.addImage(imageDataUrl, getImageFormat(imageDataUrl), x, y, size, size, undefined, 'FAST');
+        return;
+      }
+
+      const line = params.lines[data.row.index];
+      const detailRows = lineDetailBlocks[data.row.index] ?? [];
+
+      if (data.column.index === productCodeColumnIndex) {
+        drawPreviewPdfProductCodeCellContent(
+          doc,
+          bodyFont,
+          data.cell.x,
+          data.cell.y,
+          data.cell.width,
+          line.productCode ?? '',
+        );
+        return;
+      }
+
+      if (data.column.index !== productNameColumnIndex) return;
+
+      if (detailRows.length > 0) {
+        drawPreviewPdfProductNameCellContent(
+          doc,
+          bodyFont,
+          data.cell.x,
+          data.cell.y,
+          data.cell.width,
+          line.productName ?? '',
+          detailRows,
+        );
+        return;
+      }
+
+      drawPreviewPdfProductNameOnlyCellContent(
+        doc,
+        bodyFont,
+        data.cell.x,
+        data.cell.y,
+        data.cell.width,
+        line.productName ?? '',
+      );
     },
   });
 

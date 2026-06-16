@@ -15,8 +15,16 @@ import { blobToFile, resolveCustomerPhone } from '@/features/quotation/utils/quo
 import { isIntegratedOrderShare } from '../config/order-share-config';
 import { buildOrderPreviewPdfBlob } from '../utils/build-order-preview-pdf';
 import { buildOrderPreviewPdfLabels } from '../utils/build-order-preview-pdf-labels';
+import {
+  buildPreviewPdfDocumentFooterDetails,
+  buildPreviewPdfDocumentFooterLabels,
+  buildPreviewPdfLineDetailLabels,
+} from '@/features/quotation/utils/build-preview-pdf-footer-details';
+import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 import type { CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderGetDto, OrderLineFormState } from '../types/order-types';
+import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
+import { quotationNotesDtoToNotesList } from '@/features/quotation/utils/quotation-payload-mapper';
 
 interface OrderPdfExportCustomer {
   name?: string | null;
@@ -33,6 +41,7 @@ interface UseOrderPdfExportPreviewParams {
   selectedCustomer?: OrderPdfExportCustomer | null;
   order?: OrderGetDto | null;
   orderId?: number;
+  quotationNotes?: QuotationNotesDto;
   detailShareFileName?: string;
   emptyLinesToastTitle?: string;
 }
@@ -63,11 +72,13 @@ export function useOrderPdfExportPreview({
   selectedCustomer,
   order,
   orderId = 0,
+  quotationNotes = {},
   detailShareFileName,
   emptyLinesToastTitle,
 }: UseOrderPdfExportPreviewParams): UseOrderPdfExportPreviewReturn {
   const { t, i18n } = useTranslation('order');
   const branch = useAuthStore((state) => state.branch);
+  const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
 
   const [pdfExportOpen, setPdfExportOpen] = useState(false);
   const [whatsappShareOpen, setWhatsappShareOpen] = useState(false);
@@ -111,6 +122,22 @@ export function useOrderPdfExportPreview({
           customerOptions,
         })) || t('pdfExportTemplate.notSpecified');
 
+      const koliBaskiId = oc.koliBaskiDefinitionId ?? order?.koliBaskiDefinitionId ?? null;
+      const koliBaskiName =
+        order?.koliBaskiDefinitionName?.trim()
+        || (koliBaskiId != null && koliBaskiId > 0 ? koliBaskiMap[koliBaskiId] : null)
+        || null;
+
+      const footerDetails = buildPreviewPdfDocumentFooterDetails(
+        {
+          koliBaskiName,
+          description: oc.description ?? order?.description ?? null,
+          structuredNotes: quotationNotesDtoToNotesList(quotationNotes),
+        },
+        buildPreviewPdfDocumentFooterLabels(t),
+      );
+      const lineDetailLabels = buildPreviewPdfLineDetailLabels(t);
+
       return buildOrderPreviewPdfBlob({
         lines,
         currencyCode,
@@ -123,6 +150,9 @@ export function useOrderPdfExportPreview({
         generalDiscountRate: oc.generalDiscountRate ?? order?.generalDiscountRate ?? null,
         generalDiscountAmount: oc.generalDiscountAmount ?? order?.generalDiscountAmount ?? null,
         labels: buildOrderPreviewPdfLabels(t),
+        footerDetails,
+        lineDetailLabels,
+        lineDetailMaps: { profilMap, demirMap, vidaMap, baskiMap },
         draft: options?.draft ?? false,
       });
     },
@@ -136,6 +166,12 @@ export function useOrderPdfExportPreview({
       lines,
       currencyCode,
       branch,
+      profilMap,
+      demirMap,
+      vidaMap,
+      baskiMap,
+      koliBaskiMap,
+      quotationNotes,
     ],
   );
 
