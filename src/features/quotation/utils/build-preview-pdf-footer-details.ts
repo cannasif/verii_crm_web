@@ -44,12 +44,20 @@ export interface PreviewPdfLineDetailMaps {
 export interface PreviewPdfDocumentFooterLabels {
   koliBaskiLabel: string;
   notesLabel: string;
+  shippingAddressLabel: string;
 }
 
 export interface PreviewPdfDocumentFooterInput {
   koliBaskiName?: string | null;
   description?: string | null;
   structuredNotes?: string[];
+  shippingAddressText?: string | null;
+}
+
+export interface PreviewPdfShippingAddressSource {
+  shippingAddressId?: number | null;
+  shippingAddressText?: string | null;
+  shippingAddresses?: Array<{ id: number; addressText: string }>;
 }
 
 function hasText(value: string | null | undefined): value is string {
@@ -112,7 +120,24 @@ export function buildPreviewPdfDocumentFooterLabels(t: TFunction): PreviewPdfDoc
   return {
     koliBaskiLabel: t('header.koliBaski'),
     notesLabel: t('header.notes'),
+    shippingAddressLabel: t('header.shippingAddress'),
   };
+}
+
+export function resolvePreviewPdfShippingAddressText(
+  source: PreviewPdfShippingAddressSource,
+): string | null {
+  const shippingAddressId = source.shippingAddressId;
+  if (shippingAddressId != null && shippingAddressId > 0 && source.shippingAddresses) {
+    const matched = source.shippingAddresses.find((address) => address.id === shippingAddressId);
+    if (hasText(matched?.addressText)) {
+      return matched.addressText.trim();
+    }
+  }
+  if (hasText(source.shippingAddressText)) {
+    return source.shippingAddressText.trim();
+  }
+  return null;
 }
 
 export function buildPreviewPdfLineDetailRows(
@@ -496,6 +521,7 @@ export function buildPreviewPdfDocumentFooterDetails(
     labels.notesLabel,
     buildCombinedNotesText(input.description, input.structuredNotes),
   );
+  pushDetailRow(rows, labels.shippingAddressLabel, input.shippingAddressText);
 
   return rows;
 }

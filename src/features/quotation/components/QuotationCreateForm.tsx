@@ -44,6 +44,14 @@ import {
   buildQuotationPreviewPdfBlob,
   type QuotationPreviewPdfLabels,
 } from '../utils/build-quotation-preview-pdf';
+import {
+  buildPreviewPdfDocumentFooterDetails,
+  buildPreviewPdfDocumentFooterLabels,
+  buildPreviewPdfLineDetailLabels,
+  resolvePreviewPdfShippingAddressText,
+} from '../utils/build-preview-pdf-footer-details';
+import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
+import { useShippingAddresses } from '../hooks/useShippingAddresses';
 
 const CREATE_SECTION_CARD_CLASSNAME =
   'rounded-2xl overflow-hidden border border-slate-400 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04),0_12px_28px_-22px_rgba(15,23,42,0.40)] ring-1 ring-slate-300/70 dark:border-white/16 dark:bg-[#120b1d]/82 dark:ring-white/12';
@@ -186,6 +194,10 @@ export function QuotationCreateForm(): ReactElement {
   const { data: selectedCustomer } = useCustomer(
     watchedCustomerId ?? 0,
     Boolean(watchedCustomerId && watchedCustomerId > 0)
+  );
+  const { koliBaskiMap, profilMap, demirMap, vidaMap, baskiMap } = useWindoDefinitionOptions();
+  const { data: shippingAddresses = [] } = useShippingAddresses(
+    watchedCustomerId != null && watchedCustomerId > 0 ? watchedCustomerId : undefined,
   );
   const offerDateSyncInitializedRef = useRef(false);
 
@@ -476,6 +488,23 @@ export function QuotationCreateForm(): ReactElement {
       draftWatermark: t('pdfExportTemplate.draftWatermark'),
     };
 
+    const koliBaskiId = qc.koliBaskiDefinitionId ?? null;
+    const koliBaskiName =
+      koliBaskiId != null && koliBaskiId > 0 ? koliBaskiMap[koliBaskiId] ?? null : null;
+    const footerDetails = buildPreviewPdfDocumentFooterDetails(
+      {
+        koliBaskiName,
+        description: qc.description ?? null,
+        structuredNotes: quotationNotesDtoToNotesList(quotationNotes),
+        shippingAddressText: resolvePreviewPdfShippingAddressText({
+          shippingAddressId: qc.shippingAddressId ?? null,
+          shippingAddresses,
+        }),
+      },
+      buildPreviewPdfDocumentFooterLabels(t),
+    );
+    const lineDetailLabels = buildPreviewPdfLineDetailLabels(t);
+
     return buildQuotationPreviewPdfBlob({
       lines,
       currencyCode,
@@ -488,6 +517,9 @@ export function QuotationCreateForm(): ReactElement {
       generalDiscountRate: qc.generalDiscountRate,
       generalDiscountAmount: qc.generalDiscountAmount,
       labels,
+      footerDetails,
+      lineDetailLabels,
+      lineDetailMaps: { profilMap, demirMap, vidaMap, baskiMap },
       draft,
     });
   }, [
@@ -499,6 +531,13 @@ export function QuotationCreateForm(): ReactElement {
     customerOptions,
     selectedCustomer,
     branch,
+    quotationNotes,
+    koliBaskiMap,
+    shippingAddresses,
+    profilMap,
+    demirMap,
+    vidaMap,
+    baskiMap,
   ]);
 
   const openPdfExportPreview = (): void => {
