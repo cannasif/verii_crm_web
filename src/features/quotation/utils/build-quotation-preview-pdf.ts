@@ -280,14 +280,78 @@ function drawInfoChip(
   label: string,
   value: string,
 ): void {
+  const chipMidY = y + 1.1;
   doc.setFont(bodyFont, 'normal');
   doc.setFontSize(7);
   doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
-  doc.text(label.toUpperCase(), x, y);
+  doc.text(label.toUpperCase(), x, chipMidY, { baseline: 'middle' });
   doc.setFont(bodyFont, 'bold');
   doc.setFontSize(9.5);
   doc.setTextColor(INK[0], INK[1], INK[2]);
-  doc.text(value, x + w, y, { align: 'right' });
+  doc.text(value, x + w, chipMidY, { align: 'right', baseline: 'middle' });
+}
+
+const HEADER_NAME_LINE_HEIGHT = 4.6;
+const HEADER_NAME_MAX_LINES = 2;
+
+function measureHeaderNameLines(
+  doc: jsPDF,
+  bodyFont: string,
+  name: string,
+  maxWidth: number,
+): string[] {
+  doc.setFont(bodyFont, 'bold');
+  doc.setFontSize(12);
+  return (doc.splitTextToSize(name.trim() || '-', maxWidth) as string[]).slice(0, HEADER_NAME_MAX_LINES);
+}
+
+function drawHeaderNameLines(
+  doc: jsPDF,
+  bodyFont: string,
+  x: number,
+  startY: number,
+  lines: string[],
+  maxWidth: number,
+): void {
+  doc.setFontSize(12);
+  lines.forEach((line, index) => {
+    drawStrongText(doc, bodyFont, line, x, startY + index * HEADER_NAME_LINE_HEIGHT, INK, 0.18, {
+      maxWidth,
+    });
+  });
+}
+
+interface TablePageBounds {
+  top: number;
+  bottom: number;
+}
+
+function updateTablePageBounds(
+  bounds: Map<number, TablePageBounds>,
+  pageNumber: number,
+  cellY: number,
+  cellHeight: number,
+): void {
+  const top = cellY;
+  const bottom = cellY + cellHeight;
+  const existing = bounds.get(pageNumber);
+  if (!existing) {
+    bounds.set(pageNumber, { top, bottom });
+    return;
+  }
+  existing.top = Math.min(existing.top, top);
+  existing.bottom = Math.max(existing.bottom, bottom);
+}
+
+function drawTablePageOutlines(doc: jsPDF, bounds: Map<number, TablePageBounds>): void {
+  doc.setDrawColor(NAVY[0], NAVY[1], NAVY[2]);
+  doc.setLineWidth(0.5);
+  bounds.forEach((pageBounds, pageNumber) => {
+    doc.setPage(pageNumber);
+    const height = pageBounds.bottom - pageBounds.top;
+    if (height <= 0) return;
+    doc.roundedRect(M, pageBounds.top, CONTENT_W, height, 2, 2, 'S');
+  });
 }
 
 function drawHeader(
@@ -307,10 +371,22 @@ function drawHeader(
   drawHorizontalGradient(doc, PAGE_W / 2 - 18, 20.6, 36, 1.4, GRAD_FROM, GRAD_TO, 60);
 
   const cardY = 28;
-  const cardH = 32;
   const gap = 6;
   const colW = (CONTENT_W - gap) / 2;
   const rightX = M + colW + gap;
+  const nameMaxWidth = colW - 12;
+  const nameStartY = cardY + 10;
+  const branchName = params.branchName.trim() || params.labels.notSpecified;
+  const customerName = params.customerName.trim() || params.labels.notSpecified;
+
+  const leftNameLines = measureHeaderNameLines(doc, bodyFont, branchName, nameMaxWidth);
+  const rightNameLines = measureHeaderNameLines(doc, bodyFont, customerName, nameMaxWidth);
+  const nameBlockHeight =
+    Math.max(leftNameLines.length, rightNameLines.length, 1) * HEADER_NAME_LINE_HEIGHT;
+  const dividerY = nameStartY + nameBlockHeight + 1.8;
+  const dateY = dividerY + 3.2;
+  const offerNoY = dateY + 5;
+  const cardH = Math.max(32, offerNoY + 3 - cardY);
 
   doc.setFillColor(255, 255, 255);
   doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);
@@ -324,48 +400,27 @@ function drawHeader(
   doc.rect(rightX, cardY, 2.2, cardH, 'F');
 
   doc.setFontSize(7);
-  drawStrongText(doc, bodyFont, params.labels.senderLabel.toUpperCase(), M + 6, cardY + 8, PINK, 0.12);
+  drawStrongText(doc, bodyFont, params.labels.senderLabel.toUpperCase(), M + 6, cardY + 4, PINK, 0.12);
 
-  doc.setFontSize(12);
-  drawStrongText(
-    doc,
-    bodyFont,
-    params.branchName.trim() || params.labels.notSpecified,
-    M + 6,
-    cardY + 16,
-    INK,
-    0.18,
-    { maxWidth: colW - 12 },
-  );
+  drawHeaderNameLines(doc, bodyFont, M + 6, nameStartY, leftNameLines, nameMaxWidth);
 
   if (params.branchCode?.trim()) {
     doc.setFont(bodyFont, 'normal');
     doc.setFontSize(8);
     doc.setTextColor(MUTED[0], MUTED[1], MUTED[2]);
-    doc.text(params.branchCode.trim(), M + 6, cardY + 23);
+    doc.text(params.branchCode.trim(), M + 6, nameStartY + nameBlockHeight + 1.2);
   }
 
   doc.setFontSize(7);
-  drawStrongText(doc, bodyFont, params.labels.recipientLabel.toUpperCase(), rightX + 6, cardY + 8, TEAL, 0.12);
+  drawStrongText(doc, bodyFont, params.labels.recipientLabel.toUpperCase(), rightX + 6, cardY + 4, TEAL, 0.12);
 
-  doc.setFontSize(12);
-  drawStrongText(
-    doc,
-    bodyFont,
-    params.customerName.trim() || params.labels.notSpecified,
-    rightX + 6,
-    cardY + 16,
-    INK,
-    0.18,
-    { maxWidth: colW - 12 },
-  );
+  drawHeaderNameLines(doc, bodyFont, rightX + 6, nameStartY, rightNameLines, nameMaxWidth);
 
-  doc.setDrawColor(BORDER[0], BORDER[1], BORDER[2]);
-  doc.setLineWidth(0.2);
-  doc.line(rightX + 6, cardY + 20, rightX + colW - 6, cardY + 20);
+  doc.setFillColor(BORDER[0], BORDER[1], BORDER[2]);
+  doc.rect(rightX + 6, dividerY, colW - 12, 0.3, 'F');
 
-  drawInfoChip(doc, bodyFont, rightX + 6, cardY + 25, colW - 12, params.labels.metaDate, offerDateStr);
-  drawInfoChip(doc, bodyFont, rightX + 6, cardY + 30, colW - 12, params.labels.metaOfferNo, offerNoDisplay);
+  drawInfoChip(doc, bodyFont, rightX + 6, dateY, colW - 12, params.labels.metaDate, offerDateStr);
+  drawInfoChip(doc, bodyFont, rightX + 6, offerNoY, colW - 12, params.labels.metaOfferNo, offerNoDisplay);
 
   return cardY + cardH + 8;
 }
@@ -636,6 +691,7 @@ export async function buildQuotationPreviewPdfBlob(
   );
 
   const tableStartY = drawHeader(doc, bodyFont, params, offerDateStr, offerNoDisplay);
+  const tablePageBounds = new Map<number, TablePageBounds>();
 
   const dataHeadRow = [
     params.labels.productCode,
@@ -657,6 +713,13 @@ export async function buildQuotationPreviewPdfBlob(
     ];
     return hasAnyLineImage ? ['', ...row] : row;
   });
+
+  const resolveBodyRowLineIndex = (rowIndex: number, raw: unknown): number => {
+    if (rowIndex >= 0 && rowIndex < params.lines.length) {
+      return rowIndex;
+    }
+    return bodyRows.findIndex((bodyRow) => bodyRow === raw);
+  };
 
   const columnStyles: Record<number, { cellWidth?: number; halign?: 'left' | 'center' | 'right' }> =
     hasAnyLineImage
@@ -682,6 +745,7 @@ export async function buildQuotationPreviewPdfBlob(
     body: bodyRows,
     theme: 'grid',
     margin: { left: M, right: M },
+    rowPageBreak: 'avoid',
     tableLineWidth: 0,
     styles: {
       font: bodyFont,
@@ -710,9 +774,14 @@ export async function buildQuotationPreviewPdfBlob(
     },
     columnStyles,
     didParseCell: (data) => {
+      if (data.section === 'head' || data.section === 'body') {
+        updateTablePageBounds(tablePageBounds, data.pageNumber, data.cell.y, data.cell.height);
+      }
+
       if (data.section !== 'body') return;
 
-      const rowHeight = tableRowHeights[data.row.index] ?? 7.5;
+      const lineIndex = resolveBodyRowLineIndex(data.row.index, data.row.raw);
+      const rowHeight = lineIndex >= 0 ? (tableRowHeights[lineIndex] ?? 7.5) : 7.5;
       data.cell.styles.valign = 'top';
       data.cell.styles.minCellHeight = rowHeight;
       data.cell.styles.fillColor = 255;
@@ -727,9 +796,13 @@ export async function buildQuotationPreviewPdfBlob(
     },
     didDrawCell: (data) => {
       if (data.section !== 'body') return;
+      if (data.row.index < 0) return;
+
+      const lineIndex = resolveBodyRowLineIndex(data.row.index, data.row.raw);
+      if (lineIndex < 0) return;
 
       if (hasAnyLineImage && data.column.index === 0) {
-        const imageDataUrl = lineImageDataUrls[data.row.index];
+        const imageDataUrl = lineImageDataUrls[lineIndex];
         if (!imageDataUrl) return;
 
         const padding = 1.6;
@@ -744,8 +817,10 @@ export async function buildQuotationPreviewPdfBlob(
         return;
       }
 
-      const line = params.lines[data.row.index];
-      const detailRows = lineDetailBlocks[data.row.index] ?? [];
+      const line = params.lines[lineIndex];
+      if (!line) return;
+
+      const detailRows = lineDetailBlocks[lineIndex] ?? [];
 
       if (data.column.index === productCodeColumnIndex) {
         drawPreviewPdfProductCodeCellContent(
@@ -788,9 +863,8 @@ export async function buildQuotationPreviewPdfBlob(
   type DocWithTable = InstanceType<typeof JsPDF> & { lastAutoTable?: { finalY: number } };
   const finalY = (doc as DocWithTable).lastAutoTable?.finalY ?? tableStartY;
 
-  doc.setDrawColor(NAVY[0], NAVY[1], NAVY[2]);
-  doc.setLineWidth(0.5);
-  doc.roundedRect(M, tableStartY, CONTENT_W, finalY - tableStartY, 2, 2, 'S');
+  drawTablePageOutlines(doc, tablePageBounds);
+  doc.setPage(doc.getNumberOfPages());
 
   const totals = computeDocumentTotals(
     params.lines,

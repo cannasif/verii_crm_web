@@ -163,11 +163,30 @@ const DETAIL_LABEL_STROKE = 0.1;
 const NAME_STROKE = 0.07;
 const CODE_STROKE = 0.06;
 
-function resolveProductCodeFontSize(productCode: string): number {
-  const length = productCode.trim().length;
-  if (length > 22) return 6.6;
-  if (length > 16) return 7.4;
-  return NAME_FONT_SIZE;
+const MIN_PRODUCT_CODE_FONT_SIZE = 5.4;
+const PRODUCT_CODE_LINE_HEIGHT = 3.2;
+
+function resolveProductCodeFontSize(
+  doc: jsPDF,
+  bodyFont: string,
+  productCode: string,
+  maxTextWidth: number,
+): number {
+  const trimmedCode = productCode.trim();
+  if (!trimmedCode) return NAME_FONT_SIZE;
+
+  let fontSize = NAME_FONT_SIZE;
+  doc.setFont(bodyFont, 'bold');
+
+  while (fontSize > MIN_PRODUCT_CODE_FONT_SIZE) {
+    doc.setFontSize(fontSize);
+    if (doc.getTextWidth(trimmedCode) <= maxTextWidth) {
+      return fontSize;
+    }
+    fontSize -= 0.35;
+  }
+
+  return MIN_PRODUCT_CODE_FONT_SIZE;
 }
 
 function formatPreviewPdfLineDetailItem(row: PreviewPdfFooterDetailRow): string {
@@ -361,19 +380,15 @@ export function estimatePreviewPdfProductNameOnlyHeight(
 }
 
 export function estimatePreviewPdfProductCodeHeight(
-  doc: jsPDF,
-  bodyFont: string,
+  _doc: jsPDF,
+  _bodyFont: string,
   productCode: string,
-  cellWidth: number,
+  _cellWidth: number,
 ): number {
   const trimmedCode = productCode.trim();
   if (!trimmedCode) return 7.5;
 
-  const fontSize = resolveProductCodeFontSize(trimmedCode);
-  doc.setFont(bodyFont, 'bold');
-  doc.setFontSize(fontSize);
-  const codeLines = doc.splitTextToSize(trimmedCode, Math.max(cellWidth - CELL_PADDING * 2, 8)) as string[];
-  return codeLines.length * 3.2 + 7;
+  return PRODUCT_CODE_LINE_HEIGHT + 7;
 }
 
 export function drawPreviewPdfProductCodeCellContent(
@@ -387,23 +402,18 @@ export function drawPreviewPdfProductCodeCellContent(
   const trimmedCode = productCode.trim();
   if (!trimmedCode) return;
 
-  const fontSize = resolveProductCodeFontSize(trimmedCode);
   const maxTextWidth = Math.max(width - CELL_PADDING * 2, 8);
-  doc.setFont(bodyFont, 'bold');
-  doc.setFontSize(fontSize);
-  const codeLines = doc.splitTextToSize(trimmedCode, maxTextWidth) as string[];
-  codeLines.forEach((line, index) => {
-    drawStrongText(
-      doc,
-      bodyFont,
-      line,
-      x + CELL_PADDING,
-      y + CELL_PADDING + 2 + index * 3.2,
-      INK,
-      fontSize,
-      CODE_STROKE,
-    );
-  });
+  const fontSize = resolveProductCodeFontSize(doc, bodyFont, trimmedCode, maxTextWidth);
+  drawStrongText(
+    doc,
+    bodyFont,
+    trimmedCode,
+    x + CELL_PADDING,
+    y + CELL_PADDING + 2,
+    INK,
+    fontSize,
+    CODE_STROKE,
+  );
 }
 
 export function drawPreviewPdfProductNameCellContent(
