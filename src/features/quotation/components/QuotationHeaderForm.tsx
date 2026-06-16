@@ -183,7 +183,7 @@ export function QuotationHeaderForm({
     PricingRuleType.Quotation
   );
 
-  const { handleDocumentSerialTypeSelect, handleOfferNoChange } = useDocumentSerialAutoFill({
+  const { handleDocumentSerialTypeSelect } = useDocumentSerialAutoFill({
     rootKey: 'quotation',
     ruleType: PricingRuleType.Quotation,
     documentId: quotationId,
@@ -840,32 +840,6 @@ export function QuotationHeaderForm({
                               placeholder={t('select')}
                               className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                               disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormMessage className="mt-1" />
-                      </FormItem>
-                    )}
-                  />
-                )}
-                {showDocumentSerialType && (
-                  <FormField
-                    control={form.control}
-                    name="quotation.offerNo"
-                    render={({ field }) => (
-                      <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>{t('quotation:header.offerNo')}</FormLabel>
-                        <div className="relative">
-                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><FileText className="h-4 w-4" /></div>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              value={field.value ?? ''}
-                              onChange={(event) => handleOfferNoChange(event.target.value)}
-                              placeholder={t('quotation:header.offerNoPlaceholder')}
-                              className={cn(styles.inputBase, 'pl-10 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500')}
-                              disabled={readOnly}
-                              maxLength={50}
                             />
                           </FormControl>
                         </div>

@@ -178,7 +178,7 @@ export function OrderHeaderForm({
     PricingRuleType.Order
   );
 
-  const { handleDocumentSerialTypeSelect, handleOfferNoChange } = useDocumentSerialAutoFill({
+  const { handleDocumentSerialTypeSelect } = useDocumentSerialAutoFill({
     rootKey: 'order',
     ruleType: PricingRuleType.Order,
     documentId: orderId,
@@ -816,32 +816,6 @@ export function OrderHeaderForm({
                               placeholder={t('order.select')}
                               className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                               disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormMessage className="mt-1" />
-                      </FormItem>
-                    )}
-                  />
-                )}
-                {showDocumentSerialType && (
-                  <FormField
-                    control={form.control}
-                    name="order.offerNo"
-                    render={({ field }) => (
-                      <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>{t('order:header.offerNo')}</FormLabel>
-                        <div className="relative">
-                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><FileText className="h-4 w-4" /></div>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              value={field.value ?? ''}
-                              onChange={(event) => handleOfferNoChange(event.target.value)}
-                              placeholder={t('order:header.offerNoPlaceholder')}
-                              className={cn(styles.inputBase, 'pl-10 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500')}
-                              disabled={readOnly}
-                              maxLength={50}
                             />
                           </FormControl>
                         </div>

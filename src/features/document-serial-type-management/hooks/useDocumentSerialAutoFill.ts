@@ -24,7 +24,6 @@ interface UseDocumentSerialAutoFillParams {
 
 interface UseDocumentSerialAutoFillReturn {
   handleDocumentSerialTypeSelect: (documentSerialTypeId: number | null) => void;
-  handleOfferNoChange: (value: string) => void;
 }
 
 export function useDocumentSerialAutoFill({
@@ -39,7 +38,6 @@ export function useDocumentSerialAutoFill({
   branchCode,
 }: UseDocumentSerialAutoFillParams): UseDocumentSerialAutoFillReturn {
   const form = useFormContext();
-  const offerNoEditedRef = useRef(false);
   const lastAppliedSerialTypeIdRef = useRef<number | null>(null);
   const isCreateMode = documentId == null || documentId <= 0;
 
@@ -48,7 +46,7 @@ export function useDocumentSerialAutoFill({
 
   const applySuggestedOfferNo = useCallback(
     (serialType: DocumentSerialTypeGetDto): void => {
-      if (readOnly || !isCreateMode || offerNoEditedRef.current) return;
+      if (readOnly || !isCreateMode) return;
 
       form.setValue(offerNoField, formatSuggestedDocumentNumber(serialType), {
         shouldDirty: true,
@@ -85,9 +83,7 @@ export function useDocumentSerialAutoFill({
 
       if (lastAppliedSerialTypeIdRef.current !== documentSerialTypeId) {
         lastAppliedSerialTypeIdRef.current = documentSerialTypeId;
-        if (!offerNoEditedRef.current) {
-          applySuggestedOfferNo(serialType);
-        }
+        applySuggestedOfferNo(serialType);
       }
     },
     [
@@ -104,11 +100,6 @@ export function useDocumentSerialAutoFill({
     ],
   );
 
-  const handleOfferNoChange = useCallback((value: string): void => {
-    offerNoEditedRef.current = true;
-    form.setValue(offerNoField, value, { shouldDirty: true, shouldValidate: true });
-  }, [form, offerNoField]);
-
   useEffect(() => {
     if (readOnly || !isCreateMode) return;
     if (!watchedRepresentativeId || watchedRepresentativeId <= 0) return;
@@ -118,7 +109,7 @@ export function useDocumentSerialAutoFill({
     if (currentSerialTypeId != null && currentSerialTypeId > 0) {
       const existingSerialType = availableDocumentSerialTypes.find((item) => item.id === currentSerialTypeId);
       const currentOfferNo = String(form.getValues(offerNoField) ?? '').trim();
-      if (existingSerialType && !currentOfferNo && !offerNoEditedRef.current) {
+      if (existingSerialType && !currentOfferNo) {
         lastAppliedSerialTypeIdRef.current = currentSerialTypeId;
         applySuggestedOfferNo(existingSerialType);
       }
@@ -164,7 +155,7 @@ export function useDocumentSerialAutoFill({
     if (!serialType) return;
 
     lastAppliedSerialTypeIdRef.current = watchedDocumentSerialTypeId;
-    if (isCreateMode && !readOnly && !offerNoEditedRef.current) {
+    if (isCreateMode && !readOnly) {
       applySuggestedOfferNo(serialType);
     }
   }, [
@@ -177,6 +168,5 @@ export function useDocumentSerialAutoFill({
 
   return {
     handleDocumentSerialTypeSelect,
-    handleOfferNoChange,
   };
 }
