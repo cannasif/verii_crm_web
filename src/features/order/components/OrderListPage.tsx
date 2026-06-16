@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useOrderList } from '../hooks/useOrderList';
+import { useRefetchOnPageRestore } from '@/features/approval/hooks/useRefetchOnPageRestore';
 import { orderApi } from '../api/order-api';
 import { QUOTATION_QUERY_KEYS } from '../utils/query-keys';
 import type { OrderGetDto } from '../types/order-types';
@@ -236,6 +237,7 @@ export function OrderListPage(): ReactElement {
     approvalStatusFilter,
     ...filtersParam,
   });
+  useRefetchOnPageRestore(orderQuery.refetch);
   const pagedData = orderQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;

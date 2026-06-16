@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useDemandList } from '../hooks/useDemandList';
+import { useRefetchOnPageRestore } from '@/features/approval/hooks/useRefetchOnPageRestore';
 import { demandApi } from '../api/demand-api';
 import { DEMAND_QUERY_KEYS } from '../utils/query-keys';
 import type { DemandGetDto } from '../types/demand-types';
@@ -236,6 +237,7 @@ export function DemandListPage(): ReactElement {
     approvalStatusFilter,
     ...filtersParam,
   });
+  useRefetchOnPageRestore(demandQuery.refetch);
   const pagedData = demandQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;

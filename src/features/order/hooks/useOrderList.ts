@@ -16,5 +16,6 @@ export const useOrderList = (
     queryFn: () =>
       fetchPagedDocumentList<OrderGetDto>(params, (queryParams) => orderApi.getList(queryParams)),
     staleTime: 2 * 60 * 1000,
+    refetchOnMount: 'always',
   });
 };

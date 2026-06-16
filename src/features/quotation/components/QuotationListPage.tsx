@@ -41,6 +41,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { useQuotationList } from '../hooks/useQuotationList';
+import { useRefetchOnPageRestore } from '@/features/approval/hooks/useRefetchOnPageRestore';
 import { quotationApi } from '../api/quotation-api';
 import { QUOTATION_QUERY_KEYS } from '../utils/query-keys';
 import type { QuotationGetDto } from '../types/quotation-types';
@@ -236,6 +237,7 @@ export function QuotationListPage(): ReactElement {
     approvalStatusFilter,
     ...filtersParam,
   });
+  useRefetchOnPageRestore(quotationQuery.refetch);
   const pagedData = quotationQuery.data;
   const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
   const totalCount = pagedData?.totalCount ?? 0;

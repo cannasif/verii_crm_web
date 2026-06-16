@@ -16,5 +16,6 @@ export const useDemandList = (
     queryFn: () =>
       fetchPagedDocumentList<DemandGetDto>(params, (queryParams) => demandApi.getList(queryParams)),
     staleTime: 2 * 60 * 1000,
+    refetchOnMount: 'always',
   });
 };
