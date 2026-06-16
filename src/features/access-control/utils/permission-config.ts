@@ -300,8 +300,11 @@ export const PERMISSION_CODE_DISPLAY: Record<string, { key?: string; fallback: s
   'dashboard.view': { key: 'sidebar.dashboard', fallback: 'Dashboard' },
 
   'sales.demands.view': { key: 'sidebar.demands', fallback: 'Talepler' },
+  'sales.demands.select-representative': { fallback: 'Taleplerde Temsilci Seçme' },
   'sales.quotations.view': { key: 'sidebar.proposals', fallback: 'Teklifler' },
+  'sales.quotations.select-representative': { fallback: 'Tekliflerde Temsilci Seçme' },
   'sales.orders.view': { key: 'sidebar.orders', fallback: 'Siparisler' },
+  'sales.orders.select-representative': { fallback: 'Siparişlerde Temsilci Seçme' },
   'sales.erp-orders.view': { key: 'sidebar.erpOrderList', fallback: 'ERP Siparis Listesi' },
   'sales-documents.erp-cleanup-delete': { key: 'sidebar.erpDocumentCleanupLogs', fallback: 'ERP Kaydı Silme' },
 
@@ -532,6 +535,9 @@ export function getPermissionPlatform(_code: string, availableOnWeb: boolean, av
 const EXTRA_PERMISSION_CODES = [
   'customers.erp-create',
   'sales-documents.erp-cleanup-delete',
+  'sales.demands.select-representative',
+  'sales.quotations.select-representative',
+  'sales.orders.select-representative',
   'activity.images.create',
   'activity.images.update',
   'activity.images.delete',

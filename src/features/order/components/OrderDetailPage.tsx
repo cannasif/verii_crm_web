@@ -106,7 +106,6 @@ export function OrderDetailPage(): ReactElement {
   const updateNotesMutation = useUpdateOrderNotesList(orderId);
   const startApprovalFlow = useStartApprovalFlow();
   const cancelByCustomerMutation = useCancelOrderByCustomer();
-  const { data: customerOptions = [] } = useCustomerOptions();
 
   const [lines, setLines] = useState<OrderLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<OrderExchangeRateFormState[]>([]);
@@ -318,6 +317,7 @@ export function OrderDetailPage(): ReactElement {
   const watchedCustomerId = form.watch('order.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('order.erpCustomerCode');
   const watchedRepresentativeId = form.watch('order.representativeId');
+  const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   const watchedOfferDate = form.watch('order.offerDate');
   const orderFormSlice = form.watch('order');
 

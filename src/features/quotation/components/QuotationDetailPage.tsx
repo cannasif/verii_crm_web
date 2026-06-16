@@ -138,7 +138,6 @@ export function QuotationDetailPage(): ReactElement {
   const startApprovalFlow = useStartApprovalFlow();
   const cancelByCustomerMutation = useCancelQuotationByCustomer();
   const createRevisionMutation = useCreateRevisionOfQuotation();
-  const { data: customerOptions = [] } = useCustomerOptions();
   const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
 
   const [lines, setLines] = useState<QuotationLineFormState[]>([]);
@@ -392,6 +391,7 @@ export function QuotationDetailPage(): ReactElement {
   const watchedCustomerId = form.watch('quotation.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
+  const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   const { data: selectedCustomer } = useCustomer(
     watchedCustomerId ?? 0,
     Boolean(watchedCustomerId && watchedCustomerId > 0)

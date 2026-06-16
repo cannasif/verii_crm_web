@@ -103,7 +103,6 @@ export function DemandDetailPage(): ReactElement {
   const updateNotesMutation = useUpdateDemandNotesList(demandId);
   const startApprovalFlow = useStartApprovalFlow();
   const cancelByCustomerMutation = useCancelDemandByCustomer();
-  const { data: customerOptions = [] } = useCustomerOptions();
 
   const [lines, setLines] = useState<DemandLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<DemandExchangeRateFormState[]>([]);
@@ -315,6 +314,7 @@ export function DemandDetailPage(): ReactElement {
   const watchedCustomerId = form.watch('demand.potentialCustomerId');
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedRepresentativeId = form.watch('demand.representativeId');
+  const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   const watchedOfferDate = form.watch('demand.offerDate');
   const demandFormSlice = form.watch('demand');
 
