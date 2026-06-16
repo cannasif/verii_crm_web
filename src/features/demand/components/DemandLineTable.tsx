@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+import { LineTableQuickEditNumberInput } from '@/components/shared/LineTableQuickEditNumberInput';
+import { LineTableQuickEditMonetaryInput } from '@/components/shared/LineTableQuickEditMonetaryInput';
+import { parseLineTableQuickEditNumericValue } from '@/lib/line-table-quick-edit-parse';
 import {
   Dialog,
   DialogContent,
@@ -73,6 +75,7 @@ import {
   canDocumentLinePrerequisites,
 } from '@/lib/document-line-prerequisites';
 import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } from '@/lib/line-form-stock-markers';
+import { mergeCreatedLineProductName } from '@/lib/merge-created-line-product-name';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 
 function toCreateDto(line: DemandLineFormState, demandId: number): CreateDemandLineDto {
@@ -394,7 +397,9 @@ export function DemandLineTable({
         try {
           const dtos: CreateDemandLineDto[] = [toCreateDto(lineToAdd, demandId)];
           const created = await createMutation.mutateAsync(dtos);
-          const mapped = created.map((dto: DemandLineGetDto, i: number) => dtoToFormState(dto, lines.length + i));
+          const mapped = created.map((dto: DemandLineGetDto, i: number) =>
+            mergeCreatedLineProductName(dtoToFormState(dto, lines.length + i), lineToAdd)
+          );
           setLines([...lines, ...mapped]);
           setAddLineDialogOpen(false);
           setNewLine(null);
@@ -418,7 +423,9 @@ export function DemandLineTable({
         try {
           const dtos: CreateDemandLineDto[] = linesToAdd.map((l) => toCreateDto(l, demandId));
           const created = await createMutation.mutateAsync(dtos);
-          const mapped = created.map((dto: DemandLineGetDto, i: number) => dtoToFormState(dto, lines.length + i));
+          const mapped = created.map((dto: DemandLineGetDto, i: number) =>
+            mergeCreatedLineProductName(dtoToFormState(dto, lines.length + i), linesToAdd[i])
+          );
           setLines([...lines, ...mapped]);
           setAddLineDialogOpen(false);
           setNewLine(null);
@@ -674,9 +681,8 @@ export function DemandLineTable({
       return;
     }
 
-    const raw = quickEdit.draft.replace(',', '.').trim();
-    const parsedFloat = parseFloat(raw);
-    if (raw === '' || Number.isNaN(parsedFloat)) return;
+    const parsedFloat = parseLineTableQuickEditNumericValue(quickEdit.field, quickEdit.draft);
+    if (parsedFloat === null) return;
 
     let value: number;
     if (quickEdit.field === 'quantity') {
@@ -1079,14 +1085,10 @@ export function DemandLineTable({
                               onMouseDown={(e) => e.stopPropagation()}
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <Input
-                                type="number"
-                                step={numberInputStep}
-                                min={0}
+                              <LineTableQuickEditMonetaryInput
                                 value={quickEdit.draft}
-                                onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
-                                className="h-8 w-[104px] rounded-lg border-pink-500/50 text-sm font-mono px-2"
-                                autoFocus
+                                onChange={(draft) => setQuickEdit((q) => (q ? { ...q, draft } : q))}
+                                className="h-8 min-w-[120px] w-[120px] rounded-lg border-pink-500/50 text-sm font-mono px-2"
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') void commitQuickEdit();
                                   if (e.key === 'Escape') cancelQuickEdit();
@@ -1146,14 +1148,12 @@ export function DemandLineTable({
                               onMouseDown={(e) => e.stopPropagation()}
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <Input
-                                type="number"
+                              <LineTableQuickEditNumberInput
                                 step={numberInputStep}
                                 min={0}
                                 value={quickEdit.draft}
-                                onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
+                                onChange={(draft) => setQuickEdit((q) => (q ? { ...q, draft } : q))}
                                 className="h-8 w-16 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
-                                autoFocus
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') void commitQuickEdit();
                                   if (e.key === 'Escape') cancelQuickEdit();
@@ -1223,15 +1223,13 @@ export function DemandLineTable({
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   <div className="flex items-center justify-center gap-1">
-                                    <Input
-                                      type="number"
+                                    <LineTableQuickEditNumberInput
                                       step={numberInputStep}
                                       min={0}
                                       max={100}
                                       value={quickEdit.draft}
-                                      onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
+                                      onChange={(draft) => setQuickEdit((q) => (q ? { ...q, draft } : q))}
                                       className="h-8 w-14 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
-                                      autoFocus
                                       onKeyDown={(e) => {
                                         if (e.key === 'Enter') void commitQuickEdit();
                                         if (e.key === 'Escape') cancelQuickEdit();

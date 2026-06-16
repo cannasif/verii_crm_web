@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
+import { LineTableQuickEditNumberInput } from '@/components/shared/LineTableQuickEditNumberInput';
+import { LineTableQuickEditMonetaryInput } from '@/components/shared/LineTableQuickEditMonetaryInput';
+import { parseLineTableQuickEditNumericValue } from '@/lib/line-table-quick-edit-parse';
 import {
   Dialog,
   DialogContent,
@@ -25,6 +27,7 @@ import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscount
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { DescriptionCell } from '@/components/shared';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
+import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useCreateQuotationLines } from '../hooks/useCreateQuotationLines';
@@ -72,7 +75,7 @@ import {
   applyQuotationLineQuickFieldPatch,
   type QuotationQuickEditField,
 } from '../utils/apply-quotation-line-quick-field-patch';
-import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { mergeCreatedLineProductName } from '@/lib/merge-created-line-product-name';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 
 function toCreateDto(line: QuotationLineFormState, quotationId: number): CreateQuotationLineDto {
@@ -541,9 +544,8 @@ export function QuotationLineTable({
       return;
     }
 
-    const raw = quickEdit.draft.replace(',', '.').trim();
-    const parsedFloat = parseFloat(raw);
-    if (raw === '' || Number.isNaN(parsedFloat)) return;
+    const parsedFloat = parseLineTableQuickEditNumericValue(quickEdit.field, quickEdit.draft);
+    if (parsedFloat === null) return;
 
     let value: number;
     if (quickEdit.field === 'quantity') {
@@ -622,7 +624,9 @@ export function QuotationLineTable({
           const dtos: CreateQuotationLineDto[] = [toCreateDto(lineToAdd, quotationId)];
           const created = await createMutation.mutateAsync(dtos);
           const finalized = await finalizeCreatedLineImages([lineToAdd], created, quotationId);
-          const mapped = finalized.map((dto, i) => dtoToFormState(dto, lines.length + i));
+          const mapped = finalized.map((dto, i) =>
+            mergeCreatedLineProductName(dtoToFormState(dto, lines.length + i), lineToAdd)
+          );
           setLines([...lines, ...mapped]);
           setAddLineDialogOpen(false);
           setNewLine(null);
@@ -647,7 +651,9 @@ export function QuotationLineTable({
           const dtos: CreateQuotationLineDto[] = linesToAdd.map((l) => toCreateDto(l, quotationId));
           const created = await createMutation.mutateAsync(dtos);
           const finalized = await finalizeCreatedLineImages(linesToAdd, created, quotationId);
-          const mapped = finalized.map((dto, i) => dtoToFormState(dto, lines.length + i));
+          const mapped = finalized.map((dto, i) =>
+            mergeCreatedLineProductName(dtoToFormState(dto, lines.length + i), linesToAdd[i])
+          );
           setLines([...lines, ...mapped]);
           setAddLineDialogOpen(false);
           setNewLine(null);
@@ -1128,14 +1134,10 @@ export function QuotationLineTable({
                               onMouseDown={(e) => e.stopPropagation()}
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <Input
-                                type="number"
-                                step={numberInputStep}
-                                min={0}
+                              <LineTableQuickEditMonetaryInput
                                 value={quickEdit.draft}
-                                onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
-                                className="h-8 w-[104px] rounded-lg border-pink-500/50 text-sm font-mono px-2"
-                                autoFocus
+                                onChange={(draft) => setQuickEdit((q) => (q ? { ...q, draft } : q))}
+                                className="h-8 min-w-[120px] w-[120px] rounded-lg border-pink-500/50 text-sm font-mono px-2"
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') void commitQuickEdit();
                                   if (e.key === 'Escape') cancelQuickEdit();
@@ -1194,14 +1196,12 @@ export function QuotationLineTable({
                               onMouseDown={(e) => e.stopPropagation()}
                               onClick={(e) => e.stopPropagation()}
                             >
-                              <Input
-                                type="number"
+                              <LineTableQuickEditNumberInput
                                 step={numberInputStep}
                                 min={0}
                                 value={quickEdit.draft}
-                                onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
+                                onChange={(draft) => setQuickEdit((q) => (q ? { ...q, draft } : q))}
                                 className="h-8 w-16 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
-                                autoFocus
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') void commitQuickEdit();
                                   if (e.key === 'Escape') cancelQuickEdit();
@@ -1271,15 +1271,13 @@ export function QuotationLineTable({
                                   onClick={(e) => e.stopPropagation()}
                                 >
                                   <div className="flex items-center justify-center gap-1">
-                                    <Input
-                                      type="number"
+                                    <LineTableQuickEditNumberInput
                                       step={numberInputStep}
                                       min={0}
                                       max={100}
                                       value={quickEdit.draft}
-                                      onChange={(e) => setQuickEdit((q) => (q ? { ...q, draft: e.target.value } : q))}
+                                      onChange={(draft) => setQuickEdit((q) => (q ? { ...q, draft } : q))}
                                       className="h-8 w-14 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
-                                      autoFocus
                                       onKeyDown={(e) => {
                                         if (e.key === 'Enter') void commitQuickEdit();
                                         if (e.key === 'Escape') cancelQuickEdit();

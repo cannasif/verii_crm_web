@@ -1,4 +1,5 @@
 import i18n from '@/lib/i18n';
+import { formatMonetaryTrDraftFromNumber } from '@/lib/monetary-input-tr';
 import { getDefaultSystemSettings, useSystemSettingsStore } from '@/stores/system-settings-store';
 
 function getSettings() {
@@ -81,7 +82,7 @@ export function formatLineTableQuickEditDraft(
   }
 
   if (field === 'unitPrice') {
-    return formatHtmlNumberInputDraft(value);
+    return formatMonetaryTrDraftFromNumber(value);
   }
 
   if (field === 'discountRate1' || field === 'discountRate2' || field === 'discountRate3') {
