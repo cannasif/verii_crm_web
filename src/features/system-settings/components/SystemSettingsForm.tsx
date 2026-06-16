@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ReactElement, useEffect, useMemo } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { type Resolver, type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -41,19 +41,39 @@ const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   orderApprovalCompletionAction: 1,
 };
 
-
-
-function resolveActionSelectValue(
+function getActionSelectLabel(
   value: number | string | undefined,
-  fallback: number,
+  options: Array<{ value: string; label: string }>,
+  placeholder: string
+): string {
+  const selectedValue = value === undefined || value === null ? '' : String(value);
+  return options.find((option) => option.value === selectedValue)?.label ?? placeholder;
+}
+
+function getSupportedActionValue(
+  value: number | string | undefined,
+  fallbackValue: number,
   options: Array<{ value: string; label: string }>
-): string | undefined {
-  const numericValue = typeof value === 'string' ? Number(value) : value;
-  if (Number.isInteger(numericValue) && options.some((option) => option.value === String(numericValue))) {
-    return String(numericValue);
+): number {
+  const optionValues = new Set(options.map((option) => option.value));
+  const valueAsString = value === undefined || value === null ? '' : String(value);
+
+  if (optionValues.has(valueAsString)) {
+    return Number(valueAsString);
   }
 
-  return options.some((option) => option.value === String(fallback)) ? String(fallback) : undefined;
+  const fallbackAsString = String(fallbackValue);
+  if (optionValues.has(fallbackAsString)) {
+    return fallbackValue;
+  }
+
+  return Number(options[0]?.value ?? 1);
+}
+
+interface ApprovalActionValues {
+  demandApprovalCompletionAction: number;
+  quotationApprovalCompletionAction: number;
+  orderApprovalCompletionAction: number;
 }
 
 interface SystemSettingsFormProps {
@@ -133,37 +153,40 @@ export function SystemSettingsForm({
     defaultValues: DEFAULT_FORM_VALUES,
   });
 
-  useEffect(() => {
-    form.reset(formValues, {
-      keepDirtyValues: false,
-      keepErrors: false,
-    });
-    form.setValue('demandApprovalCompletionAction', formValues.demandApprovalCompletionAction, {
-      shouldDirty: false,
-      shouldTouch: false,
-      shouldValidate: true,
-    });
-    form.setValue('quotationApprovalCompletionAction', formValues.quotationApprovalCompletionAction, {
-      shouldDirty: false,
-      shouldTouch: false,
-      shouldValidate: true,
-    });
-    form.setValue('orderApprovalCompletionAction', formValues.orderApprovalCompletionAction, {
-      shouldDirty: false,
-      shouldTouch: false,
-      shouldValidate: true,
-    });
-    void form.trigger([
-      'numberFormat',
-      'decimalPlaces',
-      'restrictCustomersBySalesRepMatch',
-      'demandApprovalCompletionAction',
-      'quotationApprovalCompletionAction',
-      'orderApprovalCompletionAction',
-    ]);
-  }, [form, formValues]);
+  const [approvalActionValues, setApprovalActionValues] = useState<ApprovalActionValues>({
+    demandApprovalCompletionAction: DEFAULT_FORM_VALUES.demandApprovalCompletionAction,
+    quotationApprovalCompletionAction: DEFAULT_FORM_VALUES.quotationApprovalCompletionAction,
+    orderApprovalCompletionAction: DEFAULT_FORM_VALUES.orderApprovalCompletionAction,
+  });
 
-  const handleSubmit: SubmitHandler<SystemSettingsFormSchema> = (values) => onSubmit(values);
+  useEffect(() => {
+    if (!data) return;
+    form.reset(formValues);
+    setApprovalActionValues({
+      demandApprovalCompletionAction: formValues.demandApprovalCompletionAction,
+      quotationApprovalCompletionAction: formValues.quotationApprovalCompletionAction,
+      orderApprovalCompletionAction: formValues.orderApprovalCompletionAction,
+    });
+  }, [data, form, formValues]);
+
+  const handleSubmit: SubmitHandler<SystemSettingsFormSchema> = (values) => onSubmit({
+    ...values,
+    demandApprovalCompletionAction: getSupportedActionValue(
+      approvalActionValues.demandApprovalCompletionAction,
+      formValues.demandApprovalCompletionAction,
+      demandActionOptions
+    ),
+    quotationApprovalCompletionAction: getSupportedActionValue(
+      approvalActionValues.quotationApprovalCompletionAction,
+      formValues.quotationApprovalCompletionAction,
+      quotationActionOptions
+    ),
+    orderApprovalCompletionAction: getSupportedActionValue(
+      approvalActionValues.orderApprovalCompletionAction,
+      formValues.orderApprovalCompletionAction,
+      orderActionOptions
+    ),
+  });
   const erpConnectionSucceeded = erpConnectionTest?.success === true;
   const erpConnectionMessage = erpConnectionSucceeded
     ? erpConnectionTest.message || t('systemSettings.ErpConnection.TestSucceeded')
@@ -171,7 +194,7 @@ export function SystemSettingsForm({
   const erpTokenSource = erpConnectionTest?.data?.source;
   const erpBranchCode = erpConnectionTest?.data?.branchCode;
 
-  if (isLoading) {
+  if (isLoading || !data) {
     return (
       <Card>
         <CardContent className="pt-6">
@@ -350,20 +373,41 @@ export function SystemSettingsForm({
             <FormField
               control={form.control}
               name="demandApprovalCompletionAction"
-              render={({ field }) => {
-                const selectedValue = resolveActionSelectValue(
-                  field.value,
+              render={() => {
+                const selectedValue = String(getSupportedActionValue(
+                  approvalActionValues.demandApprovalCompletionAction,
                   formValues.demandApprovalCompletionAction,
                   demandActionOptions
+                ));
+                const selectedLabel = getActionSelectLabel(
+                  selectedValue,
+                  demandActionOptions,
+                  t('systemSettings.Placeholders.ApprovalCompletionAction')
                 );
 
                 return (
                   <FormItem>
                     <FormLabel>{t('systemSettings.Fields.DemandApprovalCompletionAction')}</FormLabel>
-                    <Select value={selectedValue} onValueChange={(value) => field.onChange(Number(value))}>
+                    <Select
+                      value={selectedValue}
+                      onValueChange={(value) => {
+                        const nextValue = Number(value);
+                        setApprovalActionValues((current) => ({
+                          ...current,
+                          demandApprovalCompletionAction: nextValue,
+                        }));
+                        form.setValue('demandApprovalCompletionAction', nextValue, {
+                          shouldDirty: true,
+                          shouldTouch: true,
+                          shouldValidate: true,
+                        });
+                      }}
+                    >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
+                          <span data-slot="select-value" className="min-w-0 truncate">
+                            {selectedLabel}
+                          </span>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -383,20 +427,41 @@ export function SystemSettingsForm({
             <FormField
               control={form.control}
               name="quotationApprovalCompletionAction"
-              render={({ field }) => {
-                const selectedValue = resolveActionSelectValue(
-                  field.value,
+              render={() => {
+                const selectedValue = String(getSupportedActionValue(
+                  approvalActionValues.quotationApprovalCompletionAction,
                   formValues.quotationApprovalCompletionAction,
                   quotationActionOptions
+                ));
+                const selectedLabel = getActionSelectLabel(
+                  selectedValue,
+                  quotationActionOptions,
+                  t('systemSettings.Placeholders.ApprovalCompletionAction')
                 );
 
                 return (
                   <FormItem>
                     <FormLabel>{t('systemSettings.Fields.QuotationApprovalCompletionAction')}</FormLabel>
-                    <Select value={selectedValue} onValueChange={(value) => field.onChange(Number(value))}>
+                    <Select
+                      value={selectedValue}
+                      onValueChange={(value) => {
+                        const nextValue = Number(value);
+                        setApprovalActionValues((current) => ({
+                          ...current,
+                          quotationApprovalCompletionAction: nextValue,
+                        }));
+                        form.setValue('quotationApprovalCompletionAction', nextValue, {
+                          shouldDirty: true,
+                          shouldTouch: true,
+                          shouldValidate: true,
+                        });
+                      }}
+                    >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
+                          <span data-slot="select-value" className="min-w-0 truncate">
+                            {selectedLabel}
+                          </span>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -416,20 +481,41 @@ export function SystemSettingsForm({
             <FormField
               control={form.control}
               name="orderApprovalCompletionAction"
-              render={({ field }) => {
-                const selectedValue = resolveActionSelectValue(
-                  field.value,
+              render={() => {
+                const selectedValue = String(getSupportedActionValue(
+                  approvalActionValues.orderApprovalCompletionAction,
                   formValues.orderApprovalCompletionAction,
                   orderActionOptions
+                ));
+                const selectedLabel = getActionSelectLabel(
+                  selectedValue,
+                  orderActionOptions,
+                  t('systemSettings.Placeholders.ApprovalCompletionAction')
                 );
 
                 return (
                   <FormItem>
                     <FormLabel>{t('systemSettings.Fields.OrderApprovalCompletionAction')}</FormLabel>
-                    <Select value={selectedValue} onValueChange={(value) => field.onChange(Number(value))}>
+                    <Select
+                      value={selectedValue}
+                      onValueChange={(value) => {
+                        const nextValue = Number(value);
+                        setApprovalActionValues((current) => ({
+                          ...current,
+                          orderApprovalCompletionAction: nextValue,
+                        }));
+                        form.setValue('orderApprovalCompletionAction', nextValue, {
+                          shouldDirty: true,
+                          shouldTouch: true,
+                          shouldValidate: true,
+                        });
+                      }}
+                    >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder={t('systemSettings.Placeholders.ApprovalCompletionAction')} />
+                          <span data-slot="select-value" className="min-w-0 truncate">
+                            {selectedLabel}
+                          </span>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
