@@ -828,6 +828,7 @@ export function DemandDetailPage(): ReactElement {
                       representativeId={watchedRepresentativeId}
                       demandId={demandId}
                       enabled={linesEnabled}
+                      offerType={form.watch('demand.offerType')}
                     />
                     </div>
                   </section>

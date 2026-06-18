@@ -1,4 +1,4 @@
-import { type Dispatch, type ReactElement, type SetStateAction, useState, useMemo, useCallback, useRef } from 'react';
+import { type Dispatch, type ReactElement, type SetStateAction, useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -72,6 +72,7 @@ import {
   getHtmlNumberInputStepForDecimals,
 } from '@/lib/system-settings';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
+import { enforceExportVatOnLine, isExportOfferType, resolveDocumentVatRate } from '@/lib/document-vat';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import {
   buildDocumentLinePrerequisiteHintLines,
@@ -236,6 +237,7 @@ interface OrderLineTableProps {
   enabled?: boolean;
   buildExportPdfBlob?: (options: { draft: boolean; showDiscount?: boolean }) => Promise<Blob>;
   exportPdfFileName?: string;
+  offerType?: string | null;
 }
 
 export function OrderLineTable({
@@ -252,6 +254,7 @@ export function OrderLineTable({
   enabled = true,
   buildExportPdfBlob,
   exportPdfFileName,
+  offerType,
 }: OrderLineTableProps): ReactElement {
   const queryClient = useQueryClient();
   const linesEditable = enabled;
@@ -302,7 +305,20 @@ export function OrderLineTable({
     currency,
     exchangeRates,
     pricingRules,
+    offerType,
   });
+  const isExportOffer = isExportOfferType(offerType);
+
+  useEffect(() => {
+    if (!isExportOffer) return;
+    updateLines((prev) => {
+      if (!prev.some((line) => (line.vatRate ?? 0) !== 0 || (line.vatAmount ?? 0) !== 0)) {
+        return prev;
+      }
+
+      return prev.map((line) => calculateLineTotals(enforceExportVatOnLine(line, offerType)));
+    });
+  }, [calculateLineTotals, isExportOffer, offerType, updateLines]);
 
   const existingDocumentLineMarkers = useMemo(() => linesToDocumentStockMarkers(lines), [lines]);
   const existingDocumentLineMarkersForEdit = useMemo(
@@ -398,7 +414,7 @@ export function OrderLineTable({
       discountAmount2: 0,
       discountRate3: 0,
       discountAmount3: 0,
-      vatRate: 20,
+      vatRate: resolveDocumentVatRate(20, offerType),
       vatAmount: 0,
       lineTotal: 0,
       lineGrandTotal: 0,
@@ -486,7 +502,10 @@ export function OrderLineTable({
       value = Math.min(100, Math.max(0, parsedFloat));
     }
 
-    const patched = applyOrderLineQuickFieldPatch(originalLine, quickEdit.field, value, quickPatchDeps);
+    const patched = enforceExportVatOnLine(
+      applyOrderLineQuickFieldPatch(originalLine, quickEdit.field, value, quickPatchDeps),
+      offerType
+    );
     const nextLines = mergeLinesAfterMainLineUpdate(
       lines,
       originalLine,
@@ -542,11 +561,12 @@ export function OrderLineTable({
     orderId,
     updateMutation,
     updateLines,
+    offerType,
   ]);
 
   const handleSaveNewLine = useCallback(
     async (line: OrderLineFormState): Promise<void> => {
-      const lineToAdd = { ...line, isEditing: false };
+      const lineToAdd = { ...enforceExportVatOnLine(line, offerType), isEditing: false };
       if (isExistingOrder && orderId) {
         try {
           const dtos: CreateOrderLineDto[] = [toCreateDto(lineToAdd, orderId)];
@@ -569,13 +589,13 @@ export function OrderLineTable({
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingOrder, orderId, createMutation, updateLines]
+    [isExistingOrder, orderId, createMutation, updateLines, offerType]
   );
 
   const handleSaveMultipleLines = useCallback(
     async (newLines: OrderLineFormState[]): Promise<void> => {
       if (!linesEditable) return;
-      const linesToAdd = newLines.map((l) => ({ ...l, isEditing: false }));
+      const linesToAdd = newLines.map((l) => ({ ...enforceExportVatOnLine(l, offerType), isEditing: false }));
       if (isExistingOrder && orderId) {
         try {
           const dtos: CreateOrderLineDto[] = linesToAdd.map((l) => toCreateDto(l, orderId));
@@ -599,7 +619,7 @@ export function OrderLineTable({
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingOrder, orderId, createMutation, updateLines, linesEditable]
+    [isExistingOrder, orderId, createMutation, updateLines, linesEditable, offerType]
   );
 
   const handleCancelNewLine = (): void => {
@@ -678,7 +698,9 @@ export function OrderLineTable({
       return;
     }
 
-    const allUpdatedLines = [updatedLine, ...(relatedLinesToUpdate || [])].map((l) => ({ ...l, isEditing: false }));
+    const normalizedUpdatedLine = enforceExportVatOnLine(updatedLine, offerType);
+    const normalizedRelatedLines = relatedLinesToUpdate?.map((line) => enforceExportVatOnLine(line, offerType));
+    const allUpdatedLines = [normalizedUpdatedLine, ...(normalizedRelatedLines || [])].map((l) => ({ ...l, isEditing: false }));
     const linesWithBackendId = allUpdatedLines.filter((l) => resolveDocumentLineBackendId(l) != null);
 
     if (isExistingOrder && orderId && linesWithBackendId.length > 0) {
@@ -697,7 +719,7 @@ export function OrderLineTable({
       return;
     }
 
-    applyLineUpdatesToLocalState(updatedLine, relatedLinesToUpdate, originalLine);
+    applyLineUpdatesToLocalState(normalizedUpdatedLine, normalizedRelatedLines, originalLine);
     setEditLineDialogOpen(false);
     setLineToEdit(null);
   };
@@ -1459,6 +1481,7 @@ export function OrderLineTable({
             userDiscountLimits={userDiscountLimits}
             isSaving={createMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkers}
+            offerType={offerType}
             allowImageUpload
             imageUploadScope="order-line"
             imageUploadExtras={{
@@ -1491,6 +1514,7 @@ export function OrderLineTable({
             exchangeRates={exchangeRates}
             pricingRules={pricingRules}
             userDiscountLimits={userDiscountLimits}
+            offerType={offerType}
             isSaving={updateMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkersForEdit}
             allowImageUpload={Boolean(resolveDocumentLineBackendId(lineToEdit))}

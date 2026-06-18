@@ -7,6 +7,9 @@ export interface SystemSettingsDto {
   hideDemandVatRate: boolean;
   hideQuotationVatRate: boolean;
   hideOrderVatRate: boolean;
+  readonlyDemandVatRate: boolean;
+  readonlyQuotationVatRate: boolean;
+  readonlyOrderVatRate: boolean;
   catalogGroupCodeLabel?: string | null;
   catalogCode1Label?: string | null;
   catalogCode2Label?: string | null;
@@ -39,6 +42,9 @@ export interface EditableSystemSettingsDto {
   hideDemandVatRate: boolean;
   hideQuotationVatRate: boolean;
   hideOrderVatRate: boolean;
+  readonlyDemandVatRate: boolean;
+  readonlyQuotationVatRate: boolean;
+  readonlyOrderVatRate: boolean;
   catalogGroupCodeLabel?: string | null;
   catalogCode1Label?: string | null;
   catalogCode2Label?: string | null;
@@ -76,6 +82,9 @@ export const systemSettingsFormSchema = z.object({
   hideDemandVatRate: z.boolean(),
   hideQuotationVatRate: z.boolean(),
   hideOrderVatRate: z.boolean(),
+  readonlyDemandVatRate: z.boolean(),
+  readonlyQuotationVatRate: z.boolean(),
+  readonlyOrderVatRate: z.boolean(),
   catalogGroupCodeLabel: z.string().max(50, 'common.form.maxLength').nullable().optional(),
   catalogCode1Label: z.string().max(50, 'common.form.maxLength').nullable().optional(),
   catalogCode2Label: z.string().max(50, 'common.form.maxLength').nullable().optional(),

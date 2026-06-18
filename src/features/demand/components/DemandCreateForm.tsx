@@ -444,6 +444,7 @@ export function DemandCreateForm(): ReactElement {
                       customerId={watchedCustomerId}
                       erpCustomerCode={watchedErpCustomerCode}
                       representativeId={watchedRepresentativeId}
+                      offerType={form.watch('demand.offerType')}
                     />
                   </div>
                 </div>

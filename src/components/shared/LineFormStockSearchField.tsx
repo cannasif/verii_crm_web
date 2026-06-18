@@ -27,7 +27,9 @@ import {
 import type { StockGetDto } from '@/features/stock/types';
 import { dedupeStocksByErpStockCode } from '@/features/stock/utils/dedupe-stocks-by-erp-code';
 import { getLocalizedStockName } from '@/features/stock/utils/localized-stock-name';
+import { getCatalogFieldLabel } from '@/lib/catalog-field-labels';
 import { cn } from '@/lib/utils';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 
 const INLINE_STOCK_SEARCH_DEBOUNCE_MS = 400;
 
@@ -47,6 +49,7 @@ export function LineFormStockSearchField({
   inputClassName,
 }: LineFormStockSearchFieldProps): ReactElement {
   const { t, i18n } = useTranslation('common');
+  const systemSettings = useSystemSettingsStore((state) => state.settings);
   const [draftQuery, setDraftQuery] = useState(productCode || '');
   const [stockPopoverOpen, setStockPopoverOpen] = useState(false);
   const [relatedDialogOpen, setRelatedDialogOpen] = useState(false);
@@ -190,6 +193,22 @@ export function LineFormStockSearchField({
     count: DROPDOWN_MIN_CHARS,
     defaultValue: `Minimum ${DROPDOWN_MIN_CHARS} characters`,
   });
+  const resolvedPlaceholder = useMemo(() => {
+    if (placeholder) {
+      return placeholder;
+    }
+
+    const groupLabel = getCatalogFieldLabel(systemSettings, 'grupKodu', t);
+    const code1Label = getCatalogFieldLabel(systemSettings, 'kod1', t);
+    const code2Label = getCatalogFieldLabel(systemSettings, 'kod2', t);
+
+    return t('lineFormStockSearch.searchPlaceholderWithLabels', {
+      group: groupLabel,
+      code1: code1Label,
+      code2: code2Label,
+      defaultValue: `Stok kodu, stok adı, ${code1Label}, ${code2Label} ve ${groupLabel} ile ara...`,
+    });
+  }, [placeholder, systemSettings, t]);
 
   return (
     <>
@@ -199,7 +218,7 @@ export function LineFormStockSearchField({
           autoComplete="off"
           value={draftQuery}
           disabled={disabled}
-          placeholder={placeholder ?? t('productSelectDialog.searchPlaceholder')}
+          placeholder={resolvedPlaceholder}
           onChange={(e) => {
             const v = e.target.value;
             setDraftQuery(v);

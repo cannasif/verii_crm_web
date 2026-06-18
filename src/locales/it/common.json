@@ -4849,12 +4849,33 @@
       "NumberFormat": "Formato numeri",
       "DecimalPlaces": "Cifre decimali",
       "RestrictCustomersBySalesRepMatch": "Limita i clienti in base all'abbinamento al rappresentante di vendita",
+      "HideDemandVatRate": "Nascondi aliquota IVA nelle richieste",
+      "HideQuotationVatRate": "Nascondi aliquota IVA nei preventivi",
+      "HideOrderVatRate": "Nascondi aliquota IVA negli ordini",
+      "ReadonlyDemandVatRate": "Blocca aliquota IVA nelle richieste",
+      "ReadonlyQuotationVatRate": "Blocca aliquota IVA nei preventivi",
+      "ReadonlyOrderVatRate": "Blocca aliquota IVA negli ordini",
+      "CatalogGroupCodeLabel": "Etichetta codice gruppo",
+      "CatalogCode1Label": "Etichetta codice 1",
+      "CatalogCode2Label": "Etichetta codice 2",
+      "CatalogCode3Label": "Etichetta codice 3",
+      "CatalogCode4Label": "Etichetta codice 4",
+      "CatalogCode5Label": "Etichetta codice 5",
       "DemandApprovalCompletionAction": "Demand approval completion action",
       "QuotationApprovalCompletionAction": "Quotation approval completion action",
       "OrderApprovalCompletionAction": "Order approval completion action"
     },
     "Descriptions": {
-      "RestrictCustomersBySalesRepMatch": "Se abilitato, elenchi e selettori clienti sono limitati ai codici rappresentante di vendita associati all'utente selezionato."
+      "RestrictCustomersBySalesRepMatch": "Se abilitato, elenchi e selettori clienti sono limitati ai codici rappresentante di vendita associati all'utente selezionato.",
+      "DecimalPlacesRange": "Le cifre decimali devono essere comprese tra 0 e 6.",
+      "VatVisibility": "Se abilitato, il campo dell'aliquota IVA viene nascosto nelle righe di richiesta, preventivo o ordine correlate. I dati di calcolo vengono conservati.",
+      "VatReadonly": "Se abilitato, l'aliquota IVA resta visibile nelle righe di richiesta, preventivo o ordine correlate, ma non può essere modificata dall'utente.",
+      "CatalogLabels": "Lascia vuoto per mantenere i nomi campo Netsis predefiniti, come Codice gruppo, Codice1 e Codice2. Massimo 50 caratteri."
+    },
+    "Sections": {
+      "VatVisibility": "Visibilità aliquota IVA",
+      "VatReadonly": "Modifica aliquota IVA",
+      "CatalogLabels": "Etichette dei campi codice catalogo"
     },
     "Placeholders": {
       "DefaultLanguage": "Seleziona lingua",

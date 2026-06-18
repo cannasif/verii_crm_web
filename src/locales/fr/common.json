@@ -4775,12 +4775,33 @@
       "NumberFormat": "Format des nombres",
       "DecimalPlaces": "Nombre de décimales",
       "RestrictCustomersBySalesRepMatch": "Limiter les clients selon l'appariement au représentant commercial",
+      "HideDemandVatRate": "Masquer le taux de TVA sur les demandes",
+      "HideQuotationVatRate": "Masquer le taux de TVA sur les devis",
+      "HideOrderVatRate": "Masquer le taux de TVA sur les commandes",
+      "ReadonlyDemandVatRate": "Verrouiller le taux de TVA sur les demandes",
+      "ReadonlyQuotationVatRate": "Verrouiller le taux de TVA sur les devis",
+      "ReadonlyOrderVatRate": "Verrouiller le taux de TVA sur les commandes",
+      "CatalogGroupCodeLabel": "Libellé du code groupe",
+      "CatalogCode1Label": "Libellé du code 1",
+      "CatalogCode2Label": "Libellé du code 2",
+      "CatalogCode3Label": "Libellé du code 3",
+      "CatalogCode4Label": "Libellé du code 4",
+      "CatalogCode5Label": "Libellé du code 5",
       "DemandApprovalCompletionAction": "Demand approval completion action",
       "QuotationApprovalCompletionAction": "Quotation approval completion action",
       "OrderApprovalCompletionAction": "Order approval completion action"
     },
     "Descriptions": {
-      "RestrictCustomersBySalesRepMatch": "Lorsque cette option est activée, les listes et sélecteurs de clients sont limités aux codes de représentant commercial correspondant à l'utilisateur sélectionné."
+      "RestrictCustomersBySalesRepMatch": "Lorsque cette option est activée, les listes et sélecteurs de clients sont limités aux codes de représentant commercial correspondant à l'utilisateur sélectionné.",
+      "DecimalPlacesRange": "Le nombre de décimales doit être compris entre 0 et 6.",
+      "VatVisibility": "Lorsque cette option est activée, le champ du taux de TVA est masqué dans les lignes de demande, devis ou commande concernées. Les données de calcul sont conservées.",
+      "VatReadonly": "Lorsque cette option est activée, le taux de TVA reste visible dans les lignes de demande, devis ou commande concernées, mais l'utilisateur ne peut pas le modifier.",
+      "CatalogLabels": "Laissez vide pour conserver les noms de champs Netsis par défaut, comme Code groupe, Code1 et Code2. Maximum 50 caractères."
+    },
+    "Sections": {
+      "VatVisibility": "Visibilité du taux de TVA",
+      "VatReadonly": "Modification du taux de TVA",
+      "CatalogLabels": "Libellés des champs de code catalogue"
     },
     "Placeholders": {
       "DefaultLanguage": "Sélectionner la langue",

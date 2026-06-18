@@ -4777,6 +4777,9 @@
       "HideDemandVatRate": "Hide VAT rate on demands",
       "HideQuotationVatRate": "Hide VAT rate on quotations",
       "HideOrderVatRate": "Hide VAT rate on orders",
+      "ReadonlyDemandVatRate": "Lock VAT rate on demands",
+      "ReadonlyQuotationVatRate": "Lock VAT rate on quotations",
+      "ReadonlyOrderVatRate": "Lock VAT rate on orders",
       "CatalogGroupCodeLabel": "Group Code label",
       "CatalogCode1Label": "Code1 label",
       "CatalogCode2Label": "Code2 label",
@@ -4791,10 +4794,12 @@
       "RestrictCustomersBySalesRepMatch": "When enabled, customer lists and pickers are limited by the selected user's matched sales representative codes.",
       "DecimalPlacesRange": "Decimal places must be between 0 and 6.",
       "VatVisibility": "When enabled, the VAT rate input is hidden on the related demand, quotation, or order line forms. Calculation data is preserved.",
+      "VatReadonly": "When enabled, the VAT rate remains visible on the related demand, quotation, or order lines but cannot be changed by the user.",
       "CatalogLabels": "Leave empty to keep the default Netsis field names such as Group Code, Code1, and Code2. Maximum 50 characters."
     },
     "Sections": {
       "VatVisibility": "VAT rate visibility",
+      "VatReadonly": "VAT rate editing",
       "CatalogLabels": "Catalog code field labels"
     },
     "Placeholders": {

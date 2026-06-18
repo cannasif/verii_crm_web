@@ -4820,12 +4820,33 @@
       "NumberFormat": "Formato numérico",
       "DecimalPlaces": "Cifras decimales",
       "RestrictCustomersBySalesRepMatch": "Limitar clientes según coincidencia con representante de ventas",
+      "HideDemandVatRate": "Ocultar IVA en demandas",
+      "HideQuotationVatRate": "Ocultar IVA en cotizaciones",
+      "HideOrderVatRate": "Ocultar IVA en pedidos",
+      "ReadonlyDemandVatRate": "Bloquear IVA en demandas",
+      "ReadonlyQuotationVatRate": "Bloquear IVA en cotizaciones",
+      "ReadonlyOrderVatRate": "Bloquear IVA en pedidos",
+      "CatalogGroupCodeLabel": "Etiqueta de código de grupo",
+      "CatalogCode1Label": "Etiqueta de código 1",
+      "CatalogCode2Label": "Etiqueta de código 2",
+      "CatalogCode3Label": "Etiqueta de código 3",
+      "CatalogCode4Label": "Etiqueta de código 4",
+      "CatalogCode5Label": "Etiqueta de código 5",
       "DemandApprovalCompletionAction": "Demand approval completion action",
       "QuotationApprovalCompletionAction": "Quotation approval completion action",
       "OrderApprovalCompletionAction": "Order approval completion action"
     },
     "Descriptions": {
-      "RestrictCustomersBySalesRepMatch": "Si está activado, las listas y selectores de clientes se limitan a los códigos de representante de ventas asociados al usuario seleccionado."
+      "RestrictCustomersBySalesRepMatch": "Si está activado, las listas y selectores de clientes se limitan a los códigos de representante de ventas asociados al usuario seleccionado.",
+      "DecimalPlacesRange": "Las cifras decimales deben estar entre 0 y 6.",
+      "VatVisibility": "Cuando está activado, el campo de IVA se oculta en las líneas de demanda, cotización o pedido relacionadas. Los datos de cálculo se conservan.",
+      "VatReadonly": "Cuando está activado, el IVA permanece visible en las líneas de demanda, cotización o pedido relacionadas, pero el usuario no puede modificarlo.",
+      "CatalogLabels": "Déjelo vacío para usar los nombres de campo predeterminados de Netsis, como Código de grupo, Código1 y Código2. Máximo 50 caracteres."
+    },
+    "Sections": {
+      "VatVisibility": "Visibilidad del IVA",
+      "VatReadonly": "Edición del IVA",
+      "CatalogLabels": "Etiquetas de campos de código de catálogo"
     },
     "Placeholders": {
       "DefaultLanguage": "Seleccionar idioma",

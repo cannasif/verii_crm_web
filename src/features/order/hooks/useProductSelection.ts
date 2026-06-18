@@ -20,11 +20,13 @@ import {
   convertProductLinePriceForDocument,
   type PricingRulePriceLineLike,
 } from '@/lib/line-unit-price-currency';
+import { resolveDocumentVatRate } from '@/lib/document-vat';
 
 interface UseProductSelectionParams {
   currency: number;
   exchangeRates: OrderExchangeRateFormState[];
   pricingRules?: PricingRuleLineGetDto[];
+  offerType?: string | null;
 }
 
 interface UseProductSelectionReturn {
@@ -36,6 +38,7 @@ export function useProductSelection({
   currency,
   exchangeRates,
   pricingRules = [],
+  offerType,
 }: UseProductSelectionParams): UseProductSelectionReturn {
   const { calculateLineTotals } = useOrderCalculations();
   const { currencyOptions } = useCurrencyOptions();
@@ -58,7 +61,7 @@ export function useProductSelection({
         discountAmount2: 0,
         discountRate3: 0,
         discountAmount3: 0,
-        vatRate: product.vatRate || 20,
+        vatRate: resolveDocumentVatRate(product.vatRate, offerType),
         vatAmount: 0,
         lineTotal: 0,
         lineGrandTotal: 0,
@@ -71,7 +74,7 @@ export function useProductSelection({
         isEditing: true,
       };
     },
-    []
+    [offerType]
   );
 
   const convertPriceData = useCallback(
@@ -149,7 +152,7 @@ export function useProductSelection({
           const isMainProduct = i === 0;
 
           let productName = isMainProduct ? resolvedMainProductName : '';
-          const vatRate = productWithResolvedName.vatRate || 20;
+          const vatRate = resolveDocumentVatRate(productWithResolvedName.vatRate, offerType);
           const relatedStockId: number | null = mainStockId;
 
           let relatedStockIdFromArray: number | undefined;
@@ -252,7 +255,7 @@ export function useProductSelection({
         return [calculateLineTotals(baseLine)];
       }
     },
-    [convertPriceData, createEmptyLine, calculateLineTotals, i18n.language]
+    [convertPriceData, createEmptyLine, calculateLineTotals, i18n.language, offerType]
   );
 
   const handleProductSelect = useCallback(

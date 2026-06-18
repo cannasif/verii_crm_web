@@ -4779,6 +4779,9 @@
       "HideDemandVatRate": "MwSt.-Satz bei Anfragen ausblenden",
       "HideQuotationVatRate": "MwSt.-Satz bei Angeboten ausblenden",
       "HideOrderVatRate": "MwSt.-Satz bei Aufträgen ausblenden",
+      "ReadonlyDemandVatRate": "MwSt.-Satz bei Anfragen sperren",
+      "ReadonlyQuotationVatRate": "MwSt.-Satz bei Angeboten sperren",
+      "ReadonlyOrderVatRate": "MwSt.-Satz bei Aufträgen sperren",
       "CatalogGroupCodeLabel": "Bezeichnung für Gruppencode",
       "CatalogCode1Label": "Bezeichnung für Code1",
       "CatalogCode2Label": "Bezeichnung für Code2",
@@ -4794,10 +4797,12 @@
       "RestrictCustomersBySalesRepMatch": "Wenn aktiviert, werden Kundenlisten und -auswahl auf die dem gewählten Benutzer zugeordneten Vertriebsmitarbeiter-Codes begrenzt.",
       "DecimalPlacesRange": "Die Anzahl der Dezimalstellen muss zwischen 0 und 6 liegen.",
       "VatVisibility": "Wenn aktiviert, wird das Eingabefeld für den MwSt.-Satz in den entsprechenden Anfrage-, Angebots- oder Auftragszeilen ausgeblendet. Die Berechnungsdaten bleiben erhalten.",
+      "VatReadonly": "Wenn aktiviert, bleibt der MwSt.-Satz in den entsprechenden Anfrage-, Angebots- oder Auftragszeilen sichtbar, kann aber vom Benutzer nicht geändert werden.",
       "CatalogLabels": "Leer lassen, um die Standard-Netsis-Feldnamen wie Gruppencode, Code1 und Code2 zu verwenden. Maximal 50 Zeichen."
     },
     "Sections": {
       "VatVisibility": "Sichtbarkeit des MwSt.-Satzes",
+      "VatReadonly": "Bearbeitung des MwSt.-Satzes",
       "CatalogLabels": "Bezeichnungen der Katalogcode-Felder"
     },
     "Placeholders": {

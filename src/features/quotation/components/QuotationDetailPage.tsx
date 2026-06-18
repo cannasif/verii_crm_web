@@ -1206,6 +1206,7 @@ export function QuotationDetailPage(): ReactElement {
                       representativeId={watchedRepresentativeId}
                       quotationId={quotationId}
                       enabled={linesEnabled}
+                      offerType={form.watch('quotation.offerType')}
                       offerNo={quotation?.offerNo ?? null}
                       customerName={quotation?.potentialCustomerName ?? null}
                       buildExportPdfBlob={buildPreviewPdfBlob}

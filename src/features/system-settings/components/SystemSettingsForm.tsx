@@ -39,6 +39,9 @@ const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   hideDemandVatRate: false,
   hideQuotationVatRate: false,
   hideOrderVatRate: false,
+  readonlyDemandVatRate: false,
+  readonlyQuotationVatRate: false,
+  readonlyOrderVatRate: false,
   catalogGroupCodeLabel: '',
   catalogCode1Label: '',
   catalogCode2Label: '',
@@ -152,6 +155,9 @@ export function SystemSettingsForm({
       hideDemandVatRate: normalizedData.hideDemandVatRate,
       hideQuotationVatRate: normalizedData.hideQuotationVatRate,
       hideOrderVatRate: normalizedData.hideOrderVatRate,
+      readonlyDemandVatRate: normalizedData.readonlyDemandVatRate,
+      readonlyQuotationVatRate: normalizedData.readonlyQuotationVatRate,
+      readonlyOrderVatRate: normalizedData.readonlyOrderVatRate,
       catalogGroupCodeLabel: normalizedData.catalogGroupCodeLabel ?? '',
       catalogCode1Label: normalizedData.catalogCode1Label ?? '',
       catalogCode2Label: normalizedData.catalogCode2Label ?? '',
@@ -380,6 +386,41 @@ export function SystemSettingsForm({
                   ['hideDemandVatRate', t('systemSettings.Fields.HideDemandVatRate', 'Talepte KDV oranını gizle')],
                   ['hideQuotationVatRate', t('systemSettings.Fields.HideQuotationVatRate', 'Teklifte KDV oranını gizle')],
                   ['hideOrderVatRate', t('systemSettings.Fields.HideOrderVatRate', 'Siparişte KDV oranını gizle')],
+                ] as const).map(([name, label]) => (
+                  <FormField
+                    key={name}
+                    control={form.control}
+                    name={name}
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#0C0516]">
+                          <FormControl>
+                            <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                          </FormControl>
+                          <FormLabel required={false} className="leading-5">
+                            {label}
+                          </FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="mb-3 space-y-1">
+                <p className="text-sm font-semibold">{t('systemSettings.Sections.VatReadonly', 'KDV oranı düzenleme yetkisi')}</p>
+                <p className="text-muted-foreground text-sm">
+                  {t('systemSettings.Descriptions.VatReadonly', 'Açıldığında ilgili talep, teklif veya sipariş satırlarında KDV oranı görünür kalır ancak kullanıcı tarafından değiştirilemez.')}
+                </p>
+              </div>
+              <div className="grid gap-3 md:grid-cols-3">
+                {([
+                  ['readonlyDemandVatRate', t('systemSettings.Fields.ReadonlyDemandVatRate', 'Talepte KDV oranını kilitle')],
+                  ['readonlyQuotationVatRate', t('systemSettings.Fields.ReadonlyQuotationVatRate', 'Teklifte KDV oranını kilitle')],
+                  ['readonlyOrderVatRate', t('systemSettings.Fields.ReadonlyOrderVatRate', 'Siparişte KDV oranını kilitle')],
                 ] as const).map(([name, label]) => (
                   <FormField
                     key={name}

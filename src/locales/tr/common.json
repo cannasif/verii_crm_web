@@ -4820,6 +4820,9 @@
       "HideDemandVatRate": "Talepte KDV oranını gizle",
       "HideQuotationVatRate": "Teklifte KDV oranını gizle",
       "HideOrderVatRate": "Siparişte KDV oranını gizle",
+      "ReadonlyDemandVatRate": "Talepte KDV oranını kilitle",
+      "ReadonlyQuotationVatRate": "Teklifte KDV oranını kilitle",
+      "ReadonlyOrderVatRate": "Siparişte KDV oranını kilitle",
       "CatalogGroupCodeLabel": "Grup Kodu adı",
       "CatalogCode1Label": "Kod1 adı",
       "CatalogCode2Label": "Kod2 adı",
@@ -4834,10 +4837,12 @@
       "RestrictCustomersBySalesRepMatch": "Açık olduğunda müşteri listeleri ve seçim ekranları, ilgili kullanıcının satış temsilcisi eşleşmelerine göre daraltılır.",
       "DecimalPlacesRange": "Ondalık basamak sayısı 0 ile 6 arasında olmalıdır.",
       "VatVisibility": "Açıldığında ilgili talep, teklif veya sipariş satırlarında KDV oranı giriş alanı gizlenir. Hesaplama verisi korunur.",
+      "VatReadonly": "Açıldığında ilgili talep, teklif veya sipariş satırlarında KDV oranı görünür kalır ancak kullanıcı tarafından değiştirilemez.",
       "CatalogLabels": "Boş bırakılırsa Grup Kodu, Kod1, Kod2 gibi mevcut Netsis alan adları kullanılır. En fazla 50 karakter girilebilir."
     },
     "Sections": {
       "VatVisibility": "KDV oranı görünürlüğü",
+      "VatReadonly": "KDV oranı düzenleme yetkisi",
       "CatalogLabels": "Katalog kod alanı isimleri"
     },
     "Placeholders": {

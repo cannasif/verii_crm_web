@@ -858,6 +858,7 @@ export function OrderDetailPage(): ReactElement {
                       representativeId={watchedRepresentativeId}
                       orderId={orderId}
                       enabled={linesEnabled}
+                      offerType={form.watch('order.offerType')}
                       buildExportPdfBlob={pdfExport.buildExportPdfBlob}
                       exportPdfFileName={pdfShareFileName}
                     />

@@ -524,6 +524,7 @@ export function OrderCreateForm(): ReactElement {
                       customerId={watchedCustomerId}
                       erpCustomerCode={watchedErpCustomerCode}
                       representativeId={watchedRepresentativeId}
+                      offerType={form.watch('order.offerType')}
                       buildExportPdfBlob={pdfExport.buildExportPdfBlob}
                       exportPdfFileName={pdfExport.shareFileName}
                     />

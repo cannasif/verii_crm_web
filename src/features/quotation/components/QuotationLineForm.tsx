@@ -50,6 +50,7 @@ import {
   DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS,
 } from '@/lib/document-line-dialog-styles';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
+import { enforceExportVatOnLine, isExportOfferType, resolveDocumentVatRate } from '@/lib/document-vat';
 
 interface TemporaryStockData {
   productCode: string;
@@ -117,6 +118,7 @@ interface QuotationLineFormProps {
   allowImageUpload?: boolean;
   imageUploadScope?: 'quotation-line';
   imageUploadExtras?: Omit<UploadPdfAssetOptions, 'assetScope'>;
+  offerType?: string | null;
 }
 
 export function QuotationLineForm({
@@ -133,11 +135,15 @@ export function QuotationLineForm({
   allowImageUpload = false,
   imageUploadScope = 'quotation-line',
   imageUploadExtras,
+  offerType,
 }: QuotationLineFormProps): ReactElement {
   const { t } = useTranslation(['quotation', 'common']);
   const queryClient = useQueryClient();
   const { calculateLineTotals } = useQuotationCalculations();
   const hideVatRate = useSystemSettingsStore((state) => state.settings.hideQuotationVatRate);
+  const readonlyVatRate = useSystemSettingsStore((state) => state.settings.readonlyQuotationVatRate);
+  const isExportOffer = isExportOfferType(offerType);
+  const isVatRateInputLocked = readonlyVatRate || isExportOffer;
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
   const [companyDialogOpen, setCompanyDialogOpen] = useState(false);
@@ -154,6 +160,7 @@ export function QuotationLineForm({
     currency,
     exchangeRates,
     pricingRules,
+    offerType,
   });
 
   const handleCompanySelect = (result: CustomerSelectionResult) => {
@@ -169,7 +176,7 @@ export function QuotationLineForm({
     return found?.code || 'TRY';
   }, [currency, currencyOptions]);
 
-  const [formData, setFormData] = useState<QuotationLineFormState>(line);
+  const [formData, setFormData] = useState<QuotationLineFormState>(() => calculateLineTotals(enforceExportVatOnLine(line, offerType)));
   const { profilOptions, demirOptions, vidaOptions, baskiOptions, allDemirOptions, allVidaOptions, isLoading: isDefinitionOptionsLoading } =
     useWindoDefinitionOptions(formData.profilDefinitionId, {
       demirDefinitionId: formData.demirDefinitionId,
@@ -194,7 +201,7 @@ export function QuotationLineForm({
   const [quantityInputValue, setQuantityInputValue] = useState<string>(() =>
     formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit),
   );
-  const [vatRateInputValue, setVatRateInputValue] = useState<string>(String(line.vatRate || ''));
+  const [vatRateInputValue, setVatRateInputValue] = useState<string>(() => String(resolveDocumentVatRate(line.vatRate, offerType)));
   const [discountRate1InputValue, setDiscountRate1InputValue] = useState<string>(String(line.discountRate1 || ''));
   const [discountRate2InputValue, setDiscountRate2InputValue] = useState<string>(String(line.discountRate2 || ''));
   const [discountRate3InputValue, setDiscountRate3InputValue] = useState<string>(String(line.discountRate3 || ''));
@@ -357,21 +364,33 @@ export function QuotationLineForm({
       return;
     }
 
-    setFormData(line);
-    setQuantityInputValue(formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit));
+    const nextLine = calculateLineTotals(enforceExportVatOnLine(line, offerType));
+    setFormData(nextLine);
+    setQuantityInputValue(formatQuantityInputDraftFromNumber(nextLine.quantity ?? 0, nextLine.unit));
     unitPriceInput.resetInputCurrencyToDocument();
-    unitPriceInput.syncUnitPriceFromDocument(line.unitPrice ?? 0);
-    setVatRateInputValue(String(line.vatRate || ''));
-    setDiscountRate1InputValue(String(line.discountRate1 || ''));
-    setDiscountRate2InputValue(String(line.discountRate2 || ''));
-    setDiscountRate3InputValue(String(line.discountRate3 || ''));
+    unitPriceInput.syncUnitPriceFromDocument(nextLine.unitPrice ?? 0);
+    setVatRateInputValue(String(resolveDocumentVatRate(nextLine.vatRate, offerType)));
+    setDiscountRate1InputValue(String(nextLine.discountRate1 || ''));
+    setDiscountRate2InputValue(String(nextLine.discountRate2 || ''));
+    setDiscountRate3InputValue(String(nextLine.discountRate3 || ''));
     const lineRelatedLines = (line as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines || [];
     if (lineRelatedLines.length > 0) {
-      setRelatedLines(lineRelatedLines);
+      setRelatedLines(lineRelatedLines.map((relatedLine) => calculateLineTotals(enforceExportVatOnLine(relatedLine, offerType))));
     } else {
       setRelatedLines([]);
     }
-  }, [line]);
+  }, [calculateLineTotals, isExportOffer, line, offerType]);
+
+  useEffect(() => {
+    if (!isExportOffer) return;
+    setVatRateInputValue('0');
+    setFormData((prev) => {
+      if ((prev.vatRate ?? 0) === 0 && (prev.vatAmount ?? 0) === 0) return prev;
+      return calculateLineTotals(enforceExportVatOnLine(prev, offerType));
+    });
+    setRelatedLines((prev) => prev.map((relatedLine) => calculateLineTotals(enforceExportVatOnLine(relatedLine, offerType))));
+    setBulkDraftLines((prev) => prev.map((draftLine) => calculateLineTotals(enforceExportVatOnLine(draftLine, offerType))));
+  }, [calculateLineTotals, isExportOffer, offerType]);
 
   useEffect(() => {
     unitPriceInput.syncUnitPriceFromDocument(formData.unitPrice ?? 0);
@@ -854,7 +873,7 @@ export function QuotationLineForm({
       setQuantityInputValue(formatQuantityInputDraftFromNumber(firstLine.quantity ?? 0, firstLine.unit));
       unitPriceInput.resetInputCurrencyToDocument();
       unitPriceInput.syncUnitPriceFromDocument(firstLine.unitPrice ?? 0);
-      setVatRateInputValue(String(firstLine.vatRate || ''));
+      setVatRateInputValue(String(resolveDocumentVatRate(firstLine.vatRate, offerType)));
       setDiscountRate1InputValue(String(firstLine.discountRate1 || ''));
       setDiscountRate2InputValue(String(firstLine.discountRate2 || ''));
       setDiscountRate3InputValue(String(firstLine.discountRate3 || ''));
@@ -870,7 +889,7 @@ export function QuotationLineForm({
     const flattenedLines = bulkDraftLines.flatMap((lineItem) => {
       const nested = (lineItem as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines ?? [];
       return [lineItem, ...nested];
-    });
+    }).map((draftLine) => calculateLineTotals(enforceExportVatOnLine(draftLine, offerType)));
     if (onSaveMultiple) {
       onSaveMultiple(flattenedLines);
     } else {
@@ -896,7 +915,7 @@ export function QuotationLineForm({
     setFormData(selected);
     setQuantityInputValue(formatQuantityInputDraftFromNumber(selected.quantity ?? 0, selected.unit));
     unitPriceInput.syncUnitPriceFromDocument(selected.unitPrice ?? 0);
-    setVatRateInputValue(String(selected.vatRate || ''));
+    setVatRateInputValue(String(resolveDocumentVatRate(selected.vatRate, offerType)));
     setDiscountRate1InputValue(String(selected.discountRate1 || ''));
     setDiscountRate2InputValue(String(selected.discountRate2 || ''));
     setDiscountRate3InputValue(String(selected.discountRate3 || ''));
@@ -915,7 +934,7 @@ export function QuotationLineForm({
       setQuantityInputValue(formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit));
       unitPriceInput.resetInputCurrencyToDocument();
       unitPriceInput.syncUnitPriceFromDocument(line.unitPrice ?? 0);
-      setVatRateInputValue(String(line.vatRate || ''));
+      setVatRateInputValue(String(resolveDocumentVatRate(line.vatRate, offerType)));
       setDiscountRate1InputValue(String(line.discountRate1 || ''));
       setDiscountRate2InputValue(String(line.discountRate2 || ''));
       setDiscountRate3InputValue(String(line.discountRate3 || ''));
@@ -936,7 +955,7 @@ export function QuotationLineForm({
       setFormData(selected);
       setQuantityInputValue(formatQuantityInputDraftFromNumber(selected.quantity ?? 0, selected.unit));
       unitPriceInput.syncUnitPriceFromDocument(selected.unitPrice ?? 0);
-      setVatRateInputValue(String(selected.vatRate || ''));
+      setVatRateInputValue(String(resolveDocumentVatRate(selected.vatRate, offerType)));
       setDiscountRate1InputValue(String(selected.discountRate1 || ''));
       setDiscountRate2InputValue(String(selected.discountRate2 || ''));
       setDiscountRate3InputValue(String(selected.discountRate3 || ''));
@@ -947,6 +966,15 @@ export function QuotationLineForm({
   };
 
   const handleFieldChange = (field: keyof QuotationLineFormState, value: unknown): void => {
+    if (isExportOffer && field === 'vatRate') {
+      setVatRateInputValue('0');
+      setFormData((prev) => calculateLineTotals(enforceExportVatOnLine(prev, offerType)));
+      return;
+    }
+    if (readonlyVatRate && field === 'vatRate') {
+      return;
+    }
+
     const prevUnitPrice = formData.unitPrice;
     const prevQuantity = formData.quantity;
     const updated = { ...formData, [field]: value };
@@ -1045,29 +1073,33 @@ export function QuotationLineForm({
       };
     }
 
-    setFormData(calculated);
+    const nextCalculated = isExportOffer
+      ? calculateLineTotals(enforceExportVatOnLine(calculated, offerType))
+      : calculated;
+
+    setFormData(nextCalculated);
     if (bulkDraftLines.length > 0) {
       setBulkDraftLines((prev) =>
         prev.map((lineItem, index) => (
-          index === activeBulkIndex ? { ...calculated, id: lineItem.id } : lineItem
+          index === activeBulkIndex ? { ...nextCalculated, id: lineItem.id } : lineItem
         ))
       );
     }
 
-    if (field !== 'unitPrice' && calculated.unitPrice !== prevUnitPrice) {
-      unitPriceInput.syncUnitPriceFromDocument(calculated.unitPrice ?? 0);
+    if (field !== 'unitPrice' && nextCalculated.unitPrice !== prevUnitPrice) {
+      unitPriceInput.syncUnitPriceFromDocument(nextCalculated.unitPrice ?? 0);
     }
 
-    if (field !== 'quantity' && calculated.quantity !== prevQuantity) {
+    if (field !== 'quantity' && nextCalculated.quantity !== prevQuantity) {
       setQuantityInputValue(
-        formatQuantityInputDraftFromNumber(calculated.quantity ?? 0, calculated.unit ?? formData.unit),
+        formatQuantityInputDraftFromNumber(nextCalculated.quantity ?? 0, nextCalculated.unit ?? formData.unit),
       );
     }
 
     if (field === 'quantity' && formData.productCode) {
-      setDiscountRate1InputValue(String(calculated.discountRate1 || ''));
-      setDiscountRate2InputValue(String(calculated.discountRate2 || ''));
-      setDiscountRate3InputValue(String(calculated.discountRate3 || ''));
+      setDiscountRate1InputValue(String(nextCalculated.discountRate1 || ''));
+      setDiscountRate2InputValue(String(nextCalculated.discountRate2 || ''));
+      setDiscountRate3InputValue(String(nextCalculated.discountRate3 || ''));
     }
 
     if (field === 'quantity' && formData.relatedProductKey && relatedLines.length > 0) {
@@ -1084,7 +1116,7 @@ export function QuotationLineForm({
             quantity: newRelatedQuantity,
             groupCode: relatedLine.groupCode || relatedStockData.groupCode || null,
           };
-          return calculateLineTotals(updatedRelatedLine);
+          return calculateLineTotals(enforceExportVatOnLine(updatedRelatedLine, offerType));
         }
 
         return relatedLine;
@@ -1097,11 +1129,14 @@ export function QuotationLineForm({
   handleFieldChangeRef.current = handleFieldChange;
 
   const handleSave = (): void => {
+    const normalizedFormData = calculateLineTotals(enforceExportVatOnLine(formData, offerType));
+    const normalizedRelatedLines = relatedLines.map((relatedLine) => calculateLineTotals(enforceExportVatOnLine(relatedLine, offerType)));
+
     if (onSaveMultiple && relatedLines.length > 0) {
-      const linesToSave = [formData, ...relatedLines];
+      const linesToSave = [normalizedFormData, ...normalizedRelatedLines];
       onSaveMultiple(linesToSave);
     } else if (onSave) {
-      onSave(formData);
+      onSave(normalizedFormData);
     }
   };
 
@@ -1334,9 +1369,15 @@ export function QuotationLineForm({
               step={percentageStep}
               min="0"
               max="100"
-              disabled={!isLineStockSelected}
+              disabled={!isLineStockSelected || isVatRateInputLocked}
               value={vatRateInputValue}
               onChange={(e) => {
+                if (isVatRateInputLocked) {
+                  if (!isExportOffer) return;
+                  setVatRateInputValue('0');
+                  handleFieldChange('vatRate', 0);
+                  return;
+                }
                 const inputValue = e.target.value;
                 setVatRateInputValue(inputValue);
                 if (inputValue === '' || inputValue === '.') {
@@ -1349,6 +1390,12 @@ export function QuotationLineForm({
                 }
               }}
               onBlur={() => {
+                if (isVatRateInputLocked) {
+                  if (!isExportOffer) return;
+                  setVatRateInputValue('0');
+                  handleFieldChange('vatRate', 0);
+                  return;
+                }
                 if (vatRateInputValue === '' || vatRateInputValue === '.') {
                   setVatRateInputValue('0');
                   handleFieldChange('vatRate', 0);
