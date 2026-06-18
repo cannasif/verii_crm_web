@@ -14,6 +14,10 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { getImageUrl } from '@/features/stock/utils/image-url';
 import { StockWarehouseBalanceBadge } from '@/features/stock/components/StockWarehouseBalanceBadge';
+import {
+  dedupeStocksByErpStockCode,
+  normalizeErpStockCodeForDedupe,
+} from '@/features/stock/utils/dedupe-stocks-by-erp-code';
 import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } from './RelatedStocksSelectionDialog';
 import { cn } from '@/lib/utils';
 import type { StockGetDto, StockGetWithMainImageDto } from '@/features/stock/types';
@@ -553,7 +557,20 @@ export function ProductSelectDialog({
     value.id != null ? `id:${value.id}` : `code:${value.code}`;
 
   const addSelection = useCallback((result: ProductSelectionResult): void => {
-    setSelectedResults((prev) => [...prev, result]);
+    const normalizedCode = normalizeErpStockCodeForDedupe(result.code);
+    setSelectedResults((prev) => {
+      if (
+        normalizedCode &&
+        prev.some((item) => normalizeErpStockCodeForDedupe(item.code) === normalizedCode)
+      ) {
+        return prev;
+      }
+      const nextKey = getSelectionKey(result);
+      if (prev.some((item) => getSelectionKey(item) === nextKey)) {
+        return prev;
+      }
+      return [...prev, result];
+    });
   }, []);
 
   const removeSelectionAtIndex = useCallback((index: number): void => {
@@ -590,7 +607,10 @@ export function ProductSelectDialog({
     fetchPage: dropdownApi.getStockWithImagesPage,
   });
 
-  const visibleStocks = stocksDropdown.items;
+  const visibleStocks = useMemo(
+    () => dedupeStocksByErpStockCode(stocksDropdown.items),
+    [stocksDropdown.items],
+  );
 
   const handleStockSelect = async (stock: StockGetDto | StockGetWithMainImageDto): Promise<void> => {
     const hasRelatedStocks = stock.parentRelations && stock.parentRelations.length > 0;

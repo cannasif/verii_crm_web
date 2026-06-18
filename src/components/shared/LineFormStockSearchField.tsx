@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SearchX, Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -25,6 +25,7 @@ import {
   type RelatedStockSelectionConfirmItem,
 } from '@/components/shared/RelatedStocksSelectionDialog';
 import type { StockGetDto } from '@/features/stock/types';
+import { dedupeStocksByErpStockCode } from '@/features/stock/utils/dedupe-stocks-by-erp-code';
 import { getLocalizedStockName } from '@/features/stock/utils/localized-stock-name';
 import { cn } from '@/lib/utils';
 
@@ -72,7 +73,10 @@ export function LineFormStockSearchField({
     fetchPage: dropdownApi.getStockPage,
   });
 
-  const visibleStocks = stocksDropdown.items;
+  const visibleStocks = useMemo(
+    () => dedupeStocksByErpStockCode(stocksDropdown.items),
+    [stocksDropdown.items],
+  );
 
   const handleListScroll = (event: React.UIEvent<HTMLDivElement>): void => {
     if (!stocksDropdown.hasNextPage || stocksDropdown.isFetchingNextPage) {

@@ -57,6 +57,7 @@ import { StockWarehouseBalanceBadge } from '@/features/stock/components/StockWar
 import type { StockGetDto, StockGetWithMainImageDto, StockRelationDto } from '@/features/stock/types';
 import { getImageUrl } from '@/features/stock/utils/image-url';
 import { getLocalizedStockName, getLocalizedStockSearchTerms } from '@/features/stock/utils/localized-stock-name';
+import { dedupeStocksByErpStockCode } from '@/features/stock/utils/dedupe-stocks-by-erp-code';
 import {
   fetchPricingRuleCampaignStockData,
   type PricingRuleCampaignLineDisplay,
@@ -736,7 +737,7 @@ export function CatalogStockSelectDialog({
   const specialCodeTotalCount = specialCodeStocksQuery.data?.totalCount ?? 0;
   const specialCodeHasNextPage = loadedStockCount < specialCodeTotalCount;
 
-  const activeStockRows: CatalogStockItemDto[] =
+  const rawActiveStockRows: CatalogStockItemDto[] =
     stockBrowseMode === 'campaign'
       ? campaignDisplayItems
       : stockBrowseMode === 'favorites'
@@ -744,6 +745,10 @@ export function CatalogStockSelectDialog({
         : leftPanelMode === 'code' && stockBrowseMode === 'specialCodes'
           ? specialCodeStockItems
           : stockItems;
+  const activeStockRows = useMemo(
+    () => dedupeStocksByErpStockCode(rawActiveStockRows),
+    [rawActiveStockRows],
+  );
   const activeStockLoading =
     stockBrowseMode === 'campaign'
       ? campaignStocksQuery.isLoading

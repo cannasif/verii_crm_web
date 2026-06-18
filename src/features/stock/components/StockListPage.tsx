@@ -34,6 +34,7 @@ import {
   type CatalogSpecialCodeSelections,
 } from '@/components/shared/catalog-special-code-filter';
 import { fetchStockListWithCodeFilters } from '../utils/fetch-stock-list-with-code-filters';
+import { dedupeStocksByErpStockCode } from '../utils/dedupe-stocks-by-erp-code';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
@@ -274,10 +275,11 @@ export function StockListPage(): ReactElement {
   const canCreateErpStock = hasPermission(permissions, 'stocks.erp-create');
   const pagedData = stockQuery.data;
   const currentPageRows = useMemo(() => {
-    if (hasCodeFilterSelection && stockCodeFilterQuery.data) {
-      return stockCodeFilterQuery.data.data;
-    }
-    return pagedData?.data ?? [];
+    const rawRows =
+      hasCodeFilterSelection && stockCodeFilterQuery.data
+        ? stockCodeFilterQuery.data.data
+        : (pagedData?.data ?? []);
+    return dedupeStocksByErpStockCode(rawRows);
   }, [hasCodeFilterSelection, pagedData?.data, stockCodeFilterQuery.data]);
   const totalCount = hasCodeFilterSelection
     ? (stockCodeFilterQuery.data?.totalCount ?? 0)
