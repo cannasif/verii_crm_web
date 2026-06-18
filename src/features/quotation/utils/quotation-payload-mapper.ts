@@ -1,6 +1,8 @@
 import type { QuotationNotesDto, QuotationNotesGetDto } from '../types/quotation-types';
 
-const NOTE_KEYS = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
+export const QUOTATION_NOTE_KEYS = ['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const;
+
+const NOTE_KEYS = QUOTATION_NOTE_KEYS;
 
 export function mapQuotationNotesToPayload(
   notes: QuotationNotesDto

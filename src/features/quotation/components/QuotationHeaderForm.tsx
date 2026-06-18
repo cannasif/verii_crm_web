@@ -25,7 +25,6 @@ import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -58,12 +57,14 @@ import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-type
 import type { KurDto } from '@/services/erp-types';
 import { ExchangeRateDialog } from './ExchangeRateDialog';
 import { QuotationNotesDialog } from './QuotationNotesDialog';
+import { QuotationStructuredNotesList } from './QuotationStructuredNotesList';
+import { QuotationNotesAddLineButton } from './QuotationNotesAddLineButton';
 import type { QuotationNotesDto } from '../types/quotation-types';
 import { 
   User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
   Layers, SearchX,  BookUser, Building2, Folder,
-  ListPlus, X, MapPin, Banknote, Search
+  MapPin, Banknote, Search
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/quotation-schema';
@@ -124,10 +125,6 @@ export function QuotationHeaderForm({
   const [paymentTypeSearchTerm, setPaymentTypeSearchTerm] = useState('');
   const [deliveryMethodSearchTerm, setDeliveryMethodSearchTerm] = useState('');
   const isInitialLoadRef = useRef(true);
-
-  const filledNoteKeys = (['note1', 'note2', 'note3', 'note4', 'note5', 'note6', 'note7', 'note8', 'note9', 'note10', 'note11', 'note12', 'note13', 'note14', 'note15'] as const).filter(
-    (k) => (quotationNotes[k] ?? '').trim().length > 0
-  );
 
   const handleRemoveNote = (key: keyof QuotationNotesDto): void => {
     if (onQuotationNotesChange) {
@@ -596,7 +593,7 @@ export function QuotationHeaderForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className={styles.glassCard}>
           <div className="p-5 h-full flex flex-col">
             <div className="flex items-center justify-between mb-4">
@@ -811,14 +808,14 @@ export function QuotationHeaderForm({
         </div>
 
         <div className={styles.glassCard}>
-           <div className="p-5 h-full flex flex-col">
+           <div className="p-5">
               <div className="flex items-center gap-2 mb-4">
                 <div className="p-1.5 rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-600">
                   <FileText className="h-4 w-4" />
                 </div>
                 <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">{t('quotation:header.documentDetail')}</h4>
               </div>
-              <div className="space-y-4 flex-1">
+              <div className="space-y-4">
                  {showDocumentSerialType && (
                   <FormField
                     control={form.control}
@@ -848,20 +845,20 @@ export function QuotationHeaderForm({
                     )}
                   />
                 )}
-                <div>
-                  <FormField
-                    control={form.control}
-                    name="quotation.projectCode"
-                    render={({ field }) => (
-                      <FormItem className="space-y-0 relative group">
-                        <FormLabel className={styles.label}>
-                          <Folder className="h-3.5 w-3.5" />
-                          {t('quotation:header.projectCode')}
-                        </FormLabel>
-                        <div className="relative">
-                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Folder className="h-4 w-4" /></div>
+                <FormField
+                  control={form.control}
+                  name="quotation.projectCode"
+                  render={({ field }) => (
+                    <FormItem className="gap-0 space-y-0 relative group">
+                      <FormLabel className={styles.label}>
+                        <Folder className="h-3.5 w-3.5" />
+                        {t('quotation:header.projectCode')}
+                      </FormLabel>
+                      <div className="relative">
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Folder className="h-4 w-4" /></div>
+                        <FormControl>
                           <VoiceSearchCombobox
-                            className={cn("h-11 w-full pl-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-within:ring-4 focus-within:ring-pink-500/10 focus-within:border-pink-500 **:pl-8")}
+                            className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                             value={field.value || ''}
                             onSelect={(value) => field.onChange(value)}
                             options={projectDropdown.options}
@@ -874,32 +871,34 @@ export function QuotationHeaderForm({
                             searchPlaceholder={t('common.search', { ns: 'common' })}
                             disabled={readOnly}
                           />
-                        </div>
-                        <FormMessage className="mt-1.5" />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                        </FormControl>
+                      </div>
+                      <FormMessage className="mt-1.5" />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="quotation.koliBaskiDefinitionId"
                   render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
+                    <FormItem className="gap-0 space-y-0 relative group">
                       <FormLabel className={styles.label}>
                         <Layers className="h-3.5 w-3.5" />
                         {t('quotation:header.koliBaski')}
                       </FormLabel>
                       <div className="relative">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
-                        <VoiceSearchCombobox
-                          className={cn("h-11 w-full pl-12 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-xl shadow-sm transition-all duration-300 focus-within:ring-4 focus-within:ring-pink-500/10 focus-within:border-pink-500 **:pl-8")}
-                          value={field.value ? String(field.value) : ''}
-                          onSelect={(value) => field.onChange(value ? Number(value) : null)}
-                          options={koliBaskiOptions.map((option) => ({ value: String(option.id), label: option.name }))}
-                          placeholder={isKoliBaskiOptionsLoading ? t('common.loading', { ns: 'common', defaultValue: 'Yükleniyor...' }) : t('quotation:header.koliBaskiPlaceholder')}
-                          searchPlaceholder={t('quotation:header.koliBaskiSearchPlaceholder')}
-                          disabled={readOnly || isKoliBaskiOptionsLoading}
-                        />
+                        <FormControl>
+                          <VoiceSearchCombobox
+                            className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            value={field.value ? String(field.value) : ''}
+                            onSelect={(value) => field.onChange(value ? Number(value) : null)}
+                            options={koliBaskiOptions.map((option) => ({ value: String(option.id), label: option.name }))}
+                            placeholder={isKoliBaskiOptionsLoading ? t('common.loading', { ns: 'common', defaultValue: 'Yükleniyor...' }) : t('quotation:header.koliBaskiPlaceholder')}
+                            searchPlaceholder={t('quotation:header.koliBaskiSearchPlaceholder')}
+                            disabled={readOnly || isKoliBaskiOptionsLoading}
+                          />
+                        </FormControl>
                       </div>
                       <FormMessage className="mt-1.5" />
                     </FormItem>
@@ -916,30 +915,6 @@ export function QuotationHeaderForm({
                           {field.value?.length || 0}/400
                         </span>
                       </div>
-                      {filledNoteKeys.length > 0 && (
-                        <div className="flex flex-wrap gap-2 mb-2.5 overflow-hidden">
-                          {filledNoteKeys.map((key, idx) => (
-                            <Badge
-                              key={key}
-                              variant="secondary"
-                              className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors pr-1 max-w-full h-auto py-1 text-xs border border-purple-200 dark:border-purple-500/20 shadow-sm"
-                            >
-                              <span className="mr-1.5 break-all whitespace-normal">
-                                {(quotationNotes[key] ?? '').trim() || `${t('notes.noteLabel')} ${idx + 1}`}
-                              </span>
-                              {!readOnly && onQuotationNotesChange && (
-                                <button
-                                  type="button"
-                                  onClick={() => handleRemoveNote(key)}
-                                  className="p-0.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors shrink-0"
-                                >
-                                  <X className="h-3 w-3" />
-                                </button>
-                              )}
-                            </Badge>
-                          ))}
-                        </div>
-                      )}
                       <FormControl>
                         <div className="relative w-full min-w-0">
                           <Textarea
@@ -951,17 +926,18 @@ export function QuotationHeaderForm({
                             disabled={readOnly}
                           />
                           {onQuotationNotesChange && (
-                            <button
-                              type="button"
-                              className="absolute right-1 top-1 h-7 w-7 flex items-center justify-center text-zinc-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+                            <QuotationNotesAddLineButton
                               onClick={() => setNotesDialogOpen(true)}
                               disabled={readOnly}
-                            >
-                              <ListPlus className="h-4 w-4" />
-                            </button>
+                            />
                           )}
                         </div>
                       </FormControl>
+                      <QuotationStructuredNotesList
+                        notes={quotationNotes}
+                        readOnly={readOnly}
+                        onRemove={onQuotationNotesChange ? handleRemoveNote : undefined}
+                      />
                       <FormMessage className="mt-1" />
                     </FormItem>
                   )}

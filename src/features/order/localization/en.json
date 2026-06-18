@@ -3,6 +3,18 @@
     "doubleClickToEdit": "Double-click to edit",
     "unit": "Unit"
   },
+  "notes": {
+    "title": "Order Notes",
+    "description": "Add and update internal notes for this order.",
+    "placeholder": "Enter order note",
+    "noteLabel": "Order Note",
+    "addLineTooltip": "Add description line",
+    "linesHint": "Each line appears separately in PDF and document notes.",
+    "removeLine": "Remove line",
+    "pageLabel": "Page {{current}} / {{total}}",
+    "saving": "Saving notes...",
+    "maxLengthError": "Note field can be at most 100 characters."
+  },
   "erpOrder": {
     "title": "ERP Order List",
     "description": "Review Netsis order headers and lines visible for the logged-in user.",

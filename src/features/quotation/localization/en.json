@@ -238,6 +238,10 @@
     "placeholder": "Enter a note",
     "saving": "Saving notes...",
     "noteLabel": "Note",
+    "addLineTooltip": "Add description line",
+    "linesHint": "Each line appears separately in PDF and document notes.",
+    "removeLine": "Remove line",
+    "pageLabel": "Page {{current}} / {{total}}",
     "saved": "Notes saved.",
     "saveError": "Notes could not be saved.",
     "maxLengthError": "Each note can be at most 1,000 characters.",
@@ -331,7 +335,8 @@
     "error": "Could not create the PDF. Please try again.",
     "download": "Download",
     "errorDismiss": "Close",
-    "downloadFileName": "quotation.pdf"
+    "downloadFileName": "quotation.pdf",
+    "showDiscount": "Show discount"
   },
   "pdfExportTemplate": {
     "builtInTemplateTitle": "V3RII Ready Template (Preview)",
@@ -345,6 +350,7 @@
     "recipientLabel": "Offer to",
     "lineImage": "Image",
     "unitPriceNet": "Net unit",
+    "netUnitPriceColumn": "Net unit price",
     "lineDiscount": "Discount",
     "vatRate": "VAT %",
     "priceDetail": "Price breakdown",

@@ -18,6 +18,18 @@
   "save": "Save",
   "confirm": "Confirm",
   "saveAndApply": "Save and Apply",
+  "notes": {
+    "title": "Demand Notes",
+    "description": "Add and update internal notes for this demand.",
+    "placeholder": "Enter demand note",
+    "noteLabel": "Demand Note",
+    "addLineTooltip": "Add description line",
+    "linesHint": "Each line appears separately in PDF and document notes.",
+    "removeLine": "Remove line",
+    "pageLabel": "Page {{current}} / {{total}}",
+    "saving": "Saving notes...",
+    "maxLengthError": "Note field can be at most 100 characters."
+  },
   "list": {
     "revise": "Revise",
     "showing": "Showing {{from}}-{{to}} / {{total}}",

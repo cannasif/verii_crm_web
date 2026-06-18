@@ -18,6 +18,18 @@
   "save": "Kaydet",
   "confirm": "Onayla",
   "saveAndApply": "Kaydet ve Uygula",
+  "notes": {
+    "title": "Talep Notları",
+    "description": "Talep için iç notlar ekleyin ve güncelleyin.",
+    "placeholder": "Talep notunu girin",
+    "noteLabel": "Talep Notu",
+    "addLineTooltip": "Açıklama satırı ekle",
+    "linesHint": "Her satır PDF ve belge notlarında ayrı görünür.",
+    "removeLine": "Satırı kaldır",
+    "pageLabel": "Sayfa {{current}} / {{total}}",
+    "saving": "Notlar kaydediliyor...",
+    "maxLengthError": "Not alanı en fazla 100 karakter olabilir."
+  },
   "list": {
     "revise": "Revize Et",
     "showing": "{{total}} kayıttan {{from}}-{{to}} arası gösteriliyor",

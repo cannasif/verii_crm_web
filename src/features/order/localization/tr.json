@@ -3,6 +3,18 @@
     "doubleClickToEdit": "Düzenlemek için çift tıklayın",
     "unit": "Birim"
   },
+  "notes": {
+    "title": "Sipariş Notları",
+    "description": "Sipariş için iç notlar ekleyin ve güncelleyin.",
+    "placeholder": "Sipariş notunu girin",
+    "noteLabel": "Sipariş Notu",
+    "addLineTooltip": "Açıklama satırı ekle",
+    "linesHint": "Her satır PDF ve belge notlarında ayrı görünür.",
+    "removeLine": "Satırı kaldır",
+    "pageLabel": "Sayfa {{current}} / {{total}}",
+    "saving": "Notlar kaydediliyor...",
+    "maxLengthError": "Not alanı en fazla 100 karakter olabilir."
+  },
   "erpOrder": {
     "title": "ERP Sipariş Listesi",
     "description": "Netsis üzerinde giriş yapan kullanıcı kapsamında görünen sipariş üst kayıtlarını ve kalemlerini izleyin.",

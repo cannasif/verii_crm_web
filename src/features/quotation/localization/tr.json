@@ -255,6 +255,10 @@
     "placeholder": "Teklif notunu girin",
     "saving": "Notlar kaydediliyor...",
     "noteLabel": "Teklif Notu",
+    "addLineTooltip": "Açıklama satırı ekle",
+    "linesHint": "Her satır PDF ve belge notlarında ayrı görünür.",
+    "removeLine": "Satırı kaldır",
+    "pageLabel": "Sayfa {{current}} / {{total}}",
     "saved": "Teklif notları kaydedildi.",
     "saveError": "Teklif notları kaydedilemedi.",
     "maxLengthError": "Not alanı en fazla 1000 karakter olabilir.",
@@ -348,7 +352,8 @@
     "error": "PDF oluşturulamadı. Lütfen tekrar deneyin.",
     "download": "Bilgisayara indir",
     "errorDismiss": "Kapat",
-    "downloadFileName": "teklif.pdf"
+    "downloadFileName": "teklif.pdf",
+    "showDiscount": "İskonto göster"
   },
   "pdfExportTemplate": {
     "builtInTemplateTitle": "V3RII Hazır Şablon (Önizleme)",
@@ -362,6 +367,7 @@
     "recipientLabel": "Teklif Verilen",
     "lineImage": "Görsel",
     "unitPriceNet": "Net Birim",
+    "netUnitPriceColumn": "Net Birim Fiyat",
     "lineDiscount": "İskonto",
     "vatRate": "KDV %",
     "priceDetail": "Fiyat Detayı",
