@@ -14,6 +14,7 @@ import type {
 } from '../types/demand-types';
 import type { ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { createClientId } from '@/lib/create-client-id';
+import { resolveProductSelectionUnit } from '@/lib/resolve-product-selection-unit';
 import { getRelatedQuantityPerMainUnit } from '@/lib/related-stock-quantity';
 import {
   convertProductLinePriceForDocument,
@@ -44,7 +45,7 @@ export function useProductSelection({
   const createEmptyLine = useCallback(
     (product: ProductSelectionResult): DemandLineFormState => {
       return {
-        id: `temp-${Date.now()}`,
+        id: createClientId(),
         productId: null,
         productCode: product.code,
         productName: product.name,
@@ -104,9 +105,10 @@ export function useProductSelection({
 
   const handleProductSelectWithRelatedStocks = useCallback(
     async (product: ProductSelectionResult, relatedStockIds: number[]): Promise<DemandLineFormState[]> => {
-      const resolvedMainProductName = await resolveDocumentLineProductName(product, i18n.language);
+      const productWithUnit = await resolveProductSelectionUnit(product);
+      const resolvedMainProductName = await resolveDocumentLineProductName(productWithUnit, i18n.language);
       const productWithResolvedName: ProductSelectionResult = {
-        ...product,
+        ...productWithUnit,
         name: resolvedMainProductName,
       };
 
@@ -171,7 +173,7 @@ export function useProductSelection({
 
           if (!priceData) {
             const emptyLine = {
-              id: `temp-${Date.now()}-${i}`,
+              id: `${createClientId()}-${i}`,
               productId: null,
               productCode,
               productName,
@@ -206,7 +208,7 @@ export function useProductSelection({
           const converted = convertPriceData(priceData, productCode, lineQty);
 
           const line: DemandLineFormState = {
-            id: `temp-${Date.now()}-${i}`,
+            id: `${createClientId()}-${i}`,
             productId: null,
             productCode,
             productName,
@@ -252,9 +254,10 @@ export function useProductSelection({
 
   const handleProductSelect = useCallback(
     async (product: ProductSelectionResult): Promise<DemandLineFormState> => {
-      const resolvedProductName = await resolveDocumentLineProductName(product, i18n.language);
+      const productWithUnit = await resolveProductSelectionUnit(product);
+      const resolvedProductName = await resolveDocumentLineProductName(productWithUnit, i18n.language);
       const productWithResolvedName: ProductSelectionResult = {
-        ...product,
+        ...productWithUnit,
         name: resolvedProductName,
       };
       const baseLine = createEmptyLine(productWithResolvedName);

@@ -5,6 +5,7 @@ import type { ProductSelectionResult } from '@/components/shared/ProductSelectDi
 export interface LocalizedStockNameSource {
   stockName: string;
   englishStockName?: string | null;
+  unit?: string | null;
 }
 
 export function isTurkishUiLanguage(language?: string | null): boolean {
@@ -87,6 +88,23 @@ export function localizeLoadedLineProductName(
   }
 
   return line.productName?.trim() ?? '';
+}
+
+export function resolveLoadedLineUnit(
+  line: { productCode?: string | null; unit?: string | null },
+  stockByCodeLower: ReadonlyMap<string, LocalizedStockNameSource>,
+): string | null {
+  const fromLine = line.unit?.trim();
+  if (fromLine) {
+    return fromLine;
+  }
+
+  const code = line.productCode?.trim().toLowerCase() ?? '';
+  if (!code) {
+    return null;
+  }
+
+  return stockByCodeLower.get(code)?.unit?.trim() ?? null;
 }
 
 export async function fetchLocalizedStockMapByErpCodes(

@@ -88,6 +88,7 @@ export interface CreateOrderLineDto {
   productId?: number | null;
   productCode: string;
   productName: string;
+  unit?: string | null;
   groupCode?: string | null;
   quantity: number;
   unitPrice: number;
@@ -126,6 +127,7 @@ export interface UpdateOrderLineDto {
   productId: number;
   productCode?: string | null;
   productName: string;
+  unit?: string | null;
   groupCode?: string | null;
   quantity: number;
   unitPrice: number;
@@ -292,11 +294,14 @@ export interface OrderExchangeRateGetDto {
 
 export interface OrderLineFormState extends Omit<CreateOrderLineDto, 'orderId'> {
   id: string;
+  backendLineId?: number | null;
   unit?: string | null;
   vidaDefinitionName?: string | null;
   baskiDefinitionName?: string | null;
   isEditing: boolean;
   relatedLines?: OrderLineFormState[];
+  pendingImageFile?: File | null;
+  pendingImagePreviewUrl?: string | null;
 }
 
 export interface OrderExchangeRateFormState {

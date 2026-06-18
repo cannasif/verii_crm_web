@@ -130,6 +130,7 @@ export interface CreateQuotationLineDto {
   productId?: number | null;
   productCode: string;
   productName: string;
+  unit?: string | null;
   groupCode?: string | null;
   quantity: number;
   unitPrice: number;
@@ -168,6 +169,7 @@ export interface UpdateQuotationLineDto {
   productId: number;
   productCode?: string | null;
   productName: string;
+  unit?: string | null;
   groupCode?: string | null;
   quantity: number;
   unitPrice: number;
@@ -327,6 +329,7 @@ export interface QuotationExchangeRateGetDto {
 
 export interface QuotationLineFormState extends Omit<CreateQuotationLineDto, 'quotationId'> {
   id: string;
+  backendLineId?: number | null;
   unit?: string | null;
   vidaDefinitionName?: string | null;
   baskiDefinitionName?: string | null;

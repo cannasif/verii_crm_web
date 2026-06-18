@@ -88,6 +88,7 @@ export interface CreateDemandLineDto {
   productId?: number | null;
   productCode: string;
   productName: string;
+  unit?: string | null;
   groupCode?: string | null;
   quantity: number;
   unitPrice: number;
@@ -126,6 +127,7 @@ export interface UpdateDemandLineDto {
   productId: number;
   productCode?: string | null;
   productName: string;
+  unit?: string | null;
   groupCode?: string | null;
   quantity: number;
   unitPrice: number;
@@ -292,6 +294,7 @@ export interface DemandExchangeRateGetDto {
 
 export interface DemandLineFormState extends Omit<CreateDemandLineDto, 'demandId'> {
   id: string;
+  backendLineId?: number | null;
   unit?: string | null;
   vidaDefinitionName?: string | null;
   baskiDefinitionName?: string | null;

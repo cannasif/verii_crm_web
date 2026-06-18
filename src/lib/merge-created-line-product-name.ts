@@ -1,14 +1,14 @@
-export function mergeCreatedLineProductName<T extends { productName?: string | null }>(
+export function mergeCreatedLineProductName<T extends { productName?: string | null; unit?: string | null }>(
   mappedLine: T,
-  sourceLine?: { productName?: string | null } | null
+  sourceLine?: { productName?: string | null; unit?: string | null } | null,
 ): T {
   const sourceName = sourceLine?.productName?.trim();
-  if (!sourceName) {
-    return mappedLine;
-  }
+  const mappedUnit = mappedLine.unit?.trim();
+  const sourceUnit = sourceLine?.unit?.trim();
 
   return {
     ...mappedLine,
-    productName: sourceName,
+    ...(sourceName ? { productName: sourceName } : {}),
+    unit: (mappedUnit || sourceUnit || mappedLine.unit) ?? null,
   };
 }
