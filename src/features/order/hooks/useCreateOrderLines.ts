@@ -13,8 +13,18 @@ export const useCreateOrderLines = (
 
   return useMutation({
     mutationFn: (dtos: CreateOrderLineDto[]) => orderApi.createOrderLines(dtos),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.orderLines(orderId) });
+    onSuccess: (created) => {
+      queryClient.setQueryData<OrderLineGetDto[]>(
+        queryKeys.orderLines(orderId),
+        (current) => {
+          const existing = current ?? [];
+          const createdIds = new Set(
+            created.map((line) => line.id).filter((id): id is number => Number.isFinite(id) && id > 0)
+          );
+          const withoutReplaced = existing.filter((line) => !createdIds.has(line.id));
+          return [...withoutReplaced, ...created];
+        },
+      );
       toast.success(t('order.lines.createSuccess'));
     },
     onError: (error: Error) => {

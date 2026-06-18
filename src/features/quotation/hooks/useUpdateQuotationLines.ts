@@ -13,8 +13,18 @@ export const useUpdateQuotationLines = (
 
   return useMutation({
     mutationFn: (dtos: QuotationLineGetDto[]) => quotationApi.updateQuotationLines(dtos),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.quotationLines(quotationId) });
+    onSuccess: (updated) => {
+      queryClient.setQueryData<QuotationLineGetDto[]>(
+        queryKeys.quotationLines(quotationId),
+        (current) => {
+          const existing = current ?? [];
+          const updatedIds = new Set(
+            updated.map((line) => line.id).filter((id): id is number => Number.isFinite(id) && id > 0),
+          );
+          const withoutUpdated = existing.filter((line) => !updatedIds.has(line.id));
+          return [...withoutUpdated, ...updated];
+        },
+      );
       toast.success(t('lines.updateSuccess'));
     },
     onError: (error: Error) => {

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { demandApi } from '../api/demand-api';
 import { queryKeys } from '../utils/query-keys';
+import type { DemandLineGetDto } from '../types/demand-types';
 
 export const useDeleteDemandLine = (
   demandId: number
@@ -12,8 +13,11 @@ export const useDeleteDemandLine = (
 
   return useMutation({
     mutationFn: (id: number) => demandApi.deleteDemandLine(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.demandLines(demandId) });
+    onSuccess: (_data, deletedLineId) => {
+      queryClient.setQueryData<DemandLineGetDto[]>(
+        queryKeys.demandLines(demandId),
+        (current) => current?.filter((line) => line.id !== deletedLineId) ?? [],
+      );
       toast.success(t('lines.deleteSuccess'));
     },
     onError: (error: Error) => {

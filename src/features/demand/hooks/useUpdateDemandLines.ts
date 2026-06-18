@@ -13,8 +13,18 @@ export const useUpdateDemandLines = (
 
   return useMutation({
     mutationFn: (dtos: DemandLineGetDto[]) => demandApi.updateDemandLines(dtos),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.demandLines(demandId) });
+    onSuccess: (updated) => {
+      queryClient.setQueryData<DemandLineGetDto[]>(
+        queryKeys.demandLines(demandId),
+        (current) => {
+          const existing = current ?? [];
+          const updatedIds = new Set(
+            updated.map((line) => line.id).filter((id): id is number => Number.isFinite(id) && id > 0),
+          );
+          const withoutUpdated = existing.filter((line) => !updatedIds.has(line.id));
+          return [...withoutUpdated, ...updated];
+        },
+      );
       toast.success(t('lines.updateSuccess'));
     },
     onError: (error: Error) => {

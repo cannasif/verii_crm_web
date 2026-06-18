@@ -1,4 +1,5 @@
-import { type ReactElement, useState, useMemo, useCallback, useRef } from 'react';
+import { type Dispatch, type ReactElement, type SetStateAction, useState, useMemo, useCallback, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ import { DocumentLineFormDialog } from '@/components/shared/DocumentLineFormDial
 import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { DescriptionCell } from '@/components/shared';
+import { LineTableImageThumbnail } from '@/components/shared/LineTableImageThumbnail';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { useOrderCalculations } from '../hooks/useOrderCalculations';
@@ -33,6 +35,7 @@ import { useCreateOrderLines } from '../hooks/useCreateOrderLines';
 import { useUpdateOrderLines } from '../hooks/useUpdateOrderLines';
 import { useDeleteOrderLine } from '../hooks/useDeleteOrderLine';
 import { orderApi } from '../api/order-api';
+import { queryKeys } from '../utils/query-keys';
 import { formatCurrency } from '../utils/format-currency';
 import {
   buildDocumentLineTableExportData,
@@ -76,15 +79,34 @@ import {
 } from '@/lib/document-line-prerequisites';
 import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } from '@/lib/line-form-stock-markers';
 import { mergeCreatedLineProductName } from '@/lib/merge-created-line-product-name';
+import { createClientId } from '@/lib/create-client-id';
+import {
+  applyDocumentLinesUpdate,
+  mergeRefetchedDocumentLines,
+  removeDocumentLineFromState,
+  resolveDocumentLineBackendId,
+  syncDocumentLinesFromServer,
+} from '@/lib/document-line-list-update';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
+import {
+  DOCUMENT_LINE_TABLE_SCROLL_CONTAINER_CLASS,
+  DOCUMENT_LINE_TABLE_STICKY_HEAD_CLASS,
+  DOCUMENT_LINE_TABLE_CLASS,
+  getDocumentLineTableBodyCellClass,
+  getDocumentLineTableStickyStockCellClass,
+} from '@/lib/document-line-table-layout';
 
 function toCreateDto(line: OrderLineFormState, orderId: number): CreateOrderLineDto {
-  const { id, isEditing, relatedLines, unit, vidaDefinitionName, baskiDefinitionName, ...rest } = line;
+  const { id, isEditing, relatedLines, vidaDefinitionName, baskiDefinitionName, ...rest } = line;
+  void id;
+  void isEditing;
+  void relatedLines;
   void vidaDefinitionName;
   void baskiDefinitionName;
   return {
     ...rest,
     orderId,
+    unit: line.unit ?? null,
     productId: line.productId ?? 0,
     productCode: line.productCode ?? '',
     productName: line.productName ?? '',
@@ -92,22 +114,6 @@ function toCreateDto(line: OrderLineFormState, orderId: number): CreateOrderLine
     erpProjectCode: line.projectCode ?? null,
     imagePath: line.imagePath ?? null,
   };
-}
-
-function parseLineId(formId: string | number | undefined): number | null {
-  if (formId == null) return null;
-  if (typeof formId === 'number' && Number.isFinite(formId) && formId > 0) return formId;
-  const s = String(formId).trim();
-  const prefixed = s.match(/^line-(\d+)(?:-|$)/);
-  if (prefixed) {
-    const n = parseInt(prefixed[1], 10);
-    return Number.isNaN(n) ? null : n;
-  }
-  if (/^\d+$/.test(s)) {
-    const n = parseInt(s, 10);
-    return Number.isNaN(n) ? null : n;
-  }
-  return null;
 }
 
 function getValidRelatedProductGroup(
@@ -124,7 +130,7 @@ function getValidRelatedProductGroup(
   return sameGroupLines.length > 1 && hasMainLine && hasRelatedLine ? sameGroupLines : [];
 }
 
-function dtoToFormState(dto: OrderLineGetDto, index: number): OrderLineFormState {
+function dtoToFormState(dto: OrderLineGetDto, _index: number): OrderLineFormState {
   const amounts = calculateLineTotalsAmounts(
     dto.unitPrice,
     dto.quantity,
@@ -135,7 +141,8 @@ function dtoToFormState(dto: OrderLineGetDto, index: number): OrderLineFormState
   );
 
   return {
-    id: dto.id && dto.id > 0 ? `line-${dto.id}-${index}` : `line-temp-${index}`,
+    id: createClientId(),
+    backendLineId: dto.id && dto.id > 0 ? dto.id : null,
     isEditing: false,
     productId: dto.productId ?? null,
     productCode: dto.productCode ?? '',
@@ -171,13 +178,14 @@ function dtoToFormState(dto: OrderLineGetDto, index: number): OrderLineFormState
 }
 
 function toUpdateDto(line: OrderLineFormState, orderId: number): OrderLineGetDto {
-  const lineId = parseLineId(line.id) ?? 0;
+  const lineId = resolveDocumentLineBackendId(line) ?? 0;
   return {
     id: lineId,
     orderId,
     productId: line.productId ?? null,
     productCode: line.productCode ?? '',
     productName: line.productName ?? '',
+    unit: line.unit ?? null,
     groupCode: line.groupCode ?? null,
     quantity: line.quantity,
     unitPrice: line.unitPrice,
@@ -216,7 +224,7 @@ function toUpdateDto(line: OrderLineFormState, orderId: number): OrderLineGetDto
 
 interface OrderLineTableProps {
   lines: OrderLineFormState[];
-  setLines: (lines: OrderLineFormState[]) => void;
+  setLines: Dispatch<SetStateAction<OrderLineFormState[]>>;
   currency: number;
   exchangeRates?: OrderExchangeRateFormState[];
   pricingRules?: PricingRuleLineGetDto[];
@@ -226,7 +234,7 @@ interface OrderLineTableProps {
   representativeId?: number | null;
   orderId?: number | null;
   enabled?: boolean;
-  buildExportPdfBlob?: (options: { draft: boolean }) => Promise<Blob>;
+  buildExportPdfBlob?: (options: { draft: boolean; showDiscount?: boolean }) => Promise<Blob>;
   exportPdfFileName?: string;
 }
 
@@ -245,7 +253,18 @@ export function OrderLineTable({
   buildExportPdfBlob,
   exportPdfFileName,
 }: OrderLineTableProps): ReactElement {
+  const queryClient = useQueryClient();
   const linesEditable = enabled;
+  const linesRef = useRef(lines);
+  linesRef.current = lines;
+
+  const updateLines = useCallback(
+    (nextOrUpdater: OrderLineFormState[] | ((prev: OrderLineFormState[]) => OrderLineFormState[])) => {
+      applyDocumentLinesUpdate(linesRef, setLines, nextOrUpdater);
+    },
+    [setLines],
+  );
+
   const { t } = useTranslation();
   const { profilMap, demirMap, vidaMap, baskiMap } = useWindoDefinitionOptions();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -255,6 +274,7 @@ export function OrderLineTable({
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [lineToDelete, setLineToDelete] = useState<string | null>(null);
+  const deleteTargetRef = useRef<{ formLineId: string; backendLineId: number | null } | null>(null);
   const [relatedLinesCount, setRelatedLinesCount] = useState(0);
   const [addLineDialogOpen, setAddLineDialogOpen] = useState(false);
   const [newLine, setNewLine] = useState<OrderLineFormState | null>(null);
@@ -293,13 +313,13 @@ export function OrderLineTable({
   const styles = {
     glassCard:
       'relative overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm',
-    tableHeadRow: 'bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800',
-    tableHead: 'h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider border-r border-zinc-200 dark:border-zinc-800 last:border-r-0',
-    tableHeadRight: 'h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider text-right border-r border-zinc-200 dark:border-zinc-800 last:border-r-0',
-    tableCell: 'p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-r border-zinc-200 dark:border-zinc-800 last:border-r-0',
+    tableHeadRow: 'bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-700',
+    tableHead: 'h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider border-r border-zinc-200 dark:border-zinc-700 last:border-r-0',
+    tableHeadRight: 'h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider text-right border-r border-zinc-200 dark:border-zinc-700 last:border-r-0',
+    tableCell: 'p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-r border-zinc-200 dark:border-zinc-700 last:border-r-0',
     tableCellRight:
-      'p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-r border-zinc-200 dark:border-zinc-800 text-right font-mono tabular-nums last:border-r-0',
-    tableRow: 'group transition-all duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/40',
+      'p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-r border-zinc-200 dark:border-zinc-700 text-right font-mono tabular-nums last:border-r-0',
+    tableRow: 'group border-b transition-colors',
     actionButton: 'h-8 w-8 p-0 rounded-lg hover:bg-white dark:hover:bg-zinc-700 hover:shadow-sm hover:scale-105 transition-all duration-200',
   };
 
@@ -365,7 +385,7 @@ export function OrderLineTable({
     }
 
     const line: OrderLineFormState = {
-      id: `temp-${Date.now()}`,
+      id: createClientId(),
       productId: null,
       productCode: '',
       productName: '',
@@ -487,9 +507,9 @@ export function OrderLineTable({
           patchedFromNext.isMainRelatedProduct &&
           originalLine.quantity !== patchedFromNext.quantity
           ? nextLines.filter(
-            (l) => l.relatedProductKey === patchedFromNext.relatedProductKey && parseLineId(l.id) != null
+            (l) => l.relatedProductKey === patchedFromNext.relatedProductKey && resolveDocumentLineBackendId(l) != null
           )
-          : parseLineId(patchedFromNext.id) != null
+          : resolveDocumentLineBackendId(patchedFromNext) != null
             ? [patchedFromNext]
             : [];
 
@@ -498,8 +518,9 @@ export function OrderLineTable({
           const dtos = apiTargets.map((l) => toUpdateDto(l, orderId));
           await updateMutation.mutateAsync(dtos);
           const fresh = await orderApi.getOrderLinesByOrderId(orderId);
+          queryClient.setQueryData(queryKeys.orderLines(orderId), fresh);
           const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
-          setLines(mapped);
+          updateLines(mergeRefetchedDocumentLines(mapped, linesRef.current, resolveDocumentLineBackendId));
         } catch {
           void 0;
         }
@@ -508,7 +529,7 @@ export function OrderLineTable({
       }
     }
 
-    setLines(nextLines);
+    updateLines(nextLines);
     setQuickEdit(null);
   }, [
     quickEdit,
@@ -520,7 +541,7 @@ export function OrderLineTable({
     isExistingOrder,
     orderId,
     updateMutation,
-    setLines,
+    updateLines,
   ]);
 
   const handleSaveNewLine = useCallback(
@@ -529,11 +550,14 @@ export function OrderLineTable({
       if (isExistingOrder && orderId) {
         try {
           const dtos: CreateOrderLineDto[] = [toCreateDto(lineToAdd, orderId)];
-          const created = await createMutation.mutateAsync(dtos);
-          const mapped = created.map((dto: OrderLineGetDto, i: number) =>
-            mergeCreatedLineProductName(dtoToFormState(dto, lines.length + i), lineToAdd)
+          await createMutation.mutateAsync(dtos);
+          const fresh = await orderApi.getOrderLinesByOrderId(orderId);
+          queryClient.setQueryData(queryKeys.orderLines(orderId), fresh);
+          const snapshot = linesRef.current;
+          const mapped = fresh.map((dto: OrderLineGetDto, index: number) =>
+            mergeCreatedLineProductName(dtoToFormState(dto, index), lineToAdd),
           );
-          setLines([...lines, ...mapped]);
+          updateLines(syncDocumentLinesFromServer(mapped, snapshot, { keepLocalDraftLines: true }));
           setAddLineDialogOpen(false);
           setNewLine(null);
         } catch {
@@ -541,11 +565,11 @@ export function OrderLineTable({
         }
         return;
       }
-      setLines([...lines, lineToAdd]);
+      updateLines((prev) => [...prev, lineToAdd]);
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingOrder, orderId, createMutation, lines, setLines]
+    [isExistingOrder, orderId, createMutation, updateLines]
   );
 
   const handleSaveMultipleLines = useCallback(
@@ -555,11 +579,15 @@ export function OrderLineTable({
       if (isExistingOrder && orderId) {
         try {
           const dtos: CreateOrderLineDto[] = linesToAdd.map((l) => toCreateDto(l, orderId));
-          const created = await createMutation.mutateAsync(dtos);
-          const mapped = created.map((dto: OrderLineGetDto, i: number) =>
-            mergeCreatedLineProductName(dtoToFormState(dto, lines.length + i), linesToAdd[i])
-          );
-          setLines([...lines, ...mapped]);
+          await createMutation.mutateAsync(dtos);
+          const fresh = await orderApi.getOrderLinesByOrderId(orderId);
+          queryClient.setQueryData(queryKeys.orderLines(orderId), fresh);
+          const snapshot = linesRef.current;
+          const mapped = fresh.map((dto: OrderLineGetDto, index: number) => {
+            const sourceLine = linesToAdd[index] ?? linesToAdd[linesToAdd.length - 1];
+            return mergeCreatedLineProductName(dtoToFormState(dto, index), sourceLine);
+          });
+          updateLines(syncDocumentLinesFromServer(mapped, snapshot, { keepLocalDraftLines: true }));
           setAddLineDialogOpen(false);
           setNewLine(null);
         } catch {
@@ -567,11 +595,11 @@ export function OrderLineTable({
         }
         return;
       }
-      setLines([...lines, ...linesToAdd]);
+      updateLines((prev) => [...prev, ...linesToAdd]);
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingOrder, orderId, createMutation, lines, setLines, linesEditable]
+    [isExistingOrder, orderId, createMutation, updateLines, linesEditable]
   );
 
   const handleCancelNewLine = (): void => {
@@ -628,9 +656,9 @@ export function OrderLineTable({
     relatedLinesToUpdate: OrderLineFormState[] | undefined,
     originalLine: OrderLineFormState
   ): void => {
-    setLines(
+    updateLines(
       mergeLinesAfterMainLineUpdate(
-        lines,
+        linesRef.current,
         originalLine,
         updatedLine,
         relatedLinesToUpdate,
@@ -651,15 +679,16 @@ export function OrderLineTable({
     }
 
     const allUpdatedLines = [updatedLine, ...(relatedLinesToUpdate || [])].map((l) => ({ ...l, isEditing: false }));
-    const linesWithBackendId = allUpdatedLines.filter((l) => parseLineId(l.id) != null);
+    const linesWithBackendId = allUpdatedLines.filter((l) => resolveDocumentLineBackendId(l) != null);
 
     if (isExistingOrder && orderId && linesWithBackendId.length > 0) {
       try {
         const dtos: OrderLineGetDto[] = linesWithBackendId.map((l) => toUpdateDto(l, orderId));
         await updateMutation.mutateAsync(dtos);
         const fresh = await orderApi.getOrderLinesByOrderId(orderId);
+        queryClient.setQueryData(queryKeys.orderLines(orderId), fresh);
         const mapped = fresh.map((dto: OrderLineGetDto, index: number) => dtoToFormState(dto, index));
-        setLines(mapped);
+        updateLines(mergeRefetchedDocumentLines(mapped, linesRef.current, resolveDocumentLineBackendId));
         setEditLineDialogOpen(false);
         setLineToEdit(null);
       } catch {
@@ -682,6 +711,10 @@ export function OrderLineTable({
     if (!linesEditable) return;
     const line = lines.find((l) => l.id === id);
     const relatedGroup = getValidRelatedProductGroup(lines, line);
+    deleteTargetRef.current = {
+      formLineId: id,
+      backendLineId: line ? resolveDocumentLineBackendId(line) : null,
+    };
     setLineToDelete(id);
     setRelatedLinesCount(relatedGroup.length);
     setDeleteDialogOpen(true);
@@ -689,49 +722,62 @@ export function OrderLineTable({
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (!linesEditable) return;
-    if (!lineToDelete) return;
-    const lineToDeleteObj = lines.find((line) => line.id === lineToDelete);
-    if (!lineToDeleteObj) {
-      setLineToDelete(null);
-      setDeleteDialogOpen(false);
-      return;
-    }
-    const removeFromList = (): void => {
-      const relatedGroup = getValidRelatedProductGroup(lines, lineToDeleteObj);
-      if (relatedGroup.length > 0) {
-        const relatedGroupIds = new Set(relatedGroup.map((l) => l.id));
-        setLines(lines.filter((l) => !relatedGroupIds.has(l.id)));
-      } else {
-        setLines(lines.filter((l) => l.id !== lineToDelete));
-      }
+    const target =
+      deleteTargetRef.current ??
+      (lineToDelete
+        ? {
+            formLineId: lineToDelete,
+            backendLineId: resolveDocumentLineBackendId(
+              linesRef.current.find((line) => line.id === lineToDelete) ?? { id: lineToDelete },
+            ),
+          }
+        : null);
+    if (!target) return;
+
+    const closeDeleteDialog = (): void => {
+      deleteTargetRef.current = null;
       setLineToDelete(null);
       setRelatedLinesCount(0);
       setDeleteDialogOpen(false);
     };
-    if (isExistingOrder && orderId) {
-      const lineBackendId = parseLineId(lineToDeleteObj.id);
-      const oid = Number(orderId);
-      if (lineBackendId == null) {
-        removeFromList();
-        return;
-      }
-      if (!Number.isFinite(oid) || oid < 1) {
-        removeFromList();
-        return;
-      }
-      deleteMutation.mutate(lineBackendId, {
-        onSuccess: async (): Promise<void> => {
-          const fresh = await orderApi.getOrderLinesByOrderId(oid);
-          const mapped = fresh.map((dto: OrderLineGetDto, index: number) => dtoToFormState(dto, index));
-          setLines(mapped);
-          setLineToDelete(null);
-          setRelatedLinesCount(0);
-          setDeleteDialogOpen(false);
-        },
-      });
+
+    const snapshotBeforeDelete = linesRef.current;
+    const lineToDeleteObj = snapshotBeforeDelete.find((line) => line.id === target.formLineId);
+    if (!lineToDeleteObj) {
+      closeDeleteDialog();
       return;
     }
-    removeFromList();
+
+    const backendLineId = target.backendLineId ?? resolveDocumentLineBackendId(lineToDeleteObj);
+
+    updateLines((prev) =>
+      removeDocumentLineFromState(prev, target.formLineId, backendLineId, getValidRelatedProductGroup),
+    );
+    closeDeleteDialog();
+
+    if (isExistingOrder && orderId) {
+      const oid = Number(orderId);
+      if (backendLineId == null || !Number.isFinite(oid) || oid < 1) {
+        return;
+      }
+
+      try {
+        await deleteMutation.mutateAsync(backendLineId);
+        const fresh = await orderApi.getOrderLinesByOrderId(oid);
+        queryClient.setQueryData(queryKeys.orderLines(oid), fresh);
+        const mapped = fresh.map((dto: OrderLineGetDto, index: number) => dtoToFormState(dto, index));
+        updateLines(syncDocumentLinesFromServer(mapped, snapshotBeforeDelete));
+      } catch {
+        try {
+          const fresh = await orderApi.getOrderLinesByOrderId(oid);
+          queryClient.setQueryData(queryKeys.orderLines(oid), fresh);
+          const mapped = fresh.map((dto: OrderLineGetDto, index: number) => dtoToFormState(dto, index));
+          updateLines(syncDocumentLinesFromServer(mapped, snapshotBeforeDelete));
+        } catch {
+          void 0;
+        }
+      }
+    }
   };
 
   const handleDeleteCancel = (): void => {
@@ -938,18 +984,18 @@ export function OrderLineTable({
             <div
               ref={scrollRef}
               className={cn(
-                "w-full overflow-x-auto overscroll-x-contain",
-                isDragging ? "cursor-grabbing select-none" : "cursor-grab"
+                DOCUMENT_LINE_TABLE_SCROLL_CONTAINER_CLASS,
+                isDragging ? 'cursor-grabbing select-none' : 'cursor-grab',
               )}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUpOrLeave}
               onMouseLeave={handleMouseUpOrLeave}
             >
-              <table className="w-auto caption-bottom text-sm min-w-[1380px] whitespace-nowrap">
+              <table className={DOCUMENT_LINE_TABLE_CLASS}>
                 <thead className="[&_tr]:border-b">
                   <tr className={cn("hover:bg-transparent border-b", styles.tableHeadRow)}>
-                    <th className={cn("text-left align-middle whitespace-nowrap sticky left-0 z-20 bg-zinc-50 dark:bg-zinc-900 shadow-[1px_0_0_0_theme(colors.zinc.200)] dark:shadow-[1px_0_0_0_theme(colors.zinc.800)]", styles.tableHead, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>{t('order.lines.stock')}</th>
+                    <th className={cn(DOCUMENT_LINE_TABLE_STICKY_HEAD_CLASS, styles.tableHead)}>{t('order.lines.stock')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('order.lines.unitPrice')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('order.lines.quantity')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('order.lines.discount1')}</th>
@@ -981,17 +1027,16 @@ export function OrderLineTable({
                         className={cn(
                           "border-b transition-colors group",
                           styles.tableRow,
-                          hasApprovalWarning && "bg-amber-50/60 dark:bg-amber-950/20 border-l-4 border-l-amber-500"
+                          hasApprovalWarning && 'border-l-4 border-l-amber-500',
                         )}
                       >
-                        <td className={cn("p-2 align-middle whitespace-nowrap sticky left-0 z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/40 shadow-[1px_0_0_0_theme(colors.zinc.200)] dark:shadow-[1px_0_0_0_theme(colors.zinc.800)]", styles.tableCell, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>
+                        <td className={getDocumentLineTableStickyStockCellClass(styles.tableCell, hasApprovalWarning)}>
                           <div className="flex gap-3 min-w-0 w-full overflow-hidden">
                             {hasLineImage ? (
-                              <img
-                                src={lineImagePreview}
+                              <LineTableImageThumbnail
+                                src={lineImagePreview ?? ''}
                                 alt={line.productName || line.productCode || 'Line image'}
-                                loading="lazy"
-                                className="h-10 w-10 shrink-0 rounded-md border border-zinc-200 object-cover dark:border-zinc-700"
+                                imagePath={line.imagePath}
                               />
                             ) : null}
                             <div className="flex min-w-0 flex-1 flex-col gap-1.5 overflow-hidden">
@@ -1108,7 +1153,7 @@ export function OrderLineTable({
                           </div>
                         </td>
 
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCellRight, "pr-4")}>
+                        <td className={getDocumentLineTableBodyCellClass(cn(styles.tableCellRight, 'p-2 align-middle whitespace-nowrap pr-4'), hasApprovalWarning)}>
                           {quickEdit?.lineId === line.id && quickEdit.field === 'unitPrice' ? (
                             <div
                               className="flex items-center justify-end gap-1"
@@ -1171,7 +1216,7 @@ export function OrderLineTable({
                         </td>
 
                         {/* MİKTAR */}
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}>
+                        <td className={getDocumentLineTableBodyCellClass(cn(styles.tableCell, 'p-2 align-middle whitespace-nowrap text-center'), hasApprovalWarning)}>
                           {quickEdit?.lineId === line.id && quickEdit.field === 'quantity' ? (
                             <div
                               className="flex items-center justify-center gap-1"
@@ -1244,7 +1289,7 @@ export function OrderLineTable({
                           return (
                             <td
                               key={discount.field}
-                              className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}
+                              className={getDocumentLineTableBodyCellClass(cn(styles.tableCell, 'p-2 align-middle whitespace-nowrap text-center'), hasApprovalWarning)}
                             >
                               {isEditingDiscount ? (
                                 <div
@@ -1329,14 +1374,14 @@ export function OrderLineTable({
                         })}
 
                         {/* TUTAR */}
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCellRight, "pr-6")}>
+                        <td className={getDocumentLineTableBodyCellClass(cn(styles.tableCellRight, 'p-2 align-middle whitespace-nowrap pr-6'), hasApprovalWarning)}>
                           <span className="font-bold text-zinc-900 dark:text-white text-sm tabular-nums">
                             {formatCurrency(line.lineTotal, currencyCode)}
                           </span>
                         </td>
 
                         {linesEditable && (
-                          <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center pr-4")}>
+                          <td className={getDocumentLineTableBodyCellClass(cn(styles.tableCell, 'p-2 align-middle whitespace-nowrap text-center pr-4'), hasApprovalWarning)}>
                             <div className="flex items-center justify-center gap-2">
                               <Button
                                 type="button"
@@ -1441,11 +1486,11 @@ export function OrderLineTable({
             userDiscountLimits={userDiscountLimits}
             isSaving={updateMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkersForEdit}
-            allowImageUpload={Boolean(parseLineId(lineToEdit.id))}
+            allowImageUpload={Boolean(resolveDocumentLineBackendId(lineToEdit))}
             imageUploadScope="order-line"
             imageUploadExtras={{
               orderId: orderId ?? undefined,
-              orderLineId: parseLineId(lineToEdit.id) ?? undefined,
+              orderLineId: resolveDocumentLineBackendId(lineToEdit) ?? undefined,
             }}
           />
         )}

@@ -1,4 +1,5 @@
-import { type ReactElement, useState, useMemo, useCallback, useRef } from 'react';
+import { type Dispatch, type ReactElement, type SetStateAction, useState, useMemo, useCallback, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ import { DocumentLineFormDialog } from '@/components/shared/DocumentLineFormDial
 import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { DescriptionCell } from '@/components/shared';
+import { LineTableImageThumbnail } from '@/components/shared/LineTableImageThumbnail';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useProductSelection } from '../hooks/useProductSelection';
@@ -34,6 +36,7 @@ import { useCreateQuotationLines } from '../hooks/useCreateQuotationLines';
 import { useUpdateQuotationLines } from '../hooks/useUpdateQuotationLines';
 import { useDeleteQuotationLine } from '../hooks/useDeleteQuotationLine';
 import { quotationApi } from '../api/quotation-api';
+import { queryKeys } from '../utils/query-keys';
 import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
 import { formatCurrency } from '../utils/format-currency';
 import {
@@ -76,15 +79,45 @@ import {
   type QuotationQuickEditField,
 } from '../utils/apply-quotation-line-quick-field-patch';
 import { mergeCreatedLineProductName } from '@/lib/merge-created-line-product-name';
+import {
+  applyDocumentLinesUpdate,
+  mergeRefetchedDocumentLines,
+  removeDocumentLineFromState,
+  resolveDocumentLineBackendId,
+  syncDocumentLinesFromServer,
+} from '@/lib/document-line-list-update';
+import { createClientId } from '@/lib/create-client-id';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
+import {
+  DOCUMENT_LINE_TABLE_SCROLL_CONTAINER_CLASS,
+  DOCUMENT_LINE_TABLE_STICKY_HEAD_CLASS,
+  DOCUMENT_LINE_TABLE_CLASS,
+  getDocumentLineTableBodyCellClass,
+  getDocumentLineTableStickyStockCellClass,
+} from '@/lib/document-line-table-layout';
 
 function toCreateDto(line: QuotationLineFormState, quotationId: number): CreateQuotationLineDto {
-  const { id, isEditing, relatedLines, unit, pendingImageFile, pendingImagePreviewUrl, vidaDefinitionName, baskiDefinitionName, ...rest } = line;
+  const {
+    id,
+    isEditing,
+    relatedLines,
+    pendingImageFile,
+    pendingImagePreviewUrl,
+    vidaDefinitionName,
+    baskiDefinitionName,
+    ...rest
+  } = line;
+  void id;
+  void isEditing;
+  void relatedLines;
+  void pendingImageFile;
+  void pendingImagePreviewUrl;
   void vidaDefinitionName;
   void baskiDefinitionName;
   return {
     ...rest,
     quotationId,
+    unit: line.unit ?? null,
     productId: line.productId ?? 0,
     productCode: line.productCode ?? '',
     productName: line.productName ?? '',
@@ -92,22 +125,6 @@ function toCreateDto(line: QuotationLineFormState, quotationId: number): CreateQ
     erpProjectCode: line.projectCode ?? null,
     imagePath: line.imagePath ?? null,
   };
-}
-
-function parseLineId(formId: string | number | undefined): number | null {
-  if (formId == null) return null;
-  if (typeof formId === 'number' && Number.isFinite(formId) && formId > 0) return formId;
-  const s = String(formId).trim();
-  const prefixed = s.match(/^line-(\d+)(?:-|$)/);
-  if (prefixed) {
-    const n = parseInt(prefixed[1], 10);
-    return Number.isNaN(n) ? null : n;
-  }
-  if (/^\d+$/.test(s)) {
-    const n = parseInt(s, 10);
-    return Number.isNaN(n) ? null : n;
-  }
-  return null;
 }
 
 function getValidRelatedProductGroup(
@@ -124,7 +141,7 @@ function getValidRelatedProductGroup(
   return sameGroupLines.length > 1 && hasMainLine && hasRelatedLine ? sameGroupLines : [];
 }
 
-function dtoToFormState(dto: QuotationLineGetDto, index: number): QuotationLineFormState {
+function dtoToFormState(dto: QuotationLineGetDto, _index: number): QuotationLineFormState {
   const amounts = calculateLineTotalsAmounts(
     dto.unitPrice,
     dto.quantity,
@@ -135,7 +152,8 @@ function dtoToFormState(dto: QuotationLineGetDto, index: number): QuotationLineF
   );
 
   return {
-    id: dto.id && dto.id > 0 ? `line-${dto.id}-${index}` : `line-temp-${index}`,
+    id: createClientId(),
+    backendLineId: dto.id && dto.id > 0 ? dto.id : null,
     isEditing: false,
     productId: dto.productId ?? null,
     productCode: dto.productCode ?? '',
@@ -173,13 +191,14 @@ function dtoToFormState(dto: QuotationLineGetDto, index: number): QuotationLineF
 function toUpdateDto(line: QuotationLineFormState, quotationId: number): QuotationLineGetDto {
   void line.pendingImageFile;
   void line.pendingImagePreviewUrl;
-  const lineId = parseLineId(line.id) ?? 0;
+  const lineId = resolveDocumentLineBackendId(line) ?? 0;
   return {
     id: lineId,
     quotationId,
     productId: line.productId ?? null,
     productCode: line.productCode ?? '',
     productName: line.productName ?? '',
+    unit: line.unit ?? null,
     groupCode: line.groupCode ?? null,
     quantity: line.quantity,
     unitPrice: line.unitPrice,
@@ -255,7 +274,7 @@ async function finalizeCreatedLineImages(
 
 interface QuotationLineTableProps {
   lines: QuotationLineFormState[];
-  setLines: (lines: QuotationLineFormState[]) => void;
+  setLines: Dispatch<SetStateAction<QuotationLineFormState[]>>;
   currency: number;
   exchangeRates?: QuotationExchangeRateFormState[];
   pricingRules?: PricingRuleLineGetDto[];
@@ -267,7 +286,7 @@ interface QuotationLineTableProps {
   enabled?: boolean;
   offerNo?: string | null;
   customerName?: string | null;
-  buildExportPdfBlob?: (options: { draft: boolean }) => Promise<Blob>;
+  buildExportPdfBlob?: (options: { draft: boolean; showDiscount?: boolean }) => Promise<Blob>;
   exportPdfFileName?: string;
 }
 
@@ -288,7 +307,18 @@ export function QuotationLineTable({
   buildExportPdfBlob,
   exportPdfFileName,
 }: QuotationLineTableProps): ReactElement {
+  const queryClient = useQueryClient();
   const linesEditable = enabled;
+  const linesRef = useRef(lines);
+  linesRef.current = lines;
+
+  const updateLines = useCallback(
+    (nextOrUpdater: QuotationLineFormState[] | ((prev: QuotationLineFormState[]) => QuotationLineFormState[])) => {
+      applyDocumentLinesUpdate(linesRef, setLines, nextOrUpdater);
+    },
+    [setLines],
+  );
+
   const { t } = useTranslation(['quotation', 'common']);
   const { profilMap, demirMap, vidaMap, baskiMap } = useWindoDefinitionOptions();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -298,6 +328,7 @@ export function QuotationLineTable({
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [lineToDelete, setLineToDelete] = useState<string | null>(null);
+  const deleteTargetRef = useRef<{ formLineId: string; backendLineId: number | null } | null>(null);
   const [relatedLinesCount, setRelatedLinesCount] = useState(0);
   const [addLineDialogOpen, setAddLineDialogOpen] = useState(false);
   const [newLine, setNewLine] = useState<QuotationLineFormState | null>(null);
@@ -335,12 +366,12 @@ export function QuotationLineTable({
 
   const styles = {
     glassCard: "relative overflow-hidden  border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-sm",
-    tableHeadRow: "bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800",
-    tableHead: "h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider border-r border-zinc-200 dark:border-zinc-800 last:border-r-0",
-    tableHeadRight: "h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider text-right border-r border-zinc-200 dark:border-zinc-800 last:border-r-0",
-    tableCell: "p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-r border-zinc-200 dark:border-zinc-800 last:border-r-0",
-    tableCellRight: "p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-r border-zinc-200 dark:border-zinc-800 text-right font-mono tabular-nums last:border-r-0",
-    tableRow: "group transition-all duration-200 hover:bg-zinc-50 dark:hover:bg-zinc-800/40",
+    tableHeadRow: "bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-700",
+    tableHead: "h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider border-r border-zinc-200 dark:border-zinc-700 last:border-r-0",
+    tableHeadRight: "h-11 px-4 text-xs font-bold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider text-right border-r border-zinc-200 dark:border-zinc-700 last:border-r-0",
+    tableCell: "p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-r border-zinc-200 dark:border-zinc-700 last:border-r-0",
+    tableCellRight: "p-4 text-sm font-medium text-zinc-700 dark:text-zinc-200 border-b border-r border-zinc-200 dark:border-zinc-700 text-right font-mono tabular-nums last:border-r-0",
+    tableRow: 'group border-b transition-colors',
     actionButton: "h-8 w-8 p-0 rounded-lg hover:bg-white dark:hover:bg-zinc-700 hover:shadow-sm hover:scale-105 transition-all duration-200",
   };
 
@@ -458,7 +489,7 @@ export function QuotationLineTable({
     }
 
     const line: QuotationLineFormState = {
-      id: `temp-${Date.now()}`,
+      id: createClientId(),
       productId: null,
       productCode: '',
       productName: '',
@@ -579,9 +610,9 @@ export function QuotationLineTable({
           patchedFromNext.isMainRelatedProduct &&
           originalLine.quantity !== patchedFromNext.quantity
           ? nextLines.filter(
-            (l) => l.relatedProductKey === patchedFromNext.relatedProductKey && parseLineId(l.id) != null
+            (l) => l.relatedProductKey === patchedFromNext.relatedProductKey && resolveDocumentLineBackendId(l) != null
           )
-          : parseLineId(patchedFromNext.id) != null
+          : resolveDocumentLineBackendId(patchedFromNext) != null
             ? [patchedFromNext]
             : [];
 
@@ -591,7 +622,7 @@ export function QuotationLineTable({
           await updateMutation.mutateAsync(dtos);
           const fresh = await quotationApi.getQuotationLinesByQuotationId(quotationId);
           const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
-          setLines(mapped);
+          updateLines(mergeRefetchedDocumentLines(mapped, linesRef.current, resolveDocumentLineBackendId));
         } catch {
           void 0;
         }
@@ -600,7 +631,7 @@ export function QuotationLineTable({
       }
     }
 
-    setLines(nextLines);
+    updateLines(nextLines);
     setQuickEdit(null);
   }, [
     quickEdit,
@@ -612,7 +643,7 @@ export function QuotationLineTable({
     isExistingQuotation,
     quotationId,
     updateMutation,
-    setLines,
+    updateLines,
   ]);
 
   const handleSaveNewLine = useCallback(
@@ -623,11 +654,14 @@ export function QuotationLineTable({
         try {
           const dtos: CreateQuotationLineDto[] = [toCreateDto(lineToAdd, quotationId)];
           const created = await createMutation.mutateAsync(dtos);
-          const finalized = await finalizeCreatedLineImages([lineToAdd], created, quotationId);
-          const mapped = finalized.map((dto, i) =>
-            mergeCreatedLineProductName(dtoToFormState(dto, lines.length + i), lineToAdd)
+          await finalizeCreatedLineImages([lineToAdd], created, quotationId);
+          const fresh = await quotationApi.getQuotationLinesByQuotationId(quotationId);
+          queryClient.setQueryData(queryKeys.quotationLines(quotationId), fresh);
+          const snapshot = linesRef.current;
+          const mapped = fresh.map((dto, index) =>
+            mergeCreatedLineProductName(dtoToFormState(dto, index), lineToAdd),
           );
-          setLines([...lines, ...mapped]);
+          updateLines(syncDocumentLinesFromServer(mapped, snapshot, { keepLocalDraftLines: true }));
           setAddLineDialogOpen(false);
           setNewLine(null);
         } catch {
@@ -635,11 +669,11 @@ export function QuotationLineTable({
         }
         return;
       }
-      setLines([...lines, lineToAdd]);
+      updateLines((prev) => [...prev, lineToAdd]);
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingQuotation, quotationId, createMutation, lines, setLines, linesEditable]
+    [isExistingQuotation, quotationId, createMutation, updateLines, linesEditable]
   );
 
   const handleSaveMultipleLines = useCallback(
@@ -650,11 +684,15 @@ export function QuotationLineTable({
         try {
           const dtos: CreateQuotationLineDto[] = linesToAdd.map((l) => toCreateDto(l, quotationId));
           const created = await createMutation.mutateAsync(dtos);
-          const finalized = await finalizeCreatedLineImages(linesToAdd, created, quotationId);
-          const mapped = finalized.map((dto, i) =>
-            mergeCreatedLineProductName(dtoToFormState(dto, lines.length + i), linesToAdd[i])
-          );
-          setLines([...lines, ...mapped]);
+          await finalizeCreatedLineImages(linesToAdd, created, quotationId);
+          const fresh = await quotationApi.getQuotationLinesByQuotationId(quotationId);
+          queryClient.setQueryData(queryKeys.quotationLines(quotationId), fresh);
+          const snapshot = linesRef.current;
+          const mapped = fresh.map((dto, index) => {
+            const sourceLine = linesToAdd[index] ?? linesToAdd[linesToAdd.length - 1];
+            return mergeCreatedLineProductName(dtoToFormState(dto, index), sourceLine);
+          });
+          updateLines(syncDocumentLinesFromServer(mapped, snapshot, { keepLocalDraftLines: true }));
           setAddLineDialogOpen(false);
           setNewLine(null);
         } catch {
@@ -662,11 +700,11 @@ export function QuotationLineTable({
         }
         return;
       }
-      setLines([...lines, ...linesToAdd]);
+      updateLines((prev) => [...prev, ...linesToAdd]);
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingQuotation, quotationId, createMutation, lines, setLines, linesEditable]
+    [isExistingQuotation, quotationId, createMutation, updateLines, linesEditable]
   );
 
   const handleCancelNewLine = (): void => {
@@ -723,9 +761,9 @@ export function QuotationLineTable({
     relatedLinesToUpdate: QuotationLineFormState[] | undefined,
     originalLine: QuotationLineFormState
   ): void => {
-    setLines(
+    updateLines(
       mergeLinesAfterMainLineUpdate(
-        lines,
+        linesRef.current,
         originalLine,
         updatedLine,
         relatedLinesToUpdate,
@@ -746,15 +784,16 @@ export function QuotationLineTable({
     }
 
     const allUpdatedLines = [updatedLine, ...(relatedLinesToUpdate || [])].map((l) => ({ ...l, isEditing: false }));
-    const linesWithBackendId = allUpdatedLines.filter((l) => parseLineId(l.id) != null);
+    const linesWithBackendId = allUpdatedLines.filter((l) => resolveDocumentLineBackendId(l) != null);
 
     if (isExistingQuotation && quotationId && linesWithBackendId.length > 0) {
       try {
         const dtos: QuotationLineGetDto[] = linesWithBackendId.map((l) => toUpdateDto(l, quotationId));
         await updateMutation.mutateAsync(dtos);
         const fresh = await quotationApi.getQuotationLinesByQuotationId(quotationId);
+        queryClient.setQueryData(queryKeys.quotationLines(quotationId), fresh);
         const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
-        setLines(mapped);
+        updateLines(mergeRefetchedDocumentLines(mapped, linesRef.current, resolveDocumentLineBackendId));
         setEditLineDialogOpen(false);
         setLineToEdit(null);
       } catch {
@@ -777,6 +816,10 @@ export function QuotationLineTable({
     if (!linesEditable) return;
     const line = lines.find((l) => l.id === id);
     const relatedGroup = getValidRelatedProductGroup(lines, line);
+    deleteTargetRef.current = {
+      formLineId: id,
+      backendLineId: line ? resolveDocumentLineBackendId(line) : null,
+    };
     setLineToDelete(id);
     setRelatedLinesCount(relatedGroup.length);
     setDeleteDialogOpen(true);
@@ -784,49 +827,62 @@ export function QuotationLineTable({
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (!linesEditable) return;
-    if (!lineToDelete) return;
-    const lineToDeleteObj = lines.find((line) => line.id === lineToDelete);
-    if (!lineToDeleteObj) {
-      setLineToDelete(null);
-      setDeleteDialogOpen(false);
-      return;
-    }
-    const removeFromList = (): void => {
-      const relatedGroup = getValidRelatedProductGroup(lines, lineToDeleteObj);
-      if (relatedGroup.length > 0) {
-        const relatedGroupIds = new Set(relatedGroup.map((l) => l.id));
-        setLines(lines.filter((l) => !relatedGroupIds.has(l.id)));
-      } else {
-        setLines(lines.filter((l) => l.id !== lineToDelete));
-      }
+    const target =
+      deleteTargetRef.current ??
+      (lineToDelete
+        ? {
+            formLineId: lineToDelete,
+            backendLineId: resolveDocumentLineBackendId(
+              linesRef.current.find((line) => line.id === lineToDelete) ?? { id: lineToDelete },
+            ),
+          }
+        : null);
+    if (!target) return;
+
+    const closeDeleteDialog = (): void => {
+      deleteTargetRef.current = null;
       setLineToDelete(null);
       setRelatedLinesCount(0);
       setDeleteDialogOpen(false);
     };
-    if (isExistingQuotation && quotationId) {
-      const lineBackendId = parseLineId(lineToDeleteObj.id);
-      const qid = Number(quotationId);
-      if (lineBackendId == null) {
-        removeFromList();
-        return;
-      }
-      if (!Number.isFinite(qid) || qid < 1) {
-        removeFromList();
-        return;
-      }
-      deleteMutation.mutate(lineBackendId, {
-        onSuccess: async (): Promise<void> => {
-          const fresh = await quotationApi.getQuotationLinesByQuotationId(qid);
-          const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
-          setLines(mapped);
-          setLineToDelete(null);
-          setRelatedLinesCount(0);
-          setDeleteDialogOpen(false);
-        },
-      });
+
+    const snapshotBeforeDelete = linesRef.current;
+    const lineToDeleteObj = snapshotBeforeDelete.find((line) => line.id === target.formLineId);
+    if (!lineToDeleteObj) {
+      closeDeleteDialog();
       return;
     }
-    removeFromList();
+
+    const backendLineId = target.backendLineId ?? resolveDocumentLineBackendId(lineToDeleteObj);
+
+    updateLines((prev) =>
+      removeDocumentLineFromState(prev, target.formLineId, backendLineId, getValidRelatedProductGroup),
+    );
+    closeDeleteDialog();
+
+    if (isExistingQuotation && quotationId) {
+      const qid = Number(quotationId);
+      if (backendLineId == null || !Number.isFinite(qid) || qid < 1) {
+        return;
+      }
+
+      try {
+        await deleteMutation.mutateAsync(backendLineId);
+        const fresh = await quotationApi.getQuotationLinesByQuotationId(qid);
+        queryClient.setQueryData(queryKeys.quotationLines(qid), fresh);
+        const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
+        updateLines(syncDocumentLinesFromServer(mapped, snapshotBeforeDelete));
+      } catch {
+        try {
+          const fresh = await quotationApi.getQuotationLinesByQuotationId(qid);
+          queryClient.setQueryData(queryKeys.quotationLines(qid), fresh);
+          const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
+          updateLines(syncDocumentLinesFromServer(mapped, snapshotBeforeDelete));
+        } catch {
+          void 0;
+        }
+      }
+    }
   };
 
   const handleDeleteCancel = (): void => {
@@ -955,18 +1011,18 @@ export function QuotationLineTable({
             <div
               ref={scrollRef}
               className={cn(
-                "w-full overflow-x-auto overscroll-x-contain",
-                isDragging ? "cursor-grabbing select-none" : "cursor-grab"
+                DOCUMENT_LINE_TABLE_SCROLL_CONTAINER_CLASS,
+                isDragging ? 'cursor-grabbing select-none' : 'cursor-grab',
               )}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUpOrLeave}
               onMouseLeave={handleMouseUpOrLeave}
             >
-              <table className="w-auto caption-bottom text-sm min-w-[1380px] whitespace-nowrap">
+              <table className={DOCUMENT_LINE_TABLE_CLASS}>
                 <thead className="[&_tr]:border-b">
                   <tr className={cn("hover:bg-transparent border-b", styles.tableHeadRow)}>
-                    <th className={cn("text-left align-middle whitespace-nowrap sticky left-0 z-20 bg-zinc-50 dark:bg-zinc-900 shadow-[1px_0_0_0_theme(colors.zinc.200)] dark:shadow-[1px_0_0_0_theme(colors.zinc.800)]", styles.tableHead, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>{t('lines.stock')}</th>
+                    <th className={cn(DOCUMENT_LINE_TABLE_STICKY_HEAD_CLASS, styles.tableHead)}>{t('lines.stock')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px]")}>{t('lines.unitPrice')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[80px] md:min-w-[90px]")}>{t('lines.quantity')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('lines.discount1')}</th>
@@ -999,18 +1055,18 @@ export function QuotationLineTable({
                         className={cn(
                           "border-b transition-colors group",
                           styles.tableRow,
-                          hasApprovalWarning && "bg-amber-50/60 dark:bg-amber-950/20 border-l-4 border-l-amber-500"
+                          hasApprovalWarning && 'border-l-4 border-l-amber-500',
                         )}
                       >
                         {/* STOK BİLGİSİ */}
-                        <td className={cn("p-2 align-middle whitespace-nowrap sticky left-0 z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/40 shadow-[1px_0_0_0_theme(colors.zinc.200)] dark:shadow-[1px_0_0_0_theme(colors.zinc.800)]", styles.tableCell, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>
+                        <td className={getDocumentLineTableStickyStockCellClass(styles.tableCell, hasApprovalWarning)}>
                           <div className="flex gap-3 min-w-0 w-full overflow-hidden">
                             {hasLineImage ? (
-                              <img
-                                src={lineImagePreview}
+                              <LineTableImageThumbnail
+                                src={lineImagePreview ?? ''}
                                 alt={line.productName || line.productCode || 'Line image'}
-                                loading="lazy"
-                                className="h-10 w-10 shrink-0 rounded-md border border-zinc-200 object-cover dark:border-zinc-700"
+                                imagePath={line.imagePath}
+                                pendingImagePreviewUrl={line.pendingImagePreviewUrl}
                               />
                             ) : null}
                             <div className="flex min-w-0 flex-1 flex-col gap-1.5 overflow-hidden">
@@ -1127,7 +1183,7 @@ export function QuotationLineTable({
                           </div>
                         </td>
 
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCellRight, "pr-4")}>
+                        <td className={getDocumentLineTableBodyCellClass(cn(styles.tableCellRight, 'p-2 align-middle whitespace-nowrap pr-4'), hasApprovalWarning)}>
                           {quickEdit?.lineId === line.id && quickEdit.field === 'unitPrice' ? (
                             <div
                               className="flex items-center justify-end gap-1"
@@ -1189,7 +1245,7 @@ export function QuotationLineTable({
                           )}
                         </td>
 
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}>
+                        <td className={getDocumentLineTableBodyCellClass(cn(styles.tableCell, 'p-2 align-middle whitespace-nowrap text-center'), hasApprovalWarning)}>
                           {quickEdit?.lineId === line.id && quickEdit.field === 'quantity' ? (
                             <div
                               className="flex items-center justify-center gap-1"
@@ -1262,7 +1318,7 @@ export function QuotationLineTable({
                           return (
                             <td
                               key={discount.field}
-                              className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center")}
+                              className={getDocumentLineTableBodyCellClass(cn(styles.tableCell, 'p-2 align-middle whitespace-nowrap text-center'), hasApprovalWarning)}
                             >
                               {isEditingDiscount ? (
                                 <div
@@ -1346,14 +1402,14 @@ export function QuotationLineTable({
                           );
                         })}
 
-                        <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCellRight, "pr-6")}>
+                        <td className={getDocumentLineTableBodyCellClass(cn(styles.tableCellRight, 'p-2 align-middle whitespace-nowrap pr-6'), hasApprovalWarning)}>
                           <span className="font-bold text-zinc-900 dark:text-white text-sm tabular-nums">
                             {formatCurrency(line.lineTotal, currencyCode)}
                           </span>
                         </td>
 
                         {linesEditable && (
-                          <td className={cn("p-2 align-middle whitespace-nowrap", styles.tableCell, "text-center pr-4")}>
+                          <td className={getDocumentLineTableBodyCellClass(cn(styles.tableCell, 'p-2 align-middle whitespace-nowrap text-center pr-4'), hasApprovalWarning)}>
                             <div className="flex items-center justify-center gap-2">
                               <Button
                                 type="button"
@@ -1470,7 +1526,7 @@ export function QuotationLineTable({
             imageUploadScope="quotation-line"
                 imageUploadExtras={{
                   quotationId: quotationId ?? undefined,
-                  quotationLineId: parseLineId(lineToEdit.id) ?? undefined,
+                  quotationLineId: resolveDocumentLineBackendId(lineToEdit) ?? undefined,
                   productCode: lineToEdit.productCode || undefined,
                 }}
               />

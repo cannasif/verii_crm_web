@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { quotationApi } from '../api/quotation-api';
 import { queryKeys } from '../utils/query-keys';
+import type { QuotationLineGetDto } from '../types/quotation-types';
 
 export const useDeleteQuotationLine = (
   quotationId: number
@@ -12,8 +13,11 @@ export const useDeleteQuotationLine = (
 
   return useMutation({
     mutationFn: (id: number) => quotationApi.deleteQuotationLine(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.quotationLines(quotationId) });
+    onSuccess: (_data, deletedLineId) => {
+      queryClient.setQueryData<QuotationLineGetDto[]>(
+        queryKeys.quotationLines(quotationId),
+        (current) => current?.filter((line) => line.id !== deletedLineId) ?? [],
+      );
       toast.success(t('lines.deleteSuccess'));
     },
     onError: (error: Error) => {

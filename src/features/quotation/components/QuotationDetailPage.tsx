@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { type Dispatch, type ReactElement, type SetStateAction, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -51,9 +51,14 @@ import {
   buildPreviewPdfDocumentFooterDetails,
   buildPreviewPdfDocumentFooterLabels,
   buildPreviewPdfLineDetailLabels,
+  buildPreviewPdfLineDiscountLabels,
+  previewPdfLineHasDiscount,
+  previewPdfHasGeneralDiscount,
+  resolvePreviewPdfPaymentTypeName,
   resolvePreviewPdfShippingAddressText,
 } from '../utils/build-preview-pdf-footer-details';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
+import { usePaymentTypes } from '../hooks/usePaymentTypes';
 import { useShippingAddresses } from '../hooks/useShippingAddresses';
 import { ReportTemplateTab, DocumentRuleType } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
@@ -67,12 +72,16 @@ import { quotationNotesGetDtoToDto, quotationNotesDtoToNotesList } from '../util
 import { QuotationHeaderForm } from './QuotationHeaderForm';
 import { QuotationLineTable } from './QuotationLineTable';
 import { QuotationSummaryCard } from './QuotationSummaryCard';
+import { usePrefetchLineImagesForPdf } from '../hooks/usePrefetchLineImagesForPdf';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import {
   fetchLocalizedStockMapByErpCodes,
   localizeLoadedLineProductName,
+  resolveLoadedLineUnit,
 } from '@/features/stock/utils/localized-stock-name';
+import { createClientId } from '@/lib/create-client-id';
+import { deduplicateDocumentLinesByBackendId } from '@/lib/document-line-list-update';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -135,22 +144,30 @@ export function QuotationDetailPage(): ReactElement {
   const { data: quotation, isLoading } = useQuotation(quotationId);
   const { data: canEditWhileWaiting = false, isLoading: isLoadingCanEdit } = useCanEditQuotation(quotationId);
   const { data: exchangeRatesData = [], isLoading: isLoadingExchangeRates } = useQuotationExchangeRates(quotationId);
-  const { data: linesData = [], isLoading: isLoadingLines } = useQuotationLines(quotationId);
+  const { data: linesData = [], isPending: isPendingLines } = useQuotationLines(quotationId);
   const { data: notesData, isLoading: isLoadingNotes } = useQuotationNotes(quotationId);
   const updateNotesMutation = useUpdateQuotationNotesList(quotationId);
   const startApprovalFlow = useStartApprovalFlow();
   const cancelByCustomerMutation = useCancelQuotationByCustomer();
   const createRevisionMutation = useCreateRevisionOfQuotation();
   const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
+  const { data: paymentTypes = [] } = usePaymentTypes();
 
-  const [lines, setLines] = useState<QuotationLineFormState[]>([]);
+  const [lines, setLinesState] = useState<QuotationLineFormState[]>([]);
+  usePrefetchLineImagesForPdf(lines);
   const [exchangeRates, setExchangeRates] = useState<QuotationExchangeRateFormState[]>([]);
   const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
   const [temporarySallerData, setTemporarySallerData] = useState<UserDiscountLimitDto[]>([]);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  const setQuotationLines = useCallback<Dispatch<SetStateAction<QuotationLineFormState[]>>>((action) => {
+    linesDirtyRef.current = true;
+    setLinesState(action);
+  }, []);
+
   const linesInitializedRef = useRef(false);
+  const linesDirtyRef = useRef(false);
   const exchangeRatesInitializedRef = useRef(false);
   const notesInitializedRef = useRef(false);
   const formInitializedRef = useRef(false);
@@ -266,6 +283,7 @@ export function QuotationDetailPage(): ReactElement {
 
   useEffect(() => {
     linesInitializedRef.current = false;
+    linesDirtyRef.current = false;
     notesInitializedRef.current = false;
     exchangeRatesInitializedRef.current = false;
     formInitializedRef.current = false;
@@ -282,6 +300,7 @@ export function QuotationDetailPage(): ReactElement {
 
   useEffect(() => {
     if (!quotationId || quotationId < 1) return;
+    if (linesDirtyRef.current) return;
     if (!linesData || linesData.length === 0) return;
     if (linesInitializedRef.current) return;
 
@@ -295,7 +314,7 @@ export function QuotationDetailPage(): ReactElement {
 
       const backendId = (line: { id?: number }): number =>
         Number((line as { id?: number; Id?: number }).id ?? (line as { id?: number; Id?: number }).Id ?? 0);
-      const formattedLines: QuotationLineFormState[] = linesData.map((line, index) => {
+      const formattedLines: QuotationLineFormState[] = deduplicateDocumentLinesByBackendId(linesData.map((line, _index) => {
         const idNum = backendId(line);
         const amounts = calculateLineTotalsAmounts(
           line.unitPrice,
@@ -306,10 +325,12 @@ export function QuotationDetailPage(): ReactElement {
           line.vatRate,
         );
         return {
-          id: idNum > 0 ? `line-${idNum}-${index}` : `line-temp-${index}`,
+          id: createClientId(),
+          backendLineId: idNum > 0 ? idNum : null,
           isEditing: false,
           productCode: line.productCode || '',
           productName: localizeLoadedLineProductName(line, stockByCode, i18n.language),
+          unit: resolveLoadedLineUnit(line, stockByCode),
           groupCode: line.groupCode || null,
           quantity: line.quantity,
           unitPrice: line.unitPrice,
@@ -336,8 +357,14 @@ export function QuotationDetailPage(): ReactElement {
           approvalStatus: line.approvalStatus,
           ...amounts,
         };
-      });
-      setLines(formattedLines);
+      }));
+      if (cancelled) return;
+      if (linesDirtyRef.current) {
+        linesInitializedRef.current = true;
+        return;
+      }
+
+      setLinesState(formattedLines);
       linesInitializedRef.current = true;
     };
 
@@ -426,7 +453,22 @@ export function QuotationDetailPage(): ReactElement {
     return null;
   }, [watchedErpCustomerCode, watchedCustomerId, customerOptions]);
 
-  const buildPreviewPdfBlob = useCallback(async (options?: { draft?: boolean }): Promise<Blob> => {
+  const hasLineDiscounts = useMemo(
+    () => lines.some((line) => previewPdfLineHasDiscount(line)),
+    [lines],
+  );
+
+  const hasGeneralDiscount = useMemo(() => {
+    const qc = quotationFormSlice;
+    return previewPdfHasGeneralDiscount(
+      qc.generalDiscountRate ?? quotation?.generalDiscountRate ?? null,
+      qc.generalDiscountAmount ?? quotation?.generalDiscountAmount ?? null,
+    );
+  }, [quotationFormSlice, quotation]);
+
+  const defaultShowDiscountDetails = hasLineDiscounts || hasGeneralDiscount;
+
+  const buildPreviewPdfBlob = useCallback(async (options?: { draft?: boolean; showDiscount?: boolean }): Promise<Blob> => {
     const qc = quotationFormSlice;
     const customerLabel =
       (await resolveQuotationCustomerLabelForPdf({
@@ -450,6 +492,7 @@ export function QuotationDetailPage(): ReactElement {
       quantity: t('lines.quantity'),
       unitPrice: t('lines.unitPrice'),
       unitPriceNet: t('pdfExportTemplate.unitPriceNet'),
+      netUnitPriceColumn: t('pdfExportTemplate.netUnitPriceColumn'),
       lineDiscount: t('pdfExportTemplate.lineDiscount'),
       vatRate: t('pdfExportTemplate.vatRate'),
       lineTotal: t('lines.total'),
@@ -470,11 +513,18 @@ export function QuotationDetailPage(): ReactElement {
       || (koliBaskiId != null && koliBaskiId > 0 ? koliBaskiMap[koliBaskiId] : null)
       || null;
 
+    const paymentTypeName = resolvePreviewPdfPaymentTypeName(
+      qc.paymentTypeId ?? quotation?.paymentTypeId ?? null,
+      quotation?.paymentTypeName ?? null,
+      paymentTypes,
+    );
+
     const footerDetails = buildPreviewPdfDocumentFooterDetails(
       {
         koliBaskiName,
+        paymentTypeName,
         description: qc.description ?? quotation?.description ?? null,
-        structuredNotes: quotationNotesDtoToNotesList(quotationNotes),
+        quotationNotes,
         shippingAddressText: resolvePreviewPdfShippingAddressText({
           shippingAddressId: qc.shippingAddressId ?? quotation?.shippingAddressId ?? null,
           shippingAddressText: quotation?.shippingAddressText ?? null,
@@ -484,6 +534,7 @@ export function QuotationDetailPage(): ReactElement {
       buildPreviewPdfDocumentFooterLabels(t),
     );
     const lineDetailLabels = buildPreviewPdfLineDetailLabels(t);
+    const lineDiscountLabels = buildPreviewPdfLineDiscountLabels(t);
 
     return buildQuotationPreviewPdfBlob({
       lines,
@@ -500,6 +551,8 @@ export function QuotationDetailPage(): ReactElement {
       footerDetails,
       lineDetailLabels,
       lineDetailMaps: { profilMap, demirMap, vidaMap, baskiMap },
+      lineDiscountLabels,
+      showDiscount: options?.showDiscount ?? defaultShowDiscountDetails,
       draft: options?.draft ?? false,
     });
   }, [
@@ -517,8 +570,11 @@ export function QuotationDetailPage(): ReactElement {
     vidaMap,
     baskiMap,
     koliBaskiMap,
+    paymentTypes,
     quotationNotes,
     shippingAddresses,
+    hasLineDiscounts,
+    defaultShowDiscountDetails,
   ]);
 
   const reportBuiltInTemplates = useMemo(
@@ -529,14 +585,15 @@ export function QuotationDetailPage(): ReactElement {
           defaultValue: 'V3RII Hazır Şablon (Önizleme)',
         }),
         isDefault: true,
-        generate: () => buildPreviewPdfBlob({ draft: false }),
+        generate: () => buildPreviewPdfBlob({ draft: false, showDiscount: defaultShowDiscountDetails }),
       },
     ],
-    [buildPreviewPdfBlob, t]
+    [buildPreviewPdfBlob, defaultShowDiscountDetails, t]
   );
 
   const buildExportPdfBlob = useCallback(
-    async ({ draft }: { draft: boolean }): Promise<Blob> => buildPreviewPdfBlob({ draft }),
+    async ({ draft, showDiscount }: { draft: boolean; showDiscount?: boolean }): Promise<Blob> =>
+      buildPreviewPdfBlob({ draft, showDiscount }),
     [buildPreviewPdfBlob],
   );
 
@@ -916,7 +973,7 @@ export function QuotationDetailPage(): ReactElement {
         return calculateLineTotals(updatedLine);
       })
     );
-    setLines(updatedLines);
+    setQuotationLines(updatedLines);
   };
 
   const handleExplicitCurrencyChange = async (
@@ -971,7 +1028,7 @@ export function QuotationDetailPage(): ReactElement {
     setCustomerCancellationOpen(false);
   };
 
-  if (isLoading || isLoadingCanEdit || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
+  if (isLoading || isLoadingCanEdit || isLoadingExchangeRates || isPendingLines || isLoadingNotes) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
@@ -1139,7 +1196,7 @@ export function QuotationDetailPage(): ReactElement {
                       </div>
                     <QuotationLineTable
                       lines={lines}
-                      setLines={setLines}
+                      setLines={setQuotationLines}
                       currency={watchedCurrency}
                       exchangeRates={exchangeRates}
                       pricingRules={pricingRules}
@@ -1291,6 +1348,7 @@ export function QuotationDetailPage(): ReactElement {
         open={pdfExportOpen}
         onOpenChange={setPdfExportOpen}
         buildPdfBlob={buildExportPdfBlob}
+        hasLineDiscounts={defaultShowDiscountDetails}
         fileName={shareFileName}
         labels={{
           title: t('exportPreview.title'),
@@ -1302,6 +1360,7 @@ export function QuotationDetailPage(): ReactElement {
           errorDismiss: t('exportPreview.errorDismiss'),
           shareWhatsapp: t('shareWhatsapp'),
           shareMail: t('shareMail'),
+          showDiscount: t('exportPreview.showDiscount'),
         }}
         onShareWhatsapp={handleModalShareWhatsapp}
         onShareMail={handleModalShareMail}

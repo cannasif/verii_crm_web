@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { type Dispatch, type ReactElement, type SetStateAction, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -52,7 +52,10 @@ import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import {
   fetchLocalizedStockMapByErpCodes,
   localizeLoadedLineProductName,
+  resolveLoadedLineUnit,
 } from '@/features/stock/utils/localized-stock-name';
+import { createClientId } from '@/lib/create-client-id';
+import { deduplicateDocumentLinesByBackendId } from '@/lib/document-line-list-update';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { resolveWatchedDocumentCurrency } from '@/lib/line-unit-price-currency';
@@ -102,13 +105,13 @@ export function OrderDetailPage(): ReactElement {
   const { data: order, isLoading } = useOrder(orderId);
   const { data: canEditWhileWaiting = false, isLoading: isLoadingCanEdit } = useCanEditOrder(orderId);
   const { data: exchangeRatesData = [], isLoading: isLoadingExchangeRates } = useOrderExchangeRates(orderId);
-  const { data: linesData = [], isLoading: isLoadingLines } = useOrderLines(orderId);
+  const { data: linesData = [], isPending: isPendingLines } = useOrderLines(orderId);
   const { data: notesData, isLoading: isLoadingNotes } = useOrderNotes(orderId);
   const updateNotesMutation = useUpdateOrderNotesList(orderId);
   const startApprovalFlow = useStartApprovalFlow();
   const cancelByCustomerMutation = useCancelOrderByCustomer();
 
-  const [lines, setLines] = useState<OrderLineFormState[]>([]);
+  const [lines, setLinesState] = useState<OrderLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<OrderExchangeRateFormState[]>([]);
   const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
@@ -116,6 +119,12 @@ export function OrderDetailPage(): ReactElement {
   const [isUpdating, setIsUpdating] = useState(false);
 
   const linesInitializedRef = useRef(false);
+  const linesDirtyRef = useRef(false);
+
+  const setOrderLines = useCallback<Dispatch<SetStateAction<OrderLineFormState[]>>>((action) => {
+    linesDirtyRef.current = true;
+    setLinesState(action);
+  }, []);
   const notesInitializedRef = useRef(false);
   const exchangeRatesInitializedRef = useRef(false);
   const formInitializedRef = useRef(false);
@@ -207,6 +216,7 @@ export function OrderDetailPage(): ReactElement {
 
   useEffect(() => {
     linesInitializedRef.current = false;
+    linesDirtyRef.current = false;
     notesInitializedRef.current = false;
     exchangeRatesInitializedRef.current = false;
     formInitializedRef.current = false;
@@ -222,6 +232,7 @@ export function OrderDetailPage(): ReactElement {
   }, [orderId, notesData]);
 
   useEffect(() => {
+    if (linesDirtyRef.current) return;
     if (!linesData || linesData.length === 0 || linesInitializedRef.current) return;
 
     let cancelled = false;
@@ -232,7 +243,7 @@ export function OrderDetailPage(): ReactElement {
       );
       if (cancelled) return;
 
-      const formattedLines: OrderLineFormState[] = linesData.map((line, index) => {
+      const formattedLines: OrderLineFormState[] = deduplicateDocumentLinesByBackendId(linesData.map((line, _index) => {
         const amounts = calculateLineTotalsAmounts(
           line.unitPrice,
           line.quantity,
@@ -242,10 +253,12 @@ export function OrderDetailPage(): ReactElement {
           line.vatRate,
         );
         return {
-          id: line.id && line.id > 0 ? `line-${line.id}-${index}` : `line-temp-${index}`,
+          id: createClientId(),
+          backendLineId: line.id && line.id > 0 ? line.id : null,
           isEditing: false,
           productCode: line.productCode || '',
           productName: localizeLoadedLineProductName(line, stockByCode, i18n.language),
+          unit: resolveLoadedLineUnit(line, stockByCode),
           groupCode: line.groupCode || null,
           quantity: line.quantity,
           unitPrice: line.unitPrice,
@@ -272,8 +285,14 @@ export function OrderDetailPage(): ReactElement {
           approvalStatus: line.approvalStatus,
           ...amounts,
         };
-      });
-      setLines(formattedLines);
+      }));
+      if (cancelled) return;
+      if (linesDirtyRef.current) {
+        linesInitializedRef.current = true;
+        return;
+      }
+
+      setLinesState(formattedLines);
       linesInitializedRef.current = true;
     };
 
@@ -623,7 +642,7 @@ export function OrderDetailPage(): ReactElement {
         return calculateLineTotals(updatedLine);
       })
     );
-    setLines(updatedLines);
+    setOrderLines(updatedLines);
   };
 
   const handleFormSubmit = async (e: React.FormEvent): Promise<void> => {
@@ -659,7 +678,7 @@ export function OrderDetailPage(): ReactElement {
     setCustomerCancellationOpen(false);
   };
 
-  if (isLoading || isLoadingCanEdit || isLoadingExchangeRates || isLoadingLines || isLoadingNotes) {
+  if (isLoading || isLoadingCanEdit || isLoadingExchangeRates || isPendingLines || isLoadingNotes) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
         <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
@@ -829,7 +848,7 @@ export function OrderDetailPage(): ReactElement {
                       </div>
                     <OrderLineTable
                       lines={lines}
-                      setLines={setLines}
+                      setLines={setOrderLines}
                       currency={watchedCurrency}
                       exchangeRates={exchangeRates}
                       pricingRules={pricingRules}

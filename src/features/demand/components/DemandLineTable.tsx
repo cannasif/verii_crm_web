@@ -1,4 +1,5 @@
-import { type ReactElement, useState, useMemo, useCallback, useRef } from 'react';
+import { type Dispatch, type ReactElement, type SetStateAction, useState, useMemo, useCallback, useRef } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ import { DocumentLineFormDialog } from '@/components/shared/DocumentLineFormDial
 import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { DescriptionCell } from '@/components/shared';
+import { LineTableImageThumbnail } from '@/components/shared/LineTableImageThumbnail';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
@@ -33,6 +35,7 @@ import { useCreateDemandLines } from '../hooks/useCreateDemandLines';
 import { useUpdateDemandLines } from '../hooks/useUpdateDemandLines';
 import { useDeleteDemandLine } from '../hooks/useDeleteDemandLine';
 import { demandApi } from '../api/demand-api';
+import { queryKeys } from '../utils/query-keys';
 import { formatCurrency } from '../utils/format-currency';
 import {
   buildDocumentLineTableExportData,
@@ -76,15 +79,27 @@ import {
 } from '@/lib/document-line-prerequisites';
 import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } from '@/lib/line-form-stock-markers';
 import { mergeCreatedLineProductName } from '@/lib/merge-created-line-product-name';
+import { createClientId } from '@/lib/create-client-id';
+import {
+  applyDocumentLinesUpdate,
+  mergeRefetchedDocumentLines,
+  removeDocumentLineFromState,
+  resolveDocumentLineBackendId,
+  syncDocumentLinesFromServer,
+} from '@/lib/document-line-list-update';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 
 function toCreateDto(line: DemandLineFormState, demandId: number): CreateDemandLineDto {
-  const { id, isEditing, relatedLines, unit, vidaDefinitionName, baskiDefinitionName, ...rest } = line;
+  const { id, isEditing, relatedLines, vidaDefinitionName, baskiDefinitionName, ...rest } = line;
+  void id;
+  void isEditing;
+  void relatedLines;
   void vidaDefinitionName;
   void baskiDefinitionName;
   return {
     ...rest,
     demandId,
+    unit: line.unit ?? null,
     productId: line.productId ?? 0,
     productCode: line.productCode ?? '',
     productName: line.productName ?? '',
@@ -92,22 +107,6 @@ function toCreateDto(line: DemandLineFormState, demandId: number): CreateDemandL
     erpProjectCode: line.projectCode ?? null,
     imagePath: line.imagePath ?? null,
   };
-}
-
-function parseLineId(formId: string | number | undefined): number | null {
-  if (formId == null) return null;
-  if (typeof formId === 'number' && Number.isFinite(formId) && formId > 0) return formId;
-  const s = String(formId).trim();
-  const prefixed = s.match(/^line-(\d+)(?:-|$)/);
-  if (prefixed) {
-    const n = parseInt(prefixed[1], 10);
-    return Number.isNaN(n) ? null : n;
-  }
-  if (/^\d+$/.test(s)) {
-    const n = parseInt(s, 10);
-    return Number.isNaN(n) ? null : n;
-  }
-  return null;
 }
 
 function getValidRelatedProductGroup(
@@ -124,7 +123,7 @@ function getValidRelatedProductGroup(
   return sameGroupLines.length > 1 && hasMainLine && hasRelatedLine ? sameGroupLines : [];
 }
 
-function dtoToFormState(dto: DemandLineGetDto, index: number): DemandLineFormState {
+function dtoToFormState(dto: DemandLineGetDto, _index: number): DemandLineFormState {
   const amounts = calculateLineTotalsAmounts(
     dto.unitPrice,
     dto.quantity,
@@ -135,7 +134,8 @@ function dtoToFormState(dto: DemandLineGetDto, index: number): DemandLineFormSta
   );
 
   return {
-    id: dto.id && dto.id > 0 ? `line-${dto.id}-${index}` : `line-temp-${index}`,
+    id: createClientId(),
+    backendLineId: dto.id && dto.id > 0 ? dto.id : null,
     isEditing: false,
     productId: dto.productId ?? null,
     productCode: dto.productCode ?? '',
@@ -171,13 +171,14 @@ function dtoToFormState(dto: DemandLineGetDto, index: number): DemandLineFormSta
 }
 
 function toUpdateDto(line: DemandLineFormState, demandId: number): DemandLineGetDto {
-  const lineId = parseLineId(line.id) ?? 0;
+  const lineId = resolveDocumentLineBackendId(line) ?? 0;
   return {
     id: lineId,
     demandId,
     productId: line.productId ?? null,
     productCode: line.productCode ?? '',
     productName: line.productName ?? '',
+    unit: line.unit ?? null,
     groupCode: line.groupCode ?? null,
     quantity: line.quantity,
     unitPrice: line.unitPrice,
@@ -216,7 +217,7 @@ function toUpdateDto(line: DemandLineFormState, demandId: number): DemandLineGet
 
 interface DemandLineTableProps {
   lines: DemandLineFormState[];
-  setLines: (lines: DemandLineFormState[]) => void;
+  setLines: Dispatch<SetStateAction<DemandLineFormState[]>>;
   currency: number;
   exchangeRates?: DemandExchangeRateFormState[];
   pricingRules?: PricingRuleLineGetDto[];
@@ -241,7 +242,18 @@ export function DemandLineTable({
   demandId,
   enabled = true,
 }: DemandLineTableProps): ReactElement {
+  const queryClient = useQueryClient();
   const linesEditable = enabled;
+  const linesRef = useRef(lines);
+  linesRef.current = lines;
+
+  const updateLines = useCallback(
+    (nextOrUpdater: DemandLineFormState[] | ((prev: DemandLineFormState[]) => DemandLineFormState[])) => {
+      applyDocumentLinesUpdate(linesRef, setLines, nextOrUpdater);
+    },
+    [setLines],
+  );
+
   const { t } = useTranslation(['demand', 'common']);
   const { profilMap, demirMap, vidaMap, baskiMap } = useWindoDefinitionOptions();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -251,6 +263,7 @@ export function DemandLineTable({
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [lineToDelete, setLineToDelete] = useState<string | null>(null);
+  const deleteTargetRef = useRef<{ formLineId: string; backendLineId: number | null } | null>(null);
   const [relatedLinesCount, setRelatedLinesCount] = useState(0);
   const [addLineDialogOpen, setAddLineDialogOpen] = useState(false);
   const [newLine, setNewLine] = useState<DemandLineFormState | null>(null);
@@ -363,7 +376,7 @@ export function DemandLineTable({
     }
 
     const line: DemandLineFormState = {
-      id: `temp-${Date.now()}`,
+      id: createClientId(),
       productId: null,
       productCode: '',
       productName: '',
@@ -396,11 +409,14 @@ export function DemandLineTable({
       if (isExistingDemand && demandId) {
         try {
           const dtos: CreateDemandLineDto[] = [toCreateDto(lineToAdd, demandId)];
-          const created = await createMutation.mutateAsync(dtos);
-          const mapped = created.map((dto: DemandLineGetDto, i: number) =>
-            mergeCreatedLineProductName(dtoToFormState(dto, lines.length + i), lineToAdd)
+          await createMutation.mutateAsync(dtos);
+          const fresh = await demandApi.getDemandLinesByDemandId(demandId);
+          queryClient.setQueryData(queryKeys.demandLines(demandId), fresh);
+          const snapshot = linesRef.current;
+          const mapped = fresh.map((dto: DemandLineGetDto, index: number) =>
+            mergeCreatedLineProductName(dtoToFormState(dto, index), lineToAdd),
           );
-          setLines([...lines, ...mapped]);
+          updateLines(syncDocumentLinesFromServer(mapped, snapshot, { keepLocalDraftLines: true }));
           setAddLineDialogOpen(false);
           setNewLine(null);
         } catch {
@@ -408,11 +424,11 @@ export function DemandLineTable({
         }
         return;
       }
-      setLines([...lines, lineToAdd]);
+      updateLines((prev) => [...prev, lineToAdd]);
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingDemand, demandId, createMutation, lines, setLines]
+    [isExistingDemand, demandId, createMutation, updateLines]
   );
 
   const handleSaveMultipleLines = useCallback(
@@ -422,11 +438,15 @@ export function DemandLineTable({
       if (isExistingDemand && demandId) {
         try {
           const dtos: CreateDemandLineDto[] = linesToAdd.map((l) => toCreateDto(l, demandId));
-          const created = await createMutation.mutateAsync(dtos);
-          const mapped = created.map((dto: DemandLineGetDto, i: number) =>
-            mergeCreatedLineProductName(dtoToFormState(dto, lines.length + i), linesToAdd[i])
-          );
-          setLines([...lines, ...mapped]);
+          await createMutation.mutateAsync(dtos);
+          const fresh = await demandApi.getDemandLinesByDemandId(demandId);
+          queryClient.setQueryData(queryKeys.demandLines(demandId), fresh);
+          const snapshot = linesRef.current;
+          const mapped = fresh.map((dto: DemandLineGetDto, index: number) => {
+            const sourceLine = linesToAdd[index] ?? linesToAdd[linesToAdd.length - 1];
+            return mergeCreatedLineProductName(dtoToFormState(dto, index), sourceLine);
+          });
+          updateLines(syncDocumentLinesFromServer(mapped, snapshot, { keepLocalDraftLines: true }));
           setAddLineDialogOpen(false);
           setNewLine(null);
         } catch {
@@ -434,11 +454,11 @@ export function DemandLineTable({
         }
         return;
       }
-      setLines([...lines, ...linesToAdd]);
+      updateLines((prev) => [...prev, ...linesToAdd]);
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingDemand, demandId, createMutation, lines, setLines, linesEditable]
+    [isExistingDemand, demandId, createMutation, updateLines, linesEditable]
   );
 
   const handleCancelNewLine = (): void => {
@@ -495,9 +515,9 @@ export function DemandLineTable({
     relatedLinesToUpdate: DemandLineFormState[] | undefined,
     originalLine: DemandLineFormState
   ): void => {
-    setLines(
+    updateLines(
       mergeLinesAfterMainLineUpdate(
-        lines,
+        linesRef.current,
         originalLine,
         updatedLine,
         relatedLinesToUpdate,
@@ -518,15 +538,16 @@ export function DemandLineTable({
     }
 
     const allUpdatedLines = [updatedLine, ...(relatedLinesToUpdate || [])].map((l) => ({ ...l, isEditing: false }));
-    const linesWithBackendId = allUpdatedLines.filter((l) => parseLineId(l.id) != null);
+    const linesWithBackendId = allUpdatedLines.filter((l) => resolveDocumentLineBackendId(l) != null);
 
     if (isExistingDemand && demandId && linesWithBackendId.length > 0) {
       try {
         const dtos: DemandLineGetDto[] = linesWithBackendId.map((l) => toUpdateDto(l, demandId));
         await updateMutation.mutateAsync(dtos);
         const fresh = await demandApi.getDemandLinesByDemandId(demandId);
+        queryClient.setQueryData(queryKeys.demandLines(demandId), fresh);
         const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
-        setLines(mapped);
+        updateLines(mergeRefetchedDocumentLines(mapped, linesRef.current, resolveDocumentLineBackendId));
         setEditLineDialogOpen(false);
         setLineToEdit(null);
       } catch {
@@ -549,6 +570,10 @@ export function DemandLineTable({
     if (!linesEditable) return;
     const line = lines.find((l) => l.id === id);
     const relatedGroup = getValidRelatedProductGroup(lines, line);
+    deleteTargetRef.current = {
+      formLineId: id,
+      backendLineId: line ? resolveDocumentLineBackendId(line) : null,
+    };
     setLineToDelete(id);
     setRelatedLinesCount(relatedGroup.length);
     setDeleteDialogOpen(true);
@@ -556,49 +581,62 @@ export function DemandLineTable({
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (!linesEditable) return;
-    if (!lineToDelete) return;
-    const lineToDeleteObj = lines.find((line) => line.id === lineToDelete);
-    if (!lineToDeleteObj) {
-      setLineToDelete(null);
-      setDeleteDialogOpen(false);
-      return;
-    }
-    const removeFromList = (): void => {
-      const relatedGroup = getValidRelatedProductGroup(lines, lineToDeleteObj);
-      if (relatedGroup.length > 0) {
-        const relatedGroupIds = new Set(relatedGroup.map((l) => l.id));
-        setLines(lines.filter((l) => !relatedGroupIds.has(l.id)));
-      } else {
-        setLines(lines.filter((l) => l.id !== lineToDelete));
-      }
+    const target =
+      deleteTargetRef.current ??
+      (lineToDelete
+        ? {
+            formLineId: lineToDelete,
+            backendLineId: resolveDocumentLineBackendId(
+              linesRef.current.find((line) => line.id === lineToDelete) ?? { id: lineToDelete },
+            ),
+          }
+        : null);
+    if (!target) return;
+
+    const closeDeleteDialog = (): void => {
+      deleteTargetRef.current = null;
       setLineToDelete(null);
       setRelatedLinesCount(0);
       setDeleteDialogOpen(false);
     };
-    if (isExistingDemand && demandId) {
-      const lineBackendId = parseLineId(lineToDeleteObj.id);
-      const did = Number(demandId);
-      if (lineBackendId == null) {
-        removeFromList();
-        return;
-      }
-      if (!Number.isFinite(did) || did < 1) {
-        removeFromList();
-        return;
-      }
-      deleteMutation.mutate(lineBackendId, {
-        onSuccess: async (): Promise<void> => {
-          const fresh = await demandApi.getDemandLinesByDemandId(did);
-          const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
-          setLines(mapped);
-          setLineToDelete(null);
-          setRelatedLinesCount(0);
-          setDeleteDialogOpen(false);
-        },
-      });
+
+    const snapshotBeforeDelete = linesRef.current;
+    const lineToDeleteObj = snapshotBeforeDelete.find((line) => line.id === target.formLineId);
+    if (!lineToDeleteObj) {
+      closeDeleteDialog();
       return;
     }
-    removeFromList();
+
+    const backendLineId = target.backendLineId ?? resolveDocumentLineBackendId(lineToDeleteObj);
+
+    updateLines((prev) =>
+      removeDocumentLineFromState(prev, target.formLineId, backendLineId, getValidRelatedProductGroup),
+    );
+    closeDeleteDialog();
+
+    if (isExistingDemand && demandId) {
+      const did = Number(demandId);
+      if (backendLineId == null || !Number.isFinite(did) || did < 1) {
+        return;
+      }
+
+      try {
+        await deleteMutation.mutateAsync(backendLineId);
+        const fresh = await demandApi.getDemandLinesByDemandId(did);
+        queryClient.setQueryData(queryKeys.demandLines(did), fresh);
+        const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
+        updateLines(syncDocumentLinesFromServer(mapped, snapshotBeforeDelete));
+      } catch {
+        try {
+          const fresh = await demandApi.getDemandLinesByDemandId(did);
+          queryClient.setQueryData(queryKeys.demandLines(did), fresh);
+          const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
+          updateLines(syncDocumentLinesFromServer(mapped, snapshotBeforeDelete));
+        } catch {
+          void 0;
+        }
+      }
+    }
   };
 
   const handleDeleteCancel = (): void => {
@@ -716,9 +754,9 @@ export function DemandLineTable({
           patchedFromNext.isMainRelatedProduct &&
           originalLine.quantity !== patchedFromNext.quantity
           ? nextLines.filter(
-            (l) => l.relatedProductKey === patchedFromNext.relatedProductKey && parseLineId(l.id) != null
+            (l) => l.relatedProductKey === patchedFromNext.relatedProductKey && resolveDocumentLineBackendId(l) != null
           )
-          : parseLineId(patchedFromNext.id) != null
+          : resolveDocumentLineBackendId(patchedFromNext) != null
             ? [patchedFromNext]
             : [];
 
@@ -727,8 +765,9 @@ export function DemandLineTable({
           const dtos = apiTargets.map((l) => toUpdateDto(l, demandId));
           await updateMutation.mutateAsync(dtos);
           const fresh = await demandApi.getDemandLinesByDemandId(demandId);
+          queryClient.setQueryData(queryKeys.demandLines(demandId), fresh);
           const mapped = fresh.map((dto, index) => dtoToFormState(dto, index));
-          setLines(mapped);
+          updateLines(mergeRefetchedDocumentLines(mapped, linesRef.current, resolveDocumentLineBackendId));
         } catch {
           void 0;
         }
@@ -737,7 +776,7 @@ export function DemandLineTable({
       }
     }
 
-    setLines(nextLines);
+    updateLines(nextLines);
     setQuickEdit(null);
   }, [
     quickEdit,
@@ -749,7 +788,7 @@ export function DemandLineTable({
     isExistingDemand,
     demandId,
     updateMutation,
-    setLines,
+    updateLines,
   ]);
 
   const canAddLine = linesEditable && linePrerequisitesMet;
@@ -957,11 +996,10 @@ export function DemandLineTable({
                         <td className={cn("p-2 align-middle whitespace-nowrap sticky left-0 z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/40 shadow-[1px_0_0_0_theme(colors.zinc.200)] dark:shadow-[1px_0_0_0_theme(colors.zinc.800)]", styles.tableCell, "pl-6 w-[380px] min-w-[380px] max-w-[380px]")}>
                           <div className="flex gap-3 min-w-0 w-full overflow-hidden">
                             {hasLineImage ? (
-                              <img
-                                src={lineImagePreview}
+                              <LineTableImageThumbnail
+                                src={lineImagePreview ?? ''}
                                 alt={line.productName || line.productCode || 'Line image'}
-                                loading="lazy"
-                                className="h-10 w-10 shrink-0 rounded-md border border-zinc-200 object-cover dark:border-zinc-700"
+                                imagePath={line.imagePath}
                               />
                             ) : null}
                             <div className="flex min-w-0 flex-1 flex-col gap-1.5 overflow-hidden">
@@ -1411,11 +1449,11 @@ export function DemandLineTable({
             userDiscountLimits={userDiscountLimits}
             isSaving={updateMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkersForEdit}
-            allowImageUpload={Boolean(parseLineId(lineToEdit.id))}
+            allowImageUpload={Boolean(resolveDocumentLineBackendId(lineToEdit))}
             imageUploadScope="demand-line"
             imageUploadExtras={{
               demandId: demandId ?? undefined,
-              demandLineId: parseLineId(lineToEdit.id) ?? undefined,
+              demandLineId: resolveDocumentLineBackendId(lineToEdit) ?? undefined,
             }}
           />
         )}
