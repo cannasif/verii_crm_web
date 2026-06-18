@@ -20,7 +20,6 @@ import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
-import { toast } from 'sonner';
 import { DollarSign, Edit2, Check, X, RefreshCw, Loader2 } from 'lucide-react';
 import type { QuotationExchangeRateFormState, QuotationExchangeRateGetDto } from '../types/quotation-types';
 import { useUpdateExchangeRateInQuotation } from '../hooks/useUpdateExchangeRateInQuotation';
@@ -59,8 +58,6 @@ export function ExchangeRateDialog({
   onOpenChange,
   exchangeRates,
   onSave,
-  lines = [],
-  currentCurrency,
   quotationId,
   quotationOfferNo,
   readOnly = false,
@@ -95,20 +92,10 @@ export function ExchangeRateDialog({
     }
   }, [open, erpRates, exchangeRates]);
 
-  const isCurrencyUsedInLines = (dovizTipi: number): boolean => {
-    if (!lines || lines.length === 0 || !currentCurrency) {
-      return false;
-    }
-    return currentCurrency === dovizTipi;
-  };
-
   const handleRateChange = (id: string, value: number): void => {
     setLocalRates((prev) =>
       prev.map((rate) => {
         if (rate.id === id) {
-          if (isCurrencyUsedInLines(rate.dovizTipi || 0)) {
-            return rate;
-          }
           const originalRate = erpRates.find((er) => er.dovizTipi === rate.dovizTipi);
           const isChanged = originalRate?.kurDegeri !== value;
           return {
@@ -143,7 +130,6 @@ export function ExchangeRateDialog({
       const n = parseExchangeRateInput(editingDraft);
       ratesToUse = localRates.map((rate) => {
         if (rate.id !== editingId) return rate;
-        if (isCurrencyUsedInLines(rate.dovizTipi || 0)) return rate;
         const originalRate = erpRates.find((er) => er.dovizTipi === rate.dovizTipi);
         const isChanged = originalRate?.kurDegeri !== n;
         return {
@@ -248,7 +234,6 @@ export function ExchangeRateDialog({
                     localRates.map((rate) => {
                       const erpRate = erpRates.find((er) => er.dovizTipi === rate.dovizTipi);
                       const currencyCode = erpRate?.dovizIsmi || `DOVIZ_${rate.dovizTipi}`;
-                      const isUsed = isCurrencyUsedInLines(rate.dovizTipi || 0);
 
                       return (
                         <TableRow key={rate.id} className={styles.tableRow}>
@@ -272,7 +257,6 @@ export function ExchangeRateDialog({
                                 onWheel={(e) => e.preventDefault()}
                                 className={cn(styles.input, "w-36 ml-auto [appearance:auto]")}
                                 autoFocus
-                                disabled={isUsed}
                               />
                             ) : (
                               <div className="font-mono font-medium text-zinc-600 dark:text-zinc-300">
@@ -307,7 +291,6 @@ export function ExchangeRateDialog({
                                     setEditMountKey(0);
                                   }}
                                   className={cn(styles.actionButton, "hover:bg-emerald-50 text-emerald-600 dark:hover:bg-emerald-900/20 dark:text-emerald-400")}
-                                  disabled={isUsed}
                                 >
                                   <Check className="h-4 w-4" />
                                 </Button>
@@ -333,17 +316,12 @@ export function ExchangeRateDialog({
                                 size="icon"
                                 variant="ghost"
                                 onClick={() => {
-                                  if (isUsed) {
-                                    toast.error(t('exchangeRates.cannotEditUsedCurrency'));
-                                    return;
-                                  }
                                   setEditingDraft(formatExchangeRateForEdit(rate.exchangeRate));
                                   setEditMountKey((k) => k + 1);
                                   setEditingId(rate.id);
                                 }}
                                 className={cn(styles.actionButton, "text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 dark:hover:text-blue-400")}
-                                disabled={isUsed}
-                                title={isUsed ? t('exchangeRates.cannotEditUsedCurrency') : t('edit')}
+                                title={t('edit')}
                               >
                                 <Edit2 className="h-4 w-4" />
                               </Button>

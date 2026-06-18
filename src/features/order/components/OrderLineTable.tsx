@@ -1001,7 +1001,7 @@ export function OrderLineTable({
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('order.lines.discount1')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('order.lines.discount2')}</th>
                     <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center min-w-[64px] md:min-w-[72px]")}>{t('order.lines.discount3')}</th>
-                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[100px] md:min-w-[120px] pr-6")}>{t('order.lines.netPrice')}</th>
+                    <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHeadRight, "min-w-[132px] md:min-w-[156px] pr-6")}>{t('order.lines.amountBreakdown', 'Tutarlar')}</th>
                     {linesEditable && (
                       <th className={cn("text-left align-middle whitespace-nowrap", styles.tableHead, "text-center w-[84px] md:w-[100px]")}>{t('order.actions')}</th>
                     )}
@@ -1375,9 +1375,16 @@ export function OrderLineTable({
 
                         {/* TUTAR */}
                         <td className={getDocumentLineTableBodyCellClass(cn(styles.tableCellRight, 'p-2 align-middle whitespace-nowrap pr-6'), hasApprovalWarning)}>
-                          <span className="font-bold text-zinc-900 dark:text-white text-sm tabular-nums">
-                            {formatCurrency(line.lineTotal, currencyCode)}
-                          </span>
+                          <div className="flex flex-col items-end gap-1">
+                            <div className="flex items-center gap-2 text-[11px] font-semibold text-zinc-500 dark:text-zinc-400">
+                              <span>{t('order.lines.vatExcludedShort', 'KDV Hariç')}</span>
+                              <span className="tabular-nums">{formatCurrency(line.lineTotal, currencyCode)}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm font-bold text-zinc-900 dark:text-white">
+                              <span className="text-[11px] font-semibold text-pink-600 dark:text-pink-300">{t('order.lines.vatIncludedShort', 'KDV Dahil')}</span>
+                              <span className="tabular-nums">{formatCurrency(line.lineGrandTotal, currencyCode)}</span>
+                            </div>
+                          </div>
                         </td>
 
                         {linesEditable && (

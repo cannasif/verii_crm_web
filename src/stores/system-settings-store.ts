@@ -33,6 +33,15 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettingsDto = {
   numberFormat: 'tr-TR',
   decimalPlaces: 2,
   restrictCustomersBySalesRepMatch: false,
+  hideDemandVatRate: false,
+  hideQuotationVatRate: false,
+  hideOrderVatRate: false,
+  catalogGroupCodeLabel: null,
+  catalogCode1Label: null,
+  catalogCode2Label: null,
+  catalogCode3Label: null,
+  catalogCode4Label: null,
+  catalogCode5Label: null,
   demandApprovalCompletionAction: 1,
   quotationApprovalCompletionAction: 1,
   orderApprovalCompletionAction: 1,
@@ -63,6 +72,15 @@ export function normalizeSystemSettings(
         ? Math.min(6, Math.max(0, settings.decimalPlaces))
         : DEFAULT_SYSTEM_SETTINGS.decimalPlaces,
     restrictCustomersBySalesRepMatch: Boolean(settings?.restrictCustomersBySalesRepMatch),
+    hideDemandVatRate: Boolean(settings?.hideDemandVatRate),
+    hideQuotationVatRate: Boolean(settings?.hideQuotationVatRate),
+    hideOrderVatRate: Boolean(settings?.hideOrderVatRate),
+    catalogGroupCodeLabel: pickOptionalLabel(settings?.catalogGroupCodeLabel),
+    catalogCode1Label: pickOptionalLabel(settings?.catalogCode1Label),
+    catalogCode2Label: pickOptionalLabel(settings?.catalogCode2Label),
+    catalogCode3Label: pickOptionalLabel(settings?.catalogCode3Label),
+    catalogCode4Label: pickOptionalLabel(settings?.catalogCode4Label),
+    catalogCode5Label: pickOptionalLabel(settings?.catalogCode5Label),
     demandApprovalCompletionAction: normalizeActionValue(
       settings?.demandApprovalCompletionAction,
       SUPPORTED_DEMAND_ACTIONS,
@@ -80,6 +98,11 @@ export function normalizeSystemSettings(
     ),
     updatedAt: settings?.updatedAt,
   };
+}
+
+function pickOptionalLabel(value: string | null | undefined): string | null {
+  const normalizedValue = value?.trim();
+  return normalizedValue ? normalizedValue.slice(0, 50) : null;
 }
 
 function normalizeActionValue(

@@ -4820,13 +4820,29 @@
       "NumberFormat": "تنسيق الأرقام",
       "DecimalPlaces": "عدد المنازل العشرية",
       "RestrictCustomersBySalesRepMatch": "تقييد العملاء وفق تطابق مندوب المبيعات",
+      "HideDemandVatRate": "إخفاء نسبة ضريبة القيمة المضافة في الطلبات",
+      "HideQuotationVatRate": "إخفاء نسبة ضريبة القيمة المضافة في عروض الأسعار",
+      "HideOrderVatRate": "إخفاء نسبة ضريبة القيمة المضافة في الأوامر",
+      "CatalogGroupCodeLabel": "تسمية رمز المجموعة",
+      "CatalogCode1Label": "تسمية الرمز 1",
+      "CatalogCode2Label": "تسمية الرمز 2",
+      "CatalogCode3Label": "تسمية الرمز 3",
+      "CatalogCode4Label": "تسمية الرمز 4",
+      "CatalogCode5Label": "تسمية الرمز 5",
       "DemandApprovalCompletionAction": "Demand approval completion action",
       "QuotationApprovalCompletionAction": "Quotation approval completion action",
       "OrderApprovalCompletionAction": "Order approval completion action",
       "ApprovalCompletionAction": "حدد الإجراء بعد الموافقة"
     },
     "Descriptions": {
-      "RestrictCustomersBySalesRepMatch": "عند التفعيل، تُقيَّد قوائم العملاء ومنتقي العملاء برموز مندوب المبيعات المطابقة للمستخدم المحدد."
+      "RestrictCustomersBySalesRepMatch": "عند التفعيل، تُقيَّد قوائم العملاء ومنتقي العملاء برموز مندوب المبيعات المطابقة للمستخدم المحدد.",
+      "DecimalPlacesRange": "يجب أن يكون عدد المنازل العشرية بين 0 و6.",
+      "VatVisibility": "عند التفعيل، يتم إخفاء حقل إدخال نسبة ضريبة القيمة المضافة في سطور الطلب أو عرض السعر أو الأمر المرتبط. تبقى بيانات الحساب محفوظة.",
+      "CatalogLabels": "اتركه فارغًا لاستخدام أسماء حقول Netsis الافتراضية مثل رمز المجموعة والرمز 1 والرمز 2. الحد الأقصى 50 حرفًا."
+    },
+    "Sections": {
+      "VatVisibility": "إظهار نسبة ضريبة القيمة المضافة",
+      "CatalogLabels": "تسميات حقول رموز الكتالوج"
     },
     "Placeholders": {
       "DefaultLanguage": "اختر اللغة",
@@ -4835,7 +4851,13 @@
       "DateFormat": "اختر تنسيق التاريخ",
       "TimeFormat": "اختر تنسيق الوقت",
       "NumberFormat": "اختر تنسيق الأرقام",
-      "ApprovalCompletionAction": "Select approval completion action"
+      "ApprovalCompletionAction": "Select approval completion action",
+      "CatalogGroupCodeLabel": "مثال: العلامة التجارية",
+      "CatalogCode1Label": "مثال: السلسلة",
+      "CatalogCode2Label": "مثال: الطراز",
+      "CatalogCode3Label": "مثال: المقاس",
+      "CatalogCode4Label": "مثال: اللون",
+      "CatalogCode5Label": "مثال: الفئة"
     },
     "NumberFormatOptions": {
       "trTR": "تنسيق أرقام تركي (1.234,56)",

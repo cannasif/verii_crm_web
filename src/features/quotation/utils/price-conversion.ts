@@ -13,6 +13,10 @@ export function findExchangeRateByDovizTipi(
   exchangeRates: QuotationExchangeRateFormState[],
   erpRates?: KurDto[]
 ): number | null {
+  if (dovizTipi === 0) {
+    return 1;
+  }
+
   const exchangeRate = exchangeRates.find((er) => er.dovizTipi === dovizTipi);
   if (exchangeRate) {
     if (exchangeRate.exchangeRate != null && exchangeRate.exchangeRate > 0) {

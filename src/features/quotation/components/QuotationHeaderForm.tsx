@@ -353,14 +353,6 @@ export function QuotationHeaderForm({
       return;
     }
     
-    if (initialCurrency !== null && initialCurrency !== undefined) {
-      const initialCurrencyNum = typeof initialCurrency === 'string' ? Number(initialCurrency) : initialCurrency;
-      if (initialCurrencyNum === newCurrencyNum) {
-        form.setValue('quotation.currency', newCurrency, { shouldValidate: false, shouldDirty: false });
-        return;
-      }
-    }
-    
     if (currentCurrencyNum !== null && currentCurrencyNum === newCurrencyNum) return;
     
     if (lines && lines.length > 0 && onLinesChange) {

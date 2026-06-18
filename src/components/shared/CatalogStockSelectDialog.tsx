@@ -64,6 +64,8 @@ import {
 } from '@/features/pricing-rule/utils/fetch-pricing-rule-campaign-stock-codes';
 import type { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { formatSystemCurrency, getSystemCurrency } from '@/lib/system-settings';
+import { getCatalogFieldLabel } from '@/lib/catalog-field-labels';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } from './RelatedStocksSelectionDialog';
 import { CatalogSpecialCodeFilterPanel } from './CatalogSpecialCodeFilterPanel';
 import {
@@ -371,6 +373,8 @@ export function CatalogStockSelectDialog({
   pricingRuleErpCustomerCode,
 }: CatalogStockSelectDialogProps): ReactElement {
   const { t, i18n } = useTranslation('common');
+  const systemSettings = useSystemSettingsStore((state) => state.settings);
+  const groupCodeLabel = getCatalogFieldLabel(systemSettings, 'grupKodu', t);
   const [selectedCatalog, setSelectedCatalog] = useState<ProductCatalogDto | null>(null);
   const [navigationPath, setNavigationPath] = useState<CatalogCategoryNodeDto[]>([]);
   const [selectedLeafCategory, setSelectedLeafCategory] = useState<CatalogCategoryNodeDto | null>(null);
@@ -1279,7 +1283,7 @@ export function CatalogStockSelectDialog({
                   {t('catalogStockPicker.unit')}
                 </th>
                 <th className="w-24 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
-                  {t('catalogStockPicker.groupCode')}
+                  {groupCodeLabel}
                 </th>
                 <th className="w-36 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
                   {t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}

@@ -36,6 +36,15 @@ const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   numberFormat: 'tr-TR',
   decimalPlaces: 2,
   restrictCustomersBySalesRepMatch: false,
+  hideDemandVatRate: false,
+  hideQuotationVatRate: false,
+  hideOrderVatRate: false,
+  catalogGroupCodeLabel: '',
+  catalogCode1Label: '',
+  catalogCode2Label: '',
+  catalogCode3Label: '',
+  catalogCode4Label: '',
+  catalogCode5Label: '',
   demandApprovalCompletionAction: 1,
   quotationApprovalCompletionAction: 1,
   orderApprovalCompletionAction: 1,
@@ -140,6 +149,15 @@ export function SystemSettingsForm({
       numberFormat: normalizedData.numberFormat,
       decimalPlaces: normalizedData.decimalPlaces,
       restrictCustomersBySalesRepMatch: normalizedData.restrictCustomersBySalesRepMatch,
+      hideDemandVatRate: normalizedData.hideDemandVatRate,
+      hideQuotationVatRate: normalizedData.hideQuotationVatRate,
+      hideOrderVatRate: normalizedData.hideOrderVatRate,
+      catalogGroupCodeLabel: normalizedData.catalogGroupCodeLabel ?? '',
+      catalogCode1Label: normalizedData.catalogCode1Label ?? '',
+      catalogCode2Label: normalizedData.catalogCode2Label ?? '',
+      catalogCode3Label: normalizedData.catalogCode3Label ?? '',
+      catalogCode4Label: normalizedData.catalogCode4Label ?? '',
+      catalogCode5Label: normalizedData.catalogCode5Label ?? '',
       demandApprovalCompletionAction: normalizedData.demandApprovalCompletionAction,
       quotationApprovalCompletionAction: normalizedData.quotationApprovalCompletionAction,
       orderApprovalCompletionAction: normalizedData.orderApprovalCompletionAction,
@@ -342,10 +360,89 @@ export function SystemSettingsForm({
                       }}
                     />
                   </FormControl>
+                  <p className="text-muted-foreground text-xs">
+                    {t('systemSettings.Descriptions.DecimalPlacesRange', 'Ondalık basamak sayısı 0 ile 6 arasında olmalıdır.')}
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="mb-3 space-y-1">
+                <p className="text-sm font-semibold">{t('systemSettings.Sections.VatVisibility', 'KDV oranı görünürlüğü')}</p>
+                <p className="text-muted-foreground text-sm">
+                  {t('systemSettings.Descriptions.VatVisibility', 'Açıldığında ilgili talep, teklif veya sipariş satırlarında KDV oranı giriş alanı gizlenir. Hesaplama verisi korunur.')}
+                </p>
+              </div>
+              <div className="grid gap-3 md:grid-cols-3">
+                {([
+                  ['hideDemandVatRate', t('systemSettings.Fields.HideDemandVatRate', 'Talepte KDV oranını gizle')],
+                  ['hideQuotationVatRate', t('systemSettings.Fields.HideQuotationVatRate', 'Teklifte KDV oranını gizle')],
+                  ['hideOrderVatRate', t('systemSettings.Fields.HideOrderVatRate', 'Siparişte KDV oranını gizle')],
+                ] as const).map(([name, label]) => (
+                  <FormField
+                    key={name}
+                    control={form.control}
+                    name={name}
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#0C0516]">
+                          <FormControl>
+                            <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                          </FormControl>
+                          <FormLabel required={false} className="leading-5">
+                            {label}
+                          </FormLabel>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="mb-3 space-y-1">
+                <p className="text-sm font-semibold">{t('systemSettings.Sections.CatalogLabels', 'Katalog kod alanı isimleri')}</p>
+                <p className="text-muted-foreground text-sm">
+                  {t('systemSettings.Descriptions.CatalogLabels', 'Boş bırakılırsa Grup Kodu, Kod1, Kod2 gibi mevcut Netsis alan adları kullanılır. En fazla 50 karakter girilebilir.')}
+                </p>
+              </div>
+              <div className="grid gap-3 md:grid-cols-3">
+                {([
+                  ['catalogGroupCodeLabel', t('systemSettings.Fields.CatalogGroupCodeLabel', 'Grup Kodu adı'), t('systemSettings.Placeholders.CatalogGroupCodeLabel', 'Örn. Marka')],
+                  ['catalogCode1Label', t('systemSettings.Fields.CatalogCode1Label', 'Kod1 adı'), t('systemSettings.Placeholders.CatalogCode1Label', 'Örn. Seri')],
+                  ['catalogCode2Label', t('systemSettings.Fields.CatalogCode2Label', 'Kod2 adı'), t('systemSettings.Placeholders.CatalogCode2Label', 'Örn. Model')],
+                  ['catalogCode3Label', t('systemSettings.Fields.CatalogCode3Label', 'Kod3 adı'), t('systemSettings.Placeholders.CatalogCode3Label', 'Örn. Ölçü')],
+                  ['catalogCode4Label', t('systemSettings.Fields.CatalogCode4Label', 'Kod4 adı'), t('systemSettings.Placeholders.CatalogCode4Label', 'Örn. Renk')],
+                  ['catalogCode5Label', t('systemSettings.Fields.CatalogCode5Label', 'Kod5 adı'), t('systemSettings.Placeholders.CatalogCode5Label', 'Örn. Sınıf')],
+                ] as const).map(([name, label, placeholder]) => (
+                  <FormField
+                    key={name}
+                    control={form.control}
+                    name={name}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required={false}>{label}</FormLabel>
+                        <FormControl>
+                          <Input
+                            className="rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#0C0516]"
+                            maxLength={50}
+                            value={field.value ?? ''}
+                            placeholder={placeholder}
+                            onChange={(event) => field.onChange(event.target.value)}
+                            onBlur={field.onBlur}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
 
             <FormField
               control={form.control}

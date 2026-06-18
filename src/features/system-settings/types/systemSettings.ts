@@ -4,6 +4,15 @@ export interface SystemSettingsDto {
   numberFormat: string;
   decimalPlaces: number;
   restrictCustomersBySalesRepMatch: boolean;
+  hideDemandVatRate: boolean;
+  hideQuotationVatRate: boolean;
+  hideOrderVatRate: boolean;
+  catalogGroupCodeLabel?: string | null;
+  catalogCode1Label?: string | null;
+  catalogCode2Label?: string | null;
+  catalogCode3Label?: string | null;
+  catalogCode4Label?: string | null;
+  catalogCode5Label?: string | null;
   demandApprovalCompletionAction: number;
   quotationApprovalCompletionAction: number;
   orderApprovalCompletionAction: number;
@@ -27,6 +36,15 @@ export interface EditableSystemSettingsDto {
   numberFormat: string;
   decimalPlaces: number;
   restrictCustomersBySalesRepMatch: boolean;
+  hideDemandVatRate: boolean;
+  hideQuotationVatRate: boolean;
+  hideOrderVatRate: boolean;
+  catalogGroupCodeLabel?: string | null;
+  catalogCode1Label?: string | null;
+  catalogCode2Label?: string | null;
+  catalogCode3Label?: string | null;
+  catalogCode4Label?: string | null;
+  catalogCode5Label?: string | null;
   demandApprovalCompletionAction: number;
   quotationApprovalCompletionAction: number;
   orderApprovalCompletionAction: number;
@@ -55,6 +73,15 @@ export const systemSettingsFormSchema = z.object({
     z.number().int('common.form.invalidValue')
   ),
   restrictCustomersBySalesRepMatch: z.boolean(),
+  hideDemandVatRate: z.boolean(),
+  hideQuotationVatRate: z.boolean(),
+  hideOrderVatRate: z.boolean(),
+  catalogGroupCodeLabel: z.string().max(50, 'common.form.maxLength').nullable().optional(),
+  catalogCode1Label: z.string().max(50, 'common.form.maxLength').nullable().optional(),
+  catalogCode2Label: z.string().max(50, 'common.form.maxLength').nullable().optional(),
+  catalogCode3Label: z.string().max(50, 'common.form.maxLength').nullable().optional(),
+  catalogCode4Label: z.string().max(50, 'common.form.maxLength').nullable().optional(),
+  catalogCode5Label: z.string().max(50, 'common.form.maxLength').nullable().optional(),
   demandApprovalCompletionAction: approvalCompletionActionSchema(new Set([1, 2, 3, 4, 5])),
   quotationApprovalCompletionAction: approvalCompletionActionSchema(new Set([1, 2, 3, 4, 5, 6])),
   orderApprovalCompletionAction: approvalCompletionActionSchema(new Set([1, 2, 3, 4])),

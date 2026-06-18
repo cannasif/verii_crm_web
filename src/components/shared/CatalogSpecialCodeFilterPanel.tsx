@@ -8,6 +8,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { normalizeSearchValue } from '@/lib/search';
+import { getCatalogFieldLabel } from '@/lib/catalog-field-labels';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import {
   CATALOG_FILTER_DIMENSIONS,
   type CatalogFilterDimension,
@@ -51,6 +53,7 @@ export function CatalogSpecialCodeFilterPanel({
   onClear,
 }: CatalogSpecialCodeFilterPanelProps): ReactElement {
   const { t } = useTranslation('common');
+  const systemSettings = useSystemSettingsStore((state) => state.settings);
   const [filterSearch, setFilterSearch] = useState('');
   const [expandedByDimension, setExpandedByDimension] =
     useState<Record<CatalogFilterDimension, boolean>>(buildInitialExpandedState);
@@ -121,7 +124,7 @@ export function CatalogSpecialCodeFilterPanel({
           const options = filteredOptionsByLevel[dimension];
           const totalInDimension = optionsByLevel[dimension].length;
           const selectedSet = new Set(selections[dimension]);
-          const levelLabel = t(`catalogStockPicker.specialCodesLevel.${dimension}`);
+          const levelLabel = getCatalogFieldLabel(systemSettings, dimension, t);
           const isExpanded =
             normalizedFilterSearch.length > 0
               ? options.length > 0

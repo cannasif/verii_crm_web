@@ -89,6 +89,7 @@ export function useProductSelection({
         exchangeRates,
         erpRates,
         pricingRules: pricingRules as PricingRulePriceLineLike[],
+        requireDocumentExchangeRates: true,
       });
 
       if (converted.zeroRate) {

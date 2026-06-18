@@ -4776,13 +4776,29 @@
       "NumberFormat": "Zahlenformat",
       "DecimalPlaces": "Dezimalstellen",
       "RestrictCustomersBySalesRepMatch": "Kunden nach Vertriebszuordnung einschränken",
+      "HideDemandVatRate": "MwSt.-Satz bei Anfragen ausblenden",
+      "HideQuotationVatRate": "MwSt.-Satz bei Angeboten ausblenden",
+      "HideOrderVatRate": "MwSt.-Satz bei Aufträgen ausblenden",
+      "CatalogGroupCodeLabel": "Bezeichnung für Gruppencode",
+      "CatalogCode1Label": "Bezeichnung für Code1",
+      "CatalogCode2Label": "Bezeichnung für Code2",
+      "CatalogCode3Label": "Bezeichnung für Code3",
+      "CatalogCode4Label": "Bezeichnung für Code4",
+      "CatalogCode5Label": "Bezeichnung für Code5",
       "DemandApprovalCompletionAction": "Demand approval completion action",
       "QuotationApprovalCompletionAction": "Quotation approval completion action",
       "OrderApprovalCompletionAction": "Order approval completion action",
       "ApprovalCompletionAction": "Wählen Sie eine Aktion nach der Genehmigung"
     },
     "Descriptions": {
-      "RestrictCustomersBySalesRepMatch": "Wenn aktiviert, werden Kundenlisten und -auswahl auf die dem gewählten Benutzer zugeordneten Vertriebsmitarbeiter-Codes begrenzt."
+      "RestrictCustomersBySalesRepMatch": "Wenn aktiviert, werden Kundenlisten und -auswahl auf die dem gewählten Benutzer zugeordneten Vertriebsmitarbeiter-Codes begrenzt.",
+      "DecimalPlacesRange": "Die Anzahl der Dezimalstellen muss zwischen 0 und 6 liegen.",
+      "VatVisibility": "Wenn aktiviert, wird das Eingabefeld für den MwSt.-Satz in den entsprechenden Anfrage-, Angebots- oder Auftragszeilen ausgeblendet. Die Berechnungsdaten bleiben erhalten.",
+      "CatalogLabels": "Leer lassen, um die Standard-Netsis-Feldnamen wie Gruppencode, Code1 und Code2 zu verwenden. Maximal 50 Zeichen."
+    },
+    "Sections": {
+      "VatVisibility": "Sichtbarkeit des MwSt.-Satzes",
+      "CatalogLabels": "Bezeichnungen der Katalogcode-Felder"
     },
     "Placeholders": {
       "DefaultLanguage": "Sprache wählen",
@@ -4791,7 +4807,13 @@
       "DateFormat": "Datumsformat wählen",
       "TimeFormat": "Zeitformat wählen",
       "NumberFormat": "Zahlenformat wählen",
-      "ApprovalCompletionAction": "Select approval completion action"
+      "ApprovalCompletionAction": "Select approval completion action",
+      "CatalogGroupCodeLabel": "Z. B. Marke",
+      "CatalogCode1Label": "Z. B. Serie",
+      "CatalogCode2Label": "Z. B. Modell",
+      "CatalogCode3Label": "Z. B. Größe",
+      "CatalogCode4Label": "Z. B. Farbe",
+      "CatalogCode5Label": "Z. B. Klasse"
     },
     "NumberFormatOptions": {
       "trTR": "Türkisches Zahlenformat (1.234,56)",

@@ -94,6 +94,10 @@ export interface DocumentExchangeRate {
   exchangeRate?: number | null;
 }
 
+interface ExchangeRateLookupOptions {
+  allowErpFallback?: boolean;
+}
+
 export function resolveDovizTipiFromCurrencyValue(
   currencyValue: string | number | null | undefined,
   currencyOptions: CurrencyOption[],
@@ -135,8 +139,13 @@ export function findExchangeRateByDovizTipiGeneric(
   dovizTipi: number,
   exchangeRates: DocumentExchangeRate[],
   erpRates?: KurDto[],
-  currencyOptions: CurrencyOption[] = []
+  currencyOptions: CurrencyOption[] = [],
+  options: ExchangeRateLookupOptions = {}
 ): number | null {
+  if (isLocalCurrencyDovizTipi(dovizTipi, currencyOptions, erpRates)) {
+    return 1;
+  }
+
   const exchangeRate = exchangeRates.find((er) => er.dovizTipi === dovizTipi);
   if (exchangeRate) {
     if (exchangeRate.exchangeRate != null && exchangeRate.exchangeRate > 0) {
@@ -145,15 +154,12 @@ export function findExchangeRateByDovizTipiGeneric(
     return null;
   }
 
-  if (erpRates && erpRates.length > 0) {
+  const allowErpFallback = options.allowErpFallback ?? true;
+  if (allowErpFallback && erpRates && erpRates.length > 0) {
     const erpRate = erpRates.find((er) => er.dovizTipi === dovizTipi);
     if (erpRate?.kurDegeri && erpRate.kurDegeri > 0) {
       return erpRate.kurDegeri;
     }
-  }
-
-  if (isLocalCurrencyDovizTipi(dovizTipi, currencyOptions, erpRates)) {
-    return 1;
   }
 
   return null;
@@ -211,7 +217,8 @@ export function convertPriceBetweenDovizTipi(
   targetDovizTipi: number,
   exchangeRates: DocumentExchangeRate[],
   erpRates?: KurDto[],
-  currencyOptions: CurrencyOption[] = []
+  currencyOptions: CurrencyOption[] = [],
+  options: ExchangeRateLookupOptions = {}
 ): number | null {
   if (!Number.isFinite(price)) {
     return 0;
@@ -225,13 +232,15 @@ export function convertPriceBetweenDovizTipi(
     sourceDovizTipi,
     exchangeRates,
     erpRates,
-    currencyOptions
+    currencyOptions,
+    options
   );
   const targetRate = findExchangeRateByDovizTipiGeneric(
     targetDovizTipi,
     exchangeRates,
     erpRates,
-    currencyOptions
+    currencyOptions,
+    options
   );
 
   if (!sourceRate || sourceRate <= 0 || !targetRate || targetRate <= 0) {
@@ -276,6 +285,7 @@ export function convertProductPriceToDocumentCurrency(
   options?: {
     pricingRuleCurrencyCode?: string | number | null;
     hasPricingRuleFixedPrice?: boolean;
+    requireDocumentExchangeRates?: boolean;
   }
 ): { price: number; zeroRate: boolean } {
   const resolvedDocument = resolveDocumentDovizTipi(documentDovizTipi, currencyOptions, erpRates);
@@ -298,7 +308,10 @@ export function convertProductPriceToDocumentCurrency(
     resolvedDocument,
     exchangeRates,
     erpRates,
-    currencyOptions
+    currencyOptions,
+    {
+      allowErpFallback: !options?.requireDocumentExchangeRates,
+    }
   );
 
   if (converted == null) {
@@ -366,6 +379,7 @@ export function convertProductLinePriceForDocument(params: {
   exchangeRates: DocumentExchangeRate[];
   erpRates?: KurDto[];
   pricingRules?: PricingRulePriceLineLike[];
+  requireDocumentExchangeRates?: boolean;
 }): ConvertedProductLinePrice {
   const {
     priceData,
@@ -376,6 +390,7 @@ export function convertProductLinePriceForDocument(params: {
     exchangeRates,
     erpRates,
     pricingRules = [],
+    requireDocumentExchangeRates = false,
   } = params;
 
   const matchingRule = findMatchingPricingRuleLine(pricingRules, productCode, quantity);
@@ -395,6 +410,7 @@ export function convertProductLinePriceForDocument(params: {
     {
       pricingRuleCurrencyCode: matchingRule?.currencyCode,
       hasPricingRuleFixedPrice,
+      requireDocumentExchangeRates,
     }
   );
 

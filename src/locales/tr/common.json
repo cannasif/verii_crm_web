@@ -4817,12 +4817,28 @@
       "NumberFormat": "Sayı formatı",
       "DecimalPlaces": "Ondalık basamak sayısı",
       "RestrictCustomersBySalesRepMatch": "Müşterileri satış temsilcisi eşleşmesine göre sınırla",
+      "HideDemandVatRate": "Talepte KDV oranını gizle",
+      "HideQuotationVatRate": "Teklifte KDV oranını gizle",
+      "HideOrderVatRate": "Siparişte KDV oranını gizle",
+      "CatalogGroupCodeLabel": "Grup Kodu adı",
+      "CatalogCode1Label": "Kod1 adı",
+      "CatalogCode2Label": "Kod2 adı",
+      "CatalogCode3Label": "Kod3 adı",
+      "CatalogCode4Label": "Kod4 adı",
+      "CatalogCode5Label": "Kod5 adı",
       "DemandApprovalCompletionAction": "Talep onaylanınca yapılacak işlem",
       "QuotationApprovalCompletionAction": "Teklif onaylanınca yapılacak işlem",
       "OrderApprovalCompletionAction": "Sipariş onaylanınca yapılacak işlem"
     },
     "Descriptions": {
-      "RestrictCustomersBySalesRepMatch": "Açık olduğunda müşteri listeleri ve seçim ekranları, ilgili kullanıcının satış temsilcisi eşleşmelerine göre daraltılır."
+      "RestrictCustomersBySalesRepMatch": "Açık olduğunda müşteri listeleri ve seçim ekranları, ilgili kullanıcının satış temsilcisi eşleşmelerine göre daraltılır.",
+      "DecimalPlacesRange": "Ondalık basamak sayısı 0 ile 6 arasında olmalıdır.",
+      "VatVisibility": "Açıldığında ilgili talep, teklif veya sipariş satırlarında KDV oranı giriş alanı gizlenir. Hesaplama verisi korunur.",
+      "CatalogLabels": "Boş bırakılırsa Grup Kodu, Kod1, Kod2 gibi mevcut Netsis alan adları kullanılır. En fazla 50 karakter girilebilir."
+    },
+    "Sections": {
+      "VatVisibility": "KDV oranı görünürlüğü",
+      "CatalogLabels": "Katalog kod alanı isimleri"
     },
     "Placeholders": {
       "DefaultLanguage": "Dil seçin",
@@ -4831,7 +4847,13 @@
       "DateFormat": "Tarih formatı seçin",
       "TimeFormat": "Saat formatı seçin",
       "NumberFormat": "Sayı formatı seçin",
-      "ApprovalCompletionAction": "Onay sonrası işlem seçin"
+      "ApprovalCompletionAction": "Onay sonrası işlem seçin",
+      "CatalogGroupCodeLabel": "Örn. Marka",
+      "CatalogCode1Label": "Örn. Seri",
+      "CatalogCode2Label": "Örn. Model",
+      "CatalogCode3Label": "Örn. Ölçü",
+      "CatalogCode4Label": "Örn. Renk",
+      "CatalogCode5Label": "Örn. Sınıf"
     },
     "NumberFormatOptions": {
       "trTR": "Türkçe sayı biçimi (1.234,56)",

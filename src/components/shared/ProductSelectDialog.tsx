@@ -36,6 +36,8 @@ import {
   DROPDOWN_PAGE_SIZE,
   DROPDOWN_SCROLL_THRESHOLD,
 } from '@/components/shared/dropdown/constants';
+import { getCatalogFieldLabel } from '@/lib/catalog-field-labels';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 
 const POPUP_SEARCH_DEBOUNCE_MS = 700;
 
@@ -291,6 +293,8 @@ function ProductSelectCatalogStockList({
   onStockClick,
 }: ProductSelectCatalogStockListProps): ReactElement {
   const { t, i18n } = useTranslation('common');
+  const systemSettings = useSystemSettingsStore((state) => state.settings);
+  const groupCodeLabel = getCatalogFieldLabel(systemSettings, 'grupKodu', t);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none">
@@ -308,7 +312,7 @@ function ProductSelectCatalogStockList({
                 {t('catalogStockPicker.unit')}
               </th>
               <th className="w-24 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
-                {t('catalogStockPicker.groupCode')}
+                {groupCodeLabel}
               </th>
               <th className="w-36 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
                 {t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}

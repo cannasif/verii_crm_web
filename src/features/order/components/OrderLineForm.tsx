@@ -63,6 +63,7 @@ import {
   DOCUMENT_LINE_FORM_CANCEL_BUTTON_CLASS,
   DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS,
 } from '@/lib/document-line-dialog-styles';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 
 interface TemporaryStockData {
   productCode: string;
@@ -148,6 +149,7 @@ export function OrderLineForm({
   const { t } = useTranslation(['order', 'common', 'quotation']);
   const queryClient = useQueryClient();
   const { calculateLineTotals } = useOrderCalculations();
+  const hideVatRate = useSystemSettingsStore((state) => state.settings.hideOrderVatRate);
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
   const [profilCreateOpen, setProfilCreateOpen] = useState(false);
@@ -471,6 +473,7 @@ export function OrderLineForm({
                 exchangeRates,
                 erpRates,
                 pricingRules,
+                requireDocumentExchangeRates: true,
               });
               mainUnitPrice = converted.unitPrice;
               mainDiscountRate1 = converted.discountRate1;
@@ -525,6 +528,7 @@ export function OrderLineForm({
                     exchangeRates,
                     erpRates,
                     pricingRules,
+                    requireDocumentExchangeRates: true,
                   });
                   relatedUnitPrice = converted.unitPrice;
                   relatedDiscountRate1 = converted.discountRate1;
@@ -1274,6 +1278,7 @@ export function OrderLineForm({
           />
         </div>
 
+        {!hideVatRate ? (
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <Percent className="h-4 w-4 text-orange-500" />
@@ -1315,6 +1320,7 @@ export function OrderLineForm({
             <div className="absolute right-3 top-3 text-slate-400 dark:text-slate-500 font-bold">%</div>
           </div>
         </div>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 pt-4 border-t border-slate-200 dark:border-white/10">
