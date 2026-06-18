@@ -14,6 +14,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import {
   FileDown,
@@ -34,14 +36,16 @@ export interface QuotationPdfExportPreviewDialogLabels {
   errorDismiss: string;
   shareWhatsapp: string;
   shareMail: string;
+  showDiscount: string;
 }
 
 export interface QuotationPdfExportPreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  buildPdfBlob: (options: { draft: boolean }) => Promise<Blob>;
+  buildPdfBlob: (options: { draft: boolean; showDiscount: boolean }) => Promise<Blob>;
   fileName: string;
   labels: QuotationPdfExportPreviewDialogLabels;
+  hasLineDiscounts?: boolean;
   onShareWhatsapp: (pdfBlob: Blob) => void | Promise<void>;
   onShareMail: (pdfBlob: Blob) => void | Promise<void>;
 }
@@ -52,6 +56,7 @@ export function QuotationPdfExportPreviewDialog({
   buildPdfBlob,
   fileName,
   labels,
+  hasLineDiscounts = false,
   onShareWhatsapp,
   onShareMail,
 }: QuotationPdfExportPreviewDialogProps): ReactElement {
@@ -59,6 +64,7 @@ export function QuotationPdfExportPreviewDialog({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const [showDiscount, setShowDiscount] = useState(false);
   const loadIdRef = useRef(0);
 
   const revokeBlobUrl = useCallback((url: string | null): void => {
@@ -66,6 +72,12 @@ export function QuotationPdfExportPreviewDialog({
       URL.revokeObjectURL(url);
     }
   }, []);
+
+  useEffect(() => {
+    if (!open) {
+      setShowDiscount(false);
+    }
+  }, [open]);
 
   useEffect(() => {
     if (!open) {
@@ -88,7 +100,7 @@ export function QuotationPdfExportPreviewDialog({
 
     void (async (): Promise<void> => {
       try {
-        const blob = await buildPdfBlob({ draft: true });
+        const blob = await buildPdfBlob({ draft: true, showDiscount });
         if (loadIdRef.current !== id) return;
         setBlobUrl(URL.createObjectURL(blob));
       } catch {
@@ -100,10 +112,10 @@ export function QuotationPdfExportPreviewDialog({
         }
       }
     })();
-  }, [open, buildPdfBlob, revokeBlobUrl]);
+  }, [open, buildPdfBlob, revokeBlobUrl, showDiscount]);
 
   const handleDownload = async (): Promise<void> => {
-    const blob = await buildPdfBlob({ draft: false });
+    const blob = await buildPdfBlob({ draft: false, showDiscount });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
@@ -116,7 +128,7 @@ export function QuotationPdfExportPreviewDialog({
   const handleShareWhatsapp = async (): Promise<void> => {
     try {
       setSharing(true);
-      const blob = await buildPdfBlob({ draft: false });
+      const blob = await buildPdfBlob({ draft: false, showDiscount });
       await onShareWhatsapp(blob);
     } finally {
       setSharing(false);
@@ -126,7 +138,7 @@ export function QuotationPdfExportPreviewDialog({
   const handleShareMail = async (): Promise<void> => {
     try {
       setSharing(true);
-      const blob = await buildPdfBlob({ draft: false });
+      const blob = await buildPdfBlob({ draft: false, showDiscount });
       await onShareMail(blob);
     } finally {
       setSharing(false);
@@ -281,6 +293,23 @@ export function QuotationPdfExportPreviewDialog({
             'border-slate-200/90 bg-slate-50 dark:border-white/10 dark:bg-zinc-900',
           )}
         >
+          <div className="mb-3 flex items-center gap-2.5 rounded-xl border border-slate-200/90 bg-white px-3 py-2.5 dark:border-white/10 dark:bg-zinc-950">
+            <Checkbox
+              id="pdf-preview-show-discount"
+              checked={showDiscount}
+              disabled={!hasLineDiscounts || loading || sharing}
+              onCheckedChange={(checked) => setShowDiscount(checked === true)}
+            />
+            <Label
+              htmlFor="pdf-preview-show-discount"
+              className={cn(
+                'cursor-pointer text-sm font-medium text-slate-700 dark:text-zinc-200',
+                !hasLineDiscounts && 'cursor-not-allowed opacity-50',
+              )}
+            >
+              {labels.showDiscount}
+            </Label>
+          </div>
           <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
             <Button
               type="button"

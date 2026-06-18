@@ -388,7 +388,8 @@
     "error": "PDF oluşturulamadı. Lütfen tekrar deneyin.",
     "download": "Bilgisayara indir",
     "errorDismiss": "Kapat",
-    "downloadFileName": "siparis.pdf"
+    "downloadFileName": "siparis.pdf",
+    "showDiscount": "İskonto göster"
   },
   "pdfExportTemplate": {
     "builtInTemplateTitle": "V3RII Hazır Şablon (Önizleme)",
@@ -400,6 +401,7 @@
     "recipientLabel": "Sipariş Verilen",
     "lineImage": "Görsel",
     "unitPriceNet": "Net Birim",
+    "netUnitPriceColumn": "Net Birim Fiyat",
     "lineDiscount": "İskonto",
     "vatRate": "KDV %",
     "priceDetail": "Fiyat Detayı",

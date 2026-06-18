@@ -19,15 +19,19 @@ import {
   buildPreviewPdfDocumentFooterDetails,
   buildPreviewPdfDocumentFooterLabels,
   buildPreviewPdfLineDetailLabels,
+  buildPreviewPdfLineDiscountLabels,
+  previewPdfLineHasDiscount,
+  previewPdfHasGeneralDiscount,
+  resolvePreviewPdfPaymentTypeName,
   resolvePreviewPdfShippingAddressText,
 } from '@/features/quotation/utils/build-preview-pdf-footer-details';
+import { usePrefetchLineImagesForPdf } from '@/features/quotation/hooks/usePrefetchLineImagesForPdf';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
+import { usePaymentTypes } from '@/features/quotation/hooks/usePaymentTypes';
 import { useShippingAddresses } from '../hooks/useShippingAddresses';
 import type { CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderGetDto, OrderLineFormState } from '../types/order-types';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
-import { quotationNotesDtoToNotesList } from '@/features/quotation/utils/quotation-payload-mapper';
-
 interface OrderPdfExportCustomer {
   name?: string | null;
   phone?: string | null;
@@ -52,8 +56,9 @@ interface UseOrderPdfExportPreviewReturn {
   pdfExportOpen: boolean;
   setPdfExportOpen: (open: boolean) => void;
   openPdfExportPreview: () => void;
-  buildExportPdfBlob: (options: { draft: boolean }) => Promise<Blob>;
-  buildPreviewPdfBlob: (options?: { draft?: boolean }) => Promise<Blob>;
+  buildExportPdfBlob: (options: { draft: boolean; showDiscount?: boolean }) => Promise<Blob>;
+  buildPreviewPdfBlob: (options?: { draft?: boolean; showDiscount?: boolean }) => Promise<Blob>;
+  hasLineDiscounts: boolean;
   shareFileName: string;
   handleModalShareWhatsapp: (pdfBlob: Blob) => void;
   handleModalShareMail: (pdfBlob: Blob) => void;
@@ -81,6 +86,7 @@ export function useOrderPdfExportPreview({
   const { t, i18n } = useTranslation('order');
   const branch = useAuthStore((state) => state.branch);
   const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
+  const { data: paymentTypes = [] } = usePaymentTypes();
   const previewCustomerId = orderFormSlice.potentialCustomerId ?? order?.potentialCustomerId ?? undefined;
   const { data: shippingAddresses = [] } = useShippingAddresses(
     previewCustomerId != null && previewCustomerId > 0 ? previewCustomerId : undefined,
@@ -116,8 +122,25 @@ export function useOrderPdfExportPreview({
     labels: nativeShareLabels,
   });
 
+  const hasLineDiscounts = useMemo(
+    () => lines.some((line) => previewPdfLineHasDiscount(line)),
+    [lines],
+  );
+
+  usePrefetchLineImagesForPdf(lines);
+
+  const hasGeneralDiscount = useMemo(() => {
+    const oc = orderFormSlice;
+    return previewPdfHasGeneralDiscount(
+      oc.generalDiscountRate ?? order?.generalDiscountRate ?? null,
+      oc.generalDiscountAmount ?? order?.generalDiscountAmount ?? null,
+    );
+  }, [orderFormSlice, order]);
+
+  const defaultShowDiscountDetails = hasLineDiscounts || hasGeneralDiscount;
+
   const buildPreviewPdfBlob = useCallback(
-    async (options?: { draft?: boolean }): Promise<Blob> => {
+    async (options?: { draft?: boolean; showDiscount?: boolean }): Promise<Blob> => {
       const oc = orderFormSlice;
       const customerLabel =
         (await resolveQuotationCustomerLabelForPdf({
@@ -133,21 +156,29 @@ export function useOrderPdfExportPreview({
         order?.koliBaskiDefinitionName?.trim()
         || (koliBaskiId != null && koliBaskiId > 0 ? koliBaskiMap[koliBaskiId] : null)
         || null;
+      const paymentTypeName = resolvePreviewPdfPaymentTypeName(
+        oc.paymentTypeId ?? order?.paymentTypeId ?? null,
+        order?.paymentTypeName ?? null,
+        paymentTypes,
+      );
 
       const footerDetails = buildPreviewPdfDocumentFooterDetails(
         {
           koliBaskiName,
+          paymentTypeName,
           description: oc.description ?? order?.description ?? null,
-          structuredNotes: quotationNotesDtoToNotesList(quotationNotes),
+          quotationNotes,
           shippingAddressText: resolvePreviewPdfShippingAddressText({
             shippingAddressId: oc.shippingAddressId ?? order?.shippingAddressId ?? null,
             shippingAddressText: order?.shippingAddressText ?? null,
             shippingAddresses,
           }),
         },
-        buildPreviewPdfDocumentFooterLabels(t),
+        buildPreviewPdfDocumentFooterLabels(t, 'order'),
       );
       const lineDetailLabels = buildPreviewPdfLineDetailLabels(t);
+      const lineDiscountLabels = buildPreviewPdfLineDiscountLabels(t);
+      const showDiscount = options?.showDiscount ?? defaultShowDiscountDetails;
 
       return buildOrderPreviewPdfBlob({
         lines,
@@ -164,6 +195,8 @@ export function useOrderPdfExportPreview({
         footerDetails,
         lineDetailLabels,
         lineDetailMaps: { profilMap, demirMap, vidaMap, baskiMap },
+        lineDiscountLabels,
+        showDiscount,
         draft: options?.draft ?? false,
       });
     },
@@ -182,13 +215,16 @@ export function useOrderPdfExportPreview({
       vidaMap,
       baskiMap,
       koliBaskiMap,
+      paymentTypes,
       quotationNotes,
       shippingAddresses,
+      hasLineDiscounts,
     ],
   );
 
   const buildExportPdfBlob = useCallback(
-    async ({ draft }: { draft: boolean }): Promise<Blob> => buildPreviewPdfBlob({ draft }),
+    async ({ draft, showDiscount }: { draft: boolean; showDiscount?: boolean }): Promise<Blob> =>
+      buildPreviewPdfBlob({ draft, showDiscount }),
     [buildPreviewPdfBlob],
   );
 
@@ -198,10 +234,10 @@ export function useOrderPdfExportPreview({
         id: 'v3rii-order-preview',
         title: t('pdfExportTemplate.builtInTemplateTitle'),
         isDefault: true,
-        generate: () => buildPreviewPdfBlob({ draft: false }),
+        generate: () => buildPreviewPdfBlob({ draft: false, showDiscount: defaultShowDiscountDetails }),
       },
     ],
-    [buildPreviewPdfBlob, t],
+    [buildPreviewPdfBlob, defaultShowDiscountDetails, t],
   );
 
   const openPdfExportPreview = useCallback((): void => {
@@ -365,6 +401,7 @@ export function useOrderPdfExportPreview({
           open={pdfExportOpen}
           onOpenChange={setPdfExportOpen}
           buildPdfBlob={buildExportPdfBlob}
+          hasLineDiscounts={defaultShowDiscountDetails}
           fileName={orderId > 0 ? shareFileName : defaultShareFileName}
           labels={{
             title: t('exportPreview.title'),
@@ -376,6 +413,7 @@ export function useOrderPdfExportPreview({
             errorDismiss: t('exportPreview.errorDismiss'),
             shareWhatsapp: t('shareWhatsapp'),
             shareMail: t('shareMail'),
+            showDiscount: t('exportPreview.showDiscount'),
           }}
           onShareWhatsapp={handleModalShareWhatsapp}
           onShareMail={handleModalShareMail}
@@ -412,6 +450,7 @@ export function useOrderPdfExportPreview({
   }, [
     pdfExportOpen,
     buildExportPdfBlob,
+    hasLineDiscounts,
     orderId,
     shareFileName,
     defaultShareFileName,
@@ -436,6 +475,7 @@ export function useOrderPdfExportPreview({
     openPdfExportPreview,
     buildExportPdfBlob,
     buildPreviewPdfBlob,
+    hasLineDiscounts,
     shareFileName,
     handleModalShareWhatsapp,
     handleModalShareMail,

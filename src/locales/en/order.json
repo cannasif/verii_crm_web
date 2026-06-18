@@ -368,7 +368,8 @@
     "error": "PDF could not be generated. Please try again.",
     "download": "Download",
     "errorDismiss": "Close",
-    "downloadFileName": "order.pdf"
+    "downloadFileName": "order.pdf",
+    "showDiscount": "Show discount"
   },
   "pdfExportTemplate": {
     "builtInTemplateTitle": "V3RII Ready Template (Preview)",
@@ -380,6 +381,7 @@
     "recipientLabel": "Order To",
     "lineImage": "Image",
     "unitPriceNet": "Net unit",
+    "netUnitPriceColumn": "Net unit price",
     "lineDiscount": "Discount",
     "vatRate": "VAT %",
     "priceDetail": "Price detail",

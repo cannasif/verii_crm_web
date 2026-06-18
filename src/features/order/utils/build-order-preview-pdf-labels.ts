@@ -15,6 +15,7 @@ export function buildOrderPreviewPdfLabels(t: TFunction<'order'>): QuotationPrev
     quantity: t('lines.quantity'),
     unitPrice: t('lines.unitPrice'),
     unitPriceNet: t('pdfExportTemplate.unitPriceNet'),
+    netUnitPriceColumn: t('pdfExportTemplate.netUnitPriceColumn'),
     lineDiscount: t('pdfExportTemplate.lineDiscount'),
     vatRate: t('pdfExportTemplate.vatRate'),
     lineTotal: t('lines.lineTotal'),

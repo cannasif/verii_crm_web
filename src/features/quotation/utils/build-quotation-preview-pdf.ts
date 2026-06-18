@@ -1,16 +1,23 @@
 import type { jsPDF } from 'jspdf';
 import { getLineUnitDiscountBreakdown } from '@/lib/line-discount-display';
-import { getImageUrl } from '@/lib/image-url';
+import { getLineImageDataUrl } from '@/lib/line-image-data-url-cache';
 import { formatCurrency } from './format-currency';
 import {
   buildPreviewPdfLineDetailRows,
+  buildPreviewPdfLineDiscountRows,
+  buildPreviewPdfUnitPriceCellData,
   computePreviewPdfTableRowHeight,
+  drawPreviewPdfDiscountCellContent,
+  drawPreviewPdfUnitPriceCellContent,
   drawPreviewPdfProductCodeCellContent,
   drawPreviewPdfProductNameCellContent,
   drawPreviewPdfProductNameOnlyCellContent,
+  previewPdfLineHasDiscount,
   type PreviewPdfFooterDetailRow,
   type PreviewPdfLineDetailLabels,
   type PreviewPdfLineDetailMaps,
+  type PreviewPdfLineDiscountLabels,
+  type PreviewPdfUnitPriceCellData,
 } from './build-preview-pdf-footer-details';
 import {
   QUOTATION_EXPORT_PDF_FONT,
@@ -60,6 +67,7 @@ export interface QuotationPreviewPdfLabels {
   quantity: string;
   unitPrice: string;
   unitPriceNet: string;
+  netUnitPriceColumn: string;
   lineDiscount: string;
   vatRate: string;
   lineTotal: string;
@@ -89,6 +97,8 @@ export interface BuildQuotationPreviewPdfParams {
   footerDetails?: PreviewPdfFooterDetailRow[];
   lineDetailLabels?: PreviewPdfLineDetailLabels;
   lineDetailMaps?: PreviewPdfLineDetailMaps;
+  lineDiscountLabels?: PreviewPdfLineDiscountLabels;
+  showDiscount?: boolean;
   draft?: boolean;
 }
 
@@ -119,9 +129,7 @@ function formatDateLabel(value: string | null | undefined, locale: string, fallb
 }
 
 function lineHasDiscount(line: QuotationPreviewPdfLine): boolean {
-  const rates = [line.discountRate1, line.discountRate2, line.discountRate3];
-  const amounts = [line.discountAmount1, line.discountAmount2, line.discountAmount3];
-  return rates.some((rate) => (rate ?? 0) > 0) || amounts.some((amount) => (amount ?? 0) > 0);
+  return previewPdfLineHasDiscount(line);
 }
 
 function formatQuantityCell(line: QuotationPreviewPdfLine): string {
@@ -130,38 +138,8 @@ function formatQuantityCell(line: QuotationPreviewPdfLine): string {
   return unit ? `${qty} ${unit}` : qty;
 }
 
-async function blobToDataUrl(blob: Blob): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => resolve(String(reader.result || ''));
-    reader.onerror = () => reject(new Error('Blob okunamadi'));
-    reader.readAsDataURL(blob);
-  });
-}
-
 async function resolveLineImageDataUrl(line: QuotationPreviewPdfLine): Promise<string | null> {
-  const pending = line.pendingImagePreviewUrl?.trim();
-  if (pending) {
-    if (pending.startsWith('data:')) return pending;
-    try {
-      const response = await fetch(pending);
-      if (!response.ok) return null;
-      return blobToDataUrl(await response.blob());
-    } catch {
-      return null;
-    }
-  }
-
-  const remoteUrl = getImageUrl(line.imagePath);
-  if (!remoteUrl) return null;
-
-  try {
-    const response = await fetch(remoteUrl, { credentials: 'include' });
-    if (!response.ok) return null;
-    return blobToDataUrl(await response.blob());
-  } catch {
-    return null;
-  }
+  return getLineImageDataUrl(line.imagePath, line.pendingImagePreviewUrl);
 }
 
 function getImageFormat(dataUrl: string): 'PNG' | 'JPEG' | 'WEBP' {
@@ -517,16 +495,21 @@ function drawFooter(
   params: BuildQuotationPreviewPdfParams,
   totals: ReturnType<typeof computeDocumentTotals>,
 ): void {
-  const detailRows: Array<[string, number, boolean]> = [
-    [params.labels.grossTotal, totals.netTotal, false],
-  ];
-  if (totals.generalDiscountAmount > 0) {
-    detailRows.push([params.labels.generalDiscount, totals.generalDiscountAmount, true]);
+  const detailRows: Array<[string, number, boolean]> = [];
+
+  if (params.showDiscount === true) {
+    detailRows.push([params.labels.grossTotal, totals.grossTotal, false]);
+    detailRows.push([params.labels.netSubtotal, totals.netTotal, false]);
+    if (totals.generalDiscountAmount > 0) {
+      detailRows.push([params.labels.generalDiscount, totals.generalDiscountAmount, true]);
+      detailRows.push([params.labels.netSubtotal, totals.discountedNetTotal, false]);
+    }
+  } else {
+    detailRows.push([params.labels.grossTotal, totals.netTotal, false]);
+    detailRows.push([params.labels.netSubtotal, totals.discountedNetTotal, false]);
   }
-  detailRows.push(
-    [params.labels.netSubtotal, totals.discountedNetTotal, false],
-    [params.labels.totalVat, totals.totalVat, false],
-  );
+
+  detailRows.push([params.labels.totalVat, totals.totalVat, false]);
 
   const cardW = 88;
   const cardX = PAGE_W - M - cardW;
@@ -667,19 +650,46 @@ export async function buildQuotationPreviewPdfBlob(
   const offerDateStr = formatDateLabel(params.offerDate, params.locale, params.labels.notSpecified);
   const offerNoDisplay = params.offerNo?.trim() || params.labels.notSpecified;
   const anyLineDiscount = params.lines.some((line) => lineHasDiscount(line));
-  const unitPriceColumnLabel = anyLineDiscount ? params.labels.unitPriceNet : params.labels.unitPrice;
+  const showDiscountMode = params.showDiscount === true;
+  const showDiscountColumn = showDiscountMode && anyLineDiscount;
   const lineImageDataUrls = await Promise.all(params.lines.map((line) => resolveLineImageDataUrl(line)));
   const hasAnyLineImage = lineImageDataUrls.some(Boolean);
   const productCodeColumnIndex = hasAnyLineImage ? 1 : 0;
   const productNameColumnIndex = hasAnyLineImage ? 2 : 1;
+  const unitPriceColumnLabel = showDiscountMode
+    ? params.labels.netUnitPriceColumn
+    : anyLineDiscount
+      ? params.labels.unitPriceNet
+      : params.labels.unitPrice;
+  const unitPriceColumnIndex = hasAnyLineImage ? 4 : 3;
+  const lineUnitPriceCells: PreviewPdfUnitPriceCellData[] = params.lines.map((line) => {
+    if (!showDiscountMode) {
+      return { originalFormatted: '', netFormatted: '', hasLineDiscount: false };
+    }
+    return buildPreviewPdfUnitPriceCellData(
+      line,
+      (amount) => formatCurrency(amount, params.currencyCode),
+    );
+  });
+  const discountColumnWidth = 22;
   const hasLineDetailConfig = Boolean(params.lineDetailLabels && params.lineDetailMaps);
   const lineDetailBlocks: PreviewPdfFooterDetailRow[][] = params.lines.map((line) => {
     if (!hasLineDetailConfig || !params.lineDetailLabels || !params.lineDetailMaps) return [];
     return buildPreviewPdfLineDetailRows(line, params.lineDetailLabels, params.lineDetailMaps);
   });
+  const lineDiscountBlocks: PreviewPdfFooterDetailRow[][] = params.lines.map((line) => {
+    if (!showDiscountColumn || !params.lineDiscountLabels) return [];
+    return buildPreviewPdfLineDiscountRows(line, params.lineDiscountLabels);
+  });
 
+  const fixedColumnsWidth = hasAnyLineImage
+    ? 16 + 28 + 18 + 26 + (showDiscountColumn ? discountColumnWidth : 0) + 28
+    : 32 + 18 + 28 + (showDiscountColumn ? discountColumnWidth : 0) + 30;
   const productCodeColWidth = hasAnyLineImage ? 28 : 32;
-  const productNameColWidth = hasAnyLineImage ? CONTENT_W - (16 + 28 + 18 + 26 + 28) : CONTENT_W - (32 + 18 + 28 + 30);
+  const productNameColWidth = CONTENT_W - fixedColumnsWidth;
+  const discountColumnIndex = showDiscountColumn
+    ? (hasAnyLineImage ? 5 : 4)
+    : -1;
   const tableRowHeights = params.lines.map((line, index) =>
     computePreviewPdfTableRowHeight(
       doc,
@@ -689,6 +699,9 @@ export async function buildQuotationPreviewPdfBlob(
       lineDetailBlocks[index] ?? [],
       productNameColWidth,
       productCodeColWidth,
+      lineDiscountBlocks[index] ?? [],
+      showDiscountColumn ? discountColumnWidth : 0,
+      showDiscountMode ? (lineUnitPriceCells[index] ?? null) : null,
     ),
   );
 
@@ -700,6 +713,7 @@ export async function buildQuotationPreviewPdfBlob(
     params.labels.productName,
     params.labels.quantity,
     unitPriceColumnLabel,
+    ...(showDiscountColumn ? [params.labels.lineDiscount] : []),
     params.labels.lineTotal,
   ];
 
@@ -711,6 +725,7 @@ export async function buildQuotationPreviewPdfBlob(
       line.productName ?? '',
       formatQuantityCell(line),
       formatUnitPriceCell(line, params.currencyCode),
+      ...(showDiscountColumn ? [''] : []),
       formatCurrency(line.lineTotal, params.currencyCode),
     ];
     return hasAnyLineImage ? ['', ...row] : row;
@@ -723,6 +738,9 @@ export async function buildQuotationPreviewPdfBlob(
     return bodyRows.findIndex((bodyRow) => bodyRow === raw);
   };
 
+  const priceColumnHalign = showDiscountMode ? 'center' : 'right';
+  const totalColumnHalign = showDiscountMode ? 'center' : 'right';
+
   const columnStyles: Record<number, { cellWidth?: number; halign?: 'left' | 'center' | 'right' }> =
     hasAnyLineImage
       ? {
@@ -730,15 +748,25 @@ export async function buildQuotationPreviewPdfBlob(
           1: { cellWidth: 28, halign: 'left' },
           2: { halign: 'left' },
           3: { cellWidth: 18, halign: 'center' },
-          4: { cellWidth: 26, halign: 'right' },
-          5: { cellWidth: 28, halign: 'right' },
+          4: { cellWidth: 26, halign: priceColumnHalign },
+          ...(showDiscountColumn
+            ? {
+                5: { cellWidth: discountColumnWidth, halign: 'center' },
+                6: { cellWidth: 28, halign: totalColumnHalign },
+              }
+            : { 5: { cellWidth: 28, halign: totalColumnHalign } }),
         }
       : {
           0: { cellWidth: 32, halign: 'left' },
           1: { halign: 'left' },
           2: { cellWidth: 18, halign: 'center' },
-          3: { cellWidth: 28, halign: 'right' },
-          4: { cellWidth: 30, halign: 'right' },
+          3: { cellWidth: 28, halign: priceColumnHalign },
+          ...(showDiscountColumn
+            ? {
+                4: { cellWidth: discountColumnWidth, halign: 'center' },
+                5: { cellWidth: 30, halign: totalColumnHalign },
+              }
+            : { 4: { cellWidth: 30, halign: totalColumnHalign } }),
         };
 
   autoTable(doc, {
@@ -792,6 +820,10 @@ export async function buildQuotationPreviewPdfBlob(
       if (
         data.column.index === productCodeColumnIndex
         || data.column.index === productNameColumnIndex
+        || (showDiscountMode
+          && data.column.index === unitPriceColumnIndex
+          && (lineUnitPriceCells[lineIndex]?.hasLineDiscount ?? false))
+        || (showDiscountColumn && data.column.index === discountColumnIndex)
       ) {
         data.cell.text = [];
       }
@@ -832,6 +864,34 @@ export async function buildQuotationPreviewPdfBlob(
           data.cell.y,
           data.cell.width,
           line.productCode ?? '',
+        );
+        return;
+      }
+
+      if (showDiscountColumn && data.column.index === discountColumnIndex) {
+        drawPreviewPdfDiscountCellContent(
+          doc,
+          bodyFont,
+          data.cell.x,
+          data.cell.y,
+          data.cell.width,
+          lineDiscountBlocks[lineIndex] ?? [],
+        );
+        return;
+      }
+
+      if (
+        showDiscountMode
+        && data.column.index === unitPriceColumnIndex
+        && (lineUnitPriceCells[lineIndex]?.hasLineDiscount ?? false)
+      ) {
+        drawPreviewPdfUnitPriceCellContent(
+          doc,
+          bodyFont,
+          data.cell.x,
+          data.cell.y,
+          data.cell.width,
+          lineUnitPriceCells[lineIndex]!,
         );
         return;
       }

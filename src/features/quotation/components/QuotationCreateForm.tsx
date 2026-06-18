@@ -36,6 +36,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { SalesDocumentDraftRestoreDialog } from '@/features/sales-drafts/SalesDocumentDraftRestoreDialog';
 import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentDraft';
+import { usePrefetchLineImagesForPdf } from '../hooks/usePrefetchLineImagesForPdf';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -48,9 +49,14 @@ import {
   buildPreviewPdfDocumentFooterDetails,
   buildPreviewPdfDocumentFooterLabels,
   buildPreviewPdfLineDetailLabels,
+  buildPreviewPdfLineDiscountLabels,
+  previewPdfLineHasDiscount,
+  previewPdfHasGeneralDiscount,
+  resolvePreviewPdfPaymentTypeName,
   resolvePreviewPdfShippingAddressText,
 } from '../utils/build-preview-pdf-footer-details';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
+import { usePaymentTypes } from '../hooks/usePaymentTypes';
 import { useShippingAddresses } from '../hooks/useShippingAddresses';
 
 const CREATE_SECTION_CARD_CLASSNAME =
@@ -115,6 +121,7 @@ export function QuotationCreateForm(): ReactElement {
   const branch = useAuthStore((state) => state.branch);
 
   const [lines, setLines] = useState<QuotationLineFormState[]>([]);
+  usePrefetchLineImagesForPdf(lines);
   const [exchangeRates, setExchangeRates] = useState<QuotationExchangeRateFormState[]>([]);
   const [quotationNotes, setQuotationNotes] = useState<QuotationNotesDto>(createEmptyQuotationNotes);
   const [pricingRules, setPricingRules] = useState<PricingRuleLineGetDto[]>([]);
@@ -196,6 +203,7 @@ export function QuotationCreateForm(): ReactElement {
     Boolean(watchedCustomerId && watchedCustomerId > 0)
   );
   const { koliBaskiMap, profilMap, demirMap, vidaMap, baskiMap } = useWindoDefinitionOptions();
+  const { data: paymentTypes = [] } = usePaymentTypes();
   const { data: shippingAddresses = [] } = useShippingAddresses(
     watchedCustomerId != null && watchedCustomerId > 0 ? watchedCustomerId : undefined,
   );
@@ -451,7 +459,22 @@ export function QuotationCreateForm(): ReactElement {
     return found?.code || 'TRY';
   }, [watchedCurrency, currencyOptions]);
 
-  const buildExportPdfBlob = useCallback(async ({ draft }: { draft: boolean }): Promise<Blob> => {
+  const hasLineDiscounts = useMemo(
+    () => lines.some((line) => previewPdfLineHasDiscount(line)),
+    [lines],
+  );
+
+  const hasGeneralDiscount = useMemo(
+    () => previewPdfHasGeneralDiscount(
+      quotationFormSlice.generalDiscountRate,
+      quotationFormSlice.generalDiscountAmount,
+    ),
+    [quotationFormSlice.generalDiscountRate, quotationFormSlice.generalDiscountAmount],
+  );
+
+  const defaultShowDiscountDetails = hasLineDiscounts || hasGeneralDiscount;
+
+  const buildExportPdfBlob = useCallback(async ({ draft, showDiscount }: { draft: boolean; showDiscount?: boolean }): Promise<Blob> => {
     const qc = quotationFormSlice;
     const customerLabel =
       (await resolveQuotationCustomerLabelForPdf({
@@ -474,6 +497,7 @@ export function QuotationCreateForm(): ReactElement {
       quantity: t('lines.quantity'),
       unitPrice: t('lines.unitPrice'),
       unitPriceNet: t('pdfExportTemplate.unitPriceNet'),
+      netUnitPriceColumn: t('pdfExportTemplate.netUnitPriceColumn'),
       lineDiscount: t('pdfExportTemplate.lineDiscount'),
       vatRate: t('pdfExportTemplate.vatRate'),
       lineTotal: t('lines.total'),
@@ -491,11 +515,17 @@ export function QuotationCreateForm(): ReactElement {
     const koliBaskiId = qc.koliBaskiDefinitionId ?? null;
     const koliBaskiName =
       koliBaskiId != null && koliBaskiId > 0 ? koliBaskiMap[koliBaskiId] ?? null : null;
+    const paymentTypeName = resolvePreviewPdfPaymentTypeName(
+      qc.paymentTypeId ?? null,
+      null,
+      paymentTypes,
+    );
     const footerDetails = buildPreviewPdfDocumentFooterDetails(
       {
         koliBaskiName,
+        paymentTypeName,
         description: qc.description ?? null,
-        structuredNotes: quotationNotesDtoToNotesList(quotationNotes),
+        quotationNotes,
         shippingAddressText: resolvePreviewPdfShippingAddressText({
           shippingAddressId: qc.shippingAddressId ?? null,
           shippingAddresses,
@@ -504,6 +534,7 @@ export function QuotationCreateForm(): ReactElement {
       buildPreviewPdfDocumentFooterLabels(t),
     );
     const lineDetailLabels = buildPreviewPdfLineDetailLabels(t);
+    const lineDiscountLabels = buildPreviewPdfLineDiscountLabels(t);
 
     return buildQuotationPreviewPdfBlob({
       lines,
@@ -520,6 +551,8 @@ export function QuotationCreateForm(): ReactElement {
       footerDetails,
       lineDetailLabels,
       lineDetailMaps: { profilMap, demirMap, vidaMap, baskiMap },
+      lineDiscountLabels,
+      showDiscount: showDiscount ?? defaultShowDiscountDetails,
       draft,
     });
   }, [
@@ -533,11 +566,13 @@ export function QuotationCreateForm(): ReactElement {
     branch,
     quotationNotes,
     koliBaskiMap,
+    paymentTypes,
     shippingAddresses,
     profilMap,
     demirMap,
     vidaMap,
     baskiMap,
+    defaultShowDiscountDetails,
   ]);
 
   const openPdfExportPreview = (): void => {
@@ -833,6 +868,7 @@ export function QuotationCreateForm(): ReactElement {
         open={pdfExportOpen}
         onOpenChange={setPdfExportOpen}
         buildPdfBlob={buildExportPdfBlob}
+        hasLineDiscounts={defaultShowDiscountDetails}
         fileName={t('exportPreview.downloadFileName')}
         labels={{
           title: t('exportPreview.title'),
@@ -844,6 +880,7 @@ export function QuotationCreateForm(): ReactElement {
           errorDismiss: t('exportPreview.errorDismiss'),
           shareWhatsapp: t('shareWhatsapp'),
           shareMail: t('shareMail'),
+          showDiscount: t('exportPreview.showDiscount'),
         }}
         onShareWhatsapp={handleModalShareWhatsapp}
         onShareMail={handleModalShareMail}
