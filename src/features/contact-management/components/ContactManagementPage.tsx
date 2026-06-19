@@ -16,7 +16,7 @@ import {
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
-import { CONTACT_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
+import { CONTACT_MANAGEMENT_QUERY_KEYS, queryKeys } from '../utils/query-keys';
 import { ContactTable, getColumnsConfig } from './ContactTable';
 import { ContactForm } from './ContactForm';
 import { ContactStats } from './ContactStats';
@@ -30,8 +30,10 @@ import { buildCreateActivityPayload } from '@/features/activity-management/utils
 import type { ActivityFormSchema } from '@/features/activity-management/types/activity-types';
 import type { ContactDto } from '../types/contact-types';
 import type { ContactFormSchema } from '../types/contact-types';
-import { applyContactFilters, CONTACT_FILTER_COLUMNS } from '../types/contact-filter.types';
+import { contactFilterRowsToPagedFilters, CONTACT_FILTER_COLUMNS } from '../types/contact-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { normalizeQueryParams } from '@/utils/query-params';
+import { contactApi } from '../api/contact-api';
 
 const EMPTY_CONTACTS: ContactDto[] = [];
 const PAGE_KEY = 'contact-management';
@@ -127,60 +129,30 @@ export function ContactManagementPage(): ReactElement {
 
   const { data: contactStats, isLoading: isStatsLoading } = useContactStats();
 
-  const { data: apiResponse, isLoading } = useContactList({
-    pageNumber,
-    pageSize,
-    search: searchTerm || undefined,
-    sortBy,
-    sortDirection,
-  });
+  const listQueryParams = useMemo(() => {
+    const apiFilters = contactFilterRowsToPagedFilters(appliedFilterRows);
+    return {
+      pageNumber,
+      pageSize,
+      sortBy,
+      sortDirection,
+      ...(searchTerm ? { search: searchTerm } : {}),
+      ...(apiFilters.length > 0 ? { filters: apiFilters, filterLogic: 'and' as const } : {}),
+    };
+  }, [pageNumber, pageSize, sortBy, sortDirection, searchTerm, appliedFilterRows]);
+
+  const { data: apiResponse, isLoading } = useContactList(listQueryParams);
 
   const contacts = useMemo<ContactDto[]>(
     () => apiResponse?.data ?? EMPTY_CONTACTS,
     [apiResponse?.data]
   );
 
-  const filteredContacts = useMemo<ContactDto[]>(() => {
-    if (!contacts.length) return [];
-    let result = [...contacts];
-    if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter(
-        (c) =>
-          (c.fullName && c.fullName.toLowerCase().includes(lowerSearch)) ||
-          (c.firstName && c.firstName.toLowerCase().includes(lowerSearch)) ||
-          (c.lastName && c.lastName.toLowerCase().includes(lowerSearch)) ||
-          (c.email && c.email.toLowerCase().includes(lowerSearch)) ||
-          (c.phone && c.phone?.includes(lowerSearch)) ||
-          (c.customerName && c.customerName.toLowerCase().includes(lowerSearch))
-      );
-    }
-    result = applyContactFilters(result, appliedFilterRows);
-    return result;
-  }, [contacts, searchTerm, appliedFilterRows]);
-
-  const sortedContacts = useMemo(() => {
-    const result = [...filteredContacts];
-    result.sort((a, b) => {
-      const aVal = a[sortBy] != null ? String(a[sortBy]).toLowerCase() : '';
-      const bVal = b[sortBy] != null ? String(b[sortBy]).toLowerCase() : '';
-      if (sortBy === 'fullName') {
-        const aFull = [a.firstName, a.middleName, a.lastName].filter(Boolean).join(' ').trim();
-        const bFull = [b.firstName, b.middleName, b.lastName].filter(Boolean).join(' ').trim();
-        const cmp = aFull.localeCompare(bFull);
-        return sortDirection === 'asc' ? cmp : -cmp;
-      }
-      const cmp = aVal.localeCompare(bVal);
-      return sortDirection === 'asc' ? cmp : -cmp;
-    });
-    return result;
-  }, [filteredContacts, sortBy, sortDirection]);
-
-  const totalCount = apiResponse?.totalCount ?? sortedContacts.length;
+  const totalCount = apiResponse?.totalCount ?? 0;
   const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(startRow + sortedContacts.length - 1, totalCount);
-  const currentPageRows = sortedContacts;
+  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const currentPageRows = contacts;
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ContactColumnKey[];
 
@@ -224,7 +196,11 @@ export function ContactManagementPage(): ReactElement {
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
-    const list: ContactDto[] = sortedContacts;
+    const listResponse = await queryClient.fetchQuery({
+      queryKey: queryKeys.list(normalizeQueryParams(listQueryParams)),
+      queryFn: () => contactApi.getList(listQueryParams),
+    });
+    const list: ContactDto[] = listResponse?.data ?? contacts;
     return {
       columns: exportColumns,
       rows: list.map((c) => {
@@ -243,7 +219,7 @@ export function ContactManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language, sortedContacts]);
+  }, [contacts, exportColumns, orderedVisibleColumns, i18n.language, listQueryParams, queryClient]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

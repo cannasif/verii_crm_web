@@ -1,6 +1,7 @@
 import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
-import { applyFilterRowsClient } from '@/lib/advanced-filter-types';
+import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import type { PagedFilter } from '@/types/api';
 
 export const CONTACT_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'fullName', type: 'string', labelKey: 'advancedFilter.columnFullName' },
@@ -13,6 +14,6 @@ export const CONTACT_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'titleName', type: 'string', labelKey: 'advancedFilter.columnTitleName' },
 ] as const;
 
-export function applyContactFilters<T extends object>(items: T[], rows: FilterRow[]): T[] {
-  return applyFilterRowsClient(items, rows, CONTACT_FILTER_COLUMNS);
+export function contactFilterRowsToPagedFilters(rows: FilterRow[]): PagedFilter[] {
+  return rowsToBackendFilters(rows);
 }
