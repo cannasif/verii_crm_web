@@ -1232,7 +1232,33 @@
         "DETAY": "Detail"
       }
     },
-    "exportPdf": "Download PDF"
+    "exportPdf": "Download PDF",
+    "definitionExcel": {
+      "templateDownload": "Download template",
+      "templateDownloading": "Downloading template",
+      "importFromExcel": "Import from Excel",
+      "importInProgress": "Importing Excel",
+      "templateDownloaded": "Excel template downloaded.",
+      "templateDownloadFailed": "Excel template could not be downloaded.",
+      "invalidFileType": "Please select an .xlsx Excel file.",
+      "queueing": "Excel import is being queued...",
+      "processing": "Excel import is being processed in the background...",
+      "timedOut": "The Excel import job timed out. Please check the status again later.",
+      "failed": "Excel import could not be completed.",
+      "summary": "{{successRows}} successful, {{failedRows}} failed rows.",
+      "lastImport": "Last import",
+      "status": {
+        "Queued": "Queued",
+        "Running": "Processing",
+        "Completed": "Completed",
+        "CompletedWithErrors": "Completed with warnings",
+        "Failed": "Failed"
+      },
+      "completed": "Excel import completed. {{summary}}",
+      "completedWithErrors": "Excel import completed with warnings. {{summary}}",
+      "downloadResult": "Download result",
+      "importError": "An error occurred during Excel import."
+    }
   },
   "auth": {
     "login": {

@@ -1233,7 +1233,33 @@
         "DETAY": "Detalles"
       }
     },
-    "exportPdf": "Descargar PDF"
+    "exportPdf": "Descargar PDF",
+    "definitionExcel": {
+      "templateDownload": "Descargar plantilla",
+      "templateDownloading": "Descargando plantilla",
+      "importFromExcel": "Importar desde Excel",
+      "importInProgress": "Importando Excel",
+      "templateDownloaded": "Plantilla de Excel descargada.",
+      "templateDownloadFailed": "No se pudo descargar la plantilla de Excel.",
+      "invalidFileType": "Seleccione un archivo Excel .xlsx.",
+      "queueing": "La importación de Excel se está poniendo en cola...",
+      "processing": "La importación de Excel se procesa en segundo plano...",
+      "timedOut": "La tarea de importación de Excel agotó el tiempo de espera. Revise el estado más tarde.",
+      "failed": "No se pudo completar la importación de Excel.",
+      "summary": "{{successRows}} correctas, {{failedRows}} filas con error.",
+      "lastImport": "Última importación",
+      "status": {
+        "Queued": "En cola",
+        "Running": "Procesando",
+        "Completed": "Completada",
+        "CompletedWithErrors": "Completada con advertencias",
+        "Failed": "Error"
+      },
+      "completed": "Importación de Excel completada. {{summary}}",
+      "completedWithErrors": "Importación de Excel completada con advertencias. {{summary}}",
+      "downloadResult": "Descargar resultado",
+      "importError": "Ocurrió un error durante la importación de Excel."
+    }
   },
   "auth": {
     "login": {

@@ -1233,7 +1233,33 @@
         "DETAY": "تفاصيل"
       }
     },
-    "exportPdf": "تحميل قوات الدفاع الشعبي"
+    "exportPdf": "تحميل قوات الدفاع الشعبي",
+    "definitionExcel": {
+      "templateDownload": "تنزيل القالب",
+      "templateDownloading": "جارٍ تنزيل القالب",
+      "importFromExcel": "استيراد من Excel",
+      "importInProgress": "جارٍ استيراد Excel",
+      "templateDownloaded": "تم تنزيل قالب Excel.",
+      "templateDownloadFailed": "تعذر تنزيل قالب Excel.",
+      "invalidFileType": "يرجى اختيار ملف Excel بصيغة .xlsx.",
+      "queueing": "جارٍ وضع استيراد Excel في قائمة الانتظار...",
+      "processing": "تتم معالجة استيراد Excel في الخلفية...",
+      "timedOut": "انتهت مهلة مهمة استيراد Excel. يرجى التحقق من الحالة لاحقًا.",
+      "failed": "تعذر إكمال استيراد Excel.",
+      "summary": "{{successRows}} ناجحة، {{failedRows}} صفوف بها أخطاء.",
+      "lastImport": "آخر استيراد",
+      "status": {
+        "Queued": "في قائمة الانتظار",
+        "Running": "قيد المعالجة",
+        "Completed": "مكتمل",
+        "CompletedWithErrors": "مكتمل مع تحذيرات",
+        "Failed": "فشل"
+      },
+      "completed": "اكتمل استيراد Excel. {{summary}}",
+      "completedWithErrors": "اكتمل استيراد Excel مع تحذيرات. {{summary}}",
+      "downloadResult": "تنزيل النتيجة",
+      "importError": "حدث خطأ أثناء استيراد Excel."
+    }
   },
   "auth": {
     "login": {

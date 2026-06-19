@@ -1233,7 +1233,33 @@
         "DETAY": "Détails"
       }
     },
-    "exportPdf": "Télécharger le PDF"
+    "exportPdf": "Télécharger le PDF",
+    "definitionExcel": {
+      "templateDownload": "Télécharger le modèle",
+      "templateDownloading": "Téléchargement du modèle",
+      "importFromExcel": "Importer depuis Excel",
+      "importInProgress": "Import Excel en cours",
+      "templateDownloaded": "Modèle Excel téléchargé.",
+      "templateDownloadFailed": "Le modèle Excel n’a pas pu être téléchargé.",
+      "invalidFileType": "Veuillez sélectionner un fichier Excel .xlsx.",
+      "queueing": "Import Excel en cours de mise en file...",
+      "processing": "Import Excel traité en arrière-plan...",
+      "timedOut": "La tâche d’import Excel a expiré. Veuillez vérifier le statut plus tard.",
+      "failed": "L’import Excel n’a pas pu être terminé.",
+      "summary": "{{successRows}} lignes réussies, {{failedRows}} lignes en erreur.",
+      "lastImport": "Dernier import",
+      "status": {
+        "Queued": "En file d’attente",
+        "Running": "En cours",
+        "Completed": "Terminé",
+        "CompletedWithErrors": "Terminé avec avertissements",
+        "Failed": "Échoué"
+      },
+      "completed": "Import Excel terminé. {{summary}}",
+      "completedWithErrors": "Import Excel terminé avec avertissements. {{summary}}",
+      "downloadResult": "Télécharger le résultat",
+      "importError": "Une erreur est survenue pendant l’import Excel."
+    }
   },
   "auth": {
     "login": {

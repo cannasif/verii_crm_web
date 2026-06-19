@@ -24,6 +24,7 @@ import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-prefe
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 import { windoDefinitionApi } from '../api/windo-definition-api';
 import { useWindoDefinitionOptions } from '../hooks/useWindoDefinitionOptions';
 import type { WindoDefinitionCreateDto, WindoDefinitionGetDto } from '../types/windo-definition-types';
@@ -66,6 +67,13 @@ const SORT_MAP: Record<SortKey, string> = {
   profilName: 'ProfilDefinition.Name',
   createdDate: 'CreatedDate',
   updatedDate: 'UpdatedDate',
+};
+const DEFINITION_EXCEL_KEYS: Record<DefinitionKind, string> = {
+  profil: 'profil-definition',
+  demir: 'demir-definition',
+  vida: 'vida-definition',
+  baski: 'baski-definition',
+  koliBaski: 'koli-baski-definition',
 };
 
 function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig }): ReactElement {
@@ -356,6 +364,13 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
                 {isFetching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
                 {t('table.refresh')}
               </Button>
+            }
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey={DEFINITION_EXCEL_KEYS[config.kind]}
+                fileNamePrefix={`windo-${config.kind}`}
+                onImportCompleted={() => void invalidate()}
+              />
             }
           />
         </CardHeader>

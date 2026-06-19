@@ -532,7 +532,7 @@
       "guidedStepGoalTitle": "Bu widget ne işe yarasın?",
       "guidedStepGoalDescription": "Önce kullanım amacını seç. Sistem görünüm dilini ve başlangıç davranışını buna göre kurar.",
       "guidedStepVisualBadge": "2. Görünüm",
-      "guidedStepVisualTitle": "Bunu nasıl göstermek istiyorsun?",
+      "guidedStepVisualTitle": "Görsel tipi",
       "guidedStepVisualDescription": "Amaç seçildikten sonra uygun görünümü başlat. Sistem widget'ı ilk haliyle kurar.",
       "guidedVisualAutoSelected": "Sistem bu amaç için varsayılan olarak {{visual}} görünümünü seçti.",
       "guidedStepFieldsBadge": "3. Alanlar",
@@ -838,7 +838,6 @@
       "guidedTemplateDescription": "Amacı ve görsel tipini seç, alanları otomatik önerelim.",
       "guidedTemplateSummaryReady": "{{goal}} · {{visual}}",
       "guidedTemplateSummaryPending": "Henüz seçim yapılmadı",
-      "guidedStepVisualTitle": "Görsel tipi",
       "guidedVisualPlaceholder": "Görseli seç (tablo, trend, karşılaştırma…)",
       "dashboardFiltersSummary": "{{count}} filtre · {{fields}}",
       "dashboardFiltersEmptyShort": "Henüz filtre yok",
@@ -1232,6 +1231,32 @@
         "publish": "Yayınla",
         "archive": "Arşivle"
       }
+    },
+    "definitionExcel": {
+      "templateDownload": "Şablon indir",
+      "templateDownloading": "Şablon indiriliyor",
+      "importFromExcel": "Excel'den aktar",
+      "importInProgress": "Excel aktarılıyor",
+      "templateDownloaded": "Excel şablonu indirildi.",
+      "templateDownloadFailed": "Excel şablonu indirilemedi.",
+      "invalidFileType": "Lütfen .xlsx uzantılı Excel dosyası seçin.",
+      "queueing": "Excel aktarımı kuyruğa alınıyor...",
+      "processing": "Excel aktarımı arka planda işleniyor...",
+      "timedOut": "Excel aktarım işi zaman aşımına uğradı. Durumu daha sonra tekrar kontrol edin.",
+      "failed": "Excel aktarımı tamamlanamadı.",
+      "summary": "{{successRows}} başarılı, {{failedRows}} hatalı satır.",
+      "lastImport": "Son aktarım",
+      "status": {
+        "Queued": "Kuyrukta",
+        "Running": "İşleniyor",
+        "Completed": "Tamamlandı",
+        "CompletedWithErrors": "Uyarılı tamamlandı",
+        "Failed": "Hatalı"
+      },
+      "completed": "Excel aktarımı tamamlandı. {{summary}}",
+      "completedWithErrors": "Excel aktarımı uyarılarla tamamlandı. {{summary}}",
+      "downloadResult": "Sonucu indir",
+      "importError": "Excel aktarımı sırasında hata oluştu."
     }
   },
   "auth": {

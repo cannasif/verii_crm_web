@@ -1233,7 +1233,33 @@
         "DETAY": "Dettagli"
       }
     },
-    "exportPdf": "Scarica PDF"
+    "exportPdf": "Scarica PDF",
+    "definitionExcel": {
+      "templateDownload": "Scarica modello",
+      "templateDownloading": "Download del modello",
+      "importFromExcel": "Importa da Excel",
+      "importInProgress": "Importazione Excel",
+      "templateDownloaded": "Modello Excel scaricato.",
+      "templateDownloadFailed": "Impossibile scaricare il modello Excel.",
+      "invalidFileType": "Seleziona un file Excel .xlsx.",
+      "queueing": "Importazione Excel in coda...",
+      "processing": "Importazione Excel in elaborazione in background...",
+      "timedOut": "Il job di importazione Excel è scaduto. Controlla lo stato più tardi.",
+      "failed": "Impossibile completare l’importazione Excel.",
+      "summary": "{{successRows}} riuscite, {{failedRows}} righe con errore.",
+      "lastImport": "Ultima importazione",
+      "status": {
+        "Queued": "In coda",
+        "Running": "In elaborazione",
+        "Completed": "Completata",
+        "CompletedWithErrors": "Completata con avvisi",
+        "Failed": "Non riuscita"
+      },
+      "completed": "Importazione Excel completata. {{summary}}",
+      "completedWithErrors": "Importazione Excel completata con avvisi. {{summary}}",
+      "downloadResult": "Scarica risultato",
+      "importError": "Si è verificato un errore durante l’importazione Excel."
+    }
   },
   "auth": {
     "login": {
