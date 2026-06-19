@@ -67,7 +67,7 @@ import {
   getHtmlNumberInputStepForDecimals,
 } from '@/lib/system-settings';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
-import { enforceExportVatOnLine, isExportOfferType, resolveDocumentVatRate } from '@/lib/document-vat';
+import { enforceExportVatOnLine, getDefaultDocumentVatRate, resolveDocumentVatRate } from '@/lib/document-vat';
 import { mergeLinesAfterMainLineUpdate } from '@/lib/merge-lines-after-main-update';
 import {
   applyDemandLineQuickFieldPatch,
@@ -296,18 +296,22 @@ export function DemandLineTable({
     pricingRules,
     offerType,
   });
-  const isExportOffer = isExportOfferType(offerType);
+  const previousOfferTypeRef = useRef(offerType);
 
   useEffect(() => {
-    if (!isExportOffer) return;
+    if (previousOfferTypeRef.current === offerType) return;
+    previousOfferTypeRef.current = offerType;
+    const defaultVatRate = getDefaultDocumentVatRate(offerType);
     updateLines((prev) => {
-      if (!prev.some((line) => (line.vatRate ?? 0) !== 0 || (line.vatAmount ?? 0) !== 0)) {
-        return prev;
-      }
-
-      return prev.map((line) => calculateLineTotals(enforceExportVatOnLine(line, offerType)));
+      let changed = false;
+      const next = prev.map((line) => {
+        if ((line.vatRate ?? null) === defaultVatRate && (line.vatAmount ?? 0) === 0) return line;
+        changed = true;
+        return calculateLineTotals({ ...line, vatRate: defaultVatRate, vatAmount: 0 });
+      });
+      return changed ? next : prev;
     });
-  }, [calculateLineTotals, isExportOffer, offerType, updateLines]);
+  }, [calculateLineTotals, offerType, updateLines]);
 
   const existingDocumentLineMarkers = useMemo(() => linesToDocumentStockMarkers(lines), [lines]);
   const existingDocumentLineMarkersForEdit = useMemo(
@@ -405,7 +409,7 @@ export function DemandLineTable({
       discountAmount2: 0,
       discountRate3: 0,
       discountAmount3: 0,
-      vatRate: resolveDocumentVatRate(20, offerType),
+      vatRate: resolveDocumentVatRate(undefined, offerType, 20),
       vatAmount: 0,
       lineTotal: 0,
       lineGrandTotal: 0,

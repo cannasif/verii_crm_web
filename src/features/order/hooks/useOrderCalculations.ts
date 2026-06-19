@@ -1,5 +1,6 @@
 import type { OrderLineFormState } from '../types/order-types';
 import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
+import { useCallback, useMemo } from 'react';
 
 export interface CalculationTotals {
   subtotal: number;
@@ -25,7 +26,7 @@ function round2(value: number): number {
 }
 
 export function useOrderCalculations(): UseOrderCalculationsReturn {
-  const calculateLineTotals = (line: OrderLineFormState): OrderLineFormState => {
+  const calculateLineTotals = useCallback((line: OrderLineFormState): OrderLineFormState => {
     const amounts = calculateLineTotalsAmounts(
       line.unitPrice,
       line.quantity,
@@ -39,9 +40,9 @@ export function useOrderCalculations(): UseOrderCalculationsReturn {
       ...line,
       ...amounts,
     };
-  };
+  }, []);
 
-  const calculateTotals = (
+  const calculateTotals = useCallback((
     lines: OrderLineFormState[],
     options?: { generalDiscountRate?: number | null; generalDiscountAmount?: number | null }
   ): CalculationTotals => {
@@ -73,10 +74,10 @@ export function useOrderCalculations(): UseOrderCalculationsReturn {
       totalVatAfterDiscount,
       grandTotalAfterDiscount,
     };
-  };
+  }, []);
 
-  return {
+  return useMemo(() => ({
     calculateLineTotals,
     calculateTotals,
-  };
+  }), [calculateLineTotals, calculateTotals]);
 }

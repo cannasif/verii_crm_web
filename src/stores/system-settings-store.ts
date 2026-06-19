@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { SystemSettingsDto } from '@/features/system-settings';
 
-export const SYSTEM_SETTINGS_CACHE_TTL_MS = 60 * 60 * 1000;
+export const SYSTEM_SETTINGS_CACHE_TTL_MS = 60 * 1000;
 const SUPPORTED_NUMBER_FORMATS = new Set(['tr-TR', 'en-US', 'de-DE']);
 const SUPPORTED_DEMAND_ACTIONS = new Set([1, 2, 3, 4, 5]);
 const SUPPORTED_QUOTATION_ACTIONS = new Set([1, 2, 3, 4, 5, 6]);

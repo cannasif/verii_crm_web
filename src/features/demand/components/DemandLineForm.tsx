@@ -45,8 +45,9 @@ import {
   DOCUMENT_LINE_FORM_CANCEL_BUTTON_CLASS,
   DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS,
 } from '@/lib/document-line-dialog-styles';
+import { useSystemSettingsQuery } from '@/features/system-settings/hooks/useSystemSettingsQuery';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
-import { enforceExportVatOnLine, isExportOfferType, resolveDocumentVatRate } from '@/lib/document-vat';
+import { applyDocumentVatDefaultOnLine, getDefaultDocumentVatRate, resolveDocumentVatRate } from '@/lib/document-vat';
 import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/demand-types';
 import {
   Check,
@@ -152,10 +153,12 @@ export function DemandLineForm({
   const { t } = useTranslation(['demand', 'common', 'quotation']);
   const queryClient = useQueryClient();
   const { calculateLineTotals } = useDemandCalculations();
-  const hideVatRate = useSystemSettingsStore((state) => state.settings.hideDemandVatRate);
-  const readonlyVatRate = useSystemSettingsStore((state) => state.settings.readonlyDemandVatRate);
-  const isExportOffer = isExportOfferType(offerType);
-  const isVatRateInputLocked = readonlyVatRate || isExportOffer;
+  const storedSystemSettings = useSystemSettingsStore((state) => state.settings);
+  const { data: freshSystemSettings } = useSystemSettingsQuery();
+  const effectiveSystemSettings = freshSystemSettings ?? storedSystemSettings;
+  const hideVatRate = effectiveSystemSettings.hideDemandVatRate;
+  const readonlyVatRate = effectiveSystemSettings.readonlyDemandVatRate;
+  const isVatRateInputLocked = readonlyVatRate;
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [catalogDialogOpen, setCatalogDialogOpen] = useState(false);
   const [profilCreateOpen, setProfilCreateOpen] = useState(false);
@@ -178,7 +181,7 @@ export function DemandLineForm({
     return found?.code || 'TRY';
   }, [currency, currencyOptions]);
 
-  const [formData, setFormData] = useState<DemandLineFormState>(() => calculateLineTotals(enforceExportVatOnLine(line, offerType)));
+  const [formData, setFormData] = useState<DemandLineFormState>(() => calculateLineTotals(applyDocumentVatDefaultOnLine(line, offerType)));
   const { profilOptions, demirOptions, vidaOptions, baskiOptions, allDemirOptions, allVidaOptions, isLoading: isDefinitionOptionsLoading } =
     useWindoDefinitionOptions(formData.profilDefinitionId, {
       demirDefinitionId: formData.demirDefinitionId,
@@ -205,6 +208,7 @@ export function DemandLineForm({
     formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit),
   );
   const [vatRateInputValue, setVatRateInputValue] = useState<string>(() => String(resolveDocumentVatRate(line.vatRate, offerType)));
+  const previousOfferTypeRef = useRef(offerType);
   const [discountRate1InputValue, setDiscountRate1InputValue] = useState<string>(String(line.discountRate1 || ''));
   const [discountRate2InputValue, setDiscountRate2InputValue] = useState<string>(String(line.discountRate2 || ''));
   const [discountRate3InputValue, setDiscountRate3InputValue] = useState<string>(String(line.discountRate3 || ''));
@@ -364,7 +368,7 @@ export function DemandLineForm({
       return;
     }
 
-    const nextLine = calculateLineTotals(enforceExportVatOnLine(line, offerType));
+    const nextLine = calculateLineTotals(applyDocumentVatDefaultOnLine(line, offerType));
     setFormData(nextLine);
     setQuantityInputValue(formatQuantityInputDraftFromNumber(nextLine.quantity ?? 0, nextLine.unit));
     unitPriceInput.resetInputCurrencyToDocument();
@@ -375,22 +379,24 @@ export function DemandLineForm({
     setDiscountRate3InputValue(String(nextLine.discountRate3 || ''));
     const lineRelatedLines = (line as DemandLineFormState & { relatedLines?: DemandLineFormState[] }).relatedLines || [];
     if (lineRelatedLines.length > 0) {
-      setRelatedLines(lineRelatedLines.map((relatedLine) => calculateLineTotals(enforceExportVatOnLine(relatedLine, offerType))));
+      setRelatedLines(lineRelatedLines.map((relatedLine) => calculateLineTotals(applyDocumentVatDefaultOnLine(relatedLine, offerType))));
     } else {
       setRelatedLines([]);
     }
-  }, [calculateLineTotals, isExportOffer, line, offerType]);
+  }, [calculateLineTotals, line, offerType]);
 
   useEffect(() => {
-    if (!isExportOffer) return;
-    setVatRateInputValue('0');
+    if (previousOfferTypeRef.current === offerType) return;
+    previousOfferTypeRef.current = offerType;
+    const defaultVatRate = getDefaultDocumentVatRate(offerType);
+    setVatRateInputValue(String(defaultVatRate));
     setFormData((prev) => {
-      if ((prev.vatRate ?? 0) === 0 && (prev.vatAmount ?? 0) === 0) return prev;
-      return calculateLineTotals(enforceExportVatOnLine(prev, offerType));
+      if ((prev.vatRate ?? null) === defaultVatRate && (prev.vatAmount ?? 0) === 0) return prev;
+      return calculateLineTotals({ ...prev, vatRate: defaultVatRate, vatAmount: 0 });
     });
-    setRelatedLines((prev) => prev.map((relatedLine) => calculateLineTotals(enforceExportVatOnLine(relatedLine, offerType))));
-    setBulkDraftLines((prev) => prev.map((draftLine) => calculateLineTotals(enforceExportVatOnLine(draftLine, offerType))));
-  }, [calculateLineTotals, isExportOffer, offerType]);
+    setRelatedLines((prev) => prev.map((relatedLine) => calculateLineTotals({ ...relatedLine, vatRate: defaultVatRate, vatAmount: 0 })));
+    setBulkDraftLines((prev) => prev.map((draftLine) => calculateLineTotals({ ...draftLine, vatRate: defaultVatRate, vatAmount: 0 })));
+  }, [calculateLineTotals, offerType]);
 
   useEffect(() => {
     unitPriceInput.syncUnitPriceFromDocument(formData.unitPrice ?? 0);
@@ -817,7 +823,7 @@ export function DemandLineForm({
     const flattenedLines = bulkDraftLines.flatMap((lineItem) => {
       const nested = (lineItem as DemandLineFormState & { relatedLines?: DemandLineFormState[] }).relatedLines ?? [];
       return [lineItem, ...nested];
-    }).map((draftLine) => calculateLineTotals(enforceExportVatOnLine(draftLine, offerType)));
+    }).map((draftLine) => calculateLineTotals(applyDocumentVatDefaultOnLine(draftLine, offerType)));
 
     if (onSaveMultiple) {
       onSaveMultiple(flattenedLines);
@@ -895,11 +901,6 @@ export function DemandLineForm({
   };
 
   const handleFieldChange = (field: keyof DemandLineFormState, value: unknown): void => {
-    if (isExportOffer && field === 'vatRate') {
-      setVatRateInputValue('0');
-      setFormData((prev) => calculateLineTotals(enforceExportVatOnLine(prev, offerType)));
-      return;
-    }
     if (readonlyVatRate && field === 'vatRate') {
       return;
     }
@@ -1002,9 +1003,7 @@ export function DemandLineForm({
       };
     }
 
-    const nextCalculated = isExportOffer
-      ? calculateLineTotals(enforceExportVatOnLine(calculated, offerType))
-      : calculated;
+    const nextCalculated = calculated;
 
     setFormData(nextCalculated);
     if (bulkDraftLines.length > 0) {
@@ -1045,7 +1044,7 @@ export function DemandLineForm({
             quantity: newRelatedQuantity,
             groupCode: relatedLine.groupCode || relatedStockData.groupCode || null,
           };
-          return calculateLineTotals(enforceExportVatOnLine(updatedRelatedLine, offerType));
+          return calculateLineTotals(applyDocumentVatDefaultOnLine(updatedRelatedLine, offerType));
         }
 
         return relatedLine;
@@ -1086,8 +1085,8 @@ export function DemandLineForm({
       e.stopPropagation();
     }
 
-    const normalizedFormData = calculateLineTotals(enforceExportVatOnLine(formData, offerType));
-    const normalizedRelatedLines = relatedLines.map((relatedLine) => calculateLineTotals(enforceExportVatOnLine(relatedLine, offerType)));
+    const normalizedFormData = calculateLineTotals(formData);
+    const normalizedRelatedLines = relatedLines.map((relatedLine) => calculateLineTotals(relatedLine));
 
     if (onSaveMultiple && relatedLines.length > 0) {
       onSaveMultiple([normalizedFormData, ...normalizedRelatedLines]);
@@ -1331,12 +1330,7 @@ export function DemandLineForm({
               disabled={!isLineStockSelected || isVatRateInputLocked}
               value={vatRateInputValue}
               onChange={(e) => {
-                if (isVatRateInputLocked) {
-                  if (!isExportOffer) return;
-                  setVatRateInputValue('0');
-                  handleFieldChange('vatRate', 0);
-                  return;
-                }
+                if (isVatRateInputLocked) return;
                 const inputValue = e.target.value;
                 setVatRateInputValue(inputValue);
                 if (inputValue === '' || inputValue === '.') {
@@ -1347,12 +1341,7 @@ export function DemandLineForm({
                 }
               }}
               onBlur={() => {
-                if (isVatRateInputLocked) {
-                  if (!isExportOffer) return;
-                  setVatRateInputValue('0');
-                  handleFieldChange('vatRate', 0);
-                  return;
-                }
+                if (isVatRateInputLocked) return;
                 if (vatRateInputValue === '' || vatRateInputValue === '.') {
                   setVatRateInputValue('0');
                   handleFieldChange('vatRate', 0);

@@ -1,5 +1,6 @@
 import type { QuotationLineFormState } from '../types/quotation-types';
 import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
+import { useCallback, useMemo } from 'react';
 
 export interface CalculationTotals {
   subtotal: number;
@@ -25,7 +26,7 @@ function round2(value: number): number {
 }
 
 export function useQuotationCalculations(): UseQuotationCalculationsReturn {
-  const calculateLineTotals = (line: QuotationLineFormState): QuotationLineFormState => {
+  const calculateLineTotals = useCallback((line: QuotationLineFormState): QuotationLineFormState => {
     const amounts = calculateLineTotalsAmounts(
       line.unitPrice,
       line.quantity,
@@ -39,9 +40,9 @@ export function useQuotationCalculations(): UseQuotationCalculationsReturn {
       ...line,
       ...amounts,
     };
-  };
+  }, []);
 
-  const calculateTotals = (
+  const calculateTotals = useCallback((
     lines: QuotationLineFormState[],
     options?: { generalDiscountRate?: number | null; generalDiscountAmount?: number | null }
   ): CalculationTotals => {
@@ -73,10 +74,10 @@ export function useQuotationCalculations(): UseQuotationCalculationsReturn {
       totalVatAfterDiscount,
       grandTotalAfterDiscount,
     };
-  };
+  }, []);
 
-  return {
+  return useMemo(() => ({
     calculateLineTotals,
     calculateTotals,
-  };
+  }), [calculateLineTotals, calculateTotals]);
 }

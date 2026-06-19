@@ -33,6 +33,11 @@ import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentD
 import { useOrderCalculations } from '../hooks/useOrderCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
+import {
+  DOCUMENT_DETAIL_BUTTON_BASE,
+  DOCUMENT_DETAIL_BUTTON_PREVIEW,
+  DOCUMENT_DETAIL_BUTTON_SAVE,
+} from '@/lib/document-detail-button-styles';
 
 const CREATE_SECTION_CARD_CLASSNAME =
   'rounded-2xl overflow-hidden border border-slate-400 bg-white shadow-[0_1px_0_rgba(15,23,42,0.04),0_12px_28px_-22px_rgba(15,23,42,0.40)] ring-1 ring-slate-300/70 dark:border-white/16 dark:bg-[#120b1d]/82 dark:ring-white/12';
@@ -569,9 +574,8 @@ export function OrderCreateForm(): ReactElement {
 
             <Button
               type="button"
-              variant="outline"
               onClick={pdfExport.openPdfExportPreview}
-              className="group w-full sm:w-auto"
+              className={`group ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_PREVIEW}`}
             >
               <Eye className="mr-2 h-4 w-4" />
               {t('exportPreview.trigger')}
@@ -587,7 +591,7 @@ export function OrderCreateForm(): ReactElement {
               <Button
                 type="submit"
                 disabled={createMutation.isPending || !isFormValid}
-                className="group w-full sm:w-auto sm:min-w-[140px] bg-linear-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white"
+                className={`group sm:min-w-[140px] ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_SAVE}`}
               >
                 <Save className="mr-2 h-4 w-4" />
                 {createMutation.isPending
