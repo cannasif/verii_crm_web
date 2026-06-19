@@ -48,6 +48,10 @@ const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   catalogCode3Label: '',
   catalogCode4Label: '',
   catalogCode5Label: '',
+  customerCodeRuleEnabled: false,
+  customerCodeMask: '',
+  customerCodeExample: '',
+  customerCodeErrorMessage: '',
   demandApprovalCompletionAction: 1,
   quotationApprovalCompletionAction: 1,
   orderApprovalCompletionAction: 1,
@@ -164,6 +168,10 @@ export function SystemSettingsForm({
       catalogCode3Label: normalizedData.catalogCode3Label ?? '',
       catalogCode4Label: normalizedData.catalogCode4Label ?? '',
       catalogCode5Label: normalizedData.catalogCode5Label ?? '',
+      customerCodeRuleEnabled: normalizedData.customerCodeRuleEnabled,
+      customerCodeMask: normalizedData.customerCodeMask ?? '',
+      customerCodeExample: normalizedData.customerCodeExample ?? '',
+      customerCodeErrorMessage: normalizedData.customerCodeErrorMessage ?? '',
       demandApprovalCompletionAction: normalizedData.demandApprovalCompletionAction,
       quotationApprovalCompletionAction: normalizedData.quotationApprovalCompletionAction,
       orderApprovalCompletionAction: normalizedData.orderApprovalCompletionAction,
@@ -507,6 +515,69 @@ export function SystemSettingsForm({
                 </FormItem>
               )}
             />
+
+            <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+              <div className="mb-3 space-y-1">
+                <p className="text-sm font-semibold">
+                  {t('systemSettings.Sections.CustomerCodeRule', 'Cari kodu format kuralı')}
+                </p>
+                <p className="text-muted-foreground text-sm">
+                  {t('systemSettings.Descriptions.CustomerCodeRule', 'CRM cari kodu ve ERP cari kodu aynı iş kimliğidir. Kural açıksa müşteri oluşturma, güncelleme ve ERP cari açma işlemleri aynı formatı zorunlu tutar. 9=rakam, A=harf, X=harf/rakam.')}
+                </p>
+              </div>
+              <div className="grid gap-3 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="customerCodeRuleEnabled"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <div className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#0C0516]">
+                        <FormControl>
+                          <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                        </FormControl>
+                        <div className="space-y-1">
+                          <FormLabel required={false} className="leading-5">
+                            {t('systemSettings.Fields.CustomerCodeRuleEnabled', 'Cari kodu format kuralını aktif et')}
+                          </FormLabel>
+                          <p className="text-muted-foreground text-xs">
+                            {t('systemSettings.Descriptions.CustomerCodeRuleEnabled', 'Kapalıyken mevcut davranış korunur; açıkken girilen cari kodu maskeye uymalıdır.')}
+                          </p>
+                        </div>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {([
+                  ['customerCodeMask', t('systemSettings.Fields.CustomerCodeMask', 'Cari kodu maskesi'), t('systemSettings.Placeholders.CustomerCodeMask', 'Örn. 999-9999-AAA'), 50],
+                  ['customerCodeExample', t('systemSettings.Fields.CustomerCodeExample', 'Örnek cari kodu'), t('systemSettings.Placeholders.CustomerCodeExample', 'Örn. 123-4567-ABC'), 50],
+                  ['customerCodeErrorMessage', t('systemSettings.Fields.CustomerCodeErrorMessage', 'Hata mesajı'), t('systemSettings.Placeholders.CustomerCodeErrorMessage', 'Örn. Cari kodu 123-4567-ABC formatında olmalıdır.'), 250],
+                ] as const).map(([name, label, placeholder, maxLength]) => (
+                  <FormField
+                    key={name}
+                    control={form.control}
+                    name={name}
+                    render={({ field }) => (
+                      <FormItem className={name === 'customerCodeErrorMessage' ? 'md:col-span-2' : undefined}>
+                        <FormLabel required={false}>{label}</FormLabel>
+                        <FormControl>
+                          <Input
+                            className="rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#0C0516]"
+                            maxLength={maxLength}
+                            value={field.value ?? ''}
+                            placeholder={placeholder}
+                            onChange={(event) => field.onChange(event.target.value)}
+                            onBlur={field.onBlur}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
 
             <FormField
               control={form.control}

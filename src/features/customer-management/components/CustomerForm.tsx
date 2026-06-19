@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm, type FieldErrors, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +40,7 @@ import { customerFormSchema, type CustomerFormData, type CustomerDto } from '../
 import { isZodFieldRequired } from '@/lib/zod-required';
 import { useShippingAddressesByCustomer } from '@/features/shipping-address-management/hooks/useShippingAddressesByCustomer';
 import { useAuthStore } from '@/stores/auth-store';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import {
   CONFLICT_API_FIELD_TO_FORM,
   type CustomerDuplicateConflictPayload,
@@ -110,6 +111,7 @@ export function CustomerForm({
     [t]
   );
   const branch = useAuthStore((state) => state.branch);
+  const systemSettings = useSystemSettingsStore((state) => state.settings);
   const { data: shippingAddresses = [] } = useShippingAddressesByCustomer(customer?.id ?? 0);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const isCreateMode = !customer;
@@ -118,6 +120,24 @@ export function CustomerForm({
   const [citySearchTerm, setCitySearchTerm] = useState('');
   const [districtSearchTerm, setDistrictSearchTerm] = useState('');
   const [customerTypeSearchTerm, setCustomerTypeSearchTerm] = useState('');
+  const customerCodeRuleDescription = useMemo(() => {
+    if (!systemSettings.customerCodeRuleEnabled || !systemSettings.customerCodeMask) {
+      return null;
+    }
+
+    const parts = [
+      `Format: ${systemSettings.customerCodeMask}`,
+      systemSettings.customerCodeExample ? `Örnek: ${systemSettings.customerCodeExample}` : null,
+      systemSettings.customerCodeErrorMessage ? `Uyarı: ${systemSettings.customerCodeErrorMessage}` : null,
+    ].filter(Boolean);
+
+    return `${parts.join(' · ')} · 9=rakam, A=harf, X=harf/rakam.`;
+  }, [
+    systemSettings.customerCodeErrorMessage,
+    systemSettings.customerCodeExample,
+    systemSettings.customerCodeMask,
+    systemSettings.customerCodeRuleEnabled,
+  ]);
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerFormSchema) as Resolver<CustomerFormData>,
@@ -326,6 +346,11 @@ export function CustomerForm({
                     </FormControl>
                     <FormDescription className="text-xs text-slate-500 dark:text-slate-400">
                       {tf('customerCodeHint')}
+                      {customerCodeRuleDescription ? (
+                        <span className="mt-1 block text-pink-600 dark:text-pink-300">
+                          {customerCodeRuleDescription}
+                        </span>
+                      ) : null}
                     </FormDescription>
                     <FormMessage className="text-xs" />
                   </FormItem>

@@ -16,6 +16,10 @@ export interface SystemSettingsDto {
   catalogCode3Label?: string | null;
   catalogCode4Label?: string | null;
   catalogCode5Label?: string | null;
+  customerCodeRuleEnabled: boolean;
+  customerCodeMask?: string | null;
+  customerCodeExample?: string | null;
+  customerCodeErrorMessage?: string | null;
   demandApprovalCompletionAction: number;
   quotationApprovalCompletionAction: number;
   orderApprovalCompletionAction: number;
@@ -51,6 +55,10 @@ export interface EditableSystemSettingsDto {
   catalogCode3Label?: string | null;
   catalogCode4Label?: string | null;
   catalogCode5Label?: string | null;
+  customerCodeRuleEnabled: boolean;
+  customerCodeMask?: string | null;
+  customerCodeExample?: string | null;
+  customerCodeErrorMessage?: string | null;
   demandApprovalCompletionAction: number;
   quotationApprovalCompletionAction: number;
   orderApprovalCompletionAction: number;
@@ -91,6 +99,10 @@ export const systemSettingsFormSchema = z.object({
   catalogCode3Label: z.string().max(50, 'common.form.maxLength').nullable().optional(),
   catalogCode4Label: z.string().max(50, 'common.form.maxLength').nullable().optional(),
   catalogCode5Label: z.string().max(50, 'common.form.maxLength').nullable().optional(),
+  customerCodeRuleEnabled: z.boolean(),
+  customerCodeMask: z.string().max(50, 'common.form.maxLength').nullable().optional(),
+  customerCodeExample: z.string().max(50, 'common.form.maxLength').nullable().optional(),
+  customerCodeErrorMessage: z.string().max(250, 'common.form.maxLength').nullable().optional(),
   demandApprovalCompletionAction: approvalCompletionActionSchema(new Set([1, 2, 3, 4, 5])),
   quotationApprovalCompletionAction: approvalCompletionActionSchema(new Set([1, 2, 3, 4, 5, 6])),
   orderApprovalCompletionAction: approvalCompletionActionSchema(new Set([1, 2, 3, 4])),

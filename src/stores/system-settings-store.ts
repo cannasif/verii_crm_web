@@ -45,6 +45,10 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettingsDto = {
   catalogCode3Label: null,
   catalogCode4Label: null,
   catalogCode5Label: null,
+  customerCodeRuleEnabled: false,
+  customerCodeMask: null,
+  customerCodeExample: null,
+  customerCodeErrorMessage: null,
   demandApprovalCompletionAction: 1,
   quotationApprovalCompletionAction: 1,
   orderApprovalCompletionAction: 1,
@@ -87,6 +91,10 @@ export function normalizeSystemSettings(
     catalogCode3Label: pickOptionalLabel(settings?.catalogCode3Label),
     catalogCode4Label: pickOptionalLabel(settings?.catalogCode4Label),
     catalogCode5Label: pickOptionalLabel(settings?.catalogCode5Label),
+    customerCodeRuleEnabled: Boolean(settings?.customerCodeRuleEnabled),
+    customerCodeMask: pickOptionalLabel(settings?.customerCodeMask),
+    customerCodeExample: pickOptionalLabel(settings?.customerCodeExample),
+    customerCodeErrorMessage: pickOptionalString(settings?.customerCodeErrorMessage, 250),
     demandApprovalCompletionAction: normalizeActionValue(
       settings?.demandApprovalCompletionAction,
       SUPPORTED_DEMAND_ACTIONS,
@@ -107,8 +115,12 @@ export function normalizeSystemSettings(
 }
 
 function pickOptionalLabel(value: string | null | undefined): string | null {
+  return pickOptionalString(value, 50);
+}
+
+function pickOptionalString(value: string | null | undefined, maxLength: number): string | null {
   const normalizedValue = value?.trim();
-  return normalizedValue ? normalizedValue.slice(0, 50) : null;
+  return normalizedValue ? normalizedValue.slice(0, maxLength) : null;
 }
 
 function normalizeActionValue(
