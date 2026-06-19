@@ -19,6 +19,7 @@
   "cityName": "اسم المدينة",
   "districtName": "اسم المنطقة",
   "location": "الموقع",
+  "isActive": "نشط",
   "createdDate": "تاريخ الإنشاء",
   "updatedDate": "تاريخ التحديث",
   "actions": "إجراءات",

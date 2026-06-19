@@ -47,6 +47,7 @@ export interface CreateShippingAddressDto {
   cityId?: number;
   districtId?: number;
   isDefault?: boolean;
+  isActive?: boolean;
 }
 
 export interface UpdateShippingAddressDto {
@@ -61,6 +62,7 @@ export interface UpdateShippingAddressDto {
   cityId?: number;
   districtId?: number;
   isDefault?: boolean;
+  isActive?: boolean;
 }
 
 export interface ShippingAddressListFilters {
@@ -83,6 +85,7 @@ export interface ShippingAddressFormData {
   cityId?: number;
   districtId?: number;
   isDefault: boolean;
+  isActive: boolean;
 }
 
 export const shippingAddressFormSchema = z.object({

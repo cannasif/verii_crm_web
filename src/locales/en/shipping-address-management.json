@@ -19,6 +19,7 @@
   "cityName": "City Name",
   "districtName": "District Name",
   "location": "Location",
+  "isActive": "Active",
   "createdDate": "Created Date",
   "updatedDate": "Updated Date",
   "actions": "Actions",

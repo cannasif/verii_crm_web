@@ -23,6 +23,7 @@
   "districtName": "İlçe Adı",
   "location": "Konum",
   "isDefault": "Varsayılan Sevk Adresi",
+  "isActive": "Aktif",
   "isDefaultShort": "Varsayılan",
   "defaultBadge": "Varsayılan",
   "createdDate": "Oluşturulma Tarihi",

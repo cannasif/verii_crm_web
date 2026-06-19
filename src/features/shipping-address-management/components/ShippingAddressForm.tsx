@@ -440,6 +440,26 @@ export function ShippingAddressForm({
                   )}
                 />
 
+                <FormField
+                  control={form.control}
+                  name="isActive"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/5 px-4 py-3 transition-colors hover:bg-slate-100 dark:hover:bg-white/10">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="h-5 w-5 rounded-md border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                        />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel className="text-sm font-bold text-slate-700 dark:text-slate-200 cursor-pointer">
+                          {t('shippingAddressManagement.isActive')}
+                        </FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
+                />
 
               </div>
             </form>

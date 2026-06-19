@@ -19,6 +19,7 @@
   "cityName": "Nome Città",
   "districtName": "Nome Distretto",
   "location": "Posizione",
+  "isActive": "Attivo",
   "createdDate": "Data Creazione",
   "updatedDate": "Data Aggiornamento",
   "actions": "Azioni",
