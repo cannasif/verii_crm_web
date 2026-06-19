@@ -192,10 +192,10 @@ export function ProductPricingForm({
                       <FormField control={form.control} name="erpGroupCode" render={({ field }) => (
                         <FormItem className="space-y-2">
                           <FormLabel className={LABEL_STYLE}>
-                            <Layers size={14} className="text-pink-500" /> {t('searchGroupCode')}
+                            <Layers size={14} className="text-pink-500" /> {t('erpGroupCode')}
                           </FormLabel>
                           <FormControl>
-                            <Input {...field} readOnly className={`${INPUT_STYLE} bg-slate-100/50 dark:bg-white/[0.01] font-mono text-xs`} />
+                            <Input {...field} readOnly placeholder={t('erpGroupCodePlaceholder')} className={`${INPUT_STYLE} bg-slate-100/50 dark:bg-white/[0.01] font-mono text-xs`} />
                           </FormControl>
                         </FormItem>
                       )} />
