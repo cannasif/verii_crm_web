@@ -27,6 +27,7 @@ import { useUpdateSalesType } from '../hooks/useUpdateSalesType';
 import { applySalesTypeFilters, SALES_TYPE_FILTER_COLUMNS } from '../types/sales-type-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { OfferType } from '@/types/offer-type';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 
 const EMPTY_SALES_TYPES: SalesTypeGetDto[] = [];
 const PAGE_KEY = 'sales-type-management';
@@ -311,6 +312,13 @@ export function SalesTypeManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="sales-type-definition"
+                fileNamePrefix="sales-types"
+                onImportCompleted={handleRefresh}
+              />
+            }
             leftSlot={
               <>
                 <Button

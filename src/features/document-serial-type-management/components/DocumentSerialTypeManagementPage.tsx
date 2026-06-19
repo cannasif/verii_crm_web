@@ -52,6 +52,7 @@ import type { PagedFilter } from '@/types/api';
 import { documentSerialTypeApi } from '../api/document-serial-type-api';
 import { Alert02Icon } from 'hugeicons-react';
 import { ArrowDown, ArrowUp, ArrowUpDown, Edit2, Loader2, Plus, Trash2 } from 'lucide-react';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 
 const PAGE_KEY = 'document-serial-type-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -426,6 +427,13 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
               cooldownSeconds: 60,
               label: resolveLabel(t, 'common.refresh', 'Yenile', { ns: 'common' }),
             }}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="document-serial-type-definition"
+                fileNamePrefix="document-serial-types"
+                onImportCompleted={handleGridRefresh}
+              />
+            }
           />
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>

@@ -25,6 +25,7 @@ import { useSalesRepList } from '../hooks/useSalesRepList';
 import type { SalesRepFormSchema, SalesRepGetDto } from '../types/sales-rep-types';
 import { SALES_REP_FILTER_COLUMNS } from '../types/sales-rep-filter.types';
 import { queryKeys } from '../utils/query-keys';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 
 const PAGE_KEY = 'sales-rep-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -242,6 +243,13 @@ export function SalesRepManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="sales-rep-definition"
+                fileNamePrefix="sales-rep-codes"
+                onImportCompleted={handleRefresh}
+              />
+            }
             leftSlot={
               <Button
                 variant="outline"

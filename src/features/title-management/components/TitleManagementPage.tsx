@@ -31,6 +31,7 @@ import { useUpdateTitle } from '../hooks/useUpdateTitle';
 import { applyTitleFilters, TITLE_FILTER_COLUMNS } from '../types/title-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { queryKeys, TITLE_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 
 const EMPTY_TITLES: TitleDto[] = [];
 const PAGE_KEY = 'title-management';
@@ -349,6 +350,13 @@ export function TitleManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('search')}
             onSearchChange={setSearchTerm}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="title-definition"
+                fileNamePrefix="titles"
+                onImportCompleted={handleRefresh}
+              />
+            }
             leftSlot={
               <>
                 <Button

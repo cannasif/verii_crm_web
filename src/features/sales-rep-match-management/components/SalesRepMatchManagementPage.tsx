@@ -25,6 +25,7 @@ import { useSalesRepMatchList } from '../hooks/useSalesRepMatchList';
 import type { SalesRepMatchFormSchema, SalesRepMatchGetDto } from '../types/sales-rep-match-types';
 import { SALES_REP_MATCH_FILTER_COLUMNS } from '../types/sales-rep-match-filter.types';
 import { queryKeys } from '../utils/query-keys';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 
 const PAGE_KEY = 'sales-rep-match-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -241,6 +242,13 @@ export function SalesRepMatchManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="sales-rep-match-definition"
+                fileNamePrefix="sales-rep-matches"
+                onImportCompleted={handleRefresh}
+              />
+            }
             leftSlot={
               <Button
                 variant="outline"

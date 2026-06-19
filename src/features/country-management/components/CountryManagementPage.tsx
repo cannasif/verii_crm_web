@@ -25,6 +25,7 @@ import type { CountryDto } from '../types/country-types';
 import { useCountryList } from '../hooks/useCountryList';
 import { applyCountryFilters, COUNTRY_FILTER_COLUMNS } from '../types/country-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 
 const EMPTY_COUNTRIES: CountryDto[] = [];
 const PAGE_KEY = 'country-management';
@@ -267,6 +268,13 @@ export function CountryManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="country-definition"
+                fileNamePrefix="countries"
+                onImportCompleted={handleRefresh}
+              />
+            }
             leftSlot={
               <>
                 <Button

@@ -27,6 +27,7 @@ import { useCreateShippingAddress } from '../hooks/useCreateShippingAddress';
 import { useUpdateShippingAddress } from '../hooks/useUpdateShippingAddress';
 import { applyShippingAddressFilters, SHIPPING_ADDRESS_FILTER_COLUMNS } from '../types/shipping-address-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 
 const EMPTY_SHIPPING_ADDRESSES: ShippingAddressDto[] = [];
 const PAGE_KEY = 'shipping-address-management';
@@ -371,6 +372,13 @@ export function ShippingAddressManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('search')}
             onSearchChange={setSearchTerm}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="shipping-address-definition"
+                fileNamePrefix="shipping-addresses"
+                onImportCompleted={handleRefresh}
+              />
+            }
             leftSlot={
               <>
                 <Button

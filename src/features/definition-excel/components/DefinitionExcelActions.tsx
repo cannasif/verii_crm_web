@@ -143,7 +143,7 @@ export function DefinitionExcelActions({
   };
 
   return (
-    <div className={cn('flex min-w-0 max-w-full flex-col gap-2 sm:items-end', className)}>
+    <div className={cn('flex min-w-0 max-w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-end', className)}>
       <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
         <Button
           type="button"

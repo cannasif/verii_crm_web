@@ -30,6 +30,7 @@ import type { DistrictFormSchema } from '../types/district-types';
 import { useDistrictList } from '../hooks/useDistrictList';
 import { applyDistrictFilters, DISTRICT_FILTER_COLUMNS } from '../types/district-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 
 const EMPTY_DISTRICTS: DistrictDto[] = [];
 const PAGE_KEY = 'district-management';
@@ -319,6 +320,13 @@ export function DistrictManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="district-definition"
+                fileNamePrefix="districts"
+                onImportCompleted={handleRefresh}
+              />
+            }
             leftSlot={
               <>
                 <Button

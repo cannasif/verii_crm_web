@@ -25,6 +25,7 @@ import type { CityDto } from '../types/city-types';
 import { useCityList } from '../hooks/useCityList';
 import { applyCityFilters, CITY_FILTER_COLUMNS } from '../types/city-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 
 const EMPTY_CITIES: CityDto[] = [];
 const PAGE_KEY = 'city-management';
@@ -267,6 +268,13 @@ export function CityManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="city-definition"
+                fileNamePrefix="cities"
+                onImportCompleted={handleRefresh}
+              />
+            }
             leftSlot={
               <>
                 <Button
