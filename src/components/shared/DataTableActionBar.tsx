@@ -335,7 +335,7 @@ export function DataTableActionBar({
           )}
           {leftSlot}
 
-          <div className="ml-auto flex shrink-0 items-center gap-2 relative">
+          <div className="ml-auto flex min-w-0 flex-wrap items-center justify-end gap-2 relative">
           <Popover open={showFilters} onOpenChange={handleFilterOpenChange}>
             <PopoverTrigger asChild>
               <Button
@@ -410,7 +410,7 @@ export function DataTableActionBar({
             </PopoverContent>
           </Popover>
 
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="hidden min-w-0 flex-wrap items-center justify-end gap-2 sm:flex">
             {additionalFilterActions}
 
             <GridExportMenu

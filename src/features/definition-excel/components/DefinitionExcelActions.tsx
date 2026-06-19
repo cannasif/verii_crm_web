@@ -143,13 +143,13 @@ export function DefinitionExcelActions({
   };
 
   return (
-    <div className={cn('flex flex-col gap-2 sm:items-end', className)}>
-      <div className="flex items-center gap-2">
+    <div className={cn('flex min-w-0 max-w-full flex-col gap-2 sm:items-end', className)}>
+      <div className="flex min-w-0 flex-wrap items-center justify-end gap-2">
         <Button
           type="button"
           variant="outline"
           size="sm"
-          className="h-9 border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent"
+          className="h-9 shrink-0 whitespace-nowrap border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent"
           onClick={() => void handleTemplateDownload()}
           disabled={isTemplateDownloading || isImporting}
         >
@@ -160,7 +160,7 @@ export function DefinitionExcelActions({
           type="button"
           variant="outline"
           size="sm"
-          className="h-9 border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent"
+          className="h-9 shrink-0 whitespace-nowrap border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent"
           onClick={handleImportClick}
           disabled={isTemplateDownloading || isImporting}
         >
@@ -169,7 +169,7 @@ export function DefinitionExcelActions({
         </Button>
       </div>
       {lastJob ? (
-        <div className="max-w-full rounded-lg border border-slate-200 bg-white/80 px-3 py-2 text-xs text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+        <div className="hidden max-w-[min(100%,28rem)] rounded-lg border border-slate-200 bg-white/80 px-3 py-2 text-xs text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-slate-300 lg:block">
           <span className="font-semibold">{t('common.definitionExcel.lastImport')}:</span>{' '}
           <span className={cn('font-semibold', getStatusTone(lastJob.status))}>
             {t(`common.definitionExcel.status.${lastJob.status}`)}
