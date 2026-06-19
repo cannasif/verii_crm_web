@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye, EyeOff, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
@@ -343,6 +344,17 @@ export function CustomerTypeManagementPage(): ReactElement {
                   {resolveLabel(t, 'common.refresh', 'Yenile')}
                 </Button>
               </>
+            }
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="customer-type-definition"
+                fileNamePrefix="musteri-tipi"
+                onImportCompleted={async () => {
+                  await queryClient.invalidateQueries({ queryKey: [CUSTOMER_TYPE_MANAGEMENT_QUERY_KEYS.LIST] });
+                  await queryClient.invalidateQueries({ queryKey: [CUSTOMER_TYPE_MANAGEMENT_QUERY_KEYS.STATS] });
+                  await queryClient.invalidateQueries({ queryKey: [CUSTOMER_TYPE_MANAGEMENT_QUERY_KEYS.OPTIONS] });
+                }}
+              />
             }
           />
         </CardHeader>

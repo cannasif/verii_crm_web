@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/popover';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, ManagementListPageHeader, type DataTableGridColumn } from '@/components/shared';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
@@ -379,6 +380,15 @@ export function PaymentTypeManagementPage(): ReactElement {
                   {resolveLabel(t, 'common.refresh', 'Yenile')}
                 </Button>
               </>
+            }
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="payment-type-definition"
+                fileNamePrefix="odeme-tipi"
+                onImportCompleted={async () => {
+                  await queryClient.invalidateQueries({ queryKey: [PAYMENT_TYPE_MANAGEMENT_QUERY_KEYS.LIST] });
+                }}
+              />
             }
           />
         </CardHeader>

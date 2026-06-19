@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, ManagementListPageHeader, type DataTableGridColumn } from '@/components/shared';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
@@ -316,6 +317,16 @@ export function ActivityTypeManagementPage(): ReactElement {
                   {resolveLabel(t, 'common.refresh', 'Yenile')}
                 </Button>
               </>
+            }
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="activity-meeting-type-definition"
+                fileNamePrefix="aktivite-gorusme-tipi"
+                onImportCompleted={async () => {
+                  await queryClient.invalidateQueries({ queryKey: [ACTIVITY_TYPE_QUERY_KEYS.LIST] });
+                  await queryClient.invalidateQueries({ queryKey: [ACTIVITY_TYPE_QUERY_KEYS.STATS] });
+                }}
+              />
             }
           />
         </CardHeader>
