@@ -100,6 +100,20 @@ function toIsoDateTime(value: string | null | undefined): string | undefined {
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
 
+function formatActivityDateTime(value: string | number | Date | null | undefined): string {
+  if (!value) return '-';
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return '-';
+
+  return new Intl.DateTimeFormat(undefined, {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date);
+}
+
 function toCurrentLocalDateTime(): string {
   const now = new Date();
   const year = now.getFullYear();
@@ -249,6 +263,7 @@ export function ActivityManagementPage(): ReactElement {
         { value: 'Priority', type: 'number' as const, labelKey: 'advancedFilter.columnPriority' },
         { value: 'Status', type: 'number' as const, labelKey: 'advancedFilter.columnStatus' },
         { value: 'StartDateTime', type: 'date' as const, labelKey: 'advancedFilter.columnDueDate' },
+        { value: 'EndDateTime', type: 'date' as const, labelKey: 'endDate' },
       ],
     []
   );
@@ -273,7 +288,7 @@ export function ActivityManagementPage(): ReactElement {
           else if (key === 'activityType') row[key] = a.activityType?.name ?? '';
           else {
             const val = a[key as keyof ActivityDto];
-            if (key === 'startDateTime' && val) row[key] = new Date(String(val)).toLocaleDateString();
+            if (key === 'startDateTime' || key === 'endDateTime') row[key] = formatActivityDateTime(val as string | number | Date | null | undefined);
             else row[key] = val ?? '';
           }
         });
@@ -306,7 +321,7 @@ export function ActivityManagementPage(): ReactElement {
           else if (key === 'activityType') row[key] = a.activityType?.name ?? '';
           else {
             const val = a[key as keyof ActivityDto];
-            if (key === 'startDateTime' && val) row[key] = new Date(String(val)).toLocaleDateString();
+            if (key === 'startDateTime' || key === 'endDateTime') row[key] = formatActivityDateTime(val as string | number | Date | null | undefined);
             else row[key] = val ?? '';
           }
         });
@@ -465,6 +480,7 @@ export function ActivityManagementPage(): ReactElement {
     contact: 'ContactId',
     assignedUser: 'AssignedUserId',
     startDateTime: 'StartDateTime',
+    endDateTime: 'EndDateTime',
   };
 
   const API_TO_COLUMN: Record<string, string> = Object.fromEntries(
@@ -533,13 +549,13 @@ export function ActivityManagementPage(): ReactElement {
         </div>
       );
     }
-    if (key === 'startDateTime') {
+    if (key === 'startDateTime' || key === 'endDateTime') {
       const dateValue =
         typeof value === 'string' || typeof value === 'number' || value instanceof Date ? value : null;
       return (
         <div className="flex items-center gap-2 text-xs">
           <Calendar size={14} className="text-pink-500/50" />
-          {dateValue ? new Date(dateValue).toLocaleDateString() : '-'}
+          {formatActivityDateTime(dateValue)}
         </div>
       );
     }

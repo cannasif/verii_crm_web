@@ -46,5 +46,6 @@ export function getActivityColumns(t: TFunction): ActivityColumnDef<ActivityDto>
     { key: 'contact', label: ta(t, 'contact'), className: 'min-w-[120px] md:min-w-[150px]' },
     { key: 'assignedUser', label: ta(t, 'assignedUser'), className: 'whitespace-nowrap' },
     { key: 'startDateTime', label: ta(t, 'activityDate'), className: 'whitespace-nowrap' },
+    { key: 'endDateTime', label: ta(t, 'endDate'), className: 'whitespace-nowrap' },
   ];
 }
