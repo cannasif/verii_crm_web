@@ -14,9 +14,9 @@
     "1": "¿Cuántas ofertas creé este mes?",
     "2": "¿Cuál es mi tasa de pedidos aprobados?",
     "3": "¿Cuántas actividades he completado?",
-    "4": "¿Cuántos registros míos se integraron en ERP?"
+    "4": "¿Qué significa este error?"
   },
-  "chatHint": "Por ahora puedo responder resúmenes de rendimiento, cantidades, tasas y preguntas de integración ERP.",
+  "chatHint": "Puedo responder preguntas de rendimiento, cantidades, tasas, integración ERP y explicación de errores.",
   "sending": "Preparando respuesta...",
   "answerTitle": "Respuesta IA",
   "emptyQuestion": "Introduce una pregunta.",

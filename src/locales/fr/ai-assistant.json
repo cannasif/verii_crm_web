@@ -14,9 +14,9 @@
     "1": "Combien de devis ai-je créés ce mois-ci ?",
     "2": "Quel est mon taux de commandes approuvées ?",
     "3": "Combien d'activités ai-je terminées ?",
-    "4": "Combien de mes enregistrements ont été intégrés à l'ERP ?"
+    "4": "Que signifie cette erreur ?"
   },
-  "chatHint": "Pour l’instant, je peux répondre aux résumés de performance, volumes, taux et questions d’intégration ERP.",
+  "chatHint": "Je peux répondre aux questions de performance, volumes, taux, intégration ERP et explication d’erreurs.",
   "sending": "Préparation de la réponse...",
   "answerTitle": "Réponse IA",
   "emptyQuestion": "Veuillez saisir une question.",

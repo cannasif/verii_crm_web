@@ -14,9 +14,9 @@
     "1": "Quante offerte ho creato questo mese?",
     "2": "Qual è il mio tasso di ordini approvati?",
     "3": "Quante attività ho completato?",
-    "4": "Quanti miei record sono stati integrati nell'ERP?"
+    "4": "Cosa significa questo errore?"
   },
-  "chatHint": "Per ora posso rispondere a riepiloghi prestazionali, conteggi, percentuali e domande sull’integrazione ERP.",
+  "chatHint": "Posso rispondere a domande su prestazioni, conteggi, percentuali, integrazione ERP e spiegazione degli errori.",
   "sending": "Preparazione della risposta...",
   "answerTitle": "Risposta IA",
   "emptyQuestion": "Inserisci una domanda.",

@@ -41,6 +41,10 @@ export interface AiAssistantAskRequestDto {
   question: string;
   startDate?: string | null;
   endDate?: string | null;
+  currentPath?: string | null;
+  errorMessage?: string | null;
+  errorCode?: string | null;
+  httpStatusCode?: number | null;
 }
 
 export interface AiAssistantAnswerDto {

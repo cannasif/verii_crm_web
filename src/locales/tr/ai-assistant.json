@@ -14,9 +14,9 @@
     "1": "Bu ay kaç teklif oluşturdum?",
     "2": "Onaylanan siparişlerimin oranı nedir?",
     "3": "Kaç aktivite tamamladım?",
-    "4": "ERP'ye aktarılan kayıtlarım kaç adet?"
+    "4": "Bu hata ne anlama geliyor?"
   },
-  "chatHint": "Şimdilik performans özeti, adetler, oranlar ve ERP aktarım sorularını cevaplayabiliyorum.",
+  "chatHint": "Performans, adet, oran, ERP aktarımı ve hata açıklama sorularını cevaplayabiliyorum.",
   "sending": "Yanıt hazırlanıyor...",
   "answerTitle": "AI yanıtı",
   "emptyQuestion": "Lütfen bir soru yazın.",

@@ -14,9 +14,9 @@
     "1": "Wie viele Angebote habe ich diesen Monat erstellt?",
     "2": "Wie hoch ist meine Quote genehmigter Aufträge?",
     "3": "Wie viele Aktivitäten habe ich abgeschlossen?",
-    "4": "Wie viele meiner Datensätze wurden ins ERP übertragen?"
+    "4": "Was bedeutet dieser Fehler?"
   },
-  "chatHint": "Derzeit kann ich Leistungsübersichten, Anzahlen, Quoten und ERP-Integrationsfragen beantworten.",
+  "chatHint": "Ich kann Fragen zu Leistung, Anzahlen, Quoten, ERP-Integration und Fehlererklärungen beantworten.",
   "sending": "Antwort wird vorbereitet...",
   "answerTitle": "KI-Antwort",
   "emptyQuestion": "Bitte geben Sie eine Frage ein.",

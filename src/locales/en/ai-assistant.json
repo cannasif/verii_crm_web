@@ -14,9 +14,9 @@
     "1": "How many quotations did I create this month?",
     "2": "What is my approved order rate?",
     "3": "How many activities have I completed?",
-    "4": "How many of my records were integrated into ERP?"
+    "4": "What does this error mean?"
   },
-  "chatHint": "For now, I can answer performance summaries, counts, rates, and ERP integration questions.",
+  "chatHint": "I can answer performance, count, rate, ERP integration, and error explanation questions.",
   "sending": "Preparing answer...",
   "answerTitle": "AI answer",
   "emptyQuestion": "Please enter a question.",

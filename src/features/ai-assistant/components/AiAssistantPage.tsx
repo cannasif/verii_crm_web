@@ -17,6 +17,7 @@ export function AiAssistantPage(): ReactElement {
   const askMutation = useAskAiAssistantMutation();
   const [question, setQuestion] = useState('');
   const [lastAnswer, setLastAnswer] = useState<string | null>(null);
+  const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
   const [questionError, setQuestionError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -26,7 +27,8 @@ export function AiAssistantPage(): ReactElement {
 
   const fallbackName = user?.name || user?.email || t('fallbackName');
   const displayName = greeting?.fullName?.trim() || fallbackName;
-  const suggestionItems = [1, 2, 3, 4].map((index) => t(`suggestions.${index}`));
+  const fallbackSuggestions = [1, 2, 3, 4].map((index) => t(`suggestions.${index}`));
+  const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
 
   const askQuestion = async (value: string): Promise<void> => {
     const trimmedQuestion = value.trim();
@@ -36,8 +38,12 @@ export function AiAssistantPage(): ReactElement {
     }
 
     setQuestionError(null);
-    const result = await askMutation.mutateAsync({ question: trimmedQuestion });
+    const result = await askMutation.mutateAsync({
+      question: trimmedQuestion,
+      currentPath: window.location.pathname,
+    });
     setLastAnswer(result.answer);
+    setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
     setQuestion(trimmedQuestion);
   };
 
