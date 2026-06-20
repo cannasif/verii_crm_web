@@ -519,13 +519,18 @@ export function SystemSettingsForm({
             <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
               <div className="mb-3 space-y-1">
                 <p className="text-sm font-semibold">
-                  {t('systemSettings.Sections.CustomerCodeRule', 'Cari kodu format kuralı')}
+                  {t('systemSettings.Sections.CustomerCodeRule', 'Kod format kuralları')}
                 </p>
                 <p className="text-muted-foreground text-sm">
-                  {t('systemSettings.Descriptions.CustomerCodeRule', 'CRM cari kodu ve ERP cari kodu aynı iş kimliğidir. Kural açıksa müşteri oluşturma, güncelleme ve ERP cari açma işlemleri aynı formatı zorunlu tutar. 9=rakam, A=harf, X=harf/rakam.')}
+                  {t('systemSettings.Descriptions.CustomerCodeRule', 'Cari/ERP cari kodu için format kuralı burada yönetilir. Aynı maske yapısı ileride stok kodu gibi yeni kod türlerine de genişletilebilir. 9=rakam, A=harf, X=harf/rakam.')}
                 </p>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                    {t('systemSettings.Sections.CustomerCodeRuleCustomerScope', 'Cari kodu')}
+                  </p>
+                </div>
                 <FormField
                   control={form.control}
                   name="customerCodeRuleEnabled"
@@ -540,7 +545,7 @@ export function SystemSettingsForm({
                             {t('systemSettings.Fields.CustomerCodeRuleEnabled', 'Cari kodu format kuralını aktif et')}
                           </FormLabel>
                           <p className="text-muted-foreground text-xs">
-                            {t('systemSettings.Descriptions.CustomerCodeRuleEnabled', 'Kapalıyken mevcut davranış korunur; açıkken girilen cari kodu maskeye uymalıdır.')}
+                            {t('systemSettings.Descriptions.CustomerCodeRuleEnabled', 'Kapalıyken mevcut davranış korunur; açıkken müşteri kodu ve ERP cari kodu maskeye uymalıdır.')}
                           </p>
                         </div>
                       </div>
