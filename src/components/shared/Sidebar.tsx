@@ -319,7 +319,7 @@ function NavItemComponent({
             />
             <div
               className={cn(
-                "absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-linear-to-b from-purple-500 to-pink-500 transition-opacity duration-200",
+                "app-sidebar-active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-linear-to-b from-purple-500 to-pink-500 transition-opacity duration-200",
                 isActive && isSidebarOpen ? 'opacity-100' : 'opacity-0'
               )}
             />
@@ -413,7 +413,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
       />
       
       <aside className={cn(
-        'fixed lg:sticky top-0 min-h-dvh h-[100dvh] z-50 flex flex-col shrink-0 overflow-hidden will-change-[width,transform]',
+        'app-sidebar-panel fixed lg:sticky top-0 min-h-dvh h-[100dvh] z-50 flex flex-col shrink-0 overflow-hidden will-change-[width,transform]',
         'bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl',
         'border-r border-slate-200 dark:border-white/5',
         'shadow-[2px_0_12px_-4px_rgba(15,23,42,0.08)] dark:shadow-[2px_0_16px_-4px_rgba(0,0,0,0.45)]',
@@ -421,7 +421,9 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
         'transition-[width,transform] duration-[260ms] motion-reduce:transition-none',
         SIDEBAR_EASE,
         isSidebarOpen ? "w-72 translate-x-0" : "w-72 -translate-x-full lg:w-20 lg:translate-x-0"
-      )}>
+      )}
+        data-sidebar-open={isSidebarOpen ? 'true' : 'false'}
+      >
         
         <div className={cn(
           "h-24 flex items-center justify-center border-b border-slate-200 dark:border-white/5 shrink-0 relative overflow-hidden",

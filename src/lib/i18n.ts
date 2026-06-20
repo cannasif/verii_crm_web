@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { getNamespacesForPath } from './route-namespaces';
 import { getAppBasePath } from './api-config';
+import { applyDocumentTextDirection } from './text-direction';
 
 const i18n = i18next.createInstance();
 
@@ -142,6 +143,8 @@ const storedLng = typeof localStorage !== 'undefined' ? localStorage.getItem('i1
 const initialLng = storedLng ? (normalizeLang(storedLng) ?? DEFAULT_LANG) : DEFAULT_LANG;
 const resolvedLng = supportedLngs.includes(initialLng) ? initialLng : DEFAULT_LANG;
 
+applyDocumentTextDirection(resolvedLng);
+
 function rebuildLanguageResources(lang: string): void {
   const bundlesForLanguage = loadedBundlesByLanguage[lang] ?? {};
   const scopedBundleByNs: Record<string, Record<string, unknown>> = {};
@@ -255,6 +258,7 @@ const initPromise = (async () => {
       caches: [],
     },
   });
+  applyDocumentTextDirection(i18n.resolvedLanguage ?? i18n.language ?? resolvedLng);
   await ensureNamespacesReady(INITIAL_NAMESPACES, fallbackLng);
   if (resolvedLng !== fallbackLng) {
     await ensureNamespacesReady(INITIAL_NAMESPACES, resolvedLng);
@@ -263,6 +267,7 @@ const initPromise = (async () => {
 
 i18n.on('languageChanged', async (lng) => {
   const target = normalizeLang(lng) ?? fallbackLng;
+  applyDocumentTextDirection(target);
   await ensureNamespacesReady(INITIAL_NAMESPACES, target);
   await ensureRouteNamespacesForLanguage(target);
 });
