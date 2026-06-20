@@ -19,6 +19,7 @@
   "chatHint": "Puedo responder preguntas de rendimiento, cantidades, tasas, integración ERP y explicación de errores.",
   "sending": "Preparando respuesta...",
   "answerTitle": "Respuesta IA",
+  "actionItemsTitle": "Comprobaciones recomendadas",
   "emptyQuestion": "Introduce una pregunta.",
   "openChat": "Abrir chat de IA",
   "closeChat": "Cerrar chat de IA",

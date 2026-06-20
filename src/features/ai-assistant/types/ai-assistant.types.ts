@@ -47,10 +47,17 @@ export interface AiAssistantAskRequestDto {
   httpStatusCode?: number | null;
 }
 
+export interface AiAssistantActionItemDto {
+  title: string;
+  description: string;
+  severity: 'danger' | 'warning' | 'success' | 'info' | string;
+}
+
 export interface AiAssistantAnswerDto {
   question: string;
   intent: string;
   answer: string;
   summary: AiAssistantSummaryDto | null;
+  actionItems: AiAssistantActionItemDto[];
   suggestedQuestions: string[];
 }

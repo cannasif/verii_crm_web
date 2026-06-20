@@ -19,6 +19,7 @@
   "chatHint": "Performans, adet, oran, ERP aktarımı ve hata açıklama sorularını cevaplayabiliyorum.",
   "sending": "Yanıt hazırlanıyor...",
   "answerTitle": "AI yanıtı",
+  "actionItemsTitle": "Önerilen kontroller",
   "emptyQuestion": "Lütfen bir soru yazın.",
   "openChat": "AI sohbeti aç",
   "closeChat": "AI sohbeti kapat",

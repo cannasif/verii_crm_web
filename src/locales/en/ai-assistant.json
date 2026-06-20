@@ -19,6 +19,7 @@
   "chatHint": "I can answer performance, count, rate, ERP integration, and error explanation questions.",
   "sending": "Preparing answer...",
   "answerTitle": "AI answer",
+  "actionItemsTitle": "Recommended checks",
   "emptyQuestion": "Please enter a question.",
   "openChat": "Open AI chat",
   "closeChat": "Close AI chat",

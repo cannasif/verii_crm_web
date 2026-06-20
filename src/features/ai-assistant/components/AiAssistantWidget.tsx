@@ -11,6 +11,14 @@ import {
   subscribeAiAssistantErrorContext,
   type AiAssistantErrorContext,
 } from '../lib/ai-assistant-error-context';
+import type { AiAssistantActionItemDto } from '../types/ai-assistant.types';
+
+const actionItemClassNameBySeverity: Record<string, string> = {
+  danger: 'border-red-400/30 bg-red-400/10 text-red-950 dark:text-red-100',
+  warning: 'border-amber-400/30 bg-amber-400/10 text-amber-950 dark:text-amber-100',
+  success: 'border-emerald-400/30 bg-emerald-400/10 text-emerald-950 dark:text-emerald-100',
+  info: 'border-sky-400/30 bg-sky-400/10 text-sky-950 dark:text-sky-100',
+};
 
 export function AiAssistantWidget(): ReactElement {
   const { t } = useTranslation('ai-assistant');
@@ -21,6 +29,7 @@ export function AiAssistantWidget(): ReactElement {
   const [question, setQuestion] = useState('');
   const [lastQuestion, setLastQuestion] = useState<string | null>(null);
   const [lastAnswer, setLastAnswer] = useState<string | null>(null);
+  const [lastActionItems, setLastActionItems] = useState<AiAssistantActionItemDto[]>([]);
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
   const [latestErrorContext, setLatestErrorContext] = useState<AiAssistantErrorContext | null>(
     () => getLatestAiAssistantErrorContext()
@@ -64,6 +73,7 @@ export function AiAssistantWidget(): ReactElement {
       httpStatusCode: errorContext?.httpStatusCode ?? undefined,
     });
     setLastAnswer(result.answer);
+    setLastActionItems(result.actionItems ?? []);
     setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
     setQuestion('');
   };
@@ -137,6 +147,25 @@ export function AiAssistantWidget(): ReactElement {
                   {t('answerTitle')}
                 </div>
                 {lastAnswer}
+              </div>
+            )}
+
+            {lastActionItems.length > 0 && (
+              <div className="rounded-3xl border border-slate-200 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
+                <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
+                  {t('actionItemsTitle')}
+                </div>
+                <div className="grid gap-2">
+                  {lastActionItems.map((item) => (
+                    <div
+                      key={`${item.title}-${item.description}`}
+                      className={`rounded-2xl border p-3 ${actionItemClassNameBySeverity[item.severity] ?? actionItemClassNameBySeverity.info}`}
+                    >
+                      <div className="text-xs font-black">{item.title}</div>
+                      <p className="mt-1 text-xs font-semibold leading-5 opacity-85">{item.description}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
