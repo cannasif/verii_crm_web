@@ -88,20 +88,17 @@ export function UserDiscountLimitManagementPage(): ReactElement {
     setColumnOrder(prefs.order);
   }, [user?.id, defaultColumnKeys]);
 
-  const simpleFilters = useMemo(() => {
-    const trimmed = searchQuery.trim();
-    if (!trimmed) return [];
-    return [{ column: 'SalespersonName', operator: 'Contains', value: trimmed }];
-  }, [searchQuery]);
-
   const apiFilters = useMemo(
-    () => [...simpleFilters, ...rowsToBackendFilters(appliedFilterRows)],
-    [simpleFilters, appliedFilterRows]
+    () => rowsToBackendFilters(appliedFilterRows),
+    [appliedFilterRows]
   );
 
   const { data: apiResponse, isLoading } = useUserDiscountLimits({
     pageNumber,
     pageSize,
+    search: searchQuery,
+    sortBy,
+    sortDirection,
     filters: apiFilters,
   });
 

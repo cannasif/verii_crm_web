@@ -11,6 +11,7 @@ export const queryKeys = {
   list: (params?: {
     pageNumber?: number;
     pageSize?: number;
+    search?: string;
     sortBy?: string;
     sortDirection?: string;
     filters?: import('@/types/api').PagedFilter[] | Record<string, unknown>;
