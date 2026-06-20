@@ -19,5 +19,8 @@
   "chatHint": "Derzeit kann ich Leistungsübersichten, Anzahlen, Quoten und ERP-Integrationsfragen beantworten.",
   "sending": "Antwort wird vorbereitet...",
   "answerTitle": "KI-Antwort",
-  "emptyQuestion": "Bitte geben Sie eine Frage ein."
+  "emptyQuestion": "Bitte geben Sie eine Frage ein.",
+  "openChat": "KI-Chat öffnen",
+  "closeChat": "KI-Chat schließen",
+  "lastQuestion": "Ihre Frage"
 }

@@ -19,5 +19,8 @@
   "chatHint": "Per ora posso rispondere a riepiloghi prestazionali, conteggi, percentuali e domande sull’integrazione ERP.",
   "sending": "Preparazione della risposta...",
   "answerTitle": "Risposta IA",
-  "emptyQuestion": "Inserisci una domanda."
+  "emptyQuestion": "Inserisci una domanda.",
+  "openChat": "Apri chat IA",
+  "closeChat": "Chiudi chat IA",
+  "lastQuestion": "La tua domanda"
 }

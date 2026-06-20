@@ -7,6 +7,7 @@ import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { AiAssistantWidget } from '@/features/ai-assistant';
 import { RoutePermissionGuard } from '@/features/access-control/components/RoutePermissionGuard';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { filterNavItemsByPermission } from '@/features/access-control/utils/filterNavItems';
@@ -22,7 +23,6 @@ import {
   File01Icon,
   Analytics01Icon
 } from 'hugeicons-react';
-import { Bot } from 'lucide-react';
 
 interface NavItem {
   title: string;
@@ -50,11 +50,6 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         title: t('sidebar.home'),
         href: '/',
         icon: <DashboardCircleIcon size={iconSize} className="text-blue-500" />,
-      },
-      {
-        title: t('sidebar.aiAssistant'),
-        href: '/ai-assistant',
-        icon: <Bot size={iconSize} className="text-pink-500" />,
       },
       {
         title: t('sidebar.salesManagement'),
@@ -337,6 +332,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         </TooltipProvider>
         <Footer />
       </div>
+      <AiAssistantWidget />
       
     </div>
   );

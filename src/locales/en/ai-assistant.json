@@ -19,5 +19,8 @@
   "chatHint": "For now, I can answer performance summaries, counts, rates, and ERP integration questions.",
   "sending": "Preparing answer...",
   "answerTitle": "AI answer",
-  "emptyQuestion": "Please enter a question."
+  "emptyQuestion": "Please enter a question.",
+  "openChat": "Open AI chat",
+  "closeChat": "Close AI chat",
+  "lastQuestion": "Your question"
 }
