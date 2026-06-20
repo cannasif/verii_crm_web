@@ -17,6 +17,8 @@
   "form": {
     "addTitle": "Verkaufsperson hinzufügen",
     "addDescription": "Einen Verkaufspersonencode-Datensatz manuell erstellen.",
+    "editTitle": "Verkaufsperson bearbeiten",
+    "editDescription": "Den Verkaufspersonencode-Datensatz aktualisieren.",
     "branchCode": "Filialcode",
     "branchCodePlaceholder": "Filialcode eingeben",
     "salesRepCode": "Vertriebsmitarbeitercode",
@@ -36,6 +38,8 @@
   "messages": {
     "createSuccess": "Verkaufspersonendatensatz erstellt.",
     "createError": "Verkaufspersonendatensatz konnte nicht erstellt werden.",
+    "updateSuccess": "Verkaufspersonendatensatz aktualisiert.",
+    "updateError": "Verkaufspersonendatensatz konnte nicht aktualisiert werden.",
     "deleteSuccess": "Verkaufspersonendatensatz gelöscht.",
     "deleteError": "Verkaufspersonendatensatz konnte nicht gelöscht werden."
   },

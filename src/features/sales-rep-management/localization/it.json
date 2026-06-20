@@ -17,6 +17,8 @@
   "form": {
     "addTitle": "Aggiungi rappresentante commerciale",
     "addDescription": "Crea manualmente un codice rappresentante commerciale.",
+    "editTitle": "Modifica rappresentante commerciale",
+    "editDescription": "Aggiorna il codice rappresentante commerciale.",
     "branchCode": "Codice deposito",
     "branchCodePlaceholder": "Inserisci codice deposito",
     "salesRepCode": "Codice Rapp. Vendite",
@@ -36,6 +38,8 @@
   "messages": {
     "createSuccess": "Record rappresentante commerciale creato.",
     "createError": "Impossibile creare il record del rappresentante commerciale.",
+    "updateSuccess": "Record rappresentante commerciale aggiornato.",
+    "updateError": "Impossibile aggiornare il record del rappresentante commerciale.",
     "deleteSuccess": "Record rappresentante commerciale eliminato.",
     "deleteError": "Impossibile eliminare il record del rappresentante commerciale."
   },

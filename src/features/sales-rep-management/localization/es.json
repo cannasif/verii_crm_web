@@ -17,6 +17,8 @@
   "form": {
     "addTitle": "Agregar Representante de Ventas",
     "addDescription": "Crear manualmente un registro de código de representante de ventas.",
+    "editTitle": "Editar Representante de Ventas",
+    "editDescription": "Actualizar el registro del código de representante de ventas.",
     "branchCode": "Código de Sucursal",
     "branchCodePlaceholder": "Ingrese el código de sucursal",
     "salesRepCode": "Código Rep. Ventas",
@@ -36,6 +38,8 @@
   "messages": {
     "createSuccess": "Registro de representante de ventas creado.",
     "createError": "No se pudo crear el registro de representante de ventas.",
+    "updateSuccess": "Registro de representante de ventas actualizado.",
+    "updateError": "No se pudo actualizar el registro de representante de ventas.",
     "deleteSuccess": "Registro de representante de ventas eliminado.",
     "deleteError": "No se pudo eliminar el registro de representante de ventas."
   },

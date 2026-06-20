@@ -17,6 +17,8 @@
   "form": {
     "addTitle": "إضافة مندوب مبيعات",
     "addDescription": "إنشاء سجل رمز مندوب المبيعات يدويًا.",
+    "editTitle": "تعديل مندوب المبيعات",
+    "editDescription": "تحديث سجل رمز مندوب المبيعات.",
     "branchCode": "رمز الفرع",
     "branchCodePlaceholder": "أدخل رمز الفرع",
     "salesRepCode": "رمز مندوب المبيعات",
@@ -36,6 +38,8 @@
   "messages": {
     "createSuccess": "تم إنشاء سجل مندوب المبيعات.",
     "createError": "تعذر إنشاء سجل مندوب المبيعات.",
+    "updateSuccess": "تم تحديث سجل مندوب المبيعات.",
+    "updateError": "تعذر تحديث سجل مندوب المبيعات.",
     "deleteSuccess": "تم حذف سجل مندوب المبيعات.",
     "deleteError": "تعذر حذف سجل مندوب المبيعات."
   },

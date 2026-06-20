@@ -17,6 +17,8 @@
   "form": {
     "addTitle": "Ajouter un représentant commercial",
     "addDescription": "Créer manuellement un code de représentant commercial.",
+    "editTitle": "Modifier le représentant commercial",
+    "editDescription": "Mettre à jour le code du représentant commercial.",
     "branchCode": "Code de dépôt",
     "branchCodePlaceholder": "Entrez le code de dépôt",
     "salesRepCode": "Code Rep. Commercial",
@@ -36,6 +38,8 @@
   "messages": {
     "createSuccess": "Enregistrement du représentant commercial créé.",
     "createError": "Impossible de créer l'enregistrement du représentant commercial.",
+    "updateSuccess": "Enregistrement du représentant commercial mis à jour.",
+    "updateError": "Impossible de mettre à jour l'enregistrement du représentant commercial.",
     "deleteSuccess": "Enregistrement du représentant commercial supprimé.",
     "deleteError": "Impossible de supprimer l'enregistrement du représentant commercial."
   },

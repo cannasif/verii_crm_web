@@ -17,6 +17,8 @@
   "form": {
     "addTitle": "Add Sales Representative",
     "addDescription": "Create a sales representative code record manually.",
+    "editTitle": "Edit Sales Representative",
+    "editDescription": "Update the sales representative code record.",
     "branchCode": "Branch Code",
     "branchCodePlaceholder": "Enter branch code",
     "salesRepCode": "Sales Rep Code",
@@ -36,6 +38,8 @@
   "messages": {
     "createSuccess": "Sales representative record created.",
     "createError": "Sales representative record could not be created.",
+    "updateSuccess": "Sales representative record updated.",
+    "updateError": "Sales representative record could not be updated.",
     "deleteSuccess": "Sales representative record deleted.",
     "deleteError": "Sales representative record could not be deleted."
   },

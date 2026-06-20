@@ -22,6 +22,8 @@ export interface SalesRepCreateDto {
   name?: string | null;
 }
 
+export type SalesRepUpdateDto = SalesRepCreateDto;
+
 export const salesRepFormSchema = z.object({
   branchCode: z.coerce
     .number({

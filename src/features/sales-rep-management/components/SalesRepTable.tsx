@@ -1,7 +1,7 @@
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert02Icon } from 'hugeicons-react';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Edit2, Loader2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -43,6 +43,7 @@ interface SalesRepTableProps {
   previousLabel: string;
   nextLabel: string;
   paginationInfoText: string;
+  onEdit: (item: SalesRepGetDto) => void;
   onColumnOrderChange?: (newOrder: string[]) => void;
 }
 
@@ -71,10 +72,11 @@ export function SalesRepTable({
   previousLabel,
   nextLabel,
   paginationInfoText,
+  onEdit,
   onColumnOrderChange,
 }: SalesRepTableProps): ReactElement {
   const { t } = useTranslation(['sales-rep-management', 'common']);
-  const { canDelete } = useCrudPermissions();
+  const { canUpdate, canDelete } = useCrudPermissions();
   const deleteSalesRep = useDeleteSalesRep();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<SalesRepGetDto | null>(null);
@@ -105,10 +107,20 @@ export function SalesRepTable({
           errorText={t('error')}
           emptyText={emptyText}
           minTableWidthClassName="min-w-[900px] lg:min-w-[1100px]"
-          showActionsColumn={canDelete}
+          showActionsColumn={canUpdate || canDelete}
           actionsHeaderLabel={t('common.actions', { ns: 'common' })}
           renderActionsCell={(item) => (
             <div className="flex justify-end gap-2">
+              {canUpdate ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onEdit(item)}
+                  className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                >
+                  <Edit2 size={16} />
+                </Button>
+              ) : null}
               {canDelete ? (
                 <Button
                   variant="ghost"

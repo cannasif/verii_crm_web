@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -15,12 +15,18 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { isZodFieldRequired } from '@/lib/zod-required';
-import { salesRepFormSchema, type SalesRepFormInput, type SalesRepFormSchema } from '../types/sales-rep-types';
+import {
+  salesRepFormSchema,
+  type SalesRepFormInput,
+  type SalesRepFormSchema,
+  type SalesRepGetDto,
+} from '../types/sales-rep-types';
 
 interface SalesRepFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: SalesRepFormSchema) => void | Promise<void>;
+  salesRep?: SalesRepGetDto | null;
   isLoading?: boolean;
 }
 
@@ -43,6 +49,7 @@ export function SalesRepForm({
   open,
   onOpenChange,
   onSubmit,
+  salesRep = null,
   isLoading = false,
 }: SalesRepFormProps): ReactElement {
   const { t } = useTranslation(['sales-rep-management', 'common']);
@@ -57,15 +64,29 @@ export function SalesRepForm({
     },
   });
 
-  const handleSubmit = async (data: SalesRepFormSchema): Promise<void> => {
-    await onSubmit(data);
+  useEffect(() => {
+    if (!open) return;
+
+    if (salesRep) {
+      form.reset({
+        branchCode: String(salesRep.branchCode),
+        salesRepCode: salesRep.salesRepCode,
+        salesRepDescription: salesRep.salesRepDescription ?? '',
+        name: salesRep.name ?? '',
+      });
+      return;
+    }
+
     form.reset({
       branchCode: '0',
       salesRepCode: '',
       salesRepDescription: '',
       name: '',
     });
-    onOpenChange(false);
+  }, [form, open, salesRep]);
+
+  const handleSubmit = async (data: SalesRepFormSchema): Promise<void> => {
+    await onSubmit(data);
   };
 
   return (
@@ -80,10 +101,10 @@ export function SalesRepForm({
             </div>
             <div>
               <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
-                {t('form.addTitle')}
+                {salesRep ? t('form.editTitle') : t('form.addTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
-                {t('form.addDescription')}
+                {salesRep ? t('form.editDescription') : t('form.addDescription')}
               </DialogDescription>
             </div>
           </div>

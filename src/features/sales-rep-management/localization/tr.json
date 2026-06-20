@@ -17,6 +17,8 @@
   "form": {
     "addTitle": "Yeni Satış Temsilcisi Ekle",
     "addDescription": "Satış temsilcisi kod kaydını manuel olarak ekleyin.",
+    "editTitle": "Satış Temsilcisi Düzenle",
+    "editDescription": "Satış temsilcisi kod kaydını güncelleyin.",
     "branchCode": "Şube Kodu",
     "branchCodePlaceholder": "Şube kodu girin",
     "salesRepCode": "Satış Temsilcisi Kodu",
@@ -36,6 +38,8 @@
   "messages": {
     "createSuccess": "Satış temsilcisi kaydı oluşturuldu.",
     "createError": "Satış temsilcisi kaydı oluşturulamadı.",
+    "updateSuccess": "Satış temsilcisi kaydı güncellendi.",
+    "updateError": "Satış temsilcisi kaydı güncellenemedi.",
     "deleteSuccess": "Satış temsilcisi kaydı silindi.",
     "deleteError": "Satış temsilcisi kaydı silinemedi."
   },

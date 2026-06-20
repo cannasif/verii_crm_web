@@ -1,6 +1,6 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedFilter, PagedParams, PagedResponse } from '@/types/api';
-import type { SalesRepCreateDto, SalesRepGetDto } from '../types/sales-rep-types';
+import type { SalesRepCreateDto, SalesRepGetDto, SalesRepUpdateDto } from '../types/sales-rep-types';
 
 export const salesRepApi = {
   getList: async (
@@ -47,6 +47,14 @@ export const salesRepApi = {
       return response.data;
     }
     throw new Error(response.message || 'Sales rep kaydı oluşturulamadı');
+  },
+
+  update: async (id: number, data: SalesRepUpdateDto): Promise<SalesRepGetDto> => {
+    const response = await api.put<ApiResponse<SalesRepGetDto>>(`/api/SalesRepCode/${id}`, data);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Sales rep kaydı güncellenemedi');
   },
 
   delete: async (id: number): Promise<void> => {

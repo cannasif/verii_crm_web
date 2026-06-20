@@ -22,6 +22,7 @@ import { SalesRepForm } from './SalesRepForm';
 import { SalesRepTable } from './SalesRepTable';
 import { useCreateSalesRep } from '../hooks/useCreateSalesRep';
 import { useSalesRepList } from '../hooks/useSalesRepList';
+import { useUpdateSalesRep } from '../hooks/useUpdateSalesRep';
 import type { SalesRepFormSchema, SalesRepGetDto } from '../types/sales-rep-types';
 import { SALES_REP_FILTER_COLUMNS } from '../types/sales-rep-filter.types';
 import { queryKeys } from '../utils/query-keys';
@@ -52,6 +53,7 @@ export function SalesRepManagementPage(): ReactElement {
   const queryClient = useQueryClient();
 
   const [formOpen, setFormOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<SalesRepGetDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -65,6 +67,7 @@ export function SalesRepManagementPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   const createSalesRep = useCreateSalesRep();
+  const updateSalesRep = useUpdateSalesRep();
 
   useEffect(() => {
     setPageTitle(t('menu'));
@@ -172,13 +175,42 @@ export function SalesRepManagementPage(): ReactElement {
     [appliedFilterRows]
   );
 
+  const handleAddClick = (): void => {
+    setEditingItem(null);
+    setFormOpen(true);
+  };
+
+  const handleEdit = (item: SalesRepGetDto): void => {
+    setEditingItem(item);
+    setFormOpen(true);
+  };
+
+  const handleFormClose = (open: boolean): void => {
+    setFormOpen(open);
+    if (!open) setEditingItem(null);
+  };
+
+  const mapFormData = (data: SalesRepFormSchema) => ({
+    branchCode: Number(data.branchCode),
+    salesRepCode: data.salesRepCode.trim(),
+    salesRepDescription: data.salesRepDescription?.trim() || null,
+    name: data.name?.trim() || null,
+  });
+
   const handleSubmit = async (data: SalesRepFormSchema): Promise<void> => {
-    await createSalesRep.mutateAsync({
-      branchCode: Number(data.branchCode),
-      salesRepCode: data.salesRepCode.trim(),
-      salesRepDescription: data.salesRepDescription?.trim() || null,
-      name: data.name?.trim() || null,
-    });
+    const payload = mapFormData(data);
+
+    if (editingItem) {
+      await updateSalesRep.mutateAsync({
+        id: editingItem.id,
+        data: payload,
+      });
+    } else {
+      await createSalesRep.mutateAsync(payload);
+    }
+
+    setFormOpen(false);
+    setEditingItem(null);
   };
 
   const handleRefresh = async (): Promise<void> => {
@@ -206,7 +238,7 @@ export function SalesRepManagementPage(): ReactElement {
           </p>
         </div>
         <Button
-          onClick={() => setFormOpen(true)}
+          onClick={handleAddClick}
           className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
@@ -322,6 +354,7 @@ export function SalesRepManagementPage(): ReactElement {
                 to: endRow,
                 total: totalCount,
               })}
+              onEdit={handleEdit}
               onColumnOrderChange={(newVisibleOrder) => {
                 setColumnOrder((currentOrder) => {
                   const hiddenCols = currentOrder.filter(k => !newVisibleOrder.includes(k));
@@ -337,9 +370,10 @@ export function SalesRepManagementPage(): ReactElement {
 
       <SalesRepForm
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={handleFormClose}
         onSubmit={handleSubmit}
-        isLoading={createSalesRep.isPending}
+        salesRep={editingItem}
+        isLoading={createSalesRep.isPending || updateSalesRep.isPending}
       />
     </div>
   );
