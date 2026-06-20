@@ -150,6 +150,7 @@ export function CategoryDefinitionsPage(): ReactElement {
     () => categoriesQuery.data ?? [],
     [categoriesQuery.data]
   );
+  const canManageSelectedCatalog = Boolean(selectedCatalog) && !categoriesQuery.isLoading;
   const createCatalog = useCreateCatalog();
   const createCatalogCategory = useCreateCatalogCategory(selectedCatalogId);
   const updateCatalog = useUpdateCatalog();
@@ -242,6 +243,7 @@ export function CategoryDefinitionsPage(): ReactElement {
     setNavigationStack([]);
     setSelectedLeaf(null);
     setStockSearch('');
+    setStockHierarchyPreviewResult(null);
   };
 
   const handleCategoryClick = (node: CatalogCategoryNodeDto): void => {
@@ -311,19 +313,21 @@ export function CategoryDefinitionsPage(): ReactElement {
     setSelectedCatalogId(null);
     setNavigationStack([]);
     setSelectedLeaf(null);
+    setStockHierarchyPreviewResult(null);
   };
 
   const handleDeleteCategory = async (): Promise<void> => {
     if (!categoryToDelete) return;
 
+    const shouldResetPath = currentPath.some((item) => item.catalogCategoryId === categoryToDelete.catalogCategoryId);
+
     await deleteCatalogCategory.mutateAsync(categoryToDelete.catalogCategoryId);
     setCategoryToDelete(null);
-    if (selectedLeaf?.catalogCategoryId === categoryToDelete.catalogCategoryId) {
-      setSelectedLeaf(null);
+
+    if (shouldResetPath) {
+      handleRootReset();
     }
-    if (activeParent?.catalogCategoryId === categoryToDelete.catalogCategoryId) {
-      setNavigationStack((prev) => prev.slice(0, -1));
-    }
+
     await categoriesQuery.refetch();
   };
 
@@ -549,14 +553,14 @@ export function CategoryDefinitionsPage(): ReactElement {
               </Button>
             ) : null}
 
-            {selectedCatalog && orderedCategories.length === 0 ? (
+            {canManageSelectedCatalog ? (
               <Button onClick={() => setIsCreateCategoryOpen(true)}>
                 <CirclePlus className="mr-2 h-4 w-4" />
                 {t('categoryDefinitions.actions.addRootCategory')}
               </Button>
             ) : null}
 
-            {selectedCatalog ? (
+            {canManageSelectedCatalog ? (
               <Button
                 variant="outline"
                 onClick={() => void handlePreviewStockHierarchyImport()}
@@ -702,7 +706,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                   dark:opacity-100 dark:grayscale-0"
                   size="sm"
                   onClick={() => setIsCreateCategoryOpen(true)}
-                  disabled={!selectedCatalogId}
+                  disabled={!canManageSelectedCatalog}
                 >
                   <CirclePlus className="mr-2 h-4 w-4" />
                   {targetParent
@@ -730,7 +734,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                   variant="outline"
                   size="sm"
                   onClick={() => void handlePreviewStockHierarchyImport()}
-                  disabled={!selectedCatalogId || previewStockHierarchyImport.isPending}
+                  disabled={!canManageSelectedCatalog || previewStockHierarchyImport.isPending}
                   className="rounded-xl border-pink-200 bg-pink-50 text-pink-700 hover:bg-pink-100 dark:border-pink-500/30 dark:bg-pink-500/10 dark:text-pink-300 dark:hover:bg-pink-500/20 font-semibold"
                 >
                   <WandSparkles className="mr-2 h-4 w-4" />
@@ -894,12 +898,12 @@ export function CategoryDefinitionsPage(): ReactElement {
           </CardHeader>
           <CardContent className="flex-1">
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'summary' | 'stocks' | 'favorites' | 'rules' | 'tips')} className="space-y-6">
-              <TabsList className="grid w-full grid-cols-5 bg-slate-100 dark:bg-white/5 rounded-xl p-1 shadow-inner h-12">
-                <TabsTrigger value="summary" className="rounded-lg data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.summary')}</TabsTrigger>
-                <TabsTrigger value="stocks" className="rounded-lg data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.stocks')}</TabsTrigger>
-                <TabsTrigger value="favorites" className="rounded-lg data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.favorites')}</TabsTrigger>
-                <TabsTrigger value="rules" className="rounded-lg data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.rules')}</TabsTrigger>
-                <TabsTrigger value="tips" className="rounded-lg data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.tips')}</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-5 bg-slate-100 dark:bg-white/5 rounded-xl p-1 shadow-inner min-h-12 h-auto">
+                <TabsTrigger value="summary" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.summary')}</TabsTrigger>
+                <TabsTrigger value="stocks" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.stocks')}</TabsTrigger>
+                <TabsTrigger value="favorites" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.favorites')}</TabsTrigger>
+                <TabsTrigger value="rules" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.rules')}</TabsTrigger>
+                <TabsTrigger value="tips" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-[#1E1627] data-[state=active]:text-pink-600 data-[state=active]:dark:text-pink-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.tips')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="summary" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
