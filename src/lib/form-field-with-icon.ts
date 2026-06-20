@@ -7,7 +7,7 @@ export function hasIconPrefixPadding(className?: string | null): boolean {
   return className.includes(FORM_FIELD_ICON_PADDING_LEFT_CLASS) || className.includes(FORM_FIELD_ICON_PADDING_LEFT_CLASS_LG);
 }
 
-export function getIconPrefixPaddingStyle(className?: string | null): { paddingLeft: string } | undefined {
+export function getIconPrefixPaddingStyle(className?: string | null): { paddingInlineStart: string } | undefined {
   if (!hasIconPrefixPadding(className)) return undefined;
-  return { paddingLeft: className?.includes(FORM_FIELD_ICON_PADDING_LEFT_CLASS_LG) ? '3rem' : FORM_FIELD_ICON_PADDING_LEFT };
+  return { paddingInlineStart: className?.includes(FORM_FIELD_ICON_PADDING_LEFT_CLASS_LG) ? '3rem' : FORM_FIELD_ICON_PADDING_LEFT };
 }

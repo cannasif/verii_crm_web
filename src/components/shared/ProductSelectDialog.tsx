@@ -134,7 +134,7 @@ function ProductSelectCatalogStockCard({
       type="button"
       onClick={onClick}
       className={cn(
-        'group relative flex flex-col overflow-hidden rounded-xl border border-slate-300/90 bg-white text-left shadow-md shadow-slate-200/45 backdrop-blur-md transition-all duration-300 ease-out will-change-transform dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none',
+        'group relative flex flex-col overflow-hidden rounded-xl border border-slate-300/90 bg-white crm-text-start shadow-md shadow-slate-200/45 backdrop-blur-md transition-all duration-300 ease-out will-change-transform dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none',
         'hover:-translate-y-0.5 hover:border-pink-400/60 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-pink-500/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]',
         selected &&
           'border-pink-400/70 bg-gradient-to-b from-pink-50/90 to-white shadow-[0_6px_22px_-6px_rgba(236,72,153,0.28)] ring-1 ring-pink-400/40 dark:from-pink-500/[0.08] dark:to-transparent dark:border-pink-500/55 dark:shadow-[0_0_22px_rgba(236,72,153,0.2)] dark:ring-pink-500/30',
@@ -147,7 +147,7 @@ function ProductSelectCatalogStockCard({
 
       {selected ? (
         <div
-          className="pointer-events-none absolute right-1.5 top-1.5 z-20 flex h-6 w-6 items-center justify-center rounded-full border border-pink-400/80 bg-pink-500 shadow-[0_4px_14px_-2px_rgba(236,72,153,0.6)] ring-2 ring-white/90 backdrop-blur-md dark:ring-zinc-950/80"
+          className="pointer-events-none absolute crm-end-1-5 top-1.5 z-20 flex h-6 w-6 items-center justify-center rounded-full border border-pink-400/80 bg-pink-500 shadow-[0_4px_14px_-2px_rgba(236,72,153,0.6)] ring-2 ring-white/90 backdrop-blur-md dark:ring-zinc-950/80"
           aria-hidden
         >
           <Check className="h-3 w-3 text-white" strokeWidth={3.5} />
@@ -179,13 +179,13 @@ function ProductSelectCatalogStockCard({
               aria-hidden
             />
             <span
-              className="pointer-events-none absolute -bottom-2 left-1 select-none font-mono text-[clamp(2.25rem,7vw,4rem)] font-black uppercase leading-none tracking-tighter text-slate-900/[0.07] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-pink-500/20 dark:text-white/[0.06] dark:group-hover:text-pink-300/[0.14]"
+              className="pointer-events-none absolute -bottom-2 crm-start-1 select-none font-mono text-[clamp(2.25rem,7vw,4rem)] font-black uppercase leading-none tracking-tighter text-slate-900/[0.07] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-pink-500/20 dark:text-white/[0.06] dark:group-hover:text-pink-300/[0.14]"
               aria-hidden
             >
               {watermark}
             </span>
             <Package
-              className="pointer-events-none absolute right-2 top-2 h-4 w-4 text-slate-400/70 transition-all duration-300 group-hover:text-pink-500/70 dark:text-white/15 dark:group-hover:text-pink-300/60"
+              className="pointer-events-none absolute crm-end-2 top-2 h-4 w-4 text-slate-400/70 transition-all duration-300 group-hover:text-pink-500/70 dark:text-white/15 dark:group-hover:text-pink-300/60"
               aria-hidden
             />
             <div
@@ -195,7 +195,7 @@ function ProductSelectCatalogStockCard({
           </>
         )}
         {(alreadyInDraft || alreadyOnDocumentLine || relCount > 0) ? (
-          <div className="absolute bottom-1.5 left-1.5 z-10 flex flex-wrap items-center gap-1">
+          <div className="absolute bottom-1.5 crm-start-1-5 z-10 flex flex-wrap items-center gap-1">
             {alreadyInDraft ? (
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -302,22 +302,22 @@ function ProductSelectCatalogStockList({
         <table className="w-full min-w-[620px] table-fixed border-collapse text-sm sm:min-w-[720px]">
           <thead>
             <tr className="border-b border-slate-300/90 bg-slate-100/90 text-[10px] font-semibold uppercase tracking-wide text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 sm:text-[11px]">
-              <th className="w-[120px] border-r border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
+              <th className="w-[120px] crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
                 {t('catalogStockPicker.listColCode')}
               </th>
-              <th className="border-r border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
+              <th className="crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
                 {t('catalogStockPicker.listColName')}
               </th>
-              <th className="w-14 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+              <th className="w-14 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
                 {t('catalogStockPicker.unit')}
               </th>
-              <th className="w-24 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+              <th className="w-24 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
                 {groupCodeLabel}
               </th>
-              <th className="w-36 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+              <th className="w-36 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
                 {t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}
               </th>
-              <th className="w-16 border-r border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+              <th className="w-16 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
                 {t('catalogStockPicker.listColRelated')}
               </th>
               <th className="w-28 px-2 py-1.5 text-center sm:py-2">{t('catalogStockPicker.listColAction')}</th>
@@ -348,7 +348,7 @@ function ProductSelectCatalogStockList({
                     }
                   }}
                 >
-                  <td className="border-r border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
+                  <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
                     <div className="flex flex-wrap items-center justify-center gap-1">
                       <span className="font-mono text-[11px] font-semibold tracking-wide text-pink-700 dark:text-pink-300 sm:text-xs">
                         {stock.erpStockCode}
@@ -385,25 +385,25 @@ function ProductSelectCatalogStockList({
                       ) : null}
                     </div>
                   </td>
-                  <td className="border-r border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
-                    <div className="min-w-0 text-left">
+                  <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
+                    <div className="min-w-0 crm-text-start">
                       <span className="line-clamp-2 text-sm font-medium leading-relaxed tracking-tight text-slate-900 dark:text-slate-100">
                         {displayStockName}
                       </span>
                     </div>
                   </td>
-                  <td className="border-r border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
+                  <td className="crm-border-end border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
                     {stock.unit || '—'}
                   </td>
-                  <td className="border-r border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
+                  <td className="crm-border-end border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
                     {stock.grupKodu || '—'}
                   </td>
-                  <td className="border-r border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
+                  <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
                     <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
                       <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} />
                     </div>
                   </td>
-                  <td className="border-r border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
+                  <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
                     {relCount > 0 ? (
                       <Badge
                         variant="outline"
@@ -814,7 +814,7 @@ export function ProductSelectDialog({
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors"
+                  className="absolute crm-start-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors"
                 >
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.3-4.3" />
@@ -824,7 +824,7 @@ export function ProductSelectDialog({
                   placeholder={t('productSelectDialog.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-20 h-10 sm:h-11 bg-white dark:bg-[#0c0516] border-slate-300 dark:border-white/15 focus-visible:border-pink-400 dark:focus-visible:border-pink-500 focus-visible:ring-2 focus-visible:ring-pink-300/60 dark:focus-visible:ring-pink-500/35 rounded-xl transition-all shadow-sm"
+                  className="crm-ps-10 crm-pe-20 h-10 sm:h-11 bg-white dark:bg-[#0c0516] border-slate-300 dark:border-white/15 focus-visible:border-pink-400 dark:focus-visible:border-pink-500 focus-visible:ring-2 focus-visible:ring-pink-300/60 dark:focus-visible:ring-pink-500/35 rounded-xl transition-all shadow-sm"
                 />
               </div>
               {isThresholdInput ? (
@@ -833,7 +833,7 @@ export function ProductSelectDialog({
                     <button
                       type="button"
                       aria-label={minCharsHint}
-                      className="absolute right-12 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                      className="absolute crm-end-12 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
                     >
                       <AlertCircle className="h-4 w-4" />
                     </button>
@@ -849,8 +849,8 @@ export function ProductSelectDialog({
                   onClick={handleVoiceSearch}
                   className={cn(
                     'shrink-0 h-10 w-10 sm:h-11 sm:w-11 rounded-xl transition-all',
-                    isListening 
-                      ? 'animate-pulse bg-red-500 hover:bg-red-600 border-red-500 shadow-lg shadow-red-500/30' 
+                    isListening
+                      ? 'animate-pulse bg-red-500 hover:bg-red-600 border-red-500 shadow-lg shadow-red-500/30'
                       : 'bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400'
                   )}
                   title={t('productSelectDialog.voiceSearch')}
@@ -901,10 +901,10 @@ export function ProductSelectDialog({
                     variant="outline"
                     className="h-10 sm:h-11 rounded-xl bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400"
                   >
-                    <Filter className="h-4 w-4 mr-2" />
+                    <Filter className="h-4 w-4 crm-me-2" />
                     {t('filters', { defaultValue: 'Filtreler' })}
                     {hasAdvancedFilters ? (
-                      <span className="ml-2 inline-flex min-w-5 justify-center rounded-full bg-pink-100 px-1.5 py-0.5 text-[10px] font-semibold text-pink-700 dark:bg-pink-900/40 dark:text-pink-300">
+                      <span className="crm-ms-2 inline-flex min-w-5 justify-center rounded-full bg-pink-100 px-1.5 py-0.5 text-[10px] font-semibold text-pink-700 dark:bg-pink-900/40 dark:text-pink-300">
                         {rawAppliedAdvancedFilters.length}
                       </span>
                     ) : null}
@@ -990,7 +990,7 @@ export function ProductSelectDialog({
             </div>
           </div>
           {multiSelect && selectedResults.length > 0 ? (
-            <div className="mt-3 flex max-h-28 flex-wrap items-center gap-2 overflow-y-auto pr-1">
+            <div className="mt-3 flex max-h-28 flex-wrap items-center gap-2 overflow-y-auto crm-pe-1">
               <span className="w-full text-xs font-semibold text-slate-500 dark:text-slate-400 sm:w-auto">
                 {t('selected', { defaultValue: 'Secilen' })}: {selectedResults.length}
               </span>
@@ -1000,9 +1000,9 @@ export function ProductSelectDialog({
                   type="button"
                   onClick={() => removeSelectionAtIndex(index)}
                   title={item.code}
-                  className="inline-flex max-w-[min(11rem,42vw)] items-center gap-1 rounded-full border border-pink-200 bg-pink-50 px-2 py-1 text-left text-[11px] font-medium text-pink-700 dark:border-pink-700/40 dark:bg-pink-900/20 dark:text-pink-300 sm:max-w-[13rem]"
+                  className="inline-flex max-w-[min(11rem,42vw)] items-center gap-1 rounded-full border border-pink-200 bg-pink-50 px-2 py-1 crm-text-start text-[11px] font-medium text-pink-700 dark:border-pink-700/40 dark:bg-pink-900/20 dark:text-pink-300 sm:max-w-[13rem]"
                 >
-                  <span className="flex min-w-0 flex-1 flex-col gap-0 overflow-hidden text-left leading-tight">
+                  <span className="flex min-w-0 flex-1 flex-col gap-0 overflow-hidden crm-text-start leading-tight">
                     <span className="truncate font-mono" title={item.code}>
                       {item.code}
                     </span>
