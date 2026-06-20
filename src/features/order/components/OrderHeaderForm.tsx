@@ -510,7 +510,8 @@ export function OrderHeaderForm({
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
                             placeholder={t('order.select')}
-                            className={cn(styles.selectTrigger, "px-4 font-medium text-zinc-700 dark:text-zinc-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 px-4 font-medium text-zinc-700 dark:text-zinc-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             disabled={readOnly}
                           />
                         </FormControl>
@@ -544,7 +545,8 @@ export function OrderHeaderForm({
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
                             placeholder={t('order:header.selectShippingAddress')}
-                            className={cn(styles.selectTrigger, "px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                           />
                         </FormControl>
                         <FormMessage />
@@ -605,9 +607,10 @@ export function OrderHeaderForm({
                           placeholder={t('order.select')}
                           className={cn(
                             styles.selectTrigger,
-                            "pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500",
+                            "min-w-0 pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500",
                             "hover:brightness-95 dark:hover:brightness-110"
                           )}
+                          popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                           disabled={readOnly}
                         />
                       </FormControl>
@@ -639,7 +642,8 @@ export function OrderHeaderForm({
                           isLoading={paymentTypeDropdown.isLoading}
                           isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
                           placeholder={t('order.select')}
-                          className={cn(styles.selectTrigger, "pl-10 hover:border-pink-400 dark:hover:border-zinc-700 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                          className={cn(styles.selectTrigger, "min-w-0 pl-10 hover:border-pink-400 dark:hover:border-zinc-700 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                          popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                         />
                       </FormControl>
                     </div>
@@ -667,11 +671,11 @@ export function OrderHeaderForm({
                   control={form.control}
                   name="order.offerType"
                   render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
+                    <FormItem className="space-y-0 relative group w-full min-w-0">
                       <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.offerType')}>
                         {t('common.offerType.label')}
                       </FormLabel>
-                      <div className="relative">
+                      <div className="relative w-full min-w-0">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
                         <FormControl>
                           <VoiceSearchCombobox
@@ -682,7 +686,8 @@ export function OrderHeaderForm({
                             value={field.value || ''}
                             onSelect={(v) => field.onChange(v ?? '')}
                             placeholder={t('common.offerType.selectPlaceholder')}
-                            className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             disabled={readOnly}
                           />
                         </FormControl>
@@ -696,9 +701,9 @@ export function OrderHeaderForm({
                     control={form.control}
                     name="order.deliveryMethod"
                     render={({ field }) => (
-                      <FormItem className="space-y-0 relative group">
+                      <FormItem className="space-y-0 relative group w-full min-w-0">
                         <FormLabel className={cn(styles.label, "truncate whitespace-nowrap")}>{t('order:header.deliveryMethod')}</FormLabel>
-                        <div className="relative">
+                        <div className="relative w-full min-w-0">
                           <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                           <FormControl>
                             <VoiceSearchCombobox
@@ -711,7 +716,8 @@ export function OrderHeaderForm({
                               isLoading={deliveryMethodDropdown.isLoading}
                               isFetchingNextPage={deliveryMethodDropdown.isFetchingNextPage}
                               placeholder={t('order.select')}
-                              className={cn(styles.selectTrigger, "pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                              className={cn(styles.selectTrigger, "min-w-0 pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                              popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                               disabled={readOnly}
                             />
                           </FormControl>
@@ -728,9 +734,9 @@ export function OrderHeaderForm({
                   control={form.control}
                   name="order.offerDate"
                   render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
+                    <FormItem className="space-y-0 relative group w-full min-w-0">
                       <FormLabel className={styles.label}>{t('order:header.offerDateAbbrev')}</FormLabel>
-                      <div className="relative">
+                      <div className="relative w-full min-w-0">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Calendar className="h-4 w-4" /></div>
                         <FormControl>
                           <Input 
@@ -750,9 +756,9 @@ export function OrderHeaderForm({
                   control={form.control}
                   name="order.deliveryDate"
                   render={({ field }) => (
-                    <FormItem className="space-y-0 relative group">
+                    <FormItem className="space-y-0 relative group w-full min-w-0">
                       <FormLabel className={styles.label}>{t('order:header.deliveryDateAbbrev')}</FormLabel>
-                      <div className="relative">
+                      <div className="relative w-full min-w-0">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                         <FormControl>
                           <Input 
@@ -789,9 +795,9 @@ export function OrderHeaderForm({
                     control={form.control}
                     name="order.documentSerialTypeId"
                     render={({ field }) => (
-                      <FormItem className="space-y-0 relative group">
+                      <FormItem className="space-y-0 relative group w-full min-w-0">
                         <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.documentSerialTypeId')}>{t('order:header.serialNumber')}</FormLabel>
-                        <div className="relative">
+                        <div className="relative w-full min-w-0">
                           <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Hash className="h-4 w-4" /></div>
                           <FormControl>
                             <VoiceSearchCombobox
@@ -803,7 +809,8 @@ export function OrderHeaderForm({
                                 handleDocumentSerialTypeSelect(value ? Number(value) : null);
                               }}
                               placeholder={t('order.select')}
-                              className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                              className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                              popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                               disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
                             />
                           </FormControl>
@@ -817,16 +824,17 @@ export function OrderHeaderForm({
                   control={form.control}
                   name="order.projectCode"
                   render={({ field }) => (
-                    <FormItem className="gap-0 space-y-0 relative group">
+                    <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
                       <FormLabel className={styles.label}>
                         <Folder className="h-3.5 w-3.5" />
                         {t('order:header.projectCode')}
                       </FormLabel>
-                      <div className="relative">
+                      <div className="relative w-full min-w-0">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Folder className="h-4 w-4" /></div>
                         <FormControl>
                           <VoiceSearchCombobox
-                            className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             value={field.value || ''}
                             onSelect={(value) => field.onChange(value)}
                             options={projectDropdown.options}
@@ -849,16 +857,17 @@ export function OrderHeaderForm({
                   control={form.control}
                   name="order.koliBaskiDefinitionId"
                   render={({ field }) => (
-                    <FormItem className="gap-0 space-y-0 relative group">
+                    <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
                       <FormLabel className={styles.label}>
                         <Layers className="h-3.5 w-3.5" />
                         {t('order:header.koliBaski', { defaultValue: 'Koli Baskı' })}
                       </FormLabel>
-                      <div className="relative">
+                      <div className="relative w-full min-w-0">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
                         <FormControl>
                           <VoiceSearchCombobox
-                            className={cn(styles.selectTrigger, "pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             value={field.value ? String(field.value) : ''}
                             onSelect={(value) => field.onChange(value ? Number(value) : null)}
                             options={koliBaskiOptions.map((option) => ({ value: String(option.id), label: option.name }))}

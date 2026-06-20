@@ -1,6 +1,6 @@
 'use client';
 
-import { type ChangeEvent, type ReactElement, type MouseEvent, useState, useEffect, useMemo, useRef } from 'react';
+import { type ChangeEvent, type ReactElement, type MouseEvent, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -185,12 +185,14 @@ export function QuotationLineForm({
       demirDefinitionId: formData.demirDefinitionId,
       vidaDefinitionId: formData.vidaDefinitionId,
     });
+  const hasAppliedDefaultBaskiRef = useRef(false);
+
   const [relatedLines, setRelatedLines] = useState<QuotationLineFormState[]>([]);
   const [bulkDraftLines, setBulkDraftLines] = useState<QuotationLineFormState[]>([]);
   const [activeBulkIndex, setActiveBulkIndex] = useState(0);
   const [temporaryStockData, setTemporaryStockData] = useState<TemporaryStockData[]>([]);
   const [lastLoadedProductCode, setLastLoadedProductCode] = useState<string | null>(null);
-  const handleFieldChangeRef = useRef<(field: keyof QuotationLineFormState, value: unknown) => void>(() => {});
+  const handleFieldChangeRef = useRef<(field: keyof QuotationLineFormState, value: unknown) => void>(() => { });
   const unitPriceInput = useLineUnitPriceInput({
     documentCurrencyDovizTipi: currency,
     documentUnitPrice: formData.unitPrice ?? 0,
@@ -681,8 +683,8 @@ export function QuotationLineForm({
     setBulkDraftLines((prev) =>
       prev.length > 0
         ? prev.map((lineItem, index) =>
-            index === activeBulkIndex ? { ...lineItem, ...imageUpdate } : lineItem
-          )
+          index === activeBulkIndex ? { ...lineItem, ...imageUpdate } : lineItem
+        )
         : prev
     );
   };
@@ -758,6 +760,7 @@ export function QuotationLineForm({
           ...allLines[0],
           id: formData.id,
           groupCode: product.groupCode || null,
+          baskiDefinitionId: formData.baskiDefinitionId ?? getDefaultBaskiId() ?? undefined,
         };
         setFormData(mainLine);
         setQuantityInputValue(formatQuantityInputDraftFromNumber(mainLine.quantity ?? 0, mainLine.unit));
@@ -810,6 +813,7 @@ export function QuotationLineForm({
         ...newLine,
         id: formData.id,
         groupCode: product.groupCode || null,
+        baskiDefinitionId: formData.baskiDefinitionId ?? getDefaultBaskiId() ?? undefined,
       };
 
       setFormData(updatedFormData);
@@ -854,10 +858,12 @@ export function QuotationLineForm({
             ...mainLine,
             id: `${mainLine.id}-m${productIndex}-0`,
             groupCode: mainLine.groupCode || product.groupCode || null,
+            baskiDefinitionId: getDefaultBaskiId() ?? undefined,
             relatedLines: allLines.slice(1).map((line, lineIndex) => ({
               ...line,
               id: `${line.id}-m${productIndex}-${lineIndex + 1}`,
               groupCode: line.groupCode || product.groupCode || null,
+              baskiDefinitionId: getDefaultBaskiId() ?? undefined,
             })),
           });
         }
@@ -867,6 +873,7 @@ export function QuotationLineForm({
           ...line,
           id: `${line.id}-m${productIndex}`,
           groupCode: line.groupCode || product.groupCode || null,
+          baskiDefinitionId: getDefaultBaskiId() ?? undefined,
         });
       }
     }
@@ -1127,6 +1134,45 @@ export function QuotationLineForm({
 
   handleFieldChangeRef.current = handleFieldChange;
 
+  const getDefaultBaskiId = useCallback((): number | null => {
+    const isExistingDoc = !!imageUploadExtras?.quotationId;
+    const hasSavedBaski = !!line.baskiDefinitionId;
+    const shouldApplyBaskisizDefault = !isExistingDoc || !hasSavedBaski;
+
+    if (shouldApplyBaskisizDefault) {
+      const baskisizOption = baskiOptions.find(o => {
+        const name = o.name.trim();
+        const trName = name.toLocaleLowerCase('tr-TR');
+        const enName = name.toLowerCase();
+        return trName.includes('baskısız') || trName.includes('baskisiz') || enName.includes('baskısız') || enName.includes('baskisiz');
+      });
+      return baskisizOption ? baskisizOption.id : null;
+    }
+    return line.baskiDefinitionId ?? null;
+  }, [baskiOptions, line.baskiDefinitionId, imageUploadExtras?.quotationId]);
+
+  useEffect(() => {
+    if (!hasAppliedDefaultBaskiRef.current && baskiOptions.length > 0) {
+      if (!formData.baskiDefinitionId) {
+        const defaultBaskiId = getDefaultBaskiId();
+        if (defaultBaskiId) {
+          setTimeout(() => {
+            if (handleFieldChangeRef.current) {
+              handleFieldChangeRef.current('baskiDefinitionId', defaultBaskiId);
+            }
+          }, 50);
+          hasAppliedDefaultBaskiRef.current = true;
+        } else if (!isDefinitionOptionsLoading) {
+          hasAppliedDefaultBaskiRef.current = true;
+        }
+      } else {
+        hasAppliedDefaultBaskiRef.current = true;
+      }
+    } else if (!hasAppliedDefaultBaskiRef.current && !isDefinitionOptionsLoading && baskiOptions.length === 0) {
+      hasAppliedDefaultBaskiRef.current = true;
+    }
+  }, [baskiOptions, formData.baskiDefinitionId, isDefinitionOptionsLoading, getDefaultBaskiId]);
+
   const handleSave = (): void => {
     const normalizedFormData = calculateLineTotals(formData);
     const normalizedRelatedLines = relatedLines.map((relatedLine) => calculateLineTotals(relatedLine));
@@ -1357,54 +1403,54 @@ export function QuotationLineForm({
         </div>
 
         {!hideVatRate ? (
-        <div className="space-y-2">
-          <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
-            <Percent className="h-4 w-4 text-orange-500" />
-            {t('lines.vatRate')}
-          </label>
-          <div className="relative">
-            <Input
-              type="number"
-              step={percentageStep}
-              min="0"
-              max="100"
-              disabled={!isLineStockSelected || isVatRateInputLocked}
-              value={vatRateInputValue}
-              onChange={(e) => {
-                if (isVatRateInputLocked) return;
-                const inputValue = e.target.value;
-                setVatRateInputValue(inputValue);
-                if (inputValue === '' || inputValue === '.') {
-                  handleFieldChange('vatRate', 0);
-                } else {
-                  const numValue = parseFloat(inputValue);
-                  if (!isNaN(numValue)) {
-                    handleFieldChange('vatRate', numValue);
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
+              <Percent className="h-4 w-4 text-orange-500" />
+              {t('lines.vatRate')}
+            </label>
+            <div className="relative">
+              <Input
+                type="number"
+                step={percentageStep}
+                min="0"
+                max="100"
+                disabled={!isLineStockSelected || isVatRateInputLocked}
+                value={vatRateInputValue}
+                onChange={(e) => {
+                  if (isVatRateInputLocked) return;
+                  const inputValue = e.target.value;
+                  setVatRateInputValue(inputValue);
+                  if (inputValue === '' || inputValue === '.') {
+                    handleFieldChange('vatRate', 0);
+                  } else {
+                    const numValue = parseFloat(inputValue);
+                    if (!isNaN(numValue)) {
+                      handleFieldChange('vatRate', numValue);
+                    }
                   }
-                }
-              }}
-              onBlur={() => {
-                if (isVatRateInputLocked) return;
-                if (vatRateInputValue === '' || vatRateInputValue === '.') {
-                  setVatRateInputValue('0');
-                  handleFieldChange('vatRate', 0);
-                } else {
-                  const numValue = parseFloat(vatRateInputValue);
-                  if (!isNaN(numValue)) {
-                    setVatRateInputValue(String(numValue));
+                }}
+                onBlur={() => {
+                  if (isVatRateInputLocked) return;
+                  if (vatRateInputValue === '' || vatRateInputValue === '.') {
+                    setVatRateInputValue('0');
+                    handleFieldChange('vatRate', 0);
+                  } else {
+                    const numValue = parseFloat(vatRateInputValue);
+                    if (!isNaN(numValue)) {
+                      setVatRateInputValue(String(numValue));
+                    }
                   }
-                }
-              }}
-              className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white font-bold text-center pr-8 transition-all ${pinkFocusClass}`}
-            />
-            <div className="absolute right-3 top-3 text-slate-400 dark:text-slate-500 font-bold">%</div>
+                }}
+                className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white font-bold text-center pr-8 transition-all ${pinkFocusClass}`}
+              />
+              <div className="absolute right-3 top-3 text-slate-400 dark:text-slate-500 font-bold">%</div>
+            </div>
           </div>
-        </div>
         ) : null}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 pt-4 border-t border-slate-200 dark:border-white/10">
-        <div className="xl:col-span-7 space-y-4">
+      <div className="grid grid-cols-1 xl:grid-cols-[17fr_6fr] gap-6 pt-4 border-t border-slate-200 dark:border-white/10">
+        <div className="space-y-4 min-w-0">
           <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
             <BadgePercent className="h-4 w-4 text-purple-500" />
             {t('lines.discounts')}
@@ -1474,7 +1520,7 @@ export function QuotationLineForm({
             <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400">
               {t('lines.descriptionFieldsTitle')}
             </h5>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                   {t('lines.descriptionField1Label')}
@@ -1512,8 +1558,8 @@ export function QuotationLineForm({
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-              <div className="space-y-1.5 lg:col-span-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                   {t('lines.windoProfileLabel')}
                 </label>
@@ -1537,7 +1583,7 @@ export function QuotationLineForm({
                   {t('lines.addNewProfile', { defaultValue: 'Yeni profil ekle' })}
                 </Button>
               </div>
-              <div className="space-y-1.5 lg:col-span-2">
+              <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                   {t('lines.windoRebarLabel')}
                 </label>
@@ -1561,7 +1607,7 @@ export function QuotationLineForm({
                   {t('lines.addNewRebar', { defaultValue: 'Yeni demir ekle' })}
                 </Button>
               </div>
-              <div className="space-y-1.5 lg:col-span-2">
+              <div className="space-y-1.5">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                   {t('lines.windoScrewLabel')}
                 </label>
@@ -1585,7 +1631,7 @@ export function QuotationLineForm({
                   {t('lines.addNewScrew', { defaultValue: 'Yeni vida ekle' })}
                 </Button>
               </div>
-              <div className="space-y-1.5 lg:col-span-2 lg:col-start-3 sm:col-span-2">
+              <div className="space-y-1.5 sm:col-span-2 lg:col-span-1 lg:col-start-auto">
                 <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
                   {t('lines.windoPrintLabel', { defaultValue: 'Baskı' })}
                 </label>
@@ -1593,7 +1639,7 @@ export function QuotationLineForm({
                   options={baskiComboboxOptions}
                   value={formData.baskiDefinitionId ? String(formData.baskiDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('baskiDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoPrint', { defaultValue: 'Baskı seçin' })}
+                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.unprinted', { defaultValue: 'Baskısız' })}
                   searchPlaceholder={t('lines.searchWindoPrint', { defaultValue: 'Baskı ara...' })}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
@@ -1620,7 +1666,7 @@ export function QuotationLineForm({
           </div>
         </div>
 
-        <div className="xl:col-span-5 flex flex-col gap-4">
+        <div className="flex flex-col gap-4 min-w-0">
           {allowImageUpload ? (
             <div className="bg-slate-50 dark:bg-white/[0.03] rounded-2xl p-4 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
               <div className="flex items-center justify-between gap-3">

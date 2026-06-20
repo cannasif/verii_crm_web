@@ -44,6 +44,7 @@ interface VoiceSearchComboboxProps {
   placeholder?: string;
   searchPlaceholder?: string;
   className?: string;
+  popoverContentClassName?: string;
   disabled?: boolean;
   modal?: boolean;
 }
@@ -61,6 +62,7 @@ export function VoiceSearchCombobox({
   placeholder,
   searchPlaceholder,
   className,
+  popoverContentClassName,
   disabled = false,
   modal = true,
 }: VoiceSearchComboboxProps) {
@@ -290,7 +292,10 @@ export function VoiceSearchCombobox({
       </PopoverTrigger>
       <PopoverContent
         id={contentDomId}
-        className="w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-2xl border border-slate-300 bg-white p-0 shadow-[0_1px_0_rgba(15,23,42,0.05),0_16px_32px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/70 dark:border-white/14 dark:bg-[#130822] dark:ring-white/10"
+        className={cn(
+          "w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-2xl border border-slate-300 bg-white p-0 shadow-[0_1px_0_rgba(15,23,42,0.05),0_16px_32px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/70 dark:border-white/14 dark:bg-[#130822] dark:ring-white/10",
+          popoverContentClassName
+        )}
         align="start"
       >
         <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
