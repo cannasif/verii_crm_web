@@ -9,6 +9,7 @@ import {
   isCurrentAppPath,
   resolveAppPath,
 } from './api-config';
+import { publishAiAssistantErrorContext } from '@/features/ai-assistant/lib/ai-assistant-error-context';
 
 export { loadConfig, getApiUrl, getApiBaseUrl, resolveAppPath };
 
@@ -213,6 +214,14 @@ function extractApiErrorMessage(payload: unknown): string | null {
   }
 
   return null;
+}
+
+function extractApiErrorCode(payload: unknown): string | null {
+  if (payload == null || typeof payload !== 'object') return null;
+
+  const errorPayload = payload as Record<string, unknown>;
+  const errorCode = errorPayload.errorCode ?? errorPayload.ErrorCode;
+  return typeof errorCode === 'string' && errorCode.trim().length > 0 ? errorCode : null;
 }
 
 function getStoredAccessToken(): string | null {
@@ -515,6 +524,18 @@ api.interceptors.response.use(
     const apiMessage = extractApiErrorMessage(apiError);
     if (apiMessage) {
       error.message = apiMessage;
+    }
+
+    const requestUrl = originalRequest?.url ?? error.config?.url ?? null;
+    if (requestUrl && !requestUrl.toLowerCase().includes('/api/aiassistant')) {
+      publishAiAssistantErrorContext({
+        message: error.message || apiMessage || 'Request failed',
+        errorCode: extractApiErrorCode(apiError),
+        httpStatusCode: error.response?.status ?? null,
+        currentPath: window.location.pathname,
+        requestMethod: (originalRequest?.method ?? error.config?.method ?? null)?.toUpperCase() ?? null,
+        requestUrl,
+      });
     }
 
     return Promise.reject(error);

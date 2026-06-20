@@ -22,5 +22,8 @@
   "emptyQuestion": "Bitte geben Sie eine Frage ein.",
   "openChat": "KI-Chat öffnen",
   "closeChat": "KI-Chat schließen",
-  "lastQuestion": "Ihre Frage"
+  "lastQuestion": "Ihre Frage",
+  "lastErrorTitle": "Zuletzt erfasster Fehler",
+  "askLastError": "KI zu diesem Fehler fragen",
+  "askLastErrorQuestion": "Was bedeutet dieser Fehler?"
 }

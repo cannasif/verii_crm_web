@@ -22,5 +22,8 @@
   "emptyQuestion": "Lütfen bir soru yazın.",
   "openChat": "AI sohbeti aç",
   "closeChat": "AI sohbeti kapat",
-  "lastQuestion": "Sorunuz"
+  "lastQuestion": "Sorunuz",
+  "lastErrorTitle": "Son yakalanan hata",
+  "askLastError": "Bu hatayı AI'a sor",
+  "askLastErrorQuestion": "Bu hata ne anlama geliyor?"
 }

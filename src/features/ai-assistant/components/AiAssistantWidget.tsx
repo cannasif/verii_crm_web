@@ -6,6 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
 import { useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
+import {
+  getLatestAiAssistantErrorContext,
+  subscribeAiAssistantErrorContext,
+  type AiAssistantErrorContext,
+} from '../lib/ai-assistant-error-context';
 
 export function AiAssistantWidget(): ReactElement {
   const { t } = useTranslation('ai-assistant');
@@ -17,8 +22,13 @@ export function AiAssistantWidget(): ReactElement {
   const [lastQuestion, setLastQuestion] = useState<string | null>(null);
   const [lastAnswer, setLastAnswer] = useState<string | null>(null);
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
+  const [latestErrorContext, setLatestErrorContext] = useState<AiAssistantErrorContext | null>(
+    () => getLatestAiAssistantErrorContext()
+  );
   const [questionError, setQuestionError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useEffect(() => subscribeAiAssistantErrorContext(setLatestErrorContext), []);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -35,7 +45,7 @@ export function AiAssistantWidget(): ReactElement {
   const fallbackSuggestions = [1, 2, 3, 4].map((index) => t(`suggestions.${index}`));
   const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
 
-  const askQuestion = async (value: string): Promise<void> => {
+  const askQuestion = async (value: string, errorContext?: AiAssistantErrorContext | null): Promise<void> => {
     const trimmedQuestion = value.trim();
     if (!trimmedQuestion) {
       setQuestionError(t('emptyQuestion'));
@@ -47,6 +57,11 @@ export function AiAssistantWidget(): ReactElement {
     const result = await askMutation.mutateAsync({
       question: trimmedQuestion,
       currentPath: window.location.pathname,
+      errorMessage: errorContext
+        ? `${errorContext.message}${errorContext.requestMethod || errorContext.requestUrl ? ` | ${errorContext.requestMethod ?? ''} ${errorContext.requestUrl ?? ''}` : ''}`
+        : undefined,
+      errorCode: errorContext?.errorCode ?? undefined,
+      httpStatusCode: errorContext?.httpStatusCode ?? undefined,
     });
     setLastAnswer(result.answer);
     setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
@@ -56,6 +71,11 @@ export function AiAssistantWidget(): ReactElement {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     await askQuestion(question);
+  };
+
+  const askLatestError = async (): Promise<void> => {
+    if (!latestErrorContext) return;
+    await askQuestion(t('askLastErrorQuestion'), latestErrorContext);
   };
 
   return (
@@ -117,6 +137,28 @@ export function AiAssistantWidget(): ReactElement {
                   {t('answerTitle')}
                 </div>
                 {lastAnswer}
+              </div>
+            )}
+
+            {latestErrorContext && (
+              <div className="rounded-3xl border border-amber-400/30 bg-amber-400/10 p-4">
+                <div className="mb-1 text-xs font-black uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300">
+                  {t('lastErrorTitle')}
+                </div>
+                <p className="line-clamp-2 text-xs font-semibold leading-5 text-amber-950 dark:text-amber-100">
+                  {latestErrorContext.httpStatusCode ? `${latestErrorContext.httpStatusCode} · ` : ''}
+                  {latestErrorContext.message}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={askMutation.isPending}
+                  className="mt-3 h-9 rounded-2xl border-amber-300/60 bg-white/70 text-xs font-black text-amber-800 hover:bg-amber-50 dark:bg-white/5 dark:text-amber-100"
+                  onClick={() => void askLatestError()}
+                >
+                  {t('askLastError')}
+                </Button>
               </div>
             )}
 

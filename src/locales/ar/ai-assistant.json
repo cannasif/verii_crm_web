@@ -22,5 +22,8 @@
   "emptyQuestion": "يرجى كتابة سؤال.",
   "openChat": "فتح محادثة الذكاء الاصطناعي",
   "closeChat": "إغلاق محادثة الذكاء الاصطناعي",
-  "lastQuestion": "سؤالك"
+  "lastQuestion": "سؤالك",
+  "lastErrorTitle": "آخر خطأ تم التقاطه",
+  "askLastError": "اسأل الذكاء الاصطناعي عن هذا الخطأ",
+  "askLastErrorQuestion": "ماذا يعني هذا الخطأ؟"
 }

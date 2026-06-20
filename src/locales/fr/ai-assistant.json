@@ -22,5 +22,8 @@
   "emptyQuestion": "Veuillez saisir une question.",
   "openChat": "Ouvrir le chat IA",
   "closeChat": "Fermer le chat IA",
-  "lastQuestion": "Votre question"
+  "lastQuestion": "Votre question",
+  "lastErrorTitle": "Dernière erreur détectée",
+  "askLastError": "Demander à l’IA pour cette erreur",
+  "askLastErrorQuestion": "Que signifie cette erreur ?"
 }

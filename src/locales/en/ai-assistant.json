@@ -22,5 +22,8 @@
   "emptyQuestion": "Please enter a question.",
   "openChat": "Open AI chat",
   "closeChat": "Close AI chat",
-  "lastQuestion": "Your question"
+  "lastQuestion": "Your question",
+  "lastErrorTitle": "Latest captured error",
+  "askLastError": "Ask AI about this error",
+  "askLastErrorQuestion": "What does this error mean?"
 }
