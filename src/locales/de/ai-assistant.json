@@ -1,0 +1,23 @@
+{
+  "pageTitle": "KI-Assistent",
+  "eyebrow": "CRM KI-Assistent",
+  "greeting": "Hallo {{name}}, wie kann ich Ihnen helfen?",
+  "loadingGreeting": "Begrüßung wird vorbereitet...",
+  "fallbackName": "geschätzter Benutzer",
+  "subtitle": "Ein intelligenter CRM-Assistent für schnelle Fragen zu Anfragen, Angeboten, Aufträgen und Aktivitäten.",
+  "chatTitle": "Was möchten wir heute gemeinsam prüfen?",
+  "chatDescription": "Der erste sichere Frage-Antwort-Ablauf für Ihre CRM-Daten ist aktiv. Sie können nach Anfragen, Angeboten, Aufträgen, Aktivitäten und ERP-Zusammenfassungen fragen.",
+  "inputPlaceholder": "Zum Beispiel: Wie viele Angebote habe ich diesen Monat erstellt?",
+  "comingSoon": "Die Chat-Engine wird vorbereitet. Dieser Bereich kann bald mit Ihren CRM-Daten arbeiten.",
+  "send": "Senden",
+  "suggestions": {
+    "1": "Wie viele Angebote habe ich diesen Monat erstellt?",
+    "2": "Wie hoch ist meine Quote genehmigter Aufträge?",
+    "3": "Wie viele Aktivitäten habe ich abgeschlossen?",
+    "4": "Wie viele meiner Datensätze wurden ins ERP übertragen?"
+  },
+  "chatHint": "Derzeit kann ich Leistungsübersichten, Anzahlen, Quoten und ERP-Integrationsfragen beantworten.",
+  "sending": "Antwort wird vorbereitet...",
+  "answerTitle": "KI-Antwort",
+  "emptyQuestion": "Bitte geben Sie eine Frage ein."
+}

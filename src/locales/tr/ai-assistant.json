@@ -1,0 +1,23 @@
+{
+  "pageTitle": "AI Asistan",
+  "eyebrow": "CRM AI Asistan",
+  "greeting": "Merhaba {{name}}, size nasıl yardımcı olabilirim?",
+  "loadingGreeting": "Karşılama hazırlanıyor...",
+  "fallbackName": "değerli kullanıcı",
+  "subtitle": "Talep, teklif, sipariş ve aktivite verileriniz hakkında hızlı sorular sorabileceğiniz akıllı CRM yardımcısı.",
+  "chatTitle": "Bugün neyi birlikte inceleyelim?",
+  "chatDescription": "CRM verilerinizle ilgili ilk güvenli soru-cevap akışı aktif. Talep, teklif, sipariş, aktivite ve ERP özetlerini sorabilirsiniz.",
+  "inputPlaceholder": "Örn. Bu ay kaç teklif oluşturdum?",
+  "comingSoon": "Sohbet motoru hazırlanıyor. Bu alan yakında CRM verilerinizle konuşabilir hale gelecek.",
+  "send": "Gönder",
+  "suggestions": {
+    "1": "Bu ay kaç teklif oluşturdum?",
+    "2": "Onaylanan siparişlerimin oranı nedir?",
+    "3": "Kaç aktivite tamamladım?",
+    "4": "ERP'ye aktarılan kayıtlarım kaç adet?"
+  },
+  "chatHint": "Şimdilik performans özeti, adetler, oranlar ve ERP aktarım sorularını cevaplayabiliyorum.",
+  "sending": "Yanıt hazırlanıyor...",
+  "answerTitle": "AI yanıtı",
+  "emptyQuestion": "Lütfen bir soru yazın."
+}

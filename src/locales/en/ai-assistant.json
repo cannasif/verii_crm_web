@@ -1,0 +1,23 @@
+{
+  "pageTitle": "AI Assistant",
+  "eyebrow": "CRM AI Assistant",
+  "greeting": "Hello {{name}}, how can I help you?",
+  "loadingGreeting": "Preparing your greeting...",
+  "fallbackName": "valued user",
+  "subtitle": "An intelligent CRM assistant for quick questions about your demands, quotations, orders, and activities.",
+  "chatTitle": "What should we review together today?",
+  "chatDescription": "The first secure question-answer flow for your CRM data is active. You can ask about demands, quotations, orders, activities, and ERP summaries.",
+  "inputPlaceholder": "For example: How many quotations did I create this month?",
+  "comingSoon": "The chat engine is being prepared. This area will soon be able to talk with your CRM data.",
+  "send": "Send",
+  "suggestions": {
+    "1": "How many quotations did I create this month?",
+    "2": "What is my approved order rate?",
+    "3": "How many activities have I completed?",
+    "4": "How many of my records were integrated into ERP?"
+  },
+  "chatHint": "For now, I can answer performance summaries, counts, rates, and ERP integration questions.",
+  "sending": "Preparing answer...",
+  "answerTitle": "AI answer",
+  "emptyQuestion": "Please enter a question."
+}

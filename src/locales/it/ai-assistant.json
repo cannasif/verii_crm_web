@@ -1,0 +1,23 @@
+{
+  "pageTitle": "Assistente IA",
+  "eyebrow": "Assistente IA CRM",
+  "greeting": "Ciao {{name}}, come posso aiutarti?",
+  "loadingGreeting": "Preparazione del saluto...",
+  "fallbackName": "utente",
+  "subtitle": "Un assistente CRM intelligente per domande rapide su richieste, offerte, ordini e attività.",
+  "chatTitle": "Cosa analizziamo insieme oggi?",
+  "chatDescription": "Il primo flusso sicuro di domande e risposte sui tuoi dati CRM è attivo. Puoi chiedere informazioni su richieste, offerte, ordini, attività e riepiloghi ERP.",
+  "inputPlaceholder": "Ad esempio: quante offerte ho creato questo mese?",
+  "comingSoon": "Il motore di chat è in preparazione. Quest'area potrà presto dialogare con i tuoi dati CRM.",
+  "send": "Invia",
+  "suggestions": {
+    "1": "Quante offerte ho creato questo mese?",
+    "2": "Qual è il mio tasso di ordini approvati?",
+    "3": "Quante attività ho completato?",
+    "4": "Quanti miei record sono stati integrati nell'ERP?"
+  },
+  "chatHint": "Per ora posso rispondere a riepiloghi prestazionali, conteggi, percentuali e domande sull’integrazione ERP.",
+  "sending": "Preparazione della risposta...",
+  "answerTitle": "Risposta IA",
+  "emptyQuestion": "Inserisci una domanda."
+}

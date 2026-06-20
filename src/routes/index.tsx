@@ -20,6 +20,7 @@ const LoginPage = lazyImport(() => import('@/features/auth'), 'LoginPage');
 const ResetPasswordPage = lazyImport(() => import('@/features/auth'), 'ResetPasswordPage');
 const ForgotPasswordPage = lazyImport(() => import('@/features/auth'), 'ForgotPasswordPage');
 const DashboardPage = lazyImport(() => import('@/features/dashboard'), 'DashboardPage');
+const AiAssistantPage = lazyImport(() => import('@/features/ai-assistant'), 'AiAssistantPage');
 const TitleManagementPage = lazyImport(() => import('@/features/title-management'), 'TitleManagementPage');
 const UserManagementPage = lazyImport(() => import('@/features/user-management'), 'UserManagementPage');
 const MailSettingsPage = lazyImport(() => import('@/features/mail-settings'), 'MailSettingsPage');
@@ -124,6 +125,7 @@ export function createAppRouter() {
       errorElement: <RouteErrorFallback />,
       children: [
         { index: true, element: <DashboardPage /> },
+        { path: 'ai-assistant', element: <AiAssistantPage /> },
         { path: 'forbidden', element: <ForbiddenPage /> },
         { path: 'report-designer', element: <ReportDesignerListPage /> },
         { path: 'report-designer/create', element: <ReportDesignerCreatePage /> },
