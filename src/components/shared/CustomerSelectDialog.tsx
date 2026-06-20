@@ -470,7 +470,7 @@ export function CustomerSelectDialog({
                   <Users size={22} className="text-pink-400 dark:text-pink-300 sm:h-6 sm:w-6" />
                 </div>
               </div>
-              <div className="min-w-0 space-y-1 text-left">
+              <div className="min-w-0 space-y-1 crm-text-start">
                 <DialogTitle className="text-lg font-bold tracking-tight text-slate-900 sm:text-xl dark:text-white">
                   {t('customerSelectDialog.title')}
                 </DialogTitle>
@@ -494,12 +494,12 @@ export function CustomerSelectDialog({
           <div className="shrink-0 space-y-3 bg-white px-4 pb-0 pt-4 dark:bg-[#130822] sm:px-6 sm:pt-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="group relative min-w-0 flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 transition-colors group-focus-within:text-pink-400" />
+                <Search className="absolute crm-start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 transition-colors group-focus-within:text-pink-400" />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('customerSelectDialog.searchPlaceholder')}
-                  className={cn(INPUT_STYLE, "pl-9 pr-20")}
+                  className={cn(INPUT_STYLE, "crm-ps-9 crm-pe-20")}
                 />
                 {isThresholdInput ? (
                   <Tooltip>
@@ -507,7 +507,7 @@ export function CustomerSelectDialog({
                       <button
                         type="button"
                         aria-label={minCharsHint}
-                        className="absolute right-10 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                        className="absolute crm-end-10 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
                       >
                         <AlertCircle size={16} />
                       </button>
@@ -522,7 +522,7 @@ export function CustomerSelectDialog({
                     variant="ghost"
                     onClick={handleVoiceSearch}
                     className={cn(
-                      "absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg",
+                      "absolute crm-end-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg",
                       isListening ? 'text-pink-400' : 'text-zinc-500'
                     )}
                   >
@@ -546,7 +546,7 @@ export function CustomerSelectDialog({
               >
                 <SlidersHorizontal size={18} />
                 {appliedFilterCount > 0 && (
-                  <Badge className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center border border-pink-200/80 bg-pink-100 px-1 text-[10px] font-medium text-pink-800 dark:border-pink-400/30 dark:bg-pink-950/50 dark:text-pink-100">
+                  <Badge className="absolute -top-1.5 crm--end-1-5 flex h-4 min-w-4 items-center justify-center border border-pink-200/80 bg-pink-100 px-1 text-[10px] font-medium text-pink-800 dark:border-pink-400/30 dark:bg-pink-950/50 dark:text-pink-100">
                     {appliedFilterCount}
                   </Badge>
                 )}

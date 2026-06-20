@@ -75,14 +75,14 @@ function SubMenuComponent({ item, pathname, searchQuery }: { item: NavItem; path
             : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5"
         )}
       >
-        <span className="whitespace-normal leading-tight text-left wrap-break-word pr-2">{item.title}</span>
+        <span className="whitespace-normal leading-tight crm-text-start wrap-break-word crm-pe-2">{item.title}</span>
         <span className="opacity-70 shrink-0">
           {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </span>
       </button>
 
       {isOpen && (
-        <div className="ml-2 mt-1 space-y-1 border-l border-slate-200 dark:border-white/10 pl-2">
+        <div className="crm-ms-2 mt-1 space-y-1 crm-border-start border-slate-200 dark:border-white/10 crm-ps-2">
           {item.children?.map((child) => {
              const isSubLinkActive = pathname === child.href;
              return (
@@ -103,8 +103,8 @@ function SubMenuComponent({ item, pathname, searchQuery }: { item: NavItem; path
                    }
                  }}
                >
-                 <span className="whitespace-normal leading-tight text-left wrap-break-word">{child.title}</span>
-                 {isSubLinkActive && <span className="w-2 h-2 rounded-full bg-purple-600 dark:bg-pink-500 shrink-0 ml-2" />}
+                 <span className="whitespace-normal leading-tight crm-text-start wrap-break-word">{child.title}</span>
+                 {isSubLinkActive && <span className="w-2 h-2 rounded-full bg-purple-600 dark:bg-pink-500 shrink-0 crm-ms-2" />}
                </Link>
              );
           })}
@@ -200,7 +200,7 @@ function NavItemComponent({
         <button 
             type="button"
             className={cn(
-                "relative flex w-full items-center gap-3 rounded-xl px-3 py-2 transition-colors cursor-pointer select-none text-left group",
+                "relative flex w-full items-center gap-3 rounded-xl px-3 py-2 transition-colors cursor-pointer select-none crm-text-start group",
                 visualActive ? 'bg-purple-50 dark:bg-white/5' : 'hover:bg-slate-100 dark:hover:bg-white/5',
                 !isSidebarOpen && "justify-center px-0 gap-0",
                 SIDEBAR_TRANSITION
@@ -225,7 +225,7 @@ function NavItemComponent({
             aria-hidden={!isSidebarOpen}
             className={cn(
               SIDEBAR_LABEL_TRANSITION,
-              "flex-1 min-w-0 text-sm font-medium leading-tight text-left pr-2 whitespace-nowrap text-ellipsis",
+              "flex-1 min-w-0 text-sm font-medium leading-tight crm-text-start crm-pe-2 whitespace-nowrap text-ellipsis",
               visualActive ? 'text-purple-900 font-semibold dark:text-white' : 'text-slate-600 dark:text-slate-300',
               isSidebarOpen ? 'opacity-100 max-w-[12rem]' : 'opacity-0 max-w-0 w-0 pointer-events-none'
             )}
@@ -245,7 +245,7 @@ function NavItemComponent({
         </button>
 
         {isExpanded && isSidebarOpen && (
-          <div className="ml-12 mt-2 space-y-1 border-l border-slate-200 dark:border-white/10 pl-2">
+          <div className="crm-ms-12 mt-2 space-y-1 crm-border-start border-slate-200 dark:border-white/10 crm-ps-2">
             {item.children?.map((child) => (
               child.children && child.children.length > 0 
                 ? <SubMenuComponent key={child.title} item={child} pathname={location.pathname} searchQuery={searchQuery} />
@@ -264,8 +264,8 @@ function NavItemComponent({
                       }
                     }}
                   >
-                    <span className="whitespace-normal leading-tight text-left wrap-break-word">{child.title}</span>
-                    {location.pathname === child.href && <span className="w-2 h-2 rounded-full bg-purple-600 dark:bg-pink-500 shrink-0 ml-2" />}
+                    <span className="whitespace-normal leading-tight crm-text-start wrap-break-word">{child.title}</span>
+                    {location.pathname === child.href && <span className="w-2 h-2 rounded-full bg-purple-600 dark:bg-pink-500 shrink-0 crm-ms-2" />}
                   </Link>
             ))}
           </div>
@@ -302,7 +302,7 @@ function NavItemComponent({
               aria-hidden={!isSidebarOpen}
               className={cn(
                 SIDEBAR_LABEL_TRANSITION,
-                "flex-1 min-w-0 text-sm font-medium leading-tight text-left pr-2 whitespace-nowrap text-ellipsis",
+                "flex-1 min-w-0 text-sm font-medium leading-tight crm-text-start crm-pe-2 whitespace-nowrap text-ellipsis",
                 isActive ? 'text-purple-900 font-semibold dark:text-white' : 'text-slate-600 dark:text-slate-300',
                 isSidebarOpen ? 'opacity-100 max-w-[12rem]' : 'opacity-0 max-w-0 w-0 pointer-events-none'
               )}

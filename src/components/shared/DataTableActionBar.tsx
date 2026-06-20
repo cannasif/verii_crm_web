@@ -282,7 +282,7 @@ export function DataTableActionBar({
             )}
           >
             <Search
-              className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within/search:text-pink-500 dark:text-slate-500 dark:group-focus-within/search:text-pink-400"
+              className="pointer-events-none absolute crm-start-2-5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within/search:text-pink-500 dark:text-slate-500 dark:group-focus-within/search:text-pink-400"
               aria-hidden
             />
             <Input
@@ -291,8 +291,8 @@ export function DataTableActionBar({
               onChange={(event) => handleSearchInputChange(event.target.value)}
               className={cn(
                 resolvedSearchClassName,
-                'w-full border-slate-300 bg-white pl-9 shadow-sm transition-all dark:border-white/15 dark:bg-transparent dark:shadow-none',
-                compactSearchOnMobile && isMobileSearchActive && 'pr-8',
+                'w-full border-slate-300 bg-white crm-ps-9 shadow-sm transition-all dark:border-white/15 dark:bg-transparent dark:shadow-none',
+                compactSearchOnMobile && isMobileSearchActive && 'crm-pe-8',
                 'focus:border-pink-500 focus:ring-[3px] focus:ring-pink-500/15',
                 'focus-visible:border-pink-500 focus-visible:ring-[3px] focus-visible:ring-pink-500/15',
                 'dark:focus:border-pink-500/60 dark:focus:ring-pink-500/10',
@@ -303,7 +303,7 @@ export function DataTableActionBar({
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-0 top-0 h-full w-8 px-0 hover:bg-transparent sm:hidden"
+                className="absolute crm-end-0 top-0 h-full w-8 px-0 hover:bg-transparent sm:hidden"
                 onClick={() => {
                   handleSearchInputChange('');
                   setIsMobileSearchActive(false);
@@ -327,7 +327,7 @@ export function DataTableActionBar({
               onClick={handleRefresh}
               disabled={isRefreshDisabled}
             >
-              <RefreshCw className={cn("h-4 w-4", compactSearchOnMobile ? "max-sm:mr-0 mr-2" : "mr-2", refresh?.isLoading && 'animate-spin')} />
+              <RefreshCw className={cn("h-4 w-4", compactSearchOnMobile ? "max-sm:[margin-inline-end:0] crm-me-2" : "crm-me-2", refresh?.isLoading && 'animate-spin')} />
               <span className={cn(compactSearchOnMobile && "hidden sm:inline")}>
                 {refreshRemainingSeconds > 0 ? `${refreshLabel} (${refreshRemainingSeconds}s)` : refreshLabel}
               </span>
@@ -335,18 +335,18 @@ export function DataTableActionBar({
           )}
           {leftSlot}
 
-          <div className="relative ml-auto flex min-w-0 max-w-full flex-wrap items-center justify-end gap-2">
+          <div className="relative crm-ms-auto flex min-w-0 max-w-full flex-wrap items-center justify-end gap-2">
           <Popover open={showFilters} onOpenChange={handleFilterOpenChange}>
             <PopoverTrigger asChild>
               <Button
                 variant={showFilters || appliedFilterCount > 0 ? 'default' : 'outline'}
                 size="sm"
-                className={cn(filterButtonClassName, 'max-sm:absolute max-sm:opacity-0 max-sm:pointer-events-none max-sm:right-0 sm:inline-flex')}
+                className={cn(filterButtonClassName, 'max-sm:absolute max-sm:opacity-0 max-sm:pointer-events-none crm-end-0 sm:inline-flex')}
               >
-                <Filter className="mr-2 h-4 w-4" />
+                <Filter className="crm-me-2 h-4 w-4" />
                 {t('filters', { ns: 'common' })}
                 {appliedFilterCount > 0 && (
-                  <span className="ml-2 inline-flex min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none">
+                  <span className="crm-ms-2 inline-flex min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none">
                     {appliedFilterCount}
                   </span>
                 )}
@@ -391,9 +391,9 @@ export function DataTableActionBar({
               <Button
                 variant={columnsOpen ? 'default' : 'outline'}
                 size="sm"
-                className={cn(columnsButtonClassName, 'max-sm:absolute max-sm:opacity-0 max-sm:pointer-events-none max-sm:right-0 sm:inline-flex')}
+                className={cn(columnsButtonClassName, 'max-sm:absolute max-sm:opacity-0 max-sm:pointer-events-none crm-end-0 sm:inline-flex')}
               >
-                <Columns3 className="mr-2 h-4 w-4" />
+                <Columns3 className="crm-me-2 h-4 w-4" />
                 {t('common.editColumns')}
               </Button>
             </PopoverTrigger>
@@ -443,10 +443,10 @@ export function DataTableActionBar({
                   setTimeout(() => setShowFilters(true), 150);
                 }}
               >
-                <Filter className="mr-2 h-4 w-4" />
+                <Filter className="crm-me-2 h-4 w-4" />
                 {t('filters', { ns: 'common' })}
                 {appliedFilterCount > 0 ? (
-                  <span className="ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-pink-500/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-pink-700 dark:text-pink-300">
+                  <span className="crm-ms-auto inline-flex min-w-5 items-center justify-center rounded-full bg-pink-500/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-pink-700 dark:text-pink-300">
                     {appliedFilterCount}
                   </span>
                 ) : null}
@@ -459,12 +459,12 @@ export function DataTableActionBar({
                   setTimeout(() => setColumnsOpen(true), 150);
                 }}
               >
-                <Columns3 className="mr-2 h-4 w-4" />
+                <Columns3 className="crm-me-2 h-4 w-4" />
                 {t('common.editColumns')}
               </DropdownMenuItem>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className="cursor-pointer">
-                  <FileDown className="mr-2 h-4 w-4" />
+                  <FileDown className="crm-me-2 h-4 w-4" />
                   {t('export', { ns: 'common', defaultValue: 'Çıktı Al' })}
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>

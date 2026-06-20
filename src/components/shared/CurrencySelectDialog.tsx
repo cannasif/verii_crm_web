@@ -72,14 +72,14 @@ export function CurrencySelectDialog({
           <div className="flex items-center gap-2 mt-4">
             <div className="relative flex-1 group">
               <Search 
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-500 transition-colors" 
+                className="absolute crm-start-3-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-amber-500 transition-colors"
                 size={16} 
               />
               <Input
                 placeholder={t('currencySelectDialog.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-11 rounded-xl bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all"
+                className="crm-ps-10 h-11 rounded-xl bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 focus-visible:ring-amber-500/20 focus-visible:border-amber-500 transition-all"
               />
             </div>
             <VoiceSearchButton
@@ -92,7 +92,7 @@ export function CurrencySelectDialog({
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/30 dark:bg-black/20">
           {isLoading ? (
             <div className="flex items-center justify-center py-10 text-slate-500">
-              <div className="animate-spin mr-2 h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full"></div>
+              <div className="animate-spin crm-me-2 h-4 w-4 border-2 border-amber-500 border-t-transparent rounded-full"></div>
               {t('currencySelectDialog.loading')}
             </div>
           ) : filteredCurrencies.length === 0 ? (

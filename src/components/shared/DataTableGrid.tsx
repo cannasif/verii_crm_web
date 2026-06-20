@@ -157,12 +157,12 @@ function SortableTableHead<TKey extends string>({
         'select-none'
       )}
     >
-      <div className={cn("flex items-center gap-1 w-full pr-2", centerColumnHeaders ? "justify-center" : "justify-start")}>
+      <div className={cn("flex items-center gap-1 w-full crm-pe-2", centerColumnHeaders ? "justify-center" : "justify-start")}>
         {isDraggable && (
           <div
             {...attributes}
             {...listeners}
-            className="cursor-grab active:cursor-grabbing p-1 py-1.5 ml-1 rounded-[.3rem] border border-slate-200 bg-white/50 text-slate-400 hover:text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:text-slate-300 transition-colors shrink-0 touch-none shadow-sm"
+            className="cursor-grab active:cursor-grabbing p-1 py-1.5 crm-ms-1 rounded-[.3rem] border border-slate-200 bg-white/50 text-slate-400 hover:text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:text-slate-300 transition-colors shrink-0 touch-none shadow-sm"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
             data-no-drag-scroll="true"
           >
@@ -178,14 +178,14 @@ function SortableTableHead<TKey extends string>({
               'h-7 hover:bg-transparent flex-1 min-w-0',
               centerColumnHeaders
                 ? 'inline-flex min-h-7 w-full max-w-full flex-nowrap items-center justify-center gap-1 px-1'
-                : 'px-1 -ml-1 text-left justify-start'
+                : 'px-1 crm-text-start justify-start'
             )}
           >
             {headerLabelNode}
             {renderSortIcon?.(columnKey)}
           </Button>
         ) : (
-          <span className={cn("flex-1 px-1 truncate min-w-0", centerColumnHeaders ? "text-center block w-full" : "text-left")}>
+          <span className={cn("flex-1 px-1 truncate min-w-0", centerColumnHeaders ? "text-center block w-full" : "crm-text-start")}>
             {headerLabelNode}
           </span>
         )}
@@ -194,7 +194,7 @@ function SortableTableHead<TKey extends string>({
       {onResizeStart && (
         <div
           className={cn(
-            'absolute right-0 top-0 h-full w-1.5 cursor-col-resize z-10 group/resize flex items-center justify-center',
+            'absolute crm-end-0 top-0 h-full w-1.5 cursor-col-resize z-10 group/resize flex items-center justify-center',
             isResizing && 'bg-pink-500/10'
           )}
           onMouseDown={(e) => {
@@ -239,7 +239,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   showActionsColumn = false,
   actionsHeaderLabel = '',
   renderActionsCell,
-  actionsCellClassName = 'text-right align-middle',
+  actionsCellClassName = 'crm-text-end align-middle',
   iconOnlyActions = true,
   rowClassName,
   onRowClick,
@@ -538,7 +538,7 @@ export function DataTableGrid<TRow, TKey extends string>({
                     data-col-actions="true"
                     className={cn(
                       iconOnlyActions ? 'w-[84px]' : 'min-w-[280px]',
-                      centerColumnHeaders ? 'text-center' : (iconOnlyActions ? 'text-center' : 'text-right')
+                      centerColumnHeaders ? 'text-center' : (iconOnlyActions ? 'text-center' : 'crm-text-end')
                     )}
                   >
                     {resolvedActionsHeaderLabel}
@@ -557,8 +557,8 @@ export function DataTableGrid<TRow, TKey extends string>({
                       </TableCell>
                     ))}
                     {showActionsColumn && (
-                      <TableCell className="text-right">
-                        <Skeleton className="h-8 w-32 ml-auto bg-slate-200/60 dark:bg-white/10" />
+                      <TableCell className="crm-text-end">
+                        <Skeleton className="h-8 w-32 crm-ms-auto bg-slate-200/60 dark:bg-white/10" />
                       </TableCell>
                     )}
                   </TableRow>
@@ -651,7 +651,7 @@ export function DataTableGrid<TRow, TKey extends string>({
                 className="h-8 border-slate-300 bg-white px-3 shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none"
               >
                 <span>{pageSize}</span>
-                <ChevronDown className="ml-1 h-3.5 w-3.5" />
+                <ChevronDown className="crm-ms-1 h-3.5 w-3.5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-24">

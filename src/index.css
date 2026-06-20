@@ -156,6 +156,86 @@
     text-align: end;
   }
 
+  .crm-ms-auto {
+    margin-inline-start: auto;
+  }
+
+  .crm-ms-1 {
+    margin-inline-start: 0.25rem;
+  }
+
+  .crm-ms-2 {
+    margin-inline-start: 0.5rem;
+  }
+
+  .crm-ms-12 {
+    margin-inline-start: 3rem;
+  }
+
+  .crm-me-2 {
+    margin-inline-end: 0.5rem;
+  }
+
+  .crm--end-1-5 {
+    inset-inline-end: -0.375rem;
+  }
+
+  .crm-ps-2 {
+    padding-inline-start: 0.5rem;
+  }
+
+  .crm-ps-9 {
+    padding-inline-start: 2.25rem;
+  }
+
+  .crm-ps-10 {
+    padding-inline-start: 2.5rem;
+  }
+
+  .crm-pe-2 {
+    padding-inline-end: 0.5rem;
+  }
+
+  .crm-pe-8 {
+    padding-inline-end: 2rem;
+  }
+
+  .crm-pe-20 {
+    padding-inline-end: 5rem;
+  }
+
+  .crm-start-2-5 {
+    inset-inline-start: 0.625rem;
+  }
+
+  .crm-start-3 {
+    inset-inline-start: 0.75rem;
+  }
+
+  .crm-start-3-5 {
+    inset-inline-start: 0.875rem;
+  }
+
+  .crm-end-0 {
+    inset-inline-end: 0;
+  }
+
+  .crm-end-1 {
+    inset-inline-end: 0.25rem;
+  }
+
+  .crm-end-3 {
+    inset-inline-end: 0.75rem;
+  }
+
+  .crm-end-10 {
+    inset-inline-end: 2.5rem;
+  }
+
+  .crm-border-start {
+    border-inline-start-width: 1px;
+  }
+
   html[dir='rtl'] .app-sidebar-panel {
     border-right-width: 0;
     border-left-width: 1px;
