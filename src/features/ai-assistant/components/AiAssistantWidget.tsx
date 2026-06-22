@@ -29,6 +29,37 @@ const actionItemClassNameBySeverity: Record<string, string> = {
 };
 
 const minimumThinkingDurationMs = 900;
+const missingTranslationText = 'Çeviri eksik';
+
+const aiAssistantTextFallbacks: Record<string, string> = {
+  pageTitle: 'AI Asistan',
+  openChat: 'AI sohbeti aç',
+  closeChat: 'AI sohbeti kapat',
+  fallbackName: 'değerli kullanıcı',
+  loadingGreeting: 'Kişiselleştirme hazırlanıyor...',
+  newChat: 'Yeni sohbet',
+  emptyQuestion: 'Lütfen bir soru yazın.',
+  askLastErrorQuestion: 'Son hatayı açıklar mısın?',
+  answerTitle: 'AI Yanıtı',
+  sourceTitle: 'Kaynak',
+  actionItemsTitle: 'Önerilen kontroller',
+  openAction: 'Aç',
+  lastErrorTitle: 'Son hata yakalandı',
+  askLastError: 'Bu hatayı açıkla',
+  eyebrow: 'CRM AI Asistan',
+  chatDescription: 'Talep, teklif, sipariş, aktivite ve ERP özetlerinizi sorabilirsiniz.',
+  inputPlaceholder: 'Örn. Bu ay kaç teklif oluşturdum?',
+  chatHint: 'Performans, adet, oran, ERP aktarımı ve hata açıklaması sorabilirsiniz.',
+  sending: 'Düşünüyor',
+  send: 'Gönder',
+};
+
+const defaultSuggestions = [
+  'Bu ay kaç teklif oluşturdum?',
+  'Onaylanan siparişlerimin oranı nedir?',
+  "ERP'ye aktarılan satış kayıtlarım kaç adet?",
+  'Bugünkü aktivitelerimi özetle.',
+];
 
 function waitForMinimumThinkingDuration(): Promise<void> {
   return new Promise((resolve) => {
@@ -66,6 +97,14 @@ export function AiAssistantWidget(): ReactElement {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
   const skipNextHistoryWriteRef = useRef(false);
+  const readText = (key: string, fallback?: string, options?: Record<string, unknown>): string => {
+    const value = t(key, { defaultValue: fallback ?? aiAssistantTextFallbacks[key] ?? key, ...options });
+    if (!value || value === key || value === missingTranslationText) {
+      return fallback ?? aiAssistantTextFallbacks[key] ?? key;
+    }
+
+    return value;
+  };
 
   useEffect(() => {
     if (loadedChatHistoryKeyRef.current !== chatHistoryKey) {
@@ -97,9 +136,11 @@ export function AiAssistantWidget(): ReactElement {
     return () => window.clearTimeout(focusTimer);
   }, [isOpen]);
 
-  const fallbackName = user?.name || user?.email || t('fallbackName');
+  const fallbackName = user?.name || user?.email || readText('fallbackName');
   const displayName = greeting?.fullName?.trim() || fallbackName;
-  const fallbackSuggestions = [1, 2, 3, 4].map((index) => t(`suggestions.${index}`));
+  const fallbackSuggestions = defaultSuggestions.map((suggestion, index) =>
+    readText(`suggestions.${index + 1}`, suggestion)
+  );
   const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
   const isAssistantBusy = askMutation.isPending || isThinking;
 
@@ -115,7 +156,7 @@ export function AiAssistantWidget(): ReactElement {
   const askQuestion = async (value: string, errorContext?: AiAssistantErrorContext | null): Promise<void> => {
     const trimmedQuestion = value.trim();
     if (!trimmedQuestion) {
-      setQuestionError(t('emptyQuestion'));
+      setQuestionError(readText('emptyQuestion'));
       return;
     }
 
@@ -169,7 +210,7 @@ export function AiAssistantWidget(): ReactElement {
 
   const askLatestError = async (): Promise<void> => {
     if (!latestErrorContext) return;
-    await askQuestion(t('askLastErrorQuestion'), latestErrorContext);
+    await askQuestion(readText('askLastErrorQuestion'), latestErrorContext);
   };
 
   const clearChat = (): void => {
@@ -203,10 +244,12 @@ export function AiAssistantWidget(): ReactElement {
               </div>
               <div className="min-w-0">
                 <p className="truncate text-sm font-black text-slate-950 dark:text-white">
-                  {t('pageTitle')}
+                  {readText('pageTitle')}
                 </p>
                 <p className="truncate text-xs font-semibold text-slate-500 dark:text-slate-400">
-                  {isLoading ? t('loadingGreeting') : t('greeting', { name: displayName })}
+                  {isLoading
+                    ? readText('loadingGreeting')
+                    : readText('greeting', `Merhaba ${displayName}, size nasıl yardımcı olabilirim?`, { name: displayName })}
                 </p>
               </div>
             </div>
@@ -218,14 +261,14 @@ export function AiAssistantWidget(): ReactElement {
               onClick={clearChat}
             >
               <Plus size={15} className="me-1.5" />
-              {t('newChat')}
+              {readText('newChat')}
             </Button>
             <Button
               type="button"
               variant="ghost"
               size="icon"
               className="h-10 w-10 rounded-2xl"
-              aria-label={t('closeChat')}
+              aria-label={readText('closeChat')}
               onClick={() => setIsOpen(false)}
             >
               <X size={18} />
@@ -240,10 +283,10 @@ export function AiAssistantWidget(): ReactElement {
                 </div>
                 <div className="max-w-[86%] rounded-[1.6rem] rounded-ss-md border border-pink-500/15 bg-white/80 p-4 shadow-sm backdrop-blur-xl dark:bg-white/[0.06]">
                   <div className="mb-2 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-pink-600 dark:text-pink-300">
-                    {t('eyebrow')}
+                    {readText('eyebrow')}
                   </div>
                   <p className="text-sm font-semibold leading-6 text-slate-600 dark:text-slate-200">
-                    {t('chatDescription')}
+                    {readText('chatDescription')}
                   </p>
                 </div>
               </div>
@@ -266,13 +309,13 @@ export function AiAssistantWidget(): ReactElement {
                       </div>
                       <div className="max-w-[86%] flex-1">
                         <AiAssistantAnswerCard
-                          title={t('answerTitle')}
+                          title={readText('answerTitle')}
                           answer={message.content}
                         />
                         {message.sources && message.sources.length > 0 && (
                           <div className="mt-3 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.04]">
                             <div className="mb-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
-                              {t('sourceTitle')}
+                              {readText('sourceTitle')}
                             </div>
                             <div className="grid gap-2">
                               {message.sources.map((source) => (
@@ -295,7 +338,7 @@ export function AiAssistantWidget(): ReactElement {
                     {message.actionItems && message.actionItems.length > 0 && (
                       <div className="ms-12 rounded-3xl border border-slate-200 bg-white/70 p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
                         <div className="mb-3 text-[0.68rem] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-300">
-                          {t('actionItemsTitle')}
+                          {readText('actionItemsTitle')}
                         </div>
                         <div className="grid gap-2">
                           {message.actionItems.map((item) => (
@@ -314,7 +357,7 @@ export function AiAssistantWidget(): ReactElement {
                                   onClick={() => openActionUrl(item.actionUrl!)}
                                 >
                                   <ExternalLink size={13} className="me-1.5" />
-                                  {item.actionLabel || t('openAction')}
+                                  {item.actionLabel || readText('openAction')}
                                 </Button>
                               )}
                             </div>
@@ -332,7 +375,7 @@ export function AiAssistantWidget(): ReactElement {
             {latestErrorContext && (
               <div className="rounded-3xl border border-amber-400/30 bg-amber-400/10 p-4">
                 <div className="mb-1 text-xs font-black uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300">
-                  {t('lastErrorTitle')}
+                  {readText('lastErrorTitle')}
                 </div>
                 <p className="line-clamp-2 text-xs font-semibold leading-5 text-amber-950 dark:text-amber-100">
                   {latestErrorContext.httpStatusCode ? `${latestErrorContext.httpStatusCode} · ` : ''}
@@ -346,7 +389,7 @@ export function AiAssistantWidget(): ReactElement {
                   className="mt-3 h-9 rounded-2xl border-amber-300/60 bg-white/70 text-xs font-black text-amber-800 hover:bg-amber-50 dark:bg-white/5 dark:text-amber-100"
                   onClick={() => void askLatestError()}
                 >
-                  {t('askLastError')}
+                  {readText('askLastError')}
                 </Button>
               </div>
             )}
@@ -372,7 +415,7 @@ export function AiAssistantWidget(): ReactElement {
             <Textarea
               ref={textareaRef}
               rows={2}
-              placeholder={t('inputPlaceholder')}
+              placeholder={readText('inputPlaceholder')}
               className="max-h-28 resize-none rounded-[1.4rem] border-slate-200 bg-white/90 px-4 py-3 text-sm font-semibold shadow-sm dark:border-white/10 dark:bg-white/[0.06]"
               value={question}
               onChange={(event) => {
@@ -384,7 +427,7 @@ export function AiAssistantWidget(): ReactElement {
             />
             <div className="mt-3 flex items-center justify-between gap-3">
               <p className="min-w-0 flex-1 truncate text-xs font-medium text-slate-500 dark:text-slate-400">
-                {questionError || askMutation.error?.message || t('chatHint')}
+                {questionError || askMutation.error?.message || readText('chatHint')}
               </p>
               <Button
                 type="submit"
@@ -392,7 +435,7 @@ export function AiAssistantWidget(): ReactElement {
                 className="shrink-0 rounded-full bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 text-white shadow-lg shadow-pink-950/20"
               >
                 <SendHorizontal size={16} className="me-2" />
-                {isAssistantBusy ? t('sending') : t('send')}
+                {isAssistantBusy ? readText('sending') : readText('send')}
               </Button>
             </div>
           </form>
@@ -400,14 +443,14 @@ export function AiAssistantWidget(): ReactElement {
       ) : (
         <button
           type="button"
-          aria-label={t('openChat')}
+          aria-label={readText('openChat')}
           onClick={() => setIsOpen(true)}
           className="group flex items-center gap-3 rounded-full border border-white/20 bg-linear-to-r from-pink-600 to-orange-500 px-4 py-3 text-sm font-black text-white shadow-2xl shadow-pink-950/25 transition hover:scale-[1.02] hover:shadow-pink-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400 focus-visible:ring-offset-2 dark:ring-offset-slate-950"
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
             <MessageCircle size={20} />
           </span>
-          <span className="hidden sm:inline">{t('pageTitle')}</span>
+          <span className="hidden sm:inline">{readText('pageTitle')}</span>
         </button>
       )}
     </div>
