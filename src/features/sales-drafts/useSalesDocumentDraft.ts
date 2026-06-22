@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
-import type { FieldValues, UseFormReturn } from 'react-hook-form';
+import { useFormState } from 'react-hook-form';
+import type { FieldValues, FieldNamesMarkedBoolean, UseFormReturn } from 'react-hook-form';
 import {
   buildSalesDocumentDraftKey,
   deleteExpiredSalesDocumentDrafts,
@@ -40,6 +41,23 @@ interface UseSalesDocumentDraftOptions<
 }
 
 type AnyDraftPayload = SalesDocumentDraftPayload<FieldValues, unknown, unknown, unknown>;
+type DirtyFieldTree = Record<string, unknown>;
+
+const MEANINGFUL_ROOT_KEYS = [
+  'potentialCustomerId',
+  'erpCustomerCode',
+  'currency',
+  'shippingAddressId',
+  'paymentTypeId',
+  'documentSerialTypeId',
+  'deliveryMethod',
+  'projectCode',
+  'description',
+  'generalDiscountRate',
+  'generalDiscountAmount',
+  'offerNo',
+  'revisionNo',
+] as const;
 
 function isFileLike(value: unknown): boolean {
   return (
@@ -67,37 +85,58 @@ function hasValue(value: unknown): boolean {
   return true;
 }
 
-function hasMeaningfulRootValue(root: Record<string, unknown>): boolean {
-  const meaningfulKeys = [
-    'potentialCustomerId',
-    'erpCustomerCode',
-    'shippingAddressId',
-    'paymentTypeId',
-    'documentSerialTypeId',
-    'deliveryMethod',
-    'projectCode',
-    'description',
-    'generalDiscountRate',
-    'generalDiscountAmount',
-    'offerNo',
-    'revisionNo',
-    'currency',
-  ];
+function hasDirtyField(dirty: unknown): boolean {
+  if (dirty === true) return true;
+  if (!dirty || typeof dirty !== 'object' || Array.isArray(dirty)) return false;
+  return Object.values(dirty as DirtyFieldTree).some(hasDirtyField);
+}
 
-  return meaningfulKeys.some((key) => hasValue(root[key]));
+function getDirtyChild(dirty: unknown, key: string): unknown {
+  if (dirty === true) return true;
+  if (!dirty || typeof dirty !== 'object' || Array.isArray(dirty)) return undefined;
+  return (dirty as DirtyFieldTree)[key];
+}
+
+function hasMeaningfulRootValue(root: Record<string, unknown>, dirtyRoot: unknown): boolean {
+  return MEANINGFUL_ROOT_KEYS.some((key) => hasDirtyField(getDirtyChild(dirtyRoot, key)) && hasValue(root[key]));
+}
+
+function hasStoredMeaningfulRootValue(root: Record<string, unknown>): boolean {
+  return MEANINGFUL_ROOT_KEYS.some((key) => hasValue(root[key]));
+}
+
+function getPayloadRoot(
+  payload: AnyDraftPayload,
+  rootKey: SalesDocumentDraftRootKey,
+): Record<string, unknown> {
+  const root = payload.formValues[rootKey];
+  return root && typeof root === 'object' && !Array.isArray(root)
+    ? (root as Record<string, unknown>)
+    : {};
 }
 
 export function hasMeaningfulSalesDocumentDraft(
   payload: AnyDraftPayload,
   rootKey: SalesDocumentDraftRootKey,
+  dirtyFields?: FieldNamesMarkedBoolean<FieldValues>,
 ): boolean {
-  const root = payload.formValues[rootKey];
-  const rootObject = root && typeof root === 'object' && !Array.isArray(root)
-    ? (root as Record<string, unknown>)
-    : {};
+  const rootObject = getPayloadRoot(payload, rootKey);
+  const dirtyRoot = dirtyFields ? dirtyFields[rootKey] : undefined;
 
   return (
-    hasMeaningfulRootValue(rootObject) ||
+    hasMeaningfulRootValue(rootObject, dirtyRoot) ||
+    payload.lines.length > 0 ||
+    payload.exchangeRates.length > 0 ||
+    hasValue(payload.notes)
+  );
+}
+
+function hasStoredMeaningfulSalesDocumentDraft(
+  payload: AnyDraftPayload,
+  rootKey: SalesDocumentDraftRootKey,
+): boolean {
+  return (
+    hasStoredMeaningfulRootValue(getPayloadRoot(payload, rootKey)) ||
     payload.lines.length > 0 ||
     payload.exchangeRates.length > 0 ||
     hasValue(payload.notes)
@@ -132,6 +171,7 @@ export function useSalesDocumentDraft<
   enabled = true,
 }: UseSalesDocumentDraftOptions<TFormValues, TLine, TExchangeRate, TNotes>) {
   type Payload = SalesDocumentDraftPayload<TFormValues, TLine, TExchangeRate, TNotes>;
+  const { dirtyFields } = useFormState({ control: form.control });
 
   const draftKey = useMemo(() => {
     if (userId === null || userId === undefined || userId === '') return null;
@@ -166,7 +206,7 @@ export function useSalesDocumentDraft<
       if (!active || !record) return;
 
       const isExpired = new Date(record.expiresAt).getTime() <= Date.now();
-      if (isExpired || !hasMeaningfulSalesDocumentDraft(record.payload as AnyDraftPayload, rootKey)) {
+      if (isExpired || !hasStoredMeaningfulSalesDocumentDraft(record.payload as AnyDraftPayload, rootKey)) {
         await deleteSalesDocumentDraft(draftKey);
         return;
       }
@@ -186,7 +226,10 @@ export function useSalesDocumentDraft<
     if (!draftKey || !enabled || restoreDialogOpen || isRestoringRef.current) return;
 
     const payload = buildPayload();
-    if (!hasMeaningfulSalesDocumentDraft(payload as AnyDraftPayload, rootKey)) return;
+    if (!hasMeaningfulSalesDocumentDraft(payload as AnyDraftPayload, rootKey, dirtyFields)) {
+      void deleteSalesDocumentDraft(draftKey);
+      return;
+    }
 
     const timeoutId = window.setTimeout(() => {
       const now = new Date();
@@ -207,6 +250,7 @@ export function useSalesDocumentDraft<
     branchCode,
     buildPayload,
     documentType,
+    dirtyFields,
     draftKey,
     enabled,
     restoreDialogOpen,
@@ -244,4 +288,3 @@ export function useSalesDocumentDraft<
     clearDraft,
   };
 }
-
