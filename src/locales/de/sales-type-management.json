@@ -5,12 +5,14 @@
   "searchPlaceholder": "Verkaufstyp suchen...",
   "advancedFilter": {
     "columnName": "Name",
+    "columnCode": "Code",
     "columnSalesType": "Angebotstyp"
   },
   "table": {
     "title": "Verkaufstyp-Liste",
     "salesType": "Angebotstyp",
     "name": "Name",
+    "code": "Code",
     "createdDate": "Erstellt am"
   },
   "form": {
@@ -21,9 +23,13 @@
     "salesType": "Angebotstyp",
     "name": "Name",
     "namePlaceholder": "Verkaufstypnamen eingeben",
+    "code": "Code",
+    "codePlaceholder": "Z. B. 1 oder FOB",
+    "codeHelp": "Optional. Falls gefüllt, wird dieser Wert bei der Auftragsintegration als Export-/Lieferart-Code an Netsis gesendet; leer fällt Ausland auf FOB zurück.",
     "validation": {
       "required": "Name ist erforderlich",
-      "whitespace": "Name darf nicht leer sein"
+      "whitespace": "Name darf nicht leer sein",
+      "codeMaxLength": "Code darf maximal 50 Zeichen lang sein"
     }
   }
 }

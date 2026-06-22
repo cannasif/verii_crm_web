@@ -4,6 +4,7 @@ import type { FilterRow } from '@/lib/advanced-filter-types';
 
 export const SALES_TYPE_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'name', type: 'string', labelKey: 'advancedFilter.columnName' },
+  { value: 'code', type: 'string', labelKey: 'advancedFilter.columnCode' },
   { value: 'salesType', type: 'string', labelKey: 'advancedFilter.columnSalesType' },
 ] as const;
 

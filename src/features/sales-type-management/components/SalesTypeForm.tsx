@@ -72,6 +72,7 @@ export function SalesTypeForm({
     defaultValues: {
       salesType: OfferType.YURTICI,
       name: '',
+      code: '',
     },
   });
   const isFormValid = form.formState.isValid;
@@ -81,11 +82,13 @@ export function SalesTypeForm({
       form.reset({
         salesType: salesType.salesType,
         name: salesType.name,
+        code: salesType.code ?? '',
       });
     } else {
       form.reset({
         salesType: OfferType.YURTICI,
         name: '',
+        code: '',
       });
     }
   }, [salesType, form]);
@@ -172,6 +175,31 @@ export function SalesTypeForm({
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage className="text-red-500 text-[10px] mt-1" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="code"
+                render={({ field }) => (
+                  <FormItem className="space-y-0 md:col-span-2">
+                    <FormLabel className={LABEL_STYLE}>
+                      {t('form.code')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value ?? ''}
+                        placeholder={t('form.codePlaceholder')}
+                        className={INPUT_STYLE}
+                        maxLength={50}
+                      />
+                    </FormControl>
+                    <p className="mt-1 text-[11px] leading-relaxed text-slate-500 dark:text-slate-500">
+                      {t('form.codeHelp')}
+                    </p>
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
                   </FormItem>
                 )}

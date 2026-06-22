@@ -6,6 +6,7 @@ export interface SalesTypeGetDto {
   id: number;
   salesType: OfferTypeValue;
   name: string;
+  code?: string | null;
   createdDate: string;
   updatedDate?: string | null;
   isDeleted: boolean;
@@ -17,16 +18,19 @@ export interface SalesTypeGetDto {
 export interface SalesTypeCreateDto {
   salesType: OfferTypeValue;
   name: string;
+  code?: string | null;
 }
 
 export interface SalesTypeUpdateDto {
   salesType: OfferTypeValue;
   name: string;
+  code?: string | null;
 }
 
 export interface SalesTypeListFilters {
   salesType?: OfferTypeValue;
   name?: string;
+  code?: string;
 }
 
 export const salesTypeFormSchema = z.object({
@@ -37,6 +41,11 @@ export const salesTypeFormSchema = z.object({
     .string({ message: i18n.t('form.validation.required', { ns: 'sales-type-management' }) })
     .min(1, { message: i18n.t('form.validation.required', { ns: 'sales-type-management' }) })
     .refine((val) => val.trim().length > 0, { message: i18n.t('form.validation.whitespace', { ns: 'sales-type-management' }) }),
+  code: z
+    .string()
+    .max(50, { message: i18n.t('form.validation.codeMaxLength', { ns: 'sales-type-management' }) })
+    .optional()
+    .nullable(),
 });
 
 export type SalesTypeFormSchema = z.infer<typeof salesTypeFormSchema>;

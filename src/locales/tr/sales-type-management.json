@@ -5,12 +5,14 @@
   "searchPlaceholder": "Satış tipi ara...",
   "advancedFilter": {
     "columnName": "Ad",
+    "columnCode": "Kod",
     "columnSalesType": "Teklif Tipi"
   },
   "table": {
     "title": "Satış Tipi Listesi",
     "salesType": "Teklif Tipi",
     "name": "Ad",
+    "code": "Kod",
     "createdDate": "Oluşturulma Tarihi"
   },
   "form": {
@@ -21,9 +23,13 @@
     "salesType": "Teklif Tipi",
     "name": "Ad",
     "namePlaceholder": "Satış tipi adını girin",
+    "code": "Kod",
+    "codePlaceholder": "Örn. 1 veya FOB",
+    "codeHelp": "Opsiyoneldir. Netsis'e sipariş aktarılırken varsa ihracat/teslim tipi kodu olarak gönderilir; boşsa yurtdışı için varsayılan FOB kullanılır.",
     "validation": {
       "required": "Ad zorunludur",
-      "whitespace": "Ad boş veya sadece boşluk olamaz"
+      "whitespace": "Ad boş veya sadece boşluk olamaz",
+      "codeMaxLength": "Kod en fazla 50 karakter olabilir"
     }
   }
 }

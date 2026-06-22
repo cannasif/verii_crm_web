@@ -5,12 +5,14 @@
   "searchPlaceholder": "Cerca tipo di vendita...",
   "advancedFilter": {
     "columnName": "Nome",
+    "columnCode": "Codice",
     "columnSalesType": "Tipo offerta"
   },
   "table": {
     "title": "Elenco tipi di vendita",
     "salesType": "Tipo offerta",
     "name": "Nome",
+    "code": "Codice",
     "createdDate": "Data creazione"
   },
   "form": {
@@ -21,9 +23,13 @@
     "salesType": "Tipo offerta",
     "name": "Nome",
     "namePlaceholder": "Inserisci il nome del tipo di vendita",
+    "code": "Codice",
+    "codePlaceholder": "Es. 1 o FOB",
+    "codeHelp": "Opzionale. Se valorizzato, viene inviato a Netsis come codice tipo export/consegna durante l'integrazione dell'ordine; se vuoto, le vendite estere usano FOB.",
     "validation": {
       "required": "Il nome è obbligatorio",
-      "whitespace": "Il nome non può essere vuoto"
+      "whitespace": "Il nome non può essere vuoto",
+      "codeMaxLength": "Il codice può contenere al massimo 50 caratteri"
     }
   }
 }

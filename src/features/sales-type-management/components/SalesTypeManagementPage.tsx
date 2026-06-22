@@ -114,9 +114,10 @@ export function SalesTypeManagementPage(): ReactElement {
       const lowerSearch = searchTerm.toLowerCase();
       result = result.filter((item) => {
         const nameMatch = item.name && item.name.toLowerCase().includes(lowerSearch);
+        const codeMatch = item.code && item.code.toLowerCase().includes(lowerSearch);
         const typeLabel = salesTypeLabel(item.salesType);
         const typeMatch = typeLabel && typeLabel.toLowerCase().includes(lowerSearch);
-        return nameMatch || typeMatch;
+        return nameMatch || codeMatch || typeMatch;
       });
     }
     result = applySalesTypeFilters(result, appliedFilterRows);
@@ -238,10 +239,10 @@ export function SalesTypeManagementPage(): ReactElement {
     if (editingItem) {
       await updateSalesType.mutateAsync({
         id: editingItem.id,
-        data: { salesType: data.salesType, name: data.name.trim() },
+        data: { salesType: data.salesType, name: data.name.trim(), code: data.code?.trim() || null },
       });
     } else {
-      await createSalesType.mutateAsync({ salesType: data.salesType, name: data.name.trim() });
+      await createSalesType.mutateAsync({ salesType: data.salesType, name: data.name.trim(), code: data.code?.trim() || null });
     }
     setFormOpen(false);
     setEditingItem(null);

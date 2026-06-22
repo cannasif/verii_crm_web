@@ -5,12 +5,14 @@
   "searchPlaceholder": "Search sales type...",
   "advancedFilter": {
     "columnName": "Name",
+    "columnCode": "Code",
     "columnSalesType": "Offer Type"
   },
   "table": {
     "title": "Sales Type List",
     "salesType": "Offer Type",
     "name": "Name",
+    "code": "Code",
     "createdDate": "Created Date"
   },
   "form": {
@@ -21,9 +23,13 @@
     "salesType": "Offer Type",
     "name": "Name",
     "namePlaceholder": "Enter sales type name",
+    "code": "Code",
+    "codePlaceholder": "E.g. 1 or FOB",
+    "codeHelp": "Optional. If filled, this value is sent to Netsis as the export/delivery type code during order integration; if empty, foreign sales fall back to FOB.",
     "validation": {
       "required": "Name is required",
-      "whitespace": "Name cannot be empty or whitespace"
+      "whitespace": "Name cannot be empty or whitespace",
+      "codeMaxLength": "Code can be at most 50 characters"
     }
   }
 }
