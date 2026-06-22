@@ -7,11 +7,12 @@ const WAREHOUSE_BALANCES_STALE_MS = 60_000;
 
 export function useWarehouseBalancesByStockId(
   stockId: number,
+  enabled = true,
 ): UseQueryResult<WarehouseStockBalanceDto[], Error> {
   return useQuery<WarehouseStockBalanceDto[], Error>({
     queryKey: queryKeys.warehouseBalances(stockId),
     queryFn: () => stockApi.getWarehouseBalancesByStockId(stockId),
-    enabled: stockId > 0,
+    enabled: enabled && stockId > 0,
     staleTime: WAREHOUSE_BALANCES_STALE_MS,
     gcTime: 5 * 60_000,
   });

@@ -151,7 +151,12 @@ export function StockGridCard({
         </h3>
 
         <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-          <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} />
+          <StockWarehouseBalanceBadge
+            stockId={stock.id}
+            unit={stock.unit}
+            balance={stock.balance}
+            balanceText={stock.balanceText}
+          />
         </div>
 
         {stock.grupKodu || stock.kod1 ? (

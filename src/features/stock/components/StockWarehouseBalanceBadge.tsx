@@ -14,6 +14,8 @@ import type { WarehouseStockBalanceDto } from '../types';
 interface StockWarehouseBalanceBadgeProps {
   stockId: number;
   unit?: string | null;
+  balance?: number | null;
+  balanceText?: string | null;
   className?: string;
 }
 
@@ -59,15 +61,22 @@ function panelToneClasses(tone: 'negative' | 'positive'): {
 export function StockWarehouseBalanceBadge({
   stockId,
   unit,
+  balance,
+  balanceText,
   className,
 }: StockWarehouseBalanceBadgeProps): ReactElement | null {
   const { i18n } = useTranslation('common');
-  const { data: balances, isLoading, isError } = useWarehouseBalancesByStockId(stockId);
+  const hasPrefetchedBalance = balance !== undefined && balance !== null;
+  const { data: balances, isLoading, isError } = useWarehouseBalancesByStockId(stockId, !hasPrefetchedBalance);
 
   const rows = balances ?? [];
   const totalBalance = useMemo(
-    () => rows.reduce((sum, item) => sum + (Number(item.balance) || 0), 0),
-    [rows],
+    () => (hasPrefetchedBalance ? Number(balance) || 0 : rows.reduce((sum, item) => sum + (Number(item.balance) || 0), 0)),
+    [balance, hasPrefetchedBalance, rows],
+  );
+  const prefetchedLines = useMemo(
+    () => (balanceText ?? '').split(',').map((line) => line.trim()).filter(Boolean),
+    [balanceText],
   );
   const badgeTone = resolveBadgeTone(totalBalance);
   const panelTone = panelToneClasses(badgeTone);
@@ -76,11 +85,15 @@ export function StockWarehouseBalanceBadge({
     return null;
   }
 
-  if (isLoading) {
+  if (!hasPrefetchedBalance && isLoading) {
     return <Skeleton className={cn('h-6 w-[5.5rem] rounded-full', className)} />;
   }
 
-  if (isError || rows.length === 0) {
+  if (!hasPrefetchedBalance && (isError || rows.length === 0)) {
+    return null;
+  }
+
+  if (hasPrefetchedBalance && totalBalance === 0 && prefetchedLines.length === 0) {
     return null;
   }
 
@@ -109,14 +122,66 @@ export function StockWarehouseBalanceBadge({
           panelTone.tooltipBorder,
         )}
       >
-        <WarehouseBalanceTooltipPanel
-          balances={rows}
-          totalBalance={totalBalance}
-          unit={unit}
-          locale={i18n.language}
-        />
+        {hasPrefetchedBalance ? (
+          <WarehouseBalanceSummaryTooltipPanel
+            lines={prefetchedLines}
+            totalBalance={totalBalance}
+            unit={unit}
+          />
+        ) : (
+          <WarehouseBalanceTooltipPanel
+            balances={rows}
+            totalBalance={totalBalance}
+            unit={unit}
+            locale={i18n.language}
+          />
+        )}
       </TooltipContent>
     </Tooltip>
+  );
+}
+
+function WarehouseBalanceSummaryTooltipPanel({
+  lines,
+  totalBalance,
+  unit,
+}: {
+  lines: string[];
+  totalBalance: number;
+  unit?: string | null;
+}): ReactElement {
+  const { t } = useTranslation('common');
+  const badgeTone = resolveBadgeTone(totalBalance);
+  const panelTone = panelToneClasses(badgeTone);
+
+  return (
+    <div className="min-w-[12rem]">
+      <div className={cn('border-b px-3 py-2', panelTone.border, panelTone.headerBg)}>
+        <p className={cn('text-[10px] font-bold uppercase tracking-wide', panelTone.title)}>
+          {t('warehouseBalanceTooltip.totalLabel')}
+        </p>
+        <p className={cn('text-base font-bold tabular-nums', panelTone.value)}>
+          {formatWarehouseBalanceWithUnit(totalBalance, unit)}
+        </p>
+        {lines.length > 0 ? (
+          <p className={cn('text-[10px]', panelTone.meta)}>
+            {t('warehouseBalanceTooltip.warehouseCount', { count: lines.length })}
+          </p>
+        ) : null}
+      </div>
+      {lines.length > 0 ? (
+        <ul className="max-h-48 space-y-0 overflow-y-auto px-1 py-1.5">
+          {lines.map((line, index) => (
+            <li
+              key={`${line}-${index}`}
+              className="rounded-md px-2 py-1.5 text-xs font-semibold text-zinc-800 hover:bg-zinc-50 dark:text-zinc-100 dark:hover:bg-white/5"
+            >
+              {line}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
   );
 }
 

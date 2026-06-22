@@ -457,7 +457,12 @@ export function StockListPage(): ReactElement {
     if (key === 'WarehouseBalance') {
       return (
         <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
-          <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} />
+          <StockWarehouseBalanceBadge
+            stockId={stock.id}
+            unit={stock.unit}
+            balance={stock.balance}
+            balanceText={stock.balanceText}
+          />
         </div>
       );
     }
