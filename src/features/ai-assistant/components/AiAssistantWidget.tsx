@@ -24,10 +24,25 @@ const actionItemClassNameBySeverity: Record<string, string> = {
 
 const minimumThinkingDurationMs = 900;
 
+type AiAssistantChatMessage = {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  actionItems?: AiAssistantActionItemDto[];
+};
+
 function waitForMinimumThinkingDuration(): Promise<void> {
   return new Promise((resolve) => {
     window.setTimeout(resolve, minimumThinkingDurationMs);
   });
+}
+
+function createMessageId(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
 export function AiAssistantWidget(): ReactElement {
@@ -37,9 +52,7 @@ export function AiAssistantWidget(): ReactElement {
   const askMutation = useAskAiAssistantMutation();
   const [isOpen, setIsOpen] = useState(false);
   const [question, setQuestion] = useState('');
-  const [lastQuestion, setLastQuestion] = useState<string | null>(null);
-  const [lastAnswer, setLastAnswer] = useState<string | null>(null);
-  const [lastActionItems, setLastActionItems] = useState<AiAssistantActionItemDto[]>([]);
+  const [messages, setMessages] = useState<AiAssistantChatMessage[]>([]);
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
   const [isThinking, setIsThinking] = useState(false);
   const [latestErrorContext, setLatestErrorContext] = useState<AiAssistantErrorContext | null>(
@@ -47,6 +60,7 @@ export function AiAssistantWidget(): ReactElement {
   );
   const [questionError, setQuestionError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => subscribeAiAssistantErrorContext(setLatestErrorContext), []);
 
@@ -66,6 +80,15 @@ export function AiAssistantWidget(): ReactElement {
   const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
   const isAssistantBusy = askMutation.isPending || isThinking;
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    messagesEndRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'end',
+    });
+  }, [isOpen, messages, isAssistantBusy]);
+
   const askQuestion = async (value: string, errorContext?: AiAssistantErrorContext | null): Promise<void> => {
     const trimmedQuestion = value.trim();
     if (!trimmedQuestion) {
@@ -74,9 +97,14 @@ export function AiAssistantWidget(): ReactElement {
     }
 
     setQuestionError(null);
-    setLastQuestion(trimmedQuestion);
-    setLastAnswer(null);
-    setLastActionItems([]);
+    setMessages((currentMessages) => [
+      ...currentMessages,
+      {
+        id: createMessageId(),
+        role: 'user',
+        content: trimmedQuestion,
+      },
+    ]);
     setIsThinking(true);
 
     try {
@@ -92,8 +120,15 @@ export function AiAssistantWidget(): ReactElement {
         }),
         waitForMinimumThinkingDuration(),
       ]);
-      setLastAnswer(result.answer);
-      setLastActionItems(result.actionItems ?? []);
+      setMessages((currentMessages) => [
+        ...currentMessages,
+        {
+          id: createMessageId(),
+          role: 'assistant',
+          content: result.answer,
+          actionItems: result.actionItems ?? [],
+        },
+      ]);
       setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
       setQuestion('');
     } finally {
@@ -145,52 +180,58 @@ export function AiAssistantWidget(): ReactElement {
           </header>
 
           <div className="max-h-[min(60dvh,520px)] space-y-4 overflow-y-auto p-4">
-            <div className="rounded-3xl border border-pink-500/15 bg-pink-500/5 p-4">
-              <div className="mb-2 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-pink-600 dark:text-pink-300">
-                <Sparkles size={14} />
-                {t('eyebrow')}
-              </div>
-              <p className="text-sm font-medium leading-6 text-slate-600 dark:text-slate-300">
-                {t('chatDescription')}
-              </p>
-            </div>
-
-            {lastQuestion && (
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-                <div className="mb-1 text-xs font-black uppercase tracking-[0.2em] text-slate-400">
-                  {t('lastQuestion')}
+            {messages.length === 0 && (
+              <div className="rounded-3xl border border-pink-500/15 bg-pink-500/5 p-4">
+                <div className="mb-2 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-pink-600 dark:text-pink-300">
+                  <Sparkles size={14} />
+                  {t('eyebrow')}
                 </div>
-                {lastQuestion}
+                <p className="text-sm font-medium leading-6 text-slate-600 dark:text-slate-300">
+                  {t('chatDescription')}
+                </p>
               </div>
             )}
+
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={message.role === 'user' ? 'flex justify-end' : 'space-y-3'}
+              >
+                {message.role === 'user' ? (
+                  <div className="max-w-[85%] rounded-[1.35rem] rounded-ee-md bg-linear-to-r from-pink-600 to-orange-500 px-4 py-3 text-sm font-bold leading-6 text-white shadow-lg shadow-pink-950/20">
+                    {message.content}
+                  </div>
+                ) : (
+                  <>
+                    <AiAssistantAnswerCard
+                      title={t('answerTitle')}
+                      answer={message.content}
+                    />
+
+                    {message.actionItems && message.actionItems.length > 0 && (
+                      <div className="rounded-3xl border border-slate-200 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
+                        <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
+                          {t('actionItemsTitle')}
+                        </div>
+                        <div className="grid gap-2">
+                          {message.actionItems.map((item) => (
+                            <div
+                              key={`${message.id}-${item.title}-${item.description}`}
+                              className={`rounded-2xl border p-3 ${actionItemClassNameBySeverity[item.severity] ?? actionItemClassNameBySeverity.info}`}
+                            >
+                              <div className="text-xs font-black">{item.title}</div>
+                              <p className="mt-1 text-xs font-semibold leading-5 opacity-85">{item.description}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            ))}
 
             {isAssistantBusy && <AiAssistantThinkingIndicator />}
-
-            {lastAnswer && (
-              <AiAssistantAnswerCard
-                title={t('answerTitle')}
-                answer={lastAnswer}
-              />
-            )}
-
-            {lastActionItems.length > 0 && (
-              <div className="rounded-3xl border border-slate-200 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
-                <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
-                  {t('actionItemsTitle')}
-                </div>
-                <div className="grid gap-2">
-                  {lastActionItems.map((item) => (
-                    <div
-                      key={`${item.title}-${item.description}`}
-                      className={`rounded-2xl border p-3 ${actionItemClassNameBySeverity[item.severity] ?? actionItemClassNameBySeverity.info}`}
-                    >
-                      <div className="text-xs font-black">{item.title}</div>
-                      <p className="mt-1 text-xs font-semibold leading-5 opacity-85">{item.description}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {latestErrorContext && (
               <div className="rounded-3xl border border-amber-400/30 bg-amber-400/10 p-4">
@@ -227,6 +268,8 @@ export function AiAssistantWidget(): ReactElement {
                 </button>
               ))}
             </div>
+
+            <div ref={messagesEndRef} />
           </div>
 
           <form
