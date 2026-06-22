@@ -27,7 +27,10 @@
     }
   },
   "answerTitle": "KI-Antwort",
+  "sourceTitle": "Antwortquelle",
   "actionItemsTitle": "Empfohlene Prüfungen",
+  "openAction": "Öffnen",
+  "newChat": "Neuer Chat",
   "emptyQuestion": "Bitte geben Sie eine Frage ein.",
   "openChat": "KI-Chat öffnen",
   "closeChat": "KI-Chat schließen",

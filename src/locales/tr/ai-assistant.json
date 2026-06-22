@@ -27,7 +27,10 @@
     }
   },
   "answerTitle": "AI yanıtı",
+  "sourceTitle": "Yanıt kaynağı",
   "actionItemsTitle": "Önerilen kontroller",
+  "openAction": "Aç",
+  "newChat": "Yeni sohbet",
   "emptyQuestion": "Lütfen bir soru yazın.",
   "openChat": "AI sohbeti aç",
   "closeChat": "AI sohbeti kapat",

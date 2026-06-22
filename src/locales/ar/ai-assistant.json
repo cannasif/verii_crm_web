@@ -27,7 +27,10 @@
     }
   },
   "answerTitle": "إجابة الذكاء الاصطناعي",
+  "sourceTitle": "مصدر الإجابة",
   "actionItemsTitle": "الفحوصات المقترحة",
+  "openAction": "فتح",
+  "newChat": "محادثة جديدة",
   "emptyQuestion": "يرجى كتابة سؤال.",
   "openChat": "فتح محادثة الذكاء الاصطناعي",
   "closeChat": "إغلاق محادثة الذكاء الاصطناعي",

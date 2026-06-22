@@ -1,6 +1,7 @@
 import { type FormEvent, type ReactElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bot, MessageCircle, SendHorizontal, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Bot, ExternalLink, MessageCircle, Plus, SendHorizontal, Sparkles } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,12 @@ import {
   subscribeAiAssistantErrorContext,
   type AiAssistantErrorContext,
 } from '../lib/ai-assistant-error-context';
-import type { AiAssistantActionItemDto } from '../types/ai-assistant.types';
+import {
+  createAiAssistantChatHistoryKey,
+  readAiAssistantChatHistory,
+  writeAiAssistantChatHistory,
+  type AiAssistantChatMessage,
+} from '../lib/ai-assistant-chat-history';
 
 const actionItemClassNameBySeverity: Record<string, string> = {
   danger: 'border-red-400/30 bg-red-400/10 text-red-950 dark:text-red-100',
@@ -25,13 +31,6 @@ const actionItemClassNameBySeverity: Record<string, string> = {
 };
 
 const minimumThinkingDurationMs = 900;
-
-type AiAssistantChatMessage = {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  actionItems?: AiAssistantActionItemDto[];
-};
 
 function waitForMinimumThinkingDuration(): Promise<void> {
   return new Promise((resolve) => {
@@ -49,12 +48,16 @@ function createMessageId(): string {
 
 export function AiAssistantPage(): ReactElement {
   const { t } = useTranslation('ai-assistant');
+  const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
   const { data: greeting, isLoading } = useAiAssistantGreetingQuery();
   const askMutation = useAskAiAssistantMutation();
+  const chatHistoryKey = createAiAssistantChatHistoryKey(user);
   const [question, setQuestion] = useState('');
-  const [messages, setMessages] = useState<AiAssistantChatMessage[]>([]);
+  const [messages, setMessages] = useState<AiAssistantChatMessage[]>(() =>
+    readAiAssistantChatHistory(chatHistoryKey)
+  );
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
   const [isThinking, setIsThinking] = useState(false);
   const [latestErrorContext, setLatestErrorContext] = useState<AiAssistantErrorContext | null>(
@@ -62,6 +65,8 @@ export function AiAssistantPage(): ReactElement {
   );
   const [questionError, setQuestionError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
+  const skipNextHistoryWriteRef = useRef(false);
 
   useEffect(() => {
     setPageTitle(t('pageTitle'));
@@ -69,6 +74,24 @@ export function AiAssistantPage(): ReactElement {
   }, [setPageTitle, t]);
 
   useEffect(() => subscribeAiAssistantErrorContext(setLatestErrorContext), []);
+
+  useEffect(() => {
+    if (loadedChatHistoryKeyRef.current !== chatHistoryKey) {
+      skipNextHistoryWriteRef.current = true;
+      loadedChatHistoryKeyRef.current = chatHistoryKey;
+    }
+
+    setMessages(readAiAssistantChatHistory(chatHistoryKey));
+  }, [chatHistoryKey]);
+
+  useEffect(() => {
+    if (skipNextHistoryWriteRef.current) {
+      skipNextHistoryWriteRef.current = false;
+      return;
+    }
+
+    writeAiAssistantChatHistory(chatHistoryKey, messages);
+  }, [chatHistoryKey, messages]);
 
   const fallbackName = user?.name || user?.email || t('fallbackName');
   const displayName = greeting?.fullName?.trim() || fallbackName;
@@ -97,6 +120,7 @@ export function AiAssistantPage(): ReactElement {
         id: createMessageId(),
         role: 'user',
         content: trimmedQuestion,
+        createdAt: new Date().toISOString(),
       },
     ]);
     setIsThinking(true);
@@ -120,7 +144,9 @@ export function AiAssistantPage(): ReactElement {
           id: createMessageId(),
           role: 'assistant',
           content: result.answer,
+          createdAt: new Date().toISOString(),
           actionItems: result.actionItems ?? [],
+          sources: result.sources ?? [],
         },
       ]);
       setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
@@ -138,6 +164,21 @@ export function AiAssistantPage(): ReactElement {
   const askLatestError = async (): Promise<void> => {
     if (!latestErrorContext) return;
     await askQuestion(t('askLastErrorQuestion'), latestErrorContext);
+  };
+
+  const clearChat = (): void => {
+    setMessages([]);
+    setDynamicSuggestions([]);
+    setQuestionError(null);
+  };
+
+  const openActionUrl = (actionUrl: string): void => {
+    if (actionUrl.startsWith('http')) {
+      window.open(actionUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    navigate(actionUrl);
   };
 
   return (
@@ -175,6 +216,16 @@ export function AiAssistantPage(): ReactElement {
                 <h2 className="text-lg font-bold text-slate-950 dark:text-white">{t('chatTitle')}</h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400">{t('chatDescription')}</p>
               </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="ms-auto rounded-2xl text-xs font-black"
+                onClick={clearChat}
+              >
+                <Plus size={15} className="me-1.5" />
+                {t('newChat')}
+              </Button>
             </div>
 
             <div className="max-h-[min(58dvh,660px)] space-y-5 overflow-y-auto rounded-[2rem] border border-slate-200 bg-white/55 p-4 shadow-inner shadow-slate-950/5 backdrop-blur-xl dark:border-white/10 dark:bg-black/25">
@@ -214,6 +265,26 @@ export function AiAssistantPage(): ReactElement {
                             title={t('answerTitle')}
                             answer={message.content}
                           />
+                          {message.sources && message.sources.length > 0 && (
+                            <div className="mt-3 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.04]">
+                              <div className="mb-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
+                                {t('sourceTitle')}
+                              </div>
+                              <div className="grid gap-2 md:grid-cols-2">
+                                {message.sources.map((source) => (
+                                  <div
+                                    key={`${message.id}-${source.label}-${source.module ?? ''}-${source.period ?? ''}`}
+                                    className="rounded-xl bg-slate-950/[0.03] px-3 py-2 text-xs font-semibold leading-5 text-slate-600 dark:bg-white/[0.04] dark:text-slate-300"
+                                  >
+                                    <span className="font-black text-slate-900 dark:text-white">{source.label}</span>
+                                    {source.module ? <span> · {source.module}</span> : null}
+                                    {source.period ? <span> · {source.period}</span> : null}
+                                    <p className="mt-0.5 opacity-80">{source.description}</p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -230,6 +301,18 @@ export function AiAssistantPage(): ReactElement {
                               >
                                 <div className="text-sm font-black">{item.title}</div>
                                 <p className="mt-2 text-sm font-semibold leading-6 opacity-85">{item.description}</p>
+                                {item.actionUrl && (
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    className="mt-3 h-9 rounded-xl bg-white/70 px-3 text-xs font-black dark:bg-white/10"
+                                    onClick={() => openActionUrl(item.actionUrl!)}
+                                  >
+                                    <ExternalLink size={13} className="me-1.5" />
+                                    {item.actionLabel || t('openAction')}
+                                  </Button>
+                                )}
                               </div>
                             ))}
                           </div>

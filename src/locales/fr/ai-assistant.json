@@ -27,7 +27,10 @@
     }
   },
   "answerTitle": "Réponse IA",
+  "sourceTitle": "Source de la réponse",
   "actionItemsTitle": "Contrôles recommandés",
+  "openAction": "Ouvrir",
+  "newChat": "Nouvelle conversation",
   "emptyQuestion": "Veuillez saisir une question.",
   "openChat": "Ouvrir le chat IA",
   "closeChat": "Fermer le chat IA",

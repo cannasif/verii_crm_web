@@ -27,7 +27,10 @@
     }
   },
   "answerTitle": "AI answer",
+  "sourceTitle": "Answer source",
   "actionItemsTitle": "Recommended checks",
+  "openAction": "Open",
+  "newChat": "New chat",
   "emptyQuestion": "Please enter a question.",
   "openChat": "Open AI chat",
   "closeChat": "Close AI chat",

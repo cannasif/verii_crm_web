@@ -51,6 +51,15 @@ export interface AiAssistantActionItemDto {
   title: string;
   description: string;
   severity: 'danger' | 'warning' | 'success' | 'info' | string;
+  actionLabel?: string | null;
+  actionUrl?: string | null;
+}
+
+export interface AiAssistantSourceDto {
+  label: string;
+  description: string;
+  module?: string | null;
+  period?: string | null;
 }
 
 export interface AiAssistantAnswerDto {
@@ -59,5 +68,6 @@ export interface AiAssistantAnswerDto {
   answer: string;
   summary: AiAssistantSummaryDto | null;
   actionItems: AiAssistantActionItemDto[];
+  sources: AiAssistantSourceDto[];
   suggestedQuestions: string[];
 }
