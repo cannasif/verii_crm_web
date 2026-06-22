@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import i18n from '@/lib/i18n';
 import type { ApiResponse } from '@/types/api';
 import type {
   AiAssistantAnswerDto,
@@ -13,7 +14,13 @@ export const aiAssistantApi = {
       return response.data;
     }
 
-    throw new Error(response.message || 'AI asistan karşılama bilgisi alınamadı.');
+    throw new Error(
+      response.message ||
+        i18n.t('apiErrors.greeting', {
+          ns: 'ai-assistant',
+          defaultValue: 'AI asistan karşılama bilgisi alınamadı.',
+        })
+    );
   },
 
   ask: async (request: AiAssistantAskRequestDto): Promise<AiAssistantAnswerDto> => {
@@ -22,6 +29,12 @@ export const aiAssistantApi = {
       return response.data;
     }
 
-    throw new Error(response.message || 'AI asistan yanıtı alınamadı.');
+    throw new Error(
+      response.message ||
+        i18n.t('apiErrors.answer', {
+          ns: 'ai-assistant',
+          defaultValue: 'AI asistan yanıtı alınamadı.',
+        })
+    );
   },
 };

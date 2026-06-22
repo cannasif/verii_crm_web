@@ -34,5 +34,9 @@
   "lastQuestion": "La tua domanda",
   "lastErrorTitle": "Ultimo errore rilevato",
   "askLastError": "Chiedi all’IA di questo errore",
-  "askLastErrorQuestion": "Cosa significa questo errore?"
+  "askLastErrorQuestion": "Cosa significa questo errore?",
+  "apiErrors": {
+    "greeting": "Impossibile caricare il saluto dell’assistente IA.",
+    "answer": "Impossibile caricare la risposta dell’assistente IA."
+  }
 }

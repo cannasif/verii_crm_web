@@ -34,5 +34,9 @@
   "lastQuestion": "Votre question",
   "lastErrorTitle": "Dernière erreur détectée",
   "askLastError": "Demander à l’IA pour cette erreur",
-  "askLastErrorQuestion": "Que signifie cette erreur ?"
+  "askLastErrorQuestion": "Que signifie cette erreur ?",
+  "apiErrors": {
+    "greeting": "Impossible de charger le message d’accueil de l’assistant IA.",
+    "answer": "Impossible de charger la réponse de l’assistant IA."
+  }
 }

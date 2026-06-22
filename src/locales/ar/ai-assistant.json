@@ -34,5 +34,9 @@
   "lastQuestion": "سؤالك",
   "lastErrorTitle": "آخر خطأ تم التقاطه",
   "askLastError": "اسأل الذكاء الاصطناعي عن هذا الخطأ",
-  "askLastErrorQuestion": "ماذا يعني هذا الخطأ؟"
+  "askLastErrorQuestion": "ماذا يعني هذا الخطأ؟",
+  "apiErrors": {
+    "greeting": "تعذر تحميل رسالة ترحيب مساعد الذكاء الاصطناعي.",
+    "answer": "تعذر تحميل إجابة مساعد الذكاء الاصطناعي."
+  }
 }

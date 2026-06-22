@@ -34,5 +34,9 @@
   "lastQuestion": "Sorunuz",
   "lastErrorTitle": "Son yakalanan hata",
   "askLastError": "Bu hatayı AI'a sor",
-  "askLastErrorQuestion": "Bu hata ne anlama geliyor?"
+  "askLastErrorQuestion": "Bu hata ne anlama geliyor?",
+  "apiErrors": {
+    "greeting": "AI asistan karşılama bilgisi alınamadı.",
+    "answer": "AI asistan yanıtı alınamadı."
+  }
 }

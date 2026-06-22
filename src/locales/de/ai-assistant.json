@@ -34,5 +34,9 @@
   "lastQuestion": "Ihre Frage",
   "lastErrorTitle": "Zuletzt erfasster Fehler",
   "askLastError": "KI zu diesem Fehler fragen",
-  "askLastErrorQuestion": "Was bedeutet dieser Fehler?"
+  "askLastErrorQuestion": "Was bedeutet dieser Fehler?",
+  "apiErrors": {
+    "greeting": "Die Begrüßung des KI-Assistenten konnte nicht geladen werden.",
+    "answer": "Die Antwort des KI-Assistenten konnte nicht geladen werden."
+  }
 }

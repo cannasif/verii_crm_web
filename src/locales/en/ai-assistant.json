@@ -34,5 +34,9 @@
   "lastQuestion": "Your question",
   "lastErrorTitle": "Latest captured error",
   "askLastError": "Ask AI about this error",
-  "askLastErrorQuestion": "What does this error mean?"
+  "askLastErrorQuestion": "What does this error mean?",
+  "apiErrors": {
+    "greeting": "AI assistant greeting could not be loaded.",
+    "answer": "AI assistant answer could not be loaded."
+  }
 }
