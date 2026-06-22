@@ -36,6 +36,8 @@
   "sourceTitle": "Answer source",
   "actionItemsTitle": "Recommended checks",
   "openAction": "Open",
+  "copyAnswer": "Copy answer",
+  "copied": "Copied",
   "newChat": "New chat",
   "emptyQuestion": "Please enter a question.",
   "openChat": "Open AI chat",

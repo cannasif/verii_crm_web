@@ -36,6 +36,8 @@
   "sourceTitle": "Yanıt kaynağı",
   "actionItemsTitle": "Önerilen kontroller",
   "openAction": "Aç",
+  "copyAnswer": "Yanıtı kopyala",
+  "copied": "Kopyalandı",
   "newChat": "Yeni sohbet",
   "emptyQuestion": "Lütfen bir soru yazın.",
   "openChat": "AI sohbeti aç",

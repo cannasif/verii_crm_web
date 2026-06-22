@@ -36,6 +36,8 @@
   "sourceTitle": "مصدر الإجابة",
   "actionItemsTitle": "الفحوصات المقترحة",
   "openAction": "فتح",
+  "copyAnswer": "نسخ الإجابة",
+  "copied": "تم النسخ",
   "newChat": "محادثة جديدة",
   "emptyQuestion": "يرجى كتابة سؤال.",
   "openChat": "فتح محادثة الذكاء الاصطناعي",

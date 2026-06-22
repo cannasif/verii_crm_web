@@ -36,6 +36,8 @@
   "sourceTitle": "Antwortquelle",
   "actionItemsTitle": "Empfohlene Prüfungen",
   "openAction": "Öffnen",
+  "copyAnswer": "Antwort kopieren",
+  "copied": "Kopiert",
   "newChat": "Neuer Chat",
   "emptyQuestion": "Bitte geben Sie eine Frage ein.",
   "openChat": "KI-Chat öffnen",

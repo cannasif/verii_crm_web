@@ -36,6 +36,8 @@
   "sourceTitle": "Fonte della risposta",
   "actionItemsTitle": "Controlli consigliati",
   "openAction": "Apri",
+  "copyAnswer": "Copia risposta",
+  "copied": "Copiato",
   "newChat": "Nuova chat",
   "emptyQuestion": "Inserisci una domanda.",
   "openChat": "Apri chat IA",

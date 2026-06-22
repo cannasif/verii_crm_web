@@ -1,7 +1,7 @@
 import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Bot, ExternalLink, FileImage, ImagePlus, MessageCircle, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
+import { Bot, Check, Copy, ExternalLink, FileImage, ImagePlus, MessageCircle, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -30,6 +30,7 @@ import {
   readFileAsBase64,
   type AiAssistantSelectedAttachment,
 } from '../lib/ai-assistant-attachments';
+import { copyTextToClipboard } from '../lib/ai-assistant-clipboard';
 
 const actionItemClassNameBySeverity: Record<string, string> = {
   danger: 'border-red-400/30 bg-red-400/10 text-red-950 dark:text-red-100',
@@ -54,6 +55,8 @@ const aiAssistantTextFallbacks: Record<string, string> = {
   sourceTitle: 'Kaynak',
   actionItemsTitle: 'Önerilen kontroller',
   openAction: 'Aç',
+  copyAnswer: 'Yanıtı kopyala',
+  copied: 'Kopyalandı',
   lastErrorTitle: 'Son hata yakalandı',
   askLastError: 'Bu hatayı açıkla',
   eyebrow: 'CRM AI Asistan',
@@ -110,6 +113,7 @@ export function AiAssistantWidget(): ReactElement {
   );
   const [questionError, setQuestionError] = useState<string | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<AiAssistantSelectedAttachment | null>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sendButtonRef = useRef<HTMLButtonElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -252,6 +256,7 @@ export function AiAssistantWidget(): ReactElement {
           createdAt: new Date().toISOString(),
           actionItems: result.actionItems ?? [],
           sources: result.sources ?? [],
+          intent: result.intent,
         },
       ]);
       setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
@@ -296,6 +301,14 @@ export function AiAssistantWidget(): ReactElement {
 
     navigate(actionUrl);
     setIsOpen(false);
+  };
+
+  const copyAssistantMessage = async (message: AiAssistantChatMessage): Promise<void> => {
+    await copyTextToClipboard(message.content);
+    setCopiedMessageId(message.id);
+    window.setTimeout(() => {
+      setCopiedMessageId((current) => (current === message.id ? null : current));
+    }, 1600);
   };
 
   return (
@@ -344,7 +357,12 @@ export function AiAssistantWidget(): ReactElement {
             </Button>
           </header>
 
-          <div className="flex-1 space-y-4 overflow-y-auto px-4 py-5">
+          <div
+            className="flex-1 space-y-4 overflow-y-auto px-4 py-5"
+            role="log"
+            aria-live="polite"
+            aria-relevant="additions text"
+          >
             {messages.length === 0 && (
               <div className="flex items-start gap-3">
                 <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-500 text-white shadow-lg shadow-emerald-950/20">
@@ -391,6 +409,22 @@ export function AiAssistantWidget(): ReactElement {
                           title={readText('answerTitle')}
                           answer={message.content}
                         />
+                        <div className="mt-2 flex justify-end">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 rounded-xl px-3 text-xs font-black text-slate-500 hover:text-pink-600 dark:text-slate-300"
+                            onClick={() => void copyAssistantMessage(message)}
+                          >
+                            {copiedMessageId === message.id ? (
+                              <Check size={13} className="me-1.5" />
+                            ) : (
+                              <Copy size={13} className="me-1.5" />
+                            )}
+                            {copiedMessageId === message.id ? readText('copied') : readText('copyAnswer')}
+                          </Button>
+                        </div>
                         {message.sources && message.sources.length > 0 && (
                           <div className="mt-3 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.04]">
                             <div className="mb-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">

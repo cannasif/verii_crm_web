@@ -1,7 +1,7 @@
-import { type ChangeEvent, type FormEvent, type ReactElement, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Bot, ExternalLink, FileImage, ImagePlus, MessageCircle, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
+import { Bot, Check, Copy, ExternalLink, FileImage, ImagePlus, MessageCircle, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
@@ -32,6 +32,7 @@ import {
   readFileAsBase64,
   type AiAssistantSelectedAttachment,
 } from '../lib/ai-assistant-attachments';
+import { copyTextToClipboard } from '../lib/ai-assistant-clipboard';
 
 const actionItemClassNameBySeverity: Record<string, string> = {
   danger: 'border-red-400/30 bg-red-400/10 text-red-950 dark:text-red-100',
@@ -75,6 +76,9 @@ export function AiAssistantPage(): ReactElement {
   );
   const [questionError, setQuestionError] = useState<string | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<AiAssistantSelectedAttachment | null>(null);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const sendButtonRef = useRef<HTMLButtonElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
@@ -198,6 +202,7 @@ export function AiAssistantPage(): ReactElement {
           createdAt: new Date().toISOString(),
           actionItems: result.actionItems ?? [],
           sources: result.sources ?? [],
+          intent: result.intent,
         },
       ]);
       setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
@@ -211,6 +216,15 @@ export function AiAssistantPage(): ReactElement {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     await askQuestion(question);
+  };
+
+  const handleQuestionKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>): void => {
+    if (event.key !== 'Tab' || event.shiftKey) {
+      return;
+    }
+
+    event.preventDefault();
+    sendButtonRef.current?.focus();
   };
 
   const askLatestError = async (): Promise<void> => {
@@ -232,6 +246,14 @@ export function AiAssistantPage(): ReactElement {
     }
 
     navigate(actionUrl);
+  };
+
+  const copyAssistantMessage = async (message: AiAssistantChatMessage): Promise<void> => {
+    await copyTextToClipboard(message.content);
+    setCopiedMessageId(message.id);
+    window.setTimeout(() => {
+      setCopiedMessageId((current) => (current === message.id ? null : current));
+    }, 1600);
   };
 
   return (
@@ -281,7 +303,12 @@ export function AiAssistantPage(): ReactElement {
               </Button>
             </div>
 
-            <div className="max-h-[min(58dvh,660px)] space-y-5 overflow-y-auto rounded-[2rem] border border-slate-200 bg-white/55 p-4 shadow-inner shadow-slate-950/5 backdrop-blur-xl dark:border-white/10 dark:bg-black/25">
+            <div
+              className="max-h-[min(58dvh,660px)] space-y-5 overflow-y-auto rounded-[2rem] border border-slate-200 bg-white/55 p-4 shadow-inner shadow-slate-950/5 backdrop-blur-xl dark:border-white/10 dark:bg-black/25"
+              role="log"
+              aria-live="polite"
+              aria-relevant="additions text"
+            >
               {messages.length === 0 && (
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-500 text-white shadow-lg shadow-emerald-950/20">
@@ -328,6 +355,22 @@ export function AiAssistantPage(): ReactElement {
                             title={t('answerTitle')}
                             answer={message.content}
                           />
+                          <div className="mt-2 flex justify-end">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 rounded-xl px-3 text-xs font-black text-slate-500 hover:text-pink-600 dark:text-slate-300"
+                              onClick={() => void copyAssistantMessage(message)}
+                            >
+                              {copiedMessageId === message.id ? (
+                                <Check size={13} className="me-1.5" />
+                              ) : (
+                                <Copy size={13} className="me-1.5" />
+                              )}
+                              {copiedMessageId === message.id ? t('copied') : t('copyAnswer')}
+                            </Button>
+                          </div>
                           {message.sources && message.sources.length > 0 && (
                             <div className="mt-3 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.04]">
                               <div className="mb-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
@@ -451,6 +494,7 @@ export function AiAssistantPage(): ReactElement {
                 )}
               </div>
               <Textarea
+                ref={textareaRef}
                 rows={4}
                 placeholder={t('inputPlaceholder')}
                 className="resize-none border-0 bg-transparent p-0 text-base font-semibold shadow-none focus-visible:ring-0"
@@ -461,12 +505,14 @@ export function AiAssistantPage(): ReactElement {
                     setQuestionError(null);
                   }
                 }}
+                onKeyDown={handleQuestionKeyDown}
               />
               <div className="mt-4 flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
                   {questionError || askMutation.error?.message || (selectedAttachment ? t('imageContextHint') : t('chatHint'))}
                 </p>
                 <Button
+                  ref={sendButtonRef}
                   type="submit"
                   disabled={isAssistantBusy || (!question.trim() && !selectedAttachment)}
                   className="rounded-full bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 text-white shadow-lg shadow-pink-950/20"

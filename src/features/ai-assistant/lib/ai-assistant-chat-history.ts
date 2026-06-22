@@ -14,6 +14,7 @@ export type AiAssistantChatMessage = {
   attachments?: AiAssistantChatAttachment[];
   actionItems?: AiAssistantActionItemDto[];
   sources?: AiAssistantSourceDto[];
+  intent?: string;
 };
 
 type AiAssistantChatUser = {
@@ -50,6 +51,7 @@ export function readAiAssistantChatHistory(key: string): AiAssistantChatMessage[
       })
       .map((message) => ({
         ...message,
+        intent: typeof message.intent === 'string' ? message.intent : undefined,
         attachments: Array.isArray(message.attachments)
           ? message.attachments
               .filter((attachment): attachment is AiAssistantChatAttachment =>
