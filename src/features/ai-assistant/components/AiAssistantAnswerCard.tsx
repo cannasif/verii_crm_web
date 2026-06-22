@@ -29,8 +29,8 @@ export function AiAssistantAnswerCard({ title, answer }: AiAssistantAnswerCardPr
   const isStreaming = visibleAnswer.length < answer.length;
 
   return (
-    <div className="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm font-semibold leading-6 text-emerald-950 dark:text-emerald-100">
-      <div className="mb-1 text-xs font-black uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
+    <div className="rounded-[1.6rem] rounded-ss-md border border-slate-200/80 bg-white/85 p-4 text-sm font-semibold leading-6 text-slate-800 shadow-sm shadow-slate-950/5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-100">
+      <div className="mb-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-emerald-600 dark:text-emerald-300">
         {title}
       </div>
       <span>{visibleAnswer}</span>

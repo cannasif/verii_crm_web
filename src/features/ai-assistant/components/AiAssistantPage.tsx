@@ -164,11 +164,12 @@ export function AiAssistantPage(): ReactElement {
           </div>
         </div>
 
-        <Card className="border-white/15 bg-white/80 shadow-2xl shadow-slate-950/5 backdrop-blur-xl dark:bg-slate-950/55">
+        <Card className="overflow-hidden border-white/15 bg-[radial-gradient(circle_at_12%_0%,rgba(236,72,153,0.14),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.90),rgba(248,250,252,0.78))] shadow-2xl shadow-slate-950/5 backdrop-blur-xl dark:bg-[radial-gradient(circle_at_12%_0%,rgba(236,72,153,0.16),transparent_30%),linear-gradient(180deg,rgba(2,6,23,0.86),rgba(15,23,42,0.70))]">
           <CardContent className="space-y-5 p-5 md:p-7">
             <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 text-white shadow-lg shadow-pink-500/25">
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-pink-500 via-rose-500 to-orange-500 text-white shadow-lg shadow-pink-500/25">
                 <MessageCircle size={22} />
+                <span className="absolute -bottom-0.5 -end-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-400 dark:border-slate-950" />
               </div>
               <div>
                 <h2 className="text-lg font-bold text-slate-950 dark:text-white">{t('chatTitle')}</h2>
@@ -176,16 +177,20 @@ export function AiAssistantPage(): ReactElement {
               </div>
             </div>
 
-            <div className="max-h-[min(56dvh,620px)] space-y-4 overflow-y-auto rounded-3xl border border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-black/20">
+            <div className="max-h-[min(58dvh,660px)] space-y-5 overflow-y-auto rounded-[2rem] border border-slate-200 bg-white/55 p-4 shadow-inner shadow-slate-950/5 backdrop-blur-xl dark:border-white/10 dark:bg-black/25">
               {messages.length === 0 && (
-                <div className="rounded-3xl border border-pink-500/15 bg-pink-500/5 p-5">
-                  <div className="mb-2 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-pink-600 dark:text-pink-300">
-                    <Sparkles size={14} />
-                    {t('eyebrow')}
+                <div className="flex items-start gap-3">
+                  <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-500 text-white shadow-lg shadow-emerald-950/20">
+                    <Sparkles size={18} />
                   </div>
-                  <p className="text-sm font-medium leading-6 text-slate-600 dark:text-slate-300">
-                    {t('chatDescription')}
-                  </p>
+                  <div className="max-w-2xl rounded-[1.6rem] rounded-ss-md border border-pink-500/15 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:bg-white/[0.06]">
+                    <div className="mb-2 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-pink-600 dark:text-pink-300">
+                      {t('eyebrow')}
+                    </div>
+                    <p className="text-sm font-semibold leading-6 text-slate-600 dark:text-slate-200">
+                      {t('chatDescription')}
+                    </p>
+                  </div>
                 </div>
               )}
 
@@ -195,19 +200,26 @@ export function AiAssistantPage(): ReactElement {
                   className={message.role === 'user' ? 'flex justify-end' : 'space-y-3'}
                 >
                   {message.role === 'user' ? (
-                    <div className="max-w-[82%] rounded-[1.35rem] rounded-ee-md bg-linear-to-r from-pink-600 to-orange-500 px-5 py-3 text-sm font-bold leading-6 text-white shadow-lg shadow-pink-950/20">
+                    <div className="max-w-[78%] rounded-[1.45rem] rounded-ee-md bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 py-3 text-sm font-black leading-6 text-white shadow-lg shadow-pink-950/20">
                       {message.content}
                     </div>
                   ) : (
                     <>
-                      <AiAssistantAnswerCard
-                        title={t('answerTitle')}
-                        answer={message.content}
-                      />
+                      <div className="flex items-start gap-3">
+                        <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-500 text-white shadow-lg shadow-emerald-950/20">
+                          <Bot size={18} />
+                        </div>
+                        <div className="max-w-3xl flex-1">
+                          <AiAssistantAnswerCard
+                            title={t('answerTitle')}
+                            answer={message.content}
+                          />
+                        </div>
+                      </div>
 
                       {message.actionItems && message.actionItems.length > 0 && (
-                        <div className="rounded-3xl border border-slate-200 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
-                          <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
+                        <div className="ms-14 rounded-3xl border border-slate-200 bg-white/70 p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
+                          <div className="mb-3 text-[0.68rem] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-300">
                             {t('actionItemsTitle')}
                           </div>
                           <div className="grid gap-3 md:grid-cols-2">
@@ -254,13 +266,13 @@ export function AiAssistantPage(): ReactElement {
             )}
 
             <form
-              className="rounded-3xl border border-slate-200 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-black/20"
+              className="rounded-[2rem] border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-black/25"
               onSubmit={handleSubmit}
             >
               <Textarea
                 rows={4}
                 placeholder={t('inputPlaceholder')}
-                className="resize-none border-0 bg-transparent p-0 text-base shadow-none focus-visible:ring-0"
+                className="resize-none border-0 bg-transparent p-0 text-base font-semibold shadow-none focus-visible:ring-0"
                 value={question}
                 onChange={(event) => {
                   setQuestion(event.target.value);
@@ -276,7 +288,7 @@ export function AiAssistantPage(): ReactElement {
                 <Button
                   type="submit"
                   disabled={isAssistantBusy}
-                  className="bg-linear-to-r from-pink-600 to-orange-600 text-white"
+                  className="rounded-full bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 text-white shadow-lg shadow-pink-950/20"
                 >
                   <SendHorizontal size={16} className="me-2" />
                   {isAssistantBusy ? t('sending') : t('send')}
@@ -284,14 +296,14 @@ export function AiAssistantPage(): ReactElement {
               </div>
             </form>
 
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="flex flex-wrap gap-2">
               {suggestionItems.map((suggestion) => (
                 <button
                   key={suggestion}
                   type="button"
                   disabled={isAssistantBusy}
                   onClick={() => void askQuestion(suggestion)}
-                  className="rounded-2xl border border-slate-200 bg-white/70 p-4 text-start text-sm font-semibold text-slate-700 transition hover:border-pink-300 hover:bg-pink-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-pink-400/60 dark:hover:bg-pink-500/10"
+                  className="rounded-full border border-slate-200 bg-white/70 px-4 py-2.5 text-start text-sm font-black text-slate-700 shadow-sm transition hover:border-pink-300 hover:bg-pink-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-pink-400/60 dark:hover:bg-pink-500/10"
                 >
                   {suggestion}
                 </button>

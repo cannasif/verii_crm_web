@@ -152,11 +152,12 @@ export function AiAssistantWidget(): ReactElement {
       style={{ insetInlineEnd: '1rem' }}
     >
       {isOpen ? (
-        <section className="flex w-[calc(100vw-2rem)] max-w-[430px] flex-col overflow-hidden rounded-[2rem] border border-white/20 bg-white/95 shadow-2xl shadow-pink-950/20 backdrop-blur-2xl dark:border-white/10 dark:bg-slate-950/95">
-          <header className="flex items-center justify-between gap-3 border-b border-slate-200/80 bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.20),transparent_36%),radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.16),transparent_34%)] p-4 dark:border-white/10">
+        <section className="flex h-[min(82dvh,760px)] w-[calc(100vw-1.25rem)] max-w-[500px] flex-col overflow-hidden rounded-[2rem] border border-white/20 bg-[radial-gradient(circle_at_20%_0%,rgba(236,72,153,0.20),transparent_32%),radial-gradient(circle_at_100%_10%,rgba(249,115,22,0.16),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,250,252,0.92))] shadow-2xl shadow-pink-950/25 backdrop-blur-2xl dark:border-white/10 dark:bg-[radial-gradient(circle_at_20%_0%,rgba(236,72,153,0.18),transparent_32%),radial-gradient(circle_at_100%_10%,rgba(249,115,22,0.14),transparent_28%),linear-gradient(180deg,rgba(2,6,23,0.98),rgba(15,23,42,0.94))]">
+          <header className="flex items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03]">
             <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-pink-600 to-orange-500 text-white shadow-lg shadow-pink-500/25">
+              <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-pink-600 via-rose-500 to-orange-500 text-white shadow-lg shadow-pink-500/25">
                 <Bot size={22} />
+                <span className="absolute -bottom-0.5 -end-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-400 dark:border-slate-950" />
               </div>
               <div className="min-w-0">
                 <p className="truncate text-sm font-black text-slate-950 dark:text-white">
@@ -179,16 +180,20 @@ export function AiAssistantWidget(): ReactElement {
             </Button>
           </header>
 
-          <div className="max-h-[min(60dvh,520px)] space-y-4 overflow-y-auto p-4">
+          <div className="flex-1 space-y-4 overflow-y-auto px-4 py-5">
             {messages.length === 0 && (
-              <div className="rounded-3xl border border-pink-500/15 bg-pink-500/5 p-4">
-                <div className="mb-2 inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-pink-600 dark:text-pink-300">
-                  <Sparkles size={14} />
-                  {t('eyebrow')}
+              <div className="flex items-start gap-3">
+                <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-500 text-white shadow-lg shadow-emerald-950/20">
+                  <Sparkles size={17} />
                 </div>
-                <p className="text-sm font-medium leading-6 text-slate-600 dark:text-slate-300">
-                  {t('chatDescription')}
-                </p>
+                <div className="max-w-[86%] rounded-[1.6rem] rounded-ss-md border border-pink-500/15 bg-white/80 p-4 shadow-sm backdrop-blur-xl dark:bg-white/[0.06]">
+                  <div className="mb-2 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-pink-600 dark:text-pink-300">
+                    {t('eyebrow')}
+                  </div>
+                  <p className="text-sm font-semibold leading-6 text-slate-600 dark:text-slate-200">
+                    {t('chatDescription')}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -198,19 +203,26 @@ export function AiAssistantWidget(): ReactElement {
                 className={message.role === 'user' ? 'flex justify-end' : 'space-y-3'}
               >
                 {message.role === 'user' ? (
-                  <div className="max-w-[85%] rounded-[1.35rem] rounded-ee-md bg-linear-to-r from-pink-600 to-orange-500 px-4 py-3 text-sm font-bold leading-6 text-white shadow-lg shadow-pink-950/20">
+                  <div className="max-w-[82%] rounded-[1.45rem] rounded-ee-md bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-4 py-3 text-sm font-black leading-6 text-white shadow-lg shadow-pink-950/20">
                     {message.content}
                   </div>
                 ) : (
                   <>
-                    <AiAssistantAnswerCard
-                      title={t('answerTitle')}
-                      answer={message.content}
-                    />
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-500 text-white shadow-lg shadow-emerald-950/20">
+                        <Bot size={17} />
+                      </div>
+                      <div className="max-w-[86%] flex-1">
+                        <AiAssistantAnswerCard
+                          title={t('answerTitle')}
+                          answer={message.content}
+                        />
+                      </div>
+                    </div>
 
                     {message.actionItems && message.actionItems.length > 0 && (
-                      <div className="rounded-3xl border border-slate-200 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5">
-                        <div className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
+                      <div className="ms-12 rounded-3xl border border-slate-200 bg-white/70 p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
+                        <div className="mb-3 text-[0.68rem] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-300">
                           {t('actionItemsTitle')}
                         </div>
                         <div className="grid gap-2">
@@ -255,14 +267,14 @@ export function AiAssistantWidget(): ReactElement {
               </div>
             )}
 
-            <div className="grid gap-2">
+            <div className="flex flex-wrap gap-2">
               {suggestionItems.map((suggestion) => (
                 <button
                   key={suggestion}
                   type="button"
                   disabled={isAssistantBusy}
                   onClick={() => void askQuestion(suggestion)}
-                  className="rounded-2xl border border-slate-200 bg-white/70 p-3 text-start text-xs font-bold text-slate-700 transition hover:border-pink-300 hover:bg-pink-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-pink-400/60 dark:hover:bg-pink-500/10"
+                  className="rounded-full border border-slate-200 bg-white/70 px-3.5 py-2 text-start text-xs font-black text-slate-700 shadow-sm transition hover:border-pink-300 hover:bg-pink-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-pink-400/60 dark:hover:bg-pink-500/10"
                 >
                   {suggestion}
                 </button>
@@ -272,15 +284,12 @@ export function AiAssistantWidget(): ReactElement {
             <div ref={messagesEndRef} />
           </div>
 
-          <form
-            className="border-t border-slate-200/80 bg-slate-50/80 p-4 dark:border-white/10 dark:bg-black/20"
-            onSubmit={handleSubmit}
-          >
+          <form className="border-t border-slate-200/80 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-black/30" onSubmit={handleSubmit}>
             <Textarea
               ref={textareaRef}
               rows={2}
               placeholder={t('inputPlaceholder')}
-              className="max-h-28 resize-none rounded-2xl bg-white text-sm dark:bg-white/5"
+              className="max-h-28 resize-none rounded-[1.4rem] border-slate-200 bg-white/90 px-4 py-3 text-sm font-semibold shadow-sm dark:border-white/10 dark:bg-white/[0.06]"
               value={question}
               onChange={(event) => {
                 setQuestion(event.target.value);
@@ -296,7 +305,7 @@ export function AiAssistantWidget(): ReactElement {
               <Button
                 type="submit"
                 disabled={isAssistantBusy}
-                className="shrink-0 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white"
+                className="shrink-0 rounded-full bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 text-white shadow-lg shadow-pink-950/20"
               >
                 <SendHorizontal size={16} className="me-2" />
                 {isAssistantBusy ? t('sending') : t('send')}
