@@ -29,6 +29,7 @@ import { SalesDocumentDraftRestoreDialog } from '@/features/sales-drafts/SalesDo
 import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentDraft';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import {
   DOCUMENT_DETAIL_BUTTON_BASE,
@@ -219,9 +220,20 @@ export function DemandCreateForm(): ReactElement {
         };
       });
 
-      const exchangeRatesToSend = exchangeRates.length > 0
-        ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
-          const currencyValue = rate.currency || (dovizTipi ? String(dovizTipi) : '');
+      const currencyValue = typeof data.demand.currency === 'string'
+        ? data.demand.currency
+        : String(data.demand.currency);
+
+      const effectiveExchangeRates = buildEffectiveExchangeRates(
+        exchangeRates,
+        erpRates,
+        currencyValue,
+        data.demand.offerDate || null,
+      );
+
+      const exchangeRatesToSend = effectiveExchangeRates.length > 0
+        ? effectiveExchangeRates.map(({ id, dovizTipi, ...rate }) => {
+          const currencyValue = rate.currency || (dovizTipi != null ? String(dovizTipi) : '');
           return {
             ...rate,
             currency: currencyValue,
@@ -230,10 +242,6 @@ export function DemandCreateForm(): ReactElement {
           };
         })
         : [];
-
-      const currencyValue = typeof data.demand.currency === 'string'
-        ? data.demand.currency
-        : String(data.demand.currency);
 
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
         throw new Error(t('create.invalidCurrency'));

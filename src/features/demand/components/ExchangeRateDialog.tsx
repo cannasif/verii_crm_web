@@ -81,7 +81,7 @@ export function ExchangeRateDialog({
         const existing = exchangeRates.find((er) => er.dovizTipi === rate.dovizTipi);
         return {
           id: existing?.id || `temp-${rate.dovizTipi}-${index}`,
-          currency: existing?.currency || rate.dovizIsmi || String(rate.dovizTipi),
+          currency: existing?.currency || String(rate.dovizTipi),
           exchangeRate: existing?.exchangeRate || rate.kurDegeri || 0,
           exchangeRateDate: existing?.exchangeRateDate || new Date().toISOString().split('T')[0],
           isOfficial: existing?.isOfficial ?? (rate.kurDegeri !== null && existing === undefined),

@@ -57,6 +57,7 @@ import {
 import { createClientId } from '@/lib/create-client-id';
 import { deduplicateDocumentLinesByBackendId } from '@/lib/document-line-list-update';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { resolveWatchedDocumentCurrency } from '@/lib/line-unit-price-currency';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -469,9 +470,20 @@ export function OrderDetailPage(): ReactElement {
         };
       });
 
-      const exchangeRatesToSend = exchangeRates.length > 0
-        ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
-            const currencyValue = rate.currency || (dovizTipi ? String(dovizTipi) : '');
+      const currencyValue = typeof data.order.currency === 'string'
+        ? data.order.currency
+        : String(data.order.currency);
+
+      const effectiveExchangeRates = buildEffectiveExchangeRates(
+        exchangeRates,
+        erpRates,
+        currencyValue,
+        data.order.offerDate || null,
+      );
+
+      const exchangeRatesToSend = effectiveExchangeRates.length > 0
+        ? effectiveExchangeRates.map(({ id, dovizTipi, ...rate }) => {
+            const currencyValue = rate.currency || (dovizTipi != null ? String(dovizTipi) : '');
             return {
               id: parsePersistedId(id, 'rate'),
               ...rate,
@@ -481,10 +493,6 @@ export function OrderDetailPage(): ReactElement {
             };
           })
         : undefined;
-
-      const currencyValue = typeof data.order.currency === 'string' 
-        ? data.order.currency 
-        : String(data.order.currency);
       
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
         throw new Error(t('order.update.invalidCurrency'));

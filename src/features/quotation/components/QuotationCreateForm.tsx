@@ -39,6 +39,7 @@ import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentD
 import { usePrefetchLineImagesForPdf } from '../hooks/usePrefetchLineImagesForPdf';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import type { QuotationGetDto, QuotationLineGetDto } from '../types/quotation-types';
 import {
@@ -328,8 +329,19 @@ export function QuotationCreateForm(): ReactElement {
         };
       });
 
-      const exchangeRatesToSend = exchangeRates.length > 0
-        ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
+      const currencyValue = typeof data.quotation.currency === 'string'
+        ? data.quotation.currency
+        : String(data.quotation.currency);
+
+      const effectiveExchangeRates = buildEffectiveExchangeRates(
+        exchangeRates,
+        erpRates,
+        currencyValue,
+        data.quotation.offerDate || null,
+      );
+
+      const exchangeRatesToSend = effectiveExchangeRates.length > 0
+        ? effectiveExchangeRates.map(({ id, dovizTipi, ...rate }) => {
           const currencyValue = rate.currency || (dovizTipi != null ? String(dovizTipi) : '');
           return {
             ...rate,
@@ -339,10 +351,6 @@ export function QuotationCreateForm(): ReactElement {
           };
         })
         : [];
-
-      const currencyValue = typeof data.quotation.currency === 'string'
-        ? data.quotation.currency
-        : String(data.quotation.currency);
 
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
         throw new Error(t('create.invalidCurrency'));

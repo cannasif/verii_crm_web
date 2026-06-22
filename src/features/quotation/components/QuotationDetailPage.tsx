@@ -83,6 +83,7 @@ import {
 import { createClientId } from '@/lib/create-client-id';
 import { deduplicateDocumentLinesByBackendId } from '@/lib/document-line-list-update';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
@@ -798,8 +799,19 @@ export function QuotationDetailPage(): ReactElement {
         };
       });
 
-      const exchangeRatesToSend = exchangeRates.length > 0
-        ? exchangeRates.map(({ id, dovizTipi, ...rate }) => {
+      const currencyValue = typeof data.quotation.currency === 'string'
+        ? data.quotation.currency
+        : String(data.quotation.currency);
+
+      const effectiveExchangeRates = buildEffectiveExchangeRates(
+        exchangeRates,
+        erpRates,
+        currencyValue,
+        data.quotation.offerDate || null,
+      );
+
+      const exchangeRatesToSend = effectiveExchangeRates.length > 0
+        ? effectiveExchangeRates.map(({ id, dovizTipi, ...rate }) => {
             const currencyValue = rate.currency || (dovizTipi != null ? String(dovizTipi) : '');
             return {
               id: parsePersistedId(id, 'rate'),
@@ -810,10 +822,6 @@ export function QuotationDetailPage(): ReactElement {
             };
           })
         : undefined;
-
-      const currencyValue = typeof data.quotation.currency === 'string' 
-        ? data.quotation.currency 
-        : String(data.quotation.currency);
       
       if (currencyValue == null || currencyValue === '' || Number.isNaN(Number(currencyValue))) {
         throw new Error(t('update.invalidCurrency'));
