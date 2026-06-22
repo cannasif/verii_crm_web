@@ -17,6 +17,12 @@
     "4": "Que signifie cette erreur ?"
   },
   "chatHint": "Je peux répondre aux questions de performance, volumes, taux, intégration ERP et explication d’erreurs.",
+  "attachImage": "Joindre une image",
+  "removeImage": "Retirer l'image",
+  "imageTooLarge": "L'image peut faire au maximum {{size}} Mo.",
+  "imageUnsupported": "Seules les images PNG, JPG/JPEG ou WEBP peuvent être jointes.",
+  "imageDefaultQuestion": "Pouvez-vous interpréter cette capture d’écran ?",
+  "imageContextHint": "Capture d’écran jointe. Si vous ajoutez aussi le texte de l’erreur, je pourrai l’expliquer plus clairement.",
   "sending": "Préparation de la réponse...",
   "thinking": {
     "title": "L’IA réfléchit",

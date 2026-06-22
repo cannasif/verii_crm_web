@@ -45,6 +45,14 @@ export interface AiAssistantAskRequestDto {
   errorMessage?: string | null;
   errorCode?: string | null;
   httpStatusCode?: number | null;
+  attachments?: AiAssistantAttachmentDto[];
+}
+
+export interface AiAssistantAttachmentDto {
+  fileName: string;
+  contentType: string;
+  size: number;
+  base64Content?: string | null;
 }
 
 export interface AiAssistantActionItemDto {

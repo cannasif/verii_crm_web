@@ -17,6 +17,12 @@
     "4": "What does this error mean?"
   },
   "chatHint": "I can answer performance, count, rate, ERP integration, and error explanation questions.",
+  "attachImage": "Attach image",
+  "removeImage": "Remove image",
+  "imageTooLarge": "Image can be up to {{size}} MB.",
+  "imageUnsupported": "Only PNG, JPG/JPEG or WEBP images can be attached.",
+  "imageDefaultQuestion": "Can you interpret this screenshot?",
+  "imageContextHint": "Screenshot attached. If you also write the error text, I can explain it more clearly.",
   "sending": "Preparing answer...",
   "thinking": {
     "title": "AI is thinking",

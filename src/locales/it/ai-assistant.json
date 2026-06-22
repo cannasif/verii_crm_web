@@ -17,6 +17,12 @@
     "4": "Cosa significa questo errore?"
   },
   "chatHint": "Posso rispondere a domande su prestazioni, conteggi, percentuali, integrazione ERP e spiegazione degli errori.",
+  "attachImage": "Allega immagine",
+  "removeImage": "Rimuovi immagine",
+  "imageTooLarge": "L'immagine può essere al massimo di {{size}} MB.",
+  "imageUnsupported": "Puoi allegare solo immagini PNG, JPG/JPEG o WEBP.",
+  "imageDefaultQuestion": "Puoi interpretare questo screenshot?",
+  "imageContextHint": "Screenshot allegato. Se scrivi anche il testo dell'errore, posso spiegarlo più chiaramente.",
   "sending": "Preparazione della risposta...",
   "thinking": {
     "title": "L’IA sta pensando",

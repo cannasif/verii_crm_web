@@ -1,7 +1,7 @@
-import { type FormEvent, type KeyboardEvent, type ReactElement, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Bot, ExternalLink, MessageCircle, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
+import { Bot, ExternalLink, FileImage, ImagePlus, MessageCircle, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,6 +20,16 @@ import {
   writeAiAssistantChatHistory,
   type AiAssistantChatMessage,
 } from '../lib/ai-assistant-chat-history';
+import {
+  aiAssistantAllowedImageTypes,
+  aiAssistantMaxImageSizeBytes,
+  aiAssistantMaxImageSizeMb,
+  createAttachmentMetadata,
+  createAttachmentRequest,
+  formatAttachmentSize,
+  readFileAsBase64,
+  type AiAssistantSelectedAttachment,
+} from '../lib/ai-assistant-attachments';
 
 const actionItemClassNameBySeverity: Record<string, string> = {
   danger: 'border-red-400/30 bg-red-400/10 text-red-950 dark:text-red-100',
@@ -50,6 +60,12 @@ const aiAssistantTextFallbacks: Record<string, string> = {
   chatDescription: 'Talep, teklif, sipariş, aktivite ve ERP özetlerinizi sorabilirsiniz.',
   inputPlaceholder: 'Örn. Bu ay kaç teklif oluşturdum?',
   chatHint: 'Performans, adet, oran, ERP aktarımı ve hata açıklaması sorabilirsiniz.',
+  attachImage: 'Görsel ekle',
+  removeImage: 'Görseli kaldır',
+  imageTooLarge: 'Görsel en fazla {{size}} MB olabilir.',
+  imageUnsupported: 'Sadece PNG, JPG/JPEG veya WEBP görsel ekleyebilirsiniz.',
+  imageDefaultQuestion: 'Bu ekran görüntüsünü yorumlar mısın?',
+  imageContextHint: 'Ekran görüntüsü eklendi. Hata metnini de yazarsanız daha net yorumlarım.',
   sending: 'Düşünüyor',
   send: 'Gönder',
 };
@@ -93,8 +109,10 @@ export function AiAssistantWidget(): ReactElement {
     () => getLatestAiAssistantErrorContext()
   );
   const [questionError, setQuestionError] = useState<string | null>(null);
+  const [selectedAttachment, setSelectedAttachment] = useState<AiAssistantSelectedAttachment | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sendButtonRef = useRef<HTMLButtonElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
   const skipNextHistoryWriteRef = useRef(false);
@@ -137,6 +155,41 @@ export function AiAssistantWidget(): ReactElement {
     return () => window.clearTimeout(focusTimer);
   }, [isOpen]);
 
+  const clearSelectedAttachment = (): void => {
+    setSelectedAttachment(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleAttachmentChange = async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    if (!aiAssistantAllowedImageTypes.has(file.type)) {
+      setQuestionError(readText('imageUnsupported'));
+      clearSelectedAttachment();
+      return;
+    }
+
+    if (file.size > aiAssistantMaxImageSizeBytes) {
+      setQuestionError(readText('imageTooLarge', undefined, { size: aiAssistantMaxImageSizeMb }));
+      clearSelectedAttachment();
+      return;
+    }
+
+    const base64Content = await readFileAsBase64(file);
+    setSelectedAttachment({
+      fileName: file.name,
+      contentType: file.type,
+      size: file.size,
+      base64Content,
+    });
+    setQuestionError(null);
+  };
+
   const fallbackName = user?.name || user?.email || readText('fallbackName');
   const displayName = greeting?.fullName?.trim() || fallbackName;
   const fallbackSuggestions = defaultSuggestions.map((suggestion, index) =>
@@ -156,19 +209,22 @@ export function AiAssistantWidget(): ReactElement {
 
   const askQuestion = async (value: string, errorContext?: AiAssistantErrorContext | null): Promise<void> => {
     const trimmedQuestion = value.trim();
-    if (!trimmedQuestion) {
+    const activeAttachment = selectedAttachment;
+    if (!trimmedQuestion && !activeAttachment) {
       setQuestionError(readText('emptyQuestion'));
       return;
     }
 
+    const finalQuestion = trimmedQuestion || readText('imageDefaultQuestion');
     setQuestionError(null);
     setMessages((currentMessages) => [
       ...currentMessages,
       {
         id: createMessageId(),
         role: 'user',
-        content: trimmedQuestion,
+        content: finalQuestion,
         createdAt: new Date().toISOString(),
+        attachments: activeAttachment ? [createAttachmentMetadata(activeAttachment)] : undefined,
       },
     ]);
     setIsThinking(true);
@@ -176,13 +232,14 @@ export function AiAssistantWidget(): ReactElement {
     try {
       const [result] = await Promise.all([
         askMutation.mutateAsync({
-          question: trimmedQuestion,
+          question: finalQuestion,
           currentPath: window.location.pathname,
           errorMessage: errorContext
             ? `${errorContext.message}${errorContext.requestMethod || errorContext.requestUrl ? ` | ${errorContext.requestMethod ?? ''} ${errorContext.requestUrl ?? ''}` : ''}`
             : undefined,
           errorCode: errorContext?.errorCode ?? undefined,
           httpStatusCode: errorContext?.httpStatusCode ?? undefined,
+          attachments: activeAttachment ? [createAttachmentRequest(activeAttachment)] : [],
         }),
         waitForMinimumThinkingDuration(),
       ]);
@@ -199,6 +256,7 @@ export function AiAssistantWidget(): ReactElement {
       ]);
       setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
       setQuestion('');
+      clearSelectedAttachment();
     } finally {
       setIsThinking(false);
     }
@@ -227,6 +285,7 @@ export function AiAssistantWidget(): ReactElement {
     setMessages([]);
     setDynamicSuggestions([]);
     setQuestionError(null);
+    clearSelectedAttachment();
   };
 
   const openActionUrl = (actionUrl: string): void => {
@@ -309,7 +368,17 @@ export function AiAssistantWidget(): ReactElement {
               >
                 {message.role === 'user' ? (
                   <div className="max-w-[82%] rounded-[1.45rem] rounded-ee-md bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-4 py-3 text-sm font-black leading-6 text-white shadow-lg shadow-pink-950/20">
-                    {message.content}
+                    <p>{message.content}</p>
+                    {message.attachments?.map((attachment) => (
+                      <div
+                        key={`${message.id}-${attachment.fileName}-${attachment.size}`}
+                        className="mt-2 flex items-center gap-2 rounded-2xl bg-white/15 px-3 py-2 text-xs font-bold"
+                      >
+                        <FileImage size={14} />
+                        <span className="min-w-0 truncate">{attachment.fileName}</span>
+                        <span className="shrink-0 opacity-80">{formatAttachmentSize(attachment.size)}</span>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <>
@@ -422,6 +491,41 @@ export function AiAssistantWidget(): ReactElement {
           </div>
 
           <form className="border-t border-slate-200/80 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-black/30" onSubmit={handleSubmit}>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="hidden"
+              onChange={(event) => void handleAttachmentChange(event)}
+            />
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isAssistantBusy}
+                className="h-9 rounded-2xl border-slate-200 bg-white/80 px-3 text-xs font-black dark:border-white/10 dark:bg-white/[0.06]"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <ImagePlus size={14} className="me-1.5" />
+                {readText('attachImage')}
+              </Button>
+              {selectedAttachment && (
+                <div className="flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-pink-400/30 bg-pink-500/10 px-3 py-2 text-xs font-black text-pink-700 dark:text-pink-100">
+                  <FileImage size={14} className="shrink-0" />
+                  <span className="min-w-0 truncate">{selectedAttachment.fileName}</span>
+                  <span className="shrink-0 opacity-75">{formatAttachmentSize(selectedAttachment.size)}</span>
+                  <button
+                    type="button"
+                    className="ms-1 rounded-full p-0.5 hover:bg-pink-500/15"
+                    aria-label={readText('removeImage')}
+                    onClick={clearSelectedAttachment}
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+              )}
+            </div>
             <Textarea
               ref={textareaRef}
               rows={2}
@@ -438,12 +542,12 @@ export function AiAssistantWidget(): ReactElement {
             />
             <div className="mt-3 flex items-center justify-between gap-3">
               <p className="min-w-0 flex-1 truncate text-xs font-medium text-slate-500 dark:text-slate-400">
-                {questionError || askMutation.error?.message || readText('chatHint')}
+                {questionError || askMutation.error?.message || (selectedAttachment ? readText('imageContextHint') : readText('chatHint'))}
               </p>
               <Button
                 ref={sendButtonRef}
                 type="submit"
-                disabled={isAssistantBusy}
+                disabled={isAssistantBusy || (!question.trim() && !selectedAttachment)}
                 className="shrink-0 rounded-full bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 text-white shadow-lg shadow-pink-950/20"
               >
                 <SendHorizontal size={16} className="me-2" />

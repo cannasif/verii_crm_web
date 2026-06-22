@@ -17,6 +17,12 @@
     "4": "¿Qué significa este error?"
   },
   "chatHint": "Puedo responder preguntas de rendimiento, cantidades, tasas, integración ERP y explicación de errores.",
+  "attachImage": "Adjuntar imagen",
+  "removeImage": "Eliminar imagen",
+  "imageTooLarge": "La imagen puede tener como máximo {{size}} MB.",
+  "imageUnsupported": "Solo se pueden adjuntar imágenes PNG, JPG/JPEG o WEBP.",
+  "imageDefaultQuestion": "¿Puedes interpretar esta captura de pantalla?",
+  "imageContextHint": "Captura adjunta. Si también escribes el texto del error, podré explicarlo con más claridad.",
   "sending": "Preparando respuesta...",
   "thinking": {
     "title": "La IA está pensando",

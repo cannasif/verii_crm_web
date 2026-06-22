@@ -17,6 +17,12 @@
     "4": "Was bedeutet dieser Fehler?"
   },
   "chatHint": "Ich kann Fragen zu Leistung, Anzahlen, Quoten, ERP-Integration und Fehlererklärungen beantworten.",
+  "attachImage": "Bild anhängen",
+  "removeImage": "Bild entfernen",
+  "imageTooLarge": "Das Bild darf höchstens {{size}} MB groß sein.",
+  "imageUnsupported": "Es können nur PNG-, JPG/JPEG- oder WEBP-Bilder angehängt werden.",
+  "imageDefaultQuestion": "Kannst du diesen Screenshot interpretieren?",
+  "imageContextHint": "Screenshot angehängt. Wenn Sie auch den Fehlertext schreiben, kann ich ihn genauer erklären.",
   "sending": "Antwort wird vorbereitet...",
   "thinking": {
     "title": "KI denkt nach",

@@ -1,10 +1,17 @@
 import type { AiAssistantActionItemDto, AiAssistantSourceDto } from '../types/ai-assistant.types';
 
+export type AiAssistantChatAttachment = {
+  fileName: string;
+  contentType: string;
+  size: number;
+};
+
 export type AiAssistantChatMessage = {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   createdAt: string;
+  attachments?: AiAssistantChatAttachment[];
   actionItems?: AiAssistantActionItemDto[];
   sources?: AiAssistantSourceDto[];
 };
@@ -41,6 +48,25 @@ export function readAiAssistantChatHistory(key: string): AiAssistantChatMessage[
             typeof message.content === 'string'
         );
       })
+      .map((message) => ({
+        ...message,
+        attachments: Array.isArray(message.attachments)
+          ? message.attachments
+              .filter((attachment): attachment is AiAssistantChatAttachment =>
+                Boolean(
+                  attachment &&
+                    typeof attachment.fileName === 'string' &&
+                    typeof attachment.contentType === 'string' &&
+                    typeof attachment.size === 'number'
+                )
+              )
+              .map((attachment) => ({
+                fileName: attachment.fileName,
+                contentType: attachment.contentType,
+                size: attachment.size,
+              }))
+          : undefined,
+      }))
       .slice(-chatHistoryLimit);
   } catch {
     return [];

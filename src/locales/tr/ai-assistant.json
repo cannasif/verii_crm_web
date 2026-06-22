@@ -17,6 +17,12 @@
     "4": "Bu hata ne anlama geliyor?"
   },
   "chatHint": "Performans, adet, oran, ERP aktarımı ve hata açıklama sorularını cevaplayabiliyorum.",
+  "attachImage": "Görsel ekle",
+  "removeImage": "Görseli kaldır",
+  "imageTooLarge": "Görsel en fazla {{size}} MB olabilir.",
+  "imageUnsupported": "Sadece PNG, JPG/JPEG veya WEBP görsel ekleyebilirsiniz.",
+  "imageDefaultQuestion": "Bu ekran görüntüsünü yorumlar mısın?",
+  "imageContextHint": "Ekran görüntüsü eklendi. Hata metnini de yazarsanız daha net yorumlarım.",
   "sending": "Yanıt hazırlanıyor...",
   "thinking": {
     "title": "AI düşünüyor",
