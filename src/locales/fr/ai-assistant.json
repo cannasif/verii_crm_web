@@ -18,6 +18,14 @@
   },
   "chatHint": "Je peux répondre aux questions de performance, volumes, taux, intégration ERP et explication d’erreurs.",
   "sending": "Préparation de la réponse...",
+  "thinking": {
+    "title": "L’IA réfléchit",
+    "steps": {
+      "1": "Analyse de votre question...",
+      "2": "Lecture sécurisée des données CRM...",
+      "3": "Préparation de la réponse et des contrôles recommandés..."
+    }
+  },
   "answerTitle": "Réponse IA",
   "actionItemsTitle": "Contrôles recommandés",
   "emptyQuestion": "Veuillez saisir une question.",

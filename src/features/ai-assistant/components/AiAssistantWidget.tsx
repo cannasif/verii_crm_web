@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
 import { useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
+import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
 import {
   getLatestAiAssistantErrorContext,
   subscribeAiAssistantErrorContext,
@@ -63,6 +64,8 @@ export function AiAssistantWidget(): ReactElement {
 
     setQuestionError(null);
     setLastQuestion(trimmedQuestion);
+    setLastAnswer(null);
+    setLastActionItems([]);
     const result = await askMutation.mutateAsync({
       question: trimmedQuestion,
       currentPath: window.location.pathname,
@@ -140,6 +143,8 @@ export function AiAssistantWidget(): ReactElement {
                 {lastQuestion}
               </div>
             )}
+
+            {askMutation.isPending && <AiAssistantThinkingIndicator />}
 
             {lastAnswer && (
               <div className="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm font-semibold leading-6 text-emerald-950 dark:text-emerald-100">

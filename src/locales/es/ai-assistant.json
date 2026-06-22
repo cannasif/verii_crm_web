@@ -18,6 +18,14 @@
   },
   "chatHint": "Puedo responder preguntas de rendimiento, cantidades, tasas, integración ERP y explicación de errores.",
   "sending": "Preparando respuesta...",
+  "thinking": {
+    "title": "La IA está pensando",
+    "steps": {
+      "1": "Interpretando tu pregunta...",
+      "2": "Leyendo los datos CRM de forma segura...",
+      "3": "Preparando la respuesta y las comprobaciones recomendadas..."
+    }
+  },
   "answerTitle": "Respuesta IA",
   "actionItemsTitle": "Comprobaciones recomendadas",
   "emptyQuestion": "Introduce una pregunta.",

@@ -18,6 +18,14 @@
   },
   "chatHint": "I can answer performance, count, rate, ERP integration, and error explanation questions.",
   "sending": "Preparing answer...",
+  "thinking": {
+    "title": "AI is thinking",
+    "steps": {
+      "1": "Understanding your question...",
+      "2": "Reading CRM data safely...",
+      "3": "Preparing the answer and recommended checks..."
+    }
+  },
   "answerTitle": "AI answer",
   "actionItemsTitle": "Recommended checks",
   "emptyQuestion": "Please enter a question.",

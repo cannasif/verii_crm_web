@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
 import { useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
+import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
 import {
   getLatestAiAssistantErrorContext,
   subscribeAiAssistantErrorContext,
@@ -57,6 +58,8 @@ export function AiAssistantPage(): ReactElement {
     }
 
     setQuestionError(null);
+    setLastAnswer(null);
+    setLastActionItems([]);
     const result = await askMutation.mutateAsync({
       question: trimmedQuestion,
       currentPath: window.location.pathname,
@@ -117,6 +120,8 @@ export function AiAssistantPage(): ReactElement {
                 <p className="text-sm text-slate-500 dark:text-slate-400">{t('chatDescription')}</p>
               </div>
             </div>
+
+            {askMutation.isPending && <AiAssistantThinkingIndicator />}
 
             {lastAnswer && (
               <div className="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm font-semibold leading-6 text-emerald-950 dark:text-emerald-100">

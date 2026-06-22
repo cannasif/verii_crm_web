@@ -18,6 +18,14 @@
   },
   "chatHint": "Ich kann Fragen zu Leistung, Anzahlen, Quoten, ERP-Integration und Fehlererklärungen beantworten.",
   "sending": "Antwort wird vorbereitet...",
+  "thinking": {
+    "title": "KI denkt nach",
+    "steps": {
+      "1": "Ihre Frage wird verstanden...",
+      "2": "CRM-Daten werden sicher gelesen...",
+      "3": "Antwort und empfohlene Prüfungen werden vorbereitet..."
+    }
+  },
   "answerTitle": "KI-Antwort",
   "actionItemsTitle": "Empfohlene Prüfungen",
   "emptyQuestion": "Bitte geben Sie eine Frage ein.",
