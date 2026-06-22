@@ -1,4 +1,4 @@
-import { type FormEvent, type ReactElement, useEffect, useRef, useState } from 'react';
+import { type FormEvent, type KeyboardEvent, type ReactElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Bot, ExternalLink, MessageCircle, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
@@ -94,6 +94,7 @@ export function AiAssistantWidget(): ReactElement {
   );
   const [questionError, setQuestionError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const sendButtonRef = useRef<HTMLButtonElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
   const skipNextHistoryWriteRef = useRef(false);
@@ -206,6 +207,15 @@ export function AiAssistantWidget(): ReactElement {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     await askQuestion(question);
+  };
+
+  const handleQuestionKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>): void => {
+    if (event.key !== 'Tab' || event.shiftKey || !isOpen) {
+      return;
+    }
+
+    event.preventDefault();
+    sendButtonRef.current?.focus();
   };
 
   const askLatestError = async (): Promise<void> => {
@@ -424,12 +434,14 @@ export function AiAssistantWidget(): ReactElement {
                   setQuestionError(null);
                 }
               }}
+              onKeyDown={handleQuestionKeyDown}
             />
             <div className="mt-3 flex items-center justify-between gap-3">
               <p className="min-w-0 flex-1 truncate text-xs font-medium text-slate-500 dark:text-slate-400">
                 {questionError || askMutation.error?.message || readText('chatHint')}
               </p>
               <Button
+                ref={sendButtonRef}
                 type="submit"
                 disabled={isAssistantBusy}
                 className="shrink-0 rounded-full bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 text-white shadow-lg shadow-pink-950/20"
