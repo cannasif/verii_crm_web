@@ -14,6 +14,7 @@ import type {
   StockRelationCreateDto,
   StockCreateDto,
   WarehouseStockBalanceDto,
+  StockCodeFilterOptionsDto,
 } from '../types';
 
 export const stockApi = {
@@ -80,6 +81,20 @@ export const stockApi = {
       }
     }
     return merged;
+  },
+
+  getCodeFilterOptions: async (): Promise<StockCodeFilterOptionsDto> => {
+    const response = await api.get<ApiResponse<StockCodeFilterOptionsDto>>('/api/Stock/code-filter-options');
+
+    if (!response.success) {
+      throw new Error(response.message || 'Stok özel kod seçenekleri yüklenemedi');
+    }
+
+    if (!response.data) {
+      throw new Error('Stok özel kod seçenekleri alınamadı');
+    }
+
+    return response.data;
   },
 
   getById: async (id: number): Promise<StockGetDto> => {

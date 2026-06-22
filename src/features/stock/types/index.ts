@@ -48,6 +48,21 @@ export interface WarehouseStockBalanceDto {
   lastSyncDate?: string | null;
 }
 
+export interface StockCodeFilterOptionDto {
+  value: string;
+  label: string;
+  count?: number;
+}
+
+export interface StockCodeFilterOptionsDto {
+  grupKodu: StockCodeFilterOptionDto[];
+  kod1: StockCodeFilterOptionDto[];
+  kod2: StockCodeFilterOptionDto[];
+  kod3: StockCodeFilterOptionDto[];
+  kod4: StockCodeFilterOptionDto[];
+  kod5: StockCodeFilterOptionDto[];
+}
+
 export interface StockDetailGetDto {
   id: number;
   stockId: number;

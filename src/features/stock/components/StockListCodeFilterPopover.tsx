@@ -7,11 +7,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CatalogSpecialCodeFilterPanel } from '@/components/shared/CatalogSpecialCodeFilterPanel';
 import {
   CATALOG_FILTER_DIMENSIONS,
-  CATALOG_SPECIAL_CODE_FACET_POOL_SIZE,
   clearSpecialCodeSelections,
-  extractFilterDimensionOptions,
   toggleSpecialCodeValue,
   type CatalogFilterDimension,
+  type CatalogSpecialCodeOption,
   type CatalogSpecialCodeSelections,
 } from '@/components/shared/catalog-special-code-filter';
 import { stockApi } from '../api/stock-api';
@@ -60,32 +59,21 @@ export function StockListCodeFilterPopover({
     );
   }, [appliedSelections, draftSelections]);
 
-  const facetPoolQuery = useQuery({
-    queryKey: ['stock-list-code-facet-pool'],
-    queryFn: async () => {
-      const response = await stockApi.getList({
-        pageNumber: 1,
-        pageSize: CATALOG_SPECIAL_CODE_FACET_POOL_SIZE,
-        search: '',
-        sortBy: 'Id',
-        sortDirection: 'desc',
-        filterLogic: 'and',
-        filters: [],
-      });
-      return response.data ?? [];
-    },
-    staleTime: 120_000,
-    gcTime: 300_000,
+  const codeFilterOptionsQuery = useQuery({
+    queryKey: ['stock-list-code-filter-options'],
+    queryFn: stockApi.getCodeFilterOptions,
+    staleTime: 300_000,
+    gcTime: 600_000,
   });
 
   const optionsByLevel = useMemo(() => {
-    const pool = facetPoolQuery.data ?? [];
-    const result = {} as Record<CatalogFilterDimension, ReturnType<typeof extractFilterDimensionOptions>>;
+    const options = codeFilterOptionsQuery.data;
+    const result = {} as Record<CatalogFilterDimension, CatalogSpecialCodeOption[]>;
     for (const dimension of CATALOG_FILTER_DIMENSIONS) {
-      result[dimension] = extractFilterDimensionOptions(pool, dimension);
+      result[dimension] = options?.[dimension] ?? [];
     }
     return result;
-  }, [facetPoolQuery.data]);
+  }, [codeFilterOptionsQuery.data]);
 
   const handleToggle = (dimension: CatalogFilterDimension, value: string): void => {
     onDraftSelectionsChange(toggleSpecialCodeValue(draftSelections, dimension, value));
@@ -149,7 +137,7 @@ export function StockListCodeFilterPopover({
           <CatalogSpecialCodeFilterPanel
             selections={draftSelections}
             optionsByLevel={optionsByLevel}
-            isLoadingOptions={facetPoolQuery.isLoading}
+            isLoadingOptions={codeFilterOptionsQuery.isLoading}
             onToggle={handleToggle}
             onClear={handleClearDraft}
           />
