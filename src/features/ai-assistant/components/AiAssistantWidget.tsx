@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
 import { useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
+import { AiAssistantAnswerCard } from './AiAssistantAnswerCard';
 import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
 import {
   getLatestAiAssistantErrorContext,
@@ -21,6 +22,14 @@ const actionItemClassNameBySeverity: Record<string, string> = {
   info: 'border-sky-400/30 bg-sky-400/10 text-sky-950 dark:text-sky-100',
 };
 
+const minimumThinkingDurationMs = 900;
+
+function waitForMinimumThinkingDuration(): Promise<void> {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, minimumThinkingDurationMs);
+  });
+}
+
 export function AiAssistantWidget(): ReactElement {
   const { t } = useTranslation('ai-assistant');
   const { user } = useAuthStore();
@@ -32,6 +41,7 @@ export function AiAssistantWidget(): ReactElement {
   const [lastAnswer, setLastAnswer] = useState<string | null>(null);
   const [lastActionItems, setLastActionItems] = useState<AiAssistantActionItemDto[]>([]);
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
+  const [isThinking, setIsThinking] = useState(false);
   const [latestErrorContext, setLatestErrorContext] = useState<AiAssistantErrorContext | null>(
     () => getLatestAiAssistantErrorContext()
   );
@@ -54,6 +64,7 @@ export function AiAssistantWidget(): ReactElement {
   const displayName = greeting?.fullName?.trim() || fallbackName;
   const fallbackSuggestions = [1, 2, 3, 4].map((index) => t(`suggestions.${index}`));
   const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
+  const isAssistantBusy = askMutation.isPending || isThinking;
 
   const askQuestion = async (value: string, errorContext?: AiAssistantErrorContext | null): Promise<void> => {
     const trimmedQuestion = value.trim();
@@ -66,19 +77,28 @@ export function AiAssistantWidget(): ReactElement {
     setLastQuestion(trimmedQuestion);
     setLastAnswer(null);
     setLastActionItems([]);
-    const result = await askMutation.mutateAsync({
-      question: trimmedQuestion,
-      currentPath: window.location.pathname,
-      errorMessage: errorContext
-        ? `${errorContext.message}${errorContext.requestMethod || errorContext.requestUrl ? ` | ${errorContext.requestMethod ?? ''} ${errorContext.requestUrl ?? ''}` : ''}`
-        : undefined,
-      errorCode: errorContext?.errorCode ?? undefined,
-      httpStatusCode: errorContext?.httpStatusCode ?? undefined,
-    });
-    setLastAnswer(result.answer);
-    setLastActionItems(result.actionItems ?? []);
-    setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
-    setQuestion('');
+    setIsThinking(true);
+
+    try {
+      const [result] = await Promise.all([
+        askMutation.mutateAsync({
+          question: trimmedQuestion,
+          currentPath: window.location.pathname,
+          errorMessage: errorContext
+            ? `${errorContext.message}${errorContext.requestMethod || errorContext.requestUrl ? ` | ${errorContext.requestMethod ?? ''} ${errorContext.requestUrl ?? ''}` : ''}`
+            : undefined,
+          errorCode: errorContext?.errorCode ?? undefined,
+          httpStatusCode: errorContext?.httpStatusCode ?? undefined,
+        }),
+        waitForMinimumThinkingDuration(),
+      ]);
+      setLastAnswer(result.answer);
+      setLastActionItems(result.actionItems ?? []);
+      setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
+      setQuestion('');
+    } finally {
+      setIsThinking(false);
+    }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
@@ -144,15 +164,13 @@ export function AiAssistantWidget(): ReactElement {
               </div>
             )}
 
-            {askMutation.isPending && <AiAssistantThinkingIndicator />}
+            {isAssistantBusy && <AiAssistantThinkingIndicator />}
 
             {lastAnswer && (
-              <div className="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm font-semibold leading-6 text-emerald-950 dark:text-emerald-100">
-                <div className="mb-1 text-xs font-black uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
-                  {t('answerTitle')}
-                </div>
-                {lastAnswer}
-              </div>
+              <AiAssistantAnswerCard
+                title={t('answerTitle')}
+                answer={lastAnswer}
+              />
             )}
 
             {lastActionItems.length > 0 && (
@@ -187,7 +205,7 @@ export function AiAssistantWidget(): ReactElement {
                   type="button"
                   variant="outline"
                   size="sm"
-                  disabled={askMutation.isPending}
+                  disabled={isAssistantBusy}
                   className="mt-3 h-9 rounded-2xl border-amber-300/60 bg-white/70 text-xs font-black text-amber-800 hover:bg-amber-50 dark:bg-white/5 dark:text-amber-100"
                   onClick={() => void askLatestError()}
                 >
@@ -201,7 +219,7 @@ export function AiAssistantWidget(): ReactElement {
                 <button
                   key={suggestion}
                   type="button"
-                  disabled={askMutation.isPending}
+                  disabled={isAssistantBusy}
                   onClick={() => void askQuestion(suggestion)}
                   className="rounded-2xl border border-slate-200 bg-white/70 p-3 text-start text-xs font-bold text-slate-700 transition hover:border-pink-300 hover:bg-pink-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-pink-400/60 dark:hover:bg-pink-500/10"
                 >
@@ -234,11 +252,11 @@ export function AiAssistantWidget(): ReactElement {
               </p>
               <Button
                 type="submit"
-                disabled={askMutation.isPending}
+                disabled={isAssistantBusy}
                 className="shrink-0 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white"
               >
                 <SendHorizontal size={16} className="me-2" />
-                {askMutation.isPending ? t('sending') : t('send')}
+                {isAssistantBusy ? t('sending') : t('send')}
               </Button>
             </div>
           </form>
