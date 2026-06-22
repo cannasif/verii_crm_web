@@ -21,6 +21,8 @@ type CatalogSpecialCodeFilterPanelProps = {
   selections: CatalogSpecialCodeSelections;
   optionsByLevel: Record<CatalogFilterDimension, CatalogSpecialCodeOption[]>;
   isLoadingOptions: boolean;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
   onToggle: (dimension: CatalogFilterDimension, value: string) => void;
   onClear: () => void;
 };
@@ -49,14 +51,17 @@ export function CatalogSpecialCodeFilterPanel({
   selections,
   optionsByLevel,
   isLoadingOptions,
+  searchValue,
+  onSearchChange,
   onToggle,
   onClear,
 }: CatalogSpecialCodeFilterPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const systemSettings = useSystemSettingsStore((state) => state.settings);
-  const [filterSearch, setFilterSearch] = useState('');
+  const [internalFilterSearch, setInternalFilterSearch] = useState('');
   const [expandedByDimension, setExpandedByDimension] =
     useState<Record<CatalogFilterDimension, boolean>>(buildInitialExpandedState);
+  const filterSearch = searchValue ?? internalFilterSearch;
 
   const normalizedFilterSearch = useMemo(
     () => normalizeSearchValue(filterSearch.trim()),
@@ -81,6 +86,16 @@ export function CatalogSpecialCodeFilterPanel({
   const toggleDimensionExpanded = useCallback((dimension: CatalogFilterDimension): void => {
     setExpandedByDimension((prev) => ({ ...prev, [dimension]: !prev[dimension] }));
   }, []);
+
+  const handleFilterSearchChange = useCallback(
+    (value: string): void => {
+      onSearchChange?.(value);
+      if (searchValue === undefined) {
+        setInternalFilterSearch(value);
+      }
+    },
+    [onSearchChange, searchValue],
+  );
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-2">
@@ -109,7 +124,7 @@ export function CatalogSpecialCodeFilterPanel({
         />
         <Input
           value={filterSearch}
-          onChange={(e) => setFilterSearch(e.target.value)}
+          onChange={(e) => handleFilterSearchChange(e.target.value)}
           placeholder={t('catalogStockPicker.specialCodesFilterSearchPlaceholder')}
           className="h-10 rounded-2xl border border-slate-200/95 bg-white pl-9 text-xs text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.04)] placeholder:text-slate-500 focus-visible:border-pink-400/50 focus-visible:ring-pink-500/15 dark:border-white/12 dark:bg-zinc-900/50 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus-visible:border-pink-500/40 sm:pl-10 sm:text-[13px]"
         />

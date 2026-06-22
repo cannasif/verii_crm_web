@@ -33,7 +33,6 @@ import {
   hasSpecialCodeSelection,
   type CatalogSpecialCodeSelections,
 } from '@/components/shared/catalog-special-code-filter';
-import { fetchStockListWithCodeFilters } from '../utils/fetch-stock-list-with-code-filters';
 import { dedupeStocksByErpStockCode } from '../utils/dedupe-stocks-by-erp-code';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
@@ -227,35 +226,27 @@ export function StockListPage(): ReactElement {
       filterLogic,
     ] as const,
     queryFn: async (): Promise<{ data: StockGetDto[]; totalCount: number; hasNextPage: boolean; hasPreviousPage: boolean; totalPages: number }> => {
-      const fetchPage =
+      const request = {
+        pageNumber,
+        pageSize,
+        search: searchTerm || undefined,
+        sortBy,
+        sortDirection,
+        filterLogic,
+        filters: appliedFilters,
+        codeFilters: appliedSpecialCodeSelections,
+      };
+      const result =
         listLayout === 'grid'
-          ? stockApi.getListWithImages
-          : stockApi.getList;
-      const result = await fetchStockListWithCodeFilters(
-        appliedSpecialCodeSelections,
-        (params) =>
-          fetchPage({
-            pageNumber: params.pageNumber,
-            pageSize: params.pageSize,
-            search: params.search ?? '',
-            sortBy: params.sortBy ?? 'Id',
-            sortDirection: params.sortDirection ?? 'desc',
-            filterLogic: params.filterLogic ?? 'and',
-            filters: params.filters,
-          }),
-        {
-          pageNumber,
-          pageSize,
-          search: searchTerm || undefined,
-          additionalFilters: appliedFilters,
-        },
-      );
-      const totalPages = Math.max(1, Math.ceil(result.totalCount / pageSize));
+          ? await stockApi.getListWithImagesByCodeFilters(request)
+          : await stockApi.getListByCodeFilters(request);
+      const totalPages =
+        result.totalPages ?? Math.max(1, Math.ceil((result.totalCount ?? 0) / pageSize));
       return {
-        data: result.data,
-        totalCount: result.totalCount,
-        hasNextPage: pageNumber < totalPages,
-        hasPreviousPage: pageNumber > 1,
+        data: result.data ?? [],
+        totalCount: result.totalCount ?? 0,
+        hasNextPage: result.hasNextPage ?? pageNumber < totalPages,
+        hasPreviousPage: result.hasPreviousPage ?? pageNumber > 1,
         totalPages,
       };
     },
@@ -329,27 +320,19 @@ export function StockListPage(): ReactElement {
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
     const list = hasCodeFilterSelection
-      ? (
-        await fetchStockListWithCodeFilters(
-          appliedSpecialCodeSelections,
-          (params) =>
-            stockApi.getList({
-              pageNumber: params.pageNumber,
-              pageSize: params.pageSize,
-              search: params.search ?? '',
-              sortBy: params.sortBy ?? 'Id',
-              sortDirection: params.sortDirection ?? 'desc',
-              filterLogic: params.filterLogic ?? 'and',
-              filters: params.filters,
-            }),
-          {
-            pageNumber: 1,
-            pageSize: 2000,
+      ? await fetchAllPagedData({
+        fetchPage: (exportPageNumber, exportPageSize) =>
+          stockApi.getListByCodeFilters({
+            pageNumber: exportPageNumber,
+            pageSize: exportPageSize,
             search: searchTerm || undefined,
-            additionalFilters: appliedFilters,
-          },
-        )
-      ).data
+            sortBy,
+            sortDirection,
+            filterLogic,
+            filters: appliedFilters,
+            codeFilters: appliedSpecialCodeSelections,
+          }),
+      })
       : await fetchAllPagedData({
         fetchPage: (exportPageNumber, exportPageSize) =>
           stockApi.getList({
@@ -379,6 +362,7 @@ export function StockListPage(): ReactElement {
     hasCodeFilterSelection,
     appliedSpecialCodeSelections,
     appliedFilters,
+    filterLogic,
     i18n.language,
   ]);
 
@@ -473,7 +457,7 @@ export function StockListPage(): ReactElement {
     await queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEYS.LIST] });
     await queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEYS.LIST_WITH_IMAGES] });
     await queryClient.invalidateQueries({ queryKey: [STOCK_QUERY_KEYS.WAREHOUSE_BALANCES] });
-    await queryClient.invalidateQueries({ queryKey: ['stock-list-code-facet-pool'] });
+    await queryClient.invalidateQueries({ queryKey: ['stock-list-code-filter-options'] });
   };
 
   const handleGridRefresh = async (): Promise<void> => {

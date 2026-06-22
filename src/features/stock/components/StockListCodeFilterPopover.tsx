@@ -1,4 +1,4 @@
-import { type ReactElement, useMemo, useState } from 'react';
+import { type ReactElement, useDeferredValue, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Filter, X } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
@@ -36,6 +36,8 @@ export function StockListCodeFilterPopover({
 }: StockListCodeFilterPopoverProps): ReactElement {
   const { t } = useTranslation(['stock', 'common']);
   const [open, setOpen] = useState(false);
+  const [optionSearch, setOptionSearch] = useState('');
+  const deferredOptionSearch = useDeferredValue(optionSearch);
 
   const handleOpenChange = (nextOpen: boolean): void => {
     if (nextOpen) {
@@ -47,6 +49,9 @@ export function StockListCodeFilterPopover({
         kod4: [...appliedSelections.kod4],
         kod5: [...appliedSelections.kod5],
       });
+    }
+    if (!nextOpen) {
+      setOptionSearch('');
     }
     setOpen(nextOpen);
   };
@@ -60,8 +65,12 @@ export function StockListCodeFilterPopover({
   }, [appliedSelections, draftSelections]);
 
   const codeFilterOptionsQuery = useQuery({
-    queryKey: ['stock-list-code-filter-options'],
-    queryFn: stockApi.getCodeFilterOptions,
+    queryKey: ['stock-list-code-filter-options', deferredOptionSearch],
+    queryFn: () =>
+      stockApi.getCodeFilterOptions({
+        search: deferredOptionSearch,
+        pageSize: 150,
+      }),
     staleTime: 300_000,
     gcTime: 600_000,
   });
@@ -138,6 +147,8 @@ export function StockListCodeFilterPopover({
             selections={draftSelections}
             optionsByLevel={optionsByLevel}
             isLoadingOptions={codeFilterOptionsQuery.isLoading}
+            searchValue={optionSearch}
+            onSearchChange={setOptionSearch}
             onToggle={handleToggle}
             onClear={handleClearDraft}
           />

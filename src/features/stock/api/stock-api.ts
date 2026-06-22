@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import type { CatalogSpecialCodeSelections } from '@/components/shared/catalog-special-code-filter';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import type {
   StockGetDto,
@@ -16,6 +17,28 @@ import type {
   WarehouseStockBalanceDto,
   StockCodeFilterOptionsDto,
 } from '../types';
+
+type StockCodeFilterListParams = PagedParams & {
+  filters?: PagedFilter[] | Record<string, unknown>;
+  codeFilters: CatalogSpecialCodeSelections;
+};
+
+type StockCodeFilterOptionsQuery = {
+  search?: string;
+  pageSize?: number;
+};
+
+function normalizePagedResponse<T>(pagedData: PagedResponse<T>): PagedResponse<T> {
+  const rawData = pagedData as unknown as { items?: T[]; data?: T[] };
+  if (rawData.items && !rawData.data) {
+    return {
+      ...pagedData,
+      data: rawData.items,
+    };
+  }
+
+  return pagedData;
+}
 
 export const stockApi = {
   getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<StockGetDto>> => {
@@ -37,17 +60,7 @@ export const stockApi = {
       throw new Error('Stok listesi verisi alınamadı');
     }
 
-    const pagedData = response.data;
-    
-    const rawData = pagedData as unknown as { items?: StockGetWithMainImageDto[], data?: StockGetWithMainImageDto[] };
-    if (rawData.items && !rawData.data) {
-      return {
-        ...pagedData,
-        data: rawData.items,
-      };
-    }
-    
-    return pagedData;
+    return normalizePagedResponse(response.data);
   },
 
   getListByErpStockCodes: async (erpStockCodes: string[]): Promise<StockGetDto[]> => {
@@ -83,8 +96,36 @@ export const stockApi = {
     return merged;
   },
 
-  getCodeFilterOptions: async (): Promise<StockCodeFilterOptionsDto> => {
-    const response = await api.get<ApiResponse<StockCodeFilterOptionsDto>>('/api/Stock/code-filter-options');
+  getListByCodeFilters: async (params: StockCodeFilterListParams): Promise<PagedResponse<StockGetDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<StockGetDto>>>('/api/Stock/query-by-code-filters', {
+      pageNumber: params.pageNumber ?? 1,
+      pageSize: params.pageSize ?? 10,
+      search: params.search ?? '',
+      sortBy: params.sortBy ?? 'Id',
+      sortDirection: params.sortDirection ?? 'asc',
+      filterLogic: params.filterLogic ?? 'and',
+      filters: params.filters ?? [],
+      codeFilters: params.codeFilters,
+    });
+
+    if (!response.success) {
+      throw new Error(response.message || 'Kod filtreli stok listesi yüklenemedi');
+    }
+
+    if (!response.data) {
+      throw new Error('Kod filtreli stok listesi verisi alınamadı');
+    }
+
+    return normalizePagedResponse(response.data);
+  },
+
+  getCodeFilterOptions: async (params?: StockCodeFilterOptionsQuery): Promise<StockCodeFilterOptionsDto> => {
+    const response = params
+      ? await api.post<ApiResponse<StockCodeFilterOptionsDto>>('/api/Stock/code-filter-options/query', {
+        search: params.search ?? '',
+        pageSize: params.pageSize ?? 100,
+      })
+      : await api.get<ApiResponse<StockCodeFilterOptionsDto>>('/api/Stock/code-filter-options');
 
     if (!response.success) {
       throw new Error(response.message || 'Stok özel kod seçenekleri yüklenemedi');
@@ -351,17 +392,29 @@ export const stockApi = {
       throw new Error('Görselli stok listesi verisi alınamadı');
     }
 
-    const pagedData = response.data;
-    
-    const rawData = pagedData as unknown as { items?: StockGetWithMainImageDto[], data?: StockGetWithMainImageDto[] };
-    
-    if (rawData.items && !rawData.data) {
-      return {
-        ...pagedData,
-        data: rawData.items,
-      };
+    return normalizePagedResponse(response.data);
+  },
+
+  getListWithImagesByCodeFilters: async (params: StockCodeFilterListParams): Promise<PagedResponse<StockGetWithMainImageDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<StockGetWithMainImageDto>>>('/api/Stock/withImages/query-by-code-filters', {
+      pageNumber: params.pageNumber ?? 1,
+      pageSize: params.pageSize ?? 10,
+      search: params.search ?? '',
+      sortBy: params.sortBy ?? 'Id',
+      sortDirection: params.sortDirection ?? 'asc',
+      filterLogic: params.filterLogic ?? 'and',
+      filters: params.filters ?? [],
+      codeFilters: params.codeFilters,
+    });
+
+    if (!response.success) {
+      throw new Error(response.message || 'Kod filtreli görselli stok listesi yüklenemedi');
     }
-    
-    return pagedData;
+
+    if (!response.data) {
+      throw new Error('Kod filtreli görselli stok listesi verisi alınamadı');
+    }
+
+    return normalizePagedResponse(response.data);
   },
 };
