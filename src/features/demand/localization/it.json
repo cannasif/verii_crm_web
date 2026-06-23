@@ -90,7 +90,12 @@
       "message": "Tutte le righe verranno ricalcolate. Continuare?"
     },
     "deliveryMethod": "Modalità di consegna",
-    "documentDetail": "Testo documento"
+    "documentDetail": "Testo documento",
+    "ozelKod1": "Codice speciale 1",
+    "ozelKod1Placeholder": "Seleziona codice speciale 1",
+    "ozelKod2": "Codice speciale 2",
+    "ozelKod2Placeholder": "Seleziona codice speciale 2",
+    "specialCodeSearchPlaceholder": "Cerca codice speciale..."
   },
   "lines": {
     "title": "Righe",

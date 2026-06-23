@@ -52,6 +52,8 @@ const MEANINGFUL_ROOT_KEYS = [
   'documentSerialTypeId',
   'deliveryMethod',
   'projectCode',
+  'ozelKod1',
+  'ozelKod2',
   'description',
   'generalDiscountRate',
   'generalDiscountAmount',

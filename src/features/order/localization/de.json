@@ -41,5 +41,12 @@
       "vatRate": "MwSt.-Satz",
       "warehouseCode": "Lager"
     }
+  },
+  "header": {
+    "ozelKod1": "Sondercode 1",
+    "ozelKod1Placeholder": "Sondercode 1 auswählen",
+    "ozelKod2": "Sondercode 2",
+    "ozelKod2Placeholder": "Sondercode 2 auswählen",
+    "specialCodeSearchPlaceholder": "Sondercode suchen..."
   }
 }

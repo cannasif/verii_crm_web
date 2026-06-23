@@ -49,6 +49,7 @@ import {
   type CustomerComboboxOption,
 } from '@/features/customer-management/utils/customer-integration';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
+import { useSpecialCodesInfinite } from '@/services/hooks/useSpecialCodesInfinite';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
 import { useDocumentSerialAutoFill } from '@/features/document-serial-type-management/hooks/useDocumentSerialAutoFill';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
@@ -120,6 +121,8 @@ export function OrderHeaderForm({
   const [customerSearchQuery, setCustomerSearchQuery] = useState('');
   const [notesDialogOpen, setNotesDialogOpen] = useState(false);
   const [projectSearchTerm, setProjectSearchTerm] = useState('');
+  const [ozelKod1SearchTerm, setOzelKod1SearchTerm] = useState('');
+  const [ozelKod2SearchTerm, setOzelKod2SearchTerm] = useState('');
   const [paymentTypeSearchTerm, setPaymentTypeSearchTerm] = useState('');
   const [deliveryMethodSearchTerm, setDeliveryMethodSearchTerm] = useState('');
   const isInitialLoadRef = useRef(true);
@@ -163,6 +166,8 @@ export function OrderHeaderForm({
   const shouldFetchCustomer = Boolean(watchedCustomerId && watchedCustomerId > 0);
   const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
   const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
+  const specialCode1Dropdown = useSpecialCodesInfinite(1, ozelKod1SearchTerm);
+  const specialCode2Dropdown = useSpecialCodesInfinite(2, ozelKod2SearchTerm);
   
   const customerTypeId = useMemo(() => {
     if (watchedErpCustomerCode) return 0;
@@ -845,6 +850,72 @@ export function OrderHeaderForm({
                             isFetchingNextPage={projectDropdown.isFetchingNextPage}
                             placeholder={t('order:header.projectCodePlaceholder')}
                             searchPlaceholder={t('common.search')}
+                            disabled={readOnly}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="mt-1.5" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="order.ozelKod1"
+                  render={({ field }) => (
+                    <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
+                      <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.ozelKod1')}>
+                        <Layers className="h-3.5 w-3.5" />
+                        {t('order:header.ozelKod1')}
+                      </FormLabel>
+                      <div className="relative w-full min-w-0">
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
+                        <FormControl>
+                          <VoiceSearchCombobox
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
+                            value={field.value || ''}
+                            onSelect={(value) => field.onChange(value)}
+                            options={specialCode1Dropdown.options}
+                            onDebouncedSearchChange={setOzelKod1SearchTerm}
+                            onFetchNextPage={specialCode1Dropdown.fetchNextPage}
+                            hasNextPage={specialCode1Dropdown.hasNextPage}
+                            isLoading={specialCode1Dropdown.isLoading}
+                            isFetchingNextPage={specialCode1Dropdown.isFetchingNextPage}
+                            placeholder={t('order:header.ozelKod1Placeholder')}
+                            searchPlaceholder={t('order:header.specialCodeSearchPlaceholder')}
+                            disabled={readOnly}
+                          />
+                        </FormControl>
+                      </div>
+                      <FormMessage className="mt-1.5" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="order.ozelKod2"
+                  render={({ field }) => (
+                    <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
+                      <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.ozelKod2')}>
+                        <Layers className="h-3.5 w-3.5" />
+                        {t('order:header.ozelKod2')}
+                      </FormLabel>
+                      <div className="relative w-full min-w-0">
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
+                        <FormControl>
+                          <VoiceSearchCombobox
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
+                            value={field.value || ''}
+                            onSelect={(value) => field.onChange(value)}
+                            options={specialCode2Dropdown.options}
+                            onDebouncedSearchChange={setOzelKod2SearchTerm}
+                            onFetchNextPage={specialCode2Dropdown.fetchNextPage}
+                            hasNextPage={specialCode2Dropdown.hasNextPage}
+                            isLoading={specialCode2Dropdown.isLoading}
+                            isFetchingNextPage={specialCode2Dropdown.isFetchingNextPage}
+                            placeholder={t('order:header.ozelKod2Placeholder')}
+                            searchPlaceholder={t('order:header.specialCodeSearchPlaceholder')}
                             disabled={readOnly}
                           />
                         </FormControl>

@@ -276,6 +276,8 @@ export function QuotationDetailPage(): ReactElement {
           deliveryMethod: deliveryMethodValue,
           koliBaskiDefinitionId: quotation.koliBaskiDefinitionId ?? (raw.KoliBaskiDefinitionId as number) ?? null,
           projectCode: quotation.erpProjectCode ?? (raw.ErpProjectCode as string) ?? (raw.ProjectCode as string) ?? null,
+          ozelKod1: quotation.ozelKod1 ?? (raw.OzelKod1 as string) ?? '',
+          ozelKod2: quotation.ozelKod2 ?? (raw.OzelKod2 as string) ?? '',
         },
       });
       formInitializedRef.current = true;
@@ -854,6 +856,9 @@ export function QuotationDetailPage(): ReactElement {
         generalDiscountAmount: data.quotation.generalDiscountAmount ?? null,
         salesTypeDefinitionId: data.quotation.deliveryMethod ? Number(data.quotation.deliveryMethod) : null,
         koliBaskiDefinitionId: (data.quotation.koliBaskiDefinitionId && data.quotation.koliBaskiDefinitionId > 0) ? data.quotation.koliBaskiDefinitionId : null,
+        projectCode: data.quotation.projectCode || null,
+        ozelKod1: data.quotation.ozelKod1 || null,
+        ozelKod2: data.quotation.ozelKod2 || null,
         erpProjectCode: data.quotation.projectCode ?? null,
       };
 

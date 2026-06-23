@@ -102,7 +102,12 @@
       "message": "When the currency changes, all existing lines will be recalculated according to the new currency. Do you approve this operation?"
     },
     "deliveryMethod": "Delivery Method",
-    "documentDetail": "Document Details"
+    "documentDetail": "Document Details",
+    "ozelKod1": "Special Code 1",
+    "ozelKod1Placeholder": "Select special code 1",
+    "ozelKod2": "Special Code 2",
+    "ozelKod2Placeholder": "Select special code 2",
+    "specialCodeSearchPlaceholder": "Search special code..."
   },
   "lines": {
     "title": "Demand Lines",

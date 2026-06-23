@@ -1,8 +1,9 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedFilter, PagedResponse } from '@/types/api';
-import type { ErpCustomer, ErpProject, ProjeDto, ErpWarehouse, ErpProduct, BranchErp, CariDto, KurDto, StokGroupDto } from './erp-types';
+import type { ErpCustomer, ErpProject, ProjeDto, SpecialCodeDto, ErpWarehouse, ErpProduct, BranchErp, CariDto, KurDto, StokGroupDto } from './erp-types';
 
 let cachedProjectCodes: ProjeDto[] | null = null;
+const cachedSpecialCodesByType: Partial<Record<1 | 2, SpecialCodeDto[]>> = {};
 
 function normalizeErpWarehouse(item: unknown): ErpWarehouse | null {
   if (!item || typeof item !== 'object') {
@@ -174,6 +175,61 @@ export const erpCommonApi = {
     const totalCount = filtered.length;
     const start = (pageNumber - 1) * pageSize;
     const data = filtered.slice(start, start + pageSize);
+    return {
+      data,
+      totalCount,
+      pageNumber,
+      pageSize,
+      totalPages: Math.ceil(totalCount / pageSize) || 1,
+      hasPreviousPage: pageNumber > 1,
+      hasNextPage: start + data.length < totalCount,
+    };
+  },
+
+  getSpecialCodes: async (tableType: 1 | 2, specialCode?: string | null): Promise<SpecialCodeDto[]> => {
+    const queryParams = new URLSearchParams({ tableType: String(tableType) });
+    if (specialCode?.trim()) {
+      queryParams.set('specialCode', specialCode.trim());
+    }
+
+    const response = await api.get<ApiResponse<SpecialCodeDto[]>>(`/api/NetsisRead/getSpecialCodes?${queryParams.toString()}`);
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || 'Özel kodlar yüklenemedi');
+  },
+
+  getSpecialCodesPage: async (params: {
+    tableType: 1 | 2;
+    pageNumber: number;
+    pageSize: number;
+    filters?: PagedFilter[] | Record<string, unknown>;
+    signal: AbortSignal;
+  }): Promise<PagedResponse<SpecialCodeDto>> => {
+    const { tableType, pageNumber, pageSize, filters } = params;
+    if (!cachedSpecialCodesByType[tableType]) {
+      cachedSpecialCodesByType[tableType] = await erpCommonApi.getSpecialCodes(tableType);
+    }
+
+    let filtered = cachedSpecialCodesByType[tableType] ?? [];
+    if (filters && Array.isArray(filters)) {
+      const searchFilter = filters.find((f: PagedFilter) => f.column === 'search' || f.column === 'ozelKod' || f.column === 'aciklama');
+      const searchTerm = searchFilter?.value?.toLowerCase() ?? '';
+      if (searchTerm) {
+        filtered = filtered.filter(
+          (specialCode) =>
+            (specialCode.ozelKod?.toLowerCase() ?? '').includes(searchTerm) ||
+            (specialCode.aciklama?.toLowerCase() ?? '').includes(searchTerm) ||
+            (specialCode.displayName?.toLowerCase() ?? '').includes(searchTerm)
+        );
+      }
+    }
+
+    const totalCount = filtered.length;
+    const start = (pageNumber - 1) * pageSize;
+    const data = filtered.slice(start, start + pageSize);
+
     return {
       data,
       totalCount,

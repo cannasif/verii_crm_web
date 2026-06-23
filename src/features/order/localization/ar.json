@@ -41,5 +41,12 @@
       "vatRate": "نسبة الضريبة",
       "warehouseCode": "المستودع"
     }
+  },
+  "header": {
+    "ozelKod1": "الرمز الخاص 1",
+    "ozelKod1Placeholder": "اختر الرمز الخاص 1",
+    "ozelKod2": "الرمز الخاص 2",
+    "ozelKod2Placeholder": "اختر الرمز الخاص 2",
+    "specialCodeSearchPlaceholder": "ابحث عن رمز خاص..."
   }
 }

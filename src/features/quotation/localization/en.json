@@ -100,6 +100,11 @@
     "descriptionPlaceholder": "Enter a description",
     "projectCode": "Project code",
     "projectCodePlaceholder": "Enter project code",
+    "ozelKod1": "Special Code 1",
+    "ozelKod1Placeholder": "Select special code 1",
+    "ozelKod2": "Special Code 2",
+    "ozelKod2Placeholder": "Select special code 2",
+    "specialCodeSearchPlaceholder": "Search special code...",
     "offerNo": "Quotation no.",
     "offerNoPlaceholder": "Quotation number",
     "currencyChange": {

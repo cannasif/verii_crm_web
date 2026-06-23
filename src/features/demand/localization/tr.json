@@ -102,7 +102,12 @@
       "message": "Para birimi değiştiğinde, mevcut tüm satırlar yeni para birimine göre yeniden hesaplanacaktır. Bu işlemi onaylıyor musunuz?"
     },
     "deliveryMethod": "Teslimat Yöntemi",
-    "documentDetail": "Belge Açıklaması"
+    "documentDetail": "Belge Açıklaması",
+    "ozelKod1": "Özel Kod 1",
+    "ozelKod1Placeholder": "Özel Kod 1 seçin",
+    "ozelKod2": "Özel Kod 2",
+    "ozelKod2Placeholder": "Özel Kod 2 seçin",
+    "specialCodeSearchPlaceholder": "Özel kod ara..."
   },
   "lines": {
     "title": "Talep Satırları",

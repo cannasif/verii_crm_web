@@ -197,6 +197,8 @@ export function OrderDetailPage(): ReactElement {
           shippingAddressId: order.shippingAddressId || null,
           representativeId: order.representativeId || null,
           projectCode: projectCodeValue,
+          ozelKod1: order.ozelKod1 ?? (raw.OzelKod1 as string) ?? '',
+          ozelKod2: order.ozelKod2 ?? (raw.OzelKod2 as string) ?? '',
           status: order.status ?? null,
           description: order.description || null,
           paymentTypeId: order.paymentTypeId || null,
@@ -533,6 +535,8 @@ export function OrderDetailPage(): ReactElement {
         generalDiscountAmount: data.order.generalDiscountAmount ?? null,
         koliBaskiDefinitionId: (data.order.koliBaskiDefinitionId && data.order.koliBaskiDefinitionId > 0) ? data.order.koliBaskiDefinitionId : null,
         salesTypeDefinitionId: data.order.deliveryMethod ? Number(data.order.deliveryMethod) : null,
+        ozelKod1: data.order.ozelKod1 || null,
+        ozelKod2: data.order.ozelKod2 || null,
         erpProjectCode: data.order.projectCode ?? null,
       };
 

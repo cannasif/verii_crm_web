@@ -41,5 +41,12 @@
       "vatRate": "Aliquota IVA",
       "warehouseCode": "Magazzino"
     }
+  },
+  "header": {
+    "ozelKod1": "Codice speciale 1",
+    "ozelKod1Placeholder": "Seleziona codice speciale 1",
+    "ozelKod2": "Codice speciale 2",
+    "ozelKod2Placeholder": "Seleziona codice speciale 2",
+    "specialCodeSearchPlaceholder": "Cerca codice speciale..."
   }
 }

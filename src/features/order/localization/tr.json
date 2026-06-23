@@ -53,5 +53,12 @@
       "vatRate": "KDV Oranı",
       "warehouseCode": "Depo"
     }
+  },
+  "header": {
+    "ozelKod1": "Özel Kod 1",
+    "ozelKod1Placeholder": "Özel Kod 1 seçin",
+    "ozelKod2": "Özel Kod 2",
+    "ozelKod2Placeholder": "Özel Kod 2 seçin",
+    "specialCodeSearchPlaceholder": "Özel kod ara..."
   }
 }

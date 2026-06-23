@@ -54,6 +54,13 @@ export interface ProjeDto {
   projeAciklama: string | null;
 }
 
+export interface SpecialCodeDto {
+  isletmeKodu: number;
+  ozelKod: string;
+  aciklama: string | null;
+  displayName: string;
+}
+
 export interface ErpWarehouse {
   depoKodu: number;
   depoIsmi: string;

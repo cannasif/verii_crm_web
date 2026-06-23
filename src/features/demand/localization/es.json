@@ -90,7 +90,12 @@
       "message": "Se recalcularán todas las líneas. ¿Continuar?"
     },
     "deliveryMethod": "Método de entrega",
-    "documentDetail": "Texto del documento"
+    "documentDetail": "Texto del documento",
+    "ozelKod1": "Código especial 1",
+    "ozelKod1Placeholder": "Seleccionar código especial 1",
+    "ozelKod2": "Código especial 2",
+    "ozelKod2Placeholder": "Seleccionar código especial 2",
+    "specialCodeSearchPlaceholder": "Buscar código especial..."
   },
   "lines": {
     "title": "Líneas",

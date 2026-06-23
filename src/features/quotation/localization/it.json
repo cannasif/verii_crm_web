@@ -100,6 +100,11 @@
     "descriptionPlaceholder": "Inserire la descrizione",
     "projectCode": "Codice progetto",
     "projectCodePlaceholder": "Inserire il codice progetto",
+    "ozelKod1": "Codice speciale 1",
+    "ozelKod1Placeholder": "Seleziona codice speciale 1",
+    "ozelKod2": "Codice speciale 2",
+    "ozelKod2Placeholder": "Seleziona codice speciale 2",
+    "specialCodeSearchPlaceholder": "Cerca codice speciale...",
     "offerNo": "N. offerta",
     "offerNoPlaceholder": "Numero offerta",
     "currencyChange": {

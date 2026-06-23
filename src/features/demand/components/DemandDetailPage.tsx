@@ -194,6 +194,8 @@ export function DemandDetailPage(): ReactElement {
           shippingAddressId: demand.shippingAddressId || null,
           representativeId: demand.representativeId || null,
           projectCode: projectCodeValue,
+          ozelKod1: demand.ozelKod1 ?? (raw.OzelKod1 as string) ?? '',
+          ozelKod2: demand.ozelKod2 ?? (raw.OzelKod2 as string) ?? '',
           status: demand.status ?? null,
           description: demand.description || null,
           paymentTypeId: demand.paymentTypeId || null,
@@ -505,6 +507,8 @@ export function DemandDetailPage(): ReactElement {
         generalDiscountAmount: data.demand.generalDiscountAmount ?? null,
         koliBaskiDefinitionId: (data.demand.koliBaskiDefinitionId && data.demand.koliBaskiDefinitionId > 0) ? data.demand.koliBaskiDefinitionId : null,
         salesTypeDefinitionId: data.demand.deliveryMethod ? Number(data.demand.deliveryMethod) : null,
+        ozelKod1: data.demand.ozelKod1 || null,
+        ozelKod2: data.demand.ozelKod2 || null,
         erpProjectCode: data.demand.projectCode ?? null,
       };
 

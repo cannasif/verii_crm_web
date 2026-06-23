@@ -90,7 +90,12 @@
       "message": "Alle Zeilen werden bei Währungswechsel neu berechnet. Fortfahren?"
     },
     "deliveryMethod": "Lieferart",
-    "documentDetail": "Belegtext"
+    "documentDetail": "Belegtext",
+    "ozelKod1": "Sondercode 1",
+    "ozelKod1Placeholder": "Sondercode 1 auswählen",
+    "ozelKod2": "Sondercode 2",
+    "ozelKod2Placeholder": "Sondercode 2 auswählen",
+    "specialCodeSearchPlaceholder": "Sondercode suchen..."
   },
   "lines": {
     "title": "Positionen",

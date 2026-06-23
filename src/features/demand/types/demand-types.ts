@@ -60,6 +60,8 @@ export interface CreateDemandDto {
   shippingAddressId?: number | null;
   representativeId?: number | null;
   projectCode?: string | null;
+  ozelKod1?: string | null;
+  ozelKod2?: string | null;
   status?: number | null;
   description?: string | null;
   cancelledByUserId?: number | null;
@@ -225,6 +227,8 @@ export interface DemandGetDto {
   representativeId?: number | null;
   representativeName?: string | null;
   projectCode?: string | null;
+  ozelKod1?: string | null;
+  ozelKod2?: string | null;
   status?: number | null;
   description?: string | null;
   cancelledByUserId?: number | null;
