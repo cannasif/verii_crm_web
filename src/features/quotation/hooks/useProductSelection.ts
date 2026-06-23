@@ -153,7 +153,6 @@ export function useProductSelection({
 
           let productName = isMainProduct ? resolvedMainProductName : '';
           const vatRate = resolveDocumentVatRate(undefined, offerType, productWithResolvedName.vatRate ?? 20);
-          const relatedStockId: number | null = mainStockId;
 
           let relatedStockIdFromArray: number | undefined;
           if (!isMainProduct) {
@@ -168,6 +167,7 @@ export function useProductSelection({
               void 0;
             }
           }
+          const relatedStockId: number | null = isMainProduct ? mainStockId : relatedStockIdFromArray ?? null;
 
           const lineQty = isMainProduct
             ? 1

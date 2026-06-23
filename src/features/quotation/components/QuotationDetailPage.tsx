@@ -81,7 +81,7 @@ import {
   resolveLoadedLineUnit,
 } from '@/features/stock/utils/localized-stock-name';
 import { createClientId } from '@/lib/create-client-id';
-import { deduplicateDocumentLinesByBackendId } from '@/lib/document-line-list-update';
+import { deduplicateDocumentLinesByBackendId, resolveDocumentLineBackendId } from '@/lib/document-line-list-update';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -354,7 +354,7 @@ export function QuotationDetailPage(): ReactElement {
           baskiAciklama: line.baskiAciklama ?? null,
           pricingRuleHeaderId: line.pricingRuleHeaderId || null,
           imagePath: line.imagePath || null,
-          relatedStockId: line.relatedStockId || null,
+          relatedStockId: line.productId ?? line.relatedStockId ?? null,
           relatedProductKey: line.relatedProductKey || null,
           isMainRelatedProduct: line.isMainRelatedProduct || false,
           approvalStatus: line.approvalStatus,
@@ -777,13 +777,17 @@ export function QuotationDetailPage(): ReactElement {
 
     try {
       const linesToSend = lines.map((line) => {
-        const { id, isEditing, relatedLines, vidaDefinitionName, baskiDefinitionName, ...cleanLineData } =
+        const { id, backendLineId, isEditing, relatedLines, vidaDefinitionName, baskiDefinitionName, ...cleanLineData } =
           line as QuotationLineFormState & { relatedLines?: unknown[] };
+        const persistedLineId = resolveDocumentLineBackendId({
+          id: typeof id === 'number' ? String(id) : id ?? '',
+          backendLineId,
+        });
         void vidaDefinitionName;
         void baskiDefinitionName;
         return {
           ...cleanLineData,
-          id: parsePersistedId(id, 'line'),
+          id: persistedLineId,
           quotationId: quotationId,
           productId: cleanLineData.productId ?? null,
           description: cleanLineData.description || null,
@@ -796,7 +800,7 @@ export function QuotationDetailPage(): ReactElement {
           baskiDefinitionId: cleanLineData.baskiDefinitionId ?? null,
           baskiAciklama: cleanLineData.baskiAciklama?.trim() || null,
           pricingRuleHeaderId: cleanLineData.pricingRuleHeaderId && cleanLineData.pricingRuleHeaderId > 0 ? cleanLineData.pricingRuleHeaderId : null,
-          relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : null,
+          relatedStockId: cleanLineData.relatedStockId && cleanLineData.relatedStockId > 0 ? cleanLineData.relatedStockId : cleanLineData.productId ?? null,
           erpProjectCode: cleanLineData.projectCode ?? null,
         };
       });

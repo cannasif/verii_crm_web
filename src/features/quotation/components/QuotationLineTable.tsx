@@ -181,7 +181,7 @@ function dtoToFormState(dto: QuotationLineGetDto, _index: number): QuotationLine
     pricingRuleHeaderId: dto.pricingRuleHeaderId ?? null,
     projectCode: dto.erpProjectCode ?? dto.projectCode ?? null,
     imagePath: dto.imagePath ?? null,
-    relatedStockId: dto.relatedStockId ?? null,
+    relatedStockId: dto.productId ?? dto.relatedStockId ?? null,
     relatedProductKey: dto.relatedProductKey ?? null,
     isMainRelatedProduct: dto.isMainRelatedProduct ?? false,
     approvalStatus: dto.approvalStatus ?? 0,
