@@ -4,6 +4,7 @@ import {
   type ReactElement,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -69,27 +70,40 @@ export function ExchangeRateDialog({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingDraft, setEditingDraft] = useState('');
   const [editMountKey, setEditMountKey] = useState(0);
+  const hydratedForOpenRef = useRef(false);
   const isUpdateMode = demandId != null && demandId > 0;
   const isSaving = isUpdateMode && updateMutation.isPending;
 
   useEffect(() => {
-    if (open && erpRates.length > 0) {
-      setEditingId(null);
-      setEditingDraft('');
-      setEditMountKey(0);
-      const mappedRates: DemandExchangeRateFormState[] = erpRates.map((rate, index) => {
-        const existing = exchangeRates.find((er) => er.dovizTipi === rate.dovizTipi);
-        return {
-          id: existing?.id || `temp-${rate.dovizTipi}-${index}`,
-          currency: existing?.currency || String(rate.dovizTipi),
-          exchangeRate: existing?.exchangeRate || rate.kurDegeri || 0,
-          exchangeRateDate: existing?.exchangeRateDate || new Date().toISOString().split('T')[0],
-          isOfficial: existing?.isOfficial ?? (rate.kurDegeri !== null && existing === undefined),
-          dovizTipi: rate.dovizTipi,
-        };
-      });
-      setLocalRates(mappedRates);
+    if (!open) {
+      hydratedForOpenRef.current = false;
+      return;
     }
+    if (hydratedForOpenRef.current || erpRates.length === 0) return;
+
+    setEditingId(null);
+    setEditingDraft('');
+    setEditMountKey(0);
+    const mappedRates: DemandExchangeRateFormState[] = erpRates.map((rate, index) => {
+      const existing = exchangeRates.find((er) => er.dovizTipi === rate.dovizTipi);
+      const erpRateValue = Number(rate.kurDegeri ?? 0);
+      const existingRateValue = Number(existing?.exchangeRate ?? 0);
+      const shouldUseErpRate =
+        !existing ||
+        existingRateValue <= 0 ||
+        (existing.isOfficial !== false && existingRateValue === 1 && rate.dovizTipi !== 0 && erpRateValue > 0);
+
+      return {
+        id: existing?.id || `temp-${rate.dovizTipi}-${index}`,
+        currency: existing?.currency || String(rate.dovizTipi),
+        exchangeRate: shouldUseErpRate ? erpRateValue : existingRateValue,
+        exchangeRateDate: existing?.exchangeRateDate || new Date().toISOString().split('T')[0],
+        isOfficial: shouldUseErpRate ? rate.kurDegeri != null : existing?.isOfficial ?? rate.kurDegeri != null,
+        dovizTipi: rate.dovizTipi,
+      };
+    });
+    setLocalRates(mappedRates);
+    hydratedForOpenRef.current = true;
   }, [open, erpRates, exchangeRates]);
 
   const handleRateChange = (id: string, value: number): void => {
