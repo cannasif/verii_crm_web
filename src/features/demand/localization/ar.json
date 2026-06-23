@@ -18,6 +18,9 @@
   "save": "حفظ",
   "confirm": "تأكيد",
   "saveAndApply": "حفظ وتطبيق",
+  "notes": {
+    "notesTooltipText": "هذه تفسيرات عامة للطلب. الحد الأقصى لطول الأحرف هو 100"
+  },
   "list": {
     "revise": "مراجعة",
     "showing": "{{from}}-{{to}} / {{total}}",
@@ -148,6 +151,8 @@
     "description2": "وصف 2",
     "description3": "وصف 3",
     "descriptionPlaceholder": "وصف...",
+    "descriptionTooltipText": "هذه هي أوصاف السلع على مستوى السطر. الحد الأقصى لطول الأحرف هو 200",
+    "lineItemDescriptionPlaceholder": "وصف السلعة على مستوى السطر",
     "doubleClickToEdit": "انقر نقرتين للتحرير"
   },
   "exchangeRates": {

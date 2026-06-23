@@ -35,7 +35,8 @@ import { quotationLineRequiredSchema, type QuotationLineFormState, type Quotatio
 import { pdfReportTemplateApi } from '@/features/pdf-report';
 import type { UploadPdfAssetOptions } from '@/features/pdf-report/api/pdf-report-template-api';
 import { getImageUrl } from '@/lib/image-url';
-import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info, X, LayoutGrid, ImagePlus, Trash2, CirclePlus } from 'lucide-react';
+import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info, X, LayoutGrid, ImagePlus, Trash2, CirclePlus, HelpCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import {
   formatQuantityInputDraftFromNumber,
@@ -1522,38 +1523,98 @@ export function QuotationLineForm({
             </h5>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('lines.descriptionField1Label')}
-                </label>
+                <div className="flex items-center gap-1.5 ml-1">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('lines.descriptionField1Label')}
+                  </label>
+                  <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
+                        >
+                          <HelpCircle size={14} className="stroke-[2.5]" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="top"
+                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
+                      >
+                        {t('lines.descriptionTooltipText')}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <Input
                   value={formData.description1 ?? ''}
                   onChange={(e) => handleFieldChange('description1', e.target.value || null)}
                   maxLength={200}
-                  placeholder={t('lines.max200Chars')}
+                  placeholder={t('lines.lineItemDescriptionPlaceholder', { defaultValue: 'Satır bazlı kalem açıklaması' })}
                   className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('lines.descriptionField2Label')}
-                </label>
+                <div className="flex items-center gap-1.5 ml-1">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('lines.descriptionField2Label')}
+                  </label>
+                  <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
+                        >
+                          <HelpCircle size={14} className="stroke-[2.5]" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="top"
+                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
+                      >
+                        {t('lines.descriptionTooltipText')}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <Input
                   value={formData.description2 ?? ''}
                   onChange={(e) => handleFieldChange('description2', e.target.value || null)}
                   maxLength={200}
-                  placeholder={t('lines.max200Chars')}
+                  placeholder={t('lines.lineItemDescriptionPlaceholder', { defaultValue: 'Satır bazlı kalem açıklaması' })}
                   className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('lines.descriptionField3Label')}
-                </label>
+                <div className="flex items-center gap-1.5 ml-1">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('lines.descriptionField3Label')}
+                  </label>
+                  <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
+                        >
+                          <HelpCircle size={14} className="stroke-[2.5]" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="top"
+                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
+                      >
+                        {t('lines.descriptionTooltipText')}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <Input
                   value={formData.description3 ?? ''}
                   onChange={(e) => handleFieldChange('description3', e.target.value || null)}
                   maxLength={200}
-                  placeholder={t('lines.max200Chars')}
+                  placeholder={t('lines.lineItemDescriptionPlaceholder', { defaultValue: 'Satır bazlı kalem açıklaması' })}
                   className={`h-11 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] text-slate-900 dark:text-white ${pinkFocusClass}`}
                 />
               </div>

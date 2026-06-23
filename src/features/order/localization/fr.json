@@ -1,7 +1,12 @@
 {
   "lines": {
     "doubleClickToEdit": "Double-cliquez pour modifier",
-    "unit": "Unité"
+    "unit": "Unité",
+    "descriptionTooltipText": "Il s'agit de descriptions d'articles par ligne. La limite maximale de caractères est de 200",
+    "lineItemDescriptionPlaceholder": "Description de l'article par ligne"
+  },
+  "notes": {
+    "notesTooltipText": "Il s'agit d'explications générales pour la commande. La limite maximale de caractères est de 100"
   },
   "erpOrder": {
     "title": "Liste des commandes ERP",

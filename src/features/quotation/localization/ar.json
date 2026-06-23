@@ -178,6 +178,8 @@
     "descriptionField1Label": "المواصفات",
     "descriptionField2Label": "حديد",
     "descriptionField3Label": "برغي",
+    "descriptionTooltipText": "هذه هي أوصاف السلع على مستوى السطر. الحد الأقصى لطول الأحرف هو 200",
+    "lineItemDescriptionPlaceholder": "وصف السلعة على مستوى السطر",
     "doubleClickToEdit": "انقر نقرًا مزدوجًا للتعديل"
   },
   "exchangeRates": {
@@ -243,6 +245,7 @@
     "placeholder": "أدخل ملاحظة العرض",
     "saving": "جاري حفظ الملاحظات...",
     "noteLabel": "ملاحظة العرض",
+    "notesTooltipText": "هذه تفسيرات عامة للعرض. الحد الأقصى لطول الأحرف هو 100",
     "saved": "تم حفظ ملاحظات العرض.",
     "saveError": "تعذر حفظ ملاحظات العرض.",
     "maxLengthError": "يمكن أن تحتوي الملاحظة على 1000 حرف كحد أقصى.",

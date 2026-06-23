@@ -20,6 +20,7 @@ export interface DocumentNotesLabels {
   saving: string;
   maxLengthError: string;
   pageLabel: string;
+  notesTooltipText: string;
 }
 
 export function useDocumentNotesLabels(context: DocumentNotesContext = 'quotation'): DocumentNotesLabels {
@@ -43,6 +44,7 @@ export function useDocumentNotesLabels(context: DocumentNotesContext = 'quotatio
       saving: resolve('saving', 'Kaydediliyor...'),
       maxLengthError: resolve('maxLengthError', 'Not alanı en fazla 100 karakter olabilir.'),
       pageLabel: resolve('pageLabel', 'Sayfa {{current}} / {{total}}'),
+      notesTooltipText: resolve('notesTooltipText', 'Teklif geneli açıklamalarıdır. Maksimum karakter limiti 100\'dür'),
     };
   }, [context, ns, t]);
 }

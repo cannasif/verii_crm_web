@@ -18,6 +18,9 @@
   "save": "Enregistrer",
   "confirm": "Confirmer",
   "saveAndApply": "Enregistrer et appliquer",
+  "notes": {
+    "notesTooltipText": "Il s'agit d'explications générales pour la demande. La limite maximale de caractères est de 100"
+  },
   "list": {
     "revise": "Réviser",
     "showing": "{{from}}-{{to}} / {{total}}",
@@ -148,6 +151,8 @@
     "description2": "Description 2",
     "description3": "Description 3",
     "descriptionPlaceholder": "Description...",
+    "descriptionTooltipText": "Il s'agit de descriptions d'articles par ligne. La limite maximale de caractères est de 200",
+    "lineItemDescriptionPlaceholder": "Description de l'article par ligne",
     "doubleClickToEdit": "Double-cliquez pour modifier"
   },
   "exchangeRates": {

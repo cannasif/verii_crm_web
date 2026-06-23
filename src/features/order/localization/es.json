@@ -1,7 +1,12 @@
 {
   "lines": {
     "doubleClickToEdit": "Doble clic para editar",
-    "unit": "Unidad"
+    "unit": "Unidad",
+    "descriptionTooltipText": "Estas son descripciones de artículos por línea. El límite máximo de caracteres es 200",
+    "lineItemDescriptionPlaceholder": "Descripción del artículo por línea"
+  },
+  "notes": {
+    "notesTooltipText": "Estas son explicaciones generales para el pedido. El límite máximo de caracteres es 100"
   },
   "erpOrder": {
     "title": "Lista de pedidos ERP",

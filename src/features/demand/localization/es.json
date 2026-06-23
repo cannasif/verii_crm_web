@@ -18,6 +18,9 @@
   "save": "Guardar",
   "confirm": "Confirmar",
   "saveAndApply": "Guardar y aplicar",
+  "notes": {
+    "notesTooltipText": "Estas son explicaciones generales para la solicitud. El límite máximo de caracteres es 100"
+  },
   "list": {
     "revise": "Revisar",
     "showing": "{{from}}-{{to}} / {{total}}",
@@ -148,6 +151,8 @@
     "description2": "Descripción 2",
     "description3": "Descripción 3",
     "descriptionPlaceholder": "Descripción...",
+    "descriptionTooltipText": "Estas son descripciones de artículos por línea. El límite máximo de caracteres es 200",
+    "lineItemDescriptionPlaceholder": "Descripción del artículo por línea",
     "doubleClickToEdit": "Haz doble clic para editar"
   },
   "exchangeRates": {

@@ -178,6 +178,8 @@
     "descriptionField1Label": "Profil",
     "descriptionField2Label": "Eisen",
     "descriptionField3Label": "Schraube",
+    "descriptionTooltipText": "Dies sind zeilenbasierte Artikelbeschreibungen. Das maximale Zeichenlimit beträgt 200",
+    "lineItemDescriptionPlaceholder": "Zeilenbasierte Artikelbeschreibung",
     "doubleClickToEdit": "Zum Bearbeiten doppelklicken"
   },
   "exchangeRates": {
@@ -243,6 +245,7 @@
     "placeholder": "Angebotsnotiz eingeben",
     "saving": "Notizen werden gespeichert...",
     "noteLabel": "Angebotsnotiz",
+    "notesTooltipText": "Dies sind allgemeine Erläuterungen zum Angebot. Das maximale Zeichenlimit beträgt 100",
     "saved": "Angebotsnotizen gespeichert.",
     "saveError": "Angebotsnotizen konnten nicht gespeichert werden.",
     "maxLengthError": "Das Notizfeld darf höchstens 1000 Zeichen enthalten.",
