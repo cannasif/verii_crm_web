@@ -28,6 +28,7 @@
     "removeLine": "Satırı kaldır",
     "pageLabel": "Sayfa {{current}} / {{total}}",
     "saving": "Notlar kaydediliyor...",
+    "notesTooltipText": "Talep geneli açıklamalarıdır. Maksimum karakter limiti 100'dür",
     "maxLengthError": "Not alanı en fazla 100 karakter olabilir."
   },
   "list": {
@@ -160,6 +161,8 @@
     "description2": "Açıklama 2",
     "description3": "Açıklama 3",
     "descriptionPlaceholder": "Açıklama giriniz...",
+    "descriptionTooltipText": "Bunlar satır bazlı kalem açıklamalarıdır. Maksimum karakter limiti 200'dür",
+    "lineItemDescriptionPlaceholder": "Satır bazlı kalem açıklaması",
     "doubleClickToEdit": "Düzenlemek için çift tıklayın"
   },
   "exchangeRates": {

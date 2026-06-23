@@ -178,6 +178,8 @@
     "descriptionField1Label": "Perfil",
     "descriptionField2Label": "Hierro",
     "descriptionField3Label": "Tornillo",
+    "descriptionTooltipText": "Estas son descripciones de artículos por línea. El límite máximo de caracteres es 200",
+    "lineItemDescriptionPlaceholder": "Descripción del artículo por línea",
     "doubleClickToEdit": "Doble clic para editar"
   },
   "exchangeRates": {
@@ -243,6 +245,7 @@
     "placeholder": "Introduzca una nota",
     "saving": "Guardando notas...",
     "noteLabel": "Nota del presupuesto",
+    "notesTooltipText": "Estas son explicaciones generales para el presupuesto. El límite máximo de caracteres es 100",
     "saved": "Notas del presupuesto guardadas.",
     "saveError": "No se pudieron guardar las notas del presupuesto.",
     "maxLengthError": "La nota puede tener como máximo 1000 caracteres.",

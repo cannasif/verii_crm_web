@@ -1,13 +1,16 @@
 {
   "lines": {
     "doubleClickToEdit": "Düzenlemek için çift tıklayın",
-    "unit": "Birim"
+    "unit": "Birim",
+    "descriptionTooltipText": "Bunlar satır bazlı kalem açıklamalarıdır. Maksimum karakter limiti 200'dür",
+    "lineItemDescriptionPlaceholder": "Satır bazlı kalem açıklaması"
   },
   "notes": {
     "title": "Sipariş Notları",
     "description": "Sipariş için iç notlar ekleyin ve güncelleyin.",
     "placeholder": "Sipariş notunu girin",
     "noteLabel": "Sipariş Notu",
+    "notesTooltipText": "Sipariş geneli açıklamalarıdır. Maksimum karakter limiti 100'dür",
     "addLineTooltip": "Açıklama satırı ekle",
     "linesHint": "Her satır PDF ve belge notlarında ayrı görünür.",
     "removeLine": "Satırı kaldır",

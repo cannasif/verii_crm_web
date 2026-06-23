@@ -178,6 +178,8 @@
     "descriptionField1Label": "Description 1",
     "descriptionField2Label": "Description 2",
     "descriptionField3Label": "Description 3",
+    "descriptionTooltipText": "These are line-based item descriptions. Maximum character limit is 200",
+    "lineItemDescriptionPlaceholder": "Line-based item description",
     "doubleClickToEdit": "Double-click to edit"
   },
   "exchangeRates": {
@@ -243,6 +245,7 @@
     "placeholder": "Enter a note",
     "saving": "Saving notes...",
     "noteLabel": "Note",
+    "notesTooltipText": "These are general explanations for the quotation. Maximum character limit is 100",
     "addLineTooltip": "Add description line",
     "linesHint": "Each line appears separately in PDF and document notes.",
     "removeLine": "Remove line",

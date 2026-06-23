@@ -178,6 +178,8 @@
     "descriptionField1Label": "Profilo",
     "descriptionField2Label": "Ferro",
     "descriptionField3Label": "Vite",
+    "descriptionTooltipText": "Si tratta di descrizioni di articoli per riga. Il limite massimo di caratteri è 200",
+    "lineItemDescriptionPlaceholder": "Descrizione dell'articolo per riga",
     "doubleClickToEdit": "Fare doppio clic per modificare"
   },
   "exchangeRates": {
@@ -243,6 +245,7 @@
     "placeholder": "Inserire una nota",
     "saving": "Salvataggio note...",
     "noteLabel": "Nota preventivo",
+    "notesTooltipText": "Si tratta di spiegazioni generali per il preventivo. Il limite massimo di caratteri è 100",
     "saved": "Note preventivo salvate.",
     "saveError": "Impossibile salvare le note preventivo.",
     "maxLengthError": "La nota può contenere al massimo 1000 caratteri.",

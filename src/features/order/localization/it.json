@@ -1,7 +1,12 @@
 {
   "lines": {
     "doubleClickToEdit": "Doppio clic per modificare",
-    "unit": "Unità"
+    "unit": "Unità",
+    "descriptionTooltipText": "Si tratta di descrizioni di articoli per riga. Il limite massimo di caratteri è 200",
+    "lineItemDescriptionPlaceholder": "Descrizione dell'articolo per riga"
+  },
+  "notes": {
+    "notesTooltipText": "Si tratta di spiegazioni generali per l'ordine. Il limite massimo di caratteri è 100"
   },
   "erpOrder": {
     "title": "Elenco ordini ERP",

@@ -18,6 +18,9 @@
   "save": "Speichern",
   "confirm": "Bestätigen",
   "saveAndApply": "Speichern und anwenden",
+  "notes": {
+    "notesTooltipText": "Dies sind allgemeine Erläuterungen zur Anforderung. Das maximale Zeichenlimit beträgt 100"
+  },
   "list": {
     "revise": "Überarbeiten",
     "showing": "{{from}}-{{to}} / {{total}}",
@@ -148,6 +151,8 @@
     "description2": "Text 2",
     "description3": "Text 3",
     "descriptionPlaceholder": "Beschreibung eingeben...",
+    "descriptionTooltipText": "Dies sind zeilenbasierte Artikelbeschreibungen. Das maximale Zeichenlimit beträgt 200",
+    "lineItemDescriptionPlaceholder": "Zeilenbasierte Artikelbeschreibung",
     "doubleClickToEdit": "Zum Bearbeiten doppelklicken"
   },
   "exchangeRates": {

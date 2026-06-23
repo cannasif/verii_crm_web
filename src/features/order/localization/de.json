@@ -1,7 +1,12 @@
 {
   "lines": {
     "doubleClickToEdit": "Zum Bearbeiten doppelklicken",
-    "unit": "Einheit"
+    "unit": "Einheit",
+    "descriptionTooltipText": "Dies sind zeilenbasierte Artikelbeschreibungen. Das maximale Zeichenlimit beträgt 200",
+    "lineItemDescriptionPlaceholder": "Zeilenbasierte Artikelbeschreibung"
+  },
+  "notes": {
+    "notesTooltipText": "Dies sind allgemeine Erläuterungen zur Bestellung. Das maximale Zeichenlimit beträgt 100"
   },
   "erpOrder": {
     "title": "ERP-Bestellliste",

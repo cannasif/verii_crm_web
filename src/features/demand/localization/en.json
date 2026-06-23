@@ -28,6 +28,7 @@
     "removeLine": "Remove line",
     "pageLabel": "Page {{current}} / {{total}}",
     "saving": "Saving notes...",
+    "notesTooltipText": "These are general explanations for the demand. Maximum character limit is 100",
     "maxLengthError": "Note field can be at most 100 characters."
   },
   "list": {
@@ -160,6 +161,8 @@
     "description2": "Description 2",
     "description3": "Description 3",
     "descriptionPlaceholder": "Enter description...",
+    "descriptionTooltipText": "These are line-based item descriptions. Maximum character limit is 200",
+    "lineItemDescriptionPlaceholder": "Line-based item description",
     "doubleClickToEdit": "Double-click to edit"
   },
   "exchangeRates": {

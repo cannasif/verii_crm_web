@@ -1,7 +1,12 @@
 {
   "lines": {
     "doubleClickToEdit": "انقر مرتين للتحرير",
-    "unit": "الوحدة"
+    "unit": "الوحدة",
+    "descriptionTooltipText": "هذه هي أوصاف السلع على مستوى السطر. الحد الأقصى لطول الأحرف هو 200",
+    "lineItemDescriptionPlaceholder": "وصف السلعة على مستوى السطر"
+  },
+  "notes": {
+    "notesTooltipText": "هذه تفسيرات عامة للطلب. الحد الأقصى لطول الأحرف هو 100"
   },
   "erpOrder": {
     "title": "قائمة طلبات ERP",

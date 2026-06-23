@@ -190,6 +190,8 @@
     "descriptionField1Label": "Açıklama 1",
     "descriptionField2Label": "Açıklama 2",
     "descriptionField3Label": "Açıklama 3",
+    "descriptionTooltipText": "Bunlar satır bazlı kalem açıklamalarıdır. Maksimum karakter limiti 200'dür",
+    "lineItemDescriptionPlaceholder": "Satır bazlı kalem açıklaması",
     "doubleClickToEdit": "Düzenlemek için çift tıklayın"
   },
   "exchangeRates": {
@@ -260,6 +262,7 @@
     "placeholder": "Teklif notunu girin",
     "saving": "Notlar kaydediliyor...",
     "noteLabel": "Teklif Notu",
+    "notesTooltipText": "Teklif geneli açıklamalarıdır. Maksimum karakter limiti 100'dür",
     "addLineTooltip": "Açıklama satırı ekle",
     "linesHint": "Her satır PDF ve belge notlarında ayrı görünür.",
     "removeLine": "Satırı kaldır",

@@ -178,6 +178,8 @@
     "descriptionField1Label": "Profil",
     "descriptionField2Label": "Fer",
     "descriptionField3Label": "Vis",
+    "descriptionTooltipText": "Il s'agit de descriptions d'articles par ligne. La limite maximale de caractères est de 200",
+    "lineItemDescriptionPlaceholder": "Description de l'article par ligne",
     "doubleClickToEdit": "Double-cliquez pour modifier"
   },
   "exchangeRates": {
@@ -243,6 +245,7 @@
     "placeholder": "Saisir une note",
     "saving": "Enregistrement des notes...",
     "noteLabel": "Note de devis",
+    "notesTooltipText": "Il s'agit d'explications générales pour le devis. La limite maximale de caractères est de 100",
     "saved": "Notes de devis enregistrées.",
     "saveError": "Impossible d'enregistrer les notes de devis.",
     "maxLengthError": "La note peut comporter au plus 1000 caractères.",

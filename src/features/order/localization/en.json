@@ -1,13 +1,16 @@
 {
   "lines": {
     "doubleClickToEdit": "Double-click to edit",
-    "unit": "Unit"
+    "unit": "Unit",
+    "descriptionTooltipText": "These are line-based item descriptions. Maximum character limit is 200",
+    "lineItemDescriptionPlaceholder": "Line-based item description"
   },
   "notes": {
     "title": "Order Notes",
     "description": "Add and update internal notes for this order.",
     "placeholder": "Enter order note",
     "noteLabel": "Order Note",
+    "notesTooltipText": "These are general explanations for the order. Maximum character limit is 100",
     "addLineTooltip": "Add description line",
     "linesHint": "Each line appears separately in PDF and document notes.",
     "removeLine": "Remove line",
