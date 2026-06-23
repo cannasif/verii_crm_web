@@ -308,18 +308,25 @@ export function DemandDetailPage(): ReactElement {
   useEffect(() => {
     if (exchangeRatesData && exchangeRatesData.length > 0 && !exchangeRatesInitializedRef.current && currencyOptionsForExchangeRates.length > 0) {
       const formattedExchangeRates: DemandExchangeRateFormState[] = exchangeRatesData.map((rate) => {
+        const normalizedCurrency = String(rate.currency ?? '').trim();
+        const numericCurrency = Number(normalizedCurrency);
+        const resolvedDovizTipi = !Number.isNaN(numericCurrency)
+          ? numericCurrency
+          : undefined;
         const currencyOption = currencyOptionsForExchangeRates.find(
-          (opt) => opt.dovizIsmi?.toUpperCase() === rate.currency.toUpperCase() || 
-                   opt.code?.toUpperCase() === rate.currency.toUpperCase()
+          (opt) =>
+            (resolvedDovizTipi != null && opt.dovizTipi === resolvedDovizTipi) ||
+            opt.dovizIsmi?.toUpperCase() === normalizedCurrency.toUpperCase() ||
+            opt.code?.toUpperCase() === normalizedCurrency.toUpperCase()
         );
         
         return {
           id: `rate-${rate.id}`,
-          currency: rate.currency,
+          currency: normalizedCurrency,
           exchangeRate: rate.exchangeRate,
           exchangeRateDate: rate.exchangeRateDate ? rate.exchangeRateDate.split('T')[0] : new Date().toISOString().split('T')[0],
           isOfficial: rate.isOfficial,
-          dovizTipi: currencyOption?.dovizTipi,
+          dovizTipi: currencyOption?.dovizTipi ?? resolvedDovizTipi,
         };
       });
       setExchangeRates(formattedExchangeRates);

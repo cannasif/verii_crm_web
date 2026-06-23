@@ -96,36 +96,36 @@ export const buildEffectiveExchangeRates = <T extends SalesExchangeRateLike>(
   documentDate?: string | null,
 ): T[] => {
   const currentRates = [...exchangeRates];
-  const selectedErpRate = resolveSelectedErpRate(erpRates, selectedCurrency);
-
-  if (!selectedErpRate || selectedErpRate.dovizTipi === 0) {
+  if (!erpRates.length) {
     return currentRates;
   }
 
   const selectedToken = normalizeCurrencyToken(selectedCurrency);
-  const hasSelectedSnapshot = currentRates.some((rate) => {
-    const isSameCurrency =
-      rate.dovizTipi === selectedErpRate.dovizTipi ||
-      currencyMatches(rate.currency, String(selectedErpRate.dovizTipi)) ||
-      currencyMatches(rate.currency, selectedToken) ||
-      currencyMatches(rate.currency, selectedErpRate.dovizIsmi);
+  const selectedErpRate = resolveSelectedErpRate(erpRates, selectedCurrency);
 
-    return isSameCurrency && Number(rate.exchangeRate ?? 0) > 0;
-  });
+  const hasSnapshot = (erpRate: KurDto): boolean =>
+    currentRates.some((rate) => {
+      const isSameCurrency =
+        rate.dovizTipi === erpRate.dovizTipi ||
+        currencyMatches(rate.currency, String(erpRate.dovizTipi)) ||
+        currencyMatches(rate.currency, erpRate.dovizIsmi) ||
+        (selectedErpRate?.dovizTipi === erpRate.dovizTipi && currencyMatches(rate.currency, selectedToken));
 
-  if (hasSelectedSnapshot || selectedErpRate.kurDegeri == null || selectedErpRate.kurDegeri <= 0) {
-    return currentRates;
-  }
+      return isSameCurrency && Number(rate.exchangeRate ?? 0) > 0;
+    });
 
-  return [
-    ...currentRates,
-    {
-      id: `erp-${selectedErpRate.dovizTipi}`,
-      currency: String(selectedErpRate.dovizTipi),
-      exchangeRate: selectedErpRate.kurDegeri,
-      exchangeRateDate: documentDate || todayDateOnly(),
+  const fallbackDate = documentDate || todayDateOnly();
+  const snapshotsFromErp = erpRates
+    .filter((rate) => rate.dovizTipi !== 0 && rate.kurDegeri != null && rate.kurDegeri > 0)
+    .filter((rate) => !hasSnapshot(rate))
+    .map((rate, index) => ({
+      id: `erp-${rate.dovizTipi}-${index}`,
+      currency: String(rate.dovizTipi),
+      exchangeRate: rate.kurDegeri,
+      exchangeRateDate: fallbackDate,
       isOfficial: true,
-      dovizTipi: selectedErpRate.dovizTipi,
-    } as T,
-  ];
+      dovizTipi: rate.dovizTipi,
+    }) as T);
+
+  return [...currentRates, ...snapshotsFromErp];
 };
