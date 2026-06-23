@@ -72,6 +72,10 @@ import { OfferType } from '@/types/offer-type';
 import type { DemandExchangeRateFormState } from '../types/demand-types';
 import { cn } from '@/lib/utils';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import {
+  canApplySpecialCodeDefault,
+  getDefaultSpecialCodeForOfferType,
+} from '@/lib/sales-document-special-code-defaults';
 
 interface DemandHeaderFormProps {
   exchangeRates?: DemandExchangeRateFormState[];
@@ -140,6 +144,7 @@ export function DemandHeaderForm({
   const watchedDocumentSerialTypeId = form.watch('demand.documentSerialTypeId');
   const prevRepresentativeIdRef = useRef<number | null | undefined>(watchedRepresentativeId);
   const watchedOfferType = form.watch('demand.offerType');
+  const specialCodeManualChangeRef = useRef({ ozelKod1: false, ozelKod2: false });
 
   const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, true);
   const { koliBaskiOptions, isLoading: isKoliBaskiOptionsLoading } = useWindoDefinitionOptions();
@@ -155,6 +160,24 @@ export function DemandHeaderForm({
       form.setValue('demand.deliveryMethod', null);
     }
   }, [watchedOfferType, form]);
+
+  useEffect(() => {
+    if (readOnly || demandId) return;
+
+    const nextSpecialCode = getDefaultSpecialCodeForOfferType(watchedOfferType);
+    if (!nextSpecialCode) return;
+
+    const currentOzelKod1 = form.getValues('demand.ozelKod1');
+    const currentOzelKod2 = form.getValues('demand.ozelKod2');
+
+    if (!specialCodeManualChangeRef.current.ozelKod1 && canApplySpecialCodeDefault(currentOzelKod1)) {
+      form.setValue('demand.ozelKod1', nextSpecialCode, { shouldDirty: false, shouldValidate: true });
+    }
+
+    if (!specialCodeManualChangeRef.current.ozelKod2 && canApplySpecialCodeDefault(currentOzelKod2)) {
+      form.setValue('demand.ozelKod2', nextSpecialCode, { shouldDirty: false, shouldValidate: true });
+    }
+  }, [watchedOfferType, demandId, readOnly, form]);
 
   const { data: shippingAddresses } = useShippingAddresses(watchedCustomerId || undefined);
   const { data: relatedUsers = [] } = useDemandRelatedUsers(user?.id);
@@ -888,7 +911,10 @@ export function DemandHeaderForm({
                             className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             value={field.value || ''}
-                            onSelect={(value) => field.onChange(value)}
+                            onSelect={(value) => {
+                              specialCodeManualChangeRef.current.ozelKod1 = true;
+                              field.onChange(value);
+                            }}
                             options={specialCode1Dropdown.options}
                             onDebouncedSearchChange={setOzelKod1SearchTerm}
                             onFetchNextPage={specialCode1Dropdown.fetchNextPage}
@@ -921,7 +947,10 @@ export function DemandHeaderForm({
                             className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             value={field.value || ''}
-                            onSelect={(value) => field.onChange(value)}
+                            onSelect={(value) => {
+                              specialCodeManualChangeRef.current.ozelKod2 = true;
+                              field.onChange(value);
+                            }}
                             options={specialCode2Dropdown.options}
                             onDebouncedSearchChange={setOzelKod2SearchTerm}
                             onFetchNextPage={specialCode2Dropdown.fetchNextPage}
