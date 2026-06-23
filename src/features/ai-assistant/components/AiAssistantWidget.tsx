@@ -1,7 +1,7 @@
 import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Bot, Check, Copy, ExternalLink, FileImage, ImagePlus, MessageCircle, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
+import { Bot, Check, Copy, ExternalLink, FileImage, ImagePlus, Maximize2, MessageCircle, Minimize2, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -67,10 +67,12 @@ const aiAssistantTextFallbacks: Record<string, string> = {
   removeImage: 'Görseli kaldır',
   imageTooLarge: 'Görsel en fazla {{size}} MB olabilir.',
   imageUnsupported: 'Sadece PNG, JPG/JPEG veya WEBP görsel ekleyebilirsiniz.',
-  imageDefaultQuestion: 'Bu ekran görüntüsünü yorumlar mısın?',
+  imageDefaultQuestion: 'Bu ekran görüntünü yorumlar mısın?',
   imageContextHint: 'Ekran görüntüsü eklendi. Hata metnini de yazarsanız daha net yorumlarım.',
   sending: 'Düşünüyor',
   send: 'Gönder',
+  expandPanel: 'Paneli genişlet',
+  collapsePanel: 'Paneli küçült',
 };
 
 const defaultSuggestions = [
@@ -113,6 +115,8 @@ export function AiAssistantWidget(): ReactElement {
   );
   const [questionError, setQuestionError] = useState<string | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<AiAssistantSelectedAttachment | null>(null);
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sendButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -154,6 +158,10 @@ export function AiAssistantWidget(): ReactElement {
 
     const focusTimer = window.setTimeout(() => {
       textareaRef.current?.focus();
+      messagesEndRef.current?.scrollIntoView({
+        behavior: 'auto',
+        block: 'end',
+      });
     }, 80);
 
     return () => window.clearTimeout(focusTimer);
@@ -205,10 +213,13 @@ export function AiAssistantWidget(): ReactElement {
   useEffect(() => {
     if (!isOpen) return;
 
-    messagesEndRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end',
-    });
+    const lastMessage = messages[messages.length - 1];
+    if (messages.length === 0 || lastMessage?.role === 'user' || isAssistantBusy) {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      });
+    }
   }, [isOpen, messages, isAssistantBusy]);
 
   const askQuestion = async (value: string, errorContext?: AiAssistantErrorContext | null): Promise<void> => {
@@ -316,8 +327,28 @@ export function AiAssistantWidget(): ReactElement {
       className="fixed bottom-4 z-50 print:hidden md:bottom-6"
       style={{ insetInlineEnd: '1rem' }}
     >
+      <style>{`
+        .ai-widget-container.is-expanded .text-sm {
+          font-size: 1rem !important;
+        }
+        .ai-widget-container.is-expanded .text-xs {
+          font-size: 0.875rem !important;
+        }
+        .ai-widget-container.is-expanded textarea {
+          font-size: 1rem !important;
+        }
+        .ai-widget-container.is-expanded .text-\\[0\\.68rem\\] {
+          font-size: 0.8rem !important;
+        }
+        .ai-widget-container.is-expanded .text-\\[0\\.62rem\\] {
+          font-size: 0.75rem !important;
+        }
+      `}</style>
       {isOpen ? (
-        <section className="flex h-[min(82dvh,760px)] w-[calc(100vw-1.25rem)] max-w-[500px] flex-col overflow-hidden rounded-[2rem] border border-white/20 bg-[radial-gradient(circle_at_20%_0%,rgba(236,72,153,0.20),transparent_32%),radial-gradient(circle_at_100%_10%,rgba(249,115,22,0.16),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,250,252,0.92))] shadow-2xl shadow-pink-950/25 backdrop-blur-2xl dark:border-white/10 dark:bg-[radial-gradient(circle_at_20%_0%,rgba(236,72,153,0.18),transparent_32%),radial-gradient(circle_at_100%_10%,rgba(249,115,22,0.14),transparent_28%),linear-gradient(180deg,rgba(2,6,23,0.98),rgba(15,23,42,0.94))]">
+        <section className={`ai-widget-container flex w-[calc(100vw-1.25rem)] transition-all duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-pink-100 bg-[radial-gradient(circle_at_20%_0%,rgba(236,72,153,0.20),transparent_32%),radial-gradient(circle_at_100%_10%,rgba(249,115,22,0.16),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,250,252,0.92))] shadow-2xl shadow-pink-950/25 backdrop-blur-2xl dark:border-white/10 dark:bg-[radial-gradient(circle_at_20%_0%,rgba(236,72,153,0.18),transparent_32%),radial-gradient(circle_at_100%_10%,rgba(249,115,22,0.14),transparent_28%),linear-gradient(180deg,rgba(2,6,23,0.98),rgba(15,23,42,0.94))] ${isExpanded
+          ? 'is-expanded sm:max-w-[850px] h-[min(92dvh,850px)]'
+          : 'max-w-[500px] h-[min(80dvh,700px)]'
+          }`}>
           <header className="flex items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03]">
             <div className="flex min-w-0 items-center gap-3">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-pink-600 via-rose-500 to-orange-500 text-white shadow-lg shadow-pink-500/25">
@@ -328,33 +359,41 @@ export function AiAssistantWidget(): ReactElement {
                 <p className="truncate text-sm font-black text-slate-950 dark:text-white">
                   {readText('pageTitle')}
                 </p>
-                <p className="truncate text-xs font-semibold text-slate-500 dark:text-slate-400">
-                  {isLoading
-                    ? readText('loadingGreeting')
-                    : readText('greeting', `Merhaba ${displayName}, size nasıl yardımcı olabilirim?`, { name: displayName })}
-                </p>
+
               </div>
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="hidden h-10 rounded-2xl px-3 text-xs font-black sm:inline-flex"
-              onClick={clearChat}
-            >
-              <Plus size={15} className="me-1.5" />
-              {readText('newChat')}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-10 w-10 rounded-2xl"
-              aria-label={readText('closeChat')}
-              onClick={() => setIsOpen(false)}
-            >
-              <X size={18} />
-            </Button>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="hidden h-10 rounded-2xl px-3 text-xs font-black sm:inline-flex"
+                onClick={clearChat}
+              >
+                <Plus size={15} className="me-1.5" />
+                {readText('newChat')}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="hidden h-10 w-10 rounded-2xl sm:inline-flex"
+                aria-label={isExpanded ? readText('collapsePanel') : readText('expandPanel')}
+                onClick={() => setIsExpanded(!isExpanded)}
+              >
+                {isExpanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-10 w-10 rounded-2xl"
+                aria-label={readText('closeChat')}
+                onClick={() => setIsOpen(false)}
+              >
+                <X size={18} />
+              </Button>
+            </div>
           </header>
 
           <div
@@ -373,6 +412,9 @@ export function AiAssistantWidget(): ReactElement {
                     {readText('eyebrow')}
                   </div>
                   <p className="text-sm font-semibold leading-6 text-slate-600 dark:text-slate-200">
+                    {isLoading
+                      ? readText('loadingGreeting')
+                      : readText('greeting', `Merhaba ${displayName}, size nasıl yardımcı olabilirim?`, { name: displayName })}{' '}
                     {readText('chatDescription')}
                   </p>
                 </div>
@@ -532,61 +574,90 @@ export function AiAssistantWidget(): ReactElement {
               className="hidden"
               onChange={(event) => void handleAttachmentChange(event)}
             />
-            <div className="mb-3 flex flex-wrap items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={isAssistantBusy}
-                className="h-9 rounded-2xl border-slate-200 bg-white/80 px-3 text-xs font-black dark:border-white/10 dark:bg-white/[0.06]"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <ImagePlus size={14} className="me-1.5" />
-                {readText('attachImage')}
-              </Button>
-              {selectedAttachment && (
-                <div className="flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-pink-400/30 bg-pink-500/10 px-3 py-2 text-xs font-black text-pink-700 dark:text-pink-100">
-                  <FileImage size={14} className="shrink-0" />
-                  <span className="min-w-0 truncate">{selectedAttachment.fileName}</span>
-                  <span className="shrink-0 opacity-75">{formatAttachmentSize(selectedAttachment.size)}</span>
-                  <button
+            {selectedAttachment && (
+              <div className="mb-3 flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-pink-400/30 bg-pink-500/10 px-3 py-2 text-xs font-black text-pink-700 dark:text-pink-100">
+                <FileImage size={14} className="shrink-0" />
+                <span className="min-w-0 truncate">{selectedAttachment.fileName}</span>
+                <span className="shrink-0 opacity-75">{formatAttachmentSize(selectedAttachment.size)}</span>
+                <button
+                  type="button"
+                  className="ms-1 rounded-full p-0.5 hover:bg-pink-500/15"
+                  aria-label={readText('removeImage')}
+                  onClick={clearSelectedAttachment}
+                >
+                  <X size={13} />
+                </button>
+              </div>
+            )}
+            {(questionError || askMutation.error?.message) && (
+              <div className="mb-3 flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-700 dark:text-red-100">
+                <span className="min-w-0 truncate">{questionError || askMutation.error?.message}</span>
+              </div>
+            )}
+            <div className="flex flex-col rounded-[1.6rem] border border-slate-200 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/[0.06] overflow-hidden focus-within:ring-2 focus-within:ring-pink-500/25 dark:focus-within:ring-pink-500/20 transition-all duration-200">
+              <div className="px-4 pt-3 pb-1">
+                <Textarea
+                  ref={textareaRef}
+                  rows={2}
+                  placeholder={readText('inputPlaceholder')}
+                  className="min-h-[44px] max-h-28 resize-none border-0 bg-transparent p-0 text-sm font-semibold shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                  value={question}
+                  onChange={(event) => {
+                    setQuestion(event.target.value);
+                    if (questionError) {
+                      setQuestionError(null);
+                    }
+                  }}
+                  onKeyDown={handleQuestionKeyDown}
+                />
+              </div>
+              <div className="border-t border-slate-100 dark:border-white/5" />
+              <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-slate-50/50 dark:bg-white/[0.02]">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <Button
                     type="button"
-                    className="ms-1 rounded-full p-0.5 hover:bg-pink-500/15"
-                    aria-label={readText('removeImage')}
-                    onClick={clearSelectedAttachment}
+                    variant="ghost"
+                    size="icon"
+                    disabled={isAssistantBusy}
+                    className={`h-9 w-9 shrink-0 rounded-full border transition-all duration-200 ${isActionsMenuOpen
+                      ? 'rotate-45 border-pink-400/50 bg-pink-50 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400 dark:border-pink-500/30'
+                      : 'border-slate-200 dark:border-white/10 hover:border-pink-300 dark:hover:border-pink-500/30'
+                      }`}
+                    aria-expanded={isActionsMenuOpen}
+                    onClick={() => setIsActionsMenuOpen(!isActionsMenuOpen)}
                   >
-                    <X size={13} />
-                  </button>
+                    <Plus size={18} />
+                  </Button>
+
+                  {isActionsMenuOpen && (
+                    <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-200">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={isAssistantBusy}
+                        className="h-9 rounded-2xl border-slate-200 bg-white/80 px-3 text-xs font-black dark:border-white/10 dark:bg-white/[0.06] hover:border-pink-300 hover:bg-pink-50 dark:hover:bg-pink-500/10 transition-colors"
+                        onClick={() => {
+                          fileInputRef.current?.click();
+                          setIsActionsMenuOpen(false);
+                        }}
+                      >
+                        <ImagePlus size={14} className="me-1.5" />
+                        {readText('attachImage')}
+                      </Button>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-            <Textarea
-              ref={textareaRef}
-              rows={2}
-              placeholder={readText('inputPlaceholder')}
-              className="max-h-28 resize-none rounded-[1.4rem] border-slate-200 bg-white/90 px-4 py-3 text-sm font-semibold shadow-sm dark:border-white/10 dark:bg-white/[0.06]"
-              value={question}
-              onChange={(event) => {
-                setQuestion(event.target.value);
-                if (questionError) {
-                  setQuestionError(null);
-                }
-              }}
-              onKeyDown={handleQuestionKeyDown}
-            />
-            <div className="mt-3 flex items-center justify-between gap-3">
-              <p className="min-w-0 flex-1 truncate text-xs font-medium text-slate-500 dark:text-slate-400">
-                {questionError || askMutation.error?.message || (selectedAttachment ? readText('imageContextHint') : readText('chatHint'))}
-              </p>
-              <Button
-                ref={sendButtonRef}
-                type="submit"
-                disabled={isAssistantBusy || (!question.trim() && !selectedAttachment)}
-                className="shrink-0 rounded-full bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 text-white shadow-lg shadow-pink-950/20"
-              >
-                <SendHorizontal size={16} className="me-2" />
-                {isAssistantBusy ? readText('sending') : readText('send')}
-              </Button>
+                <Button
+                  ref={sendButtonRef}
+                  type="submit"
+                  disabled={isAssistantBusy || (!question.trim() && !selectedAttachment)}
+                  className="shrink-0 rounded-full bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 text-white shadow-lg shadow-pink-950/20"
+                >
+                  <SendHorizontal size={16} className="me-2" />
+                  {isAssistantBusy ? readText('sending') : readText('send')}
+                </Button>
+              </div>
             </div>
           </form>
         </section>
