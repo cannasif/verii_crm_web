@@ -265,7 +265,7 @@ export function ExchangeRateDialog({
                     <TableHead className={cn(styles.tableHead, "pl-6 text-zinc-600 dark:text-zinc-400")}>{t('exchangeRates.currency')}</TableHead>
                     <TableHead className={cn(styles.tableHead, "text-right text-zinc-600 dark:text-zinc-400")}>{t('exchangeRates.rate')}</TableHead>
                     <TableHead className={cn(styles.tableHead, "text-center text-zinc-600 dark:text-zinc-400")}>{t('exchangeRates.status')}</TableHead>
-                    <TableHead className={cn(styles.tableHead, "text-center w-[100px] text-zinc-600 dark:text-zinc-400")}>{t('actions')}</TableHead>
+                    <TableHead className={cn(styles.tableHead, "text-center w-[120px] text-zinc-600 dark:text-zinc-400")}>{t('actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -358,17 +358,18 @@ export function ExchangeRateDialog({
                             ) : (
                               <Button
                                 type="button"
-                                size="icon"
+                                size="sm"
                                 variant="ghost"
                                 onClick={() => {
                                   setEditingDraft(formatExchangeRateForEdit(rate.exchangeRate));
                                   setEditMountKey((k) => k + 1);
                                   setEditingId(rate.id);
                                 }}
-                                className={cn(styles.actionButton, "text-zinc-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 dark:hover:text-blue-400")}
+                                className="h-8 gap-1.5 px-2 text-zinc-500 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                                 title={t('edit')}
                               >
                                 <Edit2 className="h-4 w-4" />
+                                <span className="text-xs font-medium">{t('edit')}</span>
                               </Button>
                             )}
                           </TableCell>
