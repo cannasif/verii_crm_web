@@ -9,6 +9,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Search, Layers, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { matchesSearchTerm } from '@/lib/search';
 import { useStokGroup } from '@/services/hooks/useStokGroup';
 import type { StokGroupDto } from '@/services/erp-types';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
@@ -32,17 +33,6 @@ export function StockGroupSelectDialog({
   const [searchQuery, setSearchQuery] = useState('');
   const { data: stockGroups = [], isLoading } = useStokGroup();
 
-  const normalizeText = (text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/ğ/g, 'g')
-      .replace(/ü/g, 'u')
-      .replace(/ş/g, 's')
-      .replace(/ı/g, 'i')
-      .replace(/ö/g, 'o')
-      .replace(/ç/g, 'c');
-  };
-
   const excludedSet = useMemo(
     () => (excludeGroupCodes?.length ? new Set(excludeGroupCodes) : undefined),
     [excludeGroupCodes]
@@ -58,12 +48,9 @@ export function StockGroupSelectDialog({
 
   const filteredGroups = useMemo(() => {
     if (!searchQuery.trim()) return availableGroups;
-    const normalizedQuery = normalizeText(searchQuery);
-    return availableGroups.filter((group) => {
-      const code = group.grupKodu ? normalizeText(group.grupKodu) : '';
-      const name = group.grupAdi ? normalizeText(group.grupAdi) : '';
-      return code.includes(normalizedQuery) || name.includes(normalizedQuery);
-    });
+    return availableGroups.filter((group) =>
+      matchesSearchTerm(searchQuery, [group.grupKodu, group.grupAdi])
+    );
   }, [availableGroups, searchQuery]);
 
   const handleSelect = (group: StokGroupDto) => {

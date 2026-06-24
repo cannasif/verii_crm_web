@@ -9,6 +9,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Search, Package, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { matchesSearchTerm } from '@/lib/search';
 import { useStockList } from '@/features/stock/hooks/useStockList';
 import type { StockGetDto } from '@/features/stock/types';
 import { getLocalizedStockName, getLocalizedStockSearchTerms } from '@/features/stock/utils/localized-stock-name';
@@ -55,20 +56,19 @@ export function ProductPricingStockSelectDialog({
 
   const filteredStocks = useMemo((): StockGetDto[] => {
     if (!searchQuery.trim()) return availableStocks;
-    const q = searchQuery.toLowerCase().trim();
     return availableStocks.filter((s) => {
       const searchTerms = getLocalizedStockSearchTerms(s, i18n.language);
-      return (
-        searchTerms.some((term) => term.toLowerCase().includes(q)) ||
-        s.erpStockCode?.toLowerCase().includes(q) ||
-        s.grupKodu?.toLowerCase().includes(q) ||
-        s.grupAdi?.toLowerCase().includes(q) ||
-        s.kod1?.toLowerCase().includes(q) ||
-        s.kod1Adi?.toLowerCase().includes(q) ||
-        s.kod2?.toLowerCase().includes(q) ||
-        s.kod2Adi?.toLowerCase().includes(q) ||
-        s.ureticiKodu?.toLowerCase().includes(q)
-      );
+      return matchesSearchTerm(searchQuery, [
+        ...searchTerms,
+        s.erpStockCode,
+        s.grupKodu,
+        s.grupAdi,
+        s.kod1,
+        s.kod1Adi,
+        s.kod2,
+        s.kod2Adi,
+        s.ureticiKodu,
+      ]);
     });
   }, [availableStocks, searchQuery, i18n.language]);
 

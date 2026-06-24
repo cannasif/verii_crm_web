@@ -73,6 +73,7 @@ import { createQuotationSchema, type CreateQuotationSchema } from '../schemas/qu
 import type { QuotationExchangeRateFormState } from '../types/quotation-types';
 import { OfferType } from '@/types/offer-type';
 import { cn } from '@/lib/utils';
+import { matchesSearchTerm } from '@/lib/search';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import {
   canApplySpecialCodeDefault,
@@ -307,10 +308,8 @@ export function QuotationHeaderForm({
     }
 
     if (!customerSearchQuery) return options.slice(0, 50);
-    const lowerQuery = customerSearchQuery.toLowerCase();
     return options.filter((option) =>
-      option.label.toLowerCase().includes(lowerQuery) ||
-      (option.code && option.code.toLowerCase().includes(lowerQuery))
+      matchesSearchTerm(customerSearchQuery, [option.label, option.code])
     ).slice(0, 50);
   }, [allCustomerOptions, customerSearchQuery, selectedSerialType, watchedCustomerId, watchedErpCustomerCode]);
 

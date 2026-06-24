@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import { matchesSearchTerm } from '@/lib/search';
 import type { ApiResponse, PagedFilter, PagedResponse } from '@/types/api';
 import type { ErpCustomer, ErpProject, ProjeDto, SpecialCodeDto, ErpWarehouse, ErpProduct, BranchErp, CariDto, KurDto, StokGroupDto } from './erp-types';
 
@@ -163,12 +164,10 @@ export const erpCommonApi = {
     let filtered = cachedProjectCodes;
     if (filters && Array.isArray(filters)) {
       const searchFilter = filters.find((f: PagedFilter) => f.column === 'search' || f.column === 'projeKod' || f.column === 'projeAciklama');
-      const searchTerm = searchFilter?.value?.toLowerCase() ?? '';
+      const searchTerm = String(searchFilter?.value ?? '');
       if (searchTerm) {
         filtered = filtered.filter(
-          (p) =>
-            (p.projeKod?.toLowerCase() ?? '').includes(searchTerm) ||
-            (p.projeAciklama?.toLowerCase() ?? '').includes(searchTerm)
+          (p) => matchesSearchTerm(searchTerm, [p.projeKod, p.projeAciklama])
         );
       }
     }
@@ -215,13 +214,14 @@ export const erpCommonApi = {
     let filtered = cachedSpecialCodesByType[tableType] ?? [];
     if (filters && Array.isArray(filters)) {
       const searchFilter = filters.find((f: PagedFilter) => f.column === 'search' || f.column === 'ozelKod' || f.column === 'aciklama');
-      const searchTerm = searchFilter?.value?.toLowerCase() ?? '';
+      const searchTerm = String(searchFilter?.value ?? '');
       if (searchTerm) {
         filtered = filtered.filter(
-          (specialCode) =>
-            (specialCode.ozelKod?.toLowerCase() ?? '').includes(searchTerm) ||
-            (specialCode.aciklama?.toLowerCase() ?? '').includes(searchTerm) ||
-            (specialCode.displayName?.toLowerCase() ?? '').includes(searchTerm)
+          (specialCode) => matchesSearchTerm(searchTerm, [
+            specialCode.ozelKod,
+            specialCode.aciklama,
+            specialCode.displayName,
+          ])
         );
       }
     }

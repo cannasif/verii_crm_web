@@ -71,6 +71,7 @@ import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-s
 import { OfferType } from '@/types/offer-type';
 import type { DemandExchangeRateFormState } from '../types/demand-types';
 import { cn } from '@/lib/utils';
+import { matchesSearchTerm } from '@/lib/search';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import {
   canApplySpecialCodeDefault,
@@ -295,12 +296,8 @@ export function DemandHeaderForm({
     }
 
     if (!customerSearchQuery) return options.slice(0, 50);
-    const lowerQuery = customerSearchQuery.toLowerCase();
     return options
-      .filter((option) =>
-        option.label.toLowerCase().includes(lowerQuery) ||
-        (option.code && option.code.toLowerCase().includes(lowerQuery))
-      )
+      .filter((option) => matchesSearchTerm(customerSearchQuery, [option.label, option.code]))
       .slice(0, 50);
   }, [allCustomerOptions, customerSearchQuery, customerTypeId, watchedCustomerId, watchedErpCustomerCode]);
 

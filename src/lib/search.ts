@@ -10,6 +10,7 @@ export function normalizeSearchValue(value: unknown): string {
     .replace(/ş/g, 's')
     .replace(/ö/g, 'o')
     .replace(/ç/g, 'c')
+    .replace(/[^\p{L}\p{N}\s]+/gu, '')
     .replace(/\s+/g, ' ')
     .trim();
 }

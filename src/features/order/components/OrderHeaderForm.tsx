@@ -72,6 +72,7 @@ import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-sche
 import type { OrderExchangeRateFormState } from '../types/order-types';
 import { OfferType } from '@/types/offer-type';
 import { cn } from '@/lib/utils';
+import { matchesSearchTerm } from '@/lib/search';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import {
   canApplySpecialCodeDefault,
@@ -297,12 +298,8 @@ export function OrderHeaderForm({
     }
 
     if (!customerSearchQuery) return options.slice(0, 50);
-    const lowerQuery = customerSearchQuery.toLowerCase();
     return options
-      .filter((option) =>
-        option.label.toLowerCase().includes(lowerQuery) ||
-        (option.code && option.code.toLowerCase().includes(lowerQuery))
-      )
+      .filter((option) => matchesSearchTerm(customerSearchQuery, [option.label, option.code]))
       .slice(0, 50);
   }, [allCustomerOptions, customerSearchQuery, customerTypeId, watchedCustomerId, watchedErpCustomerCode]);
 
