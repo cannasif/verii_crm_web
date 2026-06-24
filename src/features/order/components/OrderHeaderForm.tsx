@@ -17,8 +17,8 @@ import {
 } from '@/components/ui/command';
 import {
   Popover,
+  PopoverAnchor,
   PopoverContent,
-  PopoverTrigger,
 } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -445,9 +445,7 @@ export function OrderHeaderForm({
                         />
                       </FormControl>
                       <Popover open={customerComboboxOpen} onOpenChange={setCustomerComboboxOpen}>
-                        <PopoverTrigger asChild>
-                          <div className="absolute top-full left-0 w-full h-0" />
-                        </PopoverTrigger>
+                        <PopoverAnchor className="absolute top-full left-0 h-0 w-full" />
                         <PopoverContent
                           className="p-0 w-[90vw] sm:w-[550px] max-h-[350px] overflow-hidden bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl"
                           align="start"
