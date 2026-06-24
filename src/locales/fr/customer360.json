@@ -8,6 +8,11 @@
     "label": "Devise",
     "all": "Tous"
   },
+  "balanceDialog": {
+    "openButton": "Customer balance summary",
+    "title": "Customer Balance Summary",
+    "error": "Could not load ERP balance summary."
+  },
   "tabs": {
     "quotations": "Devis",
     "orders": "Commandes",

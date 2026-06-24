@@ -8,6 +8,11 @@
     "label": "Para birimi",
     "all": "Tümü"
   },
+  "balanceDialog": {
+    "openButton": "Cari bakiye özeti",
+    "title": "Cari Bakiye Özeti",
+    "error": "ERP bakiye özeti yüklenemedi."
+  },
   "tabs": {
     "quotations": "Teklifler",
     "orders": "Siparişler",

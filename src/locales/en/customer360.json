@@ -8,6 +8,11 @@
     "label": "Currency",
     "all": "All"
   },
+  "balanceDialog": {
+    "openButton": "Customer balance summary",
+    "title": "Customer Balance Summary",
+    "error": "Could not load ERP balance summary."
+  },
   "tabs": {
     "quotations": "Quotations",
     "orders": "Orders",

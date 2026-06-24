@@ -8,6 +8,11 @@
     "label": "العملة",
     "all": "الكل"
   },
+  "balanceDialog": {
+    "openButton": "Customer balance summary",
+    "title": "Customer Balance Summary",
+    "error": "Could not load ERP balance summary."
+  },
   "tabs": {
     "quotations": "عروض الأسعار",
     "orders": "الطلبات",

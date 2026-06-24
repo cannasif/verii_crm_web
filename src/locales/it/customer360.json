@@ -8,6 +8,11 @@
     "label": "Valuta",
     "all": "Tutti"
   },
+  "balanceDialog": {
+    "openButton": "Customer balance summary",
+    "title": "Customer Balance Summary",
+    "error": "Could not load ERP balance summary."
+  },
   "tabs": {
     "quotations": "Preventivi",
     "orders": "Ordini",

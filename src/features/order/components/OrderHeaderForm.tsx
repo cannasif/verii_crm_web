@@ -33,6 +33,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { CustomerSelectDialog } from '@/components/shared/CustomerSelectDialog';
+import { CustomerErpBalanceDialog } from '@/components/shared/CustomerErpBalanceDialog';
 import { useCustomerComboListKeyboard } from '@/components/shared/useCustomerComboListKeyboard';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { useShippingAddresses } from '../hooks/useShippingAddresses';
@@ -120,6 +121,7 @@ export function OrderHeaderForm({
   const branch = useAuthStore((state) => state.branch);
 
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
+  const [customerBalanceDialogOpen, setCustomerBalanceDialogOpen] = useState(false);
   const [exchangeRateDialogOpen, setExchangeRateDialogOpen] = useState(false);
   const [currencyChangeDialogOpen, setCurrencyChangeDialogOpen] = useState(false);
   const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
@@ -357,6 +359,9 @@ export function OrderHeaderForm({
   }, [initialCurrency]);
 
   const selectedCustomer = watchedCustomerId || watchedErpCustomerCode;
+  const canShowCustomerBalance = Boolean(
+    watchedCustomerId && watchedCustomerId > 0 && watchedErpCustomerCode?.trim()
+  );
 
   const handleExchangeRatesSave = (rates: OrderExchangeRateFormState[]): void => {
     if (onExchangeRatesChange) onExchangeRatesChange(rates);
@@ -529,6 +534,18 @@ export function OrderHeaderForm({
                     >
                       <BookUser className="h-5 w-5" />
                     </Button>
+                    {canShowCustomerBalance && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setCustomerBalanceDialogOpen(true)}
+                        className="h-11 w-11 shrink-0 rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-emerald-600 hover:border-emerald-600 hover:text-white transition-all duration-300 shadow-sm"
+                        title={t('customer360:balanceDialog.openButton', { defaultValue: 'Cari bakiye özeti' })}
+                        aria-label={t('customer360:balanceDialog.openButton', { defaultValue: 'Cari bakiye özeti' })}
+                      >
+                        <Banknote className="h-5 w-5" />
+                      </Button>
+                    )}
                   </div>
                 </div>
 
@@ -1051,6 +1068,14 @@ export function OrderHeaderForm({
           form.setValue('order.potentialCustomerId', result.customerId ?? null);
           form.setValue('order.erpCustomerCode', result.erpCustomerCode ?? null);
         }}
+      />
+
+      <CustomerErpBalanceDialog
+        open={customerBalanceDialogOpen}
+        onOpenChange={setCustomerBalanceDialogOpen}
+        customerId={watchedCustomerId}
+        erpCustomerCode={watchedErpCustomerCode}
+        customerName={customerDisplayValue}
       />
 
       {exchangeRates !== undefined && onExchangeRatesChange && (
