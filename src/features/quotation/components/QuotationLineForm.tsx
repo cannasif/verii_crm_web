@@ -13,6 +13,7 @@ import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
+import { ErpFieldHint } from '@/components/shared/ErpFieldHint';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { LineFormStockSearchField } from '@/components/shared/LineFormStockSearchField';
 import { CatalogStockSelectDialog } from '@/components/shared/CatalogStockSelectDialog';
@@ -35,8 +36,7 @@ import { quotationLineRequiredSchema, type QuotationLineFormState, type Quotatio
 import { pdfReportTemplateApi } from '@/features/pdf-report';
 import type { UploadPdfAssetOptions } from '@/features/pdf-report/api/pdf-report-template-api';
 import { getImageUrl } from '@/lib/image-url';
-import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info, X, LayoutGrid, ImagePlus, Trash2, CirclePlus, HelpCircle } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Check, Package, Percent, Loader2, Coins, Layers, BadgePercent, AlertTriangle, Search, Info, X, LayoutGrid, ImagePlus, Trash2, CirclePlus } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import {
   formatQuantityInputDraftFromNumber,
@@ -1527,24 +1527,7 @@ export function QuotationLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('lines.descriptionField1Label')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('lines.descriptionTooltipText')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('lines.descriptionTooltipText')} />
                 </div>
                 <Input
                   value={formData.description1 ?? ''}
@@ -1559,24 +1542,7 @@ export function QuotationLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('lines.descriptionField2Label')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('lines.descriptionTooltipText')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('lines.descriptionTooltipText')} />
                 </div>
                 <Input
                   value={formData.description2 ?? ''}
@@ -1591,24 +1557,7 @@ export function QuotationLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('lines.descriptionField3Label')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('lines.descriptionTooltipText')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('lines.descriptionTooltipText')} />
                 </div>
                 <Input
                   value={formData.description3 ?? ''}
@@ -1625,24 +1574,7 @@ export function QuotationLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('lines.windoProfileLabel')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('lines.profileErpTooltip')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('lines.profileErpTooltip')} />
                 </div>
                 <VoiceSearchCombobox
                   options={profilComboboxOptions}
@@ -1669,24 +1601,7 @@ export function QuotationLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('lines.windoRebarLabel')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('lines.rebarErpTooltip')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('lines.rebarErpTooltip')} />
                 </div>
                 <VoiceSearchCombobox
                   options={demirComboboxOptions}
@@ -1713,24 +1628,7 @@ export function QuotationLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('lines.windoScrewLabel')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('lines.screwErpTooltip')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('lines.screwErpTooltip')} />
                 </div>
                 <VoiceSearchCombobox
                   options={vidaComboboxOptions}
@@ -1757,24 +1655,7 @@ export function QuotationLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('lines.windoPrintLabel', { defaultValue: 'Baskı' })}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('lines.printErpTooltip')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('lines.printErpTooltip')} />
                 </div>
                 <VoiceSearchCombobox
                   options={baskiComboboxOptions}

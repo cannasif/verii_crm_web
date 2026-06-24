@@ -27,6 +27,7 @@ import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex } from 
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
+import { ErpFieldHint } from '@/components/shared/ErpFieldHint';
 import { useProductSelection } from '../hooks/useProductSelection';
 import { formatCurrency } from '../utils/format-currency';
 import { orderApi } from '../api/order-api';
@@ -50,14 +51,7 @@ import {
   ImagePlus,
   Trash2,
   CirclePlus,
-  HelpCircle,
 } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import {
   formatQuantityInputDraftFromNumber,
   normalizeQuantityTrOnBlur,
@@ -1490,24 +1484,7 @@ export function OrderLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('order.lines.descriptionField1Label')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('order.lines.descriptionTooltipText')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('order.lines.descriptionTooltipText')} />
                 </div>
                 <Input
                   value={formData.description1 ?? ''}
@@ -1522,24 +1499,7 @@ export function OrderLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('order.lines.descriptionField2Label')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('order.lines.descriptionTooltipText')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('order.lines.descriptionTooltipText')} />
                 </div>
                 <Input
                   value={formData.description2 ?? ''}
@@ -1554,24 +1514,7 @@ export function OrderLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('order.lines.descriptionField3Label')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('order.lines.descriptionTooltipText')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('order.lines.descriptionTooltipText')} />
                 </div>
                 <Input
                   value={formData.description3 ?? ''}
@@ -1588,24 +1531,7 @@ export function OrderLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('order.lines.windoProfileLabel')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('order.lines.profileErpTooltip')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('order.lines.profileErpTooltip')} />
                 </div>
                 <VoiceSearchCombobox
                   options={profilComboboxOptions}
@@ -1632,24 +1558,7 @@ export function OrderLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('order.lines.windoRebarLabel')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('order.lines.rebarErpTooltip')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('order.lines.rebarErpTooltip')} />
                 </div>
                 <VoiceSearchCombobox
                   options={demirComboboxOptions}
@@ -1676,24 +1585,7 @@ export function OrderLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('order.lines.windoScrewLabel')}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('order.lines.screwErpTooltip')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('order.lines.screwErpTooltip')} />
                 </div>
                 <VoiceSearchCombobox
                   options={vidaComboboxOptions}
@@ -1720,24 +1612,7 @@ export function OrderLineForm({
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     {t('order.lines.windoPrintLabel', { defaultValue: 'Baskı' })}
                   </label>
-                  <TooltipProvider>
-                    <Tooltip delayDuration={300}>
-                      <TooltipTrigger asChild>
-                        <button
-                          type="button"
-                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                        >
-                          <HelpCircle size={14} className="stroke-[2.5]" />
-                        </button>
-                      </TooltipTrigger>
-                      <TooltipContent
-                        side="top"
-                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                      >
-                        {t('order.lines.printErpTooltip')}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <ErpFieldHint label={t('order.lines.printErpTooltip')} />
                 </div>
                 <VoiceSearchCombobox
                   options={baskiComboboxOptions}

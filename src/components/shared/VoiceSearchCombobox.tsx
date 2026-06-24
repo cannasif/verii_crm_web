@@ -5,9 +5,10 @@ import {
   useRef,
   useId,
   useLayoutEffect,
-  useCallback,
+  useImperativeHandle,
   type ButtonHTMLAttributes,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { AlertCircle, Check, ChevronsUpDown, Loader2, Mic, MicOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -79,22 +80,16 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
   const [pinnedSelection, setPinnedSelection] = useState<{ value: string; label: string } | null>(
     null
   );
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number; width: number } | null>(
+    null
+  );
   const rootRef = useRef<HTMLDivElement | null>(null);
   const triggerButtonRef = useRef<HTMLButtonElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const contentDomId = useId().replace(/:/g, '');
 
-  const setTriggerButtonRef = useCallback(
-    (node: HTMLButtonElement | null) => {
-      triggerButtonRef.current = node;
-      if (typeof ref === 'function') {
-        ref(node);
-      } else if (ref) {
-        ref.current = node;
-      }
-    },
-    [ref],
-  );
+  useImperativeHandle(ref, () => triggerButtonRef.current as HTMLButtonElement, []);
 
   const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>): void => {
     if (disabled) {
@@ -126,6 +121,43 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
     if (!open || disabled) {
       return;
     }
+    const updatePosition = (): void => {
+      const trigger = triggerButtonRef.current;
+      if (!trigger) {
+        return;
+      }
+
+      const rect = trigger.getBoundingClientRect();
+      const next = {
+        top: rect.bottom + 4,
+        left: Math.max(8, Math.min(rect.left, window.innerWidth - rect.width - 8)),
+        width: rect.width,
+      };
+
+      setDropdownPosition((previous) =>
+        previous &&
+        previous.top === next.top &&
+        previous.left === next.left &&
+        previous.width === next.width
+          ? previous
+          : next
+      );
+    };
+
+    updatePosition();
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition, true);
+
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition, true);
+    };
+  }, [open, disabled]);
+
+  useLayoutEffect(() => {
+    if (!open || disabled || !dropdownPosition) {
+      return;
+    }
     window.requestAnimationFrame(() => {
       const root = document.getElementById(contentDomId);
       const input = root?.querySelector('[data-slot="command-input"]') as HTMLInputElement | null;
@@ -136,7 +168,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
       const len = input.value.length;
       input.setSelectionRange(len, len);
     });
-  }, [open, disabled, contentDomId]);
+  }, [open, disabled, dropdownPosition, contentDomId]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -224,6 +256,9 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
     const handlePointerDown = (event: PointerEvent): void => {
       const target = event.target as Node | null;
       if (target && rootRef.current?.contains(target)) {
+        return;
+      }
+      if (target && contentRef.current?.contains(target)) {
         return;
       }
       setOpen(false);
@@ -315,7 +350,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
     <div ref={rootRef} className="relative w-full">
         <button
           {...triggerProps}
-          ref={setTriggerButtonRef}
+          ref={triggerButtonRef}
           type="button"
           role="combobox"
           aria-expanded={open}
@@ -339,13 +374,21 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </button>
-      {open ? (
+      {open && dropdownPosition && typeof document !== 'undefined' ? createPortal(
         <div
+          ref={contentRef}
           id={contentDomId}
           className={cn(
-            "absolute left-0 top-full z-50 mt-1 w-full overflow-hidden rounded-2xl border border-slate-300 bg-white p-0 shadow-[0_1px_0_rgba(15,23,42,0.05),0_16px_32px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/70 dark:border-white/14 dark:bg-[#130822] dark:ring-white/10",
+            "overflow-hidden rounded-2xl border border-slate-300 bg-white p-0 shadow-[0_1px_0_rgba(15,23,42,0.05),0_16px_32px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/70 dark:border-white/14 dark:bg-[#130822] dark:ring-white/10",
             popoverContentClassName
           )}
+          style={{
+            position: 'fixed',
+            top: dropdownPosition.top,
+            left: dropdownPosition.left,
+            width: dropdownPosition.width,
+            zIndex: 1000,
+          }}
         >
         <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
           <CommandInput 
@@ -430,7 +473,8 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
             ) : null}
           </CommandList>
         </Command>
-        </div>
+        </div>,
+        document.body
       ) : null}
     </div>
   );

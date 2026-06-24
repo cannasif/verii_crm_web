@@ -20,15 +20,10 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from '@/components/ui/popover';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { ErpFieldHint } from '@/components/shared/ErpFieldHint';
 import {
   Dialog,
   DialogContent,
@@ -70,7 +65,7 @@ import {
   Search, SearchX, User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
   Layers, Folder, MapPin, BookUser, Check, Building2,
-  Banknote, HelpCircle
+  Banknote
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
@@ -184,6 +179,7 @@ export function DemandHeaderForm({
     if (
       !specialCodeManualChangeRef.current.ozelKod1 &&
       canApplySpecialCodeDefault(currentOzelKod1) &&
+      currentOzelKod1 !== defaultSpecialCode &&
       specialCode1DefaultExists.data === true
     ) {
       form.setValue('demand.ozelKod1', defaultSpecialCode, { shouldDirty: false, shouldValidate: true });
@@ -192,6 +188,7 @@ export function DemandHeaderForm({
     if (
       !specialCodeManualChangeRef.current.ozelKod2 &&
       canApplySpecialCodeDefault(currentOzelKod2) &&
+      currentOzelKod2 !== defaultSpecialCode &&
       specialCode2DefaultExists.data === true
     ) {
       form.setValue('demand.ozelKod2', defaultSpecialCode, { shouldDirty: false, shouldValidate: true });
@@ -1021,25 +1018,7 @@ export function DemandHeaderForm({
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-1.5">
                           <FormLabel className={cn(styles.label, "mb-0")}>{t('demand:header.notes')}</FormLabel>
-                          <TooltipProvider>
-                            <Tooltip delayDuration={300}>
-                              <TooltipTrigger asChild>
-                                <button
-                                  type="button"
-                                  className="text-slate-400 transition-colors hover:text-slate-600 focus-visible:outline-none dark:hover:text-slate-300"
-                                  aria-label={t('demand:header.descriptionErpTooltip')}
-                                >
-                                  <HelpCircle size={14} className="stroke-[2.5]" />
-                                </button>
-                              </TooltipTrigger>
-                              <TooltipContent
-                                side="top"
-                                className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 shadow-xl animate-in fade-in zoom-in-95 duration-150 dark:border-white/10 dark:bg-slate-900 dark:text-slate-200"
-                              >
-                                {t('demand:header.descriptionErpTooltip')}
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          <ErpFieldHint label={t('demand:header.descriptionErpTooltip')} />
                         </div>
                         <span className={cn("text-[10px] transition-colors", (field.value?.length || 0) > 350 ? "text-red-500 font-bold" : "text-slate-400")}>
                           {field.value?.length || 0}/400

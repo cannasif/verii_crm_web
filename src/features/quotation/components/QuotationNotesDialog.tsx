@@ -10,13 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, FileText, Loader2, X, HelpCircle } from 'lucide-react';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { ChevronLeft, ChevronRight, FileText, Loader2, X } from 'lucide-react';
+import { ErpFieldHint } from '@/components/shared/ErpFieldHint';
 import type { QuotationNotesDto } from '../types/quotation-types';
 import { QUOTATION_NOTE_KEYS } from '../utils/quotation-payload-mapper';
 import {
@@ -182,24 +177,7 @@ export function QuotationNotesDialog({
                           {' '}
                           {index + 1}
                         </span>
-                        <TooltipProvider>
-                          <Tooltip delayDuration={300}>
-                            <TooltipTrigger asChild>
-                              <button
-                                type="button"
-                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
-                              >
-                                <HelpCircle size={12} className="stroke-[2.5]" />
-                              </button>
-                            </TooltipTrigger>
-                            <TooltipContent
-                              side="top"
-                              className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
-                            >
-                              {labels.notesTooltipText}
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <ErpFieldHint label={labels.notesTooltipText} />
                       </div>
                     </div>
                     <span

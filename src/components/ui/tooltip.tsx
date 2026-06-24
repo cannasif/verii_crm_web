@@ -9,7 +9,28 @@ const TooltipProvider = TooltipPrimitive.Provider;
 
 const Tooltip = TooltipPrimitive.Root;
 
-const TooltipTrigger = TooltipPrimitive.Trigger;
+function TooltipTrigger({
+  asChild,
+  children,
+  ...props
+}: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
+  if (asChild && React.isValidElement(children)) {
+    const child = children as React.ReactElement<React.HTMLAttributes<HTMLElement>>;
+    const ariaLabel =
+      child.props['aria-label'] ??
+      (typeof props['aria-label'] === 'string' ? props['aria-label'] : undefined);
+
+    return React.cloneElement(child, {
+      ...props,
+      ...child.props,
+      'data-slot': 'tooltip-trigger',
+      title: child.props.title ?? ariaLabel,
+      'aria-label': ariaLabel,
+    } as React.HTMLAttributes<HTMLElement>);
+  }
+
+  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props}>{children}</TooltipPrimitive.Trigger>;
+}
 
 const TooltipContent = React.forwardRef<
   React.ComponentRef<typeof TooltipPrimitive.Content>,
