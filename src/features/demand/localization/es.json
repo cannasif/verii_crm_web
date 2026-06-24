@@ -19,7 +19,7 @@
   "confirm": "Confirmar",
   "saveAndApply": "Guardar y aplicar",
   "notes": {
-    "notesTooltipText": "Estas son explicaciones generales para la solicitud. El límite máximo de caracteres es 100"
+    "notesTooltipText": "Notas de envío/factura para toda la solicitud. Al transferirse al ERP, se guardan secuencialmente en las descripciones extra de cabecera de presupuesto/pedido 1-5; la nota 2 va a la descripción extra 2 de Netsis."
   },
   "list": {
     "revise": "Revisar",
@@ -94,6 +94,8 @@
     },
     "deliveryMethod": "Método de entrega",
     "documentDetail": "Texto del documento",
+    "notes": "Notas",
+    "descriptionErpTooltip": "Nota general de producción para toda la solicitud. Al enviarse al ERP como presupuesto/pedido, se guarda en el campo Descripción de cabecera de Netsis (FatUst.Aciklama).",
     "ozelKod1": "Código especial 1",
     "ozelKod1Placeholder": "Seleccionar código especial 1",
     "ozelKod2": "Código especial 2",
@@ -151,7 +153,11 @@
     "description2": "Descripción 2",
     "description3": "Descripción 3",
     "descriptionPlaceholder": "Descripción...",
-    "descriptionTooltipText": "Estas son descripciones de artículos por línea. El límite máximo de caracteres es 200",
+    "descriptionTooltipText": "Nota de producción por línea. Al transferirse al ERP, el mapeo de línea Netsis es: Descripción 1 -> Descripción extra de línea 1, Descripción 2 -> Descripción extra de línea 6, Descripción 3 -> Descripción extra de línea 7. Para el Campo extra 2 de Netsis reflejado en la factura, use el campo Perfil de CRM.",
+    "profileErpTooltip": "Esta selección de Perfil se envía al ERP como Campo extra 2 / Descripción extra de línea 2 de Netsis.",
+    "rebarErpTooltip": "Esta selección de hierro se envía al ERP como Descripción extra de línea 3 de Netsis.",
+    "screwErpTooltip": "Esta selección de tornillo se envía al ERP como Descripción extra de línea 4 de Netsis.",
+    "printErpTooltip": "Esta selección de impresión se envía al ERP como Descripción extra de línea 8 de Netsis. La nota de impresión también va a la Descripción de línea 9 y Descripción extra de línea 9 de Netsis.",
     "lineItemDescriptionPlaceholder": "Descripción del artículo por línea",
     "doubleClickToEdit": "Haz doble clic para editar"
   },
