@@ -114,7 +114,6 @@ export function CustomerForm({
   const systemSettings = useSystemSettingsStore((state) => state.settings);
   const { data: shippingAddresses = [] } = useShippingAddressesByCustomer(customer?.id ?? 0);
   const nameInputRef = useRef<HTMLInputElement>(null);
-  const isCreateMode = !customer;
   const { triggerShake, isShaking } = useFieldShake();
   const [countrySearchTerm, setCountrySearchTerm] = useState('');
   const [citySearchTerm, setCitySearchTerm] = useState('');
@@ -145,6 +144,7 @@ export function CustomerForm({
     reValidateMode: 'onChange',
     defaultValues: createEmptyCustomerFormData(branch?.code),
   });
+  const lastResetSignatureRef = useRef<string | null>(null);
 
   const selectedCountryId = form.watch('countryId');
   const selectedCityId = form.watch('cityId');
@@ -185,6 +185,20 @@ export function CustomerForm({
 
   useEffect(() => {
     if (!open) {
+      lastResetSignatureRef.current = null;
+      return;
+    }
+
+    const resetSignature = JSON.stringify({
+      mode: customer ? 'edit' : 'create',
+      branchCode: branch?.code ?? null,
+      customerId: customer?.id ?? null,
+      updatedDate: customer?.updatedDate ?? null,
+      customerCode: customer?.customerCode ?? null,
+      defaultShippingAddressId: customer?.defaultShippingAddressId ?? null,
+    });
+
+    if (lastResetSignatureRef.current === resetSignature) {
       return;
     }
 
@@ -193,8 +207,16 @@ export function CustomerForm({
       : createEmptyCustomerFormData(branch?.code);
 
     form.reset(nextValues);
-
-  }, [open, customer?.id, branch?.code, form, isCreateMode, customer]);
+    lastResetSignatureRef.current = resetSignature;
+  }, [
+    open,
+    branch?.code,
+    customer?.id,
+    customer?.updatedDate,
+    customer?.customerCode,
+    customer?.defaultShippingAddressId,
+    form,
+  ]);
 
   useEffect(() => {
     if (!conflictState) {
