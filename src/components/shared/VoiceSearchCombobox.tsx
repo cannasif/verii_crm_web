@@ -292,6 +292,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
     ? (options.find((option) => option.value === value)?.label ??
       (pinnedSelection?.value === value ? pinnedSelection.label : null))
     : null;
+  const listMinHeight = options.length > 0 || isFetchingNextPage ? DROPDOWN_MAX_HEIGHT_PX : undefined;
 
   const handleOptionSelect = (option: ComboboxOption): void => {
     const nextValue = option.value === value ? null : option.value;
@@ -382,7 +383,12 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
           <CommandList
             onScroll={handleListScroll}
             className="custom-scrollbar space-y-1 p-2"
-            style={{ minHeight: DROPDOWN_MAX_HEIGHT_PX, maxHeight: DROPDOWN_MAX_HEIGHT_PX, overflowY: 'auto', overscrollBehavior: 'contain' }}
+            style={{
+              minHeight: listMinHeight,
+              maxHeight: DROPDOWN_MAX_HEIGHT_PX,
+              overflowY: 'auto',
+              overscrollBehavior: 'contain',
+            }}
           >
             <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
               {isThresholdMode ? minCharsHint : t('common.noResults')}
