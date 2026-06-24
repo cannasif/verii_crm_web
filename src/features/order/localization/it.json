@@ -2,11 +2,12 @@
   "lines": {
     "doubleClickToEdit": "Doppio clic per modificare",
     "unit": "Unità",
-    "descriptionTooltipText": "Si tratta di descrizioni di articoli per riga. Il limite massimo di caratteri è 200",
+    "descriptionTooltipText": "Nota di produzione a livello riga. Mappatura Netsis: Descrizione 1 -> Descrizione extra riga 1, Descrizione 2 -> Descrizione extra riga 6, Descrizione 3 -> Descrizione extra riga 7. Per il Campo extra 2 Netsis riportato in fattura, usare il campo Profilo del CRM.",
+    "profileErpTooltip": "Questa selezione Profilo viene inviata all'ERP come Campo extra riga 2 / Descrizione extra riga 2 Netsis.",
     "lineItemDescriptionPlaceholder": "Descrizione dell'articolo per riga"
   },
   "notes": {
-    "notesTooltipText": "Si tratta di spiegazioni generali per l'ordine. Il limite massimo di caratteri è 100"
+    "notesTooltipText": "Note di spedizione/fatturazione per l'intero ordine. Sono salvate in sequenza nelle descrizioni extra testata Netsis 1-5; la nota 2 va nella descrizione extra Netsis 2."
   },
   "erpOrder": {
     "title": "Elenco ordini ERP",
@@ -48,6 +49,8 @@
     }
   },
   "header": {
+    "notes": "Note",
+    "descriptionErpTooltip": "Nota di produzione generale per l'intero ordine. All'invio all'ERP viene salvata nel campo Descrizione testata ordine Netsis (FatUst.Aciklama).",
     "ozelKod1": "Codice speciale 1",
     "ozelKod1Placeholder": "Seleziona codice speciale 1",
     "ozelKod2": "Codice speciale 2",

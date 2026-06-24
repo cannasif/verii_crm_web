@@ -2,11 +2,12 @@
   "lines": {
     "doubleClickToEdit": "Zum Bearbeiten doppelklicken",
     "unit": "Einheit",
-    "descriptionTooltipText": "Dies sind zeilenbasierte Artikelbeschreibungen. Das maximale Zeichenlimit beträgt 200",
+    "descriptionTooltipText": "Zeilenbezogene Produktionsnotiz. Netsis-Zeilenzuordnung: Beschreibung 1 -> Zeilen-Zusatzbeschreibung 1, Beschreibung 2 -> Zeilen-Zusatzbeschreibung 6, Beschreibung 3 -> Zeilen-Zusatzbeschreibung 7. Für das rechnungsrelevante Netsis-Zusatzfeld 2 der Zeile wird im CRM das Feld Profil verwendet.",
+    "profileErpTooltip": "Diese Profil-Auswahl wird bei der ERP-Übertragung als Netsis Zeilen-Zusatzfeld 2 / Zeilen-Zusatzbeschreibung 2 gespeichert.",
     "lineItemDescriptionPlaceholder": "Zeilenbasierte Artikelbeschreibung"
   },
   "notes": {
-    "notesTooltipText": "Dies sind allgemeine Erläuterungen zur Bestellung. Das maximale Zeichenlimit beträgt 100"
+    "notesTooltipText": "Versand-/Rechnungsnotizen für die gesamte Bestellung. Sie werden der Reihe nach in Netsis Bestellkopf Zusatzbeschreibung 1-5 gespeichert; Notiz 2 geht an Netsis Zusatzbeschreibung 2."
   },
   "erpOrder": {
     "title": "ERP-Bestellliste",
@@ -48,6 +49,8 @@
     }
   },
   "header": {
+    "notes": "Notizen",
+    "descriptionErpTooltip": "Allgemeine Produktionsnotiz für die gesamte Bestellung. Bei der ERP-Übertragung wird sie im Netsis Bestellkopf-Feld Beschreibung (FatUst.Aciklama) gespeichert.",
     "ozelKod1": "Sondercode 1",
     "ozelKod1Placeholder": "Sondercode 1 auswählen",
     "ozelKod2": "Sondercode 2",

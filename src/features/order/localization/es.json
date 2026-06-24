@@ -2,11 +2,12 @@
   "lines": {
     "doubleClickToEdit": "Doble clic para editar",
     "unit": "Unidad",
-    "descriptionTooltipText": "Estas son descripciones de artículos por línea. El límite máximo de caracteres es 200",
+    "descriptionTooltipText": "Nota de producción por línea. Mapeo de línea Netsis: Descripción 1 -> Descripción extra de línea 1, Descripción 2 -> Descripción extra de línea 6, Descripción 3 -> Descripción extra de línea 7. Para el Campo extra 2 de Netsis reflejado en la factura, use el campo Perfil de CRM.",
+    "profileErpTooltip": "Esta selección de Perfil se envía al ERP como Campo extra 2 / Descripción extra de línea 2 de Netsis.",
     "lineItemDescriptionPlaceholder": "Descripción del artículo por línea"
   },
   "notes": {
-    "notesTooltipText": "Estas son explicaciones generales para el pedido. El límite máximo de caracteres es 100"
+    "notesTooltipText": "Notas de envío/factura para todo el pedido. Se guardan secuencialmente en Netsis, descripción extra de cabecera 1-5; la nota 2 va a la descripción extra 2 de Netsis."
   },
   "erpOrder": {
     "title": "Lista de pedidos ERP",
@@ -48,6 +49,8 @@
     }
   },
   "header": {
+    "notes": "Notas",
+    "descriptionErpTooltip": "Nota general de producción para todo el pedido. Al enviarse al ERP, se guarda en el campo Descripción de cabecera de pedido de Netsis (FatUst.Aciklama).",
     "ozelKod1": "Código especial 1",
     "ozelKod1Placeholder": "Seleccionar código especial 1",
     "ozelKod2": "Código especial 2",

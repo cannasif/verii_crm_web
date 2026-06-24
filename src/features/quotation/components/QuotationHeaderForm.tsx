@@ -20,7 +20,8 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from '@/components/ui/popover';
-import { Check } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Check, HelpCircle } from 'lucide-react';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -1026,7 +1027,28 @@ export function QuotationHeaderForm({
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group w-full min-w-0">
                       <div className="flex items-center justify-between mb-2">
-                        <FormLabel className={cn(styles.label, "mb-0")}>{t('quotation:header.notes')}</FormLabel>
+                        <div className="flex items-center gap-1.5">
+                          <FormLabel className={cn(styles.label, "mb-0")}>{t('quotation:header.notes')}</FormLabel>
+                          <TooltipProvider>
+                            <Tooltip delayDuration={300}>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="text-slate-400 transition-colors hover:text-slate-600 focus-visible:outline-none dark:hover:text-slate-300"
+                                  aria-label={t('quotation:header.descriptionErpTooltip')}
+                                >
+                                  <HelpCircle size={14} className="stroke-[2.5]" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent
+                                side="top"
+                                className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-700 shadow-xl animate-in fade-in zoom-in-95 duration-150 dark:border-white/10 dark:bg-slate-900 dark:text-slate-200"
+                              >
+                                {t('quotation:header.descriptionErpTooltip')}
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
                         <span className={cn("text-[10px] transition-colors", (field.value?.length || 0) > 350 ? "text-red-500 font-bold" : "text-zinc-400")}>
                           {field.value?.length || 0}/400
                         </span>

@@ -2,7 +2,8 @@
   "lines": {
     "doubleClickToEdit": "Düzenlemek için çift tıklayın",
     "unit": "Birim",
-    "descriptionTooltipText": "Bunlar satır bazlı kalem açıklamalarıdır. Maksimum karakter limiti 200'dür",
+    "descriptionTooltipText": "Satır bazlı üretim açıklamasıdır. Netsis satır ek açıklama eşleşmesi: Açıklama 1 -> Satır Ek Açıklama 1, Açıklama 2 -> Satır Ek Açıklama 6, Açıklama 3 -> Satır Ek Açıklama 7. Kalemde faturaya yansıtılan Netsis Ek Alan-2 için CRM'de Profil alanı kullanılır.",
+    "profileErpTooltip": "Bu Profil seçimi ERP'ye gönderimde Netsis satır Ek Alan-2 / Satır Ek Açıklama 2 değerine kaydedilir.",
     "lineItemDescriptionPlaceholder": "Satır bazlı kalem açıklaması"
   },
   "notes": {
@@ -10,7 +11,7 @@
     "description": "Sipariş için iç notlar ekleyin ve güncelleyin.",
     "placeholder": "Sipariş notunu girin",
     "noteLabel": "Sipariş Notu",
-    "notesTooltipText": "Sipariş geneli açıklamalarıdır. Maksimum karakter limiti 100'dür",
+    "notesTooltipText": "Siparişin tümünü ilgilendiren sevkiyat/fatura notlarıdır. Netsis sipariş üst Ek Açıklama 1-5 alanlarına sırayla kaydedilir; 2. not Netsis Ek Açıklama 2'ye gider.",
     "addLineTooltip": "Açıklama satırı ekle",
     "linesHint": "Her satır PDF ve belge notlarında ayrı görünür.",
     "removeLine": "Satırı kaldır",
@@ -58,6 +59,8 @@
     }
   },
   "header": {
+    "notes": "Notlar",
+    "descriptionErpTooltip": "Siparişin tamamı için üretimin görmesini istediğiniz genel açıklamadır. ERP'ye gönderimde Netsis sipariş üst Açıklama (FatUst.Aciklama) alanına kaydedilir.",
     "ozelKod1": "Özel Kod 1",
     "ozelKod1Placeholder": "Özel Kod 1 seçin",
     "ozelKod2": "Özel Kod 2",

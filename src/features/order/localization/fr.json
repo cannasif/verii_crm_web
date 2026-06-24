@@ -2,11 +2,12 @@
   "lines": {
     "doubleClickToEdit": "Double-cliquez pour modifier",
     "unit": "Unité",
-    "descriptionTooltipText": "Il s'agit de descriptions d'articles par ligne. La limite maximale de caractères est de 200",
+    "descriptionTooltipText": "Note de production au niveau de la ligne. Correspondance Netsis: Description 1 -> Description supplémentaire ligne 1, Description 2 -> Description supplémentaire ligne 6, Description 3 -> Description supplémentaire ligne 7. Pour le champ supplémentaire Netsis 2 repris sur la facture, utilisez le champ Profil du CRM.",
+    "profileErpTooltip": "Cette sélection de Profil est envoyée à l'ERP comme champ supplémentaire Netsis ligne 2 / description supplémentaire ligne 2.",
     "lineItemDescriptionPlaceholder": "Description de l'article par ligne"
   },
   "notes": {
-    "notesTooltipText": "Il s'agit d'explications générales pour la commande. La limite maximale de caractères est de 100"
+    "notesTooltipText": "Notes d'expédition/facturation pour toute la commande. Elles sont enregistrées dans Netsis en descriptions supplémentaires d'en-tête 1-5; la note 2 va dans la description supplémentaire Netsis 2."
   },
   "erpOrder": {
     "title": "Liste des commandes ERP",
@@ -48,6 +49,8 @@
     }
   },
   "header": {
+    "notes": "Notes",
+    "descriptionErpTooltip": "Note de production générale pour toute la commande. Lors de l'envoi à l'ERP, elle est enregistrée dans le champ Description d'en-tête de commande Netsis (FatUst.Aciklama).",
     "ozelKod1": "Code spécial 1",
     "ozelKod1Placeholder": "Sélectionner le code spécial 1",
     "ozelKod2": "Code spécial 2",
