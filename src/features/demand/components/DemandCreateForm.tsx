@@ -29,6 +29,7 @@ import { SalesDocumentDraftRestoreDialog } from '@/features/sales-drafts/SalesDo
 import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentDraft';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
 import { applyExchangeRateChangeToLines } from '@/features/sales-documents/utils/apply-exchange-rate-to-lines';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -152,6 +153,39 @@ export function DemandCreateForm(): ReactElement {
     setLines((prev) => applyExchangeRateChangeToLines(prev, oldExchangeRate, newExchangeRate));
   }, []);
   const { data: erpRates = [] } = useExchangeRate();
+  const { currencyOptions } = useCurrencyOptions();
+
+  useEffect(() => {
+    if (erpRates.length > 0 && currencyOptions.length > 0) {
+      setExchangeRates((prev) => {
+        const mappedRates = erpRates.map((rate, index) => {
+          const existing = prev.find((er) => er.dovizTipi === rate.dovizTipi);
+          const erpRateValue = Number(rate.kurDegeri ?? 0);
+          const existingRateValue = Number(existing?.exchangeRate ?? 0);
+          const shouldUseErpRate =
+            !existing ||
+            existingRateValue <= 0 ||
+            (existing.isOfficial !== false && existingRateValue === 1 && rate.dovizTipi !== 0 && erpRateValue > 0);
+
+          return {
+            id: existing?.id || `temp-${rate.dovizTipi}-${index}`,
+            currency: existing?.currency || String(rate.dovizTipi),
+            exchangeRate: shouldUseErpRate ? erpRateValue : existingRateValue,
+            exchangeRateDate: existing?.exchangeRateDate || new Date().toISOString().split('T')[0],
+            isOfficial: shouldUseErpRate ? rate.kurDegeri != null : existing?.isOfficial ?? rate.kurDegeri != null,
+            dovizTipi: rate.dovizTipi,
+          };
+        });
+
+        const isDifferent = mappedRates.some((mr, i) => {
+          const pr = prev[i];
+          return !pr || pr.exchangeRate !== mr.exchangeRate || pr.dovizTipi !== mr.dovizTipi;
+        }) || mappedRates.length !== prev.length;
+
+        return isDifferent ? mappedRates : prev;
+      });
+    }
+  }, [erpRates, currencyOptions, setExchangeRates]);
 
   const customerCode = useMemo(() => {
     if (watchedErpCustomerCode) {
