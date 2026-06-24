@@ -223,6 +223,12 @@ export function ExchangeRateDialog({
     onOpenChange(next);
   };
 
+  const selectedRate = findRateForCurrency(localRates);
+  const selectedErpRate = selectedRate
+    ? erpRates.find((er) => er.dovizTipi === selectedRate.dovizTipi)
+    : undefined;
+  const selectedCurrencyName = selectedErpRate?.dovizIsmi || selectedRate?.currency || '-';
+
   const styles = {
     tableHead: "h-10 px-4 text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800",
     tableRow: "hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors border-b border-zinc-100 dark:border-zinc-800 last:border-0",
@@ -258,8 +264,33 @@ export function ExchangeRateDialog({
               <span className="text-sm font-medium">{t('loading')}</span>
             </div>
           ) : (
-            <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm bg-white dark:bg-zinc-900/20">
-              <Table>
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-emerald-400/30 bg-emerald-50/80 p-4 shadow-sm dark:border-emerald-400/20 dark:bg-emerald-500/10">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-lg shadow-emerald-600/20">
+                      <DollarSign className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                        Seçili döviz kuru: {selectedCurrencyName}
+                      </div>
+                      <div className="mt-1 text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
+                        Kur değerini düzenleyip <span className="font-semibold">Kaydet ve Uygula</span> dediğinizde satır fiyatları, KDV ve talep toplamı yeni kura göre güncellenecektir.
+                      </div>
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-emerald-400/30 bg-white/80 px-4 py-2 text-right dark:bg-black/20">
+                    <div className="text-[10px] font-bold uppercase text-emerald-700 dark:text-emerald-300">Mevcut kur</div>
+                    <div className="font-mono text-lg font-bold text-zinc-900 dark:text-white">
+                      {selectedRate ? selectedRate.exchangeRate.toFixed(4) : '-'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm bg-white dark:bg-zinc-900/20">
+                <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-0">
                     <TableHead className={cn(styles.tableHead, "pl-6")}>{t('exchangeRates.currency')}</TableHead>
@@ -378,7 +409,8 @@ export function ExchangeRateDialog({
                     })
                   )}
                 </TableBody>
-              </Table>
+                </Table>
+              </div>
             </div>
           )}
           
