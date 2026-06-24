@@ -251,13 +251,17 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
 
   useEffect(() => {
     if (!value) {
-      setPinnedSelection(null);
+      setPinnedSelection((previous) => (previous === null ? previous : null));
       return;
     }
 
     const match = options.find((option) => option.value === value);
     if (match) {
-      setPinnedSelection({ value, label: match.label });
+      setPinnedSelection((previous) =>
+        previous?.value === value && previous.label === match.label
+          ? previous
+          : { value, label: match.label }
+      );
       return;
     }
 
