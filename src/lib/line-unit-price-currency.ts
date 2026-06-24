@@ -165,6 +165,29 @@ export function findExchangeRateByDovizTipiGeneric(
   return null;
 }
 
+export function hasRequiredDocumentExchangeRate(
+  documentDovizTipi: number,
+  currencyOptions: CurrencyOption[],
+  exchangeRates: DocumentExchangeRate[],
+  erpRates?: KurDto[],
+  options: ExchangeRateLookupOptions = {}
+): boolean {
+  const resolvedDocument = resolveDocumentDovizTipi(documentDovizTipi, currencyOptions, erpRates);
+  if (isLocalCurrencyDovizTipi(resolvedDocument, currencyOptions, erpRates)) {
+    return true;
+  }
+
+  const rate = findExchangeRateByDovizTipiGeneric(
+    resolvedDocument,
+    exchangeRates,
+    erpRates,
+    currencyOptions,
+    options
+  );
+
+  return rate != null && rate > 0;
+}
+
 export function resolveProductPricingSourceDovizTipi(params: {
   pricingRuleCurrencyCode?: string | number | null;
   apiCurrency?: string | number | null;
@@ -289,6 +312,15 @@ export function convertProductPriceToDocumentCurrency(
   }
 ): { price: number; zeroRate: boolean } {
   const resolvedDocument = resolveDocumentDovizTipi(documentDovizTipi, currencyOptions, erpRates);
+  if (
+    options?.requireDocumentExchangeRates &&
+    !hasRequiredDocumentExchangeRate(documentDovizTipi, currencyOptions, exchangeRates, erpRates, {
+      allowErpFallback: false,
+    })
+  ) {
+    return { price: listPrice ?? 0, zeroRate: true };
+  }
+
   const sourceDovizTipi = resolveProductPricingSourceDovizTipi({
     pricingRuleCurrencyCode: options?.pricingRuleCurrencyCode,
     apiCurrency: sourceCurrencyValue,

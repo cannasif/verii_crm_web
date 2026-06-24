@@ -68,6 +68,7 @@ import {
   type DemandQuickEditField,
 } from '../utils/apply-demand-line-quick-field-patch';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { hasRequiredDocumentExchangeRate } from '@/lib/line-unit-price-currency';
 import {
   buildDocumentLinePrerequisiteHintLines,
   canDocumentLinePrerequisites,
@@ -377,6 +378,20 @@ export function DemandLineTable({
   );
 
   const linePrerequisitesMet = canDocumentLinePrerequisites(linePrerequisitesInput);
+  const documentExchangeRateMet = hasRequiredDocumentExchangeRate(currency, currencyOptions, exchangeRates, erpRates, {
+    allowErpFallback: false,
+  });
+
+  const ensureDocumentExchangeRate = (): boolean => {
+    if (documentExchangeRateMet) return true;
+
+    toast.error(t('error'), {
+      description: t('exchangeRates.zeroRateError', {
+        defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
+      }),
+    });
+    return false;
+  };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
     if (!scrollRef.current) return;
@@ -409,6 +424,7 @@ export function DemandLineTable({
       });
       return;
     }
+    if (!ensureDocumentExchangeRate()) return;
 
     const line: DemandLineFormState = {
       id: createClientId(),
@@ -508,6 +524,7 @@ export function DemandLineTable({
       });
       return;
     }
+    if (!ensureDocumentExchangeRate()) return;
 
     const hasRelatedStocks = product.relatedStockIds && product.relatedStockIds.length > 0;
 
@@ -832,7 +849,7 @@ export function DemandLineTable({
     offerType,
   ]);
 
-  const canAddLine = linesEditable && linePrerequisitesMet;
+  const canAddLine = linesEditable && linePrerequisitesMet && documentExchangeRateMet;
 
   const headerSectionTitle = t('sections.header');
   const addLineDisableHints = useMemo(() => {

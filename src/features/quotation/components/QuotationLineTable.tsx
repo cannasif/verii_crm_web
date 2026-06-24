@@ -90,6 +90,7 @@ import {
   getDocumentLineTableBodyCellClass,
   getDocumentLineTableStickyStockCellClass,
 } from '@/lib/document-line-table-layout';
+import { hasRequiredDocumentExchangeRate } from '@/lib/line-unit-price-currency';
 
 function toCreateDto(line: QuotationLineFormState, quotationId: number): CreateQuotationLineDto {
   const {
@@ -438,6 +439,20 @@ export function QuotationLineTable({
   );
 
   const linePrerequisitesMet = canDocumentLinePrerequisites(linePrerequisitesInput);
+  const documentExchangeRateMet = hasRequiredDocumentExchangeRate(currency, currencyOptions, exchangeRates, erpRates, {
+    allowErpFallback: false,
+  });
+
+  const ensureDocumentExchangeRate = (): boolean => {
+    if (documentExchangeRateMet) return true;
+
+    toast.error(t('error'), {
+      description: t('exchangeRates.zeroRateError', {
+        defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
+      }),
+    });
+    return false;
+  };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
     if (!scrollRef.current) return;
@@ -522,6 +537,7 @@ export function QuotationLineTable({
       });
       return;
     }
+    if (!ensureDocumentExchangeRate()) return;
 
     const line: QuotationLineFormState = {
       id: createClientId(),
@@ -550,7 +566,7 @@ export function QuotationLineTable({
     setAddLineDialogOpen(true);
   };
 
-  const canAddLine = linesEditable && linePrerequisitesMet;
+  const canAddLine = linesEditable && linePrerequisitesMet && documentExchangeRateMet;
 
   const headerSectionTitle = t('sections.header');
   const addLineDisableHints = useMemo(() => {
@@ -758,6 +774,7 @@ export function QuotationLineTable({
       });
       return;
     }
+    if (!ensureDocumentExchangeRate()) return;
 
     const hasRelatedStocks = product.relatedStockIds && product.relatedStockIds.length > 0;
 

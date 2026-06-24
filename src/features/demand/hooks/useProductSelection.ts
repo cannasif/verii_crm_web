@@ -18,6 +18,7 @@ import { resolveProductSelectionUnit } from '@/lib/resolve-product-selection-uni
 import { getRelatedQuantityPerMainUnit } from '@/lib/related-stock-quantity';
 import {
   convertProductLinePriceForDocument,
+  hasRequiredDocumentExchangeRate,
   type PricingRulePriceLineLike,
 } from '@/lib/line-unit-price-currency';
 import { resolveDocumentVatRate } from '@/lib/document-vat';
@@ -107,8 +108,24 @@ export function useProductSelection({
     [currency, currencyOptions, erpRates, exchangeRates, pricingRules, t]
   );
 
+  const ensureDocumentExchangeRate = useCallback((): void => {
+    if (
+      hasRequiredDocumentExchangeRate(currency, currencyOptions, exchangeRates, erpRates, {
+        allowErpFallback: false,
+      })
+    ) {
+      return;
+    }
+
+    toast.error(t('update.error', 'Hata'), {
+      description: t('exchangeRates.zeroRateError', 'Lütfen devam edebilmek için kur değeri girin.'),
+    });
+    throw new Error('ZERO_RATE');
+  }, [currency, currencyOptions, exchangeRates, erpRates, t]);
+
   const handleProductSelectWithRelatedStocks = useCallback(
     async (product: ProductSelectionResult, relatedStockIds: number[]): Promise<DemandLineFormState[]> => {
+      ensureDocumentExchangeRate();
       const productWithUnit = await resolveProductSelectionUnit(product);
       const resolvedMainProductName = await resolveDocumentLineProductName(productWithUnit, i18n.language);
       const productWithResolvedName: ProductSelectionResult = {
@@ -253,11 +270,12 @@ export function useProductSelection({
         return [calculateLineTotals(baseLine)];
       }
     },
-    [convertPriceData, createEmptyLine, calculateLineTotals, i18n.language, offerType]
+    [convertPriceData, createEmptyLine, calculateLineTotals, ensureDocumentExchangeRate, i18n.language, offerType]
   );
 
   const handleProductSelect = useCallback(
     async (product: ProductSelectionResult): Promise<DemandLineFormState> => {
+      ensureDocumentExchangeRate();
       const productWithUnit = await resolveProductSelectionUnit(product);
       const resolvedProductName = await resolveDocumentLineProductName(productWithUnit, i18n.language);
       const productWithResolvedName: ProductSelectionResult = {
@@ -309,7 +327,7 @@ export function useProductSelection({
         return calculateLineTotals(baseLine);
       }
     },
-    [convertPriceData, createEmptyLine, calculateLineTotals, handleProductSelectWithRelatedStocks, i18n.language]
+    [convertPriceData, createEmptyLine, calculateLineTotals, ensureDocumentExchangeRate, handleProductSelectWithRelatedStocks, i18n.language]
   );
 
   return {

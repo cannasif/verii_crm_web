@@ -68,6 +68,7 @@ import {
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { enforceExportVatOnLine, getDefaultDocumentVatRate, resolveDocumentVatRate } from '@/lib/document-vat';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
+import { hasRequiredDocumentExchangeRate } from '@/lib/line-unit-price-currency';
 import {
   buildDocumentLinePrerequisiteHintLines,
   canDocumentLinePrerequisites,
@@ -386,6 +387,20 @@ export function OrderLineTable({
   );
 
   const linePrerequisitesMet = canDocumentLinePrerequisites(linePrerequisitesInput);
+  const documentExchangeRateMet = hasRequiredDocumentExchangeRate(currency, currencyOptions, exchangeRates, erpRates, {
+    allowErpFallback: false,
+  });
+
+  const ensureDocumentExchangeRate = (): boolean => {
+    if (documentExchangeRateMet) return true;
+
+    toast.error(t('order.error'), {
+      description: t('order.exchangeRates.zeroRateError', {
+        defaultValue: 'Lütfen devam edebilmek için kur değeri girin.',
+      }),
+    });
+    return false;
+  };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>): void => {
     if (!scrollRef.current) return;
@@ -418,6 +433,7 @@ export function OrderLineTable({
       });
       return;
     }
+    if (!ensureDocumentExchangeRate()) return;
 
     const line: OrderLineFormState = {
       id: createClientId(),
@@ -447,7 +463,7 @@ export function OrderLineTable({
     setAddLineDialogOpen(true);
   };
 
-  const canAddLine = linesEditable && linePrerequisitesMet;
+  const canAddLine = linesEditable && linePrerequisitesMet && documentExchangeRateMet;
 
   const headerSectionTitle = t('order.sections.header');
   const addLineDisableHints = useMemo(() => {
@@ -653,6 +669,7 @@ export function OrderLineTable({
       });
       return;
     }
+    if (!ensureDocumentExchangeRate()) return;
 
     const hasRelatedStocks = product.relatedStockIds && product.relatedStockIds.length > 0;
 
