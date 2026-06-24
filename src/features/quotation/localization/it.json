@@ -182,6 +182,9 @@
     "descriptionField3Label": "Vite",
     "descriptionTooltipText": "Nota di produzione a livello riga. Mappatura Netsis: Descrizione 1 -> Descrizione extra riga 1, Descrizione 2 -> Descrizione extra riga 6, Descrizione 3 -> Descrizione extra riga 7. Per il Campo extra 2 Netsis riportato in fattura, usare il campo Profilo del CRM.",
     "profileErpTooltip": "Questa selezione Profilo viene inviata all'ERP come Campo extra riga 2 / Descrizione extra riga 2 Netsis.",
+    "rebarErpTooltip": "Questa selezione Ferro viene inviata all'ERP come Descrizione extra riga 3 Netsis.",
+    "screwErpTooltip": "Questa selezione Vite viene inviata all'ERP come Descrizione extra riga 4 Netsis.",
+    "printErpTooltip": "Questa selezione Stampa viene inviata all'ERP come Descrizione extra riga 8 Netsis. La nota di stampa va anche in Descrizione riga 9 e Descrizione extra riga 9 Netsis.",
     "lineItemDescriptionPlaceholder": "Descrizione dell'articolo per riga",
     "doubleClickToEdit": "Fare doppio clic per modificare"
   },

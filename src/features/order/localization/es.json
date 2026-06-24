@@ -4,6 +4,9 @@
     "unit": "Unidad",
     "descriptionTooltipText": "Nota de producción por línea. Mapeo de línea Netsis: Descripción 1 -> Descripción extra de línea 1, Descripción 2 -> Descripción extra de línea 6, Descripción 3 -> Descripción extra de línea 7. Para el Campo extra 2 de Netsis reflejado en la factura, use el campo Perfil de CRM.",
     "profileErpTooltip": "Esta selección de Perfil se envía al ERP como Campo extra 2 / Descripción extra de línea 2 de Netsis.",
+    "rebarErpTooltip": "Esta selección de hierro se envía al ERP como Descripción extra de línea 3 de Netsis.",
+    "screwErpTooltip": "Esta selección de tornillo se envía al ERP como Descripción extra de línea 4 de Netsis.",
+    "printErpTooltip": "Esta selección de impresión se envía al ERP como Descripción extra de línea 8 de Netsis. La nota de impresión también va a la Descripción de línea 9 y Descripción extra de línea 9 de Netsis.",
     "lineItemDescriptionPlaceholder": "Descripción del artículo por línea"
   },
   "notes": {

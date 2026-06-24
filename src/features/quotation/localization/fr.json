@@ -182,6 +182,9 @@
     "descriptionField3Label": "Vis",
     "descriptionTooltipText": "Note de production au niveau de la ligne. Correspondance Netsis: Description 1 -> Description supplémentaire ligne 1, Description 2 -> Description supplémentaire ligne 6, Description 3 -> Description supplémentaire ligne 7. Pour le champ supplémentaire Netsis 2 repris sur la facture, utilisez le champ Profil du CRM.",
     "profileErpTooltip": "Cette sélection de Profil est envoyée à l'ERP comme champ supplémentaire Netsis ligne 2 / description supplémentaire ligne 2.",
+    "rebarErpTooltip": "Cette sélection de fer est envoyée à l'ERP comme description supplémentaire ligne 3 Netsis.",
+    "screwErpTooltip": "Cette sélection de vis est envoyée à l'ERP comme description supplémentaire ligne 4 Netsis.",
+    "printErpTooltip": "Cette sélection d'impression est envoyée à l'ERP comme description supplémentaire ligne 8 Netsis. La note d'impression va aussi dans la description ligne 9 et la description supplémentaire ligne 9 Netsis.",
     "lineItemDescriptionPlaceholder": "Description de l'article par ligne",
     "doubleClickToEdit": "Double-cliquez pour modifier"
   },

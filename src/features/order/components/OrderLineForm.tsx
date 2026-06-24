@@ -1628,9 +1628,29 @@ export function OrderLineForm({
                 </Button>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('order.lines.windoRebarLabel')}
-                </label>
+                <div className="flex items-center gap-1.5 ml-1">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('order.lines.windoRebarLabel')}
+                  </label>
+                  <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
+                        >
+                          <HelpCircle size={14} className="stroke-[2.5]" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="top"
+                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
+                      >
+                        {t('order.lines.rebarErpTooltip')}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <VoiceSearchCombobox
                   options={demirComboboxOptions}
                   value={formData.demirDefinitionId ? String(formData.demirDefinitionId) : null}
@@ -1652,9 +1672,29 @@ export function OrderLineForm({
                 </Button>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('order.lines.windoScrewLabel')}
-                </label>
+                <div className="flex items-center gap-1.5 ml-1">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('order.lines.windoScrewLabel')}
+                  </label>
+                  <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
+                        >
+                          <HelpCircle size={14} className="stroke-[2.5]" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="top"
+                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
+                      >
+                        {t('order.lines.screwErpTooltip')}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <VoiceSearchCombobox
                   options={vidaComboboxOptions}
                   value={formData.vidaDefinitionId ? String(formData.vidaDefinitionId) : null}
@@ -1676,9 +1716,29 @@ export function OrderLineForm({
                 </Button>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">
-                  {t('order.lines.windoPrintLabel', { defaultValue: 'Baskı' })}
-                </label>
+                <div className="flex items-center gap-1.5 ml-1">
+                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    {t('order.lines.windoPrintLabel', { defaultValue: 'Baskı' })}
+                  </label>
+                  <TooltipProvider>
+                    <Tooltip delayDuration={300}>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus-visible:outline-none"
+                        >
+                          <HelpCircle size={14} className="stroke-[2.5]" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent
+                        side="top"
+                        className="rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xl px-3.5 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 max-w-xs animate-in fade-in zoom-in-95 duration-150"
+                      >
+                        {t('order.lines.printErpTooltip')}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
                 <VoiceSearchCombobox
                   options={baskiComboboxOptions}
                   value={formData.baskiDefinitionId ? String(formData.baskiDefinitionId) : null}

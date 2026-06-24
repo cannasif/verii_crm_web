@@ -182,6 +182,9 @@
     "descriptionField3Label": "Schraube",
     "descriptionTooltipText": "Zeilenbezogene Produktionsnotiz. Netsis-Zeilenzuordnung: Beschreibung 1 -> Zeilen-Zusatzbeschreibung 1, Beschreibung 2 -> Zeilen-Zusatzbeschreibung 6, Beschreibung 3 -> Zeilen-Zusatzbeschreibung 7. Für das rechnungsrelevante Netsis-Zusatzfeld 2 der Zeile wird im CRM das Feld Profil verwendet.",
     "profileErpTooltip": "Diese Profil-Auswahl wird bei der ERP-Übertragung als Netsis Zeilen-Zusatzfeld 2 / Zeilen-Zusatzbeschreibung 2 gespeichert.",
+    "rebarErpTooltip": "Diese Eisen-Auswahl wird bei der ERP-Übertragung als Netsis Zeilen-Zusatzbeschreibung 3 gespeichert.",
+    "screwErpTooltip": "Diese Schrauben-Auswahl wird bei der ERP-Übertragung als Netsis Zeilen-Zusatzbeschreibung 4 gespeichert.",
+    "printErpTooltip": "Diese Druck-Auswahl wird bei der ERP-Übertragung als Netsis Zeilen-Zusatzbeschreibung 8 gespeichert. Die Drucknotiz geht außerdem an Netsis Zeilenbeschreibung 9 und Zeilen-Zusatzbeschreibung 9.",
     "lineItemDescriptionPlaceholder": "Zeilenbasierte Artikelbeschreibung",
     "doubleClickToEdit": "Zum Bearbeiten doppelklicken"
   },
