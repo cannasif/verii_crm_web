@@ -1,4 +1,13 @@
-import { useState, useEffect, useRef, useId, useLayoutEffect } from 'react';
+import {
+  forwardRef,
+  useState,
+  useEffect,
+  useRef,
+  useId,
+  useLayoutEffect,
+  useCallback,
+  type ButtonHTMLAttributes,
+} from 'react';
 import { AlertCircle, Check, ChevronsUpDown, Loader2, Mic, MicOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -11,11 +20,6 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useTranslation } from 'react-i18next';
 import {
@@ -31,7 +35,8 @@ export interface ComboboxOption {
   label: string;
 }
 
-interface VoiceSearchComboboxProps {
+interface VoiceSearchComboboxProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'value' | 'onSelect' | 'disabled'> {
   options: ComboboxOption[];
   value?: string | null;
   onSelect: (value: string | null) => void;
@@ -49,7 +54,7 @@ interface VoiceSearchComboboxProps {
   modal?: boolean;
 }
 
-export function VoiceSearchCombobox({
+export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComboboxProps>(function VoiceSearchCombobox({
   options,
   value,
   onSelect,
@@ -64,8 +69,9 @@ export function VoiceSearchCombobox({
   className,
   popoverContentClassName,
   disabled = false,
-  modal = true,
-}: VoiceSearchComboboxProps) {
+  modal: _modal = true,
+  ...triggerProps
+}, ref) {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -73,8 +79,22 @@ export function VoiceSearchCombobox({
   const [pinnedSelection, setPinnedSelection] = useState<{ value: string; label: string } | null>(
     null
   );
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const triggerButtonRef = useRef<HTMLButtonElement | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const contentDomId = useId().replace(/:/g, '');
+
+  const setTriggerButtonRef = useCallback(
+    (node: HTMLButtonElement | null) => {
+      triggerButtonRef.current = node;
+      if (typeof ref === 'function') {
+        ref(node);
+      } else if (ref) {
+        ref.current = node;
+      }
+    },
+    [ref],
+  );
 
   const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>): void => {
     if (disabled) {
@@ -197,6 +217,25 @@ export function VoiceSearchCombobox({
   }, [open]);
 
   useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent): void => {
+      const target = event.target as Node | null;
+      if (target && rootRef.current?.contains(target)) {
+        return;
+      }
+      setOpen(false);
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [open]);
+
+  useEffect(() => {
     if (!onDebouncedSearchChange) {
       return;
     }
@@ -268,16 +307,22 @@ export function VoiceSearchCombobox({
   const iconPrefixStyle = getIconPrefixPaddingStyle(className);
 
   return (
-    <Popover open={open} onOpenChange={setOpen} modal={modal}>
-      <PopoverTrigger asChild>
-        <Button
+    <div ref={rootRef} className="relative w-full">
+        <button
+          {...triggerProps}
+          ref={setTriggerButtonRef}
           type="button"
-          variant="outline"
           role="combobox"
           aria-expanded={open}
+          aria-controls={open ? contentDomId : undefined}
+          onClick={() => {
+            if (!disabled) setOpen((current) => !current);
+          }}
           onKeyDown={handleTriggerKeyDown}
           className={cn(
-            "w-full justify-between px-3 text-left font-normal [&>.truncate]:min-w-0 [&>.truncate]:overflow-hidden",
+            "inline-flex h-9 items-center rounded-md border bg-background shadow-xs transition-all hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+            "w-full justify-between px-3 text-left text-sm font-normal outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+            "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&>.truncate]:min-w-0 [&>.truncate]:overflow-hidden",
             !value && "text-muted-foreground",
             className
           )}
@@ -288,16 +333,15 @@ export function VoiceSearchCombobox({
             {selectedLabel || placeholder || t('common.select')}
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        id={contentDomId}
-        className={cn(
-          "w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-2xl border border-slate-300 bg-white p-0 shadow-[0_1px_0_rgba(15,23,42,0.05),0_16px_32px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/70 dark:border-white/14 dark:bg-[#130822] dark:ring-white/10",
-          popoverContentClassName
-        )}
-        align="start"
-      >
+        </button>
+      {open ? (
+        <div
+          id={contentDomId}
+          className={cn(
+            "absolute left-0 top-full z-50 mt-1 w-full overflow-hidden rounded-2xl border border-slate-300 bg-white p-0 shadow-[0_1px_0_rgba(15,23,42,0.05),0_16px_32px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/70 dark:border-white/14 dark:bg-[#130822] dark:ring-white/10",
+            popoverContentClassName
+          )}
+        >
         <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
           <CommandInput 
             placeholder={searchPlaceholder || t('common.search')} 
@@ -307,14 +351,12 @@ export function VoiceSearchCombobox({
           >
              {isThresholdMode ? (
                <Tooltip>
-                 <TooltipTrigger asChild>
-                   <button
-                     type="button"
-                     aria-label={minCharsHint}
-                     className="h-8 w-8 mr-1 inline-flex items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
-                   >
-                     <AlertCircle className="h-4 w-4" />
-                   </button>
+                 <TooltipTrigger
+                   type="button"
+                   aria-label={minCharsHint}
+                   className="h-8 w-8 mr-1 inline-flex items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                 >
+                   <AlertCircle className="h-4 w-4" />
                  </TooltipTrigger>
                  <TooltipContent side="top">
                    {minCharsHint}
@@ -378,7 +420,8 @@ export function VoiceSearchCombobox({
             ) : null}
           </CommandList>
         </Command>
-      </PopoverContent>
-    </Popover>
+        </div>
+      ) : null}
+    </div>
   );
-}
+});

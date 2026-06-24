@@ -15,12 +15,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { QuotationLineForm } from './QuotationLineForm';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { DocumentLineFormDialog } from '@/components/shared/DocumentLineFormDialog';
@@ -325,6 +319,7 @@ export function QuotationLineTable({
   const { t } = useTranslation(['quotation', 'common']);
   const { profilMap, demirMap, vidaMap, baskiMap } = useWindoDefinitionOptions();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const actionMenuRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -337,6 +332,7 @@ export function QuotationLineTable({
   const [newLine, setNewLine] = useState<QuotationLineFormState | null>(null);
   const [editLineDialogOpen, setEditLineDialogOpen] = useState(false);
   const [lineToEdit, setLineToEdit] = useState<QuotationLineFormState | null>(null);
+  const [actionMenuOpen, setActionMenuOpen] = useState(false);
   const [quickEdit, setQuickEdit] = useState<{
     lineId: string;
     field: QuotationQuickEditField;
@@ -349,6 +345,25 @@ export function QuotationLineTable({
   const updateMutation = useUpdateQuotationLines(quotationId ?? 0);
   const deleteMutation = useDeleteQuotationLine(quotationId ?? 0);
   const systemDecimalPlaces = useSystemSettingsStore((s) => s.settings.decimalPlaces);
+
+  useEffect(() => {
+    if (!actionMenuOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent): void => {
+      const target = event.target as Node | null;
+      if (target && actionMenuRef.current?.contains(target)) {
+        return;
+      }
+      setActionMenuOpen(false);
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+    };
+  }, [actionMenuOpen]);
   const numberInputStep = useMemo(
     () => getHtmlNumberInputStepForDecimals(systemDecimalPlaces),
     [systemDecimalPlaces]
@@ -951,72 +966,93 @@ export function QuotationLineTable({
                   {t('lines.add')}
                 </Button>
               ) : (
-                <Tooltip delayDuration={250}>
-                  <TooltipTrigger asChild>
-                    <span className="inline-flex cursor-help rounded-md">
-                      <Button
-                        type="button"
-                        onClick={handleAddLine}
-                        disabled
-                        size="sm"
-                        className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:hover:scale-100"
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        {t('lines.add')}
-                      </Button>
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="top"
-                    align="end"
-                    className="max-w-xs border bg-popover px-3 py-2.5 text-left text-popover-foreground shadow-md"
+                <span
+                  className="inline-flex cursor-help rounded-md"
+                  title={[
+                    t('disabledActionHints.addLineTitle', { ns: 'common', section: headerSectionTitle }),
+                    ...addLineDisableHints,
+                  ].join('\n')}
+                >
+                  <Button
+                    type="button"
+                    onClick={handleAddLine}
+                    disabled
+                    size="sm"
+                    className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:hover:scale-100"
                   >
-                    <p className="text-sm font-medium leading-snug">
-                      {t('disabledActionHints.addLineTitle', { ns: 'common', section: headerSectionTitle })}
-                    </p>
-                    <ul className="mt-2 list-disc space-y-1 pl-4 text-xs leading-relaxed text-foreground/95">
-                      {addLineDisableHints.map((hint) => (
-                        <li key={hint}>{hint}</li>
-                      ))}
-                    </ul>
-                  </TooltipContent>
-                </Tooltip>
+                    <Plus className="h-4 w-4 mr-2" />
+                    {t('lines.add')}
+                  </Button>
+                </span>
               ))}
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-10 w-10 p-0 border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 hover:bg-pink-50 dark:hover:bg-white/10 hover:border-pink-500/30">
-                  <Menu size={18} className="text-slate-500 dark:text-slate-400" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64 bg-[#151025] border border-white/10 shadow-2xl shadow-black/50 overflow-visible p-0">
-                <div className="p-2">
-                  <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    {t('common.actions', { ns: 'common' })}
+            <div ref={actionMenuRef} className="relative">
+              <button
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={actionMenuOpen}
+                onClick={() => setActionMenuOpen((current) => !current)}
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 bg-white/50 p-0 text-sm font-medium shadow-xs transition-all hover:border-pink-500/30 hover:bg-pink-50 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+              >
+                <Menu size={18} className="text-slate-500 dark:text-slate-400" />
+              </button>
+              {actionMenuOpen ? (
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full z-50 mt-1 w-64 overflow-visible rounded-md border border-white/10 bg-[#151025] p-0 shadow-2xl shadow-black/50"
+                >
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      {t('common.actions', { ns: 'common' })}
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-white/5 my-1"></div>
+
+                  <div className="p-2">
+                    <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      {t('common.export', { ns: 'common' })}
+                    </div>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setActionMenuOpen(false);
+                        handleExportExcel();
+                      }}
+                      className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left"
+                    >
+                      <FileSpreadsheet size={16} className="text-emerald-500" />
+                      <span>{t('common.exportExcel', { ns: 'common' })}</span>
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setActionMenuOpen(false);
+                        handleExportPDF();
+                      }}
+                      className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left"
+                    >
+                      <FileText size={16} className="text-red-400" />
+                      <span>{t('common.exportPDF', { ns: 'common' })}</span>
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => {
+                        setActionMenuOpen(false);
+                        handleExportPowerPoint();
+                      }}
+                      className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left"
+                    >
+                      <Presentation size={16} className="text-orange-400" />
+                      <span>{t('common.exportPPT', { ns: 'common' })}</span>
+                    </button>
                   </div>
                 </div>
-
-                <div className="h-px bg-white/5 my-1"></div>
-
-                <div className="p-2">
-                  <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                    {t('common.export', { ns: 'common' })}
-                  </div>
-                  <button onClick={handleExportExcel} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                    <FileSpreadsheet size={16} className="text-emerald-500" />
-                    <span>{t('common.exportExcel', { ns: 'common' })}</span>
-                  </button>
-                  <button onClick={handleExportPDF} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                    <FileText size={16} className="text-red-400" />
-                    <span>{t('common.exportPDF', { ns: 'common' })}</span>
-                  </button>
-                  <button onClick={handleExportPowerPoint} className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg text-sm text-gray-200 hover:bg-white/5 transition-colors text-left">
-                    <Presentation size={16} className="text-orange-400" />
-                    <span>{t('common.exportPPT', { ns: 'common' })}</span>
-                  </button>
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
+              ) : null}
+            </div>
           </div>
         </div>
 
