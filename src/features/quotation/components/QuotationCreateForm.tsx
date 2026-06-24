@@ -40,6 +40,7 @@ import { usePrefetchLineImagesForPdf } from '../hooks/usePrefetchLineImagesForPd
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
+import { applyExchangeRateChangeToLines } from '@/features/sales-documents/utils/apply-exchange-rate-to-lines';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import type { QuotationGetDto, QuotationLineGetDto } from '../types/quotation-types';
 import {
@@ -253,6 +254,10 @@ export function QuotationCreateForm(): ReactElement {
   }, [location.state, form]);
 
   const { calculateLineTotals } = useQuotationCalculations();
+
+  const handleApplyExchangeRateChangeToLines = useCallback((oldExchangeRate: number, newExchangeRate: number): void => {
+    setLines((prev) => applyExchangeRateChangeToLines(prev, oldExchangeRate, newExchangeRate));
+  }, []);
   const { data: erpRates = [] } = useExchangeRate();
 
   const customerCode = useMemo(() => {
@@ -765,6 +770,7 @@ export function QuotationCreateForm(): ReactElement {
                     <QuotationHeaderForm
                       exchangeRates={exchangeRates}
                       onExchangeRatesChange={setExchangeRates}
+                      onApplyExchangeRateChangeToLines={handleApplyExchangeRateChangeToLines}
                       quotationNotes={quotationNotes}
                       onQuotationNotesChange={setQuotationNotes}
                       lines={lines}

@@ -17,6 +17,8 @@ export const useUpdateExchangeRateInDemand = (
       demandApi.updateExchangeRateInDemand(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.demandExchangeRates(demandId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.demand(demandId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.demandLines(demandId) });
       toast.success(t('exchangeRates.updateSuccess'));
     },
     onError: (error: Error) => {

@@ -84,6 +84,7 @@ import {
 interface QuotationHeaderFormProps {
   exchangeRates?: QuotationExchangeRateFormState[];
   onExchangeRatesChange?: (rates: QuotationExchangeRateFormState[]) => void;
+  onApplyExchangeRateChangeToLines?: (oldExchangeRate: number, newExchangeRate: number) => void;
   quotationNotes?: QuotationNotesDto;
   onQuotationNotesChange?: (notes: QuotationNotesDto) => void;
   onSaveNotes?: (notes: QuotationNotesDto) => Promise<void>;
@@ -102,6 +103,7 @@ interface QuotationHeaderFormProps {
 export function QuotationHeaderForm({
   exchangeRates = [],
   onExchangeRatesChange,
+  onApplyExchangeRateChangeToLines,
   quotationNotes = {},
   onQuotationNotesChange,
   onSaveNotes,
@@ -1111,6 +1113,7 @@ export function QuotationHeaderForm({
           onSave={handleExchangeRatesSave}
           lines={lines}
           currentCurrency={watchedCurrency ? (typeof watchedCurrency === 'string' ? Number(watchedCurrency) : watchedCurrency) : undefined}
+          onApplyRateChangeToLines={onApplyExchangeRateChangeToLines}
           quotationId={quotationId}
           quotationOfferNo={quotationOfferNo}
           readOnly={readOnly}

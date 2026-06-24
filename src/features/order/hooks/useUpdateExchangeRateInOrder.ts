@@ -17,6 +17,8 @@ export const useUpdateExchangeRateInOrder = (
       orderApi.updateExchangeRateInOrder(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.orderExchangeRates(orderId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.order(orderId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.orderLines(orderId) });
       toast.success(t('order.exchangeRates.updateSuccess'));
     },
     onError: (error: Error) => {

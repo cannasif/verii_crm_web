@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +30,7 @@ import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentD
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
+import { applyExchangeRateChangeToLines } from '@/features/sales-documents/utils/apply-exchange-rate-to-lines';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import {
   DOCUMENT_DETAIL_BUTTON_BASE,
@@ -146,6 +147,10 @@ export function DemandCreateForm(): ReactElement {
   }, [watchedOfferDate, form]);
 
   const { calculateLineTotals } = useDemandCalculations();
+
+  const handleApplyExchangeRateChangeToLines = useCallback((oldExchangeRate: number, newExchangeRate: number): void => {
+    setLines((prev) => applyExchangeRateChangeToLines(prev, oldExchangeRate, newExchangeRate));
+  }, []);
   const { data: erpRates = [] } = useExchangeRate();
 
   const customerCode = useMemo(() => {
@@ -417,6 +422,7 @@ export function DemandCreateForm(): ReactElement {
                     <DemandHeaderForm
                       exchangeRates={exchangeRates}
                       onExchangeRatesChange={setExchangeRates}
+                      onApplyExchangeRateChangeToLines={handleApplyExchangeRateChangeToLines}
                       quotationNotes={quotationNotes}
                       onQuotationNotesChange={setQuotationNotes}
                       lines={lines}

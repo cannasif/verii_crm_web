@@ -83,6 +83,7 @@ import {
 interface OrderHeaderFormProps {
   exchangeRates?: OrderExchangeRateFormState[];
   onExchangeRatesChange?: (rates: OrderExchangeRateFormState[]) => void;
+  onApplyExchangeRateChangeToLines?: (oldExchangeRate: number, newExchangeRate: number) => void;
   quotationNotes?: QuotationNotesDto;
   onQuotationNotesChange?: (notes: QuotationNotesDto) => void;
   onSaveNotes?: (notes: QuotationNotesDto) => Promise<void>;
@@ -101,6 +102,7 @@ interface OrderHeaderFormProps {
 export function OrderHeaderForm({
   exchangeRates = [],
   onExchangeRatesChange,
+  onApplyExchangeRateChangeToLines,
   quotationNotes = {},
   onQuotationNotesChange,
   onSaveNotes,
@@ -1086,6 +1088,7 @@ export function OrderHeaderForm({
           onSave={handleExchangeRatesSave}
           lines={lines}
           currentCurrency={watchedCurrency ? (typeof watchedCurrency === 'string' ? Number(watchedCurrency) : watchedCurrency) : undefined}
+          onApplyRateChangeToLines={onApplyExchangeRateChangeToLines}
           orderId={orderId}
           orderOfferNo={orderOfferNo}
           readOnly={readOnly}

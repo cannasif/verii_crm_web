@@ -39,7 +39,8 @@ interface ExchangeRateDialogProps {
   exchangeRates: DemandExchangeRateFormState[];
   onSave: (rates: DemandExchangeRateFormState[]) => void;
   lines?: Array<{ productCode?: string | null; productName?: string | null }>;
-  currentCurrency?: number;
+  currentCurrency?: string | number | null;
+  onApplyRateChangeToLines?: (oldExchangeRate: number, newExchangeRate: number) => void;
   demandId?: number | null;
   demandOfferNo?: string | null;
   readOnly?: boolean;
@@ -59,6 +60,8 @@ export function ExchangeRateDialog({
   onOpenChange,
   exchangeRates,
   onSave,
+  currentCurrency,
+  onApplyRateChangeToLines,
   demandId,
   demandOfferNo,
   readOnly = false,
@@ -73,6 +76,33 @@ export function ExchangeRateDialog({
   const hydratedForOpenRef = useRef(false);
   const isUpdateMode = demandId != null && demandId > 0;
   const isSaving = isUpdateMode && updateMutation.isPending;
+
+  const findRateForCurrency = useCallback(
+    (rates: DemandExchangeRateFormState[]): DemandExchangeRateFormState | undefined => {
+      if (currentCurrency === null || currentCurrency === undefined || currentCurrency === '') return undefined;
+      const currency = String(currentCurrency);
+      const numericCurrency = Number(currency);
+      return rates.find((rate) => {
+        if (rate.currency === currency) return true;
+        return !Number.isNaN(numericCurrency) && rate.dovizTipi === numericCurrency;
+      });
+    },
+    [currentCurrency]
+  );
+
+  const applyCreateModeLineRepricing = useCallback(
+    (ratesToUse: DemandExchangeRateFormState[]): void => {
+      if (isUpdateMode || !onApplyRateChangeToLines) return;
+      const previousRate = findRateForCurrency(exchangeRates);
+      const nextRate = findRateForCurrency(ratesToUse);
+      const previousValue = Number(previousRate?.exchangeRate ?? 0);
+      const nextValue = Number(nextRate?.exchangeRate ?? 0);
+      if (previousValue > 0 && nextValue > 0 && previousValue !== nextValue) {
+        onApplyRateChangeToLines(previousValue, nextValue);
+      }
+    },
+    [exchangeRates, findRateForCurrency, isUpdateMode, onApplyRateChangeToLines]
+  );
 
   useEffect(() => {
     if (!open) {
@@ -167,6 +197,7 @@ export function ExchangeRateDialog({
       }
       return;
     }
+    applyCreateModeLineRepricing(ratesToUse);
     onSave(ratesToUse);
     onOpenChange(false);
   };

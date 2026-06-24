@@ -17,6 +17,8 @@ export const useUpdateExchangeRateInQuotation = (
       quotationApi.updateExchangeRateInQuotation(dtos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.quotationExchangeRates(quotationId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.quotation(quotationId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.quotationLines(quotationId) });
       toast.success(t('exchangeRates.updateSuccess'));
     },
     onError: (error: Error) => {

@@ -83,6 +83,7 @@ import {
 interface DemandHeaderFormProps {
   exchangeRates?: DemandExchangeRateFormState[];
   onExchangeRatesChange?: (rates: DemandExchangeRateFormState[]) => void;
+  onApplyExchangeRateChangeToLines?: (oldExchangeRate: number, newExchangeRate: number) => void;
   quotationNotes?: QuotationNotesDto;
   onQuotationNotesChange?: (notes: QuotationNotesDto) => void;
   onSaveNotes?: (notes: QuotationNotesDto) => Promise<void>;
@@ -101,6 +102,7 @@ interface DemandHeaderFormProps {
 export function DemandHeaderForm({
   exchangeRates = [],
   onExchangeRatesChange,
+  onApplyExchangeRateChangeToLines,
   quotationNotes = {},
   onQuotationNotesChange,
   onSaveNotes,
@@ -1100,6 +1102,7 @@ export function DemandHeaderForm({
           onSave={handleExchangeRatesSave}
           lines={lines}
           currentCurrency={watchedCurrency ? (typeof watchedCurrency === 'string' ? Number(watchedCurrency) : watchedCurrency) : undefined}
+          onApplyRateChangeToLines={onApplyExchangeRateChangeToLines}
           demandId={demandId}
           demandOfferNo={demandOfferNo}
           readOnly={readOnly}
