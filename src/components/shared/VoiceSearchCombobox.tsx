@@ -80,7 +80,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
   const [pinnedSelection, setPinnedSelection] = useState<{ value: string; label: string } | null>(
     null
   );
-  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number; width: number } | null>(
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number; width: number; openUpward: boolean } | null>(
     null
   );
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -128,17 +128,30 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
       }
 
       const rect = trigger.getBoundingClientRect();
+      const viewportH = window.innerHeight;
+      const dropdownH = DROPDOWN_MAX_HEIGHT_PX + 56;
+      const spaceBelow = viewportH - rect.bottom - 8;
+      const spaceAbove = rect.top - 8;
+
+      const openUpward = spaceBelow < dropdownH && spaceAbove > spaceBelow;
+
+      const top = openUpward
+        ? rect.top - dropdownH - 4
+        : rect.bottom + 4;
+
       const next = {
-        top: rect.bottom + 4,
+        top: Math.max(8, top),
         left: Math.max(8, Math.min(rect.left, window.innerWidth - rect.width - 8)),
         width: rect.width,
+        openUpward,
       };
 
       setDropdownPosition((previous) =>
         previous &&
-        previous.top === next.top &&
-        previous.left === next.left &&
-        previous.width === next.width
+          previous.top === next.top &&
+          previous.left === next.left &&
+          previous.width === next.width &&
+          previous.openUpward === next.openUpward
           ? previous
           : next
       );
@@ -179,7 +192,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
         recognition.interimResults = false;
-        
+
         const langMap: Record<string, string> = {
           'tr': 'tr-TR',
           'en': 'en-US',
@@ -218,7 +231,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
   const handleVoiceSearch = (e: React.MouseEvent): void => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!recognitionRef.current) {
       toast.error(t('common.voiceSearchNotSupported'));
       return;
@@ -348,32 +361,32 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
 
   return (
     <div ref={rootRef} className="relative w-full">
-        <button
-          {...triggerProps}
-          ref={triggerButtonRef}
-          type="button"
-          role="combobox"
-          aria-expanded={open}
-          aria-controls={open ? contentDomId : undefined}
-          onClick={() => {
-            if (!disabled) setOpen((current) => !current);
-          }}
-          onKeyDown={handleTriggerKeyDown}
-          className={cn(
-            "inline-flex h-9 items-center rounded-md border bg-background shadow-xs transition-all hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
-            "w-full justify-between px-3 text-left text-sm font-normal outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-            "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&>.truncate]:min-w-0 [&>.truncate]:overflow-hidden",
-            !value && "text-muted-foreground",
-            className
-          )}
-          style={iconPrefixStyle}
-          disabled={disabled}
-        >
-          <span className="truncate flex-1 min-w-0 text-left">
-            {selectedLabel || placeholder || t('common.select')}
-          </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </button>
+      <button
+        {...triggerProps}
+        ref={triggerButtonRef}
+        type="button"
+        role="combobox"
+        aria-expanded={open}
+        aria-controls={open ? contentDomId : undefined}
+        onClick={() => {
+          if (!disabled) setOpen((current) => !current);
+        }}
+        onKeyDown={handleTriggerKeyDown}
+        className={cn(
+          "inline-flex h-9 items-center rounded-md border bg-background shadow-xs transition-all hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+          "w-full justify-between px-3 text-left text-sm font-normal outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+          "disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 [&>.truncate]:min-w-0 [&>.truncate]:overflow-hidden",
+          !value && "text-muted-foreground",
+          className
+        )}
+        style={iconPrefixStyle}
+        disabled={disabled}
+      >
+        <span className="truncate flex-1 min-w-0 text-left">
+          {selectedLabel || placeholder || t('common.select')}
+        </span>
+        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      </button>
       {open && dropdownPosition && typeof document !== 'undefined' ? createPortal(
         <div
           ref={contentRef}
@@ -390,89 +403,89 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
             zIndex: 1000,
           }}
         >
-        <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
-          <CommandInput 
-            placeholder={searchPlaceholder || t('common.search')} 
-            value={searchQuery}
-            onValueChange={setSearchQuery}
-            className="border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-transparent"
-          >
-             {isThresholdMode ? (
-               <Tooltip>
-                 <TooltipTrigger
-                   type="button"
-                   aria-label={minCharsHint}
-                   className="h-8 w-8 mr-1 inline-flex items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
-                 >
-                   <AlertCircle className="h-4 w-4" />
-                 </TooltipTrigger>
-                 <TooltipContent side="top">
-                   {minCharsHint}
-                 </TooltipContent>
-               </Tooltip>
-             ) : null}
-             {recognitionRef.current && (
-               <Button
-                 type="button"
-                 variant="ghost"
-                 size="icon"
-                 className={cn(
-                   "h-8 w-8 mr-1 shrink-0 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5",
-                   isListening && "text-pink-500 animate-pulse bg-pink-50 dark:bg-pink-900/20"
-                 )}
-                 onClick={handleVoiceSearch}
-                 title={t('common.voiceSearch')}
-               >
-                 {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-               </Button>
-             )}
-          </CommandInput>
-          <CommandList
-            onScroll={handleListScroll}
-            className="custom-scrollbar space-y-1 p-2"
-            style={{
-              minHeight: listMinHeight,
-              maxHeight: DROPDOWN_MAX_HEIGHT_PX,
-              overflowY: 'auto',
-              overscrollBehavior: 'contain',
-            }}
-          >
-            <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
-              {isThresholdMode ? minCharsHint : t('common.noResults')}
-            </CommandEmpty>
-            {isLoading ? (
-              <div className="flex items-center justify-center py-6 text-sm text-slate-500 dark:text-slate-400">
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('common.loading')}
-              </div>
-            ) : (
-              <CommandGroup>
-                {options.map((option) => (
-                  <CommandItem
-                    key={option.value}
-                    value={option.label}
-                    onSelect={() => handleOptionSelect(option)}
-                    className="cursor-pointer rounded-xl border border-transparent px-3 py-2.5 shadow-sm transition-all hover:border-slate-200 hover:bg-slate-50 data-[selected=true]:border-pink-200 data-[selected=true]:bg-pink-50 data-[selected=true]:text-slate-900 dark:hover:border-white/12 dark:hover:bg-white/8 dark:data-[selected=true]:border-pink-400/35 dark:data-[selected=true]:bg-pink-900/25 dark:data-[selected=true]:text-white"
+          <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
+            <CommandInput
+              placeholder={searchPlaceholder || t('common.search')}
+              value={searchQuery}
+              onValueChange={setSearchQuery}
+              className="border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-transparent"
+            >
+              {isThresholdMode ? (
+                <Tooltip>
+                  <TooltipTrigger
+                    type="button"
+                    aria-label={minCharsHint}
+                    className="h-8 w-8 mr-1 inline-flex items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
                   >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4 text-pink-500",
-                        value === option.value ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {option.label}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
-            {isFetchingNextPage ? (
-              <div className="flex items-center justify-center py-2 text-xs text-slate-500 dark:text-slate-400">
-                <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
-                {t('common.loading')}
-              </div>
-            ) : null}
-          </CommandList>
-        </Command>
+                    <AlertCircle className="h-4 w-4" />
+                  </TooltipTrigger>
+                  <TooltipContent side="top">
+                    {minCharsHint}
+                  </TooltipContent>
+                </Tooltip>
+              ) : null}
+              {recognitionRef.current && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    "h-8 w-8 mr-1 shrink-0 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5",
+                    isListening && "text-pink-500 animate-pulse bg-pink-50 dark:bg-pink-900/20"
+                  )}
+                  onClick={handleVoiceSearch}
+                  title={t('common.voiceSearch')}
+                >
+                  {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                </Button>
+              )}
+            </CommandInput>
+            <CommandList
+              onScroll={handleListScroll}
+              className="custom-scrollbar space-y-1 p-2"
+              style={{
+                minHeight: listMinHeight,
+                maxHeight: DROPDOWN_MAX_HEIGHT_PX,
+                overflowY: 'auto',
+                overscrollBehavior: 'contain',
+              }}
+            >
+              <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                {isThresholdMode ? minCharsHint : t('common.noResults')}
+              </CommandEmpty>
+              {isLoading ? (
+                <div className="flex items-center justify-center py-6 text-sm text-slate-500 dark:text-slate-400">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t('common.loading')}
+                </div>
+              ) : (
+                <CommandGroup>
+                  {options.map((option) => (
+                    <CommandItem
+                      key={option.value}
+                      value={option.label}
+                      onSelect={() => handleOptionSelect(option)}
+                      className="cursor-pointer rounded-xl border border-transparent px-3 py-2.5 shadow-sm transition-all hover:border-slate-200 hover:bg-slate-50 data-[selected=true]:border-pink-200 data-[selected=true]:bg-pink-50 data-[selected=true]:text-slate-900 dark:hover:border-white/12 dark:hover:bg-white/8 dark:data-[selected=true]:border-pink-400/35 dark:data-[selected=true]:bg-pink-900/25 dark:data-[selected=true]:text-white"
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4 text-pink-500",
+                          value === option.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {option.label}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+              {isFetchingNextPage ? (
+                <div className="flex items-center justify-center py-2 text-xs text-slate-500 dark:text-slate-400">
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  {t('common.loading')}
+                </div>
+              ) : null}
+            </CommandList>
+          </Command>
         </div>,
         document.body
       ) : null}
