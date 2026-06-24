@@ -41,6 +41,7 @@
       "needCustomer": "Customer (CRM selection or ERP account code)",
       "needRepresentative": "Sales representative",
       "needCurrency": "Currency",
+      "needExchangeRate": "Exchange rate (from the Exchange Rates panel in the Financials tab)",
       "genericFormInvalid": "The form is not valid yet; check the field messages above.",
       "requiredFields": {
         "customer": "Customer (CRM selection or ERP account code)",

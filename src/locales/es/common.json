@@ -41,6 +41,7 @@
       "needCustomer": "Cliente (Selección de CRM o código de cuenta de ERP)",
       "needRepresentative": "Representante de ventas",
       "needCurrency": "Moneda",
+      "needExchangeRate": "Tipo de cambio (desde el panel de Tipos de cambio en la pestaña Financiera)",
       "genericFormInvalid": "El formulario aún no es válido; compruebe las advertencias anteriores.",
       "requiredFields": {
         "customer": "Selección de cliente (Selección de CRM o código de cuenta de ERP)",

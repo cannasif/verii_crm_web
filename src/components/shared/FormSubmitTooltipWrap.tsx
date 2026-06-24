@@ -4,6 +4,7 @@ import type { z } from 'zod';
 import { documentSaveButtonClassName } from '@/lib/document-save-button';
 import { getZodValidationMessages } from '@/lib/zod-validation-hint';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface FormSubmitTooltipWrapProps {
   schema: z.ZodTypeAny;
@@ -49,29 +50,45 @@ export function FormSubmitTooltipWrap({
     return wrappedChild;
   }
 
-  const disabledHint = isPending
-    ? t('disabledActionHints.savingInProgress')
-    : [
-      t('disabledActionHints.saveTitle'),
-      t('disabledActionHints.saveIssuesIntro'),
-      ...(issueLines.length > 0 ? issueLines : [t('disabledActionHints.genericFormInvalid')]),
-    ].join('\n');
+  const issuesToRender = issueLines.length > 0 ? issueLines : [t('disabledActionHints.genericFormInvalid')];
 
   return (
-    <span
-      className={cn(
-        'inline-flex w-full rounded-md outline-none cursor-not-allowed sm:w-auto',
-        triggerClassName,
-      )}
-      tabIndex={0}
-      title={disabledHint}
-      aria-label={disabledHint}
-      onClick={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-      }}
-    >
-      {wrappedChild}
-    </span>
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span
+            className={cn(
+              'inline-flex w-full rounded-md outline-none cursor-not-allowed sm:w-auto',
+              triggerClassName,
+            )}
+            tabIndex={0}
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+            }}
+          >
+            {wrappedChild}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-80 text-sm font-medium leading-relaxed p-3 z-50">
+          {isPending ? (
+            <div className="font-bold">{t('disabledActionHints.savingInProgress')}</div>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <span className="font-bold">
+                {t('disabledActionHints.saveTitle')}
+                <br />
+                {t('disabledActionHints.saveIssuesIntro')}
+              </span>
+              <ul className="list-disc pl-5 space-y-1">
+                {issuesToRender.map((hint, idx) => (
+                  <li key={idx}>{hint}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

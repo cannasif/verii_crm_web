@@ -41,6 +41,7 @@
       "needCustomer": "Client (Sélection CRM ou code compte ERP)",
       "needRepresentative": "Représentant des ventes",
       "needCurrency": "Devise",
+      "needExchangeRate": "Taux de change (depuis le panneau Taux de change dans l'onglet Finances)",
       "genericFormInvalid": "Le formulaire n'est pas encore valide ; vérifiez les avertissements ci-dessus.",
       "requiredFields": {
         "customer": "Sélection du client (Sélection CRM ou code compte ERP)",

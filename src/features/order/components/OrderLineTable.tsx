@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { OrderLineForm } from './OrderLineForm';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { DocumentLineFormDialog } from '@/components/shared/DocumentLineFormDialog';
@@ -468,10 +469,14 @@ export function OrderLineTable({
   const headerSectionTitle = t('order.sections.header');
   const addLineDisableHints = useMemo(() => {
     if (canAddLine || !linesEditable) return [];
-    return buildDocumentLinePrerequisiteHintLines(linePrerequisitesInput, (key) =>
+    const hints = buildDocumentLinePrerequisiteHintLines(linePrerequisitesInput, (key) =>
       t(key, { ns: 'common' }),
     );
-  }, [canAddLine, linesEditable, linePrerequisitesInput, t]);
+    if (!documentExchangeRateMet) {
+      hints.push(t('disabledActionHints.needExchangeRate', { ns: 'common', defaultValue: 'Kur değeri' }));
+    }
+    return hints;
+  }, [canAddLine, linesEditable, linePrerequisitesInput, documentExchangeRateMet, t]);
 
   const quickPatchDeps = useMemo(
     () => ({
@@ -934,27 +939,41 @@ export function OrderLineTable({
                   {t('order.lines.add')}
                 </Button>
               ) : (
-                <span
-                  className="inline-flex cursor-help rounded-md"
-                  title={[
-                    t('disabledActionHints.addLineTitle', { ns: 'common', section: headerSectionTitle }),
-                    ...addLineDisableHints,
-                  ].join('\n')}
-                >
-                  <Button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    disabled
-                    size="sm"
-                    className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:hover:scale-100"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {t('order.lines.add')}
-                  </Button>
-                </span>
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="inline-flex cursor-help rounded-md">
+                        <Button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                          disabled
+                          size="sm"
+                          className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:hover:scale-100"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          {t('order.lines.add')}
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-80 text-sm font-medium leading-relaxed p-3">
+                      <div className="flex flex-col gap-2">
+                        <span className="font-bold">
+                          {t('disabledActionHints.addLineTitle', { ns: 'common', section: headerSectionTitle })}
+                        </span>
+                        {addLineDisableHints.length > 0 && (
+                          <ul className="list-disc pl-5 space-y-1">
+                            {addLineDisableHints.map((hint, idx) => (
+                              <li key={idx}>{hint}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ))}
 
             <div ref={actionMenuRef} className="relative">

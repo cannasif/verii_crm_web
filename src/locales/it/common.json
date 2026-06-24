@@ -41,6 +41,7 @@
       "needCustomer": "Cliente (Selezione CRM o codice conto ERP)",
       "needRepresentative": "Rappresentante di vendita",
       "needCurrency": "Valuta",
+      "needExchangeRate": "Tasso di cambio (dal pannello Tassi di cambio nella scheda Finanziaria)",
       "genericFormInvalid": "Il modulo non è ancora valido; controlla gli avvisi sopra.",
       "requiredFields": {
         "customer": "Selezione cliente (Selezione CRM o codice conto ERP)",

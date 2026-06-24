@@ -41,6 +41,7 @@
       "needCustomer": "Kunde (CRM-Auswahl oder ERP-Konto)",
       "needRepresentative": "Vertriebsmitarbeiter",
       "needCurrency": "Währung",
+      "needExchangeRate": "Wechselkurs (über das Panel Wechselkurse im Reiter Finanzen)",
       "genericFormInvalid": "Das Formular ist noch nicht gültig; überprüfen Sie die Warnungen oben.",
       "requiredFields": {
         "customer": "Kundenauswahl (CRM-Auswahl oder ERP-Konto)",

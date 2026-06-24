@@ -24,7 +24,7 @@ export function ErpFieldHint({ label, className }: ErpFieldHintProps) {
       </TooltipTrigger>
       <TooltipContent
         side="top"
-        className="max-w-72 text-xs font-medium leading-relaxed"
+        className="max-w-80 text-sm font-medium leading-relaxed p-3"
       >
         {label}
       </TooltipContent>

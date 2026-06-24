@@ -41,6 +41,7 @@
       "needCustomer": "Müşteri (CRM müşterisi veya ERP cari kodu)",
       "needRepresentative": "Satış temsilcisi",
       "needCurrency": "Para birimi",
+      "needExchangeRate": "Kur değeri (Finansal sekmesindeki Kurlar panelinden)",
       "genericFormInvalid": "Form henüz geçerli değil; üstteki uyarıları kontrol edin.",
       "requiredFields": {
         "customer": "Müşteri seçimi (CRM müşterisi veya ERP cari kodu)",
