@@ -8,6 +8,7 @@ const OPTIONAL_STRING_FIELDS: ReadonlyArray<keyof CreateCustomerDto> = [
   'taxOffice',
   'tcknNumber',
   'address',
+  'postalCode',
   'phone',
   'phone2',
   'email',
@@ -15,6 +16,7 @@ const OPTIONAL_STRING_FIELDS: ReadonlyArray<keyof CreateCustomerDto> = [
   'notes',
   'salesRepCode',
   'groupCode',
+  'accountingCode',
 ];
 
 const sanitizeCustomerPayload = <T extends CreateCustomerDto | UpdateCustomerDto>(payload: T): T => {

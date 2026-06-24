@@ -609,6 +609,14 @@ export function CustomerForm({
                   </FormItem>
                 )} />
 
+                <FormField control={form.control} name="postalCode" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('postalCode')}</FormLabel>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={tf('postalCodePlaceholder')} /></FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )} />
+
                 <FormField control={form.control} name="creditLimit" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><CreditCard size={16} className="text-pink-500" />{tf('creditLimit')}</FormLabel>
@@ -621,6 +629,14 @@ export function CustomerForm({
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{tf('groupCode')}</FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={tf('groupCodePlaceholder')} /></FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="accountingCode" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{tf('accountingCode')}</FormLabel>
+                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={tf('accountingCodePlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />

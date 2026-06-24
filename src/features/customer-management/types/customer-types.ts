@@ -57,6 +57,7 @@ export interface CustomerDto {
   taxOffice?: string;
   tcknNumber?: string;
   address?: string;
+  postalCode?: string;
   phone?: string;
   phone2?: string;
   email?: string;
@@ -72,6 +73,7 @@ export interface CustomerDto {
   customerTypeName?: string;
   salesRepCode?: string;
   groupCode?: string;
+  accountingCode?: string;
   creditLimit?: number | null;
   defaultShippingAddressId?: number | null;
   branchCode: number;
@@ -91,6 +93,7 @@ export interface CreateCustomerDto {
   taxOffice?: string;
   tcknNumber?: string;
   address?: string;
+  postalCode?: string;
   phone?: string;
   phone2?: string;
   email?: string;
@@ -102,6 +105,7 @@ export interface CreateCustomerDto {
   customerTypeId?: number;
   salesRepCode?: string;
   groupCode?: string;
+  accountingCode?: string;
   creditLimit?: number | null;
   defaultShippingAddressId?: number | null;
   branchCode: number;
@@ -116,6 +120,7 @@ export interface UpdateCustomerDto {
   taxOffice?: string;
   tcknNumber?: string;
   address?: string;
+  postalCode?: string;
   phone?: string;
   phone2?: string;
   email?: string;
@@ -127,6 +132,7 @@ export interface UpdateCustomerDto {
   customerTypeId?: number;
   salesRepCode?: string;
   groupCode?: string;
+  accountingCode?: string;
   creditLimit?: number | null;
   defaultShippingAddressId?: number | null;
   branchCode: number;
@@ -152,6 +158,7 @@ export interface CustomerFormData {
   taxOffice?: string;
   tcknNumber?: string;
   address?: string;
+  postalCode?: string;
   phone?: string;
   phone2?: string;
   email?: string;
@@ -163,6 +170,7 @@ export interface CustomerFormData {
   customerTypeId?: number;
   salesRepCode?: string;
   groupCode?: string;
+  accountingCode?: string;
   creditLimit?: number | null;
   defaultShippingAddressId?: number | null;
   branchCode: number;
@@ -202,6 +210,11 @@ export const customerFormSchema = z.object({
   address: z
     .string()
     .max(500, 'form.addressMaxLength')
+    .optional()
+    .or(z.literal('')),
+  postalCode: z
+    .string()
+    .max(20, 'form.postalCodeMaxLength')
     .optional()
     .or(z.literal('')),
   phone: z.preprocess(
@@ -261,6 +274,11 @@ export const customerFormSchema = z.object({
   groupCode: z
     .string()
     .max(50, 'form.groupCodeMaxLength')
+    .optional()
+    .or(z.literal('')),
+  accountingCode: z
+    .string()
+    .max(50, 'form.accountingCodeMaxLength')
     .optional()
     .or(z.literal('')),
   creditLimit: z
