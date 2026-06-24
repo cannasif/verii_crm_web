@@ -49,7 +49,7 @@ import {
   type CustomerComboboxOption,
 } from '@/features/customer-management/utils/customer-integration';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
-import { useSpecialCodesInfinite } from '@/services/hooks/useSpecialCodesInfinite';
+import { useSpecialCodeExists, useSpecialCodesInfinite } from '@/services/hooks/useSpecialCodesInfinite';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
 import { useDocumentSerialAutoFill } from '@/features/document-serial-type-management/hooks/useDocumentSerialAutoFill';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
@@ -144,6 +144,7 @@ export function OrderHeaderForm({
   const watchedDocumentSerialTypeId = form.watch('order.documentSerialTypeId');
   const prevRepresentativeIdRef = useRef<number | null | undefined>(watchedRepresentativeId);
   const watchedOfferType = form.watch('order.offerType');
+  const defaultSpecialCode = getDefaultSpecialCodeForOfferType(watchedOfferType);
   const specialCodeManualChangeRef = useRef({ ozelKod1: false, ozelKod2: false });
 
   const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, true);
@@ -153,6 +154,10 @@ export function OrderHeaderForm({
     !!watchedOfferType,
     watchedOfferType ?? null
   );
+  const specialCode1Dropdown = useSpecialCodesInfinite(1, ozelKod1SearchTerm);
+  const specialCode2Dropdown = useSpecialCodesInfinite(2, ozelKod2SearchTerm);
+  const specialCode1DefaultExists = useSpecialCodeExists(1, defaultSpecialCode, !readOnly && !orderId);
+  const specialCode2DefaultExists = useSpecialCodeExists(2, defaultSpecialCode, !readOnly && !orderId);
 
   const prevOfferTypeRef = useRef(watchedOfferType);
   useEffect(() => {
@@ -165,20 +170,34 @@ export function OrderHeaderForm({
   useEffect(() => {
     if (readOnly || orderId) return;
 
-    const nextSpecialCode = getDefaultSpecialCodeForOfferType(watchedOfferType);
-    if (!nextSpecialCode) return;
+    if (!defaultSpecialCode) return;
 
     const currentOzelKod1 = form.getValues('order.ozelKod1');
     const currentOzelKod2 = form.getValues('order.ozelKod2');
 
-    if (!specialCodeManualChangeRef.current.ozelKod1 && canApplySpecialCodeDefault(currentOzelKod1)) {
-      form.setValue('order.ozelKod1', nextSpecialCode, { shouldDirty: false, shouldValidate: true });
+    if (
+      !specialCodeManualChangeRef.current.ozelKod1 &&
+      canApplySpecialCodeDefault(currentOzelKod1) &&
+      specialCode1DefaultExists.data === true
+    ) {
+      form.setValue('order.ozelKod1', defaultSpecialCode, { shouldDirty: false, shouldValidate: true });
     }
 
-    if (!specialCodeManualChangeRef.current.ozelKod2 && canApplySpecialCodeDefault(currentOzelKod2)) {
-      form.setValue('order.ozelKod2', nextSpecialCode, { shouldDirty: false, shouldValidate: true });
+    if (
+      !specialCodeManualChangeRef.current.ozelKod2 &&
+      canApplySpecialCodeDefault(currentOzelKod2) &&
+      specialCode2DefaultExists.data === true
+    ) {
+      form.setValue('order.ozelKod2', defaultSpecialCode, { shouldDirty: false, shouldValidate: true });
     }
-  }, [watchedOfferType, orderId, readOnly, form]);
+  }, [
+    defaultSpecialCode,
+    orderId,
+    readOnly,
+    form,
+    specialCode1DefaultExists.data,
+    specialCode2DefaultExists.data,
+  ]);
 
   const { data: shippingAddresses = [] } = useShippingAddresses(watchedCustomerId || undefined);
   const { data: relatedUsers = [] } = useOrderRelatedUsers(user?.id);
@@ -189,8 +208,6 @@ export function OrderHeaderForm({
   const shouldFetchCustomer = Boolean(watchedCustomerId && watchedCustomerId > 0);
   const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
   const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
-  const specialCode1Dropdown = useSpecialCodesInfinite(1, ozelKod1SearchTerm);
-  const specialCode2Dropdown = useSpecialCodesInfinite(2, ozelKod2SearchTerm);
   
   const customerTypeId = useMemo(() => {
     if (watchedErpCustomerCode) return 0;
