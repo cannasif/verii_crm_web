@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye, Loader2, RefreshCw } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import { arraysEqual } from '@/lib/utils';
 import {
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
@@ -95,8 +96,8 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
-    setColumnOrder(prefs.order);
-    setVisibleColumns(prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
   }, [defaultColumnKeys, user?.id]);
 
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);

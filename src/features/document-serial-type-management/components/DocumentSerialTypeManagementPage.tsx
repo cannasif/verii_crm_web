@@ -21,6 +21,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import { arraysEqual } from '@/lib/utils';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -147,8 +148,8 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
-    setVisibleColumns(prefs.visibleKeys);
-    setColumnOrder(prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
   }, [user?.id, defaultColumnKeys]);
 
   const filtersParam = useMemo(

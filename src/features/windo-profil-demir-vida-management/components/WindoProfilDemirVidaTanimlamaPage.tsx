@@ -21,6 +21,7 @@ import {
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import { arraysEqual } from '@/lib/utils';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
@@ -112,8 +113,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   useEffect(() => {
     const defaults = defaultColumns;
     const prefs = loadColumnPreferences(`${PAGE_KEY}-${config.kind}`, user?.id, defaults);
-    setVisibleColumns(prefs.visibleKeys);
-    setColumnOrder(prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
   }, [config.kind, defaultColumns, user?.id]);
 
   const serverSearchTerm = useMemo(() => {

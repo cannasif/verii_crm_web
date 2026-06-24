@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
+import { arraysEqual } from '@/lib/utils';
 import { PAYMENT_TYPE_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { PaymentTypeTable, getColumnsConfig } from './PaymentTypeTable';
 import { PaymentTypeForm } from './PaymentTypeForm';
@@ -75,8 +76,8 @@ export function PaymentTypeManagementPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
-    setVisibleColumns(prefs.visibleKeys);
-    setColumnOrder(prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = usePaymentTypeList({

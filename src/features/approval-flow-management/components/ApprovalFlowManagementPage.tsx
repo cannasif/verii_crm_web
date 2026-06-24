@@ -9,6 +9,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, ManagementListPageHeader, type DataTableGridColumn, DescriptionCell } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import { arraysEqual } from '@/lib/utils';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -90,8 +91,8 @@ export function ApprovalFlowManagementPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
-    setVisibleColumns(prefs.visibleKeys);
-    setColumnOrder(prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
   }, [user?.id, defaultColumnKeys]);
 
   const { data: apiResponse, isLoading } = useApprovalFlowList({

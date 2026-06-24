@@ -30,7 +30,7 @@ import {
   ACCESS_CONTROL_HEADER_CARD_CLASSNAME,
   ACCESS_CONTROL_STAT_CARD_CLASSNAME,
 } from '../utils/access-control-layout';
-import { cn } from '@/lib/utils';
+import { arraysEqual, cn } from '@/lib/utils';
 import { useCrudPermissions } from '../hooks/useCrudPermissions';
 
 const PAGE_KEY = 'visibility-policies';
@@ -56,8 +56,8 @@ export function VisibilityPoliciesPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, ['code', 'name', 'entityLabel', 'scopeLabel', 'isActive']);
-    setVisibleColumns(prefs.visibleKeys);
-    setColumnOrder(prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
   }, [user?.id]);
 
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);

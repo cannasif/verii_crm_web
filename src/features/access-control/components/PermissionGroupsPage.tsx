@@ -48,7 +48,7 @@ import {
   ACCESS_CONTROL_HEADER_CARD_CLASSNAME,
   ACCESS_CONTROL_STAT_CARD_CLASSNAME,
 } from '../utils/access-control-layout';
-import { cn } from '@/lib/utils';
+import { arraysEqual, cn } from '@/lib/utils';
 
 const EMPTY_ITEMS: PermissionGroupDto[] = [];
 const PAGE_KEY = 'permission-groups';
@@ -87,8 +87,8 @@ export function PermissionGroupsPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, ['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
-    setVisibleColumns(prefs.visibleKeys);
-    setColumnOrder(prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
   }, [user?.id]);
 
   const backendFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);

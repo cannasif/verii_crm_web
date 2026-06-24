@@ -43,7 +43,7 @@ import {
   MANAGEMENT_LIST_ID_COLUMN_DEF,
 } from '@/lib/management-list-layout';
 
-import { cn } from '@/lib/utils';
+import { arraysEqual, cn } from '@/lib/utils';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { hasPermission } from '@/features/access-control/utils/hasPermission';
 
@@ -181,8 +181,8 @@ export function StockListPage(): ReactElement {
       ...prefs.visibleKeys,
       ...defaultColumnKeys.filter((key) => !prefs.visibleKeys.includes(key)),
     ];
-    setColumnOrder(prefs.order);
-    setVisibleColumns(mergedVisibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, mergedVisibleKeys) ? current : mergedVisibleKeys);
   }, [defaultColumnKeys, user?.id]);
 
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);

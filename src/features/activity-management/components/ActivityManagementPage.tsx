@@ -38,6 +38,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableGrid, DataTableActionBar, type DataTableGridColumn, DescriptionCell } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import { arraysEqual } from '@/lib/utils';
 import {
   MANAGEMENT_DATA_GRID_CLASSNAME,
   MANAGEMENT_LIST_CARD_CLASSNAME,
@@ -218,8 +219,8 @@ export function ActivityManagementPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'id');
-    setVisibleColumns(prefs.visibleKeys);
-    setColumnOrder(prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
   }, [user?.id, defaultColumnKeys]);
 
   const { data: activitiesResponse, isLoading: activitiesLoading, isFetching: activitiesFetching } = useActivities({

@@ -22,6 +22,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { auditLogApi } from '../api/auditLogApi';
 import type { AuditLogDto, PagedRequest } from '../types/access-control.types';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import { arraysEqual } from '@/lib/utils';
 
 const PAGE_KEY = 'audit-logs';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -106,8 +107,8 @@ export function AuditLogsPage(): ReactElement {
       'branchCode',
       'requestPath',
     ]);
-    setVisibleColumns(prefs.visibleKeys);
-    setColumnOrder(prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
   }, [user?.id]);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
