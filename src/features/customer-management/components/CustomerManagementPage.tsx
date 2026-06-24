@@ -10,7 +10,7 @@ import { DataTableActionBar, type DataTableGridColumn } from '@/components/share
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import { loadTableSortPreference, saveTableSortPreference } from '@/lib/table-sort-preferences';
-import { cn } from '@/lib/utils';
+import { arraysEqual, cn } from '@/lib/utils';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -171,8 +171,8 @@ export function CustomerManagementPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
-    setVisibleColumns(prefs.visibleKeys);
-    setColumnOrder(prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
   }, [user?.id, defaultColumnKeys]);
 
   useEffect(() => {
@@ -317,7 +317,7 @@ export function CustomerManagementPage(): ReactElement {
       JSON.stringify(prevParamsRef.current.appliedFilterRows) !== JSON.stringify(appliedFilterRows);
 
     if (paramsChanged) {
-      setPageNumber(1);
+      setPageNumber((current) => current === 1 ? current : 1);
       prevParamsRef.current = { pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection };
     }
   }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);

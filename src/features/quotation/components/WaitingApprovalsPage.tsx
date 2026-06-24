@@ -13,7 +13,7 @@ import {
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
-import { cn } from '@/lib/utils';
+import { arraysEqual, cn } from '@/lib/utils';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import {
@@ -167,8 +167,8 @@ export function WaitingApprovalsPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'QuotationOfferNo', false);
-    setColumnOrder(prefs.order);
-    setVisibleColumns(prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
   }, [defaultColumnKeys, user?.id]);
 
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
@@ -294,7 +294,7 @@ export function WaitingApprovalsPage(): ReactElement {
   }, [appliedFilters, exportColumns, formatDate, searchTerm, sortBy, sortDirection, t]);
 
   useEffect(() => {
-    setPageNumber(1);
+    setPageNumber((current) => current === 1 ? current : 1);
   }, [pageSize, sortBy, sortDirection, appliedFilters, searchTerm]);
 
   const onSort = (column: WaitingApprovalColumnKey): void => {

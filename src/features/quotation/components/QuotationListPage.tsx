@@ -16,6 +16,7 @@ import {
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
+import { arraysEqual } from '@/lib/utils';
 import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
 import {
   DataTableGrid,
@@ -219,8 +220,8 @@ export function QuotationListPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'Id');
-    setColumnOrder(prefs.order);
-    setVisibleColumns(prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
   }, [defaultColumnKeys, user?.id]);
 
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
@@ -386,7 +387,7 @@ export function QuotationListPage(): ReactElement {
   }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, approvalStatusFilter, i18n.language, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationExportLabel, getErpDocumentNumber, getApprovalStatusLabel]);
 
   useEffect(() => {
-    setPageNumber(1);
+    setPageNumber((current) => current === 1 ? current : 1);
   }, [pageSize, sortBy, sortDirection, approvalStatusFilter, appliedFilterRows, searchTerm]);
 
   const onSort = (column: QuotationColumnKey): void => {

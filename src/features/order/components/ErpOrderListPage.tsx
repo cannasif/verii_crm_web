@@ -14,7 +14,7 @@ import {
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
-import { cn } from '@/lib/utils';
+import { arraysEqual, cn } from '@/lib/utils';
 import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -182,8 +182,8 @@ export function ErpOrderListPage(): ReactElement {
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'fatirsNo');
-    setColumnOrder(prefs.order);
-    setVisibleColumns(prefs.visibleKeys);
+    setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
+    setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
   }, [defaultColumnKeys, user?.id]);
 
   const columns = useMemo<DataTableGridColumn<ErpOrderColumnKey>[]>(
@@ -252,7 +252,7 @@ export function ErpOrderListPage(): ReactElement {
   );
 
   useEffect(() => {
-    setPageNumber(1);
+    setPageNumber((current) => current === 1 ? current : 1);
   }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
 
   const exportColumns = useMemo(
