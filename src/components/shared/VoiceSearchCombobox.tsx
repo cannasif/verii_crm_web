@@ -391,6 +391,12 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
         <div
           ref={contentRef}
           id={contentDomId}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            if (e.nativeEvent) {
+              e.nativeEvent.stopImmediatePropagation();
+            }
+          }}
           className={cn(
             "overflow-hidden rounded-2xl border border-slate-300 bg-white p-0 shadow-[0_1px_0_rgba(15,23,42,0.05),0_16px_32px_-18px_rgba(15,23,42,0.45)] ring-1 ring-slate-200/70 dark:border-white/14 dark:bg-[#130822] dark:ring-white/10",
             popoverContentClassName
@@ -401,6 +407,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
             left: dropdownPosition.left,
             width: dropdownPosition.width,
             zIndex: 1000,
+            pointerEvents: 'auto',
           }}
         >
           <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
