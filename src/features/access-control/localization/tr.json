@@ -214,7 +214,8 @@
     "unassigned": "Atama yok",
     "cardDescription": "{{entity}} kayıtları için bu kullanıcıya uygulanacak görünürlük policy'sini seçin.",
     "selectPolicyPlaceholder": "Policy seçin",
-    "noPolicy": "Policy yok"
+    "noPolicy": "Policy yok",
+    "noPolicyCompanyHint": "Policy yok seçildiğinde kullanıcı bu modülde şirket/fabrika genelindeki tüm kayıtları görebilir."
   },
   "visibilitySimulator": {
     "title": "Görünürlük Simülatörü",

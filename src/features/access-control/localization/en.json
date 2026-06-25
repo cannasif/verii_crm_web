@@ -214,7 +214,8 @@
     "unassigned": "Unassigned",
     "cardDescription": "Choose the visibility policy that will be applied to {{entity}} records for this user.",
     "selectPolicyPlaceholder": "Select policy",
-    "noPolicy": "No policy"
+    "noPolicy": "No policy",
+    "noPolicyCompanyHint": "When No policy is selected, the user can see all company/factory records in this module."
   },
   "visibilitySimulator": {
     "title": "Visibility simulator",

@@ -14,6 +14,7 @@ import {
   ClipboardList,
   Eye,
   FileText,
+  Info,
   Loader2,
   Package,
   ShieldCheck,
@@ -639,6 +640,15 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
                           ))}
                         </SelectContent>
                       </Select>
+                      <p className="mt-2 flex items-start gap-1.5 rounded-lg border border-sky-200/70 bg-sky-50/80 px-2.5 py-2 text-[11px] font-semibold leading-4 text-sky-800 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-200">
+                        <Info className="mt-0.5 size-3.5 shrink-0" />
+                        <span>
+                          {t('userVisibilityAssignments.noPolicyCompanyHint', {
+                            defaultValue:
+                              'Policy yok seçildiğinde kullanıcı bu modülde şirket/fabrika genelindeki tüm kayıtları görebilir.',
+                          })}
+                        </span>
+                      </p>
                     </div>
 
                     {isEntityDirty && (
