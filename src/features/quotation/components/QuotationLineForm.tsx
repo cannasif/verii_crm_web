@@ -121,6 +121,7 @@ interface QuotationLineFormProps {
   imageUploadScope?: 'quotation-line';
   imageUploadExtras?: Omit<UploadPdfAssetOptions, 'assetScope'>;
   offerType?: string | null;
+  deliveryMethodName?: string | null;
 }
 
 export function QuotationLineForm({
@@ -138,6 +139,7 @@ export function QuotationLineForm({
   imageUploadScope = 'quotation-line',
   imageUploadExtras,
   offerType,
+  deliveryMethodName,
 }: QuotationLineFormProps): ReactElement {
   const { t } = useTranslation(['quotation', 'common']);
   const queryClient = useQueryClient();
@@ -165,6 +167,7 @@ export function QuotationLineForm({
     exchangeRates,
     pricingRules,
     offerType,
+    deliveryMethodName,
   });
 
   const handleCompanySelect = (result: CustomerSelectionResult) => {
@@ -180,7 +183,7 @@ export function QuotationLineForm({
     return found?.code || 'TRY';
   }, [currency, currencyOptions]);
 
-  const [formData, setFormData] = useState<QuotationLineFormState>(() => calculateLineTotals(applyDocumentVatDefaultOnLine(line, offerType)));
+  const [formData, setFormData] = useState<QuotationLineFormState>(() => calculateLineTotals(applyDocumentVatDefaultOnLine(line, offerType, deliveryMethodName)));
   const { profilOptions, demirOptions, vidaOptions, baskiOptions, allDemirOptions, allVidaOptions, isLoading: isDefinitionOptionsLoading } =
     useWindoDefinitionOptions(formData.profilDefinitionId, {
       demirDefinitionId: formData.demirDefinitionId,
@@ -207,8 +210,9 @@ export function QuotationLineForm({
   const [quantityInputValue, setQuantityInputValue] = useState<string>(() =>
     formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit),
   );
-  const [vatRateInputValue, setVatRateInputValue] = useState<string>(() => String(resolveDocumentVatRate(line.vatRate, offerType)));
+  const [vatRateInputValue, setVatRateInputValue] = useState<string>(() => String(resolveDocumentVatRate(line.vatRate, offerType, deliveryMethodName)));
   const previousOfferTypeRef = useRef(offerType);
+  const previousDeliveryMethodNameRef = useRef(deliveryMethodName);
   const [discountRate1InputValue, setDiscountRate1InputValue] = useState<string>(String(line.discountRate1 || ''));
   const [discountRate2InputValue, setDiscountRate2InputValue] = useState<string>(String(line.discountRate2 || ''));
   const [discountRate3InputValue, setDiscountRate3InputValue] = useState<string>(String(line.discountRate3 || ''));
@@ -371,27 +375,28 @@ export function QuotationLineForm({
       return;
     }
 
-    const nextLine = calculateLineTotals(applyDocumentVatDefaultOnLine(line, offerType));
+    const nextLine = calculateLineTotals(applyDocumentVatDefaultOnLine(line, offerType, deliveryMethodName));
     setFormData(nextLine);
     setQuantityInputValue(formatQuantityInputDraftFromNumber(nextLine.quantity ?? 0, nextLine.unit));
     unitPriceInput.resetInputCurrencyToDocument();
     unitPriceInput.syncUnitPriceFromDocument(nextLine.unitPrice ?? 0);
-    setVatRateInputValue(String(resolveDocumentVatRate(nextLine.vatRate, offerType)));
+    setVatRateInputValue(String(resolveDocumentVatRate(nextLine.vatRate, offerType, deliveryMethodName)));
     setDiscountRate1InputValue(String(nextLine.discountRate1 || ''));
     setDiscountRate2InputValue(String(nextLine.discountRate2 || ''));
     setDiscountRate3InputValue(String(nextLine.discountRate3 || ''));
     const lineRelatedLines = (line as QuotationLineFormState & { relatedLines?: QuotationLineFormState[] }).relatedLines || [];
     if (lineRelatedLines.length > 0) {
-      setRelatedLines(lineRelatedLines.map((relatedLine) => calculateLineTotals(applyDocumentVatDefaultOnLine(relatedLine, offerType))));
+      setRelatedLines(lineRelatedLines.map((relatedLine) => calculateLineTotals(applyDocumentVatDefaultOnLine(relatedLine, offerType, deliveryMethodName))));
     } else {
       setRelatedLines([]);
     }
-  }, [calculateLineTotals, line, offerType]);
+  }, [calculateLineTotals, line, offerType, deliveryMethodName]);
 
   useEffect(() => {
-    if (previousOfferTypeRef.current === offerType) return;
+    if (previousOfferTypeRef.current === offerType && previousDeliveryMethodNameRef.current === deliveryMethodName) return;
     previousOfferTypeRef.current = offerType;
-    const defaultVatRate = getDefaultDocumentVatRate(offerType);
+    previousDeliveryMethodNameRef.current = deliveryMethodName;
+    const defaultVatRate = getDefaultDocumentVatRate(offerType, deliveryMethodName);
     setVatRateInputValue(String(defaultVatRate));
     setFormData((prev) => {
       if ((prev.vatRate ?? null) === defaultVatRate && (prev.vatAmount ?? 0) === 0) return prev;
@@ -399,7 +404,7 @@ export function QuotationLineForm({
     });
     setRelatedLines((prev) => prev.map((relatedLine) => calculateLineTotals({ ...relatedLine, vatRate: defaultVatRate, vatAmount: 0 })));
     setBulkDraftLines((prev) => prev.map((draftLine) => calculateLineTotals({ ...draftLine, vatRate: defaultVatRate, vatAmount: 0 })));
-  }, [calculateLineTotals, offerType]);
+  }, [calculateLineTotals, offerType, deliveryMethodName]);
 
   useEffect(() => {
     unitPriceInput.syncUnitPriceFromDocument(formData.unitPrice ?? 0);

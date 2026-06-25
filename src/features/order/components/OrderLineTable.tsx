@@ -1,4 +1,5 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -21,6 +22,7 @@ import { ProductSelectDialog, type ProductSelectionResult } from '@/components/s
 import { DocumentLineFormDialog } from '@/components/shared/DocumentLineFormDialog';
 import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
+import { useSalesTypeOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { DescriptionCell } from '@/components/shared';
 import { LineTableImageThumbnail } from '@/components/shared/LineTableImageThumbnail';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -253,6 +255,20 @@ export function OrderLineTable({
   offerType,
 }: OrderLineTableProps): ReactElement {
   const queryClient = useQueryClient();
+  const form = useFormContext();
+  const watchedDeliveryMethod = form?.watch ? form.watch('order.deliveryMethod') : null;
+
+  const { options: deliveryMethodOptions } = useSalesTypeOptionsInfinite(
+    '',
+    !!offerType,
+    offerType ?? null
+  );
+
+  const deliveryMethodName = useMemo(() => {
+    if (!watchedDeliveryMethod) return null;
+    return deliveryMethodOptions.find((o) => o.value === String(watchedDeliveryMethod))?.label || null;
+  }, [watchedDeliveryMethod, deliveryMethodOptions]);
+
   const linesEditable = enabled;
   const linesRef = useRef(lines);
   linesRef.current = lines;
@@ -304,8 +320,10 @@ export function OrderLineTable({
     exchangeRates,
     pricingRules,
     offerType,
+    deliveryMethodName,
   });
   const previousOfferTypeRef = useRef(offerType);
+  const previousDeliveryMethodNameRef = useRef(deliveryMethodName);
 
   useEffect(() => {
     if (!actionMenuOpen) {
@@ -327,9 +345,10 @@ export function OrderLineTable({
   }, [actionMenuOpen]);
 
   useEffect(() => {
-    if (previousOfferTypeRef.current === offerType) return;
+    if (previousOfferTypeRef.current === offerType && previousDeliveryMethodNameRef.current === deliveryMethodName) return;
     previousOfferTypeRef.current = offerType;
-    const defaultVatRate = getDefaultDocumentVatRate(offerType);
+    previousDeliveryMethodNameRef.current = deliveryMethodName;
+    const defaultVatRate = getDefaultDocumentVatRate(offerType, deliveryMethodName);
     updateLines((prev) => {
       let changed = false;
       const next = prev.map((line) => {
@@ -339,7 +358,7 @@ export function OrderLineTable({
       });
       return changed ? next : prev;
     });
-  }, [calculateLineTotals, offerType, updateLines]);
+  }, [calculateLineTotals, offerType, deliveryMethodName, updateLines]);
 
   const existingDocumentLineMarkers = useMemo(() => linesToDocumentStockMarkers(lines), [lines]);
   const existingDocumentLineMarkersForEdit = useMemo(
@@ -450,7 +469,7 @@ export function OrderLineTable({
       discountAmount2: 0,
       discountRate3: 0,
       discountAmount3: 0,
-      vatRate: resolveDocumentVatRate(undefined, offerType, 20),
+      vatRate: resolveDocumentVatRate(undefined, offerType, deliveryMethodName, 20),
       vatAmount: 0,
       lineTotal: 0,
       lineGrandTotal: 0,
@@ -544,7 +563,8 @@ export function OrderLineTable({
 
     const patched = enforceExportVatOnLine(
       applyOrderLineQuickFieldPatch(originalLine, quickEdit.field, value, quickPatchDeps),
-      offerType
+      offerType,
+      deliveryMethodName
     );
     const nextLines = mergeLinesAfterMainLineUpdate(
       lines,
@@ -602,11 +622,13 @@ export function OrderLineTable({
     updateMutation,
     updateLines,
     offerType,
+    deliveryMethodName,
   ]);
 
   const handleSaveNewLine = useCallback(
     async (line: OrderLineFormState): Promise<void> => {
-      const lineToAdd = { ...enforceExportVatOnLine(line, offerType), isEditing: false };
+      if (!linesEditable) return;
+      const lineToAdd = { ...enforceExportVatOnLine(line, offerType, deliveryMethodName), isEditing: false };
       if (isExistingOrder && orderId) {
         try {
           const dtos: CreateOrderLineDto[] = [toCreateDto(lineToAdd, orderId)];
@@ -629,13 +651,13 @@ export function OrderLineTable({
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingOrder, orderId, createMutation, updateLines, offerType]
+    [isExistingOrder, orderId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName]
   );
 
   const handleSaveMultipleLines = useCallback(
     async (newLines: OrderLineFormState[]): Promise<void> => {
       if (!linesEditable) return;
-      const linesToAdd = newLines.map((l) => ({ ...enforceExportVatOnLine(l, offerType), isEditing: false }));
+      const linesToAdd = newLines.map((l) => ({ ...enforceExportVatOnLine(l, offerType, deliveryMethodName), isEditing: false }));
       if (isExistingOrder && orderId) {
         try {
           const dtos: CreateOrderLineDto[] = linesToAdd.map((l) => toCreateDto(l, orderId));
@@ -659,7 +681,7 @@ export function OrderLineTable({
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingOrder, orderId, createMutation, updateLines, linesEditable, offerType]
+    [isExistingOrder, orderId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName]
   );
 
   const handleCancelNewLine = (): void => {
@@ -739,8 +761,8 @@ export function OrderLineTable({
       return;
     }
 
-    const normalizedUpdatedLine = enforceExportVatOnLine(updatedLine, offerType);
-    const normalizedRelatedLines = relatedLinesToUpdate?.map((line) => enforceExportVatOnLine(line, offerType));
+    const normalizedUpdatedLine = enforceExportVatOnLine(updatedLine, offerType, deliveryMethodName);
+    const normalizedRelatedLines = relatedLinesToUpdate?.map((line) => enforceExportVatOnLine(line, offerType, deliveryMethodName));
     const allUpdatedLines = [normalizedUpdatedLine, ...(normalizedRelatedLines || [])].map((l) => ({ ...l, isEditing: false }));
     const linesWithBackendId = allUpdatedLines.filter((l) => resolveDocumentLineBackendId(l) != null);
 
@@ -1539,6 +1561,7 @@ export function OrderLineTable({
             isSaving={createMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkers}
             offerType={offerType}
+            deliveryMethodName={deliveryMethodName}
             allowImageUpload
             imageUploadScope="order-line"
             imageUploadExtras={{
@@ -1572,6 +1595,7 @@ export function OrderLineTable({
             pricingRules={pricingRules}
             userDiscountLimits={userDiscountLimits}
             offerType={offerType}
+            deliveryMethodName={deliveryMethodName}
             isSaving={updateMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkersForEdit}
             allowImageUpload={Boolean(resolveDocumentLineBackendId(lineToEdit))}

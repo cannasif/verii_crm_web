@@ -1,4 +1,5 @@
 import { type Dispatch, type ReactElement, type SetStateAction, useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -21,6 +22,7 @@ import { ProductSelectDialog, type ProductSelectionResult } from '@/components/s
 import { DocumentLineFormDialog } from '@/components/shared/DocumentLineFormDialog';
 import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
+import { useSalesTypeOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { DescriptionCell } from '@/components/shared';
 import { LineTableImageThumbnail } from '@/components/shared/LineTableImageThumbnail';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -307,6 +309,20 @@ export function QuotationLineTable({
   offerType,
 }: QuotationLineTableProps): ReactElement {
   const queryClient = useQueryClient();
+  const form = useFormContext();
+  const watchedDeliveryMethod = form?.watch ? form.watch('quotation.deliveryMethod') : null;
+
+  const { options: deliveryMethodOptions } = useSalesTypeOptionsInfinite(
+    '',
+    !!offerType,
+    offerType ?? null
+  );
+
+  const deliveryMethodName = useMemo(() => {
+    if (!watchedDeliveryMethod) return null;
+    return deliveryMethodOptions.find((o) => o.value === String(watchedDeliveryMethod))?.label || null;
+  }, [watchedDeliveryMethod, deliveryMethodOptions]);
+
   const linesEditable = enabled;
   const linesRef = useRef(lines);
   linesRef.current = lines;
@@ -377,13 +393,16 @@ export function QuotationLineTable({
     exchangeRates,
     pricingRules,
     offerType,
+    deliveryMethodName,
   });
   const previousOfferTypeRef = useRef(offerType);
+  const previousDeliveryMethodNameRef = useRef(deliveryMethodName);
 
   useEffect(() => {
-    if (previousOfferTypeRef.current === offerType) return;
+    if (previousOfferTypeRef.current === offerType && previousDeliveryMethodNameRef.current === deliveryMethodName) return;
     previousOfferTypeRef.current = offerType;
-    const defaultVatRate = getDefaultDocumentVatRate(offerType);
+    previousDeliveryMethodNameRef.current = deliveryMethodName;
+    const defaultVatRate = getDefaultDocumentVatRate(offerType, deliveryMethodName);
     updateLines((prev) => {
       let changed = false;
       const next = prev.map((line) => {
@@ -393,7 +412,7 @@ export function QuotationLineTable({
       });
       return changed ? next : prev;
     });
-  }, [calculateLineTotals, offerType, updateLines]);
+  }, [calculateLineTotals, offerType, deliveryMethodName, updateLines]);
 
   const existingDocumentLineMarkers = useMemo(() => linesToDocumentStockMarkers(lines), [lines]);
   const existingDocumentLineMarkersForEdit = useMemo(
@@ -553,7 +572,7 @@ export function QuotationLineTable({
       discountAmount2: 0,
       discountRate3: 0,
       discountAmount3: 0,
-      vatRate: resolveDocumentVatRate(undefined, offerType, 20),
+      vatRate: resolveDocumentVatRate(undefined, offerType, deliveryMethodName, 20),
       vatAmount: 0,
       lineTotal: 0,
       lineGrandTotal: 0,
@@ -647,7 +666,8 @@ export function QuotationLineTable({
 
     const patched = enforceExportVatOnLine(
       applyQuotationLineQuickFieldPatch(originalLine, quickEdit.field, value, quickPatchDeps),
-      offerType
+      offerType,
+      deliveryMethodName
     );
     const nextLines = mergeLinesAfterMainLineUpdate(
       lines,
@@ -704,12 +724,13 @@ export function QuotationLineTable({
     updateMutation,
     updateLines,
     offerType,
+    deliveryMethodName,
   ]);
 
   const handleSaveNewLine = useCallback(
     async (line: QuotationLineFormState): Promise<void> => {
       if (!linesEditable) return;
-      const lineToAdd = { ...enforceExportVatOnLine(line, offerType), isEditing: false };
+      const lineToAdd = { ...enforceExportVatOnLine(line, offerType, deliveryMethodName), isEditing: false };
       if (isExistingQuotation && quotationId) {
         try {
           const dtos: CreateQuotationLineDto[] = [toCreateDto(lineToAdd, quotationId)];
@@ -739,7 +760,7 @@ export function QuotationLineTable({
   const handleSaveMultipleLines = useCallback(
     async (newLines: QuotationLineFormState[]): Promise<void> => {
       if (!linesEditable) return;
-      const linesToAdd = newLines.map((l) => ({ ...enforceExportVatOnLine(l, offerType), isEditing: false }));
+      const linesToAdd = newLines.map((l) => ({ ...enforceExportVatOnLine(l, offerType, deliveryMethodName), isEditing: false }));
       if (isExistingQuotation && quotationId) {
         try {
           const dtos: CreateQuotationLineDto[] = linesToAdd.map((l) => toCreateDto(l, quotationId));
@@ -844,8 +865,8 @@ export function QuotationLineTable({
       return;
     }
 
-    const normalizedUpdatedLine = enforceExportVatOnLine(updatedLine, offerType);
-    const normalizedRelatedLines = relatedLinesToUpdate?.map((line) => enforceExportVatOnLine(line, offerType));
+    const normalizedUpdatedLine = enforceExportVatOnLine(updatedLine, offerType, deliveryMethodName);
+    const normalizedRelatedLines = relatedLinesToUpdate?.map((line) => enforceExportVatOnLine(line, offerType, deliveryMethodName));
     const allUpdatedLines = [normalizedUpdatedLine, ...(normalizedRelatedLines || [])].map((l) => ({ ...l, isEditing: false }));
     const linesWithBackendId = allUpdatedLines.filter((l) => resolveDocumentLineBackendId(l) != null);
 
@@ -1586,6 +1607,7 @@ export function QuotationLineTable({
             isSaving={createMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkers}
             offerType={offerType}
+            deliveryMethodName={deliveryMethodName}
             allowImageUpload
             imageUploadScope="quotation-line"
                 imageUploadExtras={{
@@ -1627,6 +1649,7 @@ export function QuotationLineTable({
             pricingRules={pricingRules}
             userDiscountLimits={userDiscountLimits}
             offerType={offerType}
+            deliveryMethodName={deliveryMethodName}
             isSaving={updateMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkersForEdit}
             allowImageUpload

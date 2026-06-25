@@ -28,6 +28,7 @@ interface UseProductSelectionParams {
   exchangeRates: QuotationExchangeRateFormState[];
   pricingRules?: PricingRuleLineGetDto[];
   offerType?: string | null;
+  deliveryMethodName?: string | null;
 }
 
 interface UseProductSelectionReturn {
@@ -40,6 +41,7 @@ export function useProductSelection({
   exchangeRates,
   pricingRules = [],
   offerType,
+  deliveryMethodName,
 }: UseProductSelectionParams): UseProductSelectionReturn {
   const { calculateLineTotals } = useQuotationCalculations();
   const { currencyOptions } = useCurrencyOptions();
@@ -62,7 +64,7 @@ export function useProductSelection({
         discountAmount2: 0,
         discountRate3: 0,
         discountAmount3: 0,
-        vatRate: resolveDocumentVatRate(undefined, offerType, product.vatRate ?? 20),
+        vatRate: resolveDocumentVatRate(undefined, offerType, deliveryMethodName, product.vatRate ?? 20),
         vatAmount: 0,
         lineTotal: 0,
         lineGrandTotal: 0,
@@ -75,7 +77,7 @@ export function useProductSelection({
         isEditing: true,
       };
     },
-    [offerType]
+    [offerType, deliveryMethodName]
   );
 
   const convertPriceData = useCallback(
@@ -171,7 +173,7 @@ export function useProductSelection({
           const isMainProduct = i === 0;
 
           let productName = isMainProduct ? resolvedMainProductName : '';
-          const vatRate = resolveDocumentVatRate(undefined, offerType, productWithResolvedName.vatRate ?? 20);
+          const vatRate = resolveDocumentVatRate(undefined, offerType, deliveryMethodName, productWithResolvedName.vatRate ?? 20);
 
           let relatedStockIdFromArray: number | undefined;
           if (!isMainProduct) {
@@ -274,7 +276,7 @@ export function useProductSelection({
         return [calculateLineTotals(baseLine)];
       }
     },
-    [convertPriceData, createEmptyLine, calculateLineTotals, ensureDocumentExchangeRate, i18n.language, offerType]
+    [convertPriceData, createEmptyLine, calculateLineTotals, ensureDocumentExchangeRate, i18n.language, offerType, deliveryMethodName]
   );
 
   const handleProductSelect = useCallback(

@@ -327,7 +327,7 @@ export function CustomerSelectDialog({
     enabled: open,
     minChars: DROPDOWN_MIN_CHARS,
     pageSize: DROPDOWN_PAGE_SIZE,
-    sortBy: 'Id',
+    sortBy: 'Name',
     sortDirection: 'asc',
     extraQueryKey: [advancedFiltersKey, filterLogic],
     contextUserId: contextUserId ?? undefined,
