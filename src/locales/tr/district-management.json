@@ -22,6 +22,7 @@
     "id": "ID",
     "name": "İlçe Adı",
     "erpCode": "ERP Kodu",
+    "postalCode": "Posta Kodu",
     "city": "Şehir",
     "cityName": "Şehir Adı",
     "status": "Durum",
@@ -51,9 +52,12 @@
     "searchCity": "Şehir ara...",
     "erpCode": "ERP Kodu",
     "erpCodePlaceholder": "ERP kodunu girin (opsiyonel)",
+    "postalCode": "Posta Kodu",
+    "postalCodePlaceholder": "Posta kodunu girin (opsiyonel)",
     "nameRequired": "İlçe adı zorunludur",
     "nameMaxLength": "İlçe adı en fazla 100 karakter olabilir",
     "erpCodeMaxLength": "ERP kodu en fazla 10 karakter olabilir",
+    "postalCodeMaxLength": "Posta kodu en fazla 20 karakter olabilir",
     "cityRequired": "Şehir seçimi zorunludur"
   },
   "stats": {
@@ -83,6 +87,7 @@
       "id": "ID",
       "name": "İlçe Adı",
       "erpCode": "ERP Kodu",
+      "postalCode": "Posta Kodu",
       "city": "Şehir",
       "cityName": "Şehir Adı",
       "status": "Durum",
@@ -122,9 +127,12 @@
       "searchCity": "Şehir ara...",
       "erpCode": "ERP Kodu",
       "erpCodePlaceholder": "ERP kodunu girin (opsiyonel)",
+      "postalCode": "Posta Kodu",
+      "postalCodePlaceholder": "Posta kodunu girin (opsiyonel)",
       "nameRequired": "İlçe adı zorunludur",
       "nameMaxLength": "İlçe adı en fazla 100 karakter olabilir",
       "erpCodeMaxLength": "ERP kodu en fazla 10 karakter olabilir",
+      "postalCodeMaxLength": "Posta kodu en fazla 20 karakter olabilir",
       "cityRequired": "Şehir seçimi zorunludur"
     }
   }

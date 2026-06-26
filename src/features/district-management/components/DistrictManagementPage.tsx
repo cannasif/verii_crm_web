@@ -222,6 +222,7 @@ export function DistrictManagementPage(): ReactElement {
         data: {
           name: data.name,
           erpCode: data.erpCode || undefined,
+          postalCode: data.postalCode || undefined,
           cityId: data.cityId,
         },
       });
@@ -229,6 +230,7 @@ export function DistrictManagementPage(): ReactElement {
       await createDistrict.mutateAsync({
         name: data.name,
         erpCode: data.erpCode || undefined,
+        postalCode: data.postalCode || undefined,
         cityId: data.cityId,
       });
     }

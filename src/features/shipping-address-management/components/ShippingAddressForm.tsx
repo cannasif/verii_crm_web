@@ -378,7 +378,13 @@ export function ShippingAddressForm({
                       <VoiceSearchCombobox
                         options={districtDropdown.options}
                         value={field.value ? field.value.toString() : ''}
-                        onSelect={(value) => field.onChange(value ? parseInt(value) : undefined)}
+                        onSelect={(value) => {
+                          field.onChange(value ? parseInt(value) : undefined);
+                          const selectedDistrict = districtDropdown.items.find((item) => item.id === Number(value));
+                          if (selectedDistrict?.postalCode && !form.getValues('postalCode')?.trim()) {
+                            form.setValue('postalCode', selectedDistrict.postalCode, { shouldDirty: true, shouldValidate: true });
+                          }
+                        }}
                         onDebouncedSearchChange={setDistrictSearchTerm}
                         onFetchNextPage={districtDropdown.fetchNextPage}
                         hasNextPage={districtDropdown.hasNextPage}

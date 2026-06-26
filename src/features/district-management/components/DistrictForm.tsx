@@ -68,6 +68,7 @@ export function DistrictForm({
     defaultValues: {
       name: '',
       erpCode: '',
+      postalCode: '',
       cityId: 0,
     },
   });
@@ -77,12 +78,14 @@ export function DistrictForm({
       form.reset({
         name: district.name,
         erpCode: district.erpCode || '',
+        postalCode: district.postalCode || '',
         cityId: district.cityId,
       });
     } else {
       form.reset({
         name: '',
         erpCode: '',
+        postalCode: '',
         cityId: 0,
       });
     }
@@ -191,7 +194,7 @@ export function DistrictForm({
                 control={form.control}
                 name="erpCode"
                 render={({ field }) => (
-                  <FormItem className="md:col-span-2 space-y-0">
+                  <FormItem className="space-y-0">
                     <FormLabel className={LABEL_STYLE}>
                       {t('districtManagement.form.erpCode')}
                     </FormLabel>
@@ -200,6 +203,27 @@ export function DistrictForm({
                         {...field}
                         placeholder={t('districtManagement.form.erpCodePlaceholder')}
                         maxLength={10}
+                        className={INPUT_STYLE}
+                      />
+                    </FormControl>
+                    <FormMessage className="text-red-500 text-[10px] mt-1" />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="postalCode"
+                render={({ field }) => (
+                  <FormItem className="space-y-0">
+                    <FormLabel className={LABEL_STYLE}>
+                      {t('districtManagement.form.postalCode')}
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        placeholder={t('districtManagement.form.postalCodePlaceholder')}
+                        maxLength={20}
                         className={INPUT_STYLE}
                       />
                     </FormControl>

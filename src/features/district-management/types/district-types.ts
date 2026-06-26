@@ -4,6 +4,7 @@ export interface DistrictDto {
   id: number;
   name: string;
   erpCode?: string;
+  postalCode?: string;
   cityId: number;
   cityName?: string;
   createdDate: string;
@@ -17,24 +18,28 @@ export interface DistrictDto {
 export interface CreateDistrictDto {
   name: string;
   erpCode?: string;
+  postalCode?: string;
   cityId: number;
 }
 
 export interface UpdateDistrictDto {
   name: string;
   erpCode?: string;
+  postalCode?: string;
   cityId: number;
 }
 
 export interface DistrictListFilters {
   name?: string;
   erpCode?: string;
+  postalCode?: string;
   cityId?: number;
 }
 
 export interface DistrictFormData {
   name: string;
   erpCode?: string;
+  postalCode?: string;
   cityId: number;
 }
 
@@ -46,6 +51,11 @@ export const districtFormSchema = z.object({
   erpCode: z
     .string()
     .max(10, 'districtManagement.form.erpCodeMaxLength')
+    .optional()
+    .or(z.literal('')),
+  postalCode: z
+    .string()
+    .max(20, 'districtManagement.form.postalCodeMaxLength')
     .optional()
     .or(z.literal('')),
   cityId: z

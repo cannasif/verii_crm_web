@@ -30,6 +30,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<DistrictDto>[] => [
   { key: 'erpCode', label: t('table.erpCode'), type: 'code', className: 'w-[100px] md:w-[140px]' },
   { key: 'name', label: t('table.name'), type: 'text', className: 'min-w-[140px] md:min-w-[200px] font-medium' },
   { key: 'cityName', label: t('table.city'), type: 'city', className: 'min-w-[140px] md:min-w-[160px]' },
+  { key: 'postalCode', label: t('table.postalCode'), type: 'code', className: 'w-[120px] md:w-[150px]' },
   { key: 'isDeleted', label: t('table.status'), type: 'status', className: 'w-[100px] md:w-[120px]' },
 ];
 

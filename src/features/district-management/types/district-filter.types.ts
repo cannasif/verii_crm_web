@@ -5,6 +5,7 @@ import type { FilterRow } from '@/lib/advanced-filter-types';
 export const DISTRICT_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'name', type: 'string', labelKey: 'advancedFilter.columnName' },
   { value: 'erpCode', type: 'string', labelKey: 'advancedFilter.columnErpCode' },
+  { value: 'postalCode', type: 'string', labelKey: 'advancedFilter.columnPostalCode' },
   { value: 'cityName', type: 'string', labelKey: 'advancedFilter.columnCityName' },
   { value: 'isDeleted', type: 'boolean', labelKey: 'advancedFilter.columnStatus' },
 ] as const;
