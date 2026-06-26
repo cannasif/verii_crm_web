@@ -49,6 +49,7 @@ import {
 import { useSystemSettingsQuery } from '@/features/system-settings/hooks/useSystemSettingsQuery';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { applyDocumentVatDefaultOnLine, getDefaultDocumentVatRate, resolveDocumentVatRate } from '@/lib/document-vat';
+import { useDocumentFieldLabelMap } from '@/features/document-field-labels/hooks/useDocumentFieldLabels';
 import type { DemandLineFormState, DemandExchangeRateFormState, PricingRuleLineGetDto, UserDiscountLimitDto, ApprovalStatus } from '../types/demand-types';
 import {
   Check,
@@ -154,6 +155,10 @@ export function DemandLineForm({
   deliveryMethodName,
 }: DemandLineFormProps): ReactElement {
   const { t } = useTranslation(['demand', 'common', 'quotation']);
+  const lineDescriptionLabels = useDocumentFieldLabelMap('demand', 'LineDescription');
+  const description1Label = lineDescriptionLabels.Description1?.effectiveLabel || t('lines.descriptionField1Label');
+  const description2Label = lineDescriptionLabels.Description2?.effectiveLabel || t('lines.descriptionField2Label');
+  const description3Label = lineDescriptionLabels.Description3?.effectiveLabel || t('lines.descriptionField3Label');
   const queryClient = useQueryClient();
   const { calculateLineTotals } = useDemandCalculations();
   const storedSystemSettings = useSystemSettingsStore((state) => state.settings);
@@ -1486,7 +1491,7 @@ export function DemandLineForm({
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                    {t('lines.descriptionField1Label')}
+                    {description1Label}
                   </label>
                   <ErpFieldHint label={t('lines.descriptionTooltipText')} />
                 </div>
@@ -1501,7 +1506,7 @@ export function DemandLineForm({
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                    {t('lines.descriptionField2Label')}
+                    {description2Label}
                   </label>
                   <ErpFieldHint label={t('lines.descriptionTooltipText')} />
                 </div>
@@ -1516,7 +1521,7 @@ export function DemandLineForm({
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                    {t('lines.descriptionField3Label')}
+                    {description3Label}
                   </label>
                   <ErpFieldHint label={t('lines.descriptionTooltipText')} />
                 </div>

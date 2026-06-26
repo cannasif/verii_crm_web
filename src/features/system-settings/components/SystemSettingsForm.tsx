@@ -29,10 +29,10 @@ import {
   type ErpConnectionTestResultDto,
   type SystemSettingsDto,
   type SystemSettingsFormSchema,
+  type UpdateSystemSettingsDto,
 } from '../types/systemSettings';
 import { normalizeSystemSettings } from '@/stores/system-settings-store';
 import { DocumentFieldLabelsSettingsPanel } from '@/features/document-field-labels/components/DocumentFieldLabelsSettingsPanel';
-import { useUpdateDocumentFieldLabelsMutation } from '@/features/document-field-labels/hooks/useDocumentFieldLabels';
 import type { UpdateDocumentFieldLabelDto } from '@/features/document-field-labels/types/documentFieldLabels';
 
 const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
@@ -103,7 +103,7 @@ interface SystemSettingsFormProps {
   isTestingErpConnection: boolean;
   erpConnectionError?: string;
   onTestErpConnection: () => void | Promise<unknown>;
-  onSubmit: (data: SystemSettingsFormSchema) => void | Promise<void>;
+  onSubmit: (data: UpdateSystemSettingsDto) => void | Promise<void>;
 }
 
 export function SystemSettingsForm({
@@ -194,8 +194,7 @@ export function SystemSettingsForm({
     orderApprovalCompletionAction: DEFAULT_FORM_VALUES.orderApprovalCompletionAction,
   });
   const [documentFieldLabelItems, setDocumentFieldLabelItems] = useState<UpdateDocumentFieldLabelDto[]>([]);
-  const updateDocumentFieldLabelsMutation = useUpdateDocumentFieldLabelsMutation();
-  const isSaving = isSubmitting || updateDocumentFieldLabelsMutation.isPending;
+  const isSaving = isSubmitting;
 
   const handleDocumentFieldLabelsChange = useCallback((items: UpdateDocumentFieldLabelDto[]) => {
     setDocumentFieldLabelItems(items);
@@ -229,11 +228,10 @@ export function SystemSettingsForm({
         formValues.orderApprovalCompletionAction,
         orderActionOptions
       ),
+      documentFieldLabels: documentFieldLabelItems.length > 0
+        ? { items: documentFieldLabelItems }
+        : undefined,
     });
-
-    if (documentFieldLabelItems.length > 0) {
-      await updateDocumentFieldLabelsMutation.mutateAsync({ items: documentFieldLabelItems });
-    }
   };
   const erpConnectionSucceeded = erpConnectionTest?.success === true;
   const erpConnectionMessage = erpConnectionSucceeded

@@ -53,6 +53,7 @@ import {
 import { useSystemSettingsQuery } from '@/features/system-settings/hooks/useSystemSettingsQuery';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { applyDocumentVatDefaultOnLine, getDefaultDocumentVatRate, resolveDocumentVatRate } from '@/lib/document-vat';
+import { useDocumentFieldLabelMap } from '@/features/document-field-labels/hooks/useDocumentFieldLabels';
 
 interface TemporaryStockData {
   productCode: string;
@@ -142,6 +143,10 @@ export function QuotationLineForm({
   deliveryMethodName,
 }: QuotationLineFormProps): ReactElement {
   const { t } = useTranslation(['quotation', 'common']);
+  const lineDescriptionLabels = useDocumentFieldLabelMap('quotation', 'LineDescription');
+  const description1Label = lineDescriptionLabels.Description1?.effectiveLabel || t('lines.descriptionField1Label');
+  const description2Label = lineDescriptionLabels.Description2?.effectiveLabel || t('lines.descriptionField2Label');
+  const description3Label = lineDescriptionLabels.Description3?.effectiveLabel || t('lines.descriptionField3Label');
   const queryClient = useQueryClient();
   const { calculateLineTotals } = useQuotationCalculations();
   const storedSystemSettings = useSystemSettingsStore((state) => state.settings);
@@ -1530,7 +1535,7 @@ export function QuotationLineForm({
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                    {t('lines.descriptionField1Label')}
+                    {description1Label}
                   </label>
                   <ErpFieldHint label={t('lines.descriptionTooltipText')} />
                 </div>
@@ -1545,7 +1550,7 @@ export function QuotationLineForm({
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                    {t('lines.descriptionField2Label')}
+                    {description2Label}
                   </label>
                   <ErpFieldHint label={t('lines.descriptionTooltipText')} />
                 </div>
@@ -1560,7 +1565,7 @@ export function QuotationLineForm({
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                    {t('lines.descriptionField3Label')}
+                    {description3Label}
                   </label>
                   <ErpFieldHint label={t('lines.descriptionTooltipText')} />
                 </div>

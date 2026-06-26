@@ -6,6 +6,7 @@ import { useDocumentFieldLabelsQuery } from '../hooks/useDocumentFieldLabels';
 import type {
   DocumentFieldLabelDocumentType,
   DocumentFieldLabelDto,
+  DocumentFieldLabelScope,
   UpdateDocumentFieldLabelDto,
 } from '../types/documentFieldLabels';
 
@@ -13,6 +14,19 @@ const DOCUMENTS: Array<{ type: DocumentFieldLabelDocumentType; label: string }> 
   { type: 'Demand', label: 'Talep' },
   { type: 'Quotation', label: 'Teklif' },
   { type: 'Order', label: 'Sipariş' },
+];
+
+const SCOPES: Array<{ scope: DocumentFieldLabelScope; label: string; description: string }> = [
+  {
+    scope: 'HeaderNote',
+    label: 'Üst Notlar',
+    description: 'Belge not penceresindeki not başlıklarını değiştirir.',
+  },
+  {
+    scope: 'LineDescription',
+    label: 'Satır Açıklamaları',
+    description: 'Satır ekleme ekranındaki Açıklama 1, 2 ve 3 başlıklarını değiştirir.',
+  },
 ];
 
 type DraftMap = Record<string, UpdateDocumentFieldLabelDto>;
@@ -28,9 +42,10 @@ interface DocumentFieldLabelsSettingsPanelProps {
 export function DocumentFieldLabelsSettingsPanel({
   onItemsChange,
 }: DocumentFieldLabelsSettingsPanelProps): ReactElement {
-  const { data, isLoading, isError, error } = useDocumentFieldLabelsQuery({ scope: 'HeaderNote' });
+  const { data, isLoading, isError, error } = useDocumentFieldLabelsQuery();
   const [drafts, setDrafts] = useState<DraftMap>({});
   const [activeDocument, setActiveDocument] = useState<DocumentFieldLabelDocumentType>('Quotation');
+  const [activeScope, setActiveScope] = useState<DocumentFieldLabelScope>('HeaderNote');
 
   useEffect(() => {
     if (!data) return;
@@ -55,10 +70,12 @@ export function DocumentFieldLabelsSettingsPanel({
   const visibleItems = useMemo(
     () =>
       (data ?? [])
-        .filter((item) => item.documentType === activeDocument)
+        .filter((item) => item.documentType === activeDocument && item.scope === activeScope)
         .sort((a, b) => a.sortOrder - b.sortOrder),
-    [activeDocument, data],
+    [activeDocument, activeScope, data],
   );
+
+  const activeScopeDefinition = SCOPES.find((scope) => scope.scope === activeScope) ?? SCOPES[0];
 
   const handleDraftChange = (
     item: DocumentFieldLabelDto,
@@ -118,12 +135,30 @@ export function DocumentFieldLabelsSettingsPanel({
             <Tags className="h-5 w-5" />
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-semibold">Belge not başlıkları</p>
+            <p className="text-sm font-semibold">Belge alan başlıkları</p>
             <p className="text-muted-foreground text-sm">
-              Talep, teklif ve sipariş not penceresindeki “Teklif Notu 1” gibi başlıkları müşteri terminolojisine göre değiştirir. Boş bırakılan alanlarda mevcut sistem adı kullanılır.
+              Talep, teklif ve sipariş not penceresi ile satır açıklama alanlarındaki başlıkları müşteri terminolojisine göre değiştirir. Boş bırakılan alanlarda mevcut sistem adı kullanılır.
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="mb-3 flex flex-wrap gap-2">
+        {SCOPES.map((scope) => (
+          <button
+            key={scope.scope}
+            type="button"
+            onClick={() => setActiveScope(scope.scope)}
+            className={cn(
+              'rounded-xl border px-3 py-2 text-sm font-semibold transition-colors',
+              activeScope === scope.scope
+                ? 'border-sky-500 bg-sky-50 text-sky-700 dark:border-sky-400/50 dark:bg-sky-500/10 dark:text-sky-300'
+                : 'border-slate-200 bg-white text-slate-600 hover:border-sky-300 dark:border-white/10 dark:bg-[#0C0516] dark:text-slate-300',
+            )}
+          >
+            {scope.label}
+          </button>
+        ))}
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
@@ -145,7 +180,9 @@ export function DocumentFieldLabelsSettingsPanel({
       </div>
 
       <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
-        Örnek: Teklif sekmesinde Not 1 alanına “Elma”, Not 2 alanına “Armut” yazılırsa teklif not penceresinde “TEKLİF NOTU 1” yerine “Elma”, “TEKLİF NOTU 2” yerine “Armut” görünür.
+        {activeScope === 'HeaderNote'
+          ? 'Örnek: Teklif sekmesinde Not 1 alanına “Elma”, Not 2 alanına “Armut” yazılırsa teklif not penceresinde “TEKLİF NOTU 1” yerine “Elma”, “TEKLİF NOTU 2” yerine “Armut” görünür.'
+          : 'Örnek: Teklif satır açıklamalarında Açıklama 1 alanına “Üretim Notu” yazılırsa satır ekleme ekranında “Açıklama 1” yerine “Üretim Notu” görünür.'}
       </div>
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -163,7 +200,7 @@ export function DocumentFieldLabelsSettingsPanel({
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold">{effectiveLabel}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    {documentLabel} Notu {item.sortOrder} · varsayılan: {item.defaultLabel}
+                    {documentLabel} · {activeScopeDefinition.label} · varsayılan: {item.defaultLabel}
                   </p>
                 </div>
                 <span className="shrink-0 rounded-md bg-slate-100 px-2 py-1 text-[10px] font-semibold text-slate-500 dark:bg-white/5 dark:text-slate-400">

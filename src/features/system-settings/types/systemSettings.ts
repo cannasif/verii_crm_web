@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { UpdateDocumentFieldLabelDto } from '@/features/document-field-labels/types/documentFieldLabels';
 
 export interface SystemSettingsDto {
   numberFormat: string;
@@ -26,7 +27,11 @@ export interface SystemSettingsDto {
   updatedAt?: string;
 }
 
-export interface UpdateSystemSettingsDto extends SystemSettingsDto {}
+export interface UpdateSystemSettingsDto extends SystemSettingsDto {
+  documentFieldLabels?: {
+    items: UpdateDocumentFieldLabelDto[];
+  };
+}
 
 export interface ErpConnectionTestResultDto {
   accessToken?: string;

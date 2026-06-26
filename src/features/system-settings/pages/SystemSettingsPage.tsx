@@ -7,7 +7,7 @@ import { systemSettingsApi } from '../api/systemSettingsApi';
 import { SystemSettingsForm } from '../components/SystemSettingsForm';
 import { useSystemSettingsQuery } from '../hooks/useSystemSettingsQuery';
 import { useUpdateSystemSettingsMutation } from '../hooks/useUpdateSystemSettingsMutation';
-import type { SystemSettingsFormSchema, UpdateSystemSettingsDto } from '../types/systemSettings';
+import type { UpdateSystemSettingsDto } from '../types/systemSettings';
 
 export function SystemSettingsPage(): ReactElement {
   const { t } = useTranslation();
@@ -29,7 +29,7 @@ export function SystemSettingsPage(): ReactElement {
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
 
-  const handleSubmit = async (values: SystemSettingsFormSchema): Promise<void> => {
+  const handleSubmit = async (values: UpdateSystemSettingsDto): Promise<void> => {
     const payload: UpdateSystemSettingsDto = {
       numberFormat: values.numberFormat,
       decimalPlaces: values.decimalPlaces,
@@ -53,6 +53,7 @@ export function SystemSettingsPage(): ReactElement {
       demandApprovalCompletionAction: values.demandApprovalCompletionAction,
       quotationApprovalCompletionAction: values.quotationApprovalCompletionAction,
       orderApprovalCompletionAction: values.orderApprovalCompletionAction,
+      documentFieldLabels: values.documentFieldLabels,
     };
 
     await updateMutation.mutateAsync(payload);
