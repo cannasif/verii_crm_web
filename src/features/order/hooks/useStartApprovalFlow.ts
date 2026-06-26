@@ -14,11 +14,18 @@ export const useStartApprovalFlow = (): UseMutationResult<ApiResponse<boolean>, 
     mutationFn: (data: { entityId: number; documentType: number; totalAmount: number }) => 
       orderApi.startApprovalFlow(data),
     onSuccess: (_, variables) => {
+      queryClient.setQueryData<{ status?: number } | undefined>(
+        queryKeys.order(variables.entityId),
+        (current) => current ? { ...current, status: 1 } : current,
+      );
+      queryClient.setQueryData(queryKeys.approvalStatus(variables.entityId), 1);
       queryClient.invalidateQueries({ queryKey: queryKeys.orders() });
       queryClient.invalidateQueries({ 
         queryKey: queryKeys.order(variables.entityId),
         refetchType: 'active',
       });
+      queryClient.invalidateQueries({ queryKey: queryKeys.approvalStatus(variables.entityId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.approvalFlowReport(variables.entityId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.waitingApprovals() });
       toast.success(t('order.approval.startSuccess'));
     },
