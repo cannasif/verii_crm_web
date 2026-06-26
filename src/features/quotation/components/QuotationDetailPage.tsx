@@ -222,6 +222,15 @@ export function QuotationDetailPage(): ReactElement {
     }
   }, [watchedOfferDate, form]);
 
+  useEffect(() => {
+    linesInitializedRef.current = false;
+    linesDirtyRef.current = false;
+    notesInitializedRef.current = false;
+    exchangeRatesInitializedRef.current = false;
+    formInitializedRef.current = false;
+    offerDateSyncInitializedRef.current = false;
+  }, [quotationId]);
+
   // Başlık Ayarı
   useEffect(() => {
     if (quotation) {

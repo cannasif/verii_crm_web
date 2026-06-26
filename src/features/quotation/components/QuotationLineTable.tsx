@@ -1652,7 +1652,7 @@ export function QuotationLineTable({
             deliveryMethodName={deliveryMethodName}
             isSaving={updateMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkersForEdit}
-            allowImageUpload
+            allowImageUpload={Boolean(resolveDocumentLineBackendId(lineToEdit))}
             imageUploadScope="quotation-line"
                 imageUploadExtras={{
                   quotationId: quotationId ?? undefined,
