@@ -18,6 +18,7 @@ import {
   useDocumentNotesLabels,
   type DocumentNotesContext,
 } from '../hooks/useDocumentNotesLabels';
+import { useDocumentFieldLabelMap } from '@/features/document-field-labels/hooks/useDocumentFieldLabels';
 
 const MAX_NOTE_LENGTH = 100;
 const NOTES_PER_PAGE = 3;
@@ -63,6 +64,7 @@ export function QuotationNotesDialog({
 }: QuotationNotesDialogProps): ReactElement {
   const { t } = useTranslation(['common']);
   const labels = useDocumentNotesLabels(context);
+  const headerFieldLabels = useDocumentFieldLabelMap(context, 'HeaderNote');
   const [localValue, setLocalValue] = useState<QuotationNotesDto>(value);
   const [page, setPage] = useState(0);
 
@@ -141,6 +143,10 @@ export function QuotationNotesDialog({
           <div className="flex flex-1 flex-col gap-3">
             {visibleKeys.map((key) => {
               const index = QUOTATION_NOTE_KEYS.indexOf(key);
+              const fieldKey = `Note${index + 1}`;
+              const fieldLabel = headerFieldLabels[fieldKey]?.effectiveLabel || `${labels.noteLabel} ${index + 1}`;
+              const fieldHelpText = headerFieldLabels[fieldKey]?.helpText || labels.notesTooltipText;
+              const fieldPlaceholder = headerFieldLabels[fieldKey]?.placeholder || labels.placeholder;
               const noteValue = localValue[key] ?? '';
               const charCount = noteValue.length;
               const isOverLimit = charCount > MAX_NOTE_LENGTH;
@@ -173,11 +179,9 @@ export function QuotationNotesDialog({
                       </span>
                       <div className="flex items-center gap-1">
                         <span className="text-[9px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                          {labels.noteLabel}
-                          {' '}
-                          {index + 1}
+                          {fieldLabel}
                         </span>
-                        <ErpFieldHint label={labels.notesTooltipText} />
+                        <ErpFieldHint label={fieldHelpText} />
                       </div>
                     </div>
                     <span
@@ -194,7 +198,7 @@ export function QuotationNotesDialog({
                     value={noteValue}
                     onChange={(e) => handleNoteChange(key, e.target.value)}
                     rows={2}
-                    placeholder={labels.placeholder}
+                    placeholder={fieldPlaceholder}
                     className={cn(
                       'min-h-[3rem] w-full flex-1 resize-none overflow-y-auto rounded-lg border-slate-200/90 bg-slate-50/60 text-[11px] leading-snug focus-visible:border-pink-400 focus-visible:ring-2 focus-visible:ring-pink-300/50 dark:border-white/10 dark:bg-black/25 dark:focus-visible:border-pink-500 dark:focus-visible:ring-pink-500/25',
                       isOverLimit || fieldError ? 'border-red-400 dark:border-red-500' : '',

@@ -31,6 +31,7 @@ import {
   type SystemSettingsFormSchema,
 } from '../types/systemSettings';
 import { normalizeSystemSettings } from '@/stores/system-settings-store';
+import { DocumentFieldLabelsSettingsPanel } from '@/features/document-field-labels/components/DocumentFieldLabelsSettingsPanel';
 
 const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   numberFormat: 'tr-TR',
@@ -492,6 +493,8 @@ export function SystemSettingsForm({
                 ))}
               </div>
             </div>
+
+            <DocumentFieldLabelsSettingsPanel />
 
             <FormField
               control={form.control}
