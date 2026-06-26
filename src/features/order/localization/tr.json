@@ -2,8 +2,8 @@
   "lines": {
     "doubleClickToEdit": "Düzenlemek için çift tıklayın",
     "unit": "Birim",
-    "descriptionTooltipText": "Satır bazlı üretim açıklamasıdır. Netsis eşleşmesi: Açıklama 1 -> Satır Ek Açıklama 1, Açıklama 2 -> Satır Ek Açıklama 6, Açıklama 3 -> Satır Ek Açıklama 7. Satır Ek Açıklama 2 bu alanlardan değil, CRM'deki Profil seçiminden doldurulur.",
-    "profileErpTooltip": "Bu Profil seçimi ERP'ye gönderimde Netsis Satır Ek Açıklama 2 alanına kaydedilir. Müşterinin faturada Ek Alan-2 olarak gördüğü değer bu profil bilgisidir.",
+    "descriptionTooltipText": "Satır bazlı üretim açıklamasıdır. ERP'ye aktarıldığında Netsis eşleşmesi: Açıklama 1 -> Satır Ek Açıklama 1, Açıklama 2 -> Satır Ek Açıklama 6, Açıklama 3 -> Satır Ek Açıklama 7. ",
+    "profileErpTooltip": "Bu Profil seçimi ERP'ye gönderimde Netsis Satır Ek Açıklama 2 alanına kaydedilir.",
     "rebarErpTooltip": "Bu Demir seçimi ERP'ye gönderimde Netsis Satır Ek Açıklama 3 değerine kaydedilir.",
     "screwErpTooltip": "Bu Vida seçimi ERP'ye gönderimde Netsis Satır Ek Açıklama 4 değerine kaydedilir.",
     "printErpTooltip": "Bu Baskı seçimi ERP'ye gönderimde Netsis Satır Ek Açıklama 8 değerine kaydedilir. Baskı açıklaması ayrıca Netsis satır Açıklama 9 ve Satır Ek Açıklama 9 alanlarına gider.",

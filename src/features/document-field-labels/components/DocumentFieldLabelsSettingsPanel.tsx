@@ -137,7 +137,7 @@ export function DocumentFieldLabelsSettingsPanel({
           <div className="space-y-1">
             <p className="text-sm font-semibold">Belge alan başlıkları</p>
             <p className="text-muted-foreground text-sm">
-              Talep, teklif ve sipariş not penceresi ile satır açıklama alanlarındaki başlıkları müşteri terminolojisine göre değiştirir. Boş bırakılan alanlarda mevcut sistem adı kullanılır.
+              Talep, teklif ve sipariş not penceresi ile satır açıklama alanlarındaki başlıkları müşteri terminolojisine göre değiştirir. Boş bırakılan alanlarda mevcut sistem adı kullanılır. Burada yapılan başlık değişikliği dil değişiminden etkilenmez.
             </p>
           </div>
         </div>

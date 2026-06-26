@@ -2,8 +2,8 @@
   "lines": {
     "doubleClickToEdit": "Double-click to edit",
     "unit": "Unit",
-    "descriptionTooltipText": "Line-level production notes. Netsis mapping: Description 1 -> Line Extra Description 1, Description 2 -> Line Extra Description 6, Description 3 -> Line Extra Description 7. Line Extra Description 2 is not filled from these text fields; it is filled from the CRM Profile selection.",
-    "profileErpTooltip": "This Profile selection is saved to Netsis Line Extra Description 2. This is the value the customer uses as invoice-facing Extra Field 2.",
+    "descriptionTooltipText": "Line-level production notes. When transferred to ERP, Netsis mapping is: Description 1 -> Line Extra Description 1, Description 2 -> Line Extra Description 6, Description 3 -> Line Extra Description 7.",
+    "profileErpTooltip": "This Profile selection is saved to the Netsis Line Extra Description 2 field when sent to ERP.",
     "rebarErpTooltip": "This Rebar selection is sent to ERP as the Netsis Line Extra Description 3 value.",
     "screwErpTooltip": "This Screw selection is sent to ERP as the Netsis Line Extra Description 4 value.",
     "printErpTooltip": "This Print selection is sent to ERP as the Netsis Line Extra Description 8 value. The print note is also sent to Netsis line Description 9 and Line Extra Description 9.",
