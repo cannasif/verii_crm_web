@@ -1,13 +1,8 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Loader2, Save, Tags } from 'lucide-react';
-import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+import { Loader2, Tags } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import {
-  useDocumentFieldLabelsQuery,
-  useUpdateDocumentFieldLabelsMutation,
-} from '../hooks/useDocumentFieldLabels';
+import { useDocumentFieldLabelsQuery } from '../hooks/useDocumentFieldLabels';
 import type {
   DocumentFieldLabelDocumentType,
   DocumentFieldLabelDto,
@@ -26,9 +21,14 @@ function getDraftKey(item: Pick<DocumentFieldLabelDto, 'documentType' | 'scope' 
   return `${item.documentType}|${item.scope}|${item.fieldKey}`;
 }
 
-export function DocumentFieldLabelsSettingsPanel(): ReactElement {
+interface DocumentFieldLabelsSettingsPanelProps {
+  onItemsChange?: (items: UpdateDocumentFieldLabelDto[]) => void;
+}
+
+export function DocumentFieldLabelsSettingsPanel({
+  onItemsChange,
+}: DocumentFieldLabelsSettingsPanelProps): ReactElement {
   const { data, isLoading, isError, error } = useDocumentFieldLabelsQuery({ scope: 'HeaderNote' });
-  const updateMutation = useUpdateDocumentFieldLabelsMutation();
   const [drafts, setDrafts] = useState<DraftMap>({});
   const [activeDocument, setActiveDocument] = useState<DocumentFieldLabelDocumentType>('Quotation');
 
@@ -49,7 +49,8 @@ export function DocumentFieldLabelsSettingsPanel(): ReactElement {
     }
 
     setDrafts(nextDrafts);
-  }, [data]);
+    onItemsChange?.(Object.values(nextDrafts));
+  }, [data, onItemsChange]);
 
   const visibleItems = useMemo(
     () =>
@@ -64,34 +65,30 @@ export function DocumentFieldLabelsSettingsPanel(): ReactElement {
     value: string,
   ): void => {
     const key = getDraftKey(item);
-    setDrafts((current) => ({
-      ...current,
-      [key]: {
-        ...(current[key] ?? {
+    setDrafts((current) => {
+      const nextDrafts = {
+        ...current,
+        [key]: {
+          ...(current[key] ?? {
+            documentType: item.documentType,
+            scope: item.scope,
+            fieldKey: item.fieldKey,
+            customLabel: item.customLabel ?? '',
+            helpText: item.helpText ?? '',
+            placeholder: item.placeholder ?? '',
+            isActive: item.isActive,
+          }),
           documentType: item.documentType,
           scope: item.scope,
           fieldKey: item.fieldKey,
-          customLabel: item.customLabel ?? '',
-          helpText: item.helpText ?? '',
-          placeholder: item.placeholder ?? '',
           isActive: item.isActive,
-        }),
-        documentType: item.documentType,
-        scope: item.scope,
-        fieldKey: item.fieldKey,
-        isActive: item.isActive,
-        customLabel: value,
-      },
-    }));
-  };
+          customLabel: value,
+        },
+      };
 
-  const handleSave = async (): Promise<void> => {
-    try {
-      await updateMutation.mutateAsync({ items: Object.values(drafts) });
-      toast.success('Belge alan başlıkları kaydedildi.');
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Belge alan başlıkları kaydedilemedi.');
-    }
+      onItemsChange?.(Object.values(nextDrafts));
+      return nextDrafts;
+    });
   };
 
   if (isLoading) {
@@ -127,19 +124,6 @@ export function DocumentFieldLabelsSettingsPanel(): ReactElement {
             </p>
           </div>
         </div>
-        <Button
-          type="button"
-          disabled={updateMutation.isPending}
-          onClick={() => void handleSave()}
-          className="shrink-0 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700"
-        >
-          {updateMutation.isPending ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <Save className="mr-2 h-4 w-4" />
-          )}
-          Not Başlıklarını Kaydet
-        </Button>
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">

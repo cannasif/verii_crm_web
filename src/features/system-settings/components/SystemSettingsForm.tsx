@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { type Resolver, type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -32,6 +32,8 @@ import {
 } from '../types/systemSettings';
 import { normalizeSystemSettings } from '@/stores/system-settings-store';
 import { DocumentFieldLabelsSettingsPanel } from '@/features/document-field-labels/components/DocumentFieldLabelsSettingsPanel';
+import { useUpdateDocumentFieldLabelsMutation } from '@/features/document-field-labels/hooks/useDocumentFieldLabels';
+import type { UpdateDocumentFieldLabelDto } from '@/features/document-field-labels/types/documentFieldLabels';
 
 const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   numberFormat: 'tr-TR',
@@ -191,6 +193,13 @@ export function SystemSettingsForm({
     quotationApprovalCompletionAction: DEFAULT_FORM_VALUES.quotationApprovalCompletionAction,
     orderApprovalCompletionAction: DEFAULT_FORM_VALUES.orderApprovalCompletionAction,
   });
+  const [documentFieldLabelItems, setDocumentFieldLabelItems] = useState<UpdateDocumentFieldLabelDto[]>([]);
+  const updateDocumentFieldLabelsMutation = useUpdateDocumentFieldLabelsMutation();
+  const isSaving = isSubmitting || updateDocumentFieldLabelsMutation.isPending;
+
+  const handleDocumentFieldLabelsChange = useCallback((items: UpdateDocumentFieldLabelDto[]) => {
+    setDocumentFieldLabelItems(items);
+  }, []);
 
   useEffect(() => {
     if (!data) return;
@@ -202,24 +211,30 @@ export function SystemSettingsForm({
     });
   }, [data, form, formValues]);
 
-  const handleSubmit: SubmitHandler<SystemSettingsFormSchema> = (values) => onSubmit({
-    ...values,
-    demandApprovalCompletionAction: getSupportedActionValue(
-      approvalActionValues.demandApprovalCompletionAction,
-      formValues.demandApprovalCompletionAction,
-      demandActionOptions
-    ),
-    quotationApprovalCompletionAction: getSupportedActionValue(
-      approvalActionValues.quotationApprovalCompletionAction,
-      formValues.quotationApprovalCompletionAction,
-      quotationActionOptions
-    ),
-    orderApprovalCompletionAction: getSupportedActionValue(
-      approvalActionValues.orderApprovalCompletionAction,
-      formValues.orderApprovalCompletionAction,
-      orderActionOptions
-    ),
-  });
+  const handleSubmit: SubmitHandler<SystemSettingsFormSchema> = async (values) => {
+    await onSubmit({
+      ...values,
+      demandApprovalCompletionAction: getSupportedActionValue(
+        approvalActionValues.demandApprovalCompletionAction,
+        formValues.demandApprovalCompletionAction,
+        demandActionOptions
+      ),
+      quotationApprovalCompletionAction: getSupportedActionValue(
+        approvalActionValues.quotationApprovalCompletionAction,
+        formValues.quotationApprovalCompletionAction,
+        quotationActionOptions
+      ),
+      orderApprovalCompletionAction: getSupportedActionValue(
+        approvalActionValues.orderApprovalCompletionAction,
+        formValues.orderApprovalCompletionAction,
+        orderActionOptions
+      ),
+    });
+
+    if (documentFieldLabelItems.length > 0) {
+      await updateDocumentFieldLabelsMutation.mutateAsync({ items: documentFieldLabelItems });
+    }
+  };
   const erpConnectionSucceeded = erpConnectionTest?.success === true;
   const erpConnectionMessage = erpConnectionSucceeded
     ? erpConnectionTest.message || t('systemSettings.ErpConnection.TestSucceeded')
@@ -494,7 +509,7 @@ export function SystemSettingsForm({
               </div>
             </div>
 
-            <DocumentFieldLabelsSettingsPanel />
+            <DocumentFieldLabelsSettingsPanel onItemsChange={handleDocumentFieldLabelsChange} />
 
             <FormField
               control={form.control}
@@ -752,10 +767,10 @@ export function SystemSettingsForm({
             <div className="md:col-span-2 flex justify-end pt-2">
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSaving}
                 className="min-w-[140px] bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.03] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
-                {isSubmitting ? (
+                {isSaving ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     {t('common.saving')}
