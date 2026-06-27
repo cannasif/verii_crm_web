@@ -203,6 +203,66 @@
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(17 24 39 / 18%) 0%, rgb(109 40 217 / 13%) 58%, rgb(245 158 11 / 13%) 100%);
 }
 
+.theme-burgundy {
+  --crm-brand-primary: #991b1b;
+  --crm-brand-secondary: #b91c1c;
+  --crm-brand-accent: #f97316;
+  --crm-brand-muted: #fef2f2;
+  --crm-brand-soft: rgb(185 28 28 / 12%);
+  --crm-brand-ring: rgb(185 28 28 / 25%);
+  --crm-brand-shadow: rgb(153 27 27 / 24%);
+  --crm-brand-gradient: linear-gradient(90deg, #7f1d1d 0%, #b91c1c 58%, #f97316 100%);
+  --crm-brand-gradient-soft: linear-gradient(135deg, rgb(127 29 29 / 16%) 0%, rgb(185 28 28 / 12%) 58%, rgb(249 115 22 / 12%) 100%);
+}
+
+.theme-industrial-steel {
+  --crm-brand-primary: #334155;
+  --crm-brand-secondary: #475569;
+  --crm-brand-accent: #0284c7;
+  --crm-brand-muted: #f1f5f9;
+  --crm-brand-soft: rgb(71 85 105 / 13%);
+  --crm-brand-ring: rgb(56 189 248 / 25%);
+  --crm-brand-shadow: rgb(15 23 42 / 24%);
+  --crm-brand-gradient: linear-gradient(90deg, #0f172a 0%, #475569 56%, #38bdf8 100%);
+  --crm-brand-gradient-soft: linear-gradient(135deg, rgb(15 23 42 / 16%) 0%, rgb(71 85 105 / 13%) 56%, rgb(56 189 248 / 12%) 100%);
+}
+
+.theme-clean-light {
+  --crm-brand-primary: #2563eb;
+  --crm-brand-secondary: #14b8a6;
+  --crm-brand-accent: #0ea5e9;
+  --crm-brand-muted: #eff6ff;
+  --crm-brand-soft: rgb(37 99 235 / 9%);
+  --crm-brand-ring: rgb(37 99 235 / 22%);
+  --crm-brand-shadow: rgb(37 99 235 / 18%);
+  --crm-brand-gradient: linear-gradient(90deg, #2563eb 0%, #0ea5e9 52%, #14b8a6 100%);
+  --crm-brand-gradient-soft: linear-gradient(135deg, rgb(248 250 252 / 90%) 0%, rgb(37 99 235 / 10%) 52%, rgb(20 184 166 / 10%) 100%);
+}
+
+.theme-high-contrast {
+  --crm-brand-primary: #facc15;
+  --crm-brand-secondary: #ffffff;
+  --crm-brand-accent: #38bdf8;
+  --crm-brand-muted: #020617;
+  --crm-brand-soft: rgb(250 204 21 / 18%);
+  --crm-brand-ring: rgb(250 204 21 / 52%);
+  --crm-brand-shadow: rgb(250 204 21 / 24%);
+  --crm-brand-gradient: linear-gradient(90deg, #020617 0%, #1e293b 52%, #facc15 100%);
+  --crm-brand-gradient-soft: linear-gradient(135deg, rgb(2 6 23 / 24%) 0%, rgb(56 189 248 / 13%) 52%, rgb(250 204 21 / 18%) 100%);
+}
+
+.theme-minimal-crm {
+  --crm-brand-primary: #155e75;
+  --crm-brand-secondary: #0f766e;
+  --crm-brand-accent: #64748b;
+  --crm-brand-muted: #ecfeff;
+  --crm-brand-soft: rgb(21 94 117 / 11%);
+  --crm-brand-ring: rgb(15 118 110 / 24%);
+  --crm-brand-shadow: rgb(21 94 117 / 20%);
+  --crm-brand-gradient: linear-gradient(90deg, #155e75 0%, #0f766e 58%, #64748b 100%);
+  --crm-brand-gradient-soft: linear-gradient(135deg, rgb(21 94 117 / 13%) 0%, rgb(15 118 110 / 11%) 58%, rgb(100 116 139 / 10%) 100%);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

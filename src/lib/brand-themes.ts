@@ -8,6 +8,11 @@ export const brandThemeIds = [
   'graphite',
   'emerald',
   'executive',
+  'burgundy',
+  'industrialSteel',
+  'cleanLight',
+  'highContrast',
+  'minimalCrm',
 ] as const;
 
 export type BrandTheme = (typeof brandThemeIds)[number];
@@ -31,7 +36,7 @@ export const brandThemes: readonly BrandThemeDefinition[] = [
   {
     id: 'corporateBlue',
     label: 'Kurumsal Lacivert',
-    description: 'Daha ciddi, finans ve yönetim odaklı görünüm',
+    description: 'Finans, üretim ve B2B müşteriler için güven veren mavi',
     className: 'theme-corporate-blue',
     swatches: ['#1e3a8a', '#2563eb', '#06b6d4'],
   },
@@ -55,6 +60,41 @@ export const brandThemes: readonly BrandThemeDefinition[] = [
     description: 'Lacivert, mor ve altın aksanlı üst seviye his',
     className: 'theme-executive',
     swatches: ['#111827', '#6d28d9', '#f59e0b'],
+  },
+  {
+    id: 'burgundy',
+    label: 'Bordo Kurumsal',
+    description: 'ERP ekranlarına yakın, ağır ve kurumsal his',
+    className: 'theme-burgundy',
+    swatches: ['#7f1d1d', '#b91c1c', '#f97316'],
+  },
+  {
+    id: 'industrialSteel',
+    label: 'Endüstriyel Çelik',
+    description: 'Üretim, stok ve fabrika operasyonları için metalik yapı',
+    className: 'theme-industrial-steel',
+    swatches: ['#0f172a', '#475569', '#38bdf8'],
+  },
+  {
+    id: 'cleanLight',
+    label: 'Sade Açık',
+    description: 'Gündüz kullanım ve yoğun veri girişi için göz yormayan yapı',
+    className: 'theme-clean-light',
+    swatches: ['#f8fafc', '#2563eb', '#14b8a6'],
+  },
+  {
+    id: 'highContrast',
+    label: 'Yüksek Kontrast',
+    description: 'Net metin, belirgin sınırlar ve erişilebilir odak hissi',
+    className: 'theme-high-contrast',
+    swatches: ['#020617', '#f8fafc', '#facc15'],
+  },
+  {
+    id: 'minimalCrm',
+    label: 'Minimal CRM',
+    description: 'Daha az neon, daha çok operasyonel SaaS görünümü',
+    className: 'theme-minimal-crm',
+    swatches: ['#155e75', '#0f766e', '#64748b'],
   },
 ] as const;
 
