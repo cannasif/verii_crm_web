@@ -99,10 +99,6 @@ function getDirtyChild(dirty: unknown, key: string): unknown {
   return (dirty as DirtyFieldTree)[key];
 }
 
-function hasMeaningfulRootValue(root: Record<string, unknown>, dirtyRoot: unknown): boolean {
-  return MEANINGFUL_ROOT_KEYS.some((key) => hasDirtyField(getDirtyChild(dirtyRoot, key)) && hasValue(root[key]));
-}
-
 function hasStoredMeaningfulRootValue(root: Record<string, unknown>): boolean {
   return MEANINGFUL_ROOT_KEYS.some((key) => hasValue(root[key]));
 }
@@ -124,11 +120,15 @@ export function hasMeaningfulSalesDocumentDraft(
 ): boolean {
   const rootObject = getPayloadRoot(payload, rootKey);
   const dirtyRoot = dirtyFields ? dirtyFields[rootKey] : undefined;
+  const hasRootValue = hasStoredMeaningfulRootValue(rootObject);
+  const hasDirtyRootValue = MEANINGFUL_ROOT_KEYS.some(
+    (key) => hasDirtyField(getDirtyChild(dirtyRoot, key)) && hasValue(rootObject[key]),
+  );
 
   return (
-    hasMeaningfulRootValue(rootObject, dirtyRoot) ||
+    hasRootValue ||
+    hasDirtyRootValue ||
     payload.lines.length > 0 ||
-    payload.exchangeRates.length > 0 ||
     hasValue(payload.notes)
   );
 }
@@ -140,7 +140,6 @@ function hasStoredMeaningfulSalesDocumentDraft(
   return (
     hasStoredMeaningfulRootValue(getPayloadRoot(payload, rootKey)) ||
     payload.lines.length > 0 ||
-    payload.exchangeRates.length > 0 ||
     hasValue(payload.notes)
   );
 }
@@ -182,6 +181,7 @@ export function useSalesDocumentDraft<
 
   const [pendingDraft, setPendingDraft] = useState<SalesDocumentDraftRecord<Payload> | null>(null);
   const [restoreDialogOpen, setRestoreDialogOpen] = useState(false);
+  const [draftLoadComplete, setDraftLoadComplete] = useState(false);
   const isRestoringRef = useRef(false);
 
   const buildPayload = useCallback((): Payload => {
@@ -199,22 +199,32 @@ export function useSalesDocumentDraft<
   }, [draftKey]);
 
   useEffect(() => {
-    if (!draftKey) return;
+    if (!draftKey) {
+      setDraftLoadComplete(true);
+      return;
+    }
     let active = true;
+    setDraftLoadComplete(false);
 
     const loadDraft = async (): Promise<void> => {
       await deleteExpiredSalesDocumentDrafts();
       const record = await getSalesDocumentDraft<Payload>(draftKey);
-      if (!active || !record) return;
+      if (!active) return;
+      if (!record) {
+        setDraftLoadComplete(true);
+        return;
+      }
 
       const isExpired = new Date(record.expiresAt).getTime() <= Date.now();
       if (isExpired || !hasStoredMeaningfulSalesDocumentDraft(record.payload as AnyDraftPayload, rootKey)) {
         await deleteSalesDocumentDraft(draftKey);
+        if (active) setDraftLoadComplete(true);
         return;
       }
 
       setPendingDraft(record);
       setRestoreDialogOpen(true);
+      setDraftLoadComplete(true);
     };
 
     void loadDraft();
@@ -225,7 +235,7 @@ export function useSalesDocumentDraft<
   }, [draftKey, rootKey]);
 
   useEffect(() => {
-    if (!draftKey || !enabled || restoreDialogOpen || isRestoringRef.current) return;
+    if (!draftKey || !enabled || !draftLoadComplete || restoreDialogOpen || isRestoringRef.current) return;
 
     const payload = buildPayload();
     if (!hasMeaningfulSalesDocumentDraft(payload as AnyDraftPayload, rootKey, dirtyFields)) {
@@ -254,6 +264,7 @@ export function useSalesDocumentDraft<
     documentType,
     dirtyFields,
     draftKey,
+    draftLoadComplete,
     enabled,
     restoreDialogOpen,
     rootKey,
