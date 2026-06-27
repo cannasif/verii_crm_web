@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import { arraysEqual } from '@/lib/utils';
 import {
@@ -308,25 +309,32 @@ export function PricingRuleManagementPage(): ReactElement {
               label: resolveLabel(t, 'common.refresh', 'Yenile'),
             }}
             leftSlot={
-              <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl overflow-x-auto">
-                {(['all', 'active', 'inactive'] as const).map((filter) => (
-                  <Button
-                    key={filter}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setActiveFilter(filter)}
-                    className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${activeFilter === filter
-                      ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
-                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                      }`}
-                  >
-                    {filter === 'all'
-                      ? t('common.all')
-                      : filter === 'active'
-                        ? t('status.active')
-                        : t('status.inactive')}
-                  </Button>
-                ))}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl overflow-x-auto">
+                  {(['all', 'active', 'inactive'] as const).map((filter) => (
+                    <Button
+                      key={filter}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setActiveFilter(filter)}
+                      className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${activeFilter === filter
+                        ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
+                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                        }`}
+                    >
+                      {filter === 'all'
+                        ? t('common.all')
+                        : filter === 'active'
+                          ? t('status.active')
+                          : t('status.inactive')}
+                    </Button>
+                  ))}
+                </div>
+                <DefinitionExcelActions
+                  definitionKey="pricing-rule"
+                  fileNamePrefix="fiyat-kurallari"
+                  onImportCompleted={handleRefresh}
+                />
               </div>
             }
           />
