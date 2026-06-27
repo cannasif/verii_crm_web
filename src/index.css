@@ -200,6 +200,8 @@
   --crm-brand-shadow: rgb(37 99 235 / 24%);
   --crm-brand-gradient: linear-gradient(90deg, #1e3a8a 0%, #2563eb 52%, #06b6d4 100%);
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(30 64 175 / 16%) 0%, rgb(37 99 235 / 12%) 52%, rgb(6 182 212 / 12%) 100%);
+  --crm-app-aura-start: rgb(30 64 175 / 15%);
+  --crm-app-aura-end: rgb(6 182 212 / 13%);
 }
 
 .theme-graphite {
@@ -213,6 +215,8 @@
   --crm-brand-shadow: rgb(15 23 42 / 22%);
   --crm-brand-gradient: linear-gradient(90deg, #111827 0%, #475569 56%, #94a3b8 100%);
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(15 23 42 / 15%) 0%, rgb(71 85 105 / 12%) 56%, rgb(148 163 184 / 12%) 100%);
+  --crm-app-aura-start: rgb(51 65 85 / 13%);
+  --crm-app-aura-end: rgb(148 163 184 / 12%);
 }
 
 .theme-emerald {
@@ -226,6 +230,8 @@
   --crm-brand-shadow: rgb(16 185 129 / 24%);
   --crm-brand-gradient: linear-gradient(90deg, #065f46 0%, #10b981 55%, #2dd4bf 100%);
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(6 95 70 / 16%) 0%, rgb(16 185 129 / 12%) 55%, rgb(45 212 191 / 12%) 100%);
+  --crm-app-aura-start: rgb(6 95 70 / 14%);
+  --crm-app-aura-end: rgb(45 212 191 / 12%);
 }
 
 .theme-executive {
@@ -239,6 +245,8 @@
   --crm-brand-shadow: rgb(109 40 217 / 24%);
   --crm-brand-gradient: linear-gradient(90deg, #111827 0%, #6d28d9 58%, #f59e0b 100%);
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(17 24 39 / 18%) 0%, rgb(109 40 217 / 13%) 58%, rgb(245 158 11 / 13%) 100%);
+  --crm-app-aura-start: rgb(67 56 202 / 13%);
+  --crm-app-aura-end: rgb(245 158 11 / 12%);
 }
 
 .theme-burgundy {
@@ -252,6 +260,8 @@
   --crm-brand-shadow: rgb(153 27 27 / 24%);
   --crm-brand-gradient: linear-gradient(90deg, #7f1d1d 0%, #b91c1c 58%, #f97316 100%);
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(127 29 29 / 16%) 0%, rgb(185 28 28 / 12%) 58%, rgb(249 115 22 / 12%) 100%);
+  --crm-app-aura-start: rgb(127 29 29 / 13%);
+  --crm-app-aura-end: rgb(249 115 22 / 12%);
 }
 
 .theme-industrial-steel {
@@ -265,6 +275,8 @@
   --crm-brand-shadow: rgb(15 23 42 / 24%);
   --crm-brand-gradient: linear-gradient(90deg, #0f172a 0%, #475569 56%, #38bdf8 100%);
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(15 23 42 / 16%) 0%, rgb(71 85 105 / 13%) 56%, rgb(56 189 248 / 12%) 100%);
+  --crm-app-aura-start: rgb(15 23 42 / 14%);
+  --crm-app-aura-end: rgb(56 189 248 / 12%);
 }
 
 .theme-clean-light {
@@ -278,6 +290,8 @@
   --crm-brand-shadow: rgb(37 99 235 / 18%);
   --crm-brand-gradient: linear-gradient(90deg, #2563eb 0%, #0ea5e9 52%, #14b8a6 100%);
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(248 250 252 / 90%) 0%, rgb(37 99 235 / 10%) 52%, rgb(20 184 166 / 10%) 100%);
+  --crm-app-aura-start: rgb(37 99 235 / 10%);
+  --crm-app-aura-end: rgb(20 184 166 / 10%);
 }
 
 .theme-high-contrast {
@@ -291,6 +305,8 @@
   --crm-brand-shadow: rgb(250 204 21 / 24%);
   --crm-brand-gradient: linear-gradient(90deg, #020617 0%, #1e293b 52%, #facc15 100%);
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(2 6 23 / 24%) 0%, rgb(56 189 248 / 13%) 52%, rgb(250 204 21 / 18%) 100%);
+  --crm-app-aura-start: rgb(2 6 23 / 18%);
+  --crm-app-aura-end: rgb(250 204 21 / 14%);
 }
 
 .theme-minimal-crm {
@@ -304,6 +320,58 @@
   --crm-brand-shadow: rgb(21 94 117 / 20%);
   --crm-brand-gradient: linear-gradient(90deg, #155e75 0%, #0f766e 58%, #64748b 100%);
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(21 94 117 / 13%) 0%, rgb(15 118 110 / 11%) 58%, rgb(100 116 139 / 10%) 100%);
+  --crm-app-aura-start: rgb(21 94 117 / 11%);
+  --crm-app-aura-end: rgb(100 116 139 / 10%);
+}
+
+.dark.theme-v3rii {
+  --crm-app-aura-start: rgb(236 0 122 / 7%);
+  --crm-app-aura-end: rgb(255 75 0 / 7%);
+}
+
+.dark.theme-corporate-blue {
+  --crm-app-aura-start: rgb(37 99 235 / 8%);
+  --crm-app-aura-end: rgb(6 182 212 / 7%);
+}
+
+.dark.theme-graphite {
+  --crm-app-aura-start: rgb(71 85 105 / 8%);
+  --crm-app-aura-end: rgb(148 163 184 / 6%);
+}
+
+.dark.theme-emerald {
+  --crm-app-aura-start: rgb(16 185 129 / 8%);
+  --crm-app-aura-end: rgb(45 212 191 / 7%);
+}
+
+.dark.theme-executive {
+  --crm-app-aura-start: rgb(109 40 217 / 8%);
+  --crm-app-aura-end: rgb(245 158 11 / 7%);
+}
+
+.dark.theme-burgundy {
+  --crm-app-aura-start: rgb(185 28 28 / 8%);
+  --crm-app-aura-end: rgb(249 115 22 / 7%);
+}
+
+.dark.theme-industrial-steel {
+  --crm-app-aura-start: rgb(71 85 105 / 8%);
+  --crm-app-aura-end: rgb(56 189 248 / 7%);
+}
+
+.dark.theme-clean-light {
+  --crm-app-aura-start: rgb(37 99 235 / 8%);
+  --crm-app-aura-end: rgb(20 184 166 / 7%);
+}
+
+.dark.theme-high-contrast {
+  --crm-app-aura-start: rgb(250 204 21 / 8%);
+  --crm-app-aura-end: rgb(56 189 248 / 7%);
+}
+
+.dark.theme-minimal-crm {
+  --crm-app-aura-start: rgb(21 94 117 / 8%);
+  --crm-app-aura-end: rgb(100 116 139 / 7%);
 }
 
 @layer base {
@@ -476,6 +544,17 @@
     [class*='bg-gradient-to'][class*='orange']
   ) {
     background-image: var(--crm-brand-gradient) !important;
+  }
+
+  :where(
+    [class*='bg-[radial-gradient'][class*='rgba(236,72,153'],
+    [class*='bg-[radial-gradient'][class*='rgba(249,115,22'],
+    [class*='bg-[radial-gradient'][class*='rgba(219,39,119'],
+    [class*='dark:bg-[radial-gradient'][class*='rgba(236,72,153'],
+    [class*='dark:bg-[radial-gradient'][class*='rgba(249,115,22'],
+    [class*='dark:bg-[radial-gradient'][class*='rgba(219,39,119']
+  ) {
+    background-image: var(--crm-brand-gradient-soft) !important;
   }
 
   :where([class*='shadow-pink'], [class*='shadow-purple'], [class*='shadow-orange']) {
