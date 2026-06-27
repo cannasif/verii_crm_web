@@ -55,6 +55,33 @@ const normalizeContact = (raw: unknown): ContactDto => {
   };
 };
 
+const normalizePagedContacts = (
+  pagedData: PagedResponse<ContactDto> & { items?: unknown[]; Items?: unknown[] }
+): PagedResponse<ContactDto> => {
+  const rawRows = Array.isArray(pagedData.data)
+    ? pagedData.data
+    : Array.isArray(pagedData.items)
+      ? pagedData.items
+      : Array.isArray(pagedData.Items)
+        ? pagedData.Items
+        : [];
+  const totalCount = Number(pagedData.totalCount ?? 0);
+  const pageNumber = Math.max(1, Number(pagedData.pageNumber ?? 1) || 1);
+  const pageSize = Math.max(1, Number(pagedData.pageSize ?? (rawRows.length || 10)) || 10);
+  const totalPages = Number(pagedData.totalPages ?? (Math.ceil(totalCount / pageSize) || 1));
+
+  return {
+    ...pagedData,
+    data: rawRows.map(normalizeContact),
+    totalCount,
+    pageNumber,
+    pageSize,
+    totalPages: Math.max(1, totalPages),
+    hasPreviousPage: pagedData.hasPreviousPage ?? pageNumber > 1,
+    hasNextPage: pagedData.hasNextPage ?? pageNumber < Math.max(1, totalPages),
+  };
+};
+
 export const contactApi = {
   getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<ContactDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<ContactDto>>>('/api/Contact/query', {
@@ -68,19 +95,7 @@ export const contactApi = {
     });
     
     if (response.success && response.data) {
-      const pagedData = response.data as PagedResponse<ContactDto> & { items?: ContactDto[] };
-      
-      if (pagedData.items && !pagedData.data) {
-        return {
-          ...pagedData,
-          data: pagedData.items.map(normalizeContact),
-        };
-      }
-
-      return {
-        ...pagedData,
-        data: (pagedData.data ?? []).map(normalizeContact),
-      };
+      return normalizePagedContacts(response.data as PagedResponse<ContactDto> & { items?: unknown[]; Items?: unknown[] });
     }
     throw new Error(response.message || 'İletişim listesi yüklenemedi');
   },

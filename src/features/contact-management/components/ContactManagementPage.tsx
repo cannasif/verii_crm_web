@@ -149,11 +149,13 @@ export function ContactManagementPage(): ReactElement {
     [apiResponse?.data]
   );
 
-  const totalCount = apiResponse?.totalCount ?? 0;
-  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
-  const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
   const currentPageRows = contacts;
+  const totalCount = apiResponse?.totalCount ?? 0;
+  const effectivePageSize = apiResponse?.pageSize ?? pageSize;
+  const effectivePageNumber = apiResponse?.pageNumber ?? pageNumber;
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / effectivePageSize));
+  const startRow = totalCount === 0 ? 0 : (effectivePageNumber - 1) * effectivePageSize + 1;
+  const endRow = totalCount === 0 ? 0 : Math.min(startRow + currentPageRows.length - 1, totalCount);
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ContactColumnKey[];
 
@@ -230,6 +232,14 @@ export function ContactManagementPage(): ReactElement {
   useEffect(() => {
     setPageNumber(1);
   }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+
+  useEffect(() => {
+    if (totalCount === 0) {
+      return;
+    }
+
+    setPageNumber((current) => (current > totalPages ? totalPages : current));
+  }, [totalCount, totalPages]);
 
   const handleAddClick = (): void => {
     setEditingContact(null);
@@ -344,7 +354,7 @@ export function ContactManagementPage(): ReactElement {
       <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
         <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
           <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
-            {t('table.title', { defaultValue: t('table.title') })}
+            {t('table.listTitle')}
           </CardTitle>
           <DataTableActionBar
             pageKey={PAGE_KEY}
@@ -432,12 +442,12 @@ export function ContactManagementPage(): ReactElement {
                 setPageSize(s);
                 setPageNumber(1);
               }}
-              pageNumber={pageNumber}
+              pageNumber={effectivePageNumber}
               totalPages={totalPages}
-              hasPreviousPage={pageNumber > 1}
-              hasNextPage={pageNumber < totalPages}
-              onPreviousPage={() => setPageNumber((p) => Math.max(1, p - 1))}
-              onNextPage={() => setPageNumber((p) => Math.min(totalPages, p + 1))}
+              hasPreviousPage={apiResponse?.hasPreviousPage ?? effectivePageNumber > 1}
+              hasNextPage={apiResponse?.hasNextPage ?? effectivePageNumber < totalPages}
+              onPreviousPage={() => setPageNumber(Math.max(1, effectivePageNumber - 1))}
+              onNextPage={() => setPageNumber(Math.min(totalPages, effectivePageNumber + 1))}
               previousLabel={t('common.previous')}
               nextLabel={t('common.next')}
               paginationInfoText={t('common.table.showing', {

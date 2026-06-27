@@ -20,6 +20,7 @@
     "newThisMonth": "New This Month"
   },
   "table": {
+    "listTitle": "Contact List",
     "id": "ID",
     "fullName": "Full Name",
     "email": "Email",

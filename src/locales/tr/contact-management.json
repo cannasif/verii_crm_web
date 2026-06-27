@@ -21,6 +21,7 @@
     "newThisMonth": "Bu Ay Yeni"
   },
   "table": {
+    "listTitle": "İletişim Listesi",
     "id": "ID",
     "salutation": "Hitap",
     "fullName": "Ad Soyad",

@@ -8,6 +8,7 @@
     "newThisMonth": "Nouveaux ce mois-ci"
   },
   "table": {
+    "listTitle": "Liste des contacts",
     "id": "IDENTIFIANT",
     "fullName": "Nom complet",
     "email": "E-mail",
