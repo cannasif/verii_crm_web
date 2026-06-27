@@ -88,6 +88,7 @@ export interface CreateQuotationDto {
   deliveryDate?: string | null;
   shippingAddressId?: number | null;
   representativeId?: number | null;
+  activityId?: number | null;
   projectCode?: string | null;
   ozelKod1?: string | null;
   ozelKod2?: string | null;
@@ -300,6 +301,7 @@ export interface QuotationGetDto {
   validUntil?: string | null;
   contactId?: number | null;
   activityId?: number | null;
+  activitySubject?: string | null;
   generalDiscountRate?: number | null;
   generalDiscountAmount?: number | null;
   isERPIntegrated?: boolean;

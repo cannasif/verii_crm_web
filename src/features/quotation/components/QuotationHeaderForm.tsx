@@ -45,6 +45,7 @@ import {
 } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
+import { useCustomerActivities } from '@/features/activity-management/hooks/useCustomerActivities';
 import {
   mapCustomerToComboboxOption,
   resolveCustomerFieldDisplayValue,
@@ -137,6 +138,7 @@ export function QuotationHeaderForm({
   const [ozelKod2SearchTerm, setOzelKod2SearchTerm] = useState('');
   const [paymentTypeSearchTerm, setPaymentTypeSearchTerm] = useState('');
   const [deliveryMethodSearchTerm, setDeliveryMethodSearchTerm] = useState('');
+  const [activitySearchTerm, setActivitySearchTerm] = useState('');
   const isInitialLoadRef = useRef(true);
 
   const handleRemoveNote = (key: keyof QuotationNotesDto): void => {
@@ -149,6 +151,7 @@ export function QuotationHeaderForm({
   const watchedErpCustomerCode = form.watch('quotation.erpCustomerCode');
   const watchedCurrency = form.watch('quotation.currency');
   const watchedRepresentativeId = form.watch('quotation.representativeId');
+  const watchedActivityId = form.watch('quotation.activityId');
   const prevRepresentativeIdRef = useRef<number | null | undefined>(watchedRepresentativeId);
 
   const watchedDocumentSerialTypeId = form.watch('quotation.documentSerialTypeId');
@@ -163,6 +166,18 @@ export function QuotationHeaderForm({
     !!watchedOfferType,
     watchedOfferType ?? null
   );
+  const customerActivitiesQuery = useCustomerActivities(watchedCustomerId, activitySearchTerm);
+  const activityOptions = useMemo(
+    () =>
+      (customerActivitiesQuery.data ?? []).map((activity) => ({
+        value: String(activity.id),
+        label: [
+          activity.subject || `#${activity.id}`,
+          activity.startDateTime ? new Date(activity.startDateTime).toLocaleDateString() : null,
+        ].filter(Boolean).join(' - '),
+      })),
+    [customerActivitiesQuery.data],
+  );
   const specialCode1Dropdown = useSpecialCodesInfinite(1, ozelKod1SearchTerm);
   const specialCode2Dropdown = useSpecialCodesInfinite(2, ozelKod2SearchTerm);
   const specialCode1DefaultExists = useSpecialCodeExists(1, defaultSpecialCode, !readOnly && !quotationId);
@@ -174,6 +189,23 @@ export function QuotationHeaderForm({
       form.setValue('quotation.deliveryMethod', null);
     }
   }, [watchedOfferType, form]);
+
+  useEffect(() => {
+    if (!watchedCustomerId) {
+      if (watchedActivityId != null) {
+        form.setValue('quotation.activityId', null, { shouldDirty: true, shouldValidate: true });
+      }
+      return;
+    }
+
+    if (
+      watchedActivityId &&
+      !customerActivitiesQuery.isLoading &&
+      !activityOptions.some((option) => option.value === String(watchedActivityId))
+    ) {
+      form.setValue('quotation.activityId', null, { shouldDirty: true, shouldValidate: true });
+    }
+  }, [activityOptions, customerActivitiesQuery.isLoading, form, watchedActivityId, watchedCustomerId]);
 
   useEffect(() => {
     if (readOnly || quotationId) return;
@@ -638,6 +670,41 @@ export function QuotationHeaderForm({
                             className={cn(styles.selectTrigger, "min-w-0 px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             disabled={readOnly}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            )}
+
+            {selectedCustomer && (
+              <div className="animate-in fade-in slide-in-from-top-2 duration-500">
+                <div className="space-y-2">
+                  <div className={styles.label}>
+                    <div className="p-1 rounded-md bg-cyan-50 dark:bg-cyan-900/20 text-cyan-600">
+                      <BookUser className="w-3.5 h-3.5" />
+                    </div>
+                    {t('quotation:header.activity', { defaultValue: 'Bağlı Aktivite' })}
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="quotation.activityId"
+                    render={({ field }) => (
+                      <FormItem className="space-y-0 min-w-0">
+                        <FormControl>
+                          <VoiceSearchCombobox
+                            options={activityOptions}
+                            value={field.value?.toString() || ''}
+                            onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                            onDebouncedSearchChange={setActivitySearchTerm}
+                            isLoading={customerActivitiesQuery.isLoading}
+                            placeholder={t('quotation:header.selectActivity', { defaultValue: 'Aktivite seçin' })}
+                            className={cn(styles.selectTrigger, "min-w-0 px-4 hover:border-cyan-400 dark:hover:border-cyan-600 shadow-sm focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500")}
+                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[480px]"
+                            disabled={readOnly || !watchedCustomerId}
                           />
                         </FormControl>
                         <FormMessage />

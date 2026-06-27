@@ -59,6 +59,7 @@ export interface CreateDemandDto {
   deliveryDate?: string | null;
   shippingAddressId?: number | null;
   representativeId?: number | null;
+  activityId?: number | null;
   projectCode?: string | null;
   ozelKod1?: string | null;
   ozelKod2?: string | null;
@@ -226,6 +227,8 @@ export interface DemandGetDto {
   shippingAddressText?: string | null;
   representativeId?: number | null;
   representativeName?: string | null;
+  activityId?: number | null;
+  activitySubject?: string | null;
   projectCode?: string | null;
   ozelKod1?: string | null;
   ozelKod2?: string | null;
@@ -258,7 +261,6 @@ export interface DemandGetDto {
   hasCustomerSpecificDiscount: boolean;
   validUntil?: string | null;
   contactId?: number | null;
-  activityId?: number | null;
   generalDiscountRate?: number | null;
   generalDiscountAmount?: number | null;
   isERPIntegrated?: boolean;

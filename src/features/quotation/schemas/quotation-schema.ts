@@ -8,6 +8,7 @@ export const createQuotationSchema = z.object({
     deliveryDate: z.string().min(1, 'Teslimat tarihi seçilmelidir'),
     shippingAddressId: z.number().nullable().optional(),
     representativeId: z.number().nullable().optional(),
+    activityId: z.number().nullable().optional(),
     projectCode: z.string().max(50, 'Proje kodu en fazla 50 karakter olabilir').nullable().optional(),
     ozelKod1: z.string().trim().min(1, 'Özel Kod 1 seçilmelidir').max(10, 'Özel Kod 1 en fazla 10 karakter olabilir'),
     ozelKod2: z.string().trim().min(1, 'Özel Kod 2 seçilmelidir').max(10, 'Özel Kod 2 en fazla 10 karakter olabilir'),
