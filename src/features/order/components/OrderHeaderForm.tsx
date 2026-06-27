@@ -342,8 +342,14 @@ export function OrderHeaderForm({
   }, [allCustomerOptions, customerSearchQuery, customerTypeId, watchedCustomerId, watchedErpCustomerCode]);
 
   const handleComboboxSelect = (option: CustomerComboboxOption): void => {
-    form.setValue('order.potentialCustomerId', option.id);
-    form.setValue('order.erpCustomerCode', option.code ?? null);
+    form.setValue('order.potentialCustomerId', option.id, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    form.setValue('order.erpCustomerCode', option.code ?? null, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
     setCustomerComboboxOpen(false);
   };
 
@@ -1134,8 +1140,14 @@ export function OrderHeaderForm({
         onOpenChange={setCustomerSelectDialogOpen}
         contextUserId={watchedRepresentativeId ?? undefined}
         onSelect={(result) => {
-          form.setValue('order.potentialCustomerId', result.customerId ?? null);
-          form.setValue('order.erpCustomerCode', result.erpCustomerCode ?? null);
+          form.setValue('order.potentialCustomerId', result.customerId ?? null, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
+          form.setValue('order.erpCustomerCode', result.erpCustomerCode ?? null, {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
         }}
       />
 
