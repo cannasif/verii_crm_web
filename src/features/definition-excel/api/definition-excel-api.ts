@@ -33,6 +33,13 @@ interface ApiResponse<T> {
   success?: boolean;
 }
 
+export interface DefinitionExcelTemplateTheme {
+  primary?: string;
+  secondary?: string;
+  accent?: string;
+  muted?: string;
+}
+
 function unwrap<T>(response: ApiResponse<T> | T): T {
   const payload = response as ApiResponse<T>;
   if (payload && typeof payload === 'object' && 'data' in payload) {
@@ -53,9 +60,10 @@ function downloadBlob(blob: Blob, fileName: string): void {
 }
 
 export const definitionExcelApi = {
-  async downloadTemplate(definitionKey: string, fileName: string): Promise<void> {
+  async downloadTemplate(definitionKey: string, fileName: string, theme?: DefinitionExcelTemplateTheme): Promise<void> {
     const response = await api.get<Blob>(`/api/definition-excel/${definitionKey}/template`, {
       responseType: 'blob',
+      params: theme,
     });
     downloadBlob(response as unknown as Blob, fileName);
   },

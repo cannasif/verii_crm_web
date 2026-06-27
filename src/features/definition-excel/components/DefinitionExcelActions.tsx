@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { definitionExcelApi, type DefinitionExcelImportJobDto } from '../api/definition-excel-api';
+import {
+  definitionExcelApi,
+  type DefinitionExcelImportJobDto,
+  type DefinitionExcelTemplateTheme,
+} from '../api/definition-excel-api';
 
 interface DefinitionExcelActionsProps {
   definitionKey: string;
@@ -25,6 +29,21 @@ function getStatusTone(status: DefinitionExcelImportJobDto['status']): string {
   if (status === 'CompletedWithErrors') return 'text-amber-700 dark:text-amber-300';
   if (status === 'Failed') return 'text-red-700 dark:text-red-300';
   return 'text-slate-600 dark:text-slate-300';
+}
+
+function readTemplateTheme(): DefinitionExcelTemplateTheme {
+  const styles = window.getComputedStyle(document.documentElement);
+  const read = (name: string): string | undefined => {
+    const value = styles.getPropertyValue(name).trim();
+    return value.startsWith('#') ? value : undefined;
+  };
+
+  return {
+    primary: read('--crm-brand-primary'),
+    secondary: read('--crm-brand-secondary'),
+    accent: read('--crm-brand-accent'),
+    muted: read('--crm-brand-muted'),
+  };
 }
 
 async function pollImportJob(jobId: number, timeoutMessage: string): Promise<DefinitionExcelImportJobDto> {
@@ -77,7 +96,7 @@ export function DefinitionExcelActions({
   const handleTemplateDownload = async (): Promise<void> => {
     setIsTemplateDownloading(true);
     try {
-      await definitionExcelApi.downloadTemplate(definitionKey, `${fileNamePrefix}-sablon.xlsx`);
+      await definitionExcelApi.downloadTemplate(definitionKey, `${fileNamePrefix}-sablon.xlsx`, readTemplateTheme());
       toast.success(t('common.definitionExcel.templateDownloaded'));
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t('common.definitionExcel.templateDownloadFailed'));
