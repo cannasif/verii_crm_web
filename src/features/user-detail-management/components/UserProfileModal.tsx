@@ -20,10 +20,12 @@ import {
 } from 'hugeicons-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { Check, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from '@/components/theme-provider';
+import { brandThemes } from '@/lib/brand-themes';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUserDetailByUserId } from '@/features/user-detail-management/hooks/useUserDetailByUserId';
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
@@ -52,7 +54,7 @@ export function UserProfileModal({
   onOpenProfileDetails
 }: UserProfileModalProps): ReactElement {
   const { t, i18n } = useTranslation();
-  const { theme, setTheme } = useTheme();
+  const { theme, brandTheme, setTheme, setBrandTheme } = useTheme();
   const { user, logout, branch } = useAuthStore();
   const navigate = useNavigate();
   const { data: userDetail } = useUserDetailByUserId(user?.id || 0, open);
@@ -97,7 +99,7 @@ export function UserProfileModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
         "p-0 gap-0 border-none shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col w-[95vw] md:max-w-4xl lg:max-w-[1100px] max-h-[92dvh] md:max-h-[620px] rounded-[2rem] md:rounded-[2.5rem] transition-all duration-500 [&>button:last-of-type]:hidden",
-        "bg-white text-slate-900 dark:bg-[#120c18] dark:text-white"
+        "bg-[var(--crm-app-panel)] text-slate-900 dark:text-white"
       )}>
         <DialogPrimitive.Close className={cn(
           "absolute right-4 top-4 md:right-6 md:top-6 z-50 rounded-2xl p-2.5 transition-all duration-200",
@@ -113,9 +115,9 @@ export function UserProfileModal({
         <div className="flex flex-col md:flex-row w-full h-full overflow-y-auto md:overflow-hidden">
           <div className={cn(
             "w-full md:w-[320px] lg:w-[380px] rounded-[1.5rem] md:rounded-[2rem] flex flex-col items-center justify-center md:justify-start md:pt-16 p-6 md:p-10 border-b md:border-b-0 md:border-r shrink-0 relative overflow-hidden transition-all duration-500",
-            "bg-slate-50/80 border-slate-100 dark:bg-linear-to-b dark:from-[#1a1025] dark:to-[#120c18] dark:border-white/5"
+            "bg-slate-50/80 border-slate-100 dark:border-white/5 dark:bg-[linear-gradient(180deg,var(--crm-app-panel-strong)_0%,var(--crm-app-panel)_100%)]"
           )}>
-            <div className="absolute top-[-20%] left-[-20%] w-64 h-64 bg-pink-500/10 rounded-full blur-[80px]" />
+            <div className="absolute left-[-20%] top-[-20%] h-64 w-64 rounded-full bg-[var(--crm-brand-soft)] blur-[80px]" />
 
             <div className="relative group mb-4 md:mb-6 mt-4 md:mt-0">
               <div className={cn(
@@ -129,14 +131,14 @@ export function UserProfileModal({
                     className="w-full h-full rounded-[1.3rem] md:rounded-[1.8rem] object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-[1.3rem] md:rounded-[1.8rem] bg-linear-to-br from-pink-500 via-purple-600 to-orange-500 flex items-center justify-center">
+                  <div className="flex h-full w-full items-center justify-center rounded-[1.3rem] bg-[image:var(--crm-brand-gradient)] md:rounded-[1.8rem]">
                     <span className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-lg">
                       {displayInitials}
                     </span>
                   </div>
                 )}
               </div>
-              <div className="absolute -bottom-1 -right-1 w-6 h-6 md:w-9 md:h-9 bg-emerald-500 rounded-2xl border-4 border-white dark:border-[#120c18] flex items-center justify-center shadow-lg">
+              <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-2xl border-4 border-white bg-emerald-500 shadow-lg md:h-9 md:w-9 dark:border-[var(--crm-app-panel)]">
                 <ShieldEnergyIcon size={14} className="text-white md:hidden" />
                 <ShieldEnergyIcon size={16} className="text-white hidden md:block" />
               </div>
@@ -146,7 +148,7 @@ export function UserProfileModal({
               <h2 className="text-lg md:text-2xl lg:text-3xl font-black tracking-tight truncate max-w-[250px] md:max-w-[320px]">{displayName}</h2>
               <Badge variant="outline" className={cn(
                 "rounded-full font-bold py-1 px-4 md:px-5 text-[10px] md:text-xs",
-                "border-pink-200 bg-pink-50 text-pink-600 dark:border-pink-500/30 dark:bg-pink-500/5 dark:text-pink-400"
+                "border-[var(--crm-brand-ring)] bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)]"
               )}>
                 {branch?.name || 'Administrator'}
               </Badge>
@@ -154,7 +156,7 @@ export function UserProfileModal({
 
             <div className="mt-4 md:mt-8 space-y-3 z-10 px-2 md:px-8">
               <div className={cn("flex items-center gap-3 md:gap-4 p-2.5 md:p-3 rounded-2xl transition-all", "bg-white shadow-sm dark:bg-white/5 dark:shadow-none")}>
-                <Mail02Icon size={16} className="text-pink-500 shrink-0" />
+                <Mail02Icon size={16} className="shrink-0 text-[var(--crm-brand-primary)]" />
                 <span className="text-xs font-semibold truncate opacity-70">{user?.email}</span>
               </div>
             </div>
@@ -162,7 +164,7 @@ export function UserProfileModal({
 
           <div className="flex-1 p-5 md:p-10 lg:p-6 flex flex-col min-h-0 relative">
             <div className="flex items-center gap-3 mb-2 md:mb-6 shrink-0 pb-3 md:pb- border-b border-dashed border-slate-200 dark:border-white/10">
-              <div className="w-1.5 h-5 md:h-8 bg-linear-to-b from-pink-500 to-purple-600 rounded-full" />
+              <div className="h-5 w-1.5 rounded-full bg-[image:var(--crm-brand-gradient)] md:h-8" />
               <h3 className="text-lg md:text-4xl lg:text-3x1 font-black tracking-tight uppercase">{t('sidebar.settings')}</h3>
             </div>
 
@@ -173,7 +175,7 @@ export function UserProfileModal({
               <button
                 className={cn(
                   "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all duration-300",
-                  "border-slate-100 bg-slate-50/50 hover:bg-white hover:shadow-xl hover:border-pink-200 dark:border-white/5 dark:bg-white/5 dark:hover:bg-white/[0.08] dark:hover:border-pink-500/30"
+                  "border-slate-100 bg-slate-50/50 hover:border-[var(--crm-brand-ring)] hover:bg-white hover:shadow-xl dark:border-white/5 dark:bg-white/5 dark:hover:bg-white/[0.08]"
                 )}
                 onClick={onOpenProfileDetails}
               >
@@ -217,7 +219,7 @@ export function UserProfileModal({
                         key={l.code}
                         value={l.code}
                         className={cn(
-                          "rounded-xl my-1 transition-colors focus:bg-pink-600 focus:text-white cursor-pointer",
+                          "my-1 cursor-pointer rounded-xl transition-colors focus:bg-[var(--crm-brand-primary)] focus:text-white",
                           "hover:bg-slate-100 dark:hover:bg-white/5"
                         )}
                       >
@@ -246,14 +248,74 @@ export function UserProfileModal({
                 <Switch
                   checked={isDark}
                   onCheckedChange={() => setTheme(isDark ? 'light' : 'dark')}
-                  className="data-[state=checked]:bg-pink-600 scale-75 md:scale-100"
+                  className="scale-75 data-[state=checked]:bg-[var(--crm-brand-primary)] md:scale-100"
                 />
+              </div>
+
+              <div className={cn(
+                "w-full rounded-[1.5rem] border p-3 transition-all md:rounded-[2rem] md:p-4",
+                "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
+              )}>
+                <div className="mb-3 flex items-start gap-3 md:gap-4">
+                  <div className="rounded-2xl bg-[var(--crm-brand-soft)] p-2.5 text-[var(--crm-brand-primary)] shadow-lg md:p-4">
+                    <Palette size={18} className="md:h-6 md:w-6" />
+                  </div>
+                  <div className="min-w-0 text-left">
+                    <p className="text-sm font-bold md:text-base lg:text-lg">Kurumsal Tema</p>
+                    <p className="mt-0.5 hidden text-xs text-[var(--crm-app-text-muted)] sm:block">
+                      CRM genel görünümünü marka kimliğine göre değiştirin
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {brandThemes.map((item) => {
+                    const isSelected = item.id === brandTheme;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setBrandTheme(item.id)}
+                        className={cn(
+                          "group flex min-h-16 items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-200",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--crm-brand-ring)]",
+                          isSelected
+                            ? "border-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)] shadow-[0_12px_30px_-22px_var(--crm-brand-shadow)]"
+                            : "border-slate-200 bg-white/70 hover:border-[var(--crm-brand-ring)] hover:bg-white dark:border-white/10 dark:bg-black/10 dark:hover:bg-white/5"
+                        )}
+                        aria-pressed={isSelected}
+                      >
+                        <span className="flex h-9 w-12 shrink-0 overflow-hidden rounded-xl border border-white/40 shadow-sm">
+                          {item.swatches.map((color) => (
+                            <span key={color} className="h-full flex-1" style={{ backgroundColor: color }} />
+                          ))}
+                        </span>
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-xs font-black md:text-sm">{item.label}</span>
+                          <span className="mt-0.5 line-clamp-1 text-[10px] font-medium text-[var(--crm-app-text-muted)] md:text-[11px]">
+                            {item.description}
+                          </span>
+                        </span>
+                        <span
+                          className={cn(
+                            "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all",
+                            isSelected
+                              ? "border-[var(--crm-brand-primary)] bg-[var(--crm-brand-primary)] text-white"
+                              : "border-slate-200 text-transparent dark:border-white/10"
+                          )}
+                        >
+                          <Check size={14} strokeWidth={3} />
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
             <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-dashed border-slate-200 dark:border-white/10 shrink-0 pb-1 md:pb-0">
               <Button
-                className="w-full h-11 md:h-14 lg:h-15 rounded-[1.2rem] md:rounded-[1.3rem] text-white font-black text-sm md:text-lg lg:text-xl bg-linear-to-r from-pink-600 to-orange-600 hover:scale-[1.01] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)]
+                className="h-11 w-full rounded-[1.2rem] bg-[image:var(--crm-brand-gradient)] text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all hover:scale-[1.01] active:scale-[0.98] md:h-14 md:rounded-[1.3rem] md:text-lg lg:h-15 lg:text-xl
                 opacity-90 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0
                 "

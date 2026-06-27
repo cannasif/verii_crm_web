@@ -61,6 +61,7 @@ const DASHBOARD_GRID_GAP_PX = 20;
 const DASHBOARD_COL_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
 const DASHBOARD_ROW_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
 const DASHBOARD_ABS_MAX_ROWS = 6;
+const EMPTY_REPORTS: ReportDto[] = [];
 
 const CORPORATE_KPI_TOP_CLASSES = [
   'bg-linear-to-r from-sky-500 to-cyan-400',
@@ -84,6 +85,16 @@ interface DashboardChoice {
 
 function getItemKey(item: Pick<MyReportDashboardItem, 'reportId' | 'widgetId'>): string {
   return `${item.reportId}:${item.widgetId ?? '__report__'}`;
+}
+
+function areDashboardLayoutsEquivalent(
+  left: MyReportDashboardLayout,
+  right: MyReportDashboardLayout,
+): boolean {
+  return left.version === right.version
+    && left.maxCols === right.maxCols
+    && left.maxRows === right.maxRows
+    && JSON.stringify(left.items) === JSON.stringify(right.items);
 }
 
 function dashboardGridMinHeightPx(maxRows: number): number {
@@ -796,7 +807,7 @@ export function AssignedReportsDashboardSection({
   const { t } = useTranslation('common');
   const userId = useAuthStore((state) => state.user?.id);
   const navigate = useNavigate();
-  const { data: reports = [], isLoading, error } = useReportsList(undefined, 'assigned');
+  const { data: reports = EMPTY_REPORTS, isLoading, error } = useReportsList(undefined, 'assigned');
   const [layout, setLayout] = useState<MyReportDashboardLayout>({
     version: 2,
     maxCols: 3,
@@ -828,6 +839,7 @@ export function AssignedReportsDashboardSection({
 
   const reportMap = useMemo(() => new Map(reports.map((report) => [report.id, report])), [reports]);
   const allowedReportIds = useMemo(() => reports.map((report) => report.id), [reports]);
+  const allowedReportIdsKey = useMemo(() => allowedReportIds.join(','), [allowedReportIds]);
   const reportDetailQueries = useQueries({
     queries: reports.map((report) => ({
       queryKey: [...reportBuilderQueryKeys.list('detail'), report.id],
@@ -873,9 +885,15 @@ export function AssignedReportsDashboardSection({
       return;
     }
 
-    setLayout((current) => sanitizeMyDashboardLayout(current, allowedReportIds));
-    setSavedLayout((saved) => sanitizeMyDashboardLayout(saved, allowedReportIds));
-  }, [allowedReportIds, userId]);
+    setLayout((current) => {
+      const sanitized = sanitizeMyDashboardLayout(current, allowedReportIds);
+      return areDashboardLayoutsEquivalent(current, sanitized) ? current : sanitized;
+    });
+    setSavedLayout((saved) => {
+      const sanitized = sanitizeMyDashboardLayout(saved, allowedReportIds);
+      return areDashboardLayoutsEquivalent(saved, sanitized) ? saved : sanitized;
+    });
+  }, [allowedReportIds, allowedReportIdsKey, userId]);
 
   useEffect(() => {
     if (saveState !== 'saved') return;

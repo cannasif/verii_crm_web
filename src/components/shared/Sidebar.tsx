@@ -13,6 +13,14 @@ const SIDEBAR_LABEL_TRANSITION = cn(
 const LOGO_URL = '/v3logo-sm.png';
 const VERII_LOGO_URL = '/veriicrmlogo-sm.png';
 
+const areSetsEqual = (left: Set<string>, right: Set<string>): boolean => {
+  if (left.size !== right.size) return false;
+  for (const value of left) {
+    if (!right.has(value)) return false;
+  }
+  return true;
+};
+
 interface NavItem {
   title: string;
   href?: string;
@@ -380,14 +388,18 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
 
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setExpandedItemKeys(getDefaultKeys());
+      const defaultKeys = getDefaultKeys();
+      setExpandedItemKeys((prev) => (areSetsEqual(prev, defaultKeys) ? prev : defaultKeys));
       setIsManualClick(false);
     }
   }, [searchQuery, getDefaultKeys]);
 
   useEffect(() => {
     if (isSidebarOpen && !searchQuery.trim()) {
-      setExpandedItemKeys((prev) => new Set([...getDefaultKeys(), ...prev]));
+      setExpandedItemKeys((prev) => {
+        const next = new Set([...getDefaultKeys(), ...prev]);
+        return areSetsEqual(prev, next) ? prev : next;
+      });
     }
   }, [isSidebarOpen, getDefaultKeys, searchQuery]);
 
