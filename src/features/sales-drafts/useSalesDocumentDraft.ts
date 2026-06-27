@@ -61,6 +61,19 @@ const MEANINGFUL_ROOT_KEYS = [
   'revisionNo',
 ] as const;
 
+const STORED_MEANINGFUL_ROOT_KEYS = [
+  'potentialCustomerId',
+  'erpCustomerCode',
+  'currency',
+  'shippingAddressId',
+  'paymentTypeId',
+  'deliveryMethod',
+  'projectCode',
+  'description',
+  'generalDiscountRate',
+  'generalDiscountAmount',
+] as const;
+
 function isFileLike(value: unknown): boolean {
   return (
     (typeof File !== 'undefined' && value instanceof File) ||
@@ -100,7 +113,7 @@ function getDirtyChild(dirty: unknown, key: string): unknown {
 }
 
 function hasStoredMeaningfulRootValue(root: Record<string, unknown>): boolean {
-  return MEANINGFUL_ROOT_KEYS.some((key) => hasValue(root[key]));
+  return STORED_MEANINGFUL_ROOT_KEYS.some((key) => hasValue(root[key]));
 }
 
 function getPayloadRoot(
@@ -120,17 +133,11 @@ export function hasMeaningfulSalesDocumentDraft(
 ): boolean {
   const rootObject = getPayloadRoot(payload, rootKey);
   const dirtyRoot = dirtyFields ? dirtyFields[rootKey] : undefined;
-  const hasRootValue = hasStoredMeaningfulRootValue(rootObject);
   const hasDirtyRootValue = MEANINGFUL_ROOT_KEYS.some(
     (key) => hasDirtyField(getDirtyChild(dirtyRoot, key)) && hasValue(rootObject[key]),
   );
 
-  return (
-    hasRootValue ||
-    hasDirtyRootValue ||
-    payload.lines.length > 0 ||
-    hasValue(payload.notes)
-  );
+  return hasDirtyRootValue || payload.lines.length > 0 || hasValue(payload.notes);
 }
 
 function hasStoredMeaningfulSalesDocumentDraft(
