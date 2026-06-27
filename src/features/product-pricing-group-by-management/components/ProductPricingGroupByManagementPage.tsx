@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
+import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import { arraysEqual } from '@/lib/utils';
@@ -316,7 +317,7 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
             leftSlot={
-              <>
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -331,7 +332,12 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
                   )}
                   {resolveLabel(t, 'common.refresh', 'Yenile')}
                 </Button>
-              </>
+                <DefinitionExcelActions
+                  definitionKey="product-pricing-group-by"
+                  fileNamePrefix="urun-fiyatlandirma-grup"
+                  onImportCompleted={handleRefresh}
+                />
+              </div>
             }
           />
         </CardHeader>
