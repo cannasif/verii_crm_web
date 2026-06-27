@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   useCountryOptionsInfinite,
   useCityOptionsInfinite,
@@ -64,6 +65,7 @@ import {
   Globe,
   MapPin,
   CreditCard,
+  CircleHelp,
   X,
 } from 'lucide-react';
 
@@ -95,6 +97,35 @@ const LABEL_STYLE =
 
 const CRM_NS = 'customer-management';
 
+interface ErpFieldHelpProps {
+  text: string;
+  required?: boolean;
+}
+
+function ErpFieldHelp({ text, required = false }: ErpFieldHelpProps): ReactElement {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          type="button"
+          aria-label={text}
+          className={[
+            'inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full transition-colors',
+            required
+              ? 'text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
+              : 'text-sky-600 hover:text-sky-700 dark:text-sky-300 dark:hover:text-sky-200',
+          ].join(' ')}
+        >
+          <CircleHelp className="h-4 w-4" strokeWidth={2.4} aria-hidden />
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-[280px] text-xs leading-relaxed">
+        {text}
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 export function CustomerForm({
   open,
   onOpenChange,
@@ -108,6 +139,11 @@ export function CustomerForm({
   const tf = useCallback(
     (key: string, options?: Record<string, unknown>): string =>
       t(`form.${key}`, { ns: CRM_NS, ...options }),
+    [t]
+  );
+  const erpHint = useCallback(
+    (key: string, defaultValue: string): string =>
+      t(`form.erpHints.${key}`, { ns: CRM_NS, defaultValue }),
     [t]
   );
   const branch = useAuthStore((state) => state.branch);
@@ -332,7 +368,11 @@ export function CustomerForm({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <FormField control={form.control} name="name" render={({ field, fieldState }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
-                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'name')}><Building2 size={16} className="text-pink-500" />{tf('name')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'name')}>
+                      <Building2 size={16} className="text-pink-500" />
+                      {tf('name')}
+                      <ErpFieldHelp required text={erpHint('name', 'ERP cari açmada Netsis CARI_ISIM alanına gönderilir ve zorunludur.')} />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -356,7 +396,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="customerCode" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{tf('code')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <Hash size={16} className="text-pink-500" />
+                      {tf('code')}
+                      <ErpFieldHelp required text={erpHint('customerCode', 'ERP cari açmada Netsis CARI_KOD alanına gönderilir ve zorunludur.')} />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -400,7 +444,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="taxNumber" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{tf('taxNumber')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <FileText size={16} className="text-pink-500" />
+                      {tf('taxNumber')}
+                      <ErpFieldHelp required text={erpHint('taxNumber', 'ERP cari açmada Netsis VERGI_NUMARASI ve açıklama alanına gönderilir. TCKN yoksa Vergi No + Vergi Dairesi birlikte zorunludur.')} />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -427,7 +475,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="taxOffice" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{tf('taxOffice')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <FileText size={16} className="text-pink-500" />
+                      {tf('taxOffice')}
+                      <ErpFieldHelp required text={erpHint('taxOffice', 'ERP cari açmada Netsis VERGI_DAIRESI ve açıklama alanına gönderilir. TCKN yoksa Vergi No + Vergi Dairesi birlikte zorunludur.')} />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -443,7 +495,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="tcknNumber" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{tf('tcknNumber')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <FileText size={16} className="text-pink-500" />
+                      {tf('tcknNumber')}
+                      <ErpFieldHelp required text={erpHint('tcknNumber', 'ERP cari açmada Netsis TC_KIMLIK_NO alanına gönderilir. Vergi No + Vergi Dairesi yoksa TCKN zorunlu alternatiftir.')} />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -470,7 +526,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="email" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Mail size={16} className="text-pink-500" />{tf('email')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <Mail size={16} className="text-pink-500" />
+                      {tf('email')}
+                      <ErpFieldHelp required text={erpHint('email', 'ERP cari açmada Netsis EMAIL alanına gönderilir ve zorunludur.')} />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -494,7 +554,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="website" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Globe size={16} className="text-pink-500" />{tf('website')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <Globe size={16} className="text-pink-500" />
+                      {tf('website')}
+                      <ErpFieldHelp text={erpHint('website', 'Doluysa ERP cari açmada Netsis WEB alanına gönderilir.')} />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -510,7 +574,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="phone" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{tf('phone')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <Phone size={16} className="text-pink-500" />
+                      {tf('phone')}
+                      <ErpFieldHelp required text={erpHint('phone', 'ERP cari açmada Netsis CARI_TEL alanına gönderilir. Telefon veya Telefon 2 alanlarından en az biri zorunludur.')} />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -537,7 +605,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="phone2" render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Phone size={16} className="text-pink-500" />{tf('phone2')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <Phone size={16} className="text-pink-500" />
+                      {tf('phone2')}
+                      <ErpFieldHelp required text={erpHint('phone2', 'Telefon alanı boşsa ERP cari açmada Netsis CARI_TEL alanına Telefon 2 gönderilir. Telefon veya Telefon 2 alanlarından en az biri zorunludur.')} />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         {...field}
@@ -588,7 +660,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="cityId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('city')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <MapPin size={16} className="text-pink-500" />
+                      {tf('city')}
+                      <ErpFieldHelp required text={erpHint('city', 'ERP cari açmada Netsis CARI_IL alanına gönderilir ve zorunludur.')} />
+                    </FormLabel>
                     <VoiceSearchCombobox
                       options={cityDropdown.options}
                       value={field.value ? String(field.value) : ''}
@@ -612,7 +688,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="districtId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('district')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <MapPin size={16} className="text-pink-500" />
+                      {tf('district')}
+                      <ErpFieldHelp required text={erpHint('district', 'ERP cari açmada Netsis CARI_ILCE alanına gönderilir ve zorunludur.')} />
+                    </FormLabel>
                     <VoiceSearchCombobox
                       options={districtDropdown.options}
                       value={field.value ? String(field.value) : ''}
@@ -639,7 +719,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="postalCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('postalCode')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <MapPin size={16} className="text-pink-500" />
+                      {tf('postalCode')}
+                      <ErpFieldHelp text={erpHint('postalCode', 'Doluysa ERP cari açmada Netsis POSTA_KODU alanına gönderilir. İlçe tanımında posta kodu varsa boş alana otomatik yazılır.')} />
+                    </FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={tf('postalCodePlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -655,7 +739,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="groupCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{tf('groupCode')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <Hash size={16} className="text-pink-500" />
+                      {tf('groupCode')}
+                      <ErpFieldHelp text={erpHint('groupCode', 'Doluysa ERP cari açmada Netsis GRUP_KODU alanına gönderilir.')} />
+                    </FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={tf('groupCodePlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -663,7 +751,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="accountingCode" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Hash size={16} className="text-pink-500" />{tf('accountingCode')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <Hash size={16} className="text-pink-500" />
+                      {tf('accountingCode')}
+                      <ErpFieldHelp text={erpHint('accountingCode', 'Doluysa ERP cari açmada Netsis MUHASEBE_KODU alanına gönderilir.')} />
+                    </FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={tf('accountingCodePlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -685,7 +777,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="address" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('address')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <MapPin size={16} className="text-pink-500" />
+                      {tf('address')}
+                      <ErpFieldHelp required text={erpHint('address', 'ERP cari açmada Netsis CARI_ADRES alanına gönderilir ve zorunludur.')} />
+                    </FormLabel>
                     <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[100px] h-auto py-3 resize-none`} placeholder={tf('addressPlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -693,7 +789,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="notes" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
-                    <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500" />{tf('notes')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <FileText size={16} className="text-pink-500" />
+                      {tf('notes')}
+                      <ErpFieldHelp text={erpHint('notes', 'Doluysa ERP cari açmada Netsis ACIK1 alanına gönderilir.')} />
+                    </FormLabel>
                     <FormControl><Textarea {...field} value={field.value || ''} className={`${INPUT_STYLE} min-h-[90px] h-auto py-3 resize-none`} placeholder={tf('notesPlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
