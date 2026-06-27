@@ -24,6 +24,11 @@ import {
 } from '@/lib/line-unit-price-currency';
 import { findMatchingPricingRuleLine } from '@/lib/pricing-rule-line-match';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex } from '@/lib/line-discount-display';
+import {
+  areDiscountRatesValid,
+  normalizeDiscountRateForField,
+  type DiscountRateField,
+} from '@/lib/discount-rate-validation';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
@@ -321,7 +326,7 @@ export function DemandLineForm({
 
   const ruleInsightCount = matchingPricingRules.length + (matchingDiscountLimit ? 1 : 0);
 
-  type DiscountField = 'discountRate1' | 'discountRate2' | 'discountRate3';
+  type DiscountField = DiscountRateField;
   const discountInputs = useMemo<
     Array<{
       val: string;
@@ -369,6 +374,38 @@ export function DemandLineForm({
     if (field === 'discountRate2') return getUnitDiscountAmountForTierIndex(unitDiscountBreakdown, 1);
     return getUnitDiscountAmountForTierIndex(unitDiscountBreakdown, 2);
   };
+
+  const showDiscountRateError = useCallback(() => {
+    toast.error('İndirim oranı toplamı %100 değerini aşamaz.');
+  }, []);
+
+  const normalizeDiscountInput = useCallback(
+    (field: DiscountField, value: number): number => {
+      const normalized = normalizeDiscountRateForField(field, value, {
+        discountRate1: formData.discountRate1,
+        discountRate2: formData.discountRate2,
+        discountRate3: formData.discountRate3,
+      });
+
+      if (normalized.reason === 'total') {
+        showDiscountRateError();
+      }
+
+      return normalized.value;
+    },
+    [formData.discountRate1, formData.discountRate2, formData.discountRate3, showDiscountRateError]
+  );
+
+  const validateDiscountRatesBeforeSave = useCallback(
+    (linesToValidate: Array<Pick<DemandLineFormState, DiscountField>>): boolean => {
+      const isValid = linesToValidate.every((item) => areDiscountRatesValid(item));
+      if (!isValid) {
+        showDiscountRateError();
+      }
+      return isValid;
+    },
+    [showDiscountRateError]
+  );
 
   useEffect(() => {
     unitPriceInput.resetInputCurrencyToDocument();
@@ -842,6 +879,9 @@ export function DemandLineForm({
       const nested = (lineItem as DemandLineFormState & { relatedLines?: DemandLineFormState[] }).relatedLines ?? [];
       return [lineItem, ...nested];
     }).map((draftLine) => calculateLineTotals(applyDocumentVatDefaultOnLine(draftLine, offerType)));
+    if (!validateDiscountRatesBeforeSave(flattenedLines)) {
+      return;
+    }
 
     if (onSaveMultiple) {
       onSaveMultiple(flattenedLines);
@@ -1144,6 +1184,9 @@ export function DemandLineForm({
 
     const normalizedFormData = calculateLineTotals(formData);
     const normalizedRelatedLines = relatedLines.map((relatedLine) => calculateLineTotals(relatedLine));
+    if (!validateDiscountRatesBeforeSave([normalizedFormData, ...normalizedRelatedLines])) {
+      return;
+    }
 
     if (onSaveMultiple && relatedLines.length > 0) {
       onSaveMultiple([normalizedFormData, ...normalizedRelatedLines]);
@@ -1449,7 +1492,9 @@ export function DemandLineForm({
                     } else {
                       const numValue = parseFloat(inputValue);
                       if (!isNaN(numValue)) {
-                        handleFieldChange(item.field, numValue);
+                        const normalizedValue = normalizeDiscountInput(item.field, numValue);
+                        item.setVal(String(normalizedValue));
+                        handleFieldChange(item.field, normalizedValue);
                       }
                     }
                   }}
@@ -1460,7 +1505,9 @@ export function DemandLineForm({
                     } else {
                       const numValue = parseFloat(item.val);
                       if (!isNaN(numValue)) {
-                        item.setVal(String(numValue));
+                        const normalizedValue = normalizeDiscountInput(item.field, numValue);
+                        item.setVal(String(normalizedValue));
+                        handleFieldChange(item.field, normalizedValue);
                       }
                     }
                   }}
