@@ -50,6 +50,7 @@ import { hasPermission } from '@/features/access-control/utils/hasPermission';
 const PAGE_KEY = 'stock-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 const LAYOUT_STORAGE_KEY = 'stock-list-layout';
+const STOCK_CARD_CREATE_ENABLED = false;
 
 function readStoredListLayout(): 'table' | 'grid' {
   try {
@@ -262,8 +263,8 @@ export function StockListPage(): ReactElement {
   const toggleStockFavorite = useToggleStockFavorite();
   const createErpStock = useCreateErpStock();
   const { data: permissions } = useMyPermissionsQuery();
-  const canCreateMirrorStock = hasPermission(permissions, 'stocks.mirror-create');
-  const canCreateErpStock = hasPermission(permissions, 'stocks.erp-create');
+  const canCreateMirrorStock = STOCK_CARD_CREATE_ENABLED && hasPermission(permissions, 'stocks.mirror-create');
+  const canCreateErpStock = STOCK_CARD_CREATE_ENABLED && hasPermission(permissions, 'stocks.erp-create');
   const pagedData = stockQuery.data;
   const currentPageRows = useMemo(() => {
     const rawRows =
