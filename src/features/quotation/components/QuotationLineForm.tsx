@@ -339,7 +339,7 @@ export function QuotationLineForm({
   };
 
   const showDiscountRateError = useCallback(() => {
-    toast.error('İndirim oranı toplamı %100 değerini aşamaz.');
+    toast.error('Kademeli iskonto efektif %100 değerine ulaşamaz.');
   }, []);
 
   const normalizeDiscountInput = useCallback(
@@ -350,7 +350,7 @@ export function QuotationLineForm({
         discountRate3: formData.discountRate3,
       });
 
-      if (normalized.reason === 'total') {
+      if (normalized.wasClamped) {
         showDiscountRateError();
       }
 

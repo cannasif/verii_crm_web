@@ -9,6 +9,7 @@ export interface DiscountRateNormalizationResult {
 }
 
 const MAX_DISCOUNT_RATE = 100;
+const MAX_EFFECTIVE_DISCOUNT_RATE = 99.99;
 
 function readDiscountRate(value: number | null | undefined): number {
   return typeof value === 'number' && Number.isFinite(value) ? value : 0;
@@ -20,21 +21,22 @@ export function clampDiscountRate(value: number): number {
 }
 
 export function getDiscountRateTotal(rates: DiscountRateSet): number {
-  return (
-    readDiscountRate(rates.discountRate1) +
-    readDiscountRate(rates.discountRate2) +
-    readDiscountRate(rates.discountRate3)
+  const values = [rates.discountRate1, rates.discountRate2, rates.discountRate3].map((value) =>
+    clampDiscountRate(readDiscountRate(value))
   );
+  const remainingMultiplier = values.reduce((multiplier, value) => multiplier * (1 - value / 100), 1);
+  return (1 - remainingMultiplier) * 100;
 }
 
 export function getMaxAllowedDiscountRate(field: DiscountRateField, currentRates: DiscountRateSet): number {
-  const otherTotal = getDiscountRateTotal({
+  const otherRates = {
     discountRate1: field === 'discountRate1' ? 0 : currentRates.discountRate1,
     discountRate2: field === 'discountRate2' ? 0 : currentRates.discountRate2,
     discountRate3: field === 'discountRate3' ? 0 : currentRates.discountRate3,
-  });
+  };
+  const otherEffectiveRate = getDiscountRateTotal(otherRates);
 
-  return Math.max(0, MAX_DISCOUNT_RATE - otherTotal);
+  return otherEffectiveRate >= MAX_DISCOUNT_RATE ? 0 : MAX_EFFECTIVE_DISCOUNT_RATE;
 }
 
 export function normalizeDiscountRateForField(
@@ -55,6 +57,8 @@ export function normalizeDiscountRateForField(
 
 export function areDiscountRatesValid(rates: DiscountRateSet): boolean {
   const values = [rates.discountRate1, rates.discountRate2, rates.discountRate3].map(readDiscountRate);
-  return values.every((value) => value >= 0 && value <= MAX_DISCOUNT_RATE) && values.reduce((sum, value) => sum + value, 0) <= MAX_DISCOUNT_RATE;
+  return (
+    values.every((value) => value >= 0 && value <= MAX_DISCOUNT_RATE) &&
+    getDiscountRateTotal(rates) < MAX_DISCOUNT_RATE
+  );
 }
-
