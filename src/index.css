@@ -90,17 +90,34 @@
   --crm-brand-primary: #ec007a;
   --crm-brand-secondary: #7c3aed;
   --crm-brand-accent: #ff4b00;
+  --crm-brand-on-primary: #ffffff;
   --crm-brand-muted: #fdf2f8;
   --crm-brand-soft: rgb(236 0 122 / 10%);
   --crm-brand-ring: rgb(236 0 122 / 24%);
   --crm-brand-shadow: rgb(236 0 122 / 28%);
   --crm-brand-gradient: linear-gradient(90deg, #ec007a 0%, #ff4b00 100%);
   --crm-brand-gradient-soft: linear-gradient(135deg, rgb(236 0 122 / 14%) 0%, rgb(124 58 237 / 12%) 50%, rgb(255 75 0 / 12%) 100%);
+  --crm-app-background: #f8f9fc;
   --crm-app-panel: #ffffff;
   --crm-app-panel-muted: #f8fafc;
   --crm-app-panel-strong: #f1f5f9;
   --crm-app-border: rgb(226 232 240 / 90%);
   --crm-app-text-muted: #64748b;
+  --crm-app-aura-start: rgb(236 0 122 / 18%);
+  --crm-app-aura-end: rgb(255 75 0 / 16%);
+  --primary: var(--crm-brand-primary);
+  --primary-foreground: var(--crm-brand-on-primary);
+  --accent: var(--crm-brand-soft);
+  --accent-foreground: var(--crm-brand-primary);
+  --ring: var(--crm-brand-primary);
+  --sidebar-primary: var(--crm-brand-primary);
+  --sidebar-primary-foreground: var(--crm-brand-on-primary);
+  --sidebar-accent: var(--crm-brand-soft);
+  --sidebar-accent-foreground: var(--crm-brand-primary);
+  --sidebar-ring: var(--crm-brand-primary);
+  --chart-1: var(--crm-brand-primary);
+  --chart-2: var(--crm-brand-secondary);
+  --chart-3: var(--crm-brand-accent);
 }
 
 .dark {
@@ -136,17 +153,34 @@
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --crm-app-background: #0c0516;
   --crm-app-panel: #120c18;
   --crm-app-panel-muted: rgb(255 255 255 / 5%);
   --crm-app-panel-strong: #1a1025;
   --crm-app-border: rgb(255 255 255 / 10%);
   --crm-app-text-muted: #94a3b8;
+  --crm-app-aura-start: rgb(236 0 122 / 7%);
+  --crm-app-aura-end: rgb(255 75 0 / 7%);
+  --primary: var(--crm-brand-primary);
+  --primary-foreground: var(--crm-brand-on-primary);
+  --accent: var(--crm-brand-soft);
+  --accent-foreground: var(--crm-brand-primary);
+  --ring: var(--crm-brand-primary);
+  --sidebar-primary: var(--crm-brand-primary);
+  --sidebar-primary-foreground: var(--crm-brand-on-primary);
+  --sidebar-accent: var(--crm-brand-soft);
+  --sidebar-accent-foreground: var(--crm-brand-primary);
+  --sidebar-ring: var(--crm-brand-primary);
+  --chart-1: var(--crm-brand-primary);
+  --chart-2: var(--crm-brand-secondary);
+  --chart-3: var(--crm-brand-accent);
 }
 
 .theme-v3rii {
   --crm-brand-primary: #ec007a;
   --crm-brand-secondary: #7c3aed;
   --crm-brand-accent: #ff4b00;
+  --crm-brand-on-primary: #ffffff;
   --crm-brand-muted: #fdf2f8;
   --crm-brand-soft: rgb(236 0 122 / 10%);
   --crm-brand-ring: rgb(236 0 122 / 24%);
@@ -159,6 +193,7 @@
   --crm-brand-primary: #1e40af;
   --crm-brand-secondary: #2563eb;
   --crm-brand-accent: #0891b2;
+  --crm-brand-on-primary: #ffffff;
   --crm-brand-muted: #eff6ff;
   --crm-brand-soft: rgb(37 99 235 / 11%);
   --crm-brand-ring: rgb(37 99 235 / 24%);
@@ -171,6 +206,7 @@
   --crm-brand-primary: #334155;
   --crm-brand-secondary: #64748b;
   --crm-brand-accent: #0f172a;
+  --crm-brand-on-primary: #ffffff;
   --crm-brand-muted: #f1f5f9;
   --crm-brand-soft: rgb(71 85 105 / 12%);
   --crm-brand-ring: rgb(71 85 105 / 24%);
@@ -183,6 +219,7 @@
   --crm-brand-primary: #047857;
   --crm-brand-secondary: #10b981;
   --crm-brand-accent: #0f766e;
+  --crm-brand-on-primary: #ffffff;
   --crm-brand-muted: #ecfdf5;
   --crm-brand-soft: rgb(16 185 129 / 12%);
   --crm-brand-ring: rgb(16 185 129 / 25%);
@@ -195,6 +232,7 @@
   --crm-brand-primary: #4338ca;
   --crm-brand-secondary: #6d28d9;
   --crm-brand-accent: #d97706;
+  --crm-brand-on-primary: #ffffff;
   --crm-brand-muted: #f5f3ff;
   --crm-brand-soft: rgb(109 40 217 / 12%);
   --crm-brand-ring: rgb(109 40 217 / 25%);
@@ -207,6 +245,7 @@
   --crm-brand-primary: #991b1b;
   --crm-brand-secondary: #b91c1c;
   --crm-brand-accent: #f97316;
+  --crm-brand-on-primary: #ffffff;
   --crm-brand-muted: #fef2f2;
   --crm-brand-soft: rgb(185 28 28 / 12%);
   --crm-brand-ring: rgb(185 28 28 / 25%);
@@ -219,6 +258,7 @@
   --crm-brand-primary: #334155;
   --crm-brand-secondary: #475569;
   --crm-brand-accent: #0284c7;
+  --crm-brand-on-primary: #ffffff;
   --crm-brand-muted: #f1f5f9;
   --crm-brand-soft: rgb(71 85 105 / 13%);
   --crm-brand-ring: rgb(56 189 248 / 25%);
@@ -231,6 +271,7 @@
   --crm-brand-primary: #2563eb;
   --crm-brand-secondary: #14b8a6;
   --crm-brand-accent: #0ea5e9;
+  --crm-brand-on-primary: #ffffff;
   --crm-brand-muted: #eff6ff;
   --crm-brand-soft: rgb(37 99 235 / 9%);
   --crm-brand-ring: rgb(37 99 235 / 22%);
@@ -243,6 +284,7 @@
   --crm-brand-primary: #facc15;
   --crm-brand-secondary: #ffffff;
   --crm-brand-accent: #38bdf8;
+  --crm-brand-on-primary: #020617;
   --crm-brand-muted: #020617;
   --crm-brand-soft: rgb(250 204 21 / 18%);
   --crm-brand-ring: rgb(250 204 21 / 52%);
@@ -255,6 +297,7 @@
   --crm-brand-primary: #155e75;
   --crm-brand-secondary: #0f766e;
   --crm-brand-accent: #64748b;
+  --crm-brand-on-primary: #ffffff;
   --crm-brand-muted: #ecfeff;
   --crm-brand-soft: rgb(21 94 117 / 11%);
   --crm-brand-ring: rgb(15 118 110 / 24%);
@@ -313,6 +356,79 @@
 
   .crm-brand-gradient-soft {
     background-image: var(--crm-brand-gradient-soft);
+  }
+
+  :where(
+    [class*='text-pink'],
+    [class*='text-purple'],
+    [class*='text-orange'],
+    [class*='group-hover:text-pink'],
+    [class*='group-hover:text-purple'],
+    [class*='group-hover:text-orange'],
+    [class*='hover:text-pink'],
+    [class*='hover:text-purple'],
+    [class*='hover:text-orange'],
+    [class*='focus-within:text-pink'],
+    [class*='focus-within:text-purple'],
+    [class*='focus-within:text-orange']
+  ) {
+    color: var(--crm-brand-primary) !important;
+  }
+
+  :where(
+    [class*='border-pink'],
+    [class*='border-purple'],
+    [class*='border-orange'],
+    [class*='hover:border-pink'],
+    [class*='hover:border-purple'],
+    [class*='hover:border-orange'],
+    [class*='focus:border-pink'],
+    [class*='focus-visible:border-pink'],
+    [class*='ring-pink'],
+    [class*='focus:ring-pink'],
+    [class*='focus-visible:ring-pink']
+  ) {
+    border-color: var(--crm-brand-ring) !important;
+    --tw-ring-color: var(--crm-brand-ring) !important;
+  }
+
+  :where(
+    [class*='bg-pink-50'],
+    [class*='bg-pink-100'],
+    [class*='bg-purple-50'],
+    [class*='bg-purple-100'],
+    [class*='bg-orange-50'],
+    [class*='bg-orange-100'],
+    [class*='bg-pink-500/10'],
+    [class*='bg-pink-500/20'],
+    [class*='bg-purple-500/10'],
+    [class*='bg-purple-500/20'],
+    [class*='bg-orange-500/10'],
+    [class*='bg-orange-500/20'],
+    [class*='hover:bg-pink-50'],
+    [class*='hover:bg-purple-50'],
+    [class*='hover:bg-orange-50'],
+    [class*='dark:hover:bg-pink'],
+    [class*='dark:hover:bg-purple'],
+    [class*='dark:hover:bg-orange']
+  ) {
+    background-color: var(--crm-brand-soft) !important;
+  }
+
+  :where(
+    [class*='bg-linear-to'][class*='pink'],
+    [class*='bg-linear-to'][class*='purple'],
+    [class*='bg-linear-to'][class*='orange'],
+    [class*='bg-gradient-to'][class*='pink'],
+    [class*='bg-gradient-to'][class*='purple'],
+    [class*='bg-gradient-to'][class*='orange']
+  ) {
+    background-image: var(--crm-brand-gradient) !important;
+  }
+
+  :where([class*='shadow-pink'], [class*='shadow-purple'], [class*='shadow-orange']) {
+    --tw-shadow-color: var(--crm-brand-shadow) !important;
+    --tw-shadow: var(--tw-shadow-colored) !important;
   }
 
   .crm-ms-2 {

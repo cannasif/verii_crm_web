@@ -112,7 +112,7 @@ function SubMenuComponent({ item, pathname, searchQuery }: { item: NavItem; path
                  }}
                >
                  <span className="whitespace-normal leading-tight crm-text-start wrap-break-word">{child.title}</span>
-                 {isSubLinkActive && <span className="w-2 h-2 rounded-full bg-purple-600 dark:bg-pink-500 shrink-0 crm-ms-2" />}
+                 {isSubLinkActive && <span className="w-2 h-2 rounded-full bg-[var(--crm-brand-primary)] shrink-0 crm-ms-2" />}
                </Link>
              );
           })}
@@ -209,7 +209,7 @@ function NavItemComponent({
             type="button"
             className={cn(
                 "relative flex w-full items-center gap-3 rounded-xl px-3 py-2 transition-colors cursor-pointer select-none crm-text-start group",
-                visualActive ? 'bg-purple-50 dark:bg-white/5' : 'hover:bg-slate-100 dark:hover:bg-white/5',
+                visualActive ? 'bg-[var(--crm-brand-soft)]' : 'hover:bg-slate-100 dark:hover:bg-white/5',
                 !isSidebarOpen && "justify-center px-0 gap-0",
                 SIDEBAR_TRANSITION
             )}
@@ -224,7 +224,7 @@ function NavItemComponent({
           {item.icon && (
             <div className={cn(
                 "w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200",
-                visualActive ? 'bg-purple-100 text-purple-700 dark:bg-pink-500/20 dark:text-pink-400' : 'bg-white border border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-none dark:text-slate-400'
+                visualActive ? 'bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)]' : 'bg-white border border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-none dark:text-slate-400'
             )}>
               {item.icon}
             </div>
@@ -234,7 +234,7 @@ function NavItemComponent({
             className={cn(
               SIDEBAR_LABEL_TRANSITION,
               "flex-1 min-w-0 text-sm font-medium leading-tight crm-text-start crm-pe-2 whitespace-nowrap text-ellipsis",
-              visualActive ? 'text-purple-900 font-semibold dark:text-white' : 'text-slate-600 dark:text-slate-300',
+              visualActive ? 'text-[var(--crm-brand-primary)] font-semibold' : 'text-slate-600 dark:text-slate-300',
               isSidebarOpen ? 'opacity-100 max-w-[12rem]' : 'opacity-0 max-w-0 w-0 pointer-events-none'
             )}
           >
@@ -262,7 +262,7 @@ function NavItemComponent({
                     to={child.href || '#'}
                     className={cn(
                       "flex items-center justify-between px-3 py-2 rounded-lg transition-colors text-sm w-full relative",
-                      location.pathname === child.href ? 'bg-purple-50 text-purple-700 font-semibold dark:bg-white/10 dark:text-white' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5'
+                      location.pathname === child.href ? 'bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)] font-semibold' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5'
                     )}
                     onClick={() => { 
                  
@@ -273,7 +273,7 @@ function NavItemComponent({
                     }}
                   >
                     <span className="whitespace-normal leading-tight crm-text-start wrap-break-word">{child.title}</span>
-                    {location.pathname === child.href && <span className="w-2 h-2 rounded-full bg-purple-600 dark:bg-pink-500 shrink-0 crm-ms-2" />}
+                    {location.pathname === child.href && <span className="w-2 h-2 rounded-full bg-[var(--crm-brand-primary)] shrink-0 crm-ms-2" />}
                   </Link>
             ))}
           </div>
@@ -288,7 +288,7 @@ function NavItemComponent({
           to={item.href || '#'} 
           className={cn(
             "relative flex items-center gap-3 rounded-xl px-3 py-2 transition-all group",
-            isActive ? 'bg-purple-50 dark:bg-white/5' : 'hover:bg-slate-100 dark:hover:bg-white/5',
+            isActive ? 'bg-[var(--crm-brand-soft)]' : 'hover:bg-slate-100 dark:hover:bg-white/5',
             !isSidebarOpen && "justify-center px-0 gap-0",
             SIDEBAR_TRANSITION
           )}
@@ -302,7 +302,7 @@ function NavItemComponent({
           }}
         >
             {item.icon && (
-                <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200", isActive ? 'bg-purple-100 text-purple-700 dark:bg-pink-500/20 dark:text-pink-400' : 'bg-white border border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-none dark:text-slate-400')}>
+                <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-200", isActive ? 'bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)]' : 'bg-white border border-slate-200 text-slate-500 dark:bg-slate-800 dark:border-none dark:text-slate-400')}>
                     {item.icon}
                 </div>
             )}
@@ -311,7 +311,7 @@ function NavItemComponent({
               className={cn(
                 SIDEBAR_LABEL_TRANSITION,
                 "flex-1 min-w-0 text-sm font-medium leading-tight crm-text-start crm-pe-2 whitespace-nowrap text-ellipsis",
-                isActive ? 'text-purple-900 font-semibold dark:text-white' : 'text-slate-600 dark:text-slate-300',
+                isActive ? 'text-[var(--crm-brand-primary)] font-semibold' : 'text-slate-600 dark:text-slate-300',
                 isSidebarOpen ? 'opacity-100 max-w-[12rem]' : 'opacity-0 max-w-0 w-0 pointer-events-none'
               )}
             >
@@ -327,7 +327,7 @@ function NavItemComponent({
             />
             <div
               className={cn(
-                "app-sidebar-active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-linear-to-b from-purple-500 to-pink-500 transition-opacity duration-200",
+                "app-sidebar-active-marker absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-[image:var(--crm-brand-gradient)] transition-opacity duration-200",
                 isActive && isSidebarOpen ? 'opacity-100' : 'opacity-0'
               )}
             />
@@ -426,8 +426,8 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
       
       <aside className={cn(
         'app-sidebar-panel fixed lg:sticky top-0 min-h-dvh h-[100dvh] z-50 flex flex-col shrink-0 overflow-hidden will-change-[width,transform]',
-        'bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl',
-        'border-r border-slate-200 dark:border-white/5',
+        'bg-[color-mix(in_srgb,var(--crm-app-panel)_82%,transparent)] backdrop-blur-xl',
+        'border-r border-[var(--crm-app-border)]',
         'shadow-[2px_0_12px_-4px_rgba(15,23,42,0.08)] dark:shadow-[2px_0_16px_-4px_rgba(0,0,0,0.45)]',
         'pb-[env(safe-area-inset-bottom)]',
         'transition-[width,transform] duration-[260ms] motion-reduce:transition-none',
@@ -454,7 +454,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
             <button
               type="button"
               onDoubleClick={handleLogoDoubleClick}
-              className="flex justify-center flex-1 cursor-pointer select-none rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-pink-500/30"
+              className="flex justify-center flex-1 cursor-pointer select-none rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[var(--crm-brand-ring)]"
             >
               <img src={VERII_LOGO_URL} alt="Logo" className="h-32 object-contain pointer-events-none" />
             </button>
@@ -467,7 +467,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
             type="button"
             onDoubleClick={handleLogoDoubleClick}
             className={cn(
-              "absolute inset-0 flex items-center justify-center p-1 cursor-pointer select-none rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-pink-500/30 transition-opacity duration-[260ms]",
+              "absolute inset-0 flex items-center justify-center p-1 cursor-pointer select-none rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[var(--crm-brand-ring)] transition-opacity duration-[260ms]",
               SIDEBAR_EASE,
               isSidebarOpen ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"
             )}

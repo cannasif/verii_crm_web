@@ -62,23 +62,23 @@ export function Navbar(): ReactElement {
   return (
     <>
       <header className={cn(
-        "min-h-20 h-auto pt-[env(safe-area-inset-top)] px-4 sm:px-8 flex items-center justify-between border-b transition-all sticky top-0 z-40 backdrop-blur-xl border-slate-200 dark:border-white/5",
-        "bg-white/80 dark:bg-[#0c0516]/80"
+        "min-h-20 h-auto pt-[env(safe-area-inset-top)] px-4 sm:px-8 flex items-center justify-between border-b transition-all sticky top-0 z-40 backdrop-blur-xl",
+        "border-[var(--crm-app-border)] bg-[color-mix(in_srgb,var(--crm-app-panel)_82%,transparent)]"
       )}>
         <div className="flex items-center gap-2 sm:gap-4 shrink-0 h-20">
           <button
             type="button"
             onClick={toggleSidebar}
             aria-pressed={isSidebarOpen}
-            className="p-2 shrink-0 rounded-xl text-slate-500 dark:text-slate-400 hover:text-pink-500 hover:bg-pink-500/10 dark:hover:text-pink-400 dark:hover:bg-pink-500/20 hover:shadow-[0_0_15px_rgba(236,72,153,0.2)] transition-all duration-300 focus:outline-none"
+            className="p-2 shrink-0 rounded-xl text-slate-500 dark:text-slate-400 hover:text-[var(--crm-brand-primary)] hover:bg-[var(--crm-brand-soft)] hover:shadow-[0_0_15px_var(--crm-brand-shadow)] transition-all duration-300 focus:outline-none"
           >
             <SidebarLeft01Icon size={24} />
           </button>
 
           <div className="relative hidden md:block w-full max-md group">
-            <div className="absolute inset-0 bg-linear-to-r from-pink-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 rounded-2xl bg-[image:var(--crm-brand-gradient-soft)] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
             <div className="relative flex items-center">
-              <SearchList01Icon className="absolute left-4 text-slate-400 w-5 h-5 group-focus-within:text-pink-500 transition-colors duration-300" />
+              <SearchList01Icon className="absolute left-4 text-slate-400 w-5 h-5 group-focus-within:text-[var(--crm-brand-primary)] transition-colors duration-300" />
               <input
                 ref={searchInputRef}
                 type="text"
@@ -87,9 +87,9 @@ export function Navbar(): ReactElement {
                 placeholder={t('navbar.search_placeholder')}
                 className={cn(
                   "w-full py-3 pl-12 pr-24 text-base md:text-sm font-medium transition-all duration-300 outline-none rounded-2xl border",
-                  "bg-slate-100/50 border-slate-200 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-pink-500/30",
-                  "dark:bg-white/5 dark:border-white/10 dark:text-white dark:placeholder:text-slate-500 dark:focus:bg-[#150a25]",
-                  "focus:ring-4 focus:ring-pink-500/10 focus:shadow-[0_0_20px_rgba(236,72,153,0.15)]"
+                  "bg-slate-100/50 border-slate-200 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-[var(--crm-brand-ring)]",
+                  "dark:bg-white/5 dark:border-white/10 dark:text-white dark:placeholder:text-slate-500 dark:focus:bg-[var(--crm-app-panel-strong)]",
+                  "focus:ring-4 focus:ring-[var(--crm-brand-ring)] focus:shadow-[0_0_20px_var(--crm-brand-shadow)]"
                 )}
               />
               <div className="absolute right-3 flex items-center gap-2">
@@ -99,8 +99,8 @@ export function Navbar(): ReactElement {
                     className={cn(
                       "p-2 rounded-xl transition-all duration-300",
                       isListening
-                        ? "text-pink-500 bg-pink-500/10 animate-pulse shadow-[0_0_15px_rgba(236,72,153,0.3)]"
-                        : "text-slate-400 hover:text-pink-500 hover:bg-slate-100 dark:hover:bg-white/10"
+                        ? "text-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)] animate-pulse shadow-[0_0_15px_var(--crm-brand-shadow)]"
+                        : "text-slate-400 hover:text-[var(--crm-brand-primary)] hover:bg-slate-100 dark:hover:bg-white/10"
                     )}
                     title={t('common.voiceSearchTitle')}
                   >
@@ -126,13 +126,13 @@ export function Navbar(): ReactElement {
               className={cn(
                 "p-2 md:hidden rounded-xl transition-all duration-300 relative",
                 isListening
-                  ? "text-pink-500 bg-pink-500/10 animate-pulse shadow-[0_0_15px_rgba(236,72,153,0.3)]"
-                  : "text-slate-500 dark:text-slate-400 hover:text-pink-500 hover:bg-pink-500/10"
+                  ? "text-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)] animate-pulse shadow-[0_0_15px_var(--crm-brand-shadow)]"
+                  : "text-slate-500 dark:text-slate-400 hover:text-[var(--crm-brand-primary)] hover:bg-[var(--crm-brand-soft)]"
               )}
             >
               <Mic01Icon size={24} />
               {isListening && (
-                <span className="absolute top-1 right-1 w-2 h-2 bg-pink-500 rounded-full animate-ping" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--crm-brand-primary)] rounded-full animate-ping" />
               )}
             </button>
           )}
@@ -140,7 +140,7 @@ export function Navbar(): ReactElement {
 
         <div className="flex items-center justify-end shrink-0 gap-3 sm:gap-8 h-20">
           <div className="flex items-center gap-3 sm:gap-8 shrink-0">
-            <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer text-slate-500 hover:text-pink-500 dark:text-slate-400 dark:hover:text-pink-400 flex items-center justify-center group shrink-0">
+            <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full hover:bg-[var(--crm-brand-soft)] transition-colors cursor-pointer text-slate-500 hover:text-[var(--crm-brand-primary)] dark:text-slate-400 flex items-center justify-center group shrink-0">
               <NotificationIcon />
             </div>
           </div>
@@ -150,7 +150,7 @@ export function Navbar(): ReactElement {
           {user && (
             <div onClick={() => setUserProfileModalOpen(true)} className="flex items-center gap-2 sm:gap-3 cursor-pointer group shrink-0">
               <div className="text-right hidden lg:block">
-                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-pink-500 transition-colors truncate max-w-[150px]">
+                <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[var(--crm-brand-primary)] transition-colors truncate max-w-[150px]">
                   {displayName}
                 </p>
                 <p className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
@@ -158,12 +158,12 @@ export function Navbar(): ReactElement {
                 </p>
               </div>
               <div className="relative shrink-0">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full p-[2px] bg-linear-to-tr from-pink-500 via-orange-500 to-yellow-500 group-hover:shadow-[0_0_20px_rgba(236,72,153,0.5)] transition-all duration-300">
-                  <div className="w-full h-full rounded-full bg-white dark:bg-[#0c0516] flex items-center justify-center overflow-hidden border-2 border-white dark:border-[#0c0516]">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full p-[2px] bg-[image:var(--crm-brand-gradient)] group-hover:shadow-[0_0_20px_var(--crm-brand-shadow)] transition-all duration-300">
+                  <div className="w-full h-full rounded-full bg-white dark:bg-[var(--crm-app-background)] flex items-center justify-center overflow-hidden border-2 border-white dark:border-[var(--crm-app-background)]">
                     {userDetail?.profilePictureUrl ? (
                       <img src={getImageUrl(userDetail.profilePictureUrl) || ''} alt={displayName} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-xs font-bold text-orange-500">{displayInitials}</span>
+                      <span className="text-xs font-bold text-[var(--crm-brand-primary)]">{displayInitials}</span>
                     )}
                   </div>
                 </div>

@@ -49,11 +49,11 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       {
         title: t('sidebar.home'),
         href: '/',
-        icon: <DashboardCircleIcon size={iconSize} className="text-blue-500" />,
+        icon: <DashboardCircleIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
       },
       {
         title: t('sidebar.salesManagement'),
-        icon: <ShoppingBag03Icon size={iconSize} className="text-orange-500" />,
+        icon: <ShoppingBag03Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
           {
             title: t('sidebar.demands'),
@@ -85,7 +85,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.customers'),
-        icon: <UserGroupIcon size={iconSize} className="text-purple-500" />,
+        icon: <UserGroupIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
           { title: t('sidebar.customerManagement'), href: '/customer-management' },
           { title: t('sidebar.customersConflictInbox'), href: '/customers/conflict-inbox' },
@@ -96,7 +96,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.activities'),
-        icon: <Calendar03Icon size={iconSize} className="text-emerald-500" />,
+        icon: <Calendar03Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
           { title: t('sidebar.dailyTasks'), href: '/daily-tasks' },
           { title: t('sidebar.activityManagement'), href: '/activity-management' },
@@ -105,7 +105,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.productAndStock'),
-        icon: <PackageIcon size={iconSize} className="text-pink-500" />,
+        icon: <PackageIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
           { title: t('sidebar.stockManagement'), href: '/stocks' },
           { title: t('sidebar.productPricingManagement'), href: '/product-pricing-management' },
@@ -115,7 +115,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.reports'),
-        icon: <File01Icon size={iconSize} className="text-cyan-500" />,
+        icon: <File01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
           { title: t('sidebar.salesKpi'), href: '/salesmen-360/me' },
           {
@@ -135,7 +135,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           },
           {
             title: t('sidebar.powerbi'),
-            icon: <Analytics01Icon size={iconSize} className="text-amber-500" />,
+            icon: <Analytics01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
             children: [
               { title: t('sidebar.powerbiConfiguration'), href: '/powerbi/configuration' },
               { title: t('sidebar.powerbiReportsView'), href: '/powerbi/reports' },
@@ -151,7 +151,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.approvalDefinitions'),
-        icon: <CheckmarkCircle02Icon size={iconSize} className="text-teal-500" />,
+        icon: <CheckmarkCircle02Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
           { title: t('sidebar.approvalFlowManagement'), href: '/approval-flow-management' },
           { title: t('sidebar.approvalRoleGroupManagement'), href: '/approval-role-group-management' },
@@ -161,7 +161,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.definitions'),
-        icon: <SlidersHorizontalIcon size={iconSize} className="text-slate-500" />,
+        icon: <SlidersHorizontalIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
           {
             title: t('sidebar.customerDefinitions'),
@@ -206,7 +206,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.accessControl'),
-        icon: <Shield01Icon size={iconSize} className="text-violet-500" />,
+        icon: <Shield01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
           {
             title: t('sidebar.accessControlManagementGroup', { defaultValue: 'Yetki ve Kullanıcı Yönetimi' }),
@@ -235,7 +235,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.settings'),
-        icon: <Settings02Icon size={iconSize} className="text-gray-500" />,
+        icon: <Settings02Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
           { title: t('sidebar.systemSettings'), href: '/settings/system-settings' },
           {
@@ -306,10 +306,10 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
   }, [navItems, defaultNavItems, permissions, isLoading, isError, canManageIntegrationAuth]);
 
   return (
-    <div className="relative flex min-h-dvh h-[100dvh] w-full overflow-hidden bg-[#f8f9fc] dark:bg-[#0c0516] font-['Outfit'] transition-colors duration-300">
+    <div className="relative flex min-h-dvh h-[100dvh] w-full overflow-hidden bg-[var(--crm-app-background)] font-['Outfit'] transition-colors duration-300">
       <div className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-         <div className="absolute top-[-10%] left-[-10%] w-[80vw] max-w-[800px] aspect-square rounded-full bg-pink-300/30 dark:bg-pink-600/5 blur-[80px] md:blur-[120px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
-         <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] max-w-[600px] aspect-square rounded-full bg-orange-300/30 dark:bg-orange-600/5 blur-[60px] md:blur-[100px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
+         <div className="absolute top-[-10%] left-[-10%] w-[80vw] max-w-[800px] aspect-square rounded-full bg-[var(--crm-app-aura-start)] blur-[80px] md:blur-[120px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
+         <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] max-w-[600px] aspect-square rounded-full bg-[var(--crm-app-aura-end)] blur-[60px] md:blur-[100px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
       </div>
 
       {/* Sidebar - Mobile handles itself with fixed position, Desktop uses sticky/relative */}
