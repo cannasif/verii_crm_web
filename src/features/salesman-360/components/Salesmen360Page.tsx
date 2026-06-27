@@ -60,6 +60,7 @@ import type {
 import { cn } from '@/lib/utils';
 import { formatSalesmen360PeriodLabel, translateSalesmen360RfmSegment } from '../utils/localizedDisplay';
 import { translateRecommendedActionCopy } from '../utils/recommendedActionsI18n';
+import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 
 function KpiCardSkeleton(): ReactElement {
   return (
@@ -76,6 +77,12 @@ const CHART_COLORS = ['#ec4899', '#f59e0b', '#8b5cf6'];
 const SALESMAN_360_PERIOD_OPTIONS: Salesmen360PeriodKey[] = ['today', 'week', 'month', 'year'];
 const ALL_SALESMEN_ROUTE_VALUE = 'all';
 const ALL_SALESMEN_ID = 0;
+
+type Salesmen360CurrencyFilterOption = {
+  value: string;
+  label: string;
+  helper?: string;
+};
 
 const SALESMEN_360_FILTER_OUTER =
   'group/filter flex min-h-11 w-fit max-w-full items-stretch overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm ring-1 ring-slate-950/[0.03] transition-[box-shadow,border-color] duration-200 hover:border-pink-200/80 hover:shadow-md hover:shadow-pink-500/[0.07] dark:border-white/10 dark:bg-linear-to-br dark:from-[#1E1627]/95 dark:to-[#130822]/98 dark:ring-white/[0.05] dark:hover:border-pink-400/30 dark:hover:shadow-pink-500/10';
@@ -646,6 +653,7 @@ export function Salesmen360Page(): ReactElement {
   const [selectedPeriod, setSelectedPeriod] = useState<Salesmen360PeriodKey>('month');
   const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview');
   const visibleSalesmenQuery = useVisibleSalesmenQuery();
+  const { currencyOptions: erpCurrencyOptions, isLoading: isCurrencyOptionsLoading } = useCurrencyOptions();
   const currencyParam = selectedCurrency === 'ALL' ? undefined : selectedCurrency;
   const periodParams = useMemo(() => ({ period: selectedPeriod }), [selectedPeriod]);
   const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam, periodParams, isAllSalesmen || userId > 0);
@@ -694,6 +702,35 @@ export function Salesmen360Page(): ReactElement {
     }
   }, [activeTab, isAllSalesmen]);
 
+  const currencyOptions = useMemo<Salesmen360CurrencyFilterOption[]>(() => {
+    const seen = new Set<string>();
+    const options: Salesmen360CurrencyFilterOption[] = [
+      { value: 'ALL', label: t('salesman360.currencyFilter.all') },
+    ];
+
+    for (const rate of erpCurrencyOptions) {
+      const value = String(rate.dovizTipi);
+      if (seen.has(value)) {
+        continue;
+      }
+
+      seen.add(value);
+      const name = rate.dovizIsmi?.trim() || `Döviz ${rate.dovizTipi}`;
+
+      options.push({
+        value,
+        label: name,
+        helper: `ERP Kod ${rate.dovizTipi}`,
+      });
+    }
+
+    return options;
+  }, [erpCurrencyOptions, t]);
+  const selectedCurrencyOption = useMemo(
+    () => currencyOptions.find((option) => option.value === selectedCurrency),
+    [currencyOptions, selectedCurrency]
+  );
+
   const currencyFormatter = useMemo(
     () =>
       new Intl.NumberFormat(i18n.resolvedLanguage ?? i18n.language, {
@@ -702,6 +739,27 @@ export function Salesmen360Page(): ReactElement {
       }),
     [i18n.resolvedLanguage, i18n.language]
   );
+  const currencyOptionValueSignature = useMemo(
+    () => currencyOptions.map((option) => option.value).join('|'),
+    [currencyOptions]
+  );
+  const hasSelectedCurrencyOption = useMemo(() => {
+    if (selectedCurrency === 'ALL') {
+      return true;
+    }
+
+    return currencyOptionValueSignature.split('|').includes(selectedCurrency);
+  }, [currencyOptionValueSignature, selectedCurrency]);
+
+  useEffect(() => {
+    if (selectedCurrency === 'ALL' || isCurrencyOptionsLoading) {
+      return;
+    }
+
+    if (!hasSelectedCurrencyOption) {
+      setSelectedCurrency('ALL');
+    }
+  }, [hasSelectedCurrencyOption, isCurrencyOptionsLoading, selectedCurrency]);
 
   const selectedSalesmanLabel = useMemo(() => {
     if (isAllSalesmen) {
@@ -720,26 +778,6 @@ export function Salesmen360Page(): ReactElement {
 
     return fullName || selected.email || String(selected.userId);
   }, [isAllSalesmen, t, userId, visibleSalesmen]);
-
-  const currenciesFromOverview = overview?.kpis?.totalsByCurrency ?? [];
-  const currenciesFromSummary = summary?.totalsByCurrency ?? [];
-  const currenciesFromCharts = charts?.amountComparisonByCurrency ?? [];
-  const currencySet = new Set<string>();
-  for (const r of currenciesFromOverview) {
-    if (r.currency) currencySet.add(r.currency);
-  }
-  for (const r of currenciesFromSummary) {
-    if (r.currency) currencySet.add(r.currency);
-  }
-  for (const r of currenciesFromCharts) {
-    const c = (r as Salesmen360AmountComparisonDto).currency;
-    if (c) currencySet.add(c);
-  }
-  const allCurrencies = Array.from(currencySet);
-  const currencyOptions = [
-    { value: 'ALL', label: t('salesman360.currencyFilter.all') },
-    ...allCurrencies.map((c) => ({ value: c, label: c })),
-  ];
 
   const isAllCurrencies = selectedCurrency === 'ALL';
   const overviewTotalsByCurrency = overview?.kpis?.totalsByCurrency ?? [];
@@ -899,12 +937,17 @@ export function Salesmen360Page(): ReactElement {
               <div className="flex min-w-0 flex-1">
                 <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
                   <SelectTrigger className={cn(SALESMEN_360_FILTER_TRIGGER, 'w-full min-w-[6.5rem]')}>
-                    <SelectValue />
+                    <span className="min-w-0 truncate">
+                      {selectedCurrencyOption?.label ?? t('salesman360.currencyFilter.all')}
+                    </span>
                   </SelectTrigger>
                   <SelectContent sideOffset={6} className={SALESMEN_360_FILTER_CONTENT}>
                     {currencyOptions.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value} className={SALESMEN_360_FILTER_ITEM}>
-                        {opt.label}
+                      <SelectItem key={opt.value} value={opt.value} textValue={opt.label} className={SALESMEN_360_FILTER_ITEM}>
+                        <span className="flex min-w-0 flex-col gap-0.5">
+                          <span className="truncate">{opt.label}</span>
+                          {opt.helper && <span className="truncate text-[11px] font-semibold text-slate-400 dark:text-slate-500">{opt.helper}</span>}
+                        </span>
                       </SelectItem>
                     ))}
                   </SelectContent>

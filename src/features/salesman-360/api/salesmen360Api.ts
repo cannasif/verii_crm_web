@@ -42,14 +42,8 @@ export async function getSalesmenOverview(params: {
   const url = userId === 0
     ? `/api/salesmen/overview?${search.toString()}`
     : `/api/salesmen/${userId}/overview?${search.toString()}`;
-  const headers: Record<string, string> = {};
-  if (currency != null && currency !== '') {
-    headers['X-Currency'] = currency;
-    headers['Currency'] = currency;
-  }
   const response = await api.get<ApiResponse<Salesmen360OverviewDto | null>>(url, {
     signal,
-    headers: Object.keys(headers).length > 0 ? headers : undefined,
   });
   return ensureData(response, 'Overview could not be loaded');
 }
@@ -76,14 +70,8 @@ export async function getSalesmenAnalyticsSummary(params: {
     search.set('currency', currency);
   }
   const url = `/api/salesmen/${userId}/analytics/summary?${search.toString()}`;
-  const headers: Record<string, string> = {};
-  if (currency != null && currency !== '') {
-    headers['X-Currency'] = currency;
-    headers['Currency'] = currency;
-  }
   const response = await api.get<ApiResponse<Salesmen360AnalyticsSummaryDto | null>>(url, {
     signal,
-    headers: Object.keys(headers).length > 0 ? headers : undefined,
   });
   return ensureData(response, 'Analytics summary could not be loaded');
 }
@@ -102,14 +90,8 @@ export async function getSalesmenAnalyticsCharts(params: {
     search.set('currency', currency);
   }
   const url = `/api/salesmen/${userId}/analytics/charts?${search.toString()}`;
-  const headers: Record<string, string> = {};
-  if (currency != null && currency !== '') {
-    headers['X-Currency'] = currency;
-    headers['Currency'] = currency;
-  }
   const response = await api.get<ApiResponse<Salesmen360AnalyticsChartsDto | null>>(url, {
     signal,
-    headers: Object.keys(headers).length > 0 ? headers : undefined,
   });
   return ensureData(response, 'Analytics charts could not be loaded');
 }
