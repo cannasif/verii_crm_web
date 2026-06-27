@@ -232,7 +232,10 @@
     "syncing": "Syncing",
     "erpCreate": {
       "button": "Create ERP Customer",
-      "alreadyIntegrated": "ERP customer already created"
+      "alreadyIntegrated": "ERP customer already created",
+      "confirmTitle": "Create Netsis ERP Record",
+      "confirmMessage": "A Netsis ERP customer record will be created for {{name}}. Do you confirm?",
+      "confirmAction": "Yes, Create"
     }
   },
   "advancedFilter": {

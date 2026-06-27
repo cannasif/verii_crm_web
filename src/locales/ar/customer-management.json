@@ -229,7 +229,10 @@
     "syncing": "جاري المزامنة",
     "erpCreate": {
       "button": "Create ERP Customer",
-      "alreadyIntegrated": "ERP customer already created"
+      "alreadyIntegrated": "ERP customer already created",
+      "confirmTitle": "إنشاء سجل Netsis ERP",
+      "confirmMessage": "سيتم إنشاء سجل عميل Netsis ERP لـ {{name}}. هل تؤكد؟",
+      "confirmAction": "نعم، إنشاء"
     }
   },
   "advancedFilter": {

@@ -230,7 +230,10 @@
     "syncing": "Synchronisation läuft",
     "erpCreate": {
       "button": "Create ERP Customer",
-      "alreadyIntegrated": "ERP customer already created"
+      "alreadyIntegrated": "ERP customer already created",
+      "confirmTitle": "Netsis ERP-Datensatz erstellen",
+      "confirmMessage": "Für {{name}} wird ein Netsis ERP-Kundendatensatz erstellt. Bestätigen Sie?",
+      "confirmAction": "Ja, erstellen"
     }
   },
   "advancedFilter": {

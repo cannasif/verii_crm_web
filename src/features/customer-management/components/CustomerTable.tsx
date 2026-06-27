@@ -248,6 +248,8 @@ export function CustomerTable({
   const createErpCustomer = useCreateErpCustomer();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerDto | null>(null);
+  const [erpCreateDialogOpen, setErpCreateDialogOpen] = useState(false);
+  const [erpCreateCustomer, setErpCreateCustomer] = useState<CustomerDto | null>(null);
 
   const tableColumns = useMemo(
     () => getColumnsConfig(t),
@@ -269,6 +271,24 @@ export function CustomerTable({
       } catch (error) {
         console.error(error);
       }
+    }
+  };
+
+  const handleErpCreateClick = (customer: CustomerDto): void => {
+    if (!canCreateErpCustomer) return;
+    setErpCreateCustomer(customer);
+    setErpCreateDialogOpen(true);
+  };
+
+  const handleErpCreateConfirm = async (): Promise<void> => {
+    if (!erpCreateCustomer) return;
+
+    try {
+      await createErpCustomer.mutateAsync(erpCreateCustomer.id);
+      setErpCreateDialogOpen(false);
+      setErpCreateCustomer(null);
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -359,7 +379,7 @@ export function CustomerTable({
           variant="ghost"
           size="icon"
           disabled={createErpCustomer.isPending}
-          onClick={() => createErpCustomer.mutate(customer.id)}
+          onClick={() => handleErpCreateClick(customer)}
           title={t('customerManagement.erpCreate.button', {
             ns: CRM_NS,
             defaultValue: 'ERP Müşterisi Oluştur',
@@ -491,6 +511,69 @@ export function CustomerTable({
                 <span className="animate-pulse">{t('loading', { ns: CRM_NS })}</span>
               ) : null}
               {t('delete.action', { ns: CRM_NS })}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={canCreateErpCustomer && erpCreateDialogOpen}
+        onOpenChange={(open) => {
+          if (createErpCustomer.isPending) return;
+          setErpCreateDialogOpen(open);
+          if (!open) {
+            setErpCreateCustomer(null);
+          }
+        }}
+      >
+        <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
+          <DialogHeader className="flex flex-col items-center gap-4 text-center pb-6 pt-10 px-6">
+            <div className="h-20 w-20 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mb-2 animate-in zoom-in duration-300">
+              <CloudUpload size={36} className="text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div className="space-y-2">
+              <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
+                {t('customerManagement.erpCreate.confirmTitle', {
+                  ns: CRM_NS,
+                  defaultValue: 'Netsis ERP Kaydı Oluştur',
+                })}
+              </DialogTitle>
+              <DialogDescription className="text-slate-500 dark:text-slate-400 max-w-[320px] mx-auto text-sm leading-relaxed">
+                {t('customerManagement.erpCreate.confirmMessage', {
+                  ns: CRM_NS,
+                  name: erpCreateCustomer?.name || '',
+                  defaultValue: '{{name}} müşterisi için Netsis ERP cari kaydı oluşturulacak. Onaylıyor musunuz?',
+                })}
+              </DialogDescription>
+            </div>
+          </DialogHeader>
+          <DialogFooter className="flex flex-row gap-3 justify-center p-6 bg-slate-50/50 dark:bg-[#1a1025]/50 border-t border-slate-100 dark:border-white/5">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setErpCreateDialogOpen(false);
+                setErpCreateCustomer(null);
+              }}
+              disabled={createErpCustomer.isPending}
+              className="flex-1 h-12 rounded-xl border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-white dark:hover:bg-white/5 font-semibold"
+            >
+              {t('cancel', { ns: 'common' })}
+            </Button>
+            <Button
+              type="button"
+              onClick={() => void handleErpCreateConfirm()}
+              disabled={createErpCustomer.isPending}
+              className="flex-1 h-12 rounded-xl bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02] font-bold"
+            >
+              {createErpCustomer.isPending ? (
+                <span className="animate-pulse">{t('loading', { ns: CRM_NS })}</span>
+              ) : (
+                t('customerManagement.erpCreate.confirmAction', {
+                  ns: CRM_NS,
+                  defaultValue: 'Evet, Oluştur',
+                })
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

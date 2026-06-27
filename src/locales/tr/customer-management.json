@@ -47,7 +47,10 @@
     },
     "erpCreate": {
       "button": "ERP Müşterisi Oluştur",
-      "alreadyIntegrated": "ERP müşterisi oluşturulmuş"
+      "alreadyIntegrated": "ERP müşterisi oluşturulmuş",
+      "confirmTitle": "Netsis ERP Kaydı Oluştur",
+      "confirmMessage": "{{name}} müşterisi için Netsis ERP cari kaydı oluşturulacak. Onaylıyor musunuz?",
+      "confirmAction": "Evet, Oluştur"
     },
     "manualSync": "Manuel Senkronizasyon",
     "syncing": "Senkronizasyon çalışıyor",

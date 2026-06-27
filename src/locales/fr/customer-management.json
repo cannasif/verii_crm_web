@@ -229,7 +229,10 @@
     "syncing": "Synchronisation en cours",
     "erpCreate": {
       "button": "Create ERP Customer",
-      "alreadyIntegrated": "ERP customer already created"
+      "alreadyIntegrated": "ERP customer already created",
+      "confirmTitle": "Créer l'enregistrement Netsis ERP",
+      "confirmMessage": "Un compte client Netsis ERP sera créé pour {{name}}. Confirmez-vous ?",
+      "confirmAction": "Oui, créer"
     }
   },
   "advancedFilter": {
