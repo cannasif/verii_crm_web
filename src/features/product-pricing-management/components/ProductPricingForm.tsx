@@ -25,6 +25,12 @@ import {
 } from "@/components/ui/command";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  areDiscountRatesValid,
+  normalizeDiscountRateForField,
+  type DiscountRateField,
+} from '@/lib/discount-rate-validation';
+import { toast } from 'sonner';
 
 import {
   Package,
@@ -71,6 +77,15 @@ interface ProductPricingFormProps {
 const BASE_INPUT = "h-11 rounded-xl bg-white/50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/10 text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-slate-600 focus-visible:ring-2 focus-visible:ring-pink-500/20 focus:border-pink-500/50 transition-all duration-300";
 const INPUT_STYLE = `${BASE_INPUT} w-full`;
 const LABEL_STYLE = "text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1 mb-2 flex items-center gap-2";
+type ProductPricingDiscountField = 'discount1' | 'discount2' | 'discount3';
+
+const PRODUCT_PRICING_DISCOUNT_FIELD_MAP: Record<ProductPricingDiscountField, DiscountRateField> = {
+  discount1: 'discountRate1',
+  discount2: 'discountRate2',
+  discount3: 'discountRate3',
+};
+
+const DISCOUNT_RATE_ERROR_MESSAGE = 'Kademeli iskonto efektif %100 değerine ulaşamaz.';
 
 export function ProductPricingForm({
   open,
@@ -127,6 +142,45 @@ export function ProductPricingForm({
     return { final, profit };
   }, [values.listPrice, values.costPrice, values.discount1, values.discount2, values.discount3]);
 
+  const getDiscountRates = (data = form.getValues()) => ({
+    discountRate1: data.discount1,
+    discountRate2: data.discount2,
+    discountRate3: data.discount3,
+  });
+
+  const showDiscountRateError = (): void => {
+    toast.error(DISCOUNT_RATE_ERROR_MESSAGE);
+  };
+
+  const handleDiscountChange = (fieldName: ProductPricingDiscountField, value: string): void => {
+    const parsedValue = value === '' ? 0 : Number(value);
+    if (!Number.isFinite(parsedValue)) {
+      form.setValue(fieldName, 0, { shouldDirty: true, shouldValidate: true });
+      return;
+    }
+
+    const normalized = normalizeDiscountRateForField(
+      PRODUCT_PRICING_DISCOUNT_FIELD_MAP[fieldName],
+      parsedValue,
+      getDiscountRates()
+    );
+
+    form.setValue(fieldName, normalized.value, { shouldDirty: true, shouldValidate: true });
+    if (normalized.wasClamped) {
+      showDiscountRateError();
+    }
+  };
+
+  const handleValidSubmit = (data: ProductPricingFormSchema): void | Promise<void> => {
+    if (!areDiscountRatesValid(getDiscountRates(data))) {
+      showDiscountRateError();
+      form.setError('discount3', { type: 'manual', message: DISCOUNT_RATE_ERROR_MESSAGE });
+      return;
+    }
+
+    return onSubmit(data);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -160,7 +214,7 @@ export function ProductPricingForm({
 
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 w-full">
+            <form onSubmit={form.handleSubmit(handleValidSubmit)} className="space-y-8 w-full">
 
               <div className="flex flex-col gap-4">
                 <div className="space-y-6">
@@ -311,14 +365,25 @@ export function ProductPricingForm({
                     <div className="space-y-4 pt-2">
                       <div className="grid grid-cols-3 gap-4">
                         {[1, 2, 3].map((num) => (
-                          <FormField key={num} control={form.control} name={`discount${num}` as any} render={({ field }) => (
+                          <FormField key={num} control={form.control} name={`discount${num}` as ProductPricingDiscountField} render={({ field }) => (
                             <FormItem className="space-y-2">
                               <FormLabel className={LABEL_STYLE}>
                                 <Percent size={12} className="text-orange-500" /> {t(`discount${num}`)} (%)
                               </FormLabel>
                               <FormControl>
-                                <Input type="number" step="0.01" inputMode="decimal" {...field} className={`${INPUT_STYLE} text-center font-bold`} />
+                                <Input
+                                  type="number"
+                                  step="0.01"
+                                  inputMode="decimal"
+                                  min="0"
+                                  max="100"
+                                  {...field}
+                                  value={field.value ?? ''}
+                                  onChange={(event) => handleDiscountChange(field.name as ProductPricingDiscountField, event.target.value)}
+                                  className={`${INPUT_STYLE} text-center font-bold`}
+                                />
                               </FormControl>
+                              <FormMessage className="text-red-500 text-[10px] font-medium" />
                             </FormItem>
                           )} />
                         ))}
@@ -387,7 +452,7 @@ export function ProductPricingForm({
               {t('cancel', { ns: 'common' })}
             </Button>
             <Button
-              onClick={form.handleSubmit(onSubmit)}
+              onClick={form.handleSubmit(handleValidSubmit)}
               disabled={isLoading || !isFormValid}
               className="h-12 bg-linear-to-r from-pink-600 to-orange-600 px-10 font-black text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-2xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
             >

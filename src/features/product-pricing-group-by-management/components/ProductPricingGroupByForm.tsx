@@ -36,11 +36,17 @@ import {
 } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
 import { productPricingGroupByFormSchema, type ProductPricingGroupByFormSchema, calculateFinalPrice, formatPrice } from '../types/product-pricing-group-by-types';
+import {
+  areDiscountRatesValid,
+  normalizeDiscountRateForField,
+  type DiscountRateField,
+} from '@/lib/discount-rate-validation';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useStokGroup } from '@/services/hooks/useStokGroup';
 import type { ProductPricingGroupByDto } from '../types/product-pricing-group-by-types';
 import { StockGroupSelectDialog } from '@/components/shared/StockGroupSelectDialog';
 import { Cancel01Icon } from 'hugeicons-react';
+import { toast } from 'sonner';
 
 interface ProductPricingGroupByFormProps {
   open: boolean;
@@ -53,6 +59,15 @@ interface ProductPricingGroupByFormProps {
 
 const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/20 focus-visible:border-pink-500 transition-all duration-200 text-sm font-medium";
 const LABEL_STYLE = "text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-2";
+type ProductPricingGroupDiscountField = 'discount1' | 'discount2' | 'discount3';
+
+const PRODUCT_PRICING_GROUP_DISCOUNT_FIELD_MAP: Record<ProductPricingGroupDiscountField, DiscountRateField> = {
+  discount1: 'discountRate1',
+  discount2: 'discountRate2',
+  discount3: 'discountRate3',
+};
+
+const DISCOUNT_RATE_ERROR_MESSAGE = 'Kademeli iskonto efektif %100 değerine ulaşamaz.';
 
 export function ProductPricingGroupByForm({
   open,
@@ -120,7 +135,47 @@ export function ProductPricingGroupByForm({
     }
   }, [productPricingGroupBy, form]);
 
+  const getDiscountRates = (data = form.getValues()) => ({
+    discountRate1: data.discount1,
+    discountRate2: data.discount2,
+    discountRate3: data.discount3,
+  });
+
+  const showDiscountRateError = (): void => {
+    toast.error(DISCOUNT_RATE_ERROR_MESSAGE);
+  };
+
+  const handleDiscountChange = (fieldName: ProductPricingGroupDiscountField, value: string): void => {
+    if (value === '') {
+      form.setValue(fieldName, undefined, { shouldDirty: true, shouldValidate: true });
+      return;
+    }
+
+    const parsedValue = Number(value);
+    if (!Number.isFinite(parsedValue)) {
+      form.setValue(fieldName, undefined, { shouldDirty: true, shouldValidate: true });
+      return;
+    }
+
+    const normalized = normalizeDiscountRateForField(
+      PRODUCT_PRICING_GROUP_DISCOUNT_FIELD_MAP[fieldName],
+      parsedValue,
+      getDiscountRates()
+    );
+
+    form.setValue(fieldName, normalized.value, { shouldDirty: true, shouldValidate: true });
+    if (normalized.wasClamped) {
+      showDiscountRateError();
+    }
+  };
+
   const handleSubmit = async (data: ProductPricingGroupByFormSchema): Promise<void> => {
+    if (!areDiscountRatesValid(getDiscountRates(data))) {
+      showDiscountRateError();
+      form.setError('discount3', { type: 'manual', message: DISCOUNT_RATE_ERROR_MESSAGE });
+      return;
+    }
+
     await onSubmit(data);
     if (!isLoading) {
       form.reset();
@@ -361,7 +416,7 @@ export function ProductPricingGroupByForm({
                             min="0"
                             max="100"
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                            onChange={(e) => handleDiscountChange('discount1', e.target.value)}
                             value={field.value || ''}
                             className={INPUT_STYLE}
                             placeholder={t('productPricingGroupByManagement.enterDiscount1')}
@@ -387,7 +442,7 @@ export function ProductPricingGroupByForm({
                             min="0"
                             max="100"
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                            onChange={(e) => handleDiscountChange('discount2', e.target.value)}
                             value={field.value || ''}
                             className={INPUT_STYLE}
                             placeholder={t('productPricingGroupByManagement.enterDiscount2')}
@@ -413,7 +468,7 @@ export function ProductPricingGroupByForm({
                             min="0"
                             max="100"
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                            onChange={(e) => handleDiscountChange('discount3', e.target.value)}
                             value={field.value || ''}
                             className={INPUT_STYLE}
                             placeholder={t('productPricingGroupByManagement.enterDiscount3')}

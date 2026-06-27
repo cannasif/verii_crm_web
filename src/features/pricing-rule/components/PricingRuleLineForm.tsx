@@ -31,6 +31,12 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
+import {
+  areDiscountRatesValid,
+  normalizeDiscountRateForField,
+  type DiscountRateField,
+} from '@/lib/discount-rate-validation';
+import { toast } from 'sonner';
 // İkonlar
 import {
   Search,
@@ -55,6 +61,7 @@ interface PricingRuleLineFormProps {
 const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/20 focus-visible:border-pink-500 transition-all duration-200 text-sm font-medium";
 const READONLY_INPUT_STYLE = "h-11 rounded-xl bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/5 text-slate-500 dark:text-slate-400 text-sm cursor-not-allowed font-medium";
 const LABEL_STYLE = "text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-2";
+const DISCOUNT_RATE_ERROR_MESSAGE = 'Kademeli iskonto efektif %100 değerine ulaşamaz.';
 
 export function PricingRuleLineForm({
   line,
@@ -90,6 +97,37 @@ export function PricingRuleLineForm({
   const watchedDiscountRate2 = form.watch('discountRate2');
   const watchedDiscountRate3 = form.watch('discountRate3');
 
+  const getDiscountRates = (data?: {
+    discountRate1?: number | null;
+    discountRate2?: number | null;
+    discountRate3?: number | null;
+  }) => {
+    const source = data ?? form.getValues();
+    return {
+      discountRate1: source.discountRate1,
+      discountRate2: source.discountRate2,
+      discountRate3: source.discountRate3,
+    };
+  };
+
+  const showDiscountRateError = (): void => {
+    toast.error(DISCOUNT_RATE_ERROR_MESSAGE);
+  };
+
+  const handleDiscountRateChange = (fieldName: DiscountRateField, value: string): void => {
+    const parsedValue = value === '' ? 0 : Number(value);
+    if (!Number.isFinite(parsedValue)) {
+      form.setValue(fieldName, 0, { shouldDirty: true, shouldValidate: true });
+      return;
+    }
+
+    const normalized = normalizeDiscountRateForField(fieldName, parsedValue, getDiscountRates());
+    form.setValue(fieldName, normalized.value, { shouldDirty: true, shouldValidate: true });
+    if (normalized.wasClamped) {
+      showDiscountRateError();
+    }
+  };
+
   useEffect(() => {
     const baseAmount = (watchedFixedUnitPrice ?? 0) * (watchedMinQuantity ?? 0);
 
@@ -116,6 +154,11 @@ export function PricingRuleLineForm({
 
   const handleSubmit = (data: unknown): void => {
     const formData = data as PricingRuleLineFormState;
+    if (!areDiscountRatesValid(getDiscountRates(formData))) {
+      showDiscountRateError();
+      form.setError('discountRate3', { type: 'manual', message: DISCOUNT_RATE_ERROR_MESSAGE });
+      return;
+    }
 
     const savedData: PricingRuleLineFormState = {
       ...formData,
@@ -376,10 +419,11 @@ export function PricingRuleLineForm({
                       max="100"
                       {...field}
                       value={field.value ?? ''}
-                      onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
+                      onChange={(e) => handleDiscountRateChange('discountRate1', e.target.value)}
                       className={INPUT_STYLE}
                     />
                   </FormControl>
+                  <FormMessage className="text-red-500 text-[10px] mt-1" />
                 </FormItem>
               )}
             />
@@ -424,10 +468,11 @@ export function PricingRuleLineForm({
                     max="100"
                     {...field}
                     value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
+                    onChange={(e) => handleDiscountRateChange('discountRate2', e.target.value)}
                     className={INPUT_STYLE}
                   />
                 </FormControl>
+                <FormMessage className="text-red-500 text-[10px] mt-1" />
               </FormItem>
             )}
           />
@@ -450,10 +495,11 @@ export function PricingRuleLineForm({
                     max="100"
                     {...field}
                     value={field.value ?? ''}
-                    onChange={(e) => field.onChange(e.target.value === '' ? 0 : parseFloat(e.target.value) || 0)}
+                    onChange={(e) => handleDiscountRateChange('discountRate3', e.target.value)}
                     className={INPUT_STYLE}
                   />
                 </FormControl>
+                <FormMessage className="text-red-500 text-[10px] mt-1" />
               </FormItem>
             )}
           />

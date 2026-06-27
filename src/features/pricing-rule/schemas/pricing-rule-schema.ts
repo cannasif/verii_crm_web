@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { areDiscountRatesValid } from '@/lib/discount-rate-validation';
 
 export const pricingRuleHeaderSchema = z
   .object({
@@ -85,6 +86,18 @@ export const pricingRuleLineSchema = z
     {
       message: 'pricingRule.lines.maxQuantityMustBeGreaterThanMin',
       path: ['maxQuantity'],
+    }
+  )
+  .refine(
+    (data) =>
+      areDiscountRatesValid({
+        discountRate1: data.discountRate1,
+        discountRate2: data.discountRate2,
+        discountRate3: data.discountRate3,
+      }),
+    {
+      message: 'Kademeli iskonto efektif %100 değerine ulaşamaz',
+      path: ['discountRate3'],
     }
   );
 

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { areDiscountRatesValid } from '@/lib/discount-rate-validation';
 
 export interface ProductPricingGroupByDto {
   id: number;
@@ -92,6 +93,20 @@ export const productPricingGroupByFormSchema = z.object({
     .max(100, 'productPricingGroupByManagement.discount3Range')
     .optional()
     .nullable(),
+}).superRefine((data, ctx) => {
+  if (
+    !areDiscountRatesValid({
+      discountRate1: data.discount1,
+      discountRate2: data.discount2,
+      discountRate3: data.discount3,
+    })
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Kademeli iskonto efektif %100 değerine ulaşamaz',
+      path: ['discount3'],
+    });
+  }
 });
 
 export type ProductPricingGroupByFormSchema = z.infer<typeof productPricingGroupByFormSchema>;

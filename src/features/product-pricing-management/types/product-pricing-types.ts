@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { areDiscountRatesValid } from '@/lib/discount-rate-validation';
 
 // --- DTO ---
 export interface ProductPricingGetDto {
@@ -46,6 +47,20 @@ export const productPricingFormSchema = z.object({
   discount1: z.preprocess((val) => (val === '' ? undefined : Number(val)), z.number().min(0).max(100).optional()),
   discount2: z.preprocess((val) => (val === '' ? undefined : Number(val)), z.number().min(0).max(100).optional()),
   discount3: z.preprocess((val) => (val === '' ? undefined : Number(val)), z.number().min(0).max(100).optional()),
+}).superRefine((data, ctx) => {
+  if (
+    !areDiscountRatesValid({
+      discountRate1: data.discount1,
+      discountRate2: data.discount2,
+      discountRate3: data.discount3,
+    })
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Kademeli iskonto efektif %100 değerine ulaşamaz',
+      path: ['discount3'],
+    });
+  }
 });
 
 export type ProductPricingFormSchema = z.infer<typeof productPricingFormSchema>;
