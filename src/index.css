@@ -393,6 +393,18 @@
   }
 
   :where(
+    [class*='bg-pink-'],
+    [class*='bg-purple-'],
+    [class*='bg-orange-'],
+    [class*='dark:bg-pink-'],
+    [class*='dark:bg-purple-'],
+    [class*='dark:bg-orange-'],
+    [class*='hover:bg-pink-'],
+    [class*='hover:bg-purple-'],
+    [class*='hover:bg-orange-'],
+    [class*='dark:hover:bg-pink-'],
+    [class*='dark:hover:bg-purple-'],
+    [class*='dark:hover:bg-orange-'],
     [class*='bg-pink-50'],
     [class*='bg-pink-100'],
     [class*='bg-purple-50'],
@@ -407,10 +419,50 @@
     [class*='bg-orange-500/20'],
     [class*='hover:bg-pink-50'],
     [class*='hover:bg-purple-50'],
-    [class*='hover:bg-orange-50'],
-    [class*='dark:hover:bg-pink'],
-    [class*='dark:hover:bg-purple'],
-    [class*='dark:hover:bg-orange']
+    [class*='hover:bg-orange-50']
+  ) {
+    background-color: var(--crm-brand-soft) !important;
+  }
+
+  :where(
+    [class*='bg-pink-500'],
+    [class*='bg-pink-600'],
+    [class*='bg-pink-700'],
+    [class*='bg-purple-500'],
+    [class*='bg-purple-600'],
+    [class*='bg-purple-700'],
+    [class*='bg-orange-500'],
+    [class*='bg-orange-600'],
+    [class*='bg-orange-700']
+  ) {
+    background-color: var(--crm-brand-primary) !important;
+  }
+
+  :where(
+    [class*='bg-pink-300/'],
+    [class*='bg-pink-400/'],
+    [class*='bg-pink-500/'],
+    [class*='bg-pink-600/'],
+    [class*='bg-purple-300/'],
+    [class*='bg-purple-400/'],
+    [class*='bg-purple-500/'],
+    [class*='bg-purple-600/'],
+    [class*='bg-orange-300/'],
+    [class*='bg-orange-400/'],
+    [class*='bg-orange-500/'],
+    [class*='bg-orange-600/'],
+    [class*='dark:bg-pink-300/'],
+    [class*='dark:bg-pink-400/'],
+    [class*='dark:bg-pink-500/'],
+    [class*='dark:bg-pink-600/'],
+    [class*='dark:bg-purple-300/'],
+    [class*='dark:bg-purple-400/'],
+    [class*='dark:bg-purple-500/'],
+    [class*='dark:bg-purple-600/'],
+    [class*='dark:bg-orange-300/'],
+    [class*='dark:bg-orange-400/'],
+    [class*='dark:bg-orange-500/'],
+    [class*='dark:bg-orange-600/']
   ) {
     background-color: var(--crm-brand-soft) !important;
   }
