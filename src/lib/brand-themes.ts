@@ -13,6 +13,9 @@ export const brandThemeIds = [
   'cleanLight',
   'highContrast',
   'minimalCrm',
+  'flatNavy',
+  'flatSlate',
+  'flatWhite',
 ] as const;
 
 export type BrandTheme = (typeof brandThemeIds)[number];
@@ -95,6 +98,27 @@ export const brandThemes: readonly BrandThemeDefinition[] = [
     description: 'Daha az neon, daha çok operasyonel SaaS görünümü',
     className: 'theme-minimal-crm',
     swatches: ['#155e75', '#0f766e', '#64748b'],
+  },
+  {
+    id: 'flatNavy',
+    label: 'Düz Lacivert',
+    description: 'Gradientsiz, net ve kurumsal lacivert arayüz',
+    className: 'theme-flat-navy',
+    swatches: ['#1e3a8a', '#1e3a8a', '#1e3a8a'],
+  },
+  {
+    id: 'flatSlate',
+    label: 'Düz Grafit',
+    description: 'Gradientsiz, sakin ve operasyonel yönetim paneli',
+    className: 'theme-flat-slate',
+    swatches: ['#334155', '#334155', '#334155'],
+  },
+  {
+    id: 'flatWhite',
+    label: 'Düz Açık',
+    description: 'Gradientsiz, aydınlık ve yoğun veri girişi odaklı tema',
+    className: 'theme-flat-white',
+    swatches: ['#f8fafc', '#2563eb', '#e2e8f0'],
   },
 ] as const;
 
