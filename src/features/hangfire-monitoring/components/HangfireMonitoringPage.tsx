@@ -151,7 +151,10 @@ export function HangfireMonitoringPage(): ReactElement {
     ]);
   };
 
-  const recurringItems = recurringJobsQuery.data?.items ?? [];
+  const recurringItems = useMemo(
+    () => recurringJobsQuery.data?.items ?? [],
+    [recurringJobsQuery.data?.items]
+  );
   const recurringTotalPages = Math.max(1, Math.ceil(recurringItems.length / recurringPageSize));
   const recurringRows = recurringItems.slice((recurringPage - 1) * recurringPageSize, recurringPage * recurringPageSize);
   const failedTotalPages = Math.max(1, Math.ceil((failedQuery.data?.total ?? 0) / failedPageSize));

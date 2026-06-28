@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -262,7 +262,10 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
         })),
     [usersResponse?.data],
   );
-  const assignedUserIds = meta.assignedUserIds ?? [];
+  const assignedUserIds = useMemo(
+    () => meta.assignedUserIds ?? [],
+    [meta.assignedUserIds]
+  );
   const activeWidget = (config.widgets ?? []).find((widget) => widget.id === config.activeWidgetId);
   const activeAppearance = activeWidget?.appearance ?? {
     tone: 'neutral' as const,
@@ -361,8 +364,11 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
     ]),
     [config.calculatedFields, schema],
   );
-  const getFieldLabel = (fieldName?: string): string =>
-    fieldName ? fieldLabelMap.get(fieldName) ?? fieldName : t('common.reportBuilder.basicNoneSelected');
+  const getFieldLabel = useCallback(
+    (fieldName?: string): string =>
+      fieldName ? fieldLabelMap.get(fieldName) ?? fieldName : t('common.reportBuilder.basicNoneSelected'),
+    [fieldLabelMap, t]
+  );
   const tableColumnCandidates = useMemo(() => {
     const items: Array<{ key: string; label: string }> = [];
     if (config.axis?.field) items.push({ key: config.axis.field, label: config.axis.label?.trim() || getFieldLabel(config.axis.field) });

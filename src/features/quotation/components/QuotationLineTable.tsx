@@ -751,7 +751,7 @@ export function QuotationLineTable({
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingQuotation, quotationId, createMutation, updateLines, linesEditable, offerType]
+    [isExistingQuotation, quotationId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName, queryClient]
   );
 
   const handleSaveMultipleLines = useCallback(
@@ -782,7 +782,7 @@ export function QuotationLineTable({
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingQuotation, quotationId, createMutation, updateLines, linesEditable, offerType]
+    [isExistingQuotation, quotationId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName, queryClient]
   );
 
   const handleCancelNewLine = (): void => {

@@ -19,7 +19,7 @@ export interface ProductCatalogCreateDto {
   sortOrder: number;
 }
 
-export interface ProductCatalogUpdateDto extends ProductCatalogCreateDto {}
+export type ProductCatalogUpdateDto = ProductCatalogCreateDto;
 
 export interface CatalogCategoryNodeDto {
   catalogCategoryId: number;
@@ -52,7 +52,7 @@ export interface CatalogCategoryCreateDto {
   imageUrl?: string | null;
 }
 
-export interface CatalogCategoryUpdateDto extends Omit<CatalogCategoryCreateDto, 'parentCatalogCategoryId'> {}
+export type CatalogCategoryUpdateDto = Omit<CatalogCategoryCreateDto, 'parentCatalogCategoryId'>;
 
 export interface CatalogCategoryReorderDto {
   parentCatalogCategoryId?: number | null;
@@ -133,7 +133,7 @@ export interface ProductCategoryRuleCreateDto {
   priority: number;
 }
 
-export interface ProductCategoryRuleUpdateDto extends ProductCategoryRuleCreateDto {}
+export type ProductCategoryRuleUpdateDto = ProductCategoryRuleCreateDto;
 
 export interface CategoryRuleValueOptionDto {
   value: string;

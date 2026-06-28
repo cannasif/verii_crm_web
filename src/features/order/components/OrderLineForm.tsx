@@ -411,7 +411,7 @@ export function OrderLineForm({
   useEffect(() => {
     unitPriceInput.resetInputCurrencyToDocument();
     unitPriceInput.syncUnitPriceFromDocument(formData.unitPrice ?? 0);
-  }, [currency]);
+  }, [currency, formData.unitPrice, unitPriceInput]);
 
   useEffect(() => {
     if (!line.productCode?.trim() && formData.productCode?.trim()) {
@@ -433,7 +433,7 @@ export function OrderLineForm({
     } else {
       setRelatedLines([]);
     }
-  }, [calculateLineTotals, line, offerType, deliveryMethodName]);
+  }, [calculateLineTotals, line, offerType, deliveryMethodName, formData.productCode, unitPriceInput]);
 
   useEffect(() => {
     if (previousOfferTypeRef.current === offerType && previousDeliveryMethodNameRef.current === deliveryMethodName) return;
@@ -452,7 +452,7 @@ export function OrderLineForm({
   useEffect(() => {
     unitPriceInput.syncUnitPriceFromDocument(formData.unitPrice ?? 0);
     setQuantityInputValue(formatQuantityInputDraftFromNumber(formData.quantity ?? 0, formData.unit));
-  }, [formData.productCode, line.id]);
+  }, [formData.productCode, formData.quantity, formData.unit, formData.unitPrice, line.id, unitPriceInput]);
 
   useEffect(() => {
     setFormData((prev) => {

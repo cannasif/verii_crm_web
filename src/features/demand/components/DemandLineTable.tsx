@@ -501,7 +501,7 @@ export function DemandLineTable({
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingDemand, demandId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName]
+    [isExistingDemand, demandId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName, queryClient]
   );
 
   const handleSaveMultipleLines = useCallback(
@@ -531,7 +531,7 @@ export function DemandLineTable({
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingDemand, demandId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName]
+    [isExistingDemand, demandId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName, queryClient]
   );
 
   const handleCancelNewLine = (): void => {
@@ -867,6 +867,7 @@ export function DemandLineTable({
     updateLines,
     offerType,
     deliveryMethodName,
+    queryClient,
   ]);
 
   const canAddLine = linesEditable && linePrerequisitesMet && documentExchangeRateMet;

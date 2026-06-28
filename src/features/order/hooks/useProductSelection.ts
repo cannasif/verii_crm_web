@@ -77,7 +77,7 @@ export function useProductSelection({
         isEditing: true,
       };
     },
-    [offerType]
+    [offerType, deliveryMethodName]
   );
 
   const convertPriceData = useCallback(
@@ -276,7 +276,7 @@ export function useProductSelection({
         return [calculateLineTotals(baseLine)];
       }
     },
-    [convertPriceData, createEmptyLine, calculateLineTotals, ensureDocumentExchangeRate, i18n.language, offerType]
+    [convertPriceData, createEmptyLine, calculateLineTotals, ensureDocumentExchangeRate, i18n.language, offerType, deliveryMethodName]
   );
 
   const handleProductSelect = useCallback(

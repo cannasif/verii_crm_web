@@ -326,10 +326,10 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
     }
 
     setDraftSelections((prev) => {
-      const nextDraft = buildDraftFromAssignments(assignmentsQuery.data?.data ?? EMPTY_ASSIGNMENTS);
+      const nextDraft = buildDraftFromAssignments(assignments);
       return areDraftsEqual(prev, nextDraft) ? prev : nextDraft;
     });
-  }, [selectedUserId, assignmentsSyncKey, assignmentsQuery.isLoading]);
+  }, [selectedUserId, assignmentsSyncKey, assignmentsQuery.isLoading, assignments]);
 
   const dirtyEntityCount = useMemo(
     () =>

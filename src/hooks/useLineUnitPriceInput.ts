@@ -206,16 +206,29 @@ export function useLineUnitPriceInput({
     ]
   );
 
-  return {
-    unitPriceInputValue: inputValue,
-    unitPriceInputCurrencyDovizTipi: inputCurrencyDovizTipi,
-    unitPriceInputCurrencyLabel: inputCurrencyLabel,
-    currencyDialogOpen,
-    setCurrencyDialogOpen,
-    handleUnitPriceInputChange,
-    handleUnitPriceInputBlur,
-    handleInputCurrencySelect,
-    syncUnitPriceFromDocument,
-    resetInputCurrencyToDocument,
-  };
+  return useMemo(
+    () => ({
+      unitPriceInputValue: inputValue,
+      unitPriceInputCurrencyDovizTipi: inputCurrencyDovizTipi,
+      unitPriceInputCurrencyLabel: inputCurrencyLabel,
+      currencyDialogOpen,
+      setCurrencyDialogOpen,
+      handleUnitPriceInputChange,
+      handleUnitPriceInputBlur,
+      handleInputCurrencySelect,
+      syncUnitPriceFromDocument,
+      resetInputCurrencyToDocument,
+    }),
+    [
+      inputValue,
+      inputCurrencyDovizTipi,
+      inputCurrencyLabel,
+      currencyDialogOpen,
+      handleUnitPriceInputChange,
+      handleUnitPriceInputBlur,
+      handleInputCurrencySelect,
+      syncUnitPriceFromDocument,
+      resetInputCurrencyToDocument,
+    ]
+  );
 }

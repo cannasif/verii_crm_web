@@ -23,14 +23,19 @@ import { Image, X } from 'lucide-react';
 import {
   activityImageUpdateSchema,
   type ActivityImageUpdateSchema,
-  type ActivityImageDto,
 } from '../types/activity-image-types';
+
+interface EditableActivityImage {
+  id: string | number;
+  resimAciklama?: string;
+  resimUrl: string;
+}
 
 interface ActivityImageEditDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: ActivityImageUpdateSchema) => void | Promise<void>;
-  image?: ActivityImageDto | null;
+  image?: EditableActivityImage | null;
   isLoading?: boolean;
 }
 

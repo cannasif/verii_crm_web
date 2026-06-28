@@ -247,6 +247,7 @@ export function ContactTable({
         setDeleteDialogOpen(false);
         setSelectedContact(null);
       } catch {
+        void 0;
       }
     }
   };

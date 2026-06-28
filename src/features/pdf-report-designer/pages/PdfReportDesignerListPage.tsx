@@ -180,7 +180,7 @@ export function PdfReportDesignerListPage(): ReactElement {
     ruleType: effectiveRuleType,
     isActive: effectiveStatus,
   });
-  const templates = data?.items ?? [];
+  const templates = useMemo(() => data?.items ?? [], [data?.items]);
   const totalCount = data?.totalCount ?? 0;
   const totalPages = Math.max(1, data?.totalPages ?? Math.ceil(totalCount / pageSize || 1));
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;

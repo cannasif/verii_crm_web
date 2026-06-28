@@ -125,6 +125,7 @@ export function TitleTable({
         await deleteTitle.mutateAsync(selectedTitle.id);
         setDeleteDialogOpen(false);
       } catch {
+        void 0;
       }
     }
   };

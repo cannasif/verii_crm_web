@@ -421,7 +421,10 @@ export function ReportViewerPage(): ReactElement {
   const listPath = isMyReportsView ? '/reports/my' : '/reports';
   const widgetCount = config.widgets?.length ?? 1;
   const saveState = (location.state as { justSaved?: boolean; fromBuilder?: boolean; isEdit?: boolean } | null) ?? null;
-  const lifecycle = config.lifecycle ?? { status: 'draft' as const, version: 1 };
+  const lifecycle = useMemo(
+    () => config.lifecycle ?? { status: 'draft' as const, version: 1 },
+    [config.lifecycle]
+  );
 
   const governance = config.governance ?? {
     audience: 'private' as const,
@@ -481,10 +484,7 @@ export function ReportViewerPage(): ReactElement {
     statusLabel,
     lifecycle.version,
     governance.owner,
-    governance.audience,
     governance.subscriptionEnabled,
-    governance.subscriptionFrequency,
-    governance.subscriptionChannel,
     governance.certified,
     governance.category,
     audienceLabel,
@@ -796,7 +796,7 @@ export function ReportViewerPage(): ReactElement {
       return;
     }
     setUi({ checkLoading: false });
-  }, [reportId, hydrateFromReportDetail, setUi]);
+  }, [reportId, hydrateFromReportDetail, setUi, t]);
 
   const runPreview = useCallback(async (parameterOverrides: Record<string, string>) => {
     if (!meta.connectionKey || !meta.dataSourceType || !meta.dataSourceName) return;
@@ -814,7 +814,7 @@ export function ReportViewerPage(): ReactElement {
     } catch (e) {
       setUi({ previewLoading: false, error: e instanceof Error ? e.message : t('common.reportBuilder.messages.previewFailed') });
     }
-  }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, config, currentUser, setPreview, setUi]);
+  }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, config, currentUser, setPreview, setUi, t]);
 
   const runAllWidgetPreviews = useCallback(async (parameterOverrides: Record<string, string>) => {
     const widgets = config.widgets ?? [];
@@ -873,7 +873,7 @@ export function ReportViewerPage(): ReactElement {
         }
       })
     );
-  }, [config, config.calculatedFields, config.widgets, currentUser, lifecycle, meta.connectionKey, meta.dataSourceType, meta.dataSourceName]);
+  }, [config, currentUser, lifecycle, meta.connectionKey, meta.dataSourceType, meta.dataSourceName, t]);
 
   useEffect(() => {
     loadReport();

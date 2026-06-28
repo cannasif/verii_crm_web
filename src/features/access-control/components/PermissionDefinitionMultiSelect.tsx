@@ -165,7 +165,7 @@ export function PermissionDefinitionMultiSelect({
         moduleLabel: moduleEntry.moduleLabel,
         rows: Array.from(moduleEntry.rows.values()).sort((a, b) => a.label.localeCompare(b.label)),
       }));
-  }, [filteredItems, getActionKey, getDisplayLabel, getPlatformLabel, getSubjectLabel, t, actionMeta]);
+  }, [filteredItems, getActionKey, getDisplayLabel, getPlatformLabel, getSubjectLabel, t]);
 
   const toggleMany = useCallback(
     (ids: number[], checked: boolean): void => {

@@ -126,6 +126,7 @@ export function CityTable({
         await deleteCity.mutateAsync(selectedCity.id);
         setDeleteDialogOpen(false);
       } catch {
+        void 0;
       }
     }
   };

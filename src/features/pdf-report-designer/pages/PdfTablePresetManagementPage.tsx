@@ -109,7 +109,7 @@ function toFormState(preset?: PdfTablePresetDto | null): PresetFormState {
 export function PdfTablePresetManagementPage(): ReactElement {
   const { t } = useTranslation(['report-designer', 'common']);
   const { data, isLoading } = usePdfTablePresetList();
-  const presets = data?.items ?? [];
+  const presets = useMemo(() => data?.items ?? [], [data?.items]);
   const createMutation = useCreatePdfTablePreset();
   const updateMutation = useUpdatePdfTablePreset();
   const deleteMutation = useDeletePdfTablePreset();

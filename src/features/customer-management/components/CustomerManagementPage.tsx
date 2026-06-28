@@ -111,7 +111,7 @@ export function CustomerManagementPage(): ReactElement {
   });
   const tableColumns = useMemo(
     () => getColumnsConfig(t),
-    [t, i18n.language, i18n.resolvedLanguage]
+    [t]
   );
   const baseColumns = useMemo(
     () =>

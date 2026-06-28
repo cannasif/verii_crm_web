@@ -577,7 +577,6 @@ export function QuotationDetailPage(): ReactElement {
     paymentTypes,
     quotationNotes,
     shippingAddresses,
-    hasLineDiscounts,
     defaultShowDiscountDetails,
   ]);
 

@@ -156,7 +156,7 @@ export function QuotationListPage(): ReactElement {
         value: representativeName,
       },
     ];
-  }, []);
+  }, [searchParams]);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>(initialFilterRows);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>(initialFilterRows);
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
@@ -226,8 +226,10 @@ export function QuotationListPage(): ReactElement {
 
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
 
-  const filtersParam: { filters?: PagedFilter[] } =
-    appliedFilters.length > 0 ? { filters: appliedFilters } : {};
+  const filtersParam = useMemo<{ filters?: PagedFilter[] }>(
+    () => (appliedFilters.length > 0 ? { filters: appliedFilters } : {}),
+    [appliedFilters]
+  );
 
   const quotationQuery = useQuotationList({
     pageNumber,

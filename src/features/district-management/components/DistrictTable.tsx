@@ -123,6 +123,7 @@ export function DistrictTable({
         await deleteDistrict.mutateAsync(selectedDistrict.id);
         setDeleteDialogOpen(false);
       } catch {
+        void 0;
       }
     }
   };

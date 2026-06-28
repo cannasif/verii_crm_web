@@ -218,7 +218,7 @@ export function useOrderPdfExportPreview({
       paymentTypes,
       quotationNotes,
       shippingAddresses,
-      hasLineDiscounts,
+      defaultShowDiscountDetails,
     ],
   );
 
@@ -450,7 +450,7 @@ export function useOrderPdfExportPreview({
   }, [
     pdfExportOpen,
     buildExportPdfBlob,
-    hasLineDiscounts,
+    defaultShowDiscountDetails,
     orderId,
     shareFileName,
     defaultShareFileName,

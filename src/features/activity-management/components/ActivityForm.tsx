@@ -192,7 +192,7 @@ export function ActivityForm({
   initialCustomerDisplayName,
   preservePrefilledCustomer = false,
 }: ActivityFormProps): ReactElement {
-  const { t, i18n } = useTranslation(['activity-management', 'common']);
+  const { t } = useTranslation(['activity-management', 'common']);
   const { user } = useAuthStore();
   const [activityTypeSearchTerm, setActivityTypeSearchTerm] = useState('');
   const [assignedUserSearchTerm, setAssignedUserSearchTerm] = useState('');
@@ -268,7 +268,7 @@ export function ActivityForm({
       buildActivitySaveRequiredHintLines(watchedFormValues, (key) =>
         t(key, { ns: 'activity-management', defaultValue: key })
       ),
-    [watchedFormValues, t, i18n.language],
+    [watchedFormValues, t],
   );
 
   const watchedCustomerId = form.watch('potentialCustomerId');

@@ -188,10 +188,13 @@ export function StockListPage(): ReactElement {
 
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
   const hasCodeFilterSelection = hasSpecialCodeSelection(appliedSpecialCodeSelections);
-  const filtersParam: { filters?: PagedFilter[]; filterLogic?: 'and' | 'or' } =
-    appliedFilters.length > 0 && !hasCodeFilterSelection
-      ? { filters: appliedFilters, filterLogic }
-      : {};
+  const filtersParam = useMemo<{ filters?: PagedFilter[]; filterLogic?: 'and' | 'or' }>(
+    () =>
+      appliedFilters.length > 0 && !hasCodeFilterSelection
+        ? { filters: appliedFilters, filterLogic }
+        : {},
+    [appliedFilters, filterLogic, hasCodeFilterSelection]
+  );
 
   const listQueryParams = useMemo(
     () => ({

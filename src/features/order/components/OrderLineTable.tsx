@@ -624,6 +624,7 @@ export function OrderLineTable({
     updateLines,
     offerType,
     deliveryMethodName,
+    queryClient,
   ]);
 
   const handleSaveNewLine = useCallback(
@@ -652,7 +653,7 @@ export function OrderLineTable({
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingOrder, orderId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName]
+    [isExistingOrder, orderId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName, queryClient]
   );
 
   const handleSaveMultipleLines = useCallback(
@@ -682,7 +683,7 @@ export function OrderLineTable({
       setAddLineDialogOpen(false);
       setNewLine(null);
     },
-    [isExistingOrder, orderId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName]
+    [isExistingOrder, orderId, createMutation, updateLines, linesEditable, offerType, deliveryMethodName, queryClient]
   );
 
   const handleCancelNewLine = (): void => {

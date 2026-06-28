@@ -28,7 +28,7 @@ export function StockWarehouseBalances({ stockId, unit }: StockWarehouseBalances
   const { t, i18n } = useTranslation('stock');
   const { data: balances, isLoading, isError, error } = useWarehouseBalancesByStockId(stockId);
 
-  const rows = balances ?? [];
+  const rows = useMemo(() => balances ?? [], [balances]);
   const totalBalance = useMemo(
     () => rows.reduce((sum, item) => sum + (Number(item.balance) || 0), 0),
     [rows],

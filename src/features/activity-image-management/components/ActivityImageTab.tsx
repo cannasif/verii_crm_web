@@ -323,7 +323,7 @@ export function ActivityImageTab({
         open={isEditDialogOpen}
         onOpenChange={setIsEditDialogOpen}
         onSubmit={handleEditSubmit}
-        image={editingImage as any}
+        image={editingImage}
         isLoading={updateMutation.isPending}
       />
 

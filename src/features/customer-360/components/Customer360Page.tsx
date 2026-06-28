@@ -1294,7 +1294,10 @@ export function Customer360Page(): ReactElement {
   const { customerId } = useParams<{ customerId: string }>();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation(['customer-management', 'customer360', 'common']);
-  const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
+  const tc = useCallback(
+    (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts }),
+    [t]
+  );
   const { user } = useAuthStore();
   const canViewErpOrders = useCanViewCustomerErpOrders();
   const id = Number(customerId ?? 0);

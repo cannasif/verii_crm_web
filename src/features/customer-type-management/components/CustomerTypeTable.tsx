@@ -176,6 +176,7 @@ export function CustomerTypeTable({
         setDeleteDialogOpen(false);
         setSelectedCustomerType(null);
       } catch {
+        void 0;
       }
     }
   };

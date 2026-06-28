@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { ArrowDown, ArrowUp, ArrowUpDown, Clock } from 'lucide-react';
@@ -79,13 +79,13 @@ export function WaitingApprovalsPage(): ReactElement {
   const approveLabel = t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' });
   const rejectLabel = t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' });
 
-  const getStatusLabel = (status: number, statusName?: string | null): string => {
+  const getStatusLabel = useCallback((status: number, statusName?: string | null): string => {
     const statusKey = getApprovalStatusTranslationKey(status);
     if (statusKey) return t(`approval.status.${statusKey}`, { ns: 'approval' });
     return statusName || t('waitingApprovals.waiting');
-  };
+  }, [t]);
 
-  const formatDate = (dateString?: string | null): string => {
+  const formatDate = useCallback((dateString?: string | null): string => {
     if (!dateString) return '-';
     return new Date(dateString).toLocaleDateString(i18n.language, {
       year: 'numeric',
@@ -94,7 +94,7 @@ export function WaitingApprovalsPage(): ReactElement {
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
+  }, [i18n.language]);
 
   const baseColumns = useMemo(
     () => COLUMN_CONFIG.map((column) => ({

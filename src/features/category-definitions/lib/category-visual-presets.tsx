@@ -71,7 +71,7 @@ export interface CategoryVisualPresetOption {
   badgeClassName: string;
 }
 
-interface CategoryVisualPresetDefinition extends Omit<CategoryVisualPresetOption, 'label'> {}
+type CategoryVisualPresetDefinition = Omit<CategoryVisualPresetOption, 'label'>;
 
 const CATEGORY_VISUAL_PRESET_DEFINITIONS: CategoryVisualPresetDefinition[] = [
   { value: 1, key: 'general', icon: Shapes, colorClassName: 'bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-200', badgeClassName: 'border-pink-200 bg-pink-50 text-pink-700 dark:border-pink-500/30 dark:bg-pink-500/10 dark:text-pink-200' },

@@ -1,7 +1,7 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CalendarDays, ChevronDown, CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins } from 'lucide-react';
+import { CalendarDays, ChevronDown, CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins, type LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -241,7 +241,7 @@ function CardTitleWithInfo({
 }: {
   titleKey: string;
   explainKey: string;
-  icon?: any;
+  icon?: LucideIcon;
   iconClassName?: string;
 }): ReactElement {
   const { t } = useTranslation();
@@ -661,7 +661,10 @@ export function Salesmen360Page(): ReactElement {
   const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useSalesmenAnalyticsChartsQuery(userId, 12, currencyParam, periodParams, activeTab === 'analytics');
   const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(userId, 12);
   const executeActionMutation = useExecuteSalesmenActionMutation(userId);
-  const visibleSalesmen = visibleSalesmenQuery.data ?? [];
+  const visibleSalesmen = useMemo(
+    () => visibleSalesmenQuery.data ?? [],
+    [visibleSalesmenQuery.data]
+  );
   const allSalesmenOption = useMemo<Salesmen360VisibleUserDto>(
     () => ({
       userId: ALL_SALESMEN_ID,

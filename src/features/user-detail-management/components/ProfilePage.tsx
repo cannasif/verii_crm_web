@@ -115,9 +115,8 @@ function StatCard({ title, value, icon: Icon, description, colorClass, progress 
             )}
             style={{
               width: `${progress}%`,
-              // @ts-ignore
               '--progress-color': colorClass?.includes('emerald') ? '16,185,129' : colorClass?.includes('blue') ? '37,99,235' : colorClass?.includes('indigo') ? '79,70,229' : '225,29,72'
-            }}
+            } as React.CSSProperties}
           />
         </div>
       )}

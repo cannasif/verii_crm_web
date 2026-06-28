@@ -253,7 +253,7 @@ export function CustomerTable({
 
   const tableColumns = useMemo(
     () => getColumnsConfig(t),
-    [t, i18n.language, i18n.resolvedLanguage]
+    [t]
   );
 
   const handleDeleteClick = (customer: CustomerDto): void => {

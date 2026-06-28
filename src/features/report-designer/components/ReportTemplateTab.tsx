@@ -73,7 +73,10 @@ export function ReportTemplateTab({
     staleTime: 2 * 60 * 1000,
   });
 
-  const filteredTemplates: ReportTemplateListItemDto[] = listData?.items ?? [];
+  const filteredTemplates = useMemo<ReportTemplateListItemDto[]>(
+    () => listData?.items ?? [],
+    [listData?.items]
+  );
   const stableBuiltInTemplates = builtInTemplates ?? EMPTY_BUILT_IN_TEMPLATES;
   const effectiveBuiltInTemplates = stableBuiltInTemplates;
   const builtInTemplateMap = useMemo(

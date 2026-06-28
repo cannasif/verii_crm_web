@@ -839,7 +839,7 @@ export function ReportBuilderPage(): ReactElement {
       });
       setUi({ slotError: null });
     },
-    [config.activeWidgetId, config.widgets, setConfig, setUi],
+    [config, setConfig, setUi],
   );
   const handleSimpleToggleField = useCallback(
     (fieldName: string) => {
@@ -900,7 +900,7 @@ export function ReportBuilderPage(): ReactElement {
         height: activeWidget?.height ?? 'md',
       });
     },
-    [activeWidget, replaceActiveWidget, t],
+    [activeWidget, config, replaceActiveWidget, t],
   );
 
   const guidedTableFields = useMemo(

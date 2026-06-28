@@ -251,6 +251,7 @@ export function CustomerForm({
     customer?.updatedDate,
     customer?.customerCode,
     customer?.defaultShippingAddressId,
+    customer,
     form,
   ]);
 

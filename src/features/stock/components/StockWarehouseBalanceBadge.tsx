@@ -69,7 +69,7 @@ export function StockWarehouseBalanceBadge({
   const hasPrefetchedBalance = balance !== undefined && balance !== null;
   const { data: balances, isLoading, isError } = useWarehouseBalancesByStockId(stockId, !hasPrefetchedBalance);
 
-  const rows = balances ?? [];
+  const rows = useMemo(() => balances ?? [], [balances]);
   const totalBalance = useMemo(
     () => (hasPrefetchedBalance ? Number(balance) || 0 : rows.reduce((sum, item) => sum + (Number(item.balance) || 0), 0)),
     [balance, hasPrefetchedBalance, rows],

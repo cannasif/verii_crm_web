@@ -96,7 +96,10 @@ export function VisibilitySimulatorPage(): ReactElement {
     defaultValue: selectedEntityMeta?.fallback ?? selectedEntityType,
   });
 
-  const visibleUsers = previewQuery.data?.visibleUsers ?? [];
+  const visibleUsers = useMemo(
+    () => previewQuery.data?.visibleUsers ?? [],
+    [previewQuery.data?.visibleUsers]
+  );
   const visibleUsersTotalPages = Math.max(1, Math.ceil(visibleUsers.length / VISIBLE_USERS_PAGE_SIZE));
   const safeVisibleUsersPage = Math.min(visibleUsersPage, visibleUsersTotalPages);
 

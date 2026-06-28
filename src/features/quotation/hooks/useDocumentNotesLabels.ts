@@ -46,7 +46,7 @@ export function useDocumentNotesLabels(context: DocumentNotesContext = 'quotatio
       pageLabel: resolve('pageLabel', 'Sayfa {{current}} / {{total}}'),
       notesTooltipText: resolve('notesTooltipText', 'Teklif geneli açıklamalarıdır. Maksimum karakter limiti 100\'dür'),
     };
-  }, [context, ns, t]);
+  }, [ns, t]);
 }
 
 export function resolveDocumentNotesLabel(

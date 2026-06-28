@@ -1,4 +1,4 @@
-import { type ChangeEvent, type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import {
@@ -259,7 +259,10 @@ export function GoogleCustomerMailDialog({
       }),
   });
 
-  const availablePdfTemplates = pdfTemplatesQuery.data?.items ?? [];
+  const availablePdfTemplates = useMemo(
+    () => pdfTemplatesQuery.data?.items ?? [],
+    [pdfTemplatesQuery.data?.items]
+  );
 
   const selectedContact = useMemo(
     () => contacts.find((item) => item.id === contactId) ?? null,
@@ -671,7 +674,7 @@ export function GoogleCustomerMailDialog({
     setSelectedFiles((current) => current.filter((item) => item.name !== fileName));
   };
 
-  const handleGeneratePdfAttachment = async (): Promise<void> => {
+  const handleGeneratePdfAttachment = useCallback(async (): Promise<void> => {
     if (!documentRuleType || !selectedPdfTemplateId || !recordId || recordId <= 0) {
       toast.error(t('mailDialog.pdfTemplateRequired'));
       return;
@@ -714,7 +717,7 @@ export function GoogleCustomerMailDialog({
     } finally {
       setIsGeneratingPdf(false);
     }
-  };
+  }, [availablePdfTemplates, contextValues.recordNo, documentRuleType, moduleKey, recordId, selectedPdfTemplateId, t]);
 
   useEffect(() => {
     if (!open || !autoAttachPdfOnOpen || autoAttachAttemptedRef.current) return;
@@ -722,7 +725,7 @@ export function GoogleCustomerMailDialog({
 
     autoAttachAttemptedRef.current = true;
     void handleGeneratePdfAttachment();
-  }, [open, autoAttachPdfOnOpen, recordId, selectedPdfTemplateId]);
+  }, [open, autoAttachPdfOnOpen, recordId, selectedPdfTemplateId, handleGeneratePdfAttachment]);
 
   const canSend =
     !missingCustomer &&

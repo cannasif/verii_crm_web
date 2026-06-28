@@ -171,6 +171,7 @@ export function ActivityTypeTable({
         setDeleteDialogOpen(false);
         setSelectedActivityType(null);
       } catch {
+        void 0;
       }
     }
   };

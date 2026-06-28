@@ -126,6 +126,7 @@ export function PaymentTypeTable({
         await deletePaymentType.mutateAsync(selectedPaymentType.id);
         setDeleteDialogOpen(false);
       } catch {
+        void 0;
       }
     }
   };

@@ -202,7 +202,7 @@ export function ErpOrderListPage(): ReactElement {
     [t]
   );
 
-  const sourceRows = orderQuery.data ?? [];
+  const sourceRows = useMemo(() => orderQuery.data ?? [], [orderQuery.data]);
   const filteredRows = useMemo(() => {
     const search = searchTerm.trim().toLocaleLowerCase('tr-TR');
     const advancedFilteredRows = applyFilterRowsClient(sourceRows, appliedFilterRows, ERP_ORDER_COLUMNS.map((column) => ({

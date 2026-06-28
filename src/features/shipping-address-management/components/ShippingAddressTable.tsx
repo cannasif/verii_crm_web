@@ -129,6 +129,7 @@ export function ShippingAddressTable({
         await deleteShippingAddress.mutateAsync(selectedShippingAddress.id);
         setDeleteDialogOpen(false);
       } catch {
+        void 0;
       }
     }
   };

@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useMemo, useEffect, useRef } from 'react';
+import { type ReactElement, useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
@@ -658,8 +658,11 @@ export function DailyTasksPage(): ReactElement {
     return filtered;
   }, [activities, statusFilter, activeDateRange]);
 
-  const getAssignedUserName = (userId?: number) =>
-    userOptions.find((option) => option.id === userId)?.fullName || t('dailyTasks.unassigned');
+  const getAssignedUserName = useCallback(
+    (userId?: number) =>
+      userOptions.find((option) => option.id === userId)?.fullName || t('dailyTasks.unassigned'),
+    [userOptions, t]
+  );
 
   const enterpriseMetrics = useMemo(() => {
     const now = new Date(metricsNow);
@@ -725,7 +728,7 @@ export function DailyTasksPage(): ReactElement {
       upcomingItems,
       workload,
     };
-  }, [kpiActivities, metricsNow]);
+  }, [kpiActivities, metricsNow, getAssignedUserName]);
 
   // --- Handlers ---
   const handleToggleComplete = async (activity: ActivityDto) => {

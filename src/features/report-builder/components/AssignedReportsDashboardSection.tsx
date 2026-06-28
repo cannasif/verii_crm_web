@@ -1039,7 +1039,7 @@ export function AssignedReportsDashboardSection({
       });
       setDashboardTab('edit');
     },
-    [],
+    [setDashboardTab],
   );
 
   const handleSetMaxRows = useCallback(
@@ -1066,7 +1066,7 @@ export function AssignedReportsDashboardSection({
       });
       setDashboardTab('edit');
     },
-    [],
+    [setDashboardTab],
   );
 
   const handleItemSpanChange = useCallback((itemKey: string, colSpan: number, rowSpan: number): void => {

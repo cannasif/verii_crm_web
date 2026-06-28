@@ -1186,8 +1186,10 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       handleAddSmartTable,
       handleAddSmartTotals,
       handleApplyStarterLayout,
+      form,
       headerFields,
       lineFields,
+      ruleType,
       setElements,
       t,
     ]

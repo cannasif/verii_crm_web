@@ -156,7 +156,7 @@ export function OrderListPage(): ReactElement {
         value: representativeName,
       },
     ];
-  }, []);
+  }, [searchParams]);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>(initialFilterRows);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>(initialFilterRows);
   const [mailDialogOpen, setMailDialogOpen] = useState(false);
@@ -226,8 +226,10 @@ export function OrderListPage(): ReactElement {
 
   const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
 
-  const filtersParam: { filters?: PagedFilter[] } =
-    appliedFilters.length > 0 ? { filters: appliedFilters } : {};
+  const filtersParam = useMemo<{ filters?: PagedFilter[] }>(
+    () => (appliedFilters.length > 0 ? { filters: appliedFilters } : {}),
+    [appliedFilters]
+  );
 
   const orderQuery = useOrderList({
     pageNumber,
@@ -341,7 +343,7 @@ export function OrderListPage(): ReactElement {
         CountTriedBy: order.countTriedBy ?? 0,
         Status: getApprovalStatusLabel(resolveDocumentApprovalStatus(order as unknown as Record<string, unknown>)),
       })),
-    [currentPageRows, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel, i18n.language]
+    [currentPageRows, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getErpDocumentNumber, getApprovalStatusLabel, i18n.language]
   );
 
   const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
@@ -380,7 +382,7 @@ export function OrderListPage(): ReactElement {
         Status: getApprovalStatusLabel(resolveDocumentApprovalStatus(order as unknown as Record<string, unknown>)),
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, approvalStatusFilter, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getApprovalStatusLabel, i18n.language]);
+  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, approvalStatusFilter, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getErpDocumentNumber, getApprovalStatusLabel, i18n.language]);
 
   useEffect(() => {
     setPageNumber((current) => current === 1 ? current : 1);

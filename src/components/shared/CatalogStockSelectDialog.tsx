@@ -469,14 +469,14 @@ export function CatalogStockSelectDialog({
     } else {
       setMobileCategoriesOpen(true);
     }
-  }, [open, selectedLeafCategory?.catalogCategoryId]);
+  }, [open, selectedLeafCategory]);
 
   useEffect(() => {
     if (!open || !selectedLeafCategory) {
       return;
     }
     categorySelectionRowRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }, [open, selectedLeafCategory?.catalogCategoryId]);
+  }, [open, selectedLeafCategory]);
 
   const categoryQueries = useQueries({
     queries: catalogListForQueries.map((c) => {
@@ -587,7 +587,10 @@ export function CatalogStockSelectDialog({
     staleTime: 2 * 60 * 1000,
   });
 
-  const campaignCatalogItems = campaignStocksQuery.data?.items ?? [];
+  const campaignCatalogItems = useMemo(
+    () => campaignStocksQuery.data?.items ?? [],
+    [campaignStocksQuery.data?.items]
+  );
   const campaignPricingByCodeLower = campaignStocksQuery.data?.pricingByCodeLower ?? {};
   const campaignSearchFilteredItems = useMemo((): CatalogStockItemDto[] => {
     if (!debouncedStockSearch.trim()) {
@@ -1142,6 +1145,7 @@ export function CatalogStockSelectDialog({
         : t('catalogStockPicker.emptyStocksTitle');
   }, [
     stockBrowseMode,
+    leftPanelMode,
     specialCodeHasSelection,
     specialCodeStocksQuery.isLoading,
     specialCodeStockItems.length,
@@ -1191,6 +1195,7 @@ export function CatalogStockSelectDialog({
         : t('catalogStockPicker.emptyStocks');
   }, [
     stockBrowseMode,
+    leftPanelMode,
     specialCodeHasSelection,
     specialCodeStocksQuery.isLoading,
     specialCodeStockItems.length,

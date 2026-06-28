@@ -259,9 +259,9 @@ export function ReportChart({
   const Recharts = recharts;
   const palette = useMemo(() => buildPalette(appearance?.accentColor), [appearance?.accentColor]);
   const tableDensity = appearance?.tableDensity ?? 'comfortable';
-  const hiddenColumns = appearance?.hiddenColumns ?? [];
-  const tableColumnOrder = appearance?.tableColumnOrder ?? [];
-  const tableColumnSettings = appearance?.tableColumnSettings ?? [];
+  const hiddenColumns = useMemo(() => appearance?.hiddenColumns ?? [], [appearance?.hiddenColumns]);
+  const tableColumnOrder = useMemo(() => appearance?.tableColumnOrder ?? [], [appearance?.tableColumnOrder]);
+  const tableColumnSettings = useMemo(() => appearance?.tableColumnSettings ?? [], [appearance?.tableColumnSettings]);
   const themePreset = appearance?.themePreset ?? 'executive';
   const kpiFormat = appearance?.kpiFormat ?? 'number';
   const kpiLayout = appearance?.kpiLayout ?? 'split';

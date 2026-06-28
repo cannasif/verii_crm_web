@@ -1,5 +1,6 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -52,7 +53,7 @@ const CLEANUP_LOG_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'cleanupReason', labelKey: 'erpCleanupLogs.columns.cleanupReason', type: 'string' },
 ];
 
-function getDocumentTypeLabel(type: ErpCleanupDocumentType, t: any): string {
+function getDocumentTypeLabel(type: ErpCleanupDocumentType, t: TFunction): string {
   switch (type) {
     case 1:
       return t('erpCleanupLogs.documentTypes.demand', { defaultValue: 'Talep' });
@@ -65,7 +66,7 @@ function getDocumentTypeLabel(type: ErpCleanupDocumentType, t: any): string {
   }
 }
 
-function getStatusLabel(status: ErpCleanupOperationStatus, t: any): string {
+function getStatusLabel(status: ErpCleanupOperationStatus, t: TFunction): string {
   switch (status) {
     case 0:
       return t('erpCleanupLogs.statuses.notStarted', { defaultValue: 'Başlamadı' });

@@ -159,7 +159,7 @@ export function ActivityManagementPage(): ReactElement {
         value: representativeName,
       },
     ];
-  }, []);
+  }, [searchParams]);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>(initialRepresentativeFilterRows);
   const [draftFilterLogic, setDraftFilterLogic] = useState<'and' | 'or'>('and');
   const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState<PagedFilter[]>(() =>
