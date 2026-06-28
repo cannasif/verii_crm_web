@@ -365,7 +365,7 @@ export function CustomerForm({
         <div className="flex-1 overflow-y-auto p-6 sm:p-8 custom-scrollbar">
           <Form {...form}>
             <form id="customer-form" onSubmit={form.handleSubmit(handleSubmit, handleInvalidSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start">
                 <FormField control={form.control} name="name" render={({ field, fieldState }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
                     <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'name')}>

@@ -161,12 +161,27 @@ function rebuildLanguageResources(lang: string): void {
     const baseCompatibility = withNamespaceCompatibility(ns, bundle);
     for (const [otherNs, scopedBundle] of Object.entries(scopedBundleByNs)) {
       if (otherNs === ns) continue;
-      (baseCompatibility as Record<string, unknown>)[otherNs] = scopedBundle;
+      
+      const existing = (baseCompatibility as Record<string, unknown>)[otherNs];
+      if (isPlainObject(existing) && isPlainObject(scopedBundle)) {
+        (baseCompatibility as Record<string, unknown>)[otherNs] = deepMergeResource(
+          existing,
+          scopedBundle
+        );
+      } else {
+        (baseCompatibility as Record<string, unknown>)[otherNs] = scopedBundle;
+      }
+
       const camelOtherNs = toCamelCase(otherNs);
       if (camelOtherNs !== otherNs) {
         const existingAtCamel = (baseCompatibility as Record<string, unknown>)[camelOtherNs];
-        if (existingAtCamel === undefined || isPlainObject(existingAtCamel)) {
+        if (existingAtCamel === undefined) {
           (baseCompatibility as Record<string, unknown>)[camelOtherNs] = scopedBundle;
+        } else if (isPlainObject(existingAtCamel) && isPlainObject(scopedBundle)) {
+          (baseCompatibility as Record<string, unknown>)[camelOtherNs] = deepMergeResource(
+            existingAtCamel,
+            scopedBundle
+          );
         }
       }
       hoistFeatureRootsIntoBundle(baseCompatibility as Record<string, unknown>, otherNs, scopedBundle);

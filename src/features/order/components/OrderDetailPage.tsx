@@ -90,7 +90,7 @@ function addDaysToDateOnly(dateValue: string, days: number): string {
 }
 
 export function OrderDetailPage(): ReactElement {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['order', 'approval', 'common']);
   const { canUpdate } = useCrudPermissions('sales.orders.update');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();

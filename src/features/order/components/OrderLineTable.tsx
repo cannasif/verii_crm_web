@@ -1598,7 +1598,7 @@ export function OrderLineTable({
             deliveryMethodName={deliveryMethodName}
             isSaving={updateMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkersForEdit}
-            allowImageUpload={Boolean(resolveDocumentLineBackendId(lineToEdit))}
+            allowImageUpload={true}
             imageUploadScope="order-line"
             imageUploadExtras={{
               orderId: orderId ?? undefined,

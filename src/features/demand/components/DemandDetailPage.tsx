@@ -87,7 +87,7 @@ function addDaysToDateOnly(dateValue: string, days: number): string {
 }
 
 export function DemandDetailPage(): ReactElement {
-  const { t, i18n } = useTranslation(['demand', 'common']);
+  const { t, i18n } = useTranslation(['demand', 'approval', 'common']);
   const { canUpdate } = useCrudPermissions('sales.demands.update');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();

@@ -1561,7 +1561,7 @@ export function DemandLineTable({
             deliveryMethodName={deliveryMethodName}
             isSaving={updateMutation.isPending}
             existingLineStockMarkers={existingDocumentLineMarkersForEdit}
-            allowImageUpload={Boolean(resolveDocumentLineBackendId(lineToEdit))}
+            allowImageUpload={true}
             imageUploadScope="demand-line"
             imageUploadExtras={{
               demandId: demandId ?? undefined,

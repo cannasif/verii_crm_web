@@ -126,7 +126,7 @@ function parsePersistedId(formId: string | number | undefined, prefix: string): 
 }
 
 export function QuotationDetailPage(): ReactElement {
-  const { t, i18n } = useTranslation(['quotation', 'common']);
+  const { t, i18n } = useTranslation(['quotation', 'approval', 'common']);
   const branch = useAuthStore((state) => state.branch);
   const { canUpdate } = useCrudPermissions('sales.quotations.update');
   const { id: paramId } = useParams<{ id: string }>();
