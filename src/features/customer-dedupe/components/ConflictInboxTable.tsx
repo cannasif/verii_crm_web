@@ -63,7 +63,7 @@ export function ConflictInboxTable({
 
   const allRows = useMemo(() => filterAndSort(candidates, filters), [candidates, filters]);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const totalPages = Math.max(1, Math.ceil(allRows.length / pageSize));
   const rows = useMemo(
     () => allRows.slice((pageNumber - 1) * pageSize, pageNumber * pageSize),

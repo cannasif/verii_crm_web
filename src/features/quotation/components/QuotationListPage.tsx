@@ -136,7 +136,7 @@ export function QuotationListPage(): ReactElement {
   const cleanupErpMutation = useCleanupQuotationErpAndCreateCopy();
 
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<QuotationColumnKey>('Id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [searchTerm, setSearchTerm] = useState('');

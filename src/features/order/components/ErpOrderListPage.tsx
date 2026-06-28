@@ -153,7 +153,7 @@ export function ErpOrderListPage(): ReactElement {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<ErpOrderColumnKey>('tarih');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [selectedOrder, setSelectedOrder] = useState<NetsisOrderHeader | null>(null);

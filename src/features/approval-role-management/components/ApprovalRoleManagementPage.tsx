@@ -64,7 +64,7 @@ export function ApprovalRoleManagementPage(): ReactElement {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState('Id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);

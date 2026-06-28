@@ -60,7 +60,7 @@ export function ProductPricingManagementPage(): ReactElement {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResetKey, setSearchResetKey] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<ProductPricingColumnKey>('id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);

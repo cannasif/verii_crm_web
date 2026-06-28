@@ -89,7 +89,7 @@ export function AuditLogsPage(): ReactElement {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [selectedAuditLogId, setSelectedAuditLogId] = useState<number | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(['createdDate', 'traceId', 'actionType', 'entityType', 'result', 'performedByUserEmail', 'requestPath']);
   const [columnOrder, setColumnOrder] = useState<string[]>(['createdDate', 'traceId', 'actionType', 'entityType', 'entityId', 'result', 'source', 'performedByUserEmail', 'branchCode', 'requestPath']);

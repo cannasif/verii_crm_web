@@ -1,5 +1,6 @@
 import { api } from '@/lib/axios';
 import i18n from '@/lib/i18n';
+import { normalizePagedResponse } from '@/lib/paged-response';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import type { ActivityDto, CreateActivityDto, UpdateActivityDto } from '../types/activity-types';
 
@@ -22,15 +23,11 @@ export const activityApi = {
     
     if (response.success && response.data) {
       const pagedData = response.data as PagedResponse<ActivityDto> & { items?: ActivityDto[] };
-      
-      if (pagedData.items && !pagedData.data) {
-        return {
-          ...pagedData,
-          data: pagedData.items,
-        };
-      }
-      
-      return pagedData;
+
+      return normalizePagedResponse<ActivityDto>(pagedData, {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 10,
+      });
     }
     throw new Error(response.message || response.exceptionMessage || i18n.t('listLoadError', { ns: AM_NS }));
   },

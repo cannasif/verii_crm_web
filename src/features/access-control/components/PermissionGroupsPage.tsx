@@ -73,7 +73,7 @@ export function PermissionGroupsPage(): ReactElement {
   const [permissionsPanelGroupId, setPermissionsPanelGroupId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<PermissionGroupDto | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(['name', 'isSystemAdmin', 'isActive', 'permissionCount']);

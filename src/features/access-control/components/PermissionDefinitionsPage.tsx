@@ -67,7 +67,7 @@ export function PermissionDefinitionsPage(): ReactElement {
   const [editingItem, setEditingItem] = useState<PermissionDefinitionDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<PermissionDefinitionDto | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(['code', 'name', 'platform', 'isActive', 'updatedDate']);

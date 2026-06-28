@@ -55,7 +55,7 @@ export function UserDiscountLimitManagementPage(): ReactElement {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<UserDiscountLimitColumnKey>('salespersonName');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);

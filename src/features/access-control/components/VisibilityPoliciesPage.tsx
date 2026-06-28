@@ -48,7 +48,7 @@ export function VisibilityPoliciesPage(): ReactElement {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<VisibilityPolicyDto | null>(null);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(['code', 'name', 'entityLabel', 'scopeLabel', 'isActive']);

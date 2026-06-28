@@ -117,7 +117,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResetKey, setSearchResetKey] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<DocumentSerialTypeColumnKey>('serialPrefix');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);

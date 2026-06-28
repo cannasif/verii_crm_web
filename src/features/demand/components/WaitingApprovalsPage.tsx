@@ -63,7 +63,7 @@ export function WaitingApprovalsPage(): ReactElement {
   const rejectAction = useRejectAction();
 
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<WaitingApprovalColumnKey>('actionDate');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');

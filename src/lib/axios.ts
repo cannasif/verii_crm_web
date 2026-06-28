@@ -234,6 +234,12 @@ function clampPageSizeValue(value: unknown): string | null {
   return String(Math.min(Math.trunc(numeric), MAX_MANAGEMENT_PAGE_SIZE));
 }
 
+function normalizePositiveIntegerValue(value: unknown): number | null {
+  const numeric = typeof value === 'string' ? Number(value) : typeof value === 'number' ? value : Number.NaN;
+  if (!Number.isFinite(numeric) || numeric <= 0) return null;
+  return Math.max(1, Math.trunc(numeric));
+}
+
 type RequestFilterParam = {
   column?: unknown;
   operator?: unknown;
@@ -338,6 +344,38 @@ function clampPagedRequestParams(params: unknown): unknown {
   }
 
   return nextParams;
+}
+
+function clampPagedRequestData(data: unknown): unknown {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return data;
+  }
+
+  const nextData = { ...(data as Record<string, unknown>) };
+  let changed = false;
+
+  ['pageNumber', 'PageNumber'].forEach((key) => {
+    if (!(key in nextData)) return;
+    const next = normalizePositiveIntegerValue(nextData[key]);
+    if (next != null && nextData[key] !== next) {
+      nextData[key] = next;
+      changed = true;
+    }
+  });
+
+  ['pageSize', 'PageSize'].forEach((key) => {
+    if (!(key in nextData)) return;
+    const next = clampPageSizeValue(nextData[key]);
+    if (next != null) {
+      const numericNext = Number(next);
+      if (nextData[key] !== numericNext) {
+        nextData[key] = numericNext;
+        changed = true;
+      }
+    }
+  });
+
+  return changed ? nextData : data;
 }
 
 function getStoredRefreshToken(): string | null {
@@ -467,7 +505,7 @@ api.interceptors.request.use((config) => {
     delete config.headers['Content-Type'];
     delete config.headers['content-type'];
   } else if (config.data !== undefined) {
-    config.data = normalizeOutgoingUtcDateStrings(config.data);
+    config.data = clampPagedRequestData(normalizeOutgoingUtcDateStrings(config.data));
   }
 
   const token = getStoredAccessToken();

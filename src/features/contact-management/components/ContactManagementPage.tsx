@@ -151,11 +151,9 @@ export function ContactManagementPage(): ReactElement {
 
   const currentPageRows = contacts;
   const totalCount = apiResponse?.totalCount ?? 0;
-  const effectivePageSize = apiResponse?.pageSize ?? pageSize;
-  const effectivePageNumber = apiResponse?.pageNumber ?? pageNumber;
-  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / effectivePageSize));
-  const startRow = totalCount === 0 ? 0 : (effectivePageNumber - 1) * effectivePageSize + 1;
-  const endRow = totalCount === 0 ? 0 : Math.min(startRow + currentPageRows.length - 1, totalCount);
+  const totalPages = apiResponse?.totalPages ?? Math.max(1, Math.ceil(totalCount / pageSize));
+  const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
+  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as ContactColumnKey[];
 
@@ -442,12 +440,12 @@ export function ContactManagementPage(): ReactElement {
                 setPageSize(s);
                 setPageNumber(1);
               }}
-              pageNumber={effectivePageNumber}
+              pageNumber={pageNumber}
               totalPages={totalPages}
-              hasPreviousPage={apiResponse?.hasPreviousPage ?? effectivePageNumber > 1}
-              hasNextPage={apiResponse?.hasNextPage ?? effectivePageNumber < totalPages}
-              onPreviousPage={() => setPageNumber(Math.max(1, effectivePageNumber - 1))}
-              onNextPage={() => setPageNumber(Math.min(totalPages, effectivePageNumber + 1))}
+              hasPreviousPage={pageNumber > 1}
+              hasNextPage={pageNumber < totalPages}
+              onPreviousPage={() => setPageNumber((current) => Math.max(1, current - 1))}
+              onNextPage={() => setPageNumber((current) => Math.min(totalPages, current + 1))}
               previousLabel={t('common.previous')}
               nextLabel={t('common.next')}
               paginationInfoText={t('common.table.showing', {
@@ -455,7 +453,7 @@ export function ContactManagementPage(): ReactElement {
                 to: endRow,
                 total: totalCount,
               })}
-              disablePaginationButtons={false}
+              disablePaginationButtons={isLoading}
               onColumnOrderChange={(newVisibleOrder) => {
                 setColumnOrder((currentOrder) => {
                   const hiddenCols = currentOrder.filter(k => !newVisibleOrder.includes(k));

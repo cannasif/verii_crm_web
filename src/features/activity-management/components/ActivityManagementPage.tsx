@@ -140,7 +140,7 @@ export function ActivityManagementPage(): ReactElement {
   const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<ActivityDto | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState('Id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');

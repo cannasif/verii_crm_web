@@ -99,7 +99,7 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<CleanupLogColumnKey>('createdDate');
   const [sortDirection, setSortDirection] = useState<CleanupLogSortDirection>('desc');

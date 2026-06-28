@@ -136,7 +136,7 @@ export function OrderListPage(): ReactElement {
   const cleanupErpMutation = useCleanupOrderErpAndCreateCopy();
 
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<OrderColumnKey>('Id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [searchTerm, setSearchTerm] = useState('');

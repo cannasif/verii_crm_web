@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import { normalizePagedResponse } from '@/lib/paged-response';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import type { SalutationType, ContactDto, CreateContactDto, UpdateContactDto } from '../types/contact-types';
 
@@ -56,30 +57,14 @@ const normalizeContact = (raw: unknown): ContactDto => {
 };
 
 const normalizePagedContacts = (
-  pagedData: PagedResponse<ContactDto> & { items?: unknown[]; Items?: unknown[] }
+  pagedData: PagedResponse<ContactDto> & { items?: unknown[]; Items?: unknown[] },
+  requestParams: Pick<PagedParams, 'pageNumber' | 'pageSize'>
 ): PagedResponse<ContactDto> => {
-  const rawRows = Array.isArray(pagedData.data)
-    ? pagedData.data
-    : Array.isArray(pagedData.items)
-      ? pagedData.items
-      : Array.isArray(pagedData.Items)
-        ? pagedData.Items
-        : [];
-  const totalCount = Number(pagedData.totalCount ?? 0);
-  const pageNumber = Math.max(1, Number(pagedData.pageNumber ?? 1) || 1);
-  const pageSize = Math.max(1, Number(pagedData.pageSize ?? (rawRows.length || 10)) || 10);
-  const totalPages = Number(pagedData.totalPages ?? (Math.ceil(totalCount / pageSize) || 1));
-
-  return {
-    ...pagedData,
-    data: rawRows.map(normalizeContact),
-    totalCount,
-    pageNumber,
-    pageSize,
-    totalPages: Math.max(1, totalPages),
-    hasPreviousPage: pagedData.hasPreviousPage ?? pageNumber > 1,
-    hasNextPage: pagedData.hasNextPage ?? pageNumber < Math.max(1, totalPages),
-  };
+  return normalizePagedResponse<ContactDto>(pagedData, {
+    pageNumber: requestParams.pageNumber ?? 1,
+    pageSize: requestParams.pageSize ?? 10,
+    mapItem: normalizeContact,
+  });
 };
 
 export const contactApi = {
@@ -95,7 +80,7 @@ export const contactApi = {
     });
     
     if (response.success && response.data) {
-      return normalizePagedContacts(response.data as PagedResponse<ContactDto> & { items?: unknown[]; Items?: unknown[] });
+      return normalizePagedContacts(response.data as PagedResponse<ContactDto> & { items?: unknown[]; Items?: unknown[] }, params);
     }
     throw new Error(response.message || 'İletişim listesi yüklenemedi');
   },

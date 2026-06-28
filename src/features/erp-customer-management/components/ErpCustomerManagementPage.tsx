@@ -50,7 +50,7 @@ export function ErpCustomerManagementPage(): ReactElement {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<ErpCustomerColumnKey>('customerName');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
@@ -373,4 +373,3 @@ export function ErpCustomerManagementPage(): ReactElement {
     </div>
   );
 }
-
