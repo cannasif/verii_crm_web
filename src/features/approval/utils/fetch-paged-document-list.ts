@@ -15,7 +15,7 @@ export async function fetchPagedDocumentList<T extends DocumentApprovalStatusRec
   const {
     approvalStatusFilter = 'all',
     pageNumber = 1,
-    pageSize = 20,
+    pageSize = 10,
     filters,
     filterLogic,
     search,

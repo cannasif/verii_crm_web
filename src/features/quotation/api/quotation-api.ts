@@ -303,7 +303,7 @@ export const quotationApi = {
       '/api/quotation/waiting-approvals/query',
       {
         pageNumber: params.pageNumber ?? 1,
-        pageSize: params.pageSize ?? 20,
+        pageSize: params.pageSize ?? 10,
         search: params.search ?? '',
         sortBy: params.sortBy ?? 'Id',
         sortDirection: params.sortDirection ?? 'asc',
@@ -327,7 +327,7 @@ export const quotationApi = {
       data: [],
       totalCount: 0,
       pageNumber: params.pageNumber ?? 1,
-      pageSize: params.pageSize ?? 20,
+      pageSize: params.pageSize ?? 10,
       totalPages: 0,
       hasPreviousPage: false,
       hasNextPage: false,

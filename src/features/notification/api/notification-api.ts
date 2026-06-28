@@ -69,7 +69,7 @@ interface BackendPagedResponse {
 export const notificationApi = {
   getUserNotifications: async (
     pageNumber: number = 1,
-    pageSize: number = 20,
+    pageSize: number = 10,
     sortBy: string = 'Id',
     sortDirection: 'asc' | 'desc' = 'desc'
   ): Promise<PagedResponse<NotificationDto>> => {
@@ -155,7 +155,7 @@ export const notificationApi = {
   ): Promise<PagedResponse<NotificationDto>> => {
     return notificationApi.getUserNotifications(
       params.pageNumber ?? 1,
-      params.pageSize ?? 20,
+      params.pageSize ?? 10,
       params.sortBy ?? 'Id',
       (params.sortDirection as 'asc' | 'desc') ?? 'desc'
     );

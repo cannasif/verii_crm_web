@@ -174,12 +174,12 @@ export function CategoryDefinitionsPage(): ReactElement {
   const stocksQuery = useCatalogCategoryStocks(
     selectedCatalogId,
     selectedLeaf?.catalogCategoryId ?? null,
-    { pageNumber: 1, pageSize: 20, search: stockSearch || undefined }
+    { pageNumber: 1, pageSize: 10, search: stockSearch || undefined }
   );
   const favoritesQuery = useCatalogFavorites(
     selectedCatalogId,
     selectedLeaf?.catalogCategoryId ?? null,
-    { pageNumber: 1, pageSize: 20, search: stockSearch || undefined }
+    { pageNumber: 1, pageSize: 10, search: stockSearch || undefined }
   );
 
   const currentPath = useMemo(

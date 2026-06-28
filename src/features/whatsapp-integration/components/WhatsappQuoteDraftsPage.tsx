@@ -307,7 +307,7 @@ export function WhatsappQuoteDraftsPage(): ReactElement {
 
   const query = useWhatsappQuoteDraftsQuery({
     pageNumber,
-    pageSize: 20,
+    pageSize: 10,
     search,
     sortBy: 'createdDate',
     sortDirection: 'desc',

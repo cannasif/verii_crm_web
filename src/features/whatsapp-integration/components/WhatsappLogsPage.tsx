@@ -28,7 +28,7 @@ export function WhatsappLogsPage(): ReactElement {
 
   const query = useWhatsappLogsQuery({
     pageNumber,
-    pageSize: 20,
+    pageSize: 10,
     search,
     errorsOnly,
     direction: direction === 'all' ? undefined : direction,

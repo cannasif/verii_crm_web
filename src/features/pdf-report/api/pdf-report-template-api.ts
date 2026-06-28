@@ -170,7 +170,7 @@ function normalizePresetItem(item: unknown): PdfTablePresetDto {
 
 function parsePresetListResult(response: unknown): PdfTablePresetListResult {
   const data = getApiData<Record<string, unknown>>(response);
-  if (data == null) return { items: [], totalCount: 0, pageNumber: 1, pageSize: 20, totalPages: 0 };
+  if (data == null) return { items: [], totalCount: 0, pageNumber: 1, pageSize: 10, totalPages: 0 };
   const rawItems = (data.items ?? data.Items ?? data.data ?? data.Data) as unknown;
   const items = Array.isArray(rawItems) ? rawItems.map(normalizePresetItem) : [];
   const totalCount = Number(data.totalCount ?? data.TotalCount ?? 0) || items.length;
