@@ -57,7 +57,7 @@ interface ProductPricingGroupByFormProps {
   excludeGroupCodes?: string[];
 }
 
-const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/20 focus-visible:border-pink-500 transition-all duration-200 text-sm font-medium";
+const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/20 focus-visible:border-rose-500 transition-all duration-200 text-sm font-medium";
 const LABEL_STYLE = "text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-2";
 type ProductPricingGroupDiscountField = 'discount1' | 'discount2' | 'discount3';
 
@@ -211,7 +211,7 @@ export function ProductPricingGroupByForm({
             variant="ghost"
             size="icon"
             onClick={() => onOpenChange(false)}
-            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
+            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-rose-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
           >
             <Cancel01Icon size={20} className="relative z-10" />
           </Button>
@@ -330,7 +330,7 @@ export function ProductPricingGroupByForm({
                                     >
                                       <Check
                                         className={cn(
-                                          "mr-2 h-4 w-4 text-pink-500",
+                                          "mr-2 h-4 w-4 text-rose-500",
                                           String(curr.dovizTipi) === field.value ? "opacity-100" : "opacity-0"
                                         )}
                                       />
@@ -481,9 +481,9 @@ export function ProductPricingGroupByForm({
                 </div>
 
                 {watchedValues[0] > 0 && (
-                  <div className="relative overflow-hidden rounded-[2rem] border border-pink-500/20 bg-pink-50/30 dark:bg-pink-500/[0.02] p-8 space-y-6">
-                    <div className="flex items-center gap-3 text-xs font-bold text-pink-600 dark:text-pink-400 uppercase tracking-widest relative z-10">
-                      <div className="h-8 w-8 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                  <div className="relative overflow-hidden rounded-[2rem] border border-rose-500/20 bg-rose-50/30 dark:bg-rose-500/[0.02] p-8 space-y-6">
+                    <div className="flex items-center gap-3 text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest relative z-10">
+                      <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
                         <Package size={16} />
                       </div>
                       {t('productPricingGroupByManagement.priceCalculation')}

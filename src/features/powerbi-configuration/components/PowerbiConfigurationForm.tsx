@@ -113,7 +113,7 @@ export function PowerbiConfigurationForm({
                         <Input
                           {...field}
                           placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono text-sm"
+                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -132,7 +132,7 @@ export function PowerbiConfigurationForm({
                         <Input
                           {...field}
                           placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono text-sm"
+                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -153,7 +153,7 @@ export function PowerbiConfigurationForm({
                       <Input
                         {...field}
                         placeholder="00000000-0000-0000-0000-000000000000"
-                        className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono text-sm"
+                        className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
                       />
                     </FormControl>
                     <FormMessage />
@@ -176,7 +176,7 @@ export function PowerbiConfigurationForm({
                           value={field.value ?? ''}
                           type="url"
                           placeholder={DEFAULT_API_BASE_URL}
-                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono text-sm"
+                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -196,7 +196,7 @@ export function PowerbiConfigurationForm({
                           {...field}
                           value={field.value ?? ''}
                           placeholder={DEFAULT_SCOPE}
-                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono text-sm"
+                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -205,7 +205,7 @@ export function PowerbiConfigurationForm({
                 />
               </div>
 
-              <div className="inline-flex items-start gap-3 rounded-2xl border border-pink-200 bg-pink-50 dark:border-[#4C3D68] dark:bg-[#2D1B4E] px-4 py-3 text-sm text-pink-600 dark:text-[#FB64B6]">
+              <div className="inline-flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 dark:border-[#4C3D68] dark:bg-[#2D1B4E] px-4 py-3 text-sm text-rose-600 dark:text-[#FB64B6]">
                 <InfoIcon className="h-4 w-4 mt-0.5 shrink-0" />
                 <span className="font-medium">{t('powerbiConfiguration.clientSecretInfo')}</span>
               </div>
@@ -214,7 +214,7 @@ export function PowerbiConfigurationForm({
                 <Button
                   type="submit"
                   disabled={isSubmitting}
-                  className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-50 disabled:hover:scale-100 h-11 px-8 gap-2
+                  className="rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] disabled:opacity-50 disabled:hover:scale-100 h-11 px-8 gap-2
                   opacity-90 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0"
                 >
@@ -275,7 +275,7 @@ export function PowerbiConfigurationForm({
             <Button
               onClick={handleDeleteConfirm}
               disabled={isDeleting}
-              className="h-11 px-6 sm:px-10 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-pink-500/25 text-xs sm:text-sm
+              className="h-11 px-6 sm:px-10 rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] text-xs sm:text-sm
               opacity-90 grayscale-[0] 
               dark:opacity-100 dark:grayscale-0"
             >

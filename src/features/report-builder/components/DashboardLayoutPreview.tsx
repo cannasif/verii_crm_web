@@ -77,7 +77,7 @@ function SortableWidgetCard({
         isDragging && 'opacity-70 shadow-lg'
       )}
     >
-      <div className="absolute inset-0 pointer-events-none rounded-lg bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0" />
+      <div className="absolute inset-0 pointer-events-none rounded-lg bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0" />
       <div className="relative z-10">
         <div className="mb-3 flex items-center justify-between gap-2">
           <span className="text-sm font-semibold">{widget.title || t('common.reportBuilder.widgetTitleFallback', { index: index + 1 })}</span>
@@ -134,7 +134,7 @@ export function DashboardLayoutPreview({
   };
 
   return (
-    <div className="rounded-lg border bg-pink-50 p-4 text-slate-900 dark:bg-[#2D2232] dark:text-white">
+    <div className="rounded-lg border bg-rose-50 p-4 text-slate-900 dark:bg-[#2D2232] dark:text-white">
       <div className="mb-3">
         <h3 className="text-sm font-semibold">{t('common.reportBuilder.dashboardLayout')}</h3>
         <p className="text-muted-foreground text-xs">

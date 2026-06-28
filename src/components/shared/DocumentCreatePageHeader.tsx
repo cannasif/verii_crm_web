@@ -41,8 +41,8 @@ export function DocumentCreatePageHeader({
             className={cn(
               'h-10 w-10 shrink-0 rounded-xl border-slate-200 bg-white/90 shadow-sm',
               'dark:border-white/12 dark:bg-[#1a1025]/80',
-              'hover:border-pink-400/60 hover:bg-pink-50/80 hover:text-pink-700',
-              'dark:hover:border-pink-500/35 dark:hover:bg-pink-950/30 dark:hover:text-pink-200',
+              'hover:border-rose-400/60 hover:bg-rose-50/80 hover:text-rose-700',
+              'dark:hover:border-rose-500/35 dark:hover:bg-rose-950/30 dark:hover:text-rose-200',
               'transition-colors duration-200',
             )}
           >
@@ -63,11 +63,11 @@ export function DocumentCreatePageHeader({
             type="button"
             className={cn(
               'inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white/90',
-              'text-slate-500 shadow-sm outline-none ring-pink-500/20 transition-all',
-              'hover:border-pink-300 hover:bg-pink-50 hover:text-pink-600',
-              'focus-visible:border-pink-400 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
+              'text-slate-500 shadow-sm outline-none ring-rose-500/20 transition-all',
+              'hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600',
+              'focus-visible:border-rose-400 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white',
               'dark:border-white/12 dark:bg-[#1a1025]/80 dark:text-slate-300',
-              'dark:hover:border-pink-500/40 dark:hover:bg-pink-950/40 dark:hover:text-pink-200',
+              'dark:hover:border-rose-500/40 dark:hover:bg-rose-950/40 dark:hover:text-rose-200',
               'dark:focus-visible:ring-offset-[#0c0612]',
             )}
             aria-label={helpTriggerLabel}

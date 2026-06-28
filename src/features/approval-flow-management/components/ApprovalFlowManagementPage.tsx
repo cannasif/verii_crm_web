@@ -306,7 +306,7 @@ export function ApprovalFlowManagementPage(): ReactElement {
                     size="sm"
                     onClick={() => setActiveFilter(filter)}
                     className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${activeFilter === filter
-                      ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
+                      ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
                       : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
                       }`}
                   >

@@ -114,7 +114,7 @@ function CollapsibleCard({
           : 'border-slate-300/80 bg-stone-50/95 ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:ring-0'
       )}
     >
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/2 dark:to-orange-500/2 opacity-30 " />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/2 dark:to-yellow-500/2 opacity-30 " />
       <div className="relative z-10 p-4">
         <button
           type="button"
@@ -124,7 +124,7 @@ function CollapsibleCard({
         >
           <div className="flex min-w-0 items-start gap-3">
             {icon ? (
-              <span className="mt-0.5 shrink-0 flex size-8 items-center justify-center rounded-lg bg-pink-100 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 group-hover:scale-110 transition-transform">
+              <span className="mt-0.5 shrink-0 flex size-8 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
                 {icon}
               </span>
             ) : null}
@@ -136,13 +136,13 @@ function CollapsibleCard({
                 <p className="text-slate-500 dark:text-slate-400 mt-1 text-[11px] font-medium leading-relaxed">{description}</p>
               ) : null}
               {summary && !open ? (
-                <p className="mt-2 text-xs font-bold text-pink-600 dark:text-pink-400 uppercase tracking-tight">{summary}</p>
+                <p className="mt-2 text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-tight">{summary}</p>
               ) : null}
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             {action}
-            <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-400 transition-colors group-hover:bg-pink-50 dark:group-hover:bg-pink-500/10 group-hover:text-pink-500">
+            <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-400 transition-colors group-hover:bg-rose-50 dark:group-hover:bg-rose-500/10 group-hover:text-rose-500">
               <ChevronDown
                 className={cn(
                   'size-4 transition-transform duration-300',
@@ -194,10 +194,10 @@ function ReportAssignmentPanel({
       'relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0',
       className
     )}>
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
       <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-[260px] flex-1">
-          <div className="mb-2 inline-flex rounded-full border border-pink-200 bg-pink-100/50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-pink-600 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-400">
+          <div className="mb-2 inline-flex rounded-full border border-rose-200 bg-rose-100/50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
             {title}
           </div>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{description}</p>
@@ -225,12 +225,12 @@ function ReportAssignmentPanel({
               {selectedAssignedUsers.map((user) => (
                 <div
                   key={user.userId}
-                  className="group inline-flex max-w-full items-center gap-2.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:border-pink-300 hover:bg-pink-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-pink-500/30 dark:hover:bg-pink-500/10"
+                  className="group inline-flex max-w-full items-center gap-2.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:border-rose-300 hover:bg-rose-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-rose-500/30 dark:hover:bg-rose-500/10"
                 >
                   <span className="truncate">{user.label}</span>
                   <button
                     type="button"
-                    className="text-slate-400 transition-colors hover:text-pink-500"
+                    className="text-slate-400 transition-colors hover:text-rose-500"
                     onClick={() => onRequestRemoveAssignedUser(user.userId)}
                     aria-label={removeLabel}
                     title={removeLabel}
@@ -1579,7 +1579,7 @@ export function ReportBuilderPage(): ReactElement {
         "h-auto"
       )}>
         <header className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
           <div className="relative z-10 flex flex-wrap items-center gap-3 px-4 py-2.5">
             <Button
               type="button"
@@ -1628,7 +1628,7 @@ export function ReportBuilderPage(): ReactElement {
                     className={cn(
                       "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300 whitespace-nowrap max-sm:flex-1 max-sm:justify-center",
                       builderMode === 'basic'
-                        ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                        ? "bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                         : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
                     )}
                     role="tab"
@@ -1644,7 +1644,7 @@ export function ReportBuilderPage(): ReactElement {
                     className={cn(
                       "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300 whitespace-nowrap max-sm:flex-1 max-sm:justify-center",
                       builderMode === 'advanced'
-                        ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                        ? "bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                         : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
                     )}
                     role="tab"
@@ -1668,7 +1668,7 @@ export function ReportBuilderPage(): ReactElement {
                       className={cn(
                         "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300 whitespace-nowrap max-sm:flex-1 max-sm:justify-center",
                         advancedWorkspaceMode === 'guided'
-                          ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                          ? "bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                           : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
                       )}
                       role="tab"
@@ -1684,7 +1684,7 @@ export function ReportBuilderPage(): ReactElement {
                       className={cn(
                         "group relative flex h-8 items-center gap-2 rounded-lg px-4 text-[11px] font-bold tracking-wide transition-all duration-300 whitespace-nowrap max-sm:flex-1 max-sm:justify-center",
                         advancedWorkspaceMode === 'expert'
-                          ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                          ? "bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                           : "text-slate-500 hover:bg-slate-200/50 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-slate-200"
                       )}
                       role="tab"
@@ -1713,7 +1713,7 @@ export function ReportBuilderPage(): ReactElement {
                 size="sm"
                 onClick={handleSave}
                 disabled={ui.saveLoading}
-                className="h-9 min-w-[120px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="h-9 min-w-[120px] bg-[image:var(--crm-brand-gradient)] font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all hover:scale-[1.05]  opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {ui.saveLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
                 {builderMode === 'basic'
@@ -1815,7 +1815,7 @@ export function ReportBuilderPage(): ReactElement {
                         type="button"
                         size="sm"
                         onClick={handleSmartComplete}
-                        className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                        className="bg-[image:var(--crm-brand-gradient)] font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all hover:scale-[1.02]  opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                       >
                         <Sparkles className="mr-2 size-3.5" />
                         {t('common.reportBuilder.smartComplete')}
@@ -1905,18 +1905,23 @@ export function ReportBuilderPage(): ReactElement {
           removeLabel={t('common.reportBuilder.removeAssignedUser')}
         />
         {builderMode === 'advanced' && advancedWorkspaceMode === 'expert' ? (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border bg-muted/20 px-3 py-2 text-xs">
-            <CheckCircle2 className="size-3.5 text-primary" />
-            <span className="font-semibold uppercase">{lifecycleStatusLabel}</span>
-            <span className="text-muted-foreground">v{lifecycle.version}</span>
-            <div className="ml-auto flex items-center gap-1.5">
-              <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-[11px]" onClick={() => setLifecycleStatus('draft')}>
+          <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-4 shadow-sm ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:ring-0 flex flex-wrap items-center gap-3 text-xs">
+            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/2 dark:to-amber-500/2 opacity-30" />
+            <div className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400">
+              <CheckCircle2 className="size-4" />
+            </div>
+            <div className="relative z-10 min-w-0">
+              <span className="font-bold uppercase text-slate-800 dark:text-white tracking-wider">{lifecycleStatusLabel}</span>
+              <span className="text-muted-foreground ml-2">v{lifecycle.version}</span>
+            </div>
+            <div className="relative z-10 ml-auto flex items-center gap-1.5">
+              <Button type="button" variant="outline" size="sm" className="h-8 px-3 text-[11px] rounded-xl border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300" onClick={() => setLifecycleStatus('draft')}>
                 {t('common.reportBuilder.lifecycle.draft')}
               </Button>
-              <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-[11px]" onClick={() => setLifecycleStatus('published')}>
+              <Button type="button" variant="outline" size="sm" className="h-8 px-3 text-[11px] rounded-xl border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300" onClick={() => setLifecycleStatus('published')}>
                 {t('common.reportBuilder.lifecycle.publish')}
               </Button>
-              <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-[11px]" onClick={() => setLifecycleStatus('archived')}>
+              <Button type="button" variant="outline" size="sm" className="h-8 px-3 text-[11px] rounded-xl border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-300" onClick={() => setLifecycleStatus('archived')}>
                 {t('common.reportBuilder.lifecycle.archive')}
               </Button>
             </div>
@@ -2062,7 +2067,7 @@ export function ReportBuilderPage(): ReactElement {
 
         {saveBlocked && builderMode === 'advanced' && advancedWorkspaceMode === 'guided' ? (
           <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-4 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
             <div className="relative z-10">
               <div className="mb-4 flex items-start gap-3">
                 <div className="mt-0.5 shrink-0 text-primary">
@@ -2231,7 +2236,7 @@ export function ReportBuilderPage(): ReactElement {
               <Button
                 type="button"
                 size="sm"
-                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="bg-[image:var(--crm-brand-gradient)] font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all hover:scale-[1.02]  opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 onClick={(event) => {
                   event.stopPropagation();
                   handleSmartComplete();
@@ -2429,13 +2434,14 @@ export function ReportBuilderPage(): ReactElement {
 
 
         {advancedWorkspaceMode === 'expert' || builderMode !== 'advanced' ? (
-          <div className="rounded-2xl border bg-primary/5 px-4 py-3">
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
+          <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-4 shadow-sm ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:ring-0">
+            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/2 dark:to-amber-500/2 opacity-30" />
+            <div className="relative z-10 flex flex-wrap items-center gap-3">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400">
                 <ArrowRight className="size-4" />
               </div>
               <div className="min-w-[220px] flex-1">
-                <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   {t('common.reportBuilder.nextStepTitle')}
                 </div>
                 <div className="mt-0.5 text-sm font-semibold">{nextStep.title}</div>
@@ -2445,7 +2451,7 @@ export function ReportBuilderPage(): ReactElement {
                 type="button"
                 size="sm"
                 onClick={nextStep.action}
-                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="bg-[image:var(--crm-brand-gradient)] font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all hover:scale-[1.02] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {nextStep.actionLabel}
               </Button>
@@ -2467,7 +2473,7 @@ export function ReportBuilderPage(): ReactElement {
               <Button
                 type="button"
                 size="sm"
-                className="bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="bg-[image:var(--crm-brand-gradient)] font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all hover:scale-[1.02]  opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 onClick={(event) => {
                   event.stopPropagation();
                   addWidget();
@@ -2575,7 +2581,7 @@ export function ReportBuilderPage(): ReactElement {
 
         {datasetReady && builderMode === 'basic' ? (
           <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
             <div className="relative z-10">
               <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-[280px] flex-1">
@@ -2707,7 +2713,7 @@ export function ReportBuilderPage(): ReactElement {
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[320px_1fr]">
               <div className="flex flex-col gap-4 pr-1">
                 <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
                   <div className="relative z-10">
                     <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardFieldsTitle')}</h3>
                     <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardFieldsDescription')}</p>
@@ -2730,7 +2736,7 @@ export function ReportBuilderPage(): ReactElement {
                 </div>
 
                 <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
                   <div className="relative z-10">
                     <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardStructureTitle')}</h3>
                     <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardStructureDescription')}</p>
@@ -2761,7 +2767,7 @@ export function ReportBuilderPage(): ReactElement {
               <div className="flex flex-col gap-4 pr-1">
                 <DeferOnView fallback={<PreviewPanelSkeleton className="border-slate-300/80 bg-stone-50/95 p-5 ring-1 ring-slate-200/70 dark:border-white/10 dark:bg-[#1a1025]/60" />}>
                   <div className="relative min-h-[min(21rem,55vh)] overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
                     <div className="relative z-10">
                       <Suspense fallback={<PreviewPanelSkeleton />}>
                         <PreviewPanel
@@ -2784,7 +2790,7 @@ export function ReportBuilderPage(): ReactElement {
                 </DeferOnView>
 
                 <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
                   <div className="relative z-10">
                     <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardLayoutTitle')}</h3>
                     <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardLayoutDescription')}</p>
@@ -2800,7 +2806,7 @@ export function ReportBuilderPage(): ReactElement {
                 </div>
 
                 <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
                   <div className="relative z-10">
                     <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardSettingsTitle')}</h3>
                     <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardSettingsDescription')}</p>
@@ -2816,7 +2822,7 @@ export function ReportBuilderPage(): ReactElement {
               <div className="flex flex-col pr-1">
                 <DeferOnView fallback={<PreviewPanelSkeleton className="shrink-0" />}>
                   <div className="relative min-h-[min(21rem,55vh)] overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
                     <div className="relative z-10">
                       <Suspense fallback={<PreviewPanelSkeleton />}>
                         <PreviewPanel
@@ -2839,7 +2845,7 @@ export function ReportBuilderPage(): ReactElement {
                 </DeferOnView>
                 {(config.widgets?.length ?? 0) > 1 ? (
                   <div className="mt-4 relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
                     <div className="relative z-10">
                       <div className="mb-3 flex items-center gap-2">
                         <LayoutGrid className="size-4 text-primary" />
@@ -2858,7 +2864,7 @@ export function ReportBuilderPage(): ReactElement {
 
               <aside className="space-y-3">
                 <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
                   <div className="relative z-10">
                     <div className="mb-3 flex items-center gap-2">
                       <Sparkles className="size-4 text-primary" />
@@ -2869,7 +2875,7 @@ export function ReportBuilderPage(): ReactElement {
                       <Button
                         type="button"
                         onClick={handleSmartComplete}
-                        className="justify-start bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-md shadow-pink-500/10 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                        className="justify-start bg-[image:var(--crm-brand-gradient)] font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all hover:scale-[1.02]  opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                       >
                         <Sparkles className="mr-2 size-4" />
                         {t('common.reportBuilder.smartComplete')}
@@ -2943,7 +2949,7 @@ export function ReportBuilderPage(): ReactElement {
         ) : (
           <div className="space-y-4">
             <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-              <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+              <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
               <div className="relative z-10">
                 <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   {t('common.reportBuilder.simpleStepSaveBadge')}
@@ -2986,7 +2992,7 @@ export function ReportBuilderPage(): ReactElement {
             </div>
 
             <div className="relative min-h-[min(21rem,55vh)] overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-              <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+              <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
               <div className="relative z-10">
                 <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   {t('common.reportBuilder.simplePreviewBadge')}

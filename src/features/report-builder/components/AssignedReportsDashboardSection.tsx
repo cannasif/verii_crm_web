@@ -66,10 +66,10 @@ const EMPTY_REPORTS: ReportDto[] = [];
 const CORPORATE_KPI_TOP_CLASSES = [
   'bg-linear-to-r from-sky-500 to-cyan-400',
   'bg-linear-to-r from-violet-500 to-fuchsia-400',
-  'bg-linear-to-r from-pink-500 to-rose-400',
+  'bg-linear-to-r from-rose-500 to-rose-400',
   'bg-linear-to-r from-amber-500 to-yellow-400',
   'bg-linear-to-r from-emerald-500 to-teal-400',
-  'bg-linear-to-r from-orange-500 to-amber-400',
+  'bg-linear-to-r from-amber-500 to-amber-400',
 ] as const;
 
 interface DashboardChoice {
@@ -118,8 +118,8 @@ function DashboardDropCell({
       ref={setNodeRef}
       className={cn(
         'min-h-0 min-w-0 rounded-lg transition-colors',
-        isDropActive && 'bg-pink-500/[0.06] ring-1 ring-pink-300/35 dark:ring-pink-500/25',
-        isOver && 'bg-pink-500/15 ring-2 ring-pink-400',
+        isDropActive && 'bg-rose-500/[0.06] ring-1 ring-rose-300/35 dark:ring-rose-500/25',
+        isOver && 'bg-rose-500/15 ring-2 ring-rose-400',
       )}
       style={{ gridRow: row + 1, gridColumn: col + 1 }}
     />
@@ -320,9 +320,9 @@ function DashboardTileSizePopover({
                     className={cn(
                       'h-9 min-w-0 rounded-lg border text-xs font-black transition-all',
                       isActive
-                        ? 'border-pink-500 bg-pink-600 text-white shadow-md shadow-pink-500/30'
+                        ? 'border-rose-500 bg-rose-600 text-white shadow-md shadow-rose-500/30'
                         : enabled
-                          ? 'border-slate-200 bg-white text-slate-600 hover:border-pink-300 hover:bg-pink-50/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
+                          ? 'border-slate-200 bg-white text-slate-600 hover:border-rose-300 hover:bg-rose-50/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
                           : 'cursor-not-allowed border-dashed border-slate-200 bg-slate-50 text-slate-300 dark:border-white/5 dark:bg-white/[0.02] dark:text-slate-600',
                     )}
                     aria-pressed={isActive}
@@ -396,7 +396,7 @@ function SortableDashboardTile({
       style={style}
       className={cn(
         'group relative z-[1] min-w-0 w-full max-w-full',
-        isDragging && 'z-50 shadow-2xl ring-2 ring-pink-400/60',
+        isDragging && 'z-50 shadow-2xl ring-2 ring-rose-400/60',
       )}
     >
       <div className={cn('flex h-full w-full flex-col', isEditMode && 'pt-1')}>
@@ -414,8 +414,8 @@ function SortableDashboardTile({
               className={cn(
                 'inline-flex h-7 items-center justify-center gap-1.5 rounded-md border px-2 text-[11px] font-semibold shadow-sm transition-colors',
                 hideChrome
-                  ? 'border-pink-300 bg-pink-50 text-pink-600 hover:bg-pink-100 dark:border-pink-500/40 dark:bg-pink-500/15 dark:text-pink-300'
-                  : 'border-slate-200 bg-white text-slate-500 hover:border-pink-300 hover:bg-pink-50/60 hover:text-pink-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10',
+                  ? 'border-rose-300 bg-rose-50 text-rose-600 hover:bg-rose-100 dark:border-rose-500/40 dark:bg-rose-500/15 dark:text-rose-300'
+                  : 'border-slate-200 bg-white text-slate-500 hover:border-rose-300 hover:bg-rose-50/60 hover:text-rose-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10',
               )}
             >
               {hideChrome ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
@@ -445,7 +445,7 @@ function SortableDashboardTile({
           {...listeners}
           aria-label={t('common.reportBuilder.dragWidget') as string}
           title={t('common.reportBuilder.dragWidget') as string}
-          className="absolute left-1/2 top-0 z-40 flex h-5 w-14 -translate-x-1/2 -translate-y-2.5 cursor-grab items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-400 shadow-md opacity-70 backdrop-blur transition-opacity duration-200 hover:text-pink-600 group-hover:opacity-100 focus-visible:opacity-100 active:cursor-grabbing dark:border-white/10 dark:bg-slate-950/95 dark:text-slate-500"
+          className="absolute left-1/2 top-0 z-40 flex h-5 w-14 -translate-x-1/2 -translate-y-2.5 cursor-grab items-center justify-center rounded-full border border-slate-200 bg-white/95 text-slate-400 shadow-md opacity-70 backdrop-blur transition-opacity duration-200 hover:text-rose-600 group-hover:opacity-100 focus-visible:opacity-100 active:cursor-grabbing dark:border-white/10 dark:bg-slate-950/95 dark:text-slate-500"
         >
           <GripHorizontal className="size-3.5" />
         </button>
@@ -1219,7 +1219,7 @@ export function AssignedReportsDashboardSection({
                           key={`${choice.reportId}:${choice.widgetId ?? '__report__'}`}
                           type="button"
                           onClick={() => handleAddChoice(choice)}
-                          className="rounded-xl border-2 border-slate-300/80 bg-background p-4 text-left transition hover:border-pink-400/60 hover:bg-pink-50/40 dark:border-white/20 dark:hover:border-pink-500/40 dark:hover:bg-pink-500/10"
+                          className="rounded-xl border-2 border-slate-300/80 bg-background p-4 text-left transition hover:border-rose-400/60 hover:bg-rose-50/40 dark:border-white/20 dark:hover:border-rose-500/40 dark:hover:bg-rose-500/10"
                         >
                           <div className="mb-2 flex flex-wrap gap-2">
                             <Badge variant="secondary">{t('common.reportBuilder.dashboardItemTypes.widget')}</Badge>
@@ -1227,7 +1227,7 @@ export function AssignedReportsDashboardSection({
                           </div>
                           <p className="font-medium">{choice.widgetTitle}</p>
                           <p className="text-muted-foreground mt-1 text-xs">{choice.subtitle || t('common.reportBuilder.dashboardPickerWidgetDescription')}</p>
-                          <div className="mt-3 flex items-center text-xs font-medium text-pink-600 dark:text-pink-400">
+                          <div className="mt-3 flex items-center text-xs font-medium text-rose-600 dark:text-rose-400">
                             <Plus className="mr-1 size-3.5" />
                             {t('common.reportBuilder.addToMyDashboard')}
                           </div>
@@ -1251,7 +1251,7 @@ export function AssignedReportsDashboardSection({
                           key={`${choice.reportId}:${choice.widgetId ?? '__report__'}`}
                           type="button"
                           onClick={() => handleAddChoice(choice)}
-                          className="rounded-xl border-2 border-slate-300/80 bg-background p-4 text-left transition hover:border-pink-400/60 hover:bg-pink-50/40 dark:border-white/20 dark:hover:border-pink-500/40 dark:hover:bg-pink-500/10"
+                          className="rounded-xl border-2 border-slate-300/80 bg-background p-4 text-left transition hover:border-rose-400/60 hover:bg-rose-50/40 dark:border-white/20 dark:hover:border-rose-500/40 dark:hover:bg-rose-500/10"
                         >
                           <div className="mb-2 flex flex-wrap gap-2">
                             <Badge variant="secondary">{choice.kind === 'dashboard' ? t('common.reportBuilder.dashboardItemTypes.dashboard') : t('common.reportBuilder.dashboardItemTypes.report')}</Badge>
@@ -1263,7 +1263,7 @@ export function AssignedReportsDashboardSection({
                               ? t('common.reportBuilder.dashboardPickerWholeReportDescription')
                               : choice.subtitle}
                           </p>
-                          <div className="mt-3 flex items-center text-xs font-medium text-pink-600 dark:text-pink-400">
+                          <div className="mt-3 flex items-center text-xs font-medium text-rose-600 dark:text-rose-400">
                             <Plus className="mr-1 size-3.5" />
                             {t('common.reportBuilder.addToMyDashboard')}
                           </div>
@@ -1374,7 +1374,7 @@ export function AssignedReportsDashboardSection({
       </div>
       <DragOverlay dropAnimation={null}>
         {activeDragKey && dragOverlayLabel ? (
-          <div className="flex max-w-sm cursor-grabbing rounded-2xl border border-pink-300/80 bg-white/95 px-4 py-3 shadow-2xl dark:border-pink-500/40 dark:bg-slate-950/95">
+          <div className="flex max-w-sm cursor-grabbing rounded-2xl border border-rose-300/80 bg-white/95 px-4 py-3 shadow-2xl dark:border-rose-500/40 dark:bg-slate-950/95">
             <p className="truncate text-sm font-semibold text-slate-800 dark:text-white">{dragOverlayLabel}</p>
           </div>
         ) : null}
@@ -1427,7 +1427,7 @@ export function AssignedReportsDashboardSection({
         <CardHeader className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <CardTitle className="flex items-center gap-2 text-slate-800 dark:text-white">
-              <LayoutGrid className="size-5 text-pink-600 dark:text-pink-400" />
+              <LayoutGrid className="size-5 text-rose-600 dark:text-rose-400" />
               {t('common.reportBuilder.dashboardHomeTitle')}
             </CardTitle>
             <CardDescription>{t('common.reportBuilder.dashboardHomeDescription')}</CardDescription>
@@ -1449,12 +1449,12 @@ export function AssignedReportsDashboardSection({
                   : undefined
               }
               className={cn(
-                'h-9 px-6 bg-linear-to-r from-pink-600 to-orange-600 rounded-2x1 text-white text-sm font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 border-0',
+                'h-9 px-6 bg-[image:var(--crm-brand-gradient)] rounded-2x1 text-white text-sm font-bold shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all duration-300 border-0',
                 isLoading || choices.length === 0
                   ? 'opacity-60'
                   : !canAddAnyTile
                     ? 'cursor-not-allowed opacity-45 saturate-50 hover:scale-100 hover:shadow-lg active:scale-100 dark:opacity-50'
-                    : 'opacity-90 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] dark:opacity-100',
+                    : 'opacity-90 hover:scale-[1.05] hover:shadow-rose-500/30 active:scale-[0.98] dark:opacity-100',
               )}
             >
               <Plus className="mr-2 size-4 stroke-[3px]" />
@@ -1528,8 +1528,8 @@ export function AssignedReportsDashboardSection({
               </div>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/90 bg-white/70 px-4 py-3 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03]">
                 <div className="flex flex-wrap items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-pink-100 bg-pink-50 shadow-sm dark:border-pink-500/20 dark:bg-pink-500/10">
-                    <LayoutGrid className="size-4 text-pink-600 dark:text-pink-400" />
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-100 bg-rose-50 shadow-sm dark:border-rose-500/20 dark:bg-rose-500/10">
+                    <LayoutGrid className="size-4 text-rose-600 dark:text-rose-400" />
                   </div>
                   <div>
                     <div className="text-xs font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
@@ -1608,7 +1608,7 @@ export function AssignedReportsDashboardSection({
                               className={cn(
                                 'flex h-7 min-w-[28px] items-center justify-center rounded-lg px-2 text-[11px] font-black transition-colors',
                                 isActive
-                                  ? 'bg-pink-600 text-white shadow-md shadow-pink-500/30'
+                                  ? 'bg-rose-600 text-white shadow-md shadow-rose-500/30'
                                   : enabled
                                     ? 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
                                     : 'cursor-not-allowed text-slate-300 dark:text-slate-600',

@@ -120,9 +120,9 @@ export function GroupList(): ReactElement {
     <div className="w-full space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <Users className="h-7 w-7 text-pink-600 dark:text-pink-400 relative z-10" />
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Users className="h-7 w-7 text-rose-600 dark:text-rose-400 relative z-10" />
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
@@ -134,7 +134,7 @@ export function GroupList(): ReactElement {
         {canCreate && (
           <Button
             onClick={handleAdd}
-            className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] h-11 px-6 gap-2
+            className="rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] h-11 px-6 gap-2
             opacity-90 grayscale-[0] 
             dark:opacity-100 dark:grayscale-0"
           >
@@ -151,7 +151,7 @@ export function GroupList(): ReactElement {
             placeholder={t('common.search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-10 rounded-xl bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 pl-9 focus-visible:ring-pink-500/50"
+            className="h-10 rounded-xl bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 pl-9 focus-visible:ring-rose-500/50"
           />
           {searchTerm && (
             <Button
@@ -168,7 +168,7 @@ export function GroupList(): ReactElement {
           placeholder={t('powerbi.filterPlaceholder')}
           value={filterPlaceholder}
           onChange={(e) => setFilterPlaceholder(e.target.value)}
-          className="h-10 rounded-xl bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 max-w-xs focus-visible:ring-pink-500/50"
+          className="h-10 rounded-xl bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 max-w-xs focus-visible:ring-rose-500/50"
         />
         <Button
           variant="outline"
@@ -195,7 +195,7 @@ export function GroupList(): ReactElement {
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-20 bg-white/50 dark:bg-transparent">
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-pink-500" />
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-rose-500" />
                   </TableCell>
                 </TableRow>
               ) : filteredItems.length === 0 ? (
@@ -211,7 +211,7 @@ export function GroupList(): ReactElement {
                 </TableRow>
               ) : (
                 filteredItems.map((row) => (
-                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-pink-50/30 dark:hover:bg-pink-500/5 transition-colors">
+                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-rose-50/30 dark:hover:bg-rose-500/5 transition-colors">
                     <TableCell className="font-bold text-slate-700 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{row.name}</TableCell>
                     <TableCell className="text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-white/5">{row.description ?? '-'}</TableCell>
                     <TableCell className="border-r border-slate-200 dark:border-white/5">
@@ -232,7 +232,7 @@ export function GroupList(): ReactElement {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEdit(row)}
-                            className="h-8 w-8 rounded-lg hover:bg-pink-50 dark:hover:bg-pink-500/10 text-slate-400 hover:text-pink-600"
+                            className="h-8 w-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10 text-slate-400 hover:text-rose-600"
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>

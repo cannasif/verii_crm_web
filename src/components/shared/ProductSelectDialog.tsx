@@ -757,7 +757,7 @@ export function ProductSelectDialog({
     return (
       <div className="relative">
         <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.08),transparent_55%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(244,63,94,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(244,63,94,0.08),transparent_55%)]"
           aria-hidden
         />
         <div className="relative grid grid-cols-1 gap-2.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
@@ -780,10 +780,10 @@ export function ProductSelectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="!fixed !flex min-h-0 flex-col gap-0 !overflow-hidden border border-slate-300/95 bg-[linear-gradient(180deg,#ffffff,#f8fafc_40%,#f1f5f9)] p-0 text-slate-900 shadow-[0_0_50px_rgba(236,72,153,0.08),0_25px_80px_rgba(15,23,42,0.15)] ring-1 ring-slate-300/40 backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/85 dark:bg-none dark:text-slate-100 dark:shadow-[0_0_50px_rgba(236,72,153,0.1),0_25px_80px_rgba(0,0,0,0.45)] dark:ring-0 max-lg:!top-3 max-lg:!left-1/2 max-lg:!h-[calc(100svh-0.75rem)] max-lg:!max-h-[calc(100svh-0.75rem)] max-lg:!-translate-x-1/2 max-lg:!translate-y-0 max-lg:!w-[calc(100vw-0.5rem)] max-lg:!max-w-[calc(100vw-0.5rem)] lg:!top-1/2 lg:!left-1/2 lg:!h-[min(86dvh,760px)] lg:!max-h-[min(86dvh,760px)] lg:!-translate-x-1/2 lg:!-translate-y-1/2 lg:!w-[min(1040px,calc(100vw-3rem))] lg:!max-w-[min(1040px,calc(100vw-3rem))] xl:!w-[min(1120px,calc(100vw-4rem))] xl:!max-w-[min(1120px,calc(100vw-4rem))] 2xl:!w-[min(1180px,calc(100vw-5rem))] 2xl:!max-w-[min(1180px,calc(100vw-5rem))]"
+        className="!fixed !flex min-h-0 flex-col gap-0 !overflow-hidden border border-slate-300/95 bg-[linear-gradient(180deg,#ffffff,#f8fafc_40%,#f1f5f9)] p-0 text-slate-900 shadow-[0_0_50px_rgba(244,63,94,0.08),0_25px_80px_rgba(15,23,42,0.15)] ring-1 ring-slate-300/40 backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/85 dark:bg-none dark:text-slate-100 dark:shadow-[0_0_50px_rgba(244,63,94,0.1),0_25px_80px_rgba(0,0,0,0.45)] dark:ring-0 max-lg:!top-3 max-lg:!left-1/2 max-lg:!h-[calc(100svh-0.75rem)] max-lg:!max-h-[calc(100svh-0.75rem)] max-lg:!-translate-x-1/2 max-lg:!translate-y-0 max-lg:!w-[calc(100vw-0.5rem)] max-lg:!max-w-[calc(100vw-0.5rem)] lg:!top-1/2 lg:!left-1/2 lg:!h-[min(86dvh,760px)] lg:!max-h-[min(86dvh,760px)] lg:!-translate-x-1/2 lg:!-translate-y-1/2 lg:!w-[min(1040px,calc(100vw-3rem))] lg:!max-w-[min(1040px,calc(100vw-3rem))] xl:!w-[min(1120px,calc(100vw-4rem))] xl:!max-w-[min(1120px,calc(100vw-4rem))] 2xl:!w-[min(1180px,calc(100vw-5rem))] 2xl:!max-w-[min(1180px,calc(100vw-5rem))]"
       >
         <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(236,72,153,0.06),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.04),transparent_45%)] dark:bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(236,72,153,0.12),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.08),transparent_45%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(244,63,94,0.06),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.04),transparent_45%)] dark:bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(244,63,94,0.12),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.08),transparent_45%)]"
           aria-hidden
         />
         <DialogHeader className="relative z-10 shrink-0 border-b border-slate-300/90 bg-white px-3 py-2.5 shadow-[inset_0_-1px_0_rgba(148,163,184,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-6 sm:py-3 flex flex-row items-center justify-between">
@@ -814,7 +814,7 @@ export function ProductSelectDialog({
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="absolute crm-start-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-pink-500 transition-colors"
+                  className="absolute crm-start-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-500 transition-colors"
                 >
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.3-4.3" />
@@ -824,7 +824,7 @@ export function ProductSelectDialog({
                   placeholder={t('productSelectDialog.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="crm-ps-10 crm-pe-20 h-10 sm:h-11 bg-white dark:bg-[#0c0516] border-slate-300 dark:border-white/15 focus-visible:border-pink-400 dark:focus-visible:border-pink-500 focus-visible:ring-2 focus-visible:ring-pink-300/60 dark:focus-visible:ring-pink-500/35 rounded-xl transition-all shadow-sm"
+                  className="crm-ps-10 crm-pe-20 h-10 sm:h-11 bg-white dark:bg-[#0c0516] border-slate-300 dark:border-white/15 focus-visible:border-rose-400 dark:focus-visible:border-rose-500 focus-visible:ring-2 focus-visible:ring-rose-300/60 dark:focus-visible:ring-rose-500/35 rounded-xl transition-all shadow-sm"
                 />
               </div>
               {isThresholdInput ? (
@@ -904,7 +904,7 @@ export function ProductSelectDialog({
                     <Filter className="h-4 w-4 crm-me-2" />
                     {t('filters', { defaultValue: 'Filtreler' })}
                     {hasAdvancedFilters ? (
-                      <span className="crm-ms-2 inline-flex min-w-5 justify-center rounded-full bg-pink-100 px-1.5 py-0.5 text-[10px] font-semibold text-pink-700 dark:bg-pink-900/40 dark:text-pink-300">
+                      <span className="crm-ms-2 inline-flex min-w-5 justify-center rounded-full bg-rose-100 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
                         {rawAppliedAdvancedFilters.length}
                       </span>
                     ) : null}
@@ -965,7 +965,7 @@ export function ProductSelectDialog({
                   className={cn(
                     "p-2 rounded-lg transition-all",
                     viewMode === 'card' 
-                      ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 shadow-sm" 
+                      ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 shadow-sm" 
                       : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
                   )}
                   title={t('productSelectDialog.cardView')}
@@ -979,7 +979,7 @@ export function ProductSelectDialog({
                   className={cn(
                     "p-2 rounded-lg transition-all",
                     viewMode === 'list' 
-                      ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 shadow-sm" 
+                      ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 shadow-sm" 
                       : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
                   )}
                   title={t('productSelectDialog.listView')}
@@ -1000,14 +1000,14 @@ export function ProductSelectDialog({
                   type="button"
                   onClick={() => removeSelectionAtIndex(index)}
                   title={item.code}
-                  className="inline-flex max-w-[min(11rem,42vw)] items-center gap-1 rounded-full border border-pink-200 bg-pink-50 px-2 py-1 crm-text-start text-[11px] font-medium text-pink-700 dark:border-pink-700/40 dark:bg-pink-900/20 dark:text-pink-300 sm:max-w-[13rem]"
+                  className="inline-flex max-w-[min(11rem,42vw)] items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2 py-1 crm-text-start text-[11px] font-medium text-rose-700 dark:border-rose-700/40 dark:bg-rose-900/20 dark:text-rose-300 sm:max-w-[13rem]"
                 >
                   <span className="flex min-w-0 flex-1 flex-col gap-0 overflow-hidden crm-text-start leading-tight">
                     <span className="truncate font-mono" title={item.code}>
                       {item.code}
                     </span>
                     {item.name ? (
-                      <span className="truncate text-[10px] font-normal text-pink-600/90 dark:text-pink-300/80" title={item.name}>
+                      <span className="truncate text-[10px] font-normal text-rose-600/90 dark:text-rose-300/80" title={item.name}>
                         {item.name}
                       </span>
                     ) : null}
@@ -1047,7 +1047,7 @@ export function ProductSelectDialog({
               type="button"
               onClick={() => void handleConfirmMultiSelect()}
               disabled={selectedResults.length === 0}
-              className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white"
+              className="bg-linear-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white"
             >
               {t('addSelected', { defaultValue: 'Secilenleri Ekle' })} ({selectedResults.length})
             </Button>

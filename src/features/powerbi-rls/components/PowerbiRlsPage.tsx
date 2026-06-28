@@ -21,9 +21,9 @@ export function PowerbiRlsPage(): ReactElement {
     <div className="w-full space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <ShieldAlert className="h-7 w-7 text-pink-600 dark:text-pink-400 relative z-10" />
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
+            <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <ShieldAlert className="h-7 w-7 text-rose-600 dark:text-rose-400 relative z-10" />
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
@@ -36,7 +36,7 @@ export function PowerbiRlsPage(): ReactElement {
         </div>
         <Button
           onClick={() => { setEditing(null); setFormOpen(true); }}
-          className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] h-11 px-6 gap-2
+          className="rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] h-11 px-6 gap-2
           opacity-90 grayscale-[0] 
           dark:opacity-100 dark:grayscale-0"
         >

@@ -101,11 +101,11 @@ export function TopBarSelector({
       'relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0',
       className
     )}>
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
 
       <div className="relative z-10 mb-5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-xl bg-linear-to-br from-pink-500 to-orange-500 text-white shadow-lg shadow-pink-500/20">
+          <div className="flex size-9 items-center justify-center rounded-xl bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)]">
             <Database className="size-5" />
           </div>
           <div>
@@ -206,7 +206,7 @@ export function TopBarSelector({
 
         <li className="flex items-end">
           <Button
-            className="h-9 w-full bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 opacity-90 hover:opacity-100 transition-all hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 hover:opacity-30 xl:w-auto"
+            className="h-9 w-full bg-[image:var(--crm-brand-gradient)] font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] opacity-90 hover:opacity-100 transition-all hover:scale-[1.02]  hover:opacity-30 xl:w-auto"
             onClick={onCheck}
             disabled={checkLoading || connectionsLoading || !dataSourceName}
           >

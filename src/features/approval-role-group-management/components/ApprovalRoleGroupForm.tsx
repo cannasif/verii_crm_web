@@ -40,8 +40,8 @@ const INPUT_STYLE = `
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-600
   focus-visible:ring-0 focus-visible:ring-offset-0
-  focus:bg-white focus:border-pink-500 focus:shadow-[0_0_0_3px_rgba(236,72,153,0.15)]
-  dark:focus:bg-[#0c0516] dark:focus:border-pink-500/60 dark:focus:shadow-[0_0_0_3px_rgba(236,72,153,0.1)]
+  focus:bg-white focus:border-rose-500 focus:shadow-[0_0_0_3px_rgba(244,63,94,0.15)]
+  dark:focus:bg-[#0c0516] dark:focus:border-rose-500/60 dark:focus:shadow-[0_0_0_3px_rgba(244,63,94,0.1)]
   transition-all duration-200
 `;
 
@@ -100,9 +100,9 @@ export function ApprovalRoleGroupForm({
 
         <DialogHeader className="px-6 sm:px-8 py-6 border-b border-slate-100 dark:border-white/5 shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10 backdrop-blur-sm">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-rose-500 to-amber-500 p-0.5 shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)]">
               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                <ShieldCheck size={24} className="text-pink-600 dark:text-pink-400" />
+                <ShieldCheck size={24} className="text-rose-600 dark:text-rose-400" />
               </div>
             </div>
             <div>
@@ -120,10 +120,10 @@ export function ApprovalRoleGroupForm({
           </div>
           <button
             onClick={() => onOpenChange(false)}
-            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:rotate-90 shadow-sm"
+            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-rose-500 hover:text-white transition-all duration-300 hover:rotate-90 shadow-sm"
           >
             <X size={20} className="relative z-10" />
-            <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 rounded-full bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </DialogHeader>
 
@@ -168,7 +168,7 @@ export function ApprovalRoleGroupForm({
             type="submit"
             form="approval-role-group-form"
             disabled={isLoading}
-            className="h-12 px-10 rounded-2xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="h-12 px-10 rounded-2xl bg-[image:var(--crm-brand-gradient)] text-white font-black shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] ring-1 ring-rose-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-rose-500 hover:to-amber-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading ? (
               <>

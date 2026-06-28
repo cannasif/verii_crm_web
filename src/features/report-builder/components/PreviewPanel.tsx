@@ -118,7 +118,7 @@ export function PreviewPanel({
       {suppressTopAccent || hideHeader ? null : (
         <div
           className={cn(
-            'absolute top-0 left-0 right-0 bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500',
+            'absolute top-0 left-0 right-0 bg-linear-to-r from-indigo-500 via-purple-500 to-rose-500',
             isDashboardPresentation ? 'h-0.5 opacity-70' : 'h-1 opacity-80',
           )}
         />

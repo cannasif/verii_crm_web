@@ -265,15 +265,17 @@ function SortableActivityItem({
       <button
         type="button"
         onClick={() => onEdit(activity)}
-        className="flex-1 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left transition hover:border-pink-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-pink-500/50 dark:hover:bg-white/10"
+        className="flex-1 min-w-0 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left transition hover:border-pink-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-pink-500/50 dark:hover:bg-white/10"
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+        <div className="flex items-start justify-between gap-3 w-full min-w-0">
+          <div className="min-w-0 space-y-2 flex-1">
+            <div className="flex items-center gap-2 min-w-0 justify-between">
+              <span className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100" title={activity.subject}>
                 {activity.subject}
               </span>
-              {statusBadge(activity)}
+              <div className="shrink-0">
+                {statusBadge(activity)}
+              </div>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
               <span>{formatTimeRange(activity)}</span>
@@ -1243,7 +1245,7 @@ export function DailyTasksPage(): ReactElement {
       {backgroundBlobs}
 
 
-      <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-linear-to-br from-indigo-900 via-purple-900 to-slate-900 p-6 md:p-8 shadow-2xl ring-1 ring-white/10">
+      <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-linear-to-br from-indigo-900 via-violet-900 to-slate-900 p-6 md:p-8 shadow-2xl ring-1 ring-white/10">
         <div className="absolute inset-0 opacity-20 brightness-100 contrast-150 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.14)_1px,transparent_0)] bg-size-[8px_8px]"></div>
         <div className="absolute -right-20 -top-20 h-40 w-40 md:h-64 md:w-64 rounded-full bg-pink-500/30 blur-3xl"></div>
 
@@ -1255,7 +1257,7 @@ export function DailyTasksPage(): ReactElement {
             </div>
             <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight">
               {greeting}, <br className="md:hidden" />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-pink-400 to-orange-400">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-rose-400 to-amber-400">
                 {getUserDisplayName()}
               </span>
             </h1>
@@ -1300,12 +1302,12 @@ export function DailyTasksPage(): ReactElement {
           {
             label: t('dailyTasks.dueToday', { defaultValue: 'Bugün aksiyon bekleyen' }),
             value: enterpriseMetrics.dueTodayCount,
-            tone: 'from-amber-500/20 to-orange-500/10 border-amber-400/20',
+            tone: 'from-amber-500/20 to-amber-600/10 border-amber-400/20',
           },
           {
             label: t('dailyTasks.completionRate', { defaultValue: 'Tamamlanma oranı' }),
             value: `%${enterpriseMetrics.completionRate}`,
-            tone: 'from-fuchsia-500/20 to-pink-500/10 border-fuchsia-400/20',
+            tone: 'from-violet-500/20 to-rose-500/10 border-violet-400/20',
           },
         ].map((card) => (
           <div

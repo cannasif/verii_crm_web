@@ -110,7 +110,7 @@ export function PowerbiRlsList({
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-20 bg-white/50 dark:bg-transparent">
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-pink-500" />
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-rose-500" />
                   </TableCell>
                 </TableRow>
               ) : items.length === 0 ? (
@@ -126,7 +126,7 @@ export function PowerbiRlsList({
                 </TableRow>
               ) : (
                 items.map((row) => (
-                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-pink-50/30 dark:hover:bg-pink-500/5 transition-colors">
+                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-rose-50/30 dark:hover:bg-rose-500/5 transition-colors">
                     <TableCell className="font-bold text-slate-700 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{row.reportName ?? '-'}</TableCell>
                     <TableCell className="border-r border-slate-200 dark:border-white/5">{row.roleName ?? '-'}</TableCell>
                     <TableCell className="max-w-[200px] truncate border-r border-slate-200 dark:border-white/5" title={row.rlsRoles}>{row.rlsRoles}</TableCell>
@@ -139,7 +139,7 @@ export function PowerbiRlsList({
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEdit(row)}
-                            className="h-8 w-8 rounded-lg hover:bg-pink-50 dark:hover:bg-pink-500/10 text-slate-400 hover:text-pink-600"
+                            className="h-8 w-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10 text-slate-400 hover:text-rose-600"
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>

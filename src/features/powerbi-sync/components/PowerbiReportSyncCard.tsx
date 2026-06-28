@@ -51,7 +51,7 @@ export function PowerbiReportSyncCard(): ReactElement {
               setWorkspaceId(e.target.value);
               if (localError) setLocalError(null);
             }}
-            className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono text-sm"
+            className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
           />
         </div>
 
@@ -59,7 +59,7 @@ export function PowerbiReportSyncCard(): ReactElement {
           <Button
             onClick={handleSync}
             disabled={mutation.isPending}
-            className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-50 disabled:hover:scale-100 h-11 px-8 gap-2
+            className="rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] disabled:opacity-50 disabled:hover:scale-100 h-11 px-8 gap-2
             opacity-90 grayscale-[0] 
                 dark:opacity-100 dark:grayscale-0"
           >
@@ -84,7 +84,7 @@ export function PowerbiReportSyncCard(): ReactElement {
 
         {lastResult && (
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
-            <div className="rounded-2xl border border-slate-300/80 dark:border-white/15 bg-slate-50 dark:bg-[#1E1627] p-4 text-center space-y-1 transition-all hover:border-pink-500/30 hover:shadow-sm">
+            <div className="rounded-2xl border border-slate-300/80 dark:border-white/15 bg-slate-50 dark:bg-[#1E1627] p-4 text-center space-y-1 transition-all hover:border-rose-500/30 hover:shadow-sm">
               <p className="text-2xl font-black text-slate-700 dark:text-white">{lastResult.totalRemote}</p>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{t('powerbiSync.totalRemote')}</p>
             </div>

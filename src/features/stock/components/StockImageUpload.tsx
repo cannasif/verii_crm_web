@@ -107,20 +107,20 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
         className={cn(
             "relative group border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-300",
             isDragging 
-                ? "border-pink-500 bg-pink-50 dark:bg-pink-900/10 scale-[1.01]" 
-                : "border-zinc-200 dark:border-zinc-700 hover:border-pink-400 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+                ? "border-rose-500 bg-rose-50 dark:bg-rose-900/10 scale-[1.01]" 
+                : "border-zinc-200 dark:border-zinc-700 hover:border-rose-400 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-orange-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-amber-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
         
         <div className="relative z-10 flex flex-col items-center gap-3">
             <div className={cn(
                 "p-4 rounded-full bg-zinc-100 dark:bg-zinc-800 transition-colors duration-300",
-                isDragging ? "bg-pink-100 text-pink-600 dark:bg-pink-900/30" : "group-hover:text-pink-600"
+                isDragging ? "bg-rose-100 text-rose-600 dark:bg-rose-900/30" : "group-hover:text-rose-600"
             )}>
                 <CloudUpload className="h-8 w-8" />
             </div>
@@ -194,7 +194,7 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
                             h-8 pl-8 text-xs 
                             bg-transparent 
                             border-zinc-200 dark:border-zinc-700
-                            focus-visible:ring-1 focus-visible:ring-pink-500
+                            focus-visible:ring-1 focus-visible:ring-rose-500
                         "
                       />
                   </div>

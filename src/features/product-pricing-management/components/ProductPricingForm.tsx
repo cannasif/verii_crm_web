@@ -74,7 +74,7 @@ interface ProductPricingFormProps {
 }
 
 // STİL: Standart yükseklik ve kenarlıklar
-const BASE_INPUT = "h-11 rounded-xl bg-white/50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/10 text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-slate-600 focus-visible:ring-2 focus-visible:ring-pink-500/20 focus:border-pink-500/50 transition-all duration-300";
+const BASE_INPUT = "h-11 rounded-xl bg-white/50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/10 text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-slate-600 focus-visible:ring-2 focus-visible:ring-rose-500/20 focus:border-rose-500/50 transition-all duration-300";
 const INPUT_STYLE = `${BASE_INPUT} w-full`;
 const LABEL_STYLE = "text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1 mb-2 flex items-center gap-2";
 type ProductPricingDiscountField = 'discount1' | 'discount2' | 'discount3';
@@ -205,10 +205,10 @@ export function ProductPricingForm({
           </div>
           <button
             onClick={() => onOpenChange(false)}
-            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
+            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-rose-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
           >
             <X className="relative z-10" size={20} />
-            <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 rounded-full bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </DialogHeader>
 
@@ -302,7 +302,7 @@ export function ProductPricingForm({
                                       >
                                         <Check
                                           className={cn(
-                                            "mr-2 h-4 w-4 text-pink-500",
+                                            "mr-2 h-4 w-4 text-rose-500",
                                             String(curr.dovizTipi) === field.value ? "opacity-100" : "opacity-0"
                                           )}
                                         />
@@ -391,9 +391,9 @@ export function ProductPricingForm({
                     </div>
                   </div>
 
-                  <div className="relative overflow-hidden rounded-[2rem] border border-pink-500/20 bg-pink-50/30 dark:bg-pink-500/[0.02] p-6 space-y-4">
-                    <div className="flex items-center gap-3 text-sm font-bold text-pink-600 dark:text-pink-400 uppercase tracking-widest relative z-10">
-                      <div className="h-8 w-8 rounded-lg bg-pink-500/10 flex items-center justify-center">
+                  <div className="relative overflow-hidden rounded-[2rem] border border-rose-500/20 bg-rose-50/30 dark:bg-rose-500/[0.02] p-6 space-y-4">
+                    <div className="flex items-center gap-3 text-sm font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest relative z-10">
+                      <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
                         <Calculator size={16} />
                       </div>
                       {t('priceCalculation')}

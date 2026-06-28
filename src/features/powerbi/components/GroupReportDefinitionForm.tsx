@@ -92,7 +92,7 @@ export function GroupReportDefinitionForm({
     }
   };
 
-  const selectTriggerClass = "w-full h-10 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 transition-all font-medium";
+  const selectTriggerClass = "w-full h-10 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus:ring-rose-500/50 transition-all font-medium";
   const labelClass = "text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400";
 
   return (
@@ -104,9 +104,9 @@ export function GroupReportDefinitionForm({
 
         <DialogHeader className="p-6 pb-4 border-b border-slate-100 dark:border-white/5 text-left">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <Layers className="h-6 w-6 text-pink-600 dark:text-pink-400 relative z-10" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Layers className="h-6 w-6 text-rose-600 dark:text-rose-400 relative z-10" />
             </div>
             <div>
               <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -139,7 +139,7 @@ export function GroupReportDefinitionForm({
                       </FormControl>
                       <SelectContent className="w-[var(--radix-select-trigger-width)] rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
                         {groups.map((g) => (
-                          <SelectItem key={g.id} value={String(g.id)} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
+                          <SelectItem key={g.id} value={String(g.id)} className="rounded-lg focus:bg-rose-50 dark:focus:bg-rose-500/10">
                             {g.name}
                           </SelectItem>
                         ))}
@@ -166,7 +166,7 @@ export function GroupReportDefinitionForm({
                       </FormControl>
                       <SelectContent className="w-[var(--radix-select-trigger-width)] rounded-xl border-slate-200 dark:border-white/10 dark:bg-[#1E1627]">
                         {reports.map((r) => (
-                          <SelectItem key={r.id} value={String(r.id)} className="rounded-lg focus:bg-pink-50 dark:focus:bg-pink-500/10">
+                          <SelectItem key={r.id} value={String(r.id)} className="rounded-lg focus:bg-rose-50 dark:focus:bg-rose-500/10">
                             {r.name}
                           </SelectItem>
                         ))}
@@ -191,7 +191,7 @@ export function GroupReportDefinitionForm({
               <Button
                 type="submit"
                 disabled={isSubmitting || !isFormValid}
-                className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11 gap-2 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11 gap-2 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t('common.save')}

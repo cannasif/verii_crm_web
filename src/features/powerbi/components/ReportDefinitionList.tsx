@@ -137,7 +137,7 @@ export function ReportDefinitionList(): ReactElement {
         {canCreate ? (
           <Button
             onClick={handleAdd}
-            className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] h-11 px-6 gap-2
+            className="rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] h-11 px-6 gap-2
             opacity-90 grayscale-[0] 
             dark:opacity-100 dark:grayscale-0"
           >
@@ -205,7 +205,7 @@ export function ReportDefinitionList(): ReactElement {
                 </TableRow>
               ) : (
                 filteredItems.map((row) => (
-                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-pink-50/30 dark:hover:bg-pink-500/5 transition-colors">
+                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-rose-50/30 dark:hover:bg-rose-500/5 transition-colors">
                     <TableCell className="font-bold text-slate-700 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{row.name}</TableCell>
                     <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-white/5">{row.workspaceId}</TableCell>
                     <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-white/5">{row.reportId}</TableCell>

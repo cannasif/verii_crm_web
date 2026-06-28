@@ -74,7 +74,7 @@ interface StatRibbonItem {
   icon: ComponentType<{ className?: string }>;
   label: string;
   value: string;
-  accent: 'indigo' | 'violet' | 'emerald' | 'amber' | 'pink' | 'sky';
+  accent: 'indigo' | 'violet' | 'emerald' | 'amber' | 'rose' | 'sky';
 }
 
 const RIBBON_ACCENT_MAP: Record<StatRibbonItem['accent'], { bg: string; ring: string; icon: string }> = {
@@ -82,7 +82,7 @@ const RIBBON_ACCENT_MAP: Record<StatRibbonItem['accent'], { bg: string; ring: st
   violet: { bg: 'bg-violet-50 dark:bg-violet-500/10', ring: 'border-violet-100 dark:border-violet-500/20', icon: 'text-violet-600 dark:text-violet-400' },
   emerald: { bg: 'bg-emerald-50 dark:bg-emerald-500/10', ring: 'border-emerald-100 dark:border-emerald-500/20', icon: 'text-emerald-600 dark:text-emerald-400' },
   amber: { bg: 'bg-amber-50 dark:bg-amber-500/10', ring: 'border-amber-100 dark:border-amber-500/20', icon: 'text-amber-600 dark:text-amber-400' },
-  pink: { bg: 'bg-pink-50 dark:bg-pink-500/10', ring: 'border-pink-100 dark:border-pink-500/20', icon: 'text-pink-600 dark:text-pink-400' },
+  rose: { bg: 'bg-rose-50 dark:bg-rose-500/10', ring: 'border-rose-100 dark:border-rose-500/20', icon: 'text-rose-600 dark:text-rose-400' },
   sky: { bg: 'bg-sky-50 dark:bg-sky-500/10', ring: 'border-sky-100 dark:border-sky-500/20', icon: 'text-sky-600 dark:text-sky-400' },
 };
 
@@ -452,7 +452,7 @@ export function ReportViewerPage(): ReactElement {
       { icon: Tag, label: t('common.reportBuilder.version'), value: `v${lifecycle.version}`, accent: 'violet' },
       { icon: Users, label: t('common.reportBuilder.owner'), value: governance.owner ?? '-', accent: 'emerald' },
       { icon: ShieldCheck, label: t('common.reportBuilder.audience'), value: audienceLabel, accent: 'amber' },
-      { icon: RefreshCw, label: t('common.refresh'), value: refreshCadenceLabel, accent: 'pink' },
+      { icon: RefreshCw, label: t('common.refresh'), value: refreshCadenceLabel, accent: 'rose' },
       {
         icon: BellRing,
         label: t('common.reportBuilder.subscription'),
@@ -996,7 +996,7 @@ export function ReportViewerPage(): ReactElement {
               <Button
                 size="sm"
                 onClick={() => navigate(`/reports/${reportId}/edit`)}
-                className="h-9 gap-1.5 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 px-4 font-semibold text-white shadow-md shadow-pink-500/15 hover:from-pink-500 hover:to-orange-500"
+                className="h-9 gap-1.5 rounded-lg bg-[image:var(--crm-brand-gradient)] px-4 font-semibold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] "
               >
                 <Pencil className="size-4" />
                 {t('common.edit')}
@@ -1135,7 +1135,7 @@ export function ReportViewerPage(): ReactElement {
                               className={cn(
                                 'flex h-7 min-w-[28px] items-center justify-center rounded-lg px-2 text-[11px] font-black transition-colors',
                                 isActive
-                                  ? 'bg-pink-600 text-white shadow-md shadow-pink-500/30'
+                                  ? 'bg-rose-600 text-white shadow-md shadow-rose-500/30'
                                   : enabled
                                     ? 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
                                     : 'cursor-not-allowed text-slate-300 dark:text-slate-600',
@@ -1523,9 +1523,9 @@ function WidgetSizePopover({ layout, maxCols, maxRows, isSizeAvailable, onChange
                     className={cn(
                       'h-9 min-w-0 rounded-lg border text-xs font-black transition-all',
                       isActive
-                        ? 'border-pink-500 bg-pink-600 text-white shadow-md shadow-pink-500/30'
+                        ? 'border-rose-500 bg-rose-600 text-white shadow-md shadow-rose-500/30'
                         : enabled
-                          ? 'border-slate-200 bg-white text-slate-600 hover:border-pink-300 hover:bg-pink-50/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
+                          ? 'border-slate-200 bg-white text-slate-600 hover:border-rose-300 hover:bg-rose-50/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
                           : 'cursor-not-allowed border-dashed border-slate-200 bg-slate-50 text-slate-300 dark:border-white/5 dark:bg-white/[0.02] dark:text-slate-600',
                     )}
                     aria-pressed={isActive}

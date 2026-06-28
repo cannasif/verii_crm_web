@@ -85,7 +85,7 @@ type Salesmen360CurrencyFilterOption = {
 };
 
 const SALESMEN_360_FILTER_OUTER =
-  'group/filter flex min-h-11 w-fit max-w-full items-stretch overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm ring-1 ring-slate-950/[0.03] transition-[box-shadow,border-color] duration-200 hover:border-pink-200/80 hover:shadow-md hover:shadow-pink-500/[0.07] dark:border-white/10 dark:bg-linear-to-br dark:from-[#1E1627]/95 dark:to-[#130822]/98 dark:ring-white/[0.05] dark:hover:border-pink-400/30 dark:hover:shadow-pink-500/10';
+  'group/filter flex min-h-11 w-fit max-w-full items-stretch overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm ring-1 ring-slate-950/[0.03] transition-[box-shadow,border-color] duration-200 hover:border-rose-200/80 hover:shadow-md hover:shadow-rose-500/[0.07] dark:border-white/10 dark:bg-linear-to-br dark:from-[#1E1627]/95 dark:to-[#130822]/98 dark:ring-white/[0.05] dark:hover:border-rose-400/30 dark:hover:shadow-rose-500/10';
 
 const SALESMEN_360_FILTER_LABEL_SEGMENT =
   'flex shrink-0 items-center gap-2.5 border-r border-slate-200/80 bg-linear-to-b from-slate-50/98 to-slate-100/35 px-3 py-2 dark:border-white/10 dark:from-white/[0.07] dark:to-transparent';
@@ -94,19 +94,19 @@ const SALESMEN_360_FILTER_MICRO_LABEL =
   'max-w-[5rem] truncate text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 sm:max-w-[7rem] dark:text-slate-400';
 
 const SALESMEN_360_FILTER_TRIGGER =
-  'h-11 min-h-11 w-full min-w-0 border-0 bg-transparent px-3 text-sm font-semibold text-slate-800 shadow-none transition-colors rounded-none rounded-r-2xl hover:bg-pink-50/45 focus:ring-0 focus:ring-offset-0 focus-visible:bg-pink-50/55 focus-visible:outline-none data-[state=open]:bg-pink-50/50 dark:text-white/95 dark:hover:bg-white/[0.05] dark:focus-visible:bg-pink-500/[0.14] dark:data-[state=open]:bg-pink-500/15 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-pink-500/55 [&_svg]:opacity-80 dark:[&_svg]:text-pink-400/80';
+  'h-11 min-h-11 w-full min-w-0 border-0 bg-transparent px-3 text-sm font-semibold text-slate-800 shadow-none transition-colors rounded-none rounded-r-2xl hover:bg-rose-50/45 focus:ring-0 focus:ring-offset-0 focus-visible:bg-rose-50/55 focus-visible:outline-none data-[state=open]:bg-rose-50/50 dark:text-white/95 dark:hover:bg-white/[0.05] dark:focus-visible:bg-rose-500/[0.14] dark:data-[state=open]:bg-rose-500/15 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-rose-500/55 [&_svg]:opacity-80 dark:[&_svg]:text-rose-400/80';
 
 const SALESMEN_360_FILTER_CONTENT =
   'z-50 max-h-72 overflow-y-auto rounded-2xl border border-slate-200/90 bg-white/98 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1E1627]/98';
 
 const SALESMEN_360_FILTER_ITEM =
-  'cursor-pointer rounded-xl py-2.5 pl-3 pr-9 text-sm font-medium text-slate-700 transition-colors focus:bg-pink-50 focus:text-pink-950 data-[highlighted]:bg-pink-50 data-[state=checked]:bg-pink-50/90 dark:text-slate-200 dark:focus:bg-pink-500/18 dark:focus:text-pink-50 dark:data-[highlighted]:bg-pink-500/18 dark:data-[state=checked]:bg-pink-500/22';
+  'cursor-pointer rounded-xl py-2.5 pl-3 pr-9 text-sm font-medium text-slate-700 transition-colors focus:bg-rose-50 focus:text-rose-950 data-[highlighted]:bg-rose-50 data-[state=checked]:bg-rose-50/90 dark:text-slate-200 dark:focus:bg-rose-500/18 dark:focus:text-rose-50 dark:data-[highlighted]:bg-rose-500/18 dark:data-[state=checked]:bg-rose-500/22';
 
 const SALESMEN_360_FILTER_ICON_WRAP = {
   salesman:
     'border-indigo-200/90 bg-indigo-50 text-indigo-600 shadow-indigo-500/10 dark:border-indigo-400/25 dark:bg-indigo-500/12 dark:text-indigo-200',
   currency:
-    'border-pink-200/90 bg-pink-50 text-pink-600 shadow-pink-500/10 dark:border-pink-400/25 dark:bg-pink-500/12 dark:text-pink-200',
+    'border-rose-200/90 bg-rose-50 text-rose-600 shadow-rose-500/10 dark:border-rose-400/25 dark:bg-rose-500/12 dark:text-rose-200',
   period:
     'border-amber-200/90 bg-amber-50 text-amber-600 shadow-amber-500/10 dark:border-amber-400/25 dark:bg-amber-500/12 dark:text-amber-200',
 } as const;
@@ -168,7 +168,7 @@ function Salesmen360SalespersonCombobox({
                 className={cn('flex min-w-0 items-center justify-between gap-2 text-left', triggerClassName)}
               >
                 <span className="min-w-0 flex-1 truncate">{selectedLabel ?? String(selectedUserId)}</span>
-                <ChevronDown className="size-4 shrink-0 text-pink-500/55 opacity-80 dark:text-pink-400/80" aria-hidden />
+                <ChevronDown className="size-4 shrink-0 text-rose-500/55 opacity-80 dark:text-rose-400/80" aria-hidden />
               </button>
             </PopoverTrigger>
           </div>
@@ -259,7 +259,7 @@ function CardTitleWithInfo({
         <span className="text-base font-bold text-slate-800 dark:text-white">{t(titleKey)}</span>
         <Tooltip>
           <TooltipTrigger asChild>
-            <span className="inline-flex text-slate-400 hover:text-pink-500 cursor-help transition-colors">
+            <span className="inline-flex text-slate-400 hover:text-rose-500 cursor-help transition-colors">
               <Info className="size-4 shrink-0" aria-hidden />
             </span>
           </TooltipTrigger>
@@ -321,7 +321,7 @@ function RevenueQualityPanel({ quality }: { quality: RevenueQualityDto | null | 
           titleKey="salesman360.revenueQuality.title"
           explainKey="salesman360.explain.revenueQualityTitle"
           icon={TrendingUp}
-          iconClassName="bg-pink-50 dark:bg-pink-500/10 border-pink-100 dark:border-pink-500/20 text-pink-600 dark:text-pink-400"
+          iconClassName="bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20 text-rose-600 dark:text-rose-400"
         />
       </div>
       <CardContent className="px-5 pt-2 pb-5">
@@ -359,7 +359,7 @@ function RevenueQualityPanel({ quality }: { quality: RevenueQualityDto | null | 
           </div>
         </div>
         <p className="text-xs text-slate-400 dark:text-slate-500 mt-4 italic flex items-center gap-1.5">
-          <Zap className="size-3.5 text-pink-500/50" />
+          <Zap className="size-3.5 text-rose-500/50" />
           {t('salesman360.explain.modelNote')}
         </p>
       </CardContent>
@@ -397,7 +397,7 @@ function CohortRetentionPanel({
           <div className="space-y-4">
             <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500">{t('salesman360.cohort.cohortKey')}</span>
-              <span className="text-sm font-bold text-pink-600 dark:text-pink-400">{cohortLabel || first.cohortKey}</span>
+              <span className="text-sm font-bold text-rose-600 dark:text-rose-400">{cohortLabel || first.cohortKey}</span>
             </div>
             <div className="max-h-60 overflow-auto pr-1 custom-scrollbar space-y-1">
               {first.points.map((point) => (
@@ -407,7 +407,7 @@ function CohortRetentionPanel({
                   </span>
                   <div className="flex items-center gap-3">
                     <div className="w-24 h-1.5 rounded-full bg-slate-100 dark:bg-white/5 overflow-hidden hidden sm:block">
-                      <div className="h-full bg-pink-500 rounded-full" style={{ width: `${point.retentionRate}%` }} />
+                      <div className="h-full bg-rose-500 rounded-full" style={{ width: `${point.retentionRate}%` }} />
                     </div>
                     <span className="font-bold text-slate-800 dark:text-white min-w-[50px] text-right">{point.retentionRate.toFixed(1)}%</span>
                   </div>
@@ -452,11 +452,11 @@ function RecommendedActionsPanel({
             {rows.map((action) => {
               const { title, reason } = translateRecommendedActionCopy(action, t);
               return (
-                <div key={`${action.actionCode}-${action.title}`} className="group relative rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 p-4 shadow-sm hover:shadow-md hover:border-pink-500/30 transition-all">
+                <div key={`${action.actionCode}-${action.title}`} className="group relative rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 p-4 shadow-sm hover:shadow-md hover:border-rose-500/30 transition-all">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0 space-y-1">
                       <p className="font-bold text-sm text-slate-800 dark:text-white flex items-center gap-2">
-                        <span className="h-1.5 w-1.5 rounded-full bg-pink-500 shrink-0" />
+                        <span className="h-1.5 w-1.5 rounded-full bg-rose-500 shrink-0" />
                         {title}
                       </p>
                       <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400 font-medium pl-3.5">{reason}</p>
@@ -465,7 +465,7 @@ function RecommendedActionsPanel({
                       size="sm"
                       onClick={() => onExecute(action)}
                       disabled={busy}
-                      className="shrink-0 h-9 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-bold px-4 gap-1.5 border-0
+                      className="shrink-0 h-9 rounded-xl bg-linear-to-r from-rose-600 to-amber-600 text-white hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-bold px-4 gap-1.5 border-0
                       opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                     >
                       {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Zap className="size-3.5" />}
@@ -896,9 +896,9 @@ export function Salesmen360Page(): ReactElement {
       <div className="w-full px-1.5 pt-0 pb-8 space-y-6 animate-in fade-in duration-500">
         <div className="flex flex-col gap-5 pt-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <LineChart className="h-8 w-8 text-pink-600 dark:text-pink-400 relative z-10" />
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <LineChart className="h-8 w-8 text-rose-600 dark:text-rose-400 relative z-10" />
             </div>
             <div className="space-y-1">
               <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
@@ -991,11 +991,11 @@ export function Salesmen360Page(): ReactElement {
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'overview' | 'analytics')} className="space-y-6">
           <div className="flex justify-center sm:justify-start">
             <TabsList className="h-11 p-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-inner">
-              <TabsTrigger value="overview" className="rounded-xl px-6 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-[#130822] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md transition-all">
+              <TabsTrigger value="overview" className="rounded-xl px-6 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-[#130822] data-[state=active]:text-rose-600 dark:data-[state=active]:text-rose-400 data-[state=active]:shadow-md transition-all">
                 {t('salesman360.tabs.overview')}
               </TabsTrigger>
               {!isAllSalesmen && (
-                <TabsTrigger value="analytics" className="rounded-xl px-6 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-[#130822] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-md transition-all">
+                <TabsTrigger value="analytics" className="rounded-xl px-6 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-[#130822] data-[state=active]:text-rose-600 dark:data-[state=active]:text-rose-400 data-[state=active]:shadow-md transition-all">
                   {t('salesman360.tabs.analytics')}
                 </TabsTrigger>
               )}
@@ -1018,8 +1018,8 @@ export function Salesmen360Page(): ReactElement {
               >
                 <CardContent className="pt-4 pb-3 px-4">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-pink-100 dark:bg-pink-500/10 border border-pink-200 dark:border-pink-500/20 shadow-sm transition-transform">
-                      <ChevronRight className="size-4 text-pink-600 dark:text-pink-400" />
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 shadow-sm transition-transform">
+                      <ChevronRight className="size-4 text-rose-600 dark:text-rose-400" />
                     </div>
                     <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em]">{t('salesman360.kpi.totalDemands')}</p>
                   </div>
@@ -1132,7 +1132,7 @@ export function Salesmen360Page(): ReactElement {
                         </TableHeader>
                         <TableBody>
                           {overviewTotalsByCurrency.map((row) => (
-                            <TableRow key={row.currency} className="hover:bg-pink-50/30 dark:hover:bg-pink-500/5 transition-colors border-b border-slate-50 dark:border-white/5 last:border-0">
+                            <TableRow key={row.currency} className="hover:bg-rose-50/30 dark:hover:bg-rose-500/5 transition-colors border-b border-slate-50 dark:border-white/5 last:border-0">
                               <TableCell className="font-bold text-slate-700 dark:text-white border-r border-slate-100 dark:border-white/5">{row.currency}</TableCell>
                               <TableCell className="text-right tabular-nums font-medium border-r border-slate-100 dark:border-white/5">{currencyFormatter.format(row.demandAmount ?? 0)}</TableCell>
                               <TableCell className="text-right tabular-nums font-medium border-r border-slate-100 dark:border-white/5">{currencyFormatter.format(row.quotationAmount ?? 0)}</TableCell>
@@ -1149,7 +1149,7 @@ export function Salesmen360Page(): ReactElement {
 
             {!isAllCurrencies && (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden border-l-pink-500 border-l-4">
+                <Card className="rounded-2xl border border-slate-200 bg-white/80 p-1 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden border-l-rose-500 border-l-4">
                   <CardContent className="pt-4 pb-3 px-6">
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('salesman360.kpi.totalDemandAmount')}</p>
                     <p className="text-2xl font-black mt-2 text-slate-900 dark:text-white">{currencyFormatter.format(kpis.totalDemandAmount ?? 0)}</p>

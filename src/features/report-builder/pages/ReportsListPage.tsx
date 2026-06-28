@@ -164,9 +164,9 @@ export function ReportsListPage(): ReactElement {
       <div className="flex flex-col gap-6 pt-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 items-start">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <LayoutGrid className="size-8 text-pink-600 dark:text-pink-400 relative z-10" />
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-yellow-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <LayoutGrid className="size-8 text-rose-600 dark:text-rose-400 relative z-10" />
             </div>
             <div>
               <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
@@ -185,16 +185,16 @@ export function ReportsListPage(): ReactElement {
               <Button
                 variant="outline"
                 onClick={() => navigate('/')}
-                className="rounded-xl border-slate-200 dark:border-white/10 h-11 px-6 font-bold from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500  transition-all shadow-sm"
+                className="rounded-xl border-slate-200 dark:border-white/10 h-11 px-6 font-bold from-rose-500 to-yellow-500   transition-all shadow-sm"
               >
-                <LayoutGrid className="mr-2 size-4 text-pink-500" />
+                <LayoutGrid className="mr-2 size-4 text-rose-500" />
                 {t('common.reportBuilder.openDashboardHome')}
               </Button>
             )}
             {!isMyReports && (
               <Button
                 onClick={() => navigate('/reports/new')}
-                className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white h-11 px-8 font-bold border-0 shadow-lg shadow-pink-500/20 transition-all hover:scale-105 active:scale-95
+                className="rounded-xl bg-[image:var(--crm-brand-gradient)]  text-white h-11 px-8 font-bold border-0 shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all hover:scale-105 active:scale-95
                 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 <Plus className="mr-2 size-4" />
@@ -335,7 +335,7 @@ export function ReportsListPage(): ReactElement {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="size-8 rounded-md hover:bg-pink-50 hover:text-pink-600 dark:hover:bg-pink-500/10 dark:hover:text-pink-400"
+                          className="size-8 rounded-md hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleAddToDashboard(r.id);
@@ -446,13 +446,13 @@ export function ReportsListPage(): ReactElement {
             return (
               <Card
                 key={r.id}
-                className="group cursor-pointer transition-all hover:bg-white dark:hover:bg-white/5 border-slate-200 dark:border-white/10 hover:border-pink-500/30 dark:hover:border-pink-500/30 bg-white/80 dark:bg-white/[0.03] shadow-sm hover:shadow-md rounded-2xl overflow-hidden"
+                className="group cursor-pointer transition-all hover:bg-white dark:hover:bg-white/5 border-slate-200 dark:border-white/10 hover:border-rose-500/30 dark:hover:border-rose-500/30 bg-white/80 dark:bg-white/[0.03] shadow-sm hover:shadow-md rounded-2xl overflow-hidden"
                 onClick={() => navigate(isMyReports ? `/reports/my/${r.id}` : `/reports/${r.id}`)}
               >
                 <CardContent className="flex flex-row items-center justify-between gap-4 py-5 px-6">
                   <div className="flex items-center gap-5">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm group-hover:scale-105 transition-transform">
-                      <LayoutGrid className="size-6 text-slate-500 dark:text-slate-400 group-hover:text-pink-500 transition-colors" />
+                      <LayoutGrid className="size-6 text-slate-500 dark:text-slate-400 group-hover:text-rose-500 transition-colors" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
@@ -467,7 +467,7 @@ export function ReportsListPage(): ReactElement {
                         {r.connectionKey} <span className="mx-1 text-slate-300">/</span> {r.dataSourceType} <span className="mx-1 text-slate-300">/</span> {r.dataSourceName}
                       </p>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        <Badge variant="secondary" className="rounded-md bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-100 dark:border-pink-500/20 font-bold px-2 py-0.5 text-[10px] uppercase">
+                        <Badge variant="secondary" className="rounded-md bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-500/20 font-bold px-2 py-0.5 text-[10px] uppercase">
                           {getStatusLabel(summary.status)}
                         </Badge>
                         <Badge variant="outline" className="rounded-md border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
@@ -479,7 +479,7 @@ export function ReportsListPage(): ReactElement {
                           </Badge>
                         )}
                         {summary.sharedWith.length > 0 && (
-                          <Badge variant="outline" className="rounded-md border-orange-100 dark:border-orange-500/20 bg-orange-50/50 dark:bg-orange-500/5 text-orange-600 dark:text-orange-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
+                          <Badge variant="outline" className="rounded-md border-amber-100 dark:border-amber-500/20 bg-amber-50/50 dark:bg-amber-500/5 text-amber-600 dark:text-amber-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
                             {t('common.reportBuilder.sharedShort', { count: summary.sharedWith.length })}
                           </Badge>
                         )}
@@ -510,7 +510,7 @@ export function ReportsListPage(): ReactElement {
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="size-9 rounded-xl hover:bg-pink-50 dark:hover:bg-pink-500/10 hover:text-pink-600 dark:hover:text-pink-400"
+                            className="size-9 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleAddToDashboard(r.id);
