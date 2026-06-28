@@ -341,6 +341,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
   }, [value, options]);
 
   const isAsyncMode = Boolean(onDebouncedSearchChange);
+  const isDropdownBusy = isLoading || isFetchingNextPage;
   const trimmedSearchQuery = searchQuery.trim();
   const isThresholdMode = isAsyncMode && trimmedSearchQuery.length > 0 && trimmedSearchQuery.length < minChars;
   const minCharsHint = t('common.dropdown.minCharsHint', {
@@ -409,7 +410,11 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
         <span className="truncate flex-1 min-w-0 text-left">
           {selectedLabel || placeholder || t('common.select')}
         </span>
-        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        {isDropdownBusy ? (
+          <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin text-[var(--crm-brand-text)]" />
+        ) : (
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        )}
       </button>
       {open && dropdownPosition && portalContainer ? createPortal(
         <div
@@ -493,11 +498,13 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
                 overscrollBehavior: 'contain',
               }}
             >
-              <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
-                {isThresholdMode ? minCharsHint : t('common.noResults')}
-              </CommandEmpty>
+              {!isLoading ? (
+                <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
+                  {isThresholdMode ? minCharsHint : t('common.noResults')}
+                </CommandEmpty>
+              ) : null}
               {isLoading ? (
-                <div className="flex items-center justify-center py-6 text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex min-h-28 items-center justify-center py-6 text-sm text-slate-500 dark:text-slate-400">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {t('common.loading')}
                 </div>

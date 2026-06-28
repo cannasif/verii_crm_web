@@ -1226,3 +1226,17 @@ input[type="number"].allow-native-number-spinners {
 .animate-field-shake {
   animation: field-shake 0.45s ease-in-out;
 }
+
+@keyframes crm-network-progress {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  55% {
+    transform: translateX(120%);
+  }
+
+  100% {
+    transform: translateX(240%);
+  }
+}

@@ -1,6 +1,6 @@
 import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, GripVertical } from 'lucide-react';
+import { ChevronDown, GripVertical, Loader2 } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -232,7 +232,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   renderSortIcon,
   isLoading = false,
   isError = false,
-  loadingText: _loadingText = 'Loading...',
+  loadingText = 'Loading...',
   errorText = 'An error occurred while loading rows.',
   emptyText = 'No rows found.',
   minTableWidthClassName = 'min-w-[1200px]',
@@ -465,7 +465,7 @@ export function DataTableGrid<TRow, TKey extends string>({
       <div
         ref={tableScrollRef}
         className={cn(
-          'rounded-md border overflow-x-auto w-full min-w-0 *:data-[slot=table-container]:overflow-visible',
+          'relative rounded-md border overflow-x-auto w-full min-w-0 *:data-[slot=table-container]:overflow-visible',
           resizingKey
             ? 'cursor-col-resize select-none'
             : isDragging
@@ -478,6 +478,14 @@ export function DataTableGrid<TRow, TKey extends string>({
         onPointerCancel={handleDragEnd}
         onClickCapture={handleClickCapture}
       >
+        {isLoading && (
+          <div className="pointer-events-none sticky left-0 top-0 z-20 flex w-full justify-center">
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-md backdrop-blur dark:border-white/10 dark:bg-slate-950/90 dark:text-slate-300">
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--crm-brand-text)]" />
+              {loadingText}
+            </div>
+          </div>
+        )}
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}

@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -33,6 +33,8 @@ interface ComboboxProps {
   className?: string
   modal?: boolean
   disabled?: boolean
+  isLoading?: boolean
+  loadingText?: string
   onSearchChange?: (search: string) => void
 }
 
@@ -46,6 +48,8 @@ export function Combobox({
   className,
   modal = false,
   disabled = false,
+  isLoading = false,
+  loadingText = "Yukleniyor...",
   onSearchChange,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
@@ -86,7 +90,11 @@ export function Combobox({
           <span className="truncate">
             {selectedOption ? selectedOption.label : placeholder}
           </span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          {isLoading ? (
+            <Loader2 className="ml-2 h-4 w-4 shrink-0 animate-spin text-[var(--crm-brand-text)]" />
+          ) : (
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[calc(var(--radix-popover-trigger-width))] p-0" align="start">
@@ -106,29 +114,36 @@ export function Combobox({
             style={{ maxHeight: DROPDOWN_MAX_HEIGHT_PX }}
             onWheelCapture={(event) => event.stopPropagation()}
           >
-            <CommandEmpty>{emptyText}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.label}
-                  onSelect={() => {
-                    onValueChange(option.value)
-                    setSearchQuery("")
-                    onSearchChange?.("")
-                    setOpen(false)
-                  }}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {!isLoading ? <CommandEmpty>{emptyText}</CommandEmpty> : null}
+            {isLoading ? (
+              <div className="flex min-h-24 items-center justify-center py-6 text-sm text-muted-foreground">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin text-[var(--crm-brand-text)]" />
+                {loadingText}
+              </div>
+            ) : (
+              <CommandGroup>
+                {options.map((option) => (
+                  <CommandItem
+                    key={option.value}
+                    value={option.label}
+                    onSelect={() => {
+                      onValueChange(option.value)
+                      setSearchQuery("")
+                      onSearchChange?.("")
+                      setOpen(false)
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        value === option.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {option.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>

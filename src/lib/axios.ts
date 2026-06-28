@@ -28,6 +28,26 @@ export const api = axios.create({
 });
 
 let refreshPromise: Promise<string | null> | null = null;
+let activeApiRequestCount = 0;
+
+function publishApiActivity(): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(
+    new CustomEvent('crm-api-activity', {
+      detail: { activeCount: activeApiRequestCount },
+    })
+  );
+}
+
+function trackApiRequestStart(): void {
+  activeApiRequestCount += 1;
+  publishApiActivity();
+}
+
+function trackApiRequestEnd(): void {
+  activeApiRequestCount = Math.max(0, activeApiRequestCount - 1);
+  publishApiActivity();
+}
 
 function appendPathSegment(url: string | undefined, segment: string): string | undefined {
   if (!url) return url;
@@ -504,6 +524,7 @@ async function refreshAccessToken(): Promise<string | null> {
 }
 
 api.interceptors.request.use((config) => {
+  trackApiRequestStart();
   config.baseURL = config.baseURL || getApiBaseUrl() || api.defaults.baseURL;
   const originalMethod = (config.method ?? 'get').toLowerCase();
   const useNativeHttpMethod = config.useNativeHttpMethod === true;
@@ -552,10 +573,12 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => {
+    trackApiRequestEnd();
     response.data = normalizeUtcDateStrings(normalizeApiEnvelope(response.data));
     return response.data;
   },
   async (error) => {
+    trackApiRequestEnd();
     const originalRequest = error.config as import('axios').AxiosRequestConfig & { _retry?: boolean };
 
     if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !shouldSkipRefresh(originalRequest.url)) {
