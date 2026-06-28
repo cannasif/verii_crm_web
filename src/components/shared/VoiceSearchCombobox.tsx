@@ -91,6 +91,18 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
 
   useImperativeHandle(ref, () => triggerButtonRef.current as HTMLButtonElement, []);
 
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+
+  useLayoutEffect(() => {
+    if (typeof document === 'undefined') return;
+    if (open) {
+      const parentDialog = rootRef.current?.closest('[role="dialog"]') as HTMLElement | null;
+      setPortalContainer(parentDialog || document.body);
+    } else {
+      setPortalContainer(null);
+    }
+  }, [open]);
+
   const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>): void => {
     if (disabled) {
       return;
@@ -127,6 +139,9 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
         return;
       }
 
+      const parentDialog = rootRef.current?.closest('[role="dialog"]') as HTMLElement | null;
+      const container = parentDialog || document.body;
+
       const rect = trigger.getBoundingClientRect();
       const viewportH = window.innerHeight;
       const dropdownH = DROPDOWN_MAX_HEIGHT_PX + 56;
@@ -135,13 +150,22 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
 
       const openUpward = spaceBelow < dropdownH && spaceAbove > spaceBelow;
 
-      const top = openUpward
+      let top = openUpward
         ? rect.top - dropdownH - 4
         : rect.bottom + 4;
+      let left = rect.left;
+
+      if (container !== document.body) {
+        const containerRect = container.getBoundingClientRect();
+        top = top - containerRect.top;
+        left = left - containerRect.left;
+      }
 
       const next = {
-        top: Math.max(8, top),
-        left: Math.max(8, Math.min(rect.left, window.innerWidth - rect.width - 8)),
+        top: container === document.body ? Math.max(8, top) : top,
+        left: container === document.body 
+          ? Math.max(8, Math.min(left, window.innerWidth - rect.width - 8))
+          : left,
         width: rect.width,
         openUpward,
       };
@@ -387,7 +411,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
         </span>
         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
       </button>
-      {open && dropdownPosition && typeof document !== 'undefined' ? createPortal(
+      {open && dropdownPosition && portalContainer ? createPortal(
         <div
           ref={contentRef}
           id={contentDomId}
@@ -506,7 +530,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
             </CommandList>
           </Command>
         </div>,
-        document.body
+        portalContainer
       ) : null}
     </div>
   );
