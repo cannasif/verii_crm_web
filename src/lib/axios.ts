@@ -196,11 +196,37 @@ function extractApiErrorMessage(payload: unknown): string | null {
   const errorPayload = payload as Record<string, unknown>;
 
   const message = errorPayload.message;
+  const exceptionMessage = errorPayload.exceptionMessage;
+  const normalizedMessage =
+    typeof message === 'string'
+      ? message.trim().toLocaleLowerCase('tr-TR')
+      : '';
+  const searchableMessage = normalizedMessage
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
+    .replace(/ı/g, 'i')
+    .replace(/ş/g, 's');
+  const isGenericServerMessage =
+    (searchableMessage.includes('sunucu') &&
+      searchableMessage.includes('hata') &&
+      searchableMessage.includes('olustu')) ||
+    normalizedMessage === 'sunucu hatası oluştu.' ||
+    normalizedMessage === 'sunucu hatası oluştu' ||
+    normalizedMessage === 'internal server error occurred.' ||
+    normalizedMessage === 'internal server error occurred';
+
+  if (
+    isGenericServerMessage &&
+    typeof exceptionMessage === 'string' &&
+    exceptionMessage.trim().length > 0
+  ) {
+    return exceptionMessage;
+  }
+
   if (typeof message === 'string' && message.trim().length > 0) {
     return message;
   }
 
-  const exceptionMessage = errorPayload.exceptionMessage;
   if (typeof exceptionMessage === 'string' && exceptionMessage.trim().length > 0) {
     return exceptionMessage;
   }
