@@ -219,7 +219,7 @@ function Salesmen360SalespersonCombobox({
                   }}
                   className={cn(
                     SALESMEN_360_FILTER_ITEM,
-                    'cursor-pointer data-[selected=true]:bg-pink-50 data-[selected=true]:text-pink-950 dark:data-[selected=true]:bg-pink-500/18 dark:data-[selected=true]:text-pink-50'
+                    'cursor-pointer data-[selected=true]:bg-rose-50 data-[selected=true]:text-rose-950 dark:data-[selected=true]:bg-rose-950/20 dark:data-[selected=true]:text-rose-50'
                   )}
                 >
                   {buildSalespersonOptionLabel(item, meLabel)}

@@ -95,7 +95,7 @@ export function StockGridCard({
         ) : (
           <>
             <div
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(236,72,153,0.14),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.09),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(236,72,153,0.18),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.12),transparent_50%)]"
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.14),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.09),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.18),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.12),transparent_50%)]"
               aria-hidden
             />
             <div

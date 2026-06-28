@@ -123,7 +123,7 @@ function CustomerCard({
         className={cn(
           'group flex h-full cursor-pointer flex-col gap-2 rounded-lg border p-2.5 transition-all duration-200 sm:p-3',
           'border-slate-400/80 bg-white shadow-sm dark:border-white/5 dark:bg-white/5',
-          'hover:border-pink-300/80 hover:bg-pink-50/40 hover:shadow-sm dark:hover:border-pink-400/20 dark:hover:bg-white/10'
+          'hover:border-rose-300/80 hover:bg-rose-50/40 hover:shadow-sm dark:hover:border-rose-400/20 dark:hover:bg-white/10'
         )}
       >
         <div className="flex w-full items-start justify-between gap-2">
@@ -179,7 +179,7 @@ function CustomerCard({
       className={cn(
         'group flex cursor-pointer items-center gap-2 rounded-lg border p-2 transition-all duration-200 sm:gap-2.5 sm:p-2.5',
         'border-slate-400/80 bg-white shadow-sm dark:border-white/5 dark:bg-white/5',
-        'hover:border-pink-300/80 hover:bg-pink-50/35 dark:hover:border-pink-400/20 dark:hover:bg-white/10'
+        'hover:border-rose-300/80 hover:bg-rose-50/35 dark:hover:border-rose-400/20 dark:hover:bg-white/10'
       )}
     >
       <div
@@ -541,7 +541,7 @@ export function CustomerSelectDialog({
                   'relative h-11 w-11 rounded-xl border-slate-300 bg-white shadow-sm transition-all dark:border-white/10 dark:bg-transparent sm:h-12 sm:w-12',
                   isFilterPanelOpen || hasAdvancedFilters
                     ? 'border-pink-200 bg-pink-50/90 text-pink-700 dark:border-pink-400/25 dark:bg-pink-950/35 dark:text-pink-200'
-                    : 'text-slate-600 hover:bg-pink-50/50 hover:text-pink-600 dark:text-slate-400 dark:hover:bg-pink-950/25 dark:hover:text-pink-200'
+                    : 'text-slate-600 hover:bg-rose-50/50 hover:text-rose-600 dark:text-slate-400 dark:hover:bg-rose-950/25 dark:hover:text-rose-200'
                 )}
               >
                 <SlidersHorizontal size={18} />
@@ -561,7 +561,7 @@ export function CustomerSelectDialog({
                     'h-9 w-9 rounded-lg transition-all sm:h-10 sm:w-10',
                     viewMode === 'list'
                       ? 'border border-pink-200/90 bg-pink-100/90 text-pink-800 shadow-sm dark:border-pink-400/25 dark:bg-pink-950/40 dark:text-pink-100'
-                      : 'text-slate-600 hover:bg-pink-50/80 hover:text-pink-700 dark:text-slate-400 dark:hover:bg-pink-950/30 dark:hover:text-pink-200'
+                      : 'text-slate-600 hover:bg-rose-50/80 hover:text-rose-700 dark:text-slate-400 dark:hover:bg-rose-950/30 dark:hover:text-rose-200'
                   )}
                 >
                   <List size={18} className="sm:h-5 sm:w-5" />
@@ -574,7 +574,7 @@ export function CustomerSelectDialog({
                     'h-9 w-9 rounded-lg transition-all sm:h-10 sm:w-10',
                     viewMode === 'grid'
                       ? 'border border-pink-200/90 bg-pink-100/90 text-pink-800 shadow-sm dark:border-pink-400/25 dark:bg-pink-950/40 dark:text-pink-100'
-                      : 'text-slate-600 hover:bg-pink-50/80 hover:text-pink-700 dark:text-slate-400 dark:hover:bg-pink-950/30 dark:hover:text-pink-200'
+                      : 'text-slate-600 hover:bg-rose-50/80 hover:text-rose-700 dark:text-slate-400 dark:hover:bg-rose-950/30 dark:hover:text-rose-200'
                   )}
                 >
                   <LayoutGrid size={18} className="sm:h-5 sm:w-5" />
@@ -601,13 +601,13 @@ export function CustomerSelectDialog({
             <TabsList className="grid h-auto w-full grid-cols-2 rounded-xl border border-slate-300 bg-slate-100 p-1 shadow-sm dark:border-white/10 dark:bg-[#1a1025]">
               <TabsTrigger
                 value="all"
-                className="rounded-lg py-2 text-xs font-medium text-slate-600 transition-all hover:bg-pink-50/70 hover:text-pink-700 data-[state=active]:border data-[state=active]:border-pink-200/90 data-[state=active]:bg-pink-100/80 data-[state=active]:text-pink-900 data-[state=active]:shadow-sm data-[state=active]:hover:bg-pink-200/50 dark:text-slate-400 dark:hover:bg-pink-950/30 dark:hover:text-pink-200 dark:data-[state=active]:border-pink-400/20 dark:data-[state=active]:bg-pink-950/45 dark:data-[state=active]:text-pink-100 dark:data-[state=active]:hover:bg-pink-950/55 sm:text-sm"
+                className="rounded-lg py-2 text-xs font-medium text-slate-600 transition-all hover:bg-rose-50/70 hover:text-rose-700 data-[state=active]:border data-[state=active]:border-rose-200/90 data-[state=active]:bg-rose-100/80 data-[state=active]:text-rose-900 data-[state=active]:shadow-sm data-[state=active]:hover:bg-rose-200/50 dark:text-slate-400 dark:hover:bg-rose-950/30 dark:hover:text-rose-200 dark:data-[state=active]:border-rose-400/20 dark:data-[state=active]:bg-rose-950/45 dark:data-[state=active]:text-rose-100 dark:data-[state=active]:hover:bg-rose-950/55 sm:text-sm"
               >
                 {t('customerSelectDialog.allCustomers')}
               </TabsTrigger>
               <TabsTrigger
                 value="potential"
-                className="rounded-lg py-2 text-xs font-medium text-slate-600 transition-all hover:bg-pink-50/70 hover:text-pink-700 data-[state=active]:border data-[state=active]:border-pink-200/90 data-[state=active]:bg-pink-100/80 data-[state=active]:text-pink-900 data-[state=active]:shadow-sm data-[state=active]:hover:bg-pink-200/50 dark:text-slate-400 dark:hover:bg-pink-950/30 dark:hover:text-pink-200 dark:data-[state=active]:border-pink-400/20 dark:data-[state=active]:bg-pink-950/45 dark:data-[state=active]:text-pink-100 dark:data-[state=active]:hover:bg-pink-950/55 sm:text-sm"
+                className="rounded-lg py-2 text-xs font-medium text-slate-600 transition-all hover:bg-rose-50/70 hover:text-rose-700 data-[state=active]:border data-[state=active]:border-rose-200/90 data-[state=active]:bg-rose-100/80 data-[state=active]:text-rose-900 data-[state=active]:shadow-sm data-[state=active]:hover:bg-rose-200/50 dark:text-slate-400 dark:hover:bg-rose-950/30 dark:hover:text-rose-200 dark:data-[state=active]:border-rose-400/20 dark:data-[state=active]:bg-rose-950/45 dark:data-[state=active]:text-rose-100 dark:data-[state=active]:hover:bg-rose-950/55 sm:text-sm"
               >
                 {t('customerSelectDialog.potentialCustomers')}
               </TabsTrigger>

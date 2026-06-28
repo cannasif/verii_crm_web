@@ -276,9 +276,9 @@ export function LineFormStockSearchField({
                         }}
                         className={cn(
                           'mb-1 cursor-pointer rounded-xl px-3 py-2.5 transition-colors',
-                          'data-[selected=true]:bg-pink-50 dark:data-[selected=true]:bg-pink-900/20',
+                          'data-[selected=true]:bg-rose-50 dark:data-[selected=true]:bg-rose-950/20',
                           stockKeyboard.isOptionKeyboardActive(index) &&
-                            'ring-2 ring-pink-500 ring-offset-2 ring-offset-white dark:ring-offset-[#130822]',
+                            'ring-2 ring-rose-500 ring-offset-2 ring-offset-white dark:ring-offset-[#130822]',
                         )}
                       >
                         <div className="flex min-w-0 flex-col gap-0.5">

@@ -1313,7 +1313,7 @@ export function CatalogStockSelectDialog({
                     key={`${stock.stockCategoryId}-${stock.stockId}`}
                     tabIndex={0}
                     className={cn(
-                      'cursor-pointer border-b border-slate-200/90 transition-colors duration-200 hover:bg-pink-50/80 dark:border-white/5 dark:hover:bg-pink-500/[0.07]',
+                      'cursor-pointer border-b border-slate-200/90 transition-colors duration-200 hover:bg-rose-50/80 dark:border-white/5 dark:hover:bg-rose-500/[0.07]',
                       selected && 'bg-pink-50 dark:bg-pink-500/10 ring-1 ring-inset ring-pink-500/25',
                     )}
                     onClick={() => void handleStockClick(stock)}
@@ -1419,7 +1419,7 @@ export function CatalogStockSelectDialog({
               variant="outline"
               size="sm"
               disabled={activeStockFetchingMore}
-              className="h-9 w-full rounded-xl border border-slate-300/90 bg-white text-xs text-slate-800 shadow-sm backdrop-blur-sm hover:border-pink-400/55 hover:bg-pink-50 hover:text-pink-600 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-pink-500/40 dark:hover:bg-pink-500/10 dark:hover:text-pink-100"
+              className="h-9 w-full rounded-xl border border-slate-300/90 bg-white text-xs text-slate-800 shadow-sm backdrop-blur-sm hover:border-rose-400/55 hover:bg-rose-50 hover:text-rose-600 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-rose-500/40 dark:hover:bg-rose-500/10 dark:hover:text-rose-100"
               onClick={() => setPageNumber((prev) => prev + 1)}
             >
               {activeStockFetchingMore ? (
@@ -1437,7 +1437,7 @@ export function CatalogStockSelectDialog({
     ) : (
       <div className="relative flex w-full flex-col">
         <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.08),transparent_55%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(244,63,94,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(244,63,94,0.08),transparent_55%)]"
           aria-hidden
         />
         <div className="relative px-1 pt-1.5">
@@ -1464,7 +1464,7 @@ export function CatalogStockSelectDialog({
                   onClick={() => void handleStockClick(stock)}
                   className={cn(
                     'group relative flex flex-col overflow-hidden rounded-xl border border-slate-300/90 bg-white crm-text-start shadow-md shadow-slate-200/45 backdrop-blur-md transition-all duration-300 ease-out will-change-transform dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none',
-                    'hover:-translate-y-0.5 hover:border-pink-400/60 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-pink-500/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]',
+                    'hover:-translate-y-0.5 hover:border-rose-400/60 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-rose-500/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]',
                     selected &&
                       'border-pink-400/70 bg-gradient-to-b from-pink-50/90 to-white shadow-[0_6px_22px_-6px_rgba(236,72,153,0.28)] ring-1 ring-pink-400/40 dark:from-pink-500/[0.08] dark:to-transparent dark:border-pink-500/55 dark:shadow-[0_0_22px_rgba(236,72,153,0.2)] dark:ring-pink-500/30',
                   )}
@@ -1500,7 +1500,7 @@ export function CatalogStockSelectDialog({
                     ) : (
                       <>
                         <div
-                          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(236,72,153,0.14),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.09),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(236,72,153,0.18),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.12),transparent_50%)]"
+                          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.14),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.09),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.18),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.12),transparent_50%)]"
                           aria-hidden
                         />
                         <div
@@ -1651,7 +1651,7 @@ export function CatalogStockSelectDialog({
         className="!fixed !flex min-h-0 flex-col gap-0 !overflow-hidden border border-slate-300/95 bg-[linear-gradient(180deg,#ffffff,#f8fafc_40%,#f1f5f9)] p-0 text-slate-900 shadow-[0_0_50px_rgba(236,72,153,0.1),0_25px_80px_rgba(15,23,42,0.18)] ring-1 ring-slate-300/40 backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/85 dark:bg-none dark:text-slate-100 dark:shadow-[0_0_50px_rgba(236,72,153,0.1),0_25px_80px_rgba(0,0,0,0.45)] dark:ring-0 max-lg:!top-3 max-lg:!h-[calc(100svh-0.75rem)] max-lg:!max-h-[calc(100svh-0.75rem)] max-lg:!translate-y-0 max-lg:!w-[calc(100vw-0.5rem)] max-lg:!max-w-[calc(100vw-0.5rem)] lg:!top-1/2 lg:!left-1/2 lg:!h-[min(96dvh,980px)] lg:!max-h-[min(96dvh,980px)] lg:!w-[min(1520px,calc(100vw-1rem))] lg:!max-w-[min(1520px,calc(100vw-1rem))] lg:!-translate-x-1/2 lg:!-translate-y-1/2"
       >
         <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(236,72,153,0.07),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.04),transparent_45%)] dark:bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(236,72,153,0.14),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.08),transparent_45%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(244,63,94,0.07),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.04),transparent_45%)] dark:bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(244,63,94,0.14),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.08),transparent_45%)]"
           aria-hidden
         />
         <button
@@ -1747,7 +1747,7 @@ export function CatalogStockSelectDialog({
                     'flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-2 py-2 text-[10px] font-bold uppercase tracking-wide transition-all sm:text-[11px]',
                     leftPanelMode === 'code'
                       ? 'bg-gradient-to-r from-pink-600 to-fuchsia-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-pink-700 dark:text-slate-400 dark:hover:text-pink-300',
+                      : 'text-slate-600 hover:text-rose-700 dark:text-slate-400 dark:hover:text-rose-300',
                   )}
                 >
                   <ListFilter className="h-3.5 w-3.5 shrink-0" aria-hidden />
@@ -1761,7 +1761,7 @@ export function CatalogStockSelectDialog({
                     'flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-2 py-2 text-[10px] font-bold uppercase tracking-wide transition-all sm:text-[11px]',
                     leftPanelMode === 'catalog'
                       ? 'bg-gradient-to-r from-pink-600 to-fuchsia-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-pink-700 dark:text-slate-400 dark:hover:text-pink-300',
+                      : 'text-slate-600 hover:text-rose-700 dark:text-slate-400 dark:hover:text-rose-300',
                   )}
                 >
                   <FolderTree className="h-3.5 w-3.5 shrink-0" aria-hidden />
@@ -1827,7 +1827,7 @@ export function CatalogStockSelectDialog({
                         variant="ghost"
                         size="sm"
                         onClick={handleBackLevel}
-                        className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-pink-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-pink-200"
+                        className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-rose-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-rose-200"
                       >
                         <ArrowLeft className="crm-me-1 h-3.5 w-3.5" />
                         {t('catalogStockPicker.back')}
@@ -1841,7 +1841,7 @@ export function CatalogStockSelectDialog({
                             variant="ghost"
                             size="sm"
                             onClick={handleResetCategoryBranch}
-                            className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-pink-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-pink-200"
+                            className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-rose-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-rose-200"
                             aria-label={t('catalogStockPicker.resetBranchTooltip')}
                           >
                             <RotateCcw className="crm-me-1 h-3.5 w-3.5" />
@@ -2207,7 +2207,7 @@ export function CatalogStockSelectDialog({
                       'group relative isolate flex shrink-0 items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
                       stockBrowseMode === 'campaign'
                         ? 'scale-105 border-transparent bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white shadow-[0_8px_20px_rgba(244,63,94,0.4)] ring-4 ring-pink-100 dark:ring-pink-950/55'
-                        : 'border-pink-200 bg-gradient-to-r from-rose-50 to-pink-50 text-rose-600 hover:from-rose-100 hover:to-pink-100 dark:border-pink-800/50 dark:from-rose-950/45 dark:to-pink-950/35 dark:text-rose-200 dark:hover:from-rose-900/55 dark:hover:to-pink-900/45',
+                        : 'border-rose-200 bg-gradient-to-r from-rose-50 to-rose-100/50 text-rose-600 hover:from-rose-100 hover:to-rose-100 dark:border-rose-800/50 dark:from-rose-950/45 dark:to-rose-950/20 dark:text-rose-200 dark:hover:from-rose-900/55 dark:hover:to-rose-900/25',
                     )}
                   >
                     <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-xl" aria-hidden>
@@ -2390,7 +2390,7 @@ export function CatalogStockSelectDialog({
             <div
               className={cn(
                 'relative min-h-0 px-3 py-2 sm:px-5 sm:py-3',
-                'bg-[radial-gradient(ellipse_90%_60%_at_50%_0%,rgba(236,72,153,0.04),transparent_55%),linear-gradient(180deg,rgba(248,250,252,0.9),rgba(241,245,249,0.55)_35%,rgba(241,245,249,0.35))]',
+                'bg-[radial-gradient(ellipse_90%_60%_at_50%_0%,rgba(244,63,94,0.04),transparent_55%),linear-gradient(180deg,rgba(248,250,252,0.9),rgba(241,245,249,0.55)_35%,rgba(241,245,249,0.35))]',
                 'ring-1 ring-inset ring-slate-200/90 dark:ring-0',
                 'dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent_40%)]',
                 'max-lg:flex-none max-lg:min-h-0 max-lg:overflow-visible',
