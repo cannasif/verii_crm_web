@@ -400,7 +400,7 @@ export function PdfReportDesignerListPage(): ReactElement {
           {canCreate ? (
             <Button
               asChild
-              className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-5 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              className="h-10 bg-[image:var(--crm-brand-gradient)] px-5 font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] ring-1 ring-white/10 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-0"
             >
               <Link to="/pdf-report-designer/create" className="inline-flex items-center gap-2">
                 <Plus className="size-4" />

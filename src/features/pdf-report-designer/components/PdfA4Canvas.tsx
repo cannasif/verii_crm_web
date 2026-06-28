@@ -508,7 +508,7 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
       ref={setNodeRef}
       className={cn(
         "flex h-full min-h-8 w-full flex-col overflow-hidden border border-slate-200 bg-white/95 shadow-sm transition-all duration-300",
-        isOver ? "ring-2 ring-inset ring-pink-500/50" : ""
+        isOver ? "ring-2 ring-inset ring-rose-500/50" : ""
       )}
     >
       {table.columns.length === 0 ? (
@@ -547,7 +547,7 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
             ))}
           </div>
           {table.tableOptions?.detailColumnPath || table.tableOptions?.showGroupFooter ? (
-            <div className="border-b border-slate-200/60 bg-pink-500/5 px-2 py-1 text-[11px] font-bold text-pink-600/80">
+            <div className="border-b border-slate-200/60 bg-rose-500/5 px-2 py-1 text-[11px] font-bold text-rose-600/80">
               {groupHeaderLabel}: PRJ-01
             </div>
           ) : null}
@@ -934,7 +934,7 @@ function ContainerElementBlock({ element }: { element: PdfReportElement }): Reac
       ref={setNodeRef}
       className={cn(
         "flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 transition-all duration-300",
-        isOver ? "ring-2 ring-inset ring-pink-500/50 bg-pink-500/5" : ""
+        isOver ? "ring-2 ring-inset ring-rose-500/50 bg-rose-500/5" : ""
       )}
       style={{
         background: style.background ?? 'transparent',
@@ -1274,7 +1274,7 @@ function DroppableSection({
       className={cn(
         className,
         "transition-all duration-300",
-        isOver ? "ring-2 ring-inset ring-pink-500/50 bg-pink-500/5" : ""
+        isOver ? "ring-2 ring-inset ring-rose-500/50 bg-rose-500/5" : ""
       )}
     >
       {children}
@@ -1404,16 +1404,16 @@ export function PdfA4Canvas({
           <div key={pageNum} id={`pdf-canvas-page-${pageNum}`} className="flex flex-col items-center gap-2">
             <div className={cn(
               "flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300",
-              isActivePage ? "text-pink-600 dark:text-pink-400" : "text-slate-400 dark:text-slate-600"
+              isActivePage ? "text-rose-600 dark:text-rose-400" : "text-slate-400 dark:text-slate-600"
             )}>
-              <div className={cn("h-px w-10 transition-all duration-300", isActivePage ? "bg-pink-500/50" : "bg-slate-300/50 dark:bg-slate-800")} />
+              <div className={cn("h-px w-10 transition-all duration-300", isActivePage ? "bg-rose-500/50" : "bg-slate-300/50 dark:bg-slate-800")} />
               {t('pdfReportDesigner.pageNumber', { page: pageNum })}
               {isActivePage && (
-                <span className="rounded-full bg-pink-500/10 px-2 py-0.5 text-[9px] font-bold text-pink-600 ring-1 ring-pink-500/20 dark:bg-pink-500/20 dark:text-pink-400">
+                <span className="rounded-full bg-rose-500/10 px-2 py-0.5 text-[9px] font-bold text-rose-600 ring-1 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400">
                   {t('pdfReportDesigner.canvasActiveBadge', { defaultValue: 'ACTIVE' })}
                 </span>
               )}
-              <div className={cn("h-px w-10 transition-all duration-300", isActivePage ? "bg-pink-500/50" : "bg-slate-300/50 dark:bg-slate-800")} />
+              <div className={cn("h-px w-10 transition-all duration-300", isActivePage ? "bg-rose-500/50" : "bg-slate-300/50 dark:bg-slate-800")} />
             </div>
 
             <div
@@ -1429,7 +1429,7 @@ export function PdfA4Canvas({
                 className={cn(
                   "absolute left-[28px] top-[28px] bg-white transition-all duration-300 shadow-2xl",
                   isActivePage
-                    ? "ring-2 ring-pink-500/40 ring-offset-4 dark:ring-offset-[#0f0a15]"
+                    ? "ring-2 ring-rose-500/40 ring-offset-4 dark:ring-offset-[#0f0a15]"
                     : "cursor-pointer opacity-60 grayscale-[0.5] hover:opacity-100 hover:grayscale-0"
                 )}
                 style={{ width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT }}
@@ -1582,7 +1582,7 @@ export function PdfA4Canvas({
                           : isFlashing
                           ? "border-amber-400 ring-4 ring-amber-400 ring-offset-1 animate-pulse"
                           : isSelected
-                          ? "border-pink-500/60 ring-1 ring-pink-500/40 shadow-lg shadow-pink-500/5"
+                          ? "border-rose-500/60 ring-1 ring-rose-500/40 shadow-lg shadow-rose-500/5"
                           : "border-slate-200/80 hover:border-slate-300"
                       )}
                       style={{
@@ -1646,7 +1646,7 @@ export function PdfA4Canvas({
               {isActivePage && resolvedForPage.length === 0 ? (
                 <div className="pointer-events-none absolute inset-0 z-1 flex items-center justify-center p-8">
                   <div className="pointer-events-auto max-w-xs rounded-xl border border-dashed border-slate-300 bg-white/80 p-5 text-center shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
-                    <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-pink-500/10 text-pink-500 ring-1 ring-pink-500/20 dark:bg-pink-500/20 dark:text-pink-400">
+                    <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-500 ring-1 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400">
                       <GripVertical className="size-6" />
                     </div>
                     <div className="mb-1 text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -1695,7 +1695,7 @@ export function PdfA4Canvas({
         }}
       >
         <AlertDialogContent className="max-w-[400px] border-slate-300/80 bg-stone-50/95 p-0 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/90 dark:ring-0">
-          <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-50" />
           
           <div className="relative z-10 p-6">
             <AlertDialogHeader>

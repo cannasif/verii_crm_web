@@ -61,7 +61,7 @@ const INPUT_FIELD_CLASSNAME = cn(
   'text-slate-900 dark:text-white',
   'placeholder:text-slate-400 dark:placeholder:text-slate-500',
   'focus-visible:bg-white dark:focus-visible:bg-white/5',
-  'focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0',
+  'focus-visible:border-rose-500/70 focus-visible:ring-2 focus-visible:ring-rose-500/10 focus-visible:ring-offset-0',
   'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
   'dark:aria-invalid:border-destructive dark:aria-invalid:ring-destructive/30'
 );
@@ -250,7 +250,7 @@ export function UserForm({
       <DialogContent showCloseButton={false} className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[800px] max-h-[92vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl transition-all duration-300">
         <DialogHeader className="px-6 py-4 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shrink-0">
+            <div className="h-10 w-10 rounded-xl bg-[image:var(--crm-brand-gradient)] flex items-center justify-center shrink-0">
               <User size={20} className="text-white" />
             </div>
             <div className="min-w-0 text-left">
@@ -283,7 +283,7 @@ export function UserForm({
                         className={LABEL_STYLE}
                         required={isZodFieldRequired(activeSchema, 'username')}
                       >
-                        <User size={16} className="text-pink-500" /> {t('form.username')}
+                        <User size={16} className="text-rose-500" /> {t('form.username')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -308,7 +308,7 @@ export function UserForm({
                         className={LABEL_STYLE}
                         required={isZodFieldRequired(activeSchema, 'email')}
                       >
-                        <Mail size={16} className="text-pink-500" /> {t('form.email')}
+                        <Mail size={16} className="text-rose-500" /> {t('form.email')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -331,7 +331,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Lock size={16} className="text-pink-500" /> {t('form.password')}
+                        <Lock size={16} className="text-rose-500" /> {t('form.password')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -354,7 +354,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <User size={16} className="text-pink-500" /> {t('form.firstName')}
+                        <User size={16} className="text-rose-500" /> {t('form.firstName')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -375,7 +375,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <User size={16} className="text-pink-500" /> {t('form.lastName')}
+                        <User size={16} className="text-rose-500" /> {t('form.lastName')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -398,7 +398,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Phone size={16} className="text-pink-500" /> {t('form.phoneNumber')}
+                        <Phone size={16} className="text-rose-500" /> {t('form.phoneNumber')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -422,7 +422,7 @@ export function UserForm({
                         className={LABEL_STYLE}
                         required={isZodFieldRequired(activeSchema, 'roleId')}
                       >
-                        <Shield size={16} className="text-pink-500" /> {t('form.role')}
+                        <Shield size={16} className="text-rose-500" /> {t('form.role')}
                       </FormLabel>
                       <Select
                         value={field.value ? String(field.value) : ''}
@@ -438,7 +438,7 @@ export function UserForm({
                         </FormControl>
                         <SelectContent className="bg-white dark:bg-[#130822] border-slate-200 dark:border-white/10">
                           {roleOptions.map((opt) => (
-                            <SelectItem key={opt.value} value={String(opt.value)} className="focus:bg-pink-500 focus:text-white">
+                            <SelectItem key={opt.value} value={String(opt.value)} className="focus:bg-rose-500 focus:text-white">
                               {opt.label}
                             </SelectItem>
                           ))}
@@ -456,7 +456,7 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Users size={16} className="text-pink-500" /> {t('form.manager')}
+                      <Users size={16} className="text-rose-500" /> {t('form.manager')}
                     </FormLabel>
                     <Select
                       value={field.value ? String(field.value) : 'none'}
@@ -471,7 +471,7 @@ export function UserForm({
                       <SelectContent className="bg-white dark:bg-[#130822] border-slate-200 dark:border-white/10">
                         <SelectItem value="none">{t('form.noManager')}</SelectItem>
                         {managerOptions.map((option) => (
-                          <SelectItem key={option.value} value={String(option.value)} className="focus:bg-pink-500 focus:text-white">
+                          <SelectItem key={option.value} value={String(option.value)} className="focus:bg-rose-500 focus:text-white">
                             {option.label}
                           </SelectItem>
                         ))}
@@ -489,7 +489,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Shield size={16} className="text-pink-500" /> {t('form.permissionGroups')}
+                        <Shield size={16} className="text-rose-500" /> {t('form.permissionGroups')}
                       </FormLabel>
                       <FormControl>
                         <UserFormPermissionGroupSelect
@@ -510,13 +510,13 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-xl border border-slate-200 dark:border-white/10 p-4 bg-slate-50/50 dark:bg-white/5">
                     <FormLabel className="text-sm font-medium flex items-center gap-2 m-0">
-                      <Activity size={16} className="text-pink-500" /> {t('form.isActive')}
+                      <Activity size={16} className="text-rose-500" /> {t('form.isActive')}
                     </FormLabel>
                     <FormControl>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-pink-500"
+                        className="data-[state=checked]:bg-rose-500"
                       />
                     </FormControl>
                     <FormMessage />
@@ -544,7 +544,7 @@ export function UserForm({
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="h-11 px-8 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md transition-all duration-200"
+                    className="h-11 px-8 rounded-lg bg-[image:var(--crm-brand-gradient)] hover:scale-[1.02] active:scale-[0.98] border-0 text-white font-semibold shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all duration-200"
                   >
                     {isLoading ? t('form.saving') : t('form.save')}
                   </Button>

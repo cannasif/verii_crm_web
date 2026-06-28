@@ -287,8 +287,8 @@ export function PermissionGroupsPage(): ReactElement {
   return (
     <div className="w-full space-y-6">
       <div className={headerCardStyle}>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/5 dark:bg-pink-500/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/5 dark:bg-orange-500/10 blur-[80px] rounded-full -ml-20 -mb-20 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/5 dark:bg-rose-500/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 dark:bg-amber-500/10 blur-[80px] rounded-full -ml-20 -mb-20 pointer-events-none" />
 
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10">
           <div className="min-w-0">
@@ -304,7 +304,7 @@ export function PermissionGroupsPage(): ReactElement {
             <div className="flex shrink-0">
               <Button
                 onClick={handleAddClick}
-                className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="h-12 px-8 bg-[image:var(--crm-brand-gradient)] border-0 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-rose-500/25 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 <Plus size={20} className="mr-2" />
                 {t('permissionGroups.add')}
@@ -316,7 +316,7 @@ export function PermissionGroupsPage(): ReactElement {
         <div className="mt-8 grid gap-4 sm:grid-cols-3 relative z-10">
           <div className={statCardStyle}>
             <div className="flex items-center gap-4">
-              <div className="rounded-xl bg-pink-100 p-3 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400 border border-pink-100 dark:border-pink-500/20">
+              <div className="rounded-xl bg-rose-100 p-3 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20">
                 <Users2 className="size-5" />
               </div>
               <div>
@@ -342,7 +342,7 @@ export function PermissionGroupsPage(): ReactElement {
           </div>
           <div className={statCardStyle}>
             <div className="flex items-center gap-4">
-              <div className="rounded-xl bg-orange-100 p-3 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 border border-orange-100 dark:border-orange-500/20">
+              <div className="rounded-xl bg-amber-100 p-3 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20">
                 <KeyRound className="size-5" />
               </div>
               <div>

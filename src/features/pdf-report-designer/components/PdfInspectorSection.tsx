@@ -26,7 +26,7 @@ export function PdfInspectorSection({
 
   const toneClasses: Record<'default' | 'accent' | 'muted', string> = {
     default: 'border-slate-300/80 bg-white/50 dark:border-white/10 dark:bg-white/5',
-    accent: 'border-pink-500/30 bg-pink-500/5 dark:border-pink-500/20 dark:bg-pink-500/10',
+    accent: 'border-rose-500/30 bg-rose-500/5 dark:border-rose-500/20 dark:bg-rose-500/10',
     muted: 'border-slate-300/60 bg-slate-50/40 dark:border-white/5 dark:bg-white/5',
   };
 

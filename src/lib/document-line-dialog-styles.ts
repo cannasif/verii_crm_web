@@ -14,7 +14,7 @@ export const DOCUMENT_LINE_DIALOG_BODY_CLASS =
   'relative z-10 flex-1 min-h-0 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4';
 
 export const DOCUMENT_LINE_DIALOG_ICON_WRAP_CLASS =
-  'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-pink-500/20 bg-pink-50 text-pink-500 shadow-sm dark:border-pink-500/30 dark:bg-pink-500/15 dark:text-pink-300 sm:h-10 sm:w-10';
+  'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-rose-500/20 bg-rose-50 text-rose-500 shadow-sm dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300 sm:h-10 sm:w-10';
 
 export const DOCUMENT_LINE_DIALOG_ICON_WRAP_EDIT_CLASS =
   'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-indigo-500/20 bg-indigo-50 text-indigo-500 shadow-sm dark:border-indigo-500/30 dark:bg-indigo-500/15 dark:text-indigo-300 sm:h-10 sm:w-10';
@@ -23,7 +23,7 @@ export const DOCUMENT_LINE_FORM_CANCEL_BUTTON_CLASS =
   'h-12 px-6 w-full sm:w-auto rounded-xl border border-slate-300/90 bg-white text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:border-red-400/60 hover:bg-red-50 hover:text-red-600 hover:shadow-[0_0_16px_rgba(239,68,68,0.25)] dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:shadow-[0_0_18px_rgba(239,68,68,0.22)] font-medium disabled:opacity-50';
 
 export const DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS =
-  'h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-lg shadow-pink-600/20 hover:shadow-xl font-bold transition-all active:scale-95';
+  'h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white shadow-lg shadow-rose-600/20 hover:shadow-xl font-bold transition-all active:scale-95';
 
 export const DOCUMENT_LINE_FORM_FIELD_SURFACE_CLASS =
   'border-slate-300/90 bg-white text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100';

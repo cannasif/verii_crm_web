@@ -169,7 +169,7 @@ export function WindoQuickCreateDialog({
         onOpenChange(nextOpen);
       }}
     >
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md !overflow-visible">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
@@ -227,7 +227,7 @@ export function WindoQuickCreateDialog({
             </Button>
             <Button
               type="button"
-              className="bg-linear-to-r from-pink-600 to-orange-600 text-white"
+              className="bg-linear-to-r from-rose-600 to-amber-600 text-white"
               onClick={() => void handleSubmit()}
               disabled={mutation.isPending}
             >
@@ -239,3 +239,4 @@ export function WindoQuickCreateDialog({
     </Dialog>
   );
 }
+

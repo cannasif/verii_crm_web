@@ -23,7 +23,7 @@ export function UserStats(): ReactElement {
     group relative overflow-hidden
   `;
 
-  const glowStyle = "absolute inset-0 bg-linear-to-r from-pink-50/0 to-orange-50/0 dark:from-pink-500/0 dark:to-orange-500/0  transition-all duration-500 pointer-events-none";
+  const glowStyle = "absolute inset-0 bg-linear-to-r from-rose-50/0 to-amber-50/0 dark:from-rose-500/0 dark:to-amber-500/0  transition-all duration-500 pointer-events-none";
 
   if (isLoading) {
     return (
@@ -86,7 +86,7 @@ export function UserStats(): ReactElement {
           <CardTitle className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
             {t('userManagement.stats.newThisMonth')}
           </CardTitle>
-          <div className="p-2 bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 rounded-lg shadow-sm border border-orange-100 dark:border-orange-500/20">
+          <div className="p-2 bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 rounded-lg shadow-sm border border-amber-100 dark:border-amber-500/20">
             <Calendar size={18} />
           </div>
         </CardHeader>

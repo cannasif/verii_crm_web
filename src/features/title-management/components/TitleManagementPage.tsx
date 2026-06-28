@@ -254,24 +254,24 @@ export function TitleManagementPage(): ReactElement {
     shadow-sm hover:shadow-md 
     backdrop-blur-md 
     transition-all duration-300 
-    hover:border-pink-500/30 
+    hover:border-rose-500/30 
     group relative overflow-hidden
   `;
 
-  const glowStyle = "absolute inset-0 bg-linear-to-r from-pink-50/0 to-orange-50/0 dark:from-pink-500/0 dark:to-orange-500/0 group-hover:from-pink-50/50 group-hover:to-orange-50/50 dark:group-hover:from-pink-500/5 dark:group-hover:to-orange-500/5 transition-all duration-500 pointer-events-none";
+  const glowStyle = "absolute inset-0 bg-linear-to-r from-rose-50/0 to-amber-50/0 dark:from-rose-500/0 dark:to-amber-500/0 group-hover:from-rose-50/50 group-hover:to-amber-50/50 dark:group-hover:from-rose-500/5 dark:group-hover:to-amber-500/5 transition-all duration-500 pointer-events-none";
 
   const stats = [
     {
       title: t('stats.totalTitles'),
       value: statsData?.totalTitles || 0,
       icon: Users,
-      iconContainerClass: 'bg-pink-50 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400 border-pink-100 dark:border-pink-500/20',
+      iconContainerClass: 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border-rose-100 dark:border-rose-500/20',
     },
     {
       title: t('stats.activeTitles'),
       value: statsData?.activeTitles || 0,
       icon: Activity,
-      iconContainerClass: 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 border-orange-100 dark:border-orange-500/20',
+      iconContainerClass: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border-amber-100 dark:border-amber-500/20',
     },
     {
       title: t('stats.newThisMonth'),

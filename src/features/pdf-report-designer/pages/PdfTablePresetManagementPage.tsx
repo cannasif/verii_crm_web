@@ -236,7 +236,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
           </Button>
           <div>
             <div className="flex items-center gap-2">
-              <TableProperties className="size-5 text-pink-500" />
+              <TableProperties className="size-5 text-rose-500" />
               <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {t('pdfReportDesigner.tablePresetManagement.title')}
               </h1>
@@ -248,7 +248,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
         </div>
         <Button
           onClick={openCreate}
-          className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-5 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.02] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          className="h-10 bg-[image:var(--crm-brand-gradient)] px-5 font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] ring-1 ring-white/10 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-0"
         >
           <Plus className="size-4 mr-2" />
           {t('pdfReportDesigner.tablePresetManagement.newPreset')}
@@ -385,17 +385,17 @@ export function PdfTablePresetManagementPage(): ReactElement {
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent showCloseButton={false} className="max-w-3xl border-slate-300/80 bg-stone-50/95 p-0 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/95 dark:ring-0">
-          <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-50" />
 
           <div className="relative z-10">
-            <DialogClose className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full border border-slate-200/60 bg-white/50 text-slate-400 transition-all duration-300 hover:bg-white hover:text-pink-500 hover:rotate-90 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-pink-400">
+            <DialogClose className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full border border-slate-200/60 bg-white/50 text-slate-400 transition-all duration-300 hover:bg-white hover:text-rose-500 hover:rotate-90 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-rose-400">
               <X className="size-4" />
               <span className="sr-only">{t('pdfReportDesigner.tablePresetManagement.close')}</span>
             </DialogClose>
 
             <DialogHeader className="px-6 pt-6">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-pink-500/10 text-pink-500 ring-1 ring-pink-500/20 dark:bg-pink-500/20 dark:text-pink-400">
+                <div className="flex size-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-500 ring-1 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400">
                   <TableProperties className="size-5" />
                 </div>
                 <div>
@@ -414,7 +414,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                   <Input
                     value={formState.name}
                     onChange={(e) => setFormState((s) => ({ ...s, name: e.target.value }))}
-                    className="h-10 border-slate-200/60 bg-white transition-all focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5"
+                    className="h-10 border-slate-200/60 bg-white transition-all focus:ring-rose-500/20 dark:border-white/10 dark:bg-white/5"
                   />
                 </div>
                 <div className="grid gap-1.5">
@@ -422,7 +422,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                   <Input
                     value={formState.key}
                     onChange={(e) => setFormState((s) => ({ ...s, key: e.target.value }))}
-                    className="h-10 border-slate-200/60 bg-white font-mono transition-all focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5"
+                    className="h-10 border-slate-200/60 bg-white font-mono transition-all focus:ring-rose-500/20 dark:border-white/10 dark:bg-white/5"
                   />
                 </div>
               </div>
@@ -469,7 +469,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                   value={formState.columnsJson}
                   onChange={(e) => setFormState((s) => ({ ...s, columnsJson: e.target.value }))}
                   rows={10}
-                  className="font-mono text-[11px] border-slate-200/60 bg-white transition-all focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5"
+                  className="font-mono text-[11px] border-slate-200/60 bg-white transition-all focus:ring-rose-500/20 dark:border-white/10 dark:bg-white/5"
                 />
               </div>
               <div className="grid gap-1.5">
@@ -478,7 +478,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                   value={formState.optionsJson}
                   onChange={(e) => setFormState((s) => ({ ...s, optionsJson: e.target.value }))}
                   rows={5}
-                  className="font-mono text-[11px] border-slate-200/60 bg-white transition-all focus:ring-pink-500/20 dark:border-white/10 dark:bg-white/5"
+                  className="font-mono text-[11px] border-slate-200/60 bg-white transition-all focus:ring-rose-500/20 dark:border-white/10 dark:bg-white/5"
                 />
               </div>
             </div>
@@ -494,7 +494,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
               <Button
                 onClick={handleSubmit}
                 disabled={createMutation.isPending || updateMutation.isPending}
-                className="h-10 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.02] hover:from-pink-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="h-10 bg-[image:var(--crm-brand-gradient)] px-8 font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all hover:scale-[1.02] active:scale-[0.98] border-0"
               >
                 {t('pdfReportDesigner.tablePresetManagement.save')}
               </Button>

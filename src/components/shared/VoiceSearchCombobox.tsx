@@ -479,7 +479,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
                   size="icon"
                   className={cn(
                     "h-8 w-8 mr-1 shrink-0 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5",
-                    isListening && "text-pink-500 animate-pulse bg-pink-50 dark:bg-pink-900/20"
+                    isListening && "text-rose-500 animate-pulse bg-rose-50 dark:bg-rose-900/20"
                   )}
                   onClick={handleVoiceSearch}
                   title={t('common.voiceSearch')}
@@ -542,3 +542,4 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
     </div>
   );
 });
+

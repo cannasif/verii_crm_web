@@ -180,7 +180,7 @@ export function UserProfileModal({
                 onClick={onOpenProfileDetails}
               >
                 <div className="flex items-center gap-3 md:gap-4">
-                  <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400")}>
+                  <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400")}>
                     <UserIcon size={18} className="md:w-6 md:h-6" />
                   </div>
                   <div className="text-left">
@@ -238,7 +238,7 @@ export function UserProfileModal({
                 "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
               )}>
                 <div className="flex items-center gap-3 md:gap-4">
-                  <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-orange-100 text-orange-600 dark:bg-orange-500/20 dark:text-orange-400")}>
+                  <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400")}>
                     {isDark ? <Moon02Icon size={18} className="md:w-6 md:h-6" /> : <Sun01Icon size={18} className="md:w-6 md:h-6" />}
                   </div>
                   <div className="text-left">

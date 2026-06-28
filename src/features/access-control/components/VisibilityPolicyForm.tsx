@@ -52,7 +52,7 @@ const INPUT_STYLE = `
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-500
   focus-visible:bg-white dark:focus-visible:bg-white/5
-  focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
+  focus-visible:border-rose-500/70 focus-visible:ring-2 focus-visible:ring-rose-500/10 focus-visible:ring-offset-0
   transition-all duration-200 w-full
 `;
 
@@ -122,7 +122,7 @@ export function VisibilityPolicyForm({
 
         <DialogHeader className="p-2 pb-0 shrink-0">
           <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-linear-to-br from-pink-500 to-orange-500 shadow-lg shadow-pink-500/20">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-[image:var(--crm-brand-gradient)] border-0 shadow-lg shadow-rose-500/20">
               <Shield size={32} className="text-white" strokeWidth={2.5} />
             </div>
             <div className="space-y-1">
@@ -147,7 +147,7 @@ export function VisibilityPolicyForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <Network size={16} className="text-pink-500" />
+                          <Network size={16} className="text-rose-500" />
                           {t('visibilityPolicies.form.code')}
                           <FieldHelpTooltip text={t('help.visibilityPolicy.code')} />
                         </FormLabel>
@@ -164,7 +164,7 @@ export function VisibilityPolicyForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <FileText size={16} className="text-pink-500" />
+                          <FileText size={16} className="text-rose-500" />
                           {t('visibilityPolicies.form.name')}
                           <FieldHelpTooltip text={t('help.visibilityPolicy.name')} />
                         </FormLabel>
@@ -235,7 +235,7 @@ export function VisibilityPolicyForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Info size={16} className="text-pink-500" />
+                        <Info size={16} className="text-rose-500" />
                         {t('visibilityPolicies.form.description')}
                       </FormLabel>
                       <FormControl>
@@ -260,7 +260,7 @@ export function VisibilityPolicyForm({
                       <FormItem className="flex flex-row items-center justify-between rounded-[0.65rem] border border-slate-200 bg-slate-50/50 p-2.5 px-4 dark:border-white/10 dark:bg-white/5 h-[45px]">
                         <div className="space-y-0.5">
                           <FormLabel className="text-sm font-bold flex items-center gap-2">
-                            <Sparkles size={16} className="text-pink-500" />
+                            <Sparkles size={16} className="text-rose-500" />
                             {t('visibilityPolicies.form.includeSelf')}
                             <FieldHelpTooltip text={t('help.visibilityPolicy.includeSelf')} />
                           </FormLabel>
@@ -278,7 +278,7 @@ export function VisibilityPolicyForm({
                       <FormItem className="flex flex-row items-center justify-between rounded-[0.65rem] border border-slate-200 bg-slate-50/50 p-2.5 px-4 dark:border-white/10 dark:bg-white/5 h-[45px]">
                         <div className="space-y-0.5">
                           <FormLabel className="text-sm font-bold flex items-center gap-2">
-                            <Sparkles size={16} className="text-pink-500" />
+                            <Sparkles size={16} className="text-rose-500" />
                             {t('visibilityPolicies.form.isActive')}
                             <FieldHelpTooltip text={t('help.visibilityPolicy.isActive')} />
                           </FormLabel>
@@ -318,7 +318,7 @@ export function VisibilityPolicyForm({
               type="submit"
               form="visibility-policy-form"
               disabled={isLoading || !form.formState.isValid}
-              className="h-11 px-6 sm:px-10 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-pink-500/25 text-xs sm:text-sm"
+              className="h-11 px-6 sm:px-10 rounded-xl bg-[image:var(--crm-brand-gradient)] border-0 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-rose-500/25 text-xs sm:text-sm"
             >
               {isLoading ? t('common.saving') : t('common.save')}
             </Button>

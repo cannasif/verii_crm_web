@@ -50,10 +50,10 @@ export function LineFormUnitPriceInput({
             'px-1.5 py-1 text-xs font-bold',
             'text-slate-500 dark:text-slate-400',
             'transition-all duration-150',
-            'hover:border-pink-300 hover:bg-pink-50 hover:text-pink-700 hover:shadow-sm hover:[&>svg]:opacity-100',
-            'dark:hover:border-pink-500/40 dark:hover:bg-pink-500/15 dark:hover:text-pink-300',
-            'active:scale-[0.97] active:bg-pink-100 dark:active:bg-pink-500/25',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500/40 focus-visible:ring-offset-1',
+            'hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 hover:shadow-sm hover:[&>svg]:opacity-100',
+            'dark:hover:border-rose-500/40 dark:hover:bg-rose-500/15 dark:hover:text-rose-300',
+            'active:scale-[0.97] active:bg-rose-100 dark:active:bg-rose-500/25',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/40 focus-visible:ring-offset-1',
             'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50',
           )}
           title={`${currencyLabel} — tıklayarak para birimini değiştir`}

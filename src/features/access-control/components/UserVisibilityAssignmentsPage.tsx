@@ -51,23 +51,23 @@ const ENTITY_ICON_MAP: Record<string, LucideIcon> = {
 };
 
 const POLICY_SELECT_TRIGGER_CLASSNAME =
-  'h-10 w-full rounded-xl border border-slate-200/90 bg-slate-50/90 px-3.5 text-sm font-medium text-slate-900 shadow-sm transition-all duration-200 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:shadow-none hover:border-slate-300 dark:hover:border-white/20 focus-visible:border-pink-500/60 focus-visible:ring-2 focus-visible:ring-pink-500/15 focus-visible:ring-offset-0 data-[placeholder]:text-slate-400 dark:data-[placeholder]:text-slate-500';
+  'h-10 w-full rounded-xl border border-slate-200/90 bg-slate-50/90 px-3.5 text-sm font-medium text-slate-900 shadow-sm transition-all duration-200 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:shadow-none hover:border-slate-300 dark:hover:border-white/20 focus-visible:border-rose-500/60 focus-visible:ring-2 focus-visible:ring-rose-500/15 focus-visible:ring-offset-0 data-[placeholder]:text-slate-400 dark:data-[placeholder]:text-slate-500';
 
 const POLICY_SELECT_CONTENT_CLASSNAME =
   'overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-[0_12px_40px_-16px_rgba(15,23,42,0.35)] dark:border-white/12 dark:bg-[#1a1028] dark:shadow-black/50 [&_[data-slot=select-scroll-up-button]+div]:p-2';
 
 const POLICY_SELECT_ITEM_CLASSNAME =
-  'mb-1.5 last:mb-0 rounded-lg border border-transparent py-2.5 pl-3 pr-9 text-sm text-slate-700 transition-all duration-150 dark:text-slate-200 focus:border-slate-200/90 focus:bg-slate-50 dark:focus:border-white/12 dark:focus:bg-white/[0.06] data-[state=checked]:border-pink-300/80 data-[state=checked]:bg-pink-500/10 data-[state=checked]:font-semibold data-[state=checked]:text-pink-700 data-[state=checked]:shadow-sm dark:data-[state=checked]:border-pink-500/35 dark:data-[state=checked]:bg-pink-500/15 dark:data-[state=checked]:text-pink-300 [&_svg]:text-pink-600 dark:[&_svg]:text-pink-400';
+  'mb-1.5 last:mb-0 rounded-lg border border-transparent py-2.5 pl-3 pr-9 text-sm text-slate-700 transition-all duration-150 dark:text-slate-200 focus:border-slate-200/90 focus:bg-slate-50 dark:focus:border-white/12 dark:focus:bg-white/[0.06] data-[state=checked]:border-rose-300/80 data-[state=checked]:bg-rose-500/10 data-[state=checked]:font-semibold data-[state=checked]:text-rose-700 data-[state=checked]:shadow-sm dark:data-[state=checked]:border-rose-500/35 dark:data-[state=checked]:bg-rose-500/15 dark:data-[state=checked]:text-rose-300 [&_svg]:text-rose-600 dark:[&_svg]:text-rose-400';
 
 const POLICY_SELECT_NONE_ITEM_CLASSNAME =
   'mb-1.5 rounded-lg border border-dashed border-slate-200/80 py-2.5 pl-3 pr-9 text-sm text-slate-500 transition-all duration-150 dark:border-white/10 dark:text-slate-400 focus:border-slate-300 focus:bg-slate-50 dark:focus:border-white/15 dark:focus:bg-white/[0.04]';
 
 const ENTITY_ACCENT_MAP: Record<string, string> = {
   Activity: 'violet',
-  Quotation: 'pink',
+  Quotation: 'rose',
   Demand: 'sky',
   Order: 'emerald',
-  Salesman360: 'orange',
+  Salesman360: 'amber',
 };
 
 function entityAccentClasses(entityType: string): {
@@ -75,17 +75,17 @@ function entityAccentClasses(entityType: string): {
   icon: string;
   dirtyRing: string;
 } {
-  const accent = ENTITY_ACCENT_MAP[entityType] ?? 'pink';
+  const accent = ENTITY_ACCENT_MAP[entityType] ?? 'rose';
   const map: Record<string, { iconWrap: string; icon: string; dirtyRing: string }> = {
     violet: {
       iconWrap: 'bg-violet-100 border-violet-100 dark:bg-violet-500/10 dark:border-violet-500/20',
       icon: 'text-violet-600 dark:text-violet-400',
       dirtyRing: 'ring-violet-500/25 border-violet-300 dark:border-violet-500/40',
     },
-    pink: {
-      iconWrap: 'bg-pink-100 border-pink-100 dark:bg-pink-500/10 dark:border-pink-500/20',
-      icon: 'text-pink-600 dark:text-pink-400',
-      dirtyRing: 'ring-pink-500/25 border-pink-300 dark:border-pink-500/40',
+    rose: {
+      iconWrap: 'bg-rose-100 border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/20',
+      icon: 'text-rose-600 dark:text-rose-400',
+      dirtyRing: 'ring-rose-500/25 border-rose-300 dark:border-rose-500/40',
     },
     sky: {
       iconWrap: 'bg-sky-100 border-sky-100 dark:bg-sky-500/10 dark:border-sky-500/20',
@@ -97,10 +97,10 @@ function entityAccentClasses(entityType: string): {
       icon: 'text-emerald-600 dark:text-emerald-400',
       dirtyRing: 'ring-emerald-500/25 border-emerald-300 dark:border-emerald-500/40',
     },
-    orange: {
-      iconWrap: 'bg-orange-100 border-orange-100 dark:bg-orange-500/10 dark:border-orange-500/20',
-      icon: 'text-orange-600 dark:text-orange-400',
-      dirtyRing: 'ring-orange-500/25 border-orange-300 dark:border-orange-500/40',
+    amber: {
+      iconWrap: 'bg-amber-100 border-amber-100 dark:bg-amber-500/10 dark:border-amber-500/20',
+      icon: 'text-amber-600 dark:text-amber-400',
+      dirtyRing: 'ring-amber-500/25 border-amber-300 dark:border-amber-500/40',
     },
   };
   return map[accent];
@@ -396,11 +396,11 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
       />
 
       <div className={HEADER_CARD_CLASSNAME}>
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-500/5 blur-[80px] dark:bg-pink-500/10" />
-        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-orange-500/5 blur-[80px] dark:bg-orange-500/10" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/5 blur-[80px] dark:bg-rose-500/10" />
+        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px] dark:bg-amber-500/10" />
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-pink-600 dark:text-pink-400">
+          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-rose-600 dark:text-rose-400">
             <Sparkles className="size-3.5" />
             {t('sidebar.accessControl')}
           </div>
@@ -418,7 +418,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             <div className={STAT_CARD_CLASSNAME}>
               <div className="flex items-center gap-4">
-                <div className="rounded-xl border border-pink-100 bg-pink-100 p-3 text-pink-600 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-400">
+                <div className="rounded-xl border border-rose-100 bg-rose-100 p-3 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
                   <UserRound className="size-4" />
                 </div>
                 <div className="min-w-0">
@@ -450,7 +450,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
                   className={`rounded-xl border p-3 ${
                     hasChanges
                       ? 'border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300'
-                      : 'border-orange-100 bg-orange-100 text-orange-600 dark:border-orange-500/20 dark:bg-orange-500/10 dark:text-orange-400'
+                      : 'border-amber-100 bg-amber-100 text-amber-600 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400'
                   }`}
                 >
                   {isSavingAny ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
@@ -608,7 +608,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
                         <SelectTrigger
                           className={cn(
                             POLICY_SELECT_TRIGGER_CLASSNAME,
-                            isEntityDirty && 'border-pink-300/70 dark:border-pink-500/35'
+                            isEntityDirty && 'border-rose-300/70 dark:border-rose-500/35'
                           )}
                         >
                           <SelectValue placeholder={t('userVisibilityAssignments.selectPolicyPlaceholder')} />
@@ -673,7 +673,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
                               size="sm"
                               disabled={isEntitySaving}
                               onClick={() => void handleSaveEntity(entity.value)}
-                              className="h-8 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 px-3 text-white shadow-sm shadow-pink-500/20 hover:text-white"
+                              className="h-8 rounded-lg bg-[image:var(--crm-brand-gradient)] border-0 px-3 text-white shadow-sm shadow-rose-500/20 hover:text-white"
                             >
                               {isEntitySaving ? (
                                 <>

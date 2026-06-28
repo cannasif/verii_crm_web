@@ -1614,7 +1614,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-slate-300/80 bg-stone-50/95 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-none dark:ring-0">
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-br from-pink-500/5 to-orange-500/5 dark:from-pink-500/10 dark:to-orange-500/10" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-br from-rose-500/5 to-amber-500/5 dark:from-rose-500/10 dark:to-amber-500/10" />
       {(saveValidationIssues.length > 0 || invalidElementIds.length > 0) && (
         <div className="relative z-20 border-b border-red-200/80 bg-red-50/90 px-4 py-3 backdrop-blur-md dark:border-red-900/50 dark:bg-red-950/40">
           <div className="flex flex-wrap items-start gap-3">
@@ -1669,16 +1669,16 @@ export function PdfReportDesignerCreatePage(): ReactElement {
 
       {!isEdit && !hasElements ? (
         <div className="relative shrink-0 border-b border-slate-300/80 bg-stone-50/95 px-4 py-2.5 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60">
-          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
           <div className="relative z-10 flex flex-wrap items-center gap-x-6 gap-y-1.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
             <span className="inline-flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
-              <Sparkles className="size-3.5 text-pink-500" />
+              <Sparkles className="size-3.5 text-rose-500" />
               <span className="font-bold uppercase tracking-widest text-[10px]">
                 {t('pdfReportDesigner.onboardingBadge')}
               </span>
             </span>
             <span className="inline-flex items-center gap-2">
-              <span className="inline-flex size-4.5 items-center justify-center rounded-full bg-pink-500/10 text-[10px] font-bold text-pink-600 ring-1 ring-pink-500/20 dark:bg-pink-500/20 dark:text-pink-400">
+              <span className="inline-flex size-4.5 items-center justify-center rounded-full bg-rose-500/10 text-[10px] font-bold text-rose-600 ring-1 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400">
                 1
               </span>
               <span className="font-medium">{t('pdfReportDesigner.stepper.identify', { defaultValue: 'Pick document type & title' })}</span>
@@ -1706,7 +1706,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       ) : null}
 
       <div className="relative shrink-0 overflow-hidden border-b border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-50" />
+        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-50" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)} className="relative z-10">
             <div className="flex items-center gap-2 px-4 py-2">
@@ -1831,7 +1831,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                 type="submit"
                 size="sm"
                 disabled={isSaving || (isEdit && !templateByIdLoaded)}
-                className="min-w-[100px] bg-linear-to-r from-pink-600 to-orange-600 font-bold text-white shadow-lg shadow-pink-500/20 transition-all hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="min-w-[100px] bg-[image:var(--crm-brand-gradient)] font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition-all hover:scale-[1.05] border-0"
               >
                 {isSaving ? (
                   <>
@@ -2065,7 +2065,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       </div>
 
       <div className="relative z-30 shrink-0 overflow-hidden border-t border-slate-300/80 bg-stone-50/95 px-4 py-2 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/80 dark:shadow-none dark:ring-0">
-        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 rounded-lg bg-white/40 px-2 py-1 dark:bg-white/5">
@@ -2084,7 +2084,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
                   className={cn(
                     "h-7 min-w-[60px] px-3 text-[11px] font-bold transition-all duration-300",
                     currentPage === pageNumber
-                      ? "bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 hover:scale-[1.05]"
+                      ? "bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] hover:scale-[1.05] border-0"
                       : "border-slate-200/60 bg-white/40 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-white/5 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
                   )}
                   variant={currentPage === pageNumber ? 'default' : 'outline'}

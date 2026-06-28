@@ -58,7 +58,7 @@ export function GroupPermissionsPanel({
 
         <DialogHeader className="p-8 pb-0 shrink-0">
           <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-linear-to-br from-pink-500 to-orange-600 shadow-lg shadow-pink-500/20">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-linear-to-br from-rose-500 to-amber-600 shadow-lg shadow-rose-500/20">
               <Settings size={32} className="text-white" strokeWidth={2.5} />
             </div>
             <div className="space-y-1">
@@ -99,7 +99,7 @@ export function GroupPermissionsPanel({
 
             <div className="space-y-3">
               <p className={LABEL_STYLE}>
-                <Lock size={16} className="text-pink-500" />
+                <Lock size={16} className="text-rose-500" />
                 {t('permissionGroups.form.permissions')}
                 <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />
               </p>
@@ -130,7 +130,7 @@ export function GroupPermissionsPanel({
               <Button
                 onClick={handleSave}
                 disabled={setPermissions.isPending || isSystemAdminGroup}
-                className="h-11 px-6 sm:px-10 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-pink-500/25 text-xs sm:text-sm opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="h-11 px-6 sm:px-10 rounded-xl bg-[image:var(--crm-brand-gradient)] border-0 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-rose-500/25 text-xs sm:text-sm opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {setPermissions.isPending ? (
                   <>

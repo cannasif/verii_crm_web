@@ -307,7 +307,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
             {canCreate ? (
               <Button
                 type="button"
-                className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 px-6 font-semibold text-white"
+                className="h-11 rounded-xl bg-linear-to-r from-rose-600 to-amber-600 px-6 font-semibold text-white"
                 onClick={() => {
                   setEditingItem(null);
                   setDraftName('');
@@ -526,7 +526,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               </Button>
               <Button
                 type="button"
-                className="bg-linear-to-r from-pink-600 to-orange-600 text-white"
+                className="bg-linear-to-r from-rose-600 to-amber-600 text-white"
                 onClick={() => void handleSubmit()}
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
@@ -627,7 +627,7 @@ export function WindoProfilDemirVidaTanimlamaPage(): ReactElement {
               variant={isActive ? 'default' : 'outline'}
               className={
                 isActive
-                  ? 'rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white'
+                  ? 'rounded-xl bg-linear-to-r from-rose-600 to-amber-600 text-white'
                   : 'rounded-xl border-slate-300 bg-white dark:border-white/10 dark:bg-transparent'
               }
               onClick={() => setActiveKind(section.kind)}
@@ -642,3 +642,4 @@ export function WindoProfilDemirVidaTanimlamaPage(): ReactElement {
     </div>
   );
 }
+

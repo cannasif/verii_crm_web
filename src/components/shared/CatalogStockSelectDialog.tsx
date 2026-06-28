@@ -197,11 +197,11 @@ function CatalogCampaignPricingRow({ line }: CatalogCampaignPricingRowProps): Re
   const refPrice =
     fixed != null && Number.isFinite(fixed)
       ? deriveReferenceUnitPriceFromDiscountedNet(
-          fixed,
-          line.discountRate1,
-          line.discountRate2,
-          line.discountRate3,
-        )
+        fixed,
+        line.discountRate1,
+        line.discountRate2,
+        line.discountRate3,
+      )
       : null;
   const showFixed = fixed != null && Number.isFinite(fixed);
 
@@ -1215,7 +1215,7 @@ export function CatalogStockSelectDialog({
         aria-expanded={helperStripOpen}
         className="flex w-full items-center gap-2 px-3 py-2 crm-text-start transition-colors hover:bg-slate-100/70 dark:hover:bg-white/[0.04] sm:gap-3 sm:px-5 sm:py-2"
       >
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-pink-500/25 bg-pink-500/10 text-pink-500 shadow-[0_0_18px_rgba(236,72,153,0.18)] dark:text-pink-400 sm:h-8 sm:w-8 sm:rounded-xl">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-rose-500/25 bg-rose-500/10 text-rose-500 shadow-[0_0_18px_rgba(236,72,153,0.18)] dark:text-rose-400 sm:h-8 sm:w-8 sm:rounded-xl">
           <Sparkles className="h-3.5 w-3.5" />
         </div>
         <div className="min-w-0 flex-1">
@@ -1244,62 +1244,209 @@ export function CatalogStockSelectDialog({
 
   const stockListScrollInner =
     leftPanelMode === 'code' && stockBrowseMode === 'specialCodes' && !specialCodeHasSelection ? (
-    <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
-      <div className="max-w-md">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border border-pink-500/30 bg-pink-500/10 text-pink-500 shadow-[0_0_24px_rgba(236,72,153,0.22)] dark:text-pink-400">
-          <ListFilter className="h-6 w-6" />
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
+        <div className="max-w-md">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border border-rose-500/30 bg-rose-500/10 text-rose-500 shadow-[0_0_24px_rgba(236,72,153,0.22)] dark:text-rose-400">
+            <ListFilter className="h-6 w-6" />
+          </div>
+          <div className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            {t('catalogStockPicker.specialCodesEmptyTitle')}
+          </div>
+          <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t('catalogStockPicker.specialCodesPickHint')}</div>
         </div>
-        <div className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-          {t('catalogStockPicker.specialCodesEmptyTitle')}
-        </div>
-        <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t('catalogStockPicker.specialCodesPickHint')}</div>
       </div>
-    </div>
-  ) : stockBrowseMode === 'category' && !selectedLeafCategory ? (
-    <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
-      <div className="max-w-md">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border border-pink-500/30 bg-pink-500/10 text-pink-500 shadow-[0_0_24px_rgba(236,72,153,0.22)] dark:text-pink-400 dark:shadow-[0_0_28px_rgba(236,72,153,0.25)]">
-          <ShoppingBag className="h-6 w-6" />
+    ) : stockBrowseMode === 'category' && !selectedLeafCategory ? (
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
+        <div className="max-w-md">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border border-rose-500/30 bg-rose-500/10 text-rose-500 shadow-[0_0_24px_rgba(236,72,153,0.22)] dark:text-rose-400 dark:shadow-[0_0_28px_rgba(236,72,153,0.25)]">
+            <ShoppingBag className="h-6 w-6" />
+          </div>
+          <div className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+            {t('catalogStockPicker.selectLeafTitle')}
+          </div>
+          <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t('catalogStockPicker.selectLeafHint')}</div>
         </div>
-        <div className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-          {t('catalogStockPicker.selectLeafTitle')}
-        </div>
-        <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t('catalogStockPicker.selectLeafHint')}</div>
       </div>
-    </div>
-  ) : activeStockLoading ? (
-    <div className="flex min-h-0 flex-1 items-center justify-center py-8 text-sm text-slate-500 dark:text-slate-400">
-      {t('catalogStockPicker.loadingStocks')}
-    </div>
-  ) : activeStockRows.length ? (
-    stockLayoutMode === 'list' ? (
-      <div className="flex w-full flex-col rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none">
-        <div className="w-full">
-          <table className="w-full min-w-[620px] table-fixed border-collapse text-sm sm:min-w-[720px]">
-            <thead>
-              <tr className="border-b border-slate-300/90 bg-slate-100/90 text-[10px] font-semibold uppercase tracking-wide text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 sm:text-[11px]">
-                <th className="w-[120px] crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
-                  {t('catalogStockPicker.listColCode')}
-                </th>
-                <th className="crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
-                  {t('catalogStockPicker.listColName')}
-                </th>
-                <th className="w-14 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
-                  {t('catalogStockPicker.unit')}
-                </th>
-                <th className="w-24 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
-                  {groupCodeLabel}
-                </th>
-                <th className="w-36 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
-                  {t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}
-                </th>
-                <th className="w-16 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
-                  {t('catalogStockPicker.listColRelated')}
-                </th>
-                <th className="w-28 px-2 py-1.5 text-center sm:py-2">{t('catalogStockPicker.listColAction')}</th>
-              </tr>
-            </thead>
-            <tbody>
+    ) : activeStockLoading ? (
+      <div className="flex min-h-0 flex-1 items-center justify-center py-8 text-sm text-slate-500 dark:text-slate-400">
+        {t('catalogStockPicker.loadingStocks')}
+      </div>
+    ) : activeStockRows.length ? (
+      stockLayoutMode === 'list' ? (
+        <div className="flex w-full flex-col rounded-2xl border border-slate-300/90 bg-white shadow-md shadow-slate-200/50 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none">
+          <div className="w-full">
+            <table className="w-full min-w-[620px] table-fixed border-collapse text-sm sm:min-w-[720px]">
+              <thead>
+                <tr className="border-b border-slate-300/90 bg-slate-100/90 text-[10px] font-semibold uppercase tracking-wide text-slate-700 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 sm:text-[11px]">
+                  <th className="w-[120px] crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
+                    {t('catalogStockPicker.listColCode')}
+                  </th>
+                  <th className="crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:px-3 sm:py-2 dark:border-white/10">
+                    {t('catalogStockPicker.listColName')}
+                  </th>
+                  <th className="w-14 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                    {t('catalogStockPicker.unit')}
+                  </th>
+                  <th className="w-24 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                    {groupCodeLabel}
+                  </th>
+                  <th className="w-36 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                    {t('catalogStockPicker.warehouseBalanceTotal', { defaultValue: 'Toplam bakiye' })}
+                  </th>
+                  <th className="w-16 crm-border-end border-slate-300/90 px-2 py-1.5 text-center sm:py-2 dark:border-white/10">
+                    {t('catalogStockPicker.listColRelated')}
+                  </th>
+                  <th className="w-28 px-2 py-1.5 text-center sm:py-2">{t('catalogStockPicker.listColAction')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {activeStockRows.map((stock) => {
+                  const selectionKey = getSelectionKey({ id: stock.stockId, code: stock.erpStockCode });
+                  const selected = selectedKeys.has(selectionKey);
+                  const inOpeningDraft = stockMatchesDraftSnapshot(
+                    { id: stock.stockId, erpStockCode: stock.erpStockCode },
+                    catalogDraftSnapshotList
+                  );
+                  const onDocumentLine = stockMatchesDraftSnapshot(
+                    { id: stock.stockId, erpStockCode: stock.erpStockCode },
+                    catalogDocumentLinesList
+                  );
+                  const relCount = relationMap.get(stock.stockId)?.length ?? 0;
+
+                  return (
+                    <tr
+                      key={`${stock.stockCategoryId}-${stock.stockId}`}
+                      tabIndex={0}
+                      className={cn(
+                        'cursor-pointer border-b border-slate-200/90 transition-colors duration-200 hover:bg-rose-50/80 dark:border-white/5 dark:hover:bg-rose-500/[0.07]',
+                        selected && 'bg-rose-50 dark:bg-rose-500/10 ring-1 ring-inset ring-rose-500/25',
+                      )}
+                      onClick={() => void handleStockClick(stock)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          void handleStockClick(stock);
+                        }
+                      }}
+                    >
+                      <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
+                        <div className="flex flex-wrap items-center justify-center gap-1">
+                          <span className="font-mono text-[11px] font-semibold tracking-wide text-rose-700 dark:text-rose-300 sm:text-xs">
+                            {stock.erpStockCode}
+                          </span>
+                          {inOpeningDraft ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge
+                                  variant="outline"
+                                  className="h-4 border border-amber-400/40 bg-amber-50 px-1 text-[8px] font-semibold leading-none text-amber-800 dark:bg-amber-500/10 dark:text-amber-200"
+                                >
+                                  {t('catalogStockPicker.alreadyInDraftBadge')}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs text-xs">
+                                {t('catalogStockPicker.alreadyInDraftTooltip')}
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : null}
+                          {onDocumentLine ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Badge
+                                  variant="outline"
+                                  className="h-4 border border-indigo-400/40 bg-indigo-50 px-1 text-[8px] font-semibold leading-none text-indigo-800 dark:bg-indigo-500/10 dark:text-indigo-200"
+                                >
+                                  {t('catalogStockPicker.alreadyOnLineBadge')}
+                                </Badge>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs text-xs">
+                                {t('catalogStockPicker.alreadyOnLineTooltip')}
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : null}
+                        </div>
+                      </td>
+                      <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
+                        <div className="min-w-0 crm-text-start">
+                          <span className="line-clamp-2 text-sm font-medium leading-relaxed tracking-tight text-slate-900 dark:text-slate-100">
+                            {getLocalizedStockName(stock, i18n.language)}
+                          </span>
+                          {stockBrowseMode === 'campaign' ? (
+                            <CatalogCampaignPricingRow
+                              line={campaignPricingByCodeLower[stock.erpStockCode.toLowerCase()]}
+                            />
+                          ) : null}
+                        </div>
+                      </td>
+                      <td className="crm-border-end border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
+                        {stock.unit || '—'}
+                      </td>
+                      <td className="crm-border-end border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
+                        {stock.grupKodu || '—'}
+                      </td>
+                      <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
+                        <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
+                          <StockWarehouseBalanceBadge stockId={stock.stockId} unit={stock.unit} />
+                        </div>
+                      </td>
+                      <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
+                        {relCount > 0 ? (
+                          <Badge
+                            variant="outline"
+                            className="border border-cyan-400/40 bg-cyan-50 px-1.5 py-0 text-[10px] font-mono text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-300"
+                          >
+                            {relCount}
+                          </Badge>
+                        ) : (
+                          <span className="text-slate-400 dark:text-slate-500">—</span>
+                        )}
+                      </td>
+                      <td className="px-2 py-1 align-middle text-center sm:py-1.5">
+                        {selected ? (
+                          <span className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-rose-600 dark:text-rose-300">
+                            <Check className="h-3.5 w-3.5 drop-shadow-[0_0_10px_rgba(244,114,182,0.55)]" />
+                            {t('catalogStockPicker.selectedBadge')}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-slate-400 dark:text-slate-500">{t('catalogStockPicker.selectStockButton')}</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {activeStockHasNextPage ? (
+            <div className="shrink-0 border-t border-slate-300/90 bg-slate-100/80 p-2 dark:border-white/10 dark:bg-white/[0.02] sm:p-3">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={activeStockFetchingMore}
+                className="h-9 w-full rounded-xl border border-slate-300/90 bg-white text-xs text-slate-800 shadow-sm backdrop-blur-sm hover:border-rose-400/55 hover:bg-rose-50 hover:text-rose-600 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-rose-500/40 dark:hover:bg-rose-500/10 dark:hover:text-rose-100"
+                onClick={() => setPageNumber((prev) => prev + 1)}
+              >
+                {activeStockFetchingMore ? (
+                  <>
+                    <Loader2 className="crm-me-2 h-3.5 w-3.5 animate-spin" />
+                    {t('catalogStockPicker.loadingStocks')}
+                  </>
+                ) : (
+                  t('catalogStockPicker.loadMore')
+                )}
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <div className="relative flex w-full flex-col">
+          <div
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(244,63,94,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(244,63,94,0.08),transparent_55%)]"
+            aria-hidden
+          />
+          <div className="relative px-1 pt-1.5">
+            <div className="grid grid-cols-1 gap-2.5 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
               {activeStockRows.map((stock) => {
                 const selectionKey = getSelectionKey({ id: stock.stockId, code: stock.erpStockCode });
                 const selected = selectedKeys.has(selectionKey);
@@ -1311,1188 +1458,1041 @@ export function CatalogStockSelectDialog({
                   { id: stock.stockId, erpStockCode: stock.erpStockCode },
                   catalogDocumentLinesList
                 );
+                const watermark = (stock.erpStockCode ?? '').slice(0, 2).toUpperCase() || '·';
                 const relCount = relationMap.get(stock.stockId)?.length ?? 0;
+                const imageUrl = stock.imageUrl?.trim() ? getImageUrl(stock.imageUrl) : null;
 
                 return (
-                  <tr
+                  <button
                     key={`${stock.stockCategoryId}-${stock.stockId}`}
-                    tabIndex={0}
-                    className={cn(
-                      'cursor-pointer border-b border-slate-200/90 transition-colors duration-200 hover:bg-rose-50/80 dark:border-white/5 dark:hover:bg-rose-500/[0.07]',
-                      selected && 'bg-pink-50 dark:bg-pink-500/10 ring-1 ring-inset ring-pink-500/25',
-                    )}
+                    type="button"
                     onClick={() => void handleStockClick(stock)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        void handleStockClick(stock);
-                      }
-                    }}
-                  >
-                    <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
-                      <div className="flex flex-wrap items-center justify-center gap-1">
-                        <span className="font-mono text-[11px] font-semibold tracking-wide text-pink-700 dark:text-pink-300 sm:text-xs">
-                          {stock.erpStockCode}
-                        </span>
-                        {inOpeningDraft ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Badge
-                                variant="outline"
-                                className="h-4 border border-amber-400/40 bg-amber-50 px-1 text-[8px] font-semibold leading-none text-amber-800 dark:bg-amber-500/10 dark:text-amber-200"
-                              >
-                                {t('catalogStockPicker.alreadyInDraftBadge')}
-                              </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs">
-                              {t('catalogStockPicker.alreadyInDraftTooltip')}
-                            </TooltipContent>
-                          </Tooltip>
-                        ) : null}
-                        {onDocumentLine ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Badge
-                                variant="outline"
-                                className="h-4 border border-indigo-400/40 bg-indigo-50 px-1 text-[8px] font-semibold leading-none text-indigo-800 dark:bg-indigo-500/10 dark:text-indigo-200"
-                              >
-                                {t('catalogStockPicker.alreadyOnLineBadge')}
-                              </Badge>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs">
-                              {t('catalogStockPicker.alreadyOnLineTooltip')}
-                            </TooltipContent>
-                          </Tooltip>
-                        ) : null}
-                      </div>
-                    </td>
-                    <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
-                      <div className="min-w-0 crm-text-start">
-                        <span className="line-clamp-2 text-sm font-medium leading-relaxed tracking-tight text-slate-900 dark:text-slate-100">
-                          {getLocalizedStockName(stock, i18n.language)}
-                        </span>
-                        {stockBrowseMode === 'campaign' ? (
-                          <CatalogCampaignPricingRow
-                            line={campaignPricingByCodeLower[stock.erpStockCode.toLowerCase()]}
-                          />
-                        ) : null}
-                      </div>
-                    </td>
-                    <td className="crm-border-end border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
-                      {stock.unit || '—'}
-                    </td>
-                    <td className="crm-border-end border-slate-200/90 px-2 py-1 text-center align-middle font-mono text-[11px] text-slate-500 dark:text-slate-400 sm:py-1.5 sm:text-xs dark:border-white/10">
-                      {stock.grupKodu || '—'}
-                    </td>
-                    <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
-                      <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
-                        <StockWarehouseBalanceBadge stockId={stock.stockId} unit={stock.unit} />
-                      </div>
-                    </td>
-                    <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
-                      {relCount > 0 ? (
-                        <Badge
-                          variant="outline"
-                          className="border border-cyan-400/40 bg-cyan-50 px-1.5 py-0 text-[10px] font-mono text-cyan-700 dark:bg-cyan-500/10 dark:text-cyan-300"
-                        >
-                          {relCount}
-                        </Badge>
-                      ) : (
-                        <span className="text-slate-400 dark:text-slate-500">—</span>
-                      )}
-                    </td>
-                    <td className="px-2 py-1 align-middle text-center sm:py-1.5">
-                      {selected ? (
-                        <span className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-pink-600 dark:text-pink-300">
-                          <Check className="h-3.5 w-3.5 drop-shadow-[0_0_10px_rgba(244,114,182,0.55)]" />
-                          {t('catalogStockPicker.selectedBadge')}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-slate-400 dark:text-slate-500">{t('catalogStockPicker.selectStockButton')}</span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-        {activeStockHasNextPage ? (
-          <div className="shrink-0 border-t border-slate-300/90 bg-slate-100/80 p-2 dark:border-white/10 dark:bg-white/[0.02] sm:p-3">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={activeStockFetchingMore}
-              className="h-9 w-full rounded-xl border border-slate-300/90 bg-white text-xs text-slate-800 shadow-sm backdrop-blur-sm hover:border-rose-400/55 hover:bg-rose-50 hover:text-rose-600 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-rose-500/40 dark:hover:bg-rose-500/10 dark:hover:text-rose-100"
-              onClick={() => setPageNumber((prev) => prev + 1)}
-            >
-              {activeStockFetchingMore ? (
-                <>
-                  <Loader2 className="crm-me-2 h-3.5 w-3.5 animate-spin" />
-                  {t('catalogStockPicker.loadingStocks')}
-                </>
-              ) : (
-                t('catalogStockPicker.loadMore')
-              )}
-            </Button>
-          </div>
-        ) : null}
-      </div>
-    ) : (
-      <div className="relative flex w-full flex-col">
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(244,63,94,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(244,63,94,0.08),transparent_55%)]"
-          aria-hidden
-        />
-        <div className="relative px-1 pt-1.5">
-          <div className="grid grid-cols-1 gap-2.5 pb-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 2xl:gap-3">
-            {activeStockRows.map((stock) => {
-              const selectionKey = getSelectionKey({ id: stock.stockId, code: stock.erpStockCode });
-              const selected = selectedKeys.has(selectionKey);
-              const inOpeningDraft = stockMatchesDraftSnapshot(
-                { id: stock.stockId, erpStockCode: stock.erpStockCode },
-                catalogDraftSnapshotList
-              );
-              const onDocumentLine = stockMatchesDraftSnapshot(
-                { id: stock.stockId, erpStockCode: stock.erpStockCode },
-                catalogDocumentLinesList
-              );
-              const watermark = (stock.erpStockCode ?? '').slice(0, 2).toUpperCase() || '·';
-              const relCount = relationMap.get(stock.stockId)?.length ?? 0;
-              const imageUrl = stock.imageUrl?.trim() ? getImageUrl(stock.imageUrl) : null;
-
-              return (
-                <button
-                  key={`${stock.stockCategoryId}-${stock.stockId}`}
-                  type="button"
-                  onClick={() => void handleStockClick(stock)}
-                  className={cn(
-                    'group relative flex flex-col overflow-hidden rounded-xl border border-slate-300/90 bg-white crm-text-start shadow-md shadow-slate-200/45 backdrop-blur-md transition-all duration-300 ease-out will-change-transform dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none',
-                    'hover:-translate-y-0.5 hover:border-rose-400/60 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-rose-500/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]',
-                    selected &&
-                      'border-pink-400/70 bg-gradient-to-b from-pink-50/90 to-white shadow-[0_6px_22px_-6px_rgba(236,72,153,0.28)] ring-1 ring-pink-400/40 dark:from-pink-500/[0.08] dark:to-transparent dark:border-pink-500/55 dark:shadow-[0_0_22px_rgba(236,72,153,0.2)] dark:ring-pink-500/30',
-                  )}
-                >
-                  <div
-                    className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-500/35 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                    aria-hidden
-                  />
-
-                  {selected ? (
-                    <div
-                      className="pointer-events-none absolute crm-end-1-5 top-1.5 z-20 flex h-6 w-6 items-center justify-center rounded-full border border-pink-400/80 bg-pink-500 shadow-[0_4px_14px_-2px_rgba(236,72,153,0.6)] ring-2 ring-white/90 backdrop-blur-md dark:ring-zinc-950/80"
-                      aria-hidden
-                    >
-                      <Check className="h-3 w-3 text-white" strokeWidth={3.5} />
-                    </div>
-                  ) : null}
-
-                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-slate-100 via-white to-slate-200/70 dark:from-zinc-900 dark:via-slate-950 dark:to-zinc-900">
-                    {imageUrl ? (
-                      <>
-                        <img
-                          src={imageUrl}
-                          alt={getLocalizedStockName(stock, i18n.language)}
-                          loading="lazy"
-                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                        />
-                        <div
-                          className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(15,23,42,0.45),transparent_55%)] dark:bg-[linear-gradient(to_top,rgba(9,9,11,0.7),transparent_55%)]"
-                          aria-hidden
-                        />
-                      </>
-                    ) : (
-                      <>
-                        <div
-                          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.14),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.09),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.18),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.12),transparent_50%)]"
-                          aria-hidden
-                        />
-                        <div
-                          className="pointer-events-none absolute inset-0 opacity-60 [background-image:linear-gradient(rgba(15,23,42,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.05)_1px,transparent_1px)] [background-size:18px_18px] dark:opacity-70 dark:[background-image:linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)]"
-                          aria-hidden
-                        />
-                        <span
-                          className="pointer-events-none absolute -bottom-2 crm-start-1 select-none font-mono text-[clamp(2.25rem,7vw,4rem)] font-black uppercase leading-none tracking-tighter text-slate-900/[0.07] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-pink-500/20 dark:text-white/[0.06] dark:group-hover:text-pink-300/[0.14]"
-                          aria-hidden
-                        >
-                          {watermark}
-                        </span>
-                        <Package
-                          className="pointer-events-none absolute crm-end-2 top-2 h-4 w-4 text-slate-400/70 transition-all duration-300 group-hover:text-pink-500/70 dark:text-white/15 dark:group-hover:text-pink-300/60"
-                          aria-hidden
-                        />
-                        <div
-                          className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(241,245,249,0.9),transparent_55%)] dark:bg-[linear-gradient(to_top,rgba(9,9,11,0.85),transparent_50%)]"
-                          aria-hidden
-                        />
-                      </>
+                    className={cn(
+                      'group relative flex flex-col overflow-hidden rounded-xl border border-slate-300/90 bg-white crm-text-start shadow-md shadow-slate-200/45 backdrop-blur-md transition-all duration-300 ease-out will-change-transform dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none',
+                      'hover:-translate-y-0.5 hover:border-rose-400/60 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-rose-500/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]',
+                      selected &&
+                      'border-rose-400/70 bg-gradient-to-b from-rose-50/90 to-white shadow-[0_6px_22px_-6px_rgba(236,72,153,0.28)] ring-1 ring-rose-400/40 dark:from-rose-500/[0.08] dark:to-transparent dark:border-rose-500/55 dark:shadow-[0_0_22px_rgba(236,72,153,0.2)] dark:ring-rose-500/30',
                     )}
-                    {(inOpeningDraft || onDocumentLine || relCount > 0) ? (
-                      <div className="absolute bottom-1.5 crm-start-1-5 z-10 flex flex-wrap items-center gap-1">
-                        {inOpeningDraft ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="rounded-full border border-amber-500/50 bg-amber-500 px-1.5 py-0 text-[8px] font-semibold uppercase tracking-wide text-white shadow-sm backdrop-blur-md dark:border-amber-400/50 dark:bg-amber-500/25 dark:text-amber-100">
-                                {t('catalogStockPicker.alreadyInDraftBadge')}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs">
-                              {t('catalogStockPicker.alreadyInDraftTooltip')}
-                            </TooltipContent>
-                          </Tooltip>
-                        ) : null}
-                        {onDocumentLine ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="rounded-full border border-indigo-500/50 bg-indigo-500 px-1.5 py-0 text-[8px] font-semibold uppercase tracking-wide text-white shadow-sm backdrop-blur-md dark:border-indigo-400/50 dark:bg-indigo-500/25 dark:text-indigo-100">
-                                {t('catalogStockPicker.alreadyOnLineBadge')}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs">
-                              {t('catalogStockPicker.alreadyOnLineTooltip')}
-                            </TooltipContent>
-                          </Tooltip>
-                        ) : null}
-                        {relCount > 0 ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="inline-flex items-center gap-0.5 rounded-full border border-orange-500/50 bg-orange-500 px-1.5 py-0 font-mono text-[8px] font-semibold text-white shadow-sm backdrop-blur-md dark:border-orange-400/50 dark:bg-orange-500/25 dark:text-orange-100">
-                                ×{relCount}
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="max-w-xs text-xs">
-                              {t('catalogStockPicker.relatedStocksHint')}
-                            </TooltipContent>
-                          </Tooltip>
-                        ) : null}
+                  >
+                    <div
+                      className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-rose-500/35 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                      aria-hidden
+                    />
+
+                    {selected ? (
+                      <div
+                        className="pointer-events-none absolute crm-end-1-5 top-1.5 z-20 flex h-6 w-6 items-center justify-center rounded-full border border-rose-400/80 bg-rose-500 shadow-[0_4px_14px_-2px_rgba(236,72,153,0.6)] ring-2 ring-white/90 backdrop-blur-md dark:ring-zinc-950/80"
+                        aria-hidden
+                      >
+                        <Check className="h-3 w-3 text-white" strokeWidth={3.5} />
                       </div>
                     ) : null}
-                  </div>
 
-                  <div className="flex min-w-0 flex-1 flex-col gap-1 p-2.5">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-pink-600 dark:text-pink-300/90">
-                        {stock.erpStockCode}
-                      </span>
-                      {stock.unit ? (
-                        <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0 font-mono text-[9px] font-semibold uppercase tracking-wider text-slate-600 dark:bg-white/[0.06] dark:text-slate-300">
-                          {stock.unit}
-                        </span>
+                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-slate-100 via-white to-slate-200/70 dark:from-zinc-900 dark:via-slate-950 dark:to-zinc-900">
+                      {imageUrl ? (
+                        <>
+                          <img
+                            src={imageUrl}
+                            alt={getLocalizedStockName(stock, i18n.language)}
+                            loading="lazy"
+                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                          />
+                          <div
+                            className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(15,23,42,0.45),transparent_55%)] dark:bg-[linear-gradient(to_top,rgba(9,9,11,0.7),transparent_55%)]"
+                            aria-hidden
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <div
+                            className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.14),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.09),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.18),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.12),transparent_50%)]"
+                            aria-hidden
+                          />
+                          <div
+                            className="pointer-events-none absolute inset-0 opacity-60 [background-image:linear-gradient(rgba(15,23,42,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.05)_1px,transparent_1px)] [background-size:18px_18px] dark:opacity-70 dark:[background-image:linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)]"
+                            aria-hidden
+                          />
+                          <span
+                            className="pointer-events-none absolute -bottom-2 crm-start-1 select-none font-mono text-[clamp(2.25rem,7vw,4rem)] font-black uppercase leading-none tracking-tighter text-slate-900/[0.07] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-rose-500/20 dark:text-white/[0.06] dark:group-hover:text-rose-300/[0.14]"
+                            aria-hidden
+                          >
+                            {watermark}
+                          </span>
+                          <Package
+                            className="pointer-events-none absolute crm-end-2 top-2 h-4 w-4 text-slate-400/70 transition-all duration-300 group-hover:text-rose-500/70 dark:text-white/15 dark:group-hover:text-rose-300/60"
+                            aria-hidden
+                          />
+                          <div
+                            className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(241,245,249,0.9),transparent_55%)] dark:bg-[linear-gradient(to_top,rgba(9,9,11,0.85),transparent_50%)]"
+                            aria-hidden
+                          />
+                        </>
+                      )}
+                      {(inOpeningDraft || onDocumentLine || relCount > 0) ? (
+                        <div className="absolute bottom-1.5 crm-start-1-5 z-10 flex flex-wrap items-center gap-1">
+                          {inOpeningDraft ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="rounded-full border border-amber-500/50 bg-amber-500 px-1.5 py-0 text-[8px] font-semibold uppercase tracking-wide text-white shadow-sm backdrop-blur-md dark:border-amber-400/50 dark:bg-amber-500/25 dark:text-amber-100">
+                                  {t('catalogStockPicker.alreadyInDraftBadge')}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs text-xs">
+                                {t('catalogStockPicker.alreadyInDraftTooltip')}
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : null}
+                          {onDocumentLine ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="rounded-full border border-indigo-500/50 bg-indigo-500 px-1.5 py-0 text-[8px] font-semibold uppercase tracking-wide text-white shadow-sm backdrop-blur-md dark:border-indigo-400/50 dark:bg-indigo-500/25 dark:text-indigo-100">
+                                  {t('catalogStockPicker.alreadyOnLineBadge')}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs text-xs">
+                                {t('catalogStockPicker.alreadyOnLineTooltip')}
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : null}
+                          {relCount > 0 ? (
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-flex items-center gap-0.5 rounded-full border border-amber-500/50 bg-amber-500 px-1.5 py-0 font-mono text-[8px] font-semibold text-white shadow-sm backdrop-blur-md dark:border-amber-400/50 dark:bg-amber-500/25 dark:text-amber-100">
+                                  ×{relCount}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="max-w-xs text-xs">
+                                {t('catalogStockPicker.relatedStocksHint')}
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : null}
+                        </div>
                       ) : null}
                     </div>
 
-                    <h3 className="line-clamp-2 min-h-[2.2em] text-[12.5px] font-medium leading-snug tracking-tight text-slate-800 dark:text-slate-100">
-                      {getLocalizedStockName(stock, i18n.language)}
-                    </h3>
-
-                    {stockBrowseMode === 'campaign' ? (
-                      <CatalogCampaignPricingRow
-                        line={campaignPricingByCodeLower[stock.erpStockCode.toLowerCase()]}
-                      />
-                    ) : null}
-
-                    <div className="mt-auto flex w-fit max-w-full pt-1">
-                      <StockWarehouseBalanceBadge stockId={stock.stockId} unit={stock.unit} />
-                    </div>
-
-                    {(stock.grupKodu || stock.kod1) ? (
-                      <div className="mt-auto flex items-center gap-1 pt-0.5">
-                        {stock.grupKodu ? (
-                          <span className="truncate rounded bg-pink-50 px-1.5 py-0.5 font-mono text-[9px] text-pink-700/90 dark:bg-pink-500/[0.08] dark:text-pink-200/90">
-                            {stock.grupKodu}
-                          </span>
-                        ) : null}
-                        {stock.kod1 ? (
-                          <span className="truncate rounded bg-slate-100/80 px-1.5 py-0.5 font-mono text-[9px] text-slate-500 dark:bg-white/[0.04] dark:text-slate-400">
-                            {stock.kod1}
+                    <div className="flex min-w-0 flex-1 flex-col gap-1 p-2.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-rose-600 dark:text-rose-300/90">
+                          {stock.erpStockCode}
+                        </span>
+                        {stock.unit ? (
+                          <span className="shrink-0 rounded-md bg-slate-100 px-1.5 py-0 font-mono text-[9px] font-semibold uppercase tracking-wider text-slate-600 dark:bg-white/[0.06] dark:text-slate-300">
+                            {stock.unit}
                           </span>
                         ) : null}
                       </div>
-                    ) : null}
-                  </div>
-                </button>
-              );
-            })}
+
+                      <h3 className="line-clamp-2 min-h-[2.2em] text-[12.5px] font-medium leading-snug tracking-tight text-slate-800 dark:text-slate-100">
+                        {getLocalizedStockName(stock, i18n.language)}
+                      </h3>
+
+                      {stockBrowseMode === 'campaign' ? (
+                        <CatalogCampaignPricingRow
+                          line={campaignPricingByCodeLower[stock.erpStockCode.toLowerCase()]}
+                        />
+                      ) : null}
+
+                      <div className="mt-auto flex w-fit max-w-full pt-1">
+                        <StockWarehouseBalanceBadge stockId={stock.stockId} unit={stock.unit} />
+                      </div>
+
+                      {(stock.grupKodu || stock.kod1) ? (
+                        <div className="mt-auto flex items-center gap-1 pt-0.5">
+                          {stock.grupKodu ? (
+                            <span className="truncate rounded bg-rose-50 px-1.5 py-0.5 font-mono text-[9px] text-rose-700/90 dark:bg-rose-500/[0.08] dark:text-rose-200/90">
+                              {stock.grupKodu}
+                            </span>
+                          ) : null}
+                          {stock.kod1 ? (
+                            <span className="truncate rounded bg-slate-100/80 px-1.5 py-0.5 font-mono text-[9px] text-slate-500 dark:bg-white/[0.04] dark:text-slate-400">
+                              {stock.kod1}
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
+          {activeStockHasNextPage ? (
+            <div className="relative z-10 shrink-0 border-t border-slate-300/90 bg-slate-100/80 p-2 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.02] sm:p-2.5">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={activeStockFetchingMore}
+                className="h-9 w-full rounded-xl border border-slate-300/90 bg-white text-xs text-slate-800 shadow-sm backdrop-blur-sm hover:border-rose-400/55 hover:bg-rose-50 hover:text-rose-600 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-rose-500/40 dark:hover:bg-rose-500/10 dark:hover:text-rose-100"
+                onClick={() => setPageNumber((prev) => prev + 1)}
+              >
+                {activeStockFetchingMore ? (
+                  <>
+                    <Loader2 className="crm-me-2 h-3.5 w-3.5 animate-spin" />
+                    {t('catalogStockPicker.loadingStocks')}
+                  </>
+                ) : (
+                  t('catalogStockPicker.loadMore')
+                )}
+              </Button>
+            </div>
+          ) : null}
         </div>
-        {activeStockHasNextPage ? (
-          <div className="relative z-10 shrink-0 border-t border-slate-300/90 bg-slate-100/80 p-2 backdrop-blur-md dark:border-white/10 dark:bg-white/[0.02] sm:p-2.5">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={activeStockFetchingMore}
-              className="h-9 w-full rounded-xl border border-slate-300/90 bg-white text-xs text-slate-800 shadow-sm backdrop-blur-sm hover:border-pink-400/55 hover:bg-pink-50 hover:text-pink-600 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-pink-500/40 dark:hover:bg-pink-500/10 dark:hover:text-pink-100"
-              onClick={() => setPageNumber((prev) => prev + 1)}
-            >
-              {activeStockFetchingMore ? (
-                <>
-                  <Loader2 className="crm-me-2 h-3.5 w-3.5 animate-spin" />
-                  {t('catalogStockPicker.loadingStocks')}
-                </>
-              ) : (
-                t('catalogStockPicker.loadMore')
-              )}
-            </Button>
-          </div>
-        ) : null}
+      )
+    ) : (
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/90 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none sm:px-6 sm:py-12">
+        <div className="max-w-md">
+          <div className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">{t('catalogStockPicker.emptyStocksTitle')}</div>
+          <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t('catalogStockPicker.emptyStocks')}</div>
+        </div>
       </div>
-    )
-  ) : (
-    <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/90 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] dark:shadow-none sm:px-6 sm:py-12">
-      <div className="max-w-md">
-        <div className="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">{t('catalogStockPicker.emptyStocksTitle')}</div>
-        <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t('catalogStockPicker.emptyStocks')}</div>
-      </div>
-    </div>
-  );
+    );
 
   return (
     <>
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        showCloseButton={false}
-        className="!fixed !flex min-h-0 flex-col gap-0 !overflow-hidden border border-slate-300/95 bg-[linear-gradient(180deg,#ffffff,#f8fafc_40%,#f1f5f9)] p-0 text-slate-900 shadow-[0_0_50px_rgba(236,72,153,0.1),0_25px_80px_rgba(15,23,42,0.18)] ring-1 ring-slate-300/40 backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/85 dark:bg-none dark:text-slate-100 dark:shadow-[0_0_50px_rgba(236,72,153,0.1),0_25px_80px_rgba(0,0,0,0.45)] dark:ring-0 max-lg:!top-3 max-lg:!h-[calc(100svh-0.75rem)] max-lg:!max-h-[calc(100svh-0.75rem)] max-lg:!translate-y-0 max-lg:!w-[calc(100vw-0.5rem)] max-lg:!max-w-[calc(100vw-0.5rem)] lg:!top-1/2 lg:!left-1/2 lg:!h-[min(96dvh,980px)] lg:!max-h-[min(96dvh,980px)] lg:!w-[min(1520px,calc(100vw-1rem))] lg:!max-w-[min(1520px,calc(100vw-1rem))] lg:!-translate-x-1/2 lg:!-translate-y-1/2"
-      >
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(244,63,94,0.07),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.04),transparent_45%)] dark:bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(244,63,94,0.14),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.08),transparent_45%)]"
-          aria-hidden
-        />
-        <button
-          type="button"
-          onClick={() => onOpenChange(false)}
-          aria-label={t('cancel', { ns: 'common' })}
-          className="absolute crm-end-2 top-2 z-30 flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300/90 bg-white text-slate-600 shadow-sm backdrop-blur-sm transition-all hover:border-red-400/60 hover:bg-red-50 hover:text-red-600 hover:shadow-[0_0_16px_rgba(239,68,68,0.35)] dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:shadow-[0_0_18px_rgba(239,68,68,0.3)] sm:[inset-inline-end:0.625rem] sm:top-2 sm:h-8 sm:w-8"
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent
+          showCloseButton={false}
+          className="!fixed !flex min-h-0 flex-col gap-0 !overflow-hidden border border-slate-300/95 bg-[linear-gradient(180deg,#ffffff,#f8fafc_40%,#f1f5f9)] p-0 text-slate-900 shadow-[0_0_50px_rgba(236,72,153,0.1),0_25px_80px_rgba(15,23,42,0.18)] ring-1 ring-slate-300/40 backdrop-blur-3xl dark:border-white/10 dark:bg-zinc-950/85 dark:bg-none dark:text-slate-100 dark:shadow-[0_0_50px_rgba(236,72,153,0.1),0_25px_80px_rgba(0,0,0,0.45)] dark:ring-0 max-lg:!top-3 max-lg:!h-[calc(100svh-0.75rem)] max-lg:!max-h-[calc(100svh-0.75rem)] max-lg:!translate-y-0 max-lg:!w-[calc(100vw-0.5rem)] max-lg:!max-w-[calc(100vw-0.5rem)] lg:!top-1/2 lg:!left-1/2 lg:!h-[min(96dvh,980px)] lg:!max-h-[min(96dvh,980px)] lg:!w-[min(1520px,calc(100vw-1rem))] lg:!max-w-[min(1520px,calc(100vw-1rem))] lg:!-translate-x-1/2 lg:!-translate-y-1/2"
         >
-          <X className="h-4 w-4" />
-        </button>
-        <DialogHeader className="relative z-10 shrink-0 border-b border-slate-300/90 bg-white px-3 py-1.5 crm-pe-10 shadow-[inset_0_-1px_0_rgba(148,163,184,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-4 sm:py-2 sm:[padding-inline-end:2.75rem]">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-pink-500/20 bg-pink-50 text-pink-500 shadow-sm dark:border-pink-500/30 dark:bg-pink-500/15 dark:text-pink-300 sm:h-9 sm:w-9 sm:rounded-xl">
-                <PackageSearch className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden />
-              </div>
-              <div className="min-w-0">
-                <DialogTitle className="truncate crm-text-start text-sm font-bold tracking-tight text-slate-800 dark:text-slate-100 sm:text-base">
-                  {t('catalogStockPicker.pickerMainHeading')}
-                </DialogTitle>
-                <DialogDescription className="sr-only">{t('catalogStockPicker.description')}</DialogDescription>
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-8 shrink-0 gap-1 rounded-lg border border-slate-300/90 bg-white px-2 text-[11px] font-medium text-slate-800 shadow-sm backdrop-blur-sm hover:border-pink-400/55 hover:bg-pink-50 hover:text-pink-600 dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:shadow-none dark:hover:border-pink-500/35 dark:hover:bg-pink-500/10 dark:hover:text-pink-100 sm:px-2.5 sm:text-xs"
-              onClick={() => setHierarchyInfoOpen(true)}
-            >
-              <CircleHelp className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
-              <span className="hidden max-w-[10rem] truncate sm:inline">{t('catalogStockPicker.hierarchyInfoButton')}</span>
-            </Button>
-          </div>
-        </DialogHeader>
-
-        <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-0 overflow-hidden xl:grid xl:min-h-0 xl:grid-cols-[minmax(220px,22%)_minmax(0,1fr)] xl:items-stretch 2xl:grid-cols-[minmax(236px,21%)_minmax(0,1fr)]">
           <div
-            className={cn(
-              'flex flex-col overflow-hidden border-b border-slate-300/90 shadow-[inset_-1px_0_0_rgba(148,163,184,0.12)] backdrop-blur-sm dark:border-white/10 dark:shadow-none xl:shadow-[inset_-1px_0_0_rgba(148,163,184,0.14)] dark:xl:shadow-none',
-              'bg-[linear-gradient(180deg,rgba(248,250,252,0.92),rgba(241,245,249,0.55))]',
-              'dark:bg-[linear-gradient(180deg,rgba(24,24,27,0.55),rgba(9,9,11,0.42))]',
-              'min-h-0 max-xl:min-h-[100px] xl:h-full xl:min-h-0 xl:max-h-none xl:self-stretch xl:[border-inline-end-width:1px] xl:border-slate-300/90 xl:border-b-0',
-              'max-xl:shrink-0',
-              mobileCategoriesOpen ? 'max-lg:max-h-[min(52dvh,460px)]' : 'max-lg:max-h-[2.75rem]',
-              'lg:max-h-[min(52dvh,460px)] xl:max-h-none',
-            )}
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(244,63,94,0.07),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.04),transparent_45%)] dark:bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(244,63,94,0.14),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.08),transparent_45%)]"
+            aria-hidden
+          />
+          <button
+            type="button"
+            onClick={() => onOpenChange(false)}
+            aria-label={t('cancel', { ns: 'common' })}
+            className="absolute crm-end-2 top-2 z-30 flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300/90 bg-white text-slate-600 shadow-sm backdrop-blur-sm transition-all hover:border-red-400/60 hover:bg-red-50 hover:text-red-600 hover:shadow-[0_0_16px_rgba(239,68,68,0.35)] dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:shadow-[0_0_18px_rgba(239,68,68,0.3)] sm:[inset-inline-end:0.625rem] sm:top-2 sm:h-8 sm:w-8"
           >
-            <button
-              type="button"
-              onClick={() => setMobileCategoriesOpen((v) => !v)}
-              aria-expanded={mobileCategoriesOpen}
-              className="flex w-full items-center justify-between gap-2 border-b border-slate-300/90 bg-slate-50 px-3 py-2 crm-text-start transition-colors hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07] lg:hidden"
-            >
-              <span className="flex min-w-0 items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                {leftPanelMode === 'code' ? (
-                  <ListFilter className="h-4 w-4 shrink-0 text-pink-500 dark:text-pink-400" />
-                ) : (
-                  <FolderTree className="h-4 w-4 shrink-0 text-pink-500 dark:text-pink-400" />
-                )}
-                <span className="truncate">
-                  {leftPanelMode === 'code'
-                    ? t('catalogStockPicker.mobileSpecialCodesAccordion')
-                    : t('catalogStockPicker.mobileCategoriesAccordion')}
-                </span>
-              </span>
-              <ChevronDown
-                className={cn(
-                  'h-5 w-5 shrink-0 text-slate-500 transition-transform duration-200 dark:text-slate-400',
-                  mobileCategoriesOpen && 'rotate-180',
-                )}
-                aria-hidden
-              />
-            </button>
-
-            <div
-              className={cn(
-                'flex min-h-0 flex-1 flex-col overflow-hidden xl:-mt-px xl:h-full xl:border-t-0',
-                !mobileCategoriesOpen && 'max-lg:hidden lg:flex',
-              )}
-            >
-            <div className="shrink-0 border-b border-slate-300/90 bg-white/90 px-2.5 py-2 dark:border-white/10 dark:bg-zinc-950/80 sm:px-3">
-              <div
-                className="flex rounded-xl border border-slate-300/90 bg-slate-100/90 p-0.5 dark:border-white/10 dark:bg-white/[0.04]"
-                role="group"
-                aria-label={t('catalogStockPicker.leftPanelModeGroupLabel')}
+            <X className="h-4 w-4" />
+          </button>
+          <DialogHeader className="relative z-10 shrink-0 border-b border-slate-300/90 bg-white px-3 py-1.5 crm-pe-10 shadow-[inset_0_-1px_0_rgba(148,163,184,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-4 sm:py-2 sm:[padding-inline-end:2.75rem]">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-2.5">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-rose-500/20 bg-rose-50 text-rose-500 shadow-sm dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300 sm:h-9 sm:w-9 sm:rounded-xl">
+                  <PackageSearch className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden />
+                </div>
+                <div className="min-w-0">
+                  <DialogTitle className="truncate crm-text-start text-sm font-bold tracking-tight text-slate-800 dark:text-slate-100 sm:text-base">
+                    {t('catalogStockPicker.pickerMainHeading')}
+                  </DialogTitle>
+                  <DialogDescription className="sr-only">{t('catalogStockPicker.description')}</DialogDescription>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-8 shrink-0 gap-1 rounded-lg border border-slate-300/90 bg-white px-2 text-[11px] font-medium text-slate-800 shadow-sm backdrop-blur-sm hover:border-rose-400/55 hover:bg-rose-50 hover:text-rose-600 dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:shadow-none dark:hover:border-rose-500/35 dark:hover:bg-rose-500/10 dark:hover:text-rose-100 sm:px-2.5 sm:text-xs"
+                onClick={() => setHierarchyInfoOpen(true)}
               >
-                <button
-                  type="button"
-                  onClick={() => handleLeftPanelModeChange('code')}
-                  aria-pressed={leftPanelMode === 'code'}
-                  className={cn(
-                    'flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-2 py-2 text-[10px] font-bold uppercase tracking-wide transition-all sm:text-[11px]',
-                    leftPanelMode === 'code'
-                      ? 'bg-gradient-to-r from-pink-600 to-fuchsia-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-rose-700 dark:text-slate-400 dark:hover:text-rose-300',
-                  )}
-                >
-                  <ListFilter className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                  <span className="truncate">{t('catalogStockPicker.leftPanelModeCode')}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleLeftPanelModeChange('catalog')}
-                  aria-pressed={leftPanelMode === 'catalog'}
-                  className={cn(
-                    'flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-2 py-2 text-[10px] font-bold uppercase tracking-wide transition-all sm:text-[11px]',
-                    leftPanelMode === 'catalog'
-                      ? 'bg-gradient-to-r from-pink-600 to-fuchsia-600 text-white shadow-sm'
-                      : 'text-slate-600 hover:text-rose-700 dark:text-slate-400 dark:hover:text-rose-300',
-                  )}
-                >
-                  <FolderTree className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                  <span className="truncate">{t('catalogStockPicker.leftPanelModeCatalog')}</span>
-                </button>
-              </div>
+                <CircleHelp className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
+                <span className="hidden max-w-[10rem] truncate sm:inline">{t('catalogStockPicker.hierarchyInfoButton')}</span>
+              </Button>
             </div>
+          </DialogHeader>
 
-            {leftPanelMode === 'code' ? (
-              <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden overscroll-contain bg-slate-100/55 px-2 py-2 [-webkit-overflow-scrolling:touch] dark:bg-zinc-950/40 sm:px-3 sm:py-2.5">
-                <CatalogSpecialCodeFilterPanel
-                  selections={specialCodeSelections}
-                  optionsByLevel={specialCodeOptionsByLevel}
-                  isLoadingOptions={specialCodeFacetPoolQuery.isLoading}
-                  onToggle={handleSpecialCodeToggle}
-                  onClear={handleSpecialCodeClear}
-                />
-              </div>
-            ) : (
-              <>
+          <div className="relative z-10 flex min-h-0 flex-1 flex-col gap-0 overflow-hidden xl:grid xl:min-h-0 xl:grid-cols-[minmax(220px,22%)_minmax(0,1fr)] xl:items-stretch 2xl:grid-cols-[minmax(236px,21%)_minmax(0,1fr)]">
             <div
               className={cn(
-                'shrink-0 border-b border-slate-300/90 bg-gradient-to-b from-white to-transparent px-3 py-1.5 shadow-[inset_0_-1px_0_rgba(148,163,184,0.06)] dark:border-white/10 dark:from-white/[0.03] dark:shadow-none sm:px-3.5 sm:py-2 xl:px-3 xl:pb-1.5 xl:pt-1',
+                'flex flex-col overflow-hidden border-b border-slate-300/90 shadow-[inset_-1px_0_0_rgba(148,163,184,0.12)] backdrop-blur-sm dark:border-white/10 dark:shadow-none xl:shadow-[inset_-1px_0_0_rgba(148,163,184,0.14)] dark:xl:shadow-none',
+                'bg-[linear-gradient(180deg,rgba(248,250,252,0.92),rgba(241,245,249,0.55))]',
+                'dark:bg-[linear-gradient(180deg,rgba(24,24,27,0.55),rgba(9,9,11,0.42))]',
+                'min-h-0 max-xl:min-h-[100px] xl:h-full xl:min-h-0 xl:max-h-none xl:self-stretch xl:[border-inline-end-width:1px] xl:border-slate-300/90 xl:border-b-0',
+                'max-xl:shrink-0',
+                mobileCategoriesOpen ? 'max-lg:max-h-[min(52dvh,460px)]' : 'max-lg:max-h-[2.75rem]',
+                'lg:max-h-[min(52dvh,460px)] xl:max-h-none',
               )}
             >
               <button
                 type="button"
-                onClick={() => setMobileCategoryToolsOpen((v) => !v)}
-                aria-expanded={mobileCategoryToolsOpen}
-                className="mb-2 flex w-full items-center justify-between rounded-lg border border-slate-300/90 bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-200 dark:hover:bg-white/[0.08] lg:hidden"
+                onClick={() => setMobileCategoriesOpen((v) => !v)}
+                aria-expanded={mobileCategoriesOpen}
+                className="flex w-full items-center justify-between gap-2 border-b border-slate-300/90 bg-slate-50 px-3 py-2 crm-text-start transition-colors hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07] lg:hidden"
               >
-                <span>{t('catalogStockPicker.hierarchySectionTitle')}</span>
+                <span className="flex min-w-0 items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  {leftPanelMode === 'code' ? (
+                    <ListFilter className="h-4 w-4 shrink-0 text-rose-500 dark:text-rose-400" />
+                  ) : (
+                    <FolderTree className="h-4 w-4 shrink-0 text-rose-500 dark:text-rose-400" />
+                  )}
+                  <span className="truncate">
+                    {leftPanelMode === 'code'
+                      ? t('catalogStockPicker.mobileSpecialCodesAccordion')
+                      : t('catalogStockPicker.mobileCategoriesAccordion')}
+                  </span>
+                </span>
                 <ChevronDown
                   className={cn(
-                    'h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200 dark:text-slate-400',
-                    mobileCategoryToolsOpen && 'rotate-180',
+                    'h-5 w-5 shrink-0 text-slate-500 transition-transform duration-200 dark:text-slate-400',
+                    mobileCategoriesOpen && 'rotate-180',
                   )}
                   aria-hidden
                 />
               </button>
-              <div className={cn(!mobileCategoryToolsOpen && 'max-lg:hidden', 'lg:block')}>
+
               <div
                 className={cn(
-                  'flex items-center justify-between gap-2',
-                  navigationPath.length === 0 && !selectedLeafCategory && 'max-lg:hidden',
+                  'flex min-h-0 flex-1 flex-col overflow-hidden xl:-mt-px xl:h-full xl:border-t-0',
+                  !mobileCategoriesOpen && 'max-lg:hidden lg:flex',
                 )}
               >
-                <div className="hidden min-w-0 items-center gap-2 lg:flex">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-pink-500/15 bg-pink-500/[0.06] text-pink-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-300">
-                    <FolderTree className="h-3.5 w-3.5" aria-hidden />
-                  </span>
-                  <div className="min-w-0">
-                    <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-sky-600/95 dark:text-sky-400/90">
-                      {t('catalogStockPicker.hierarchySectionTitle')}
-                    </div>
-                  </div>
-                </div>
-                {navigationPath.length > 0 || canResetCategoryBranch ? (
-                  <div className="crm-ms-auto flex shrink-0 flex-wrap items-center justify-end gap-1">
-                    {navigationPath.length > 0 ? (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleBackLevel}
-                        className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-rose-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-rose-200"
-                      >
-                        <ArrowLeft className="crm-me-1 h-3.5 w-3.5" />
-                        {t('catalogStockPicker.back')}
-                      </Button>
-                    ) : null}
-                    {canResetCategoryBranch ? (
-                      <Tooltip delayDuration={250}>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleResetCategoryBranch}
-                            className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-rose-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-rose-200"
-                            aria-label={t('catalogStockPicker.resetBranchTooltip')}
-                          >
-                            <RotateCcw className="crm-me-1 h-3.5 w-3.5" />
-                            {t('catalogStockPicker.resetBranch')}
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="bottom" className="max-w-xs text-xs">
-                          {t('catalogStockPicker.resetBranchTooltip')}
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : null}
-                  </div>
-                ) : null}
-              </div>
-
-              <div className="mt-3 space-y-2 border-t border-slate-200/95 pt-3 dark:border-white/[0.06]">
-                {fullCategoryTreeQuery.isError ? (
-                  <div className="flex flex-wrap items-center gap-2 rounded-lg border border-red-300/50 bg-red-50/90 px-2.5 py-2 text-[11px] text-red-800 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-100">
-                    <span className="min-w-0 flex-1 leading-snug">{t('catalogStockPicker.categoryClientSearchError')}</span>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="h-7 shrink-0 border-red-300/60 text-xs text-red-800 hover:bg-red-100 dark:border-red-500/40 dark:text-red-100 dark:hover:bg-red-950/60"
-                      onClick={() => void fullCategoryTreeQuery.refetch()}
-                    >
-                      {t('catalogStockPicker.categoryClientSearchRetry')}
-                    </Button>
-                  </div>
-                ) : null}
-
-                {fullCategoryTreeQuery.isLoading ? (
-                  <div className="flex items-center gap-2 rounded-lg border border-dashed border-slate-300/90 bg-slate-50/80 px-2.5 py-2 text-[11px] text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-400">
-                    <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-pink-500" aria-hidden />
-                    <span>{t('catalogStockPicker.categoryClientSearchLoadingTree')}</span>
-                  </div>
-                ) : null}
-
-                <div className="relative">
-                  <Search className="pointer-events-none absolute crm-start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-pink-500/75 dark:text-pink-400/75" aria-hidden />
-                  <Input
-                    value={categoryClientSearch}
-                    onChange={(e) => setCategoryClientSearch(e.target.value)}
-                    placeholder={t('catalogStockPicker.categoryClientSearchPlaceholder')}
-                    disabled={!fullCategoryTreeQuery.data?.length || fullCategoryTreeQuery.isLoading}
-                    className="h-10 rounded-2xl border border-slate-200/95 bg-white crm-ps-9 text-xs text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.04)] placeholder:text-slate-500 focus-visible:border-pink-400/50 focus-visible:ring-pink-500/15 dark:border-white/12 dark:bg-zinc-900/50 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus-visible:border-pink-500/40 sm:[padding-inline-start:2.5rem] sm:text-[13px]"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between gap-2">
-                  <Label
-                    htmlFor="catalog-category-search-branches"
-                    className="cursor-pointer text-[11px] font-medium text-slate-700 dark:text-slate-300"
-                  >
-                    {t('catalogStockPicker.categoryClientSearchShowBranches')}
-                  </Label>
-                  <Switch
-                    id="catalog-category-search-branches"
-                    checked={categorySearchShowBranches}
-                    onCheckedChange={setCategorySearchShowBranches}
-                    disabled={!fullCategoryTreeQuery.data?.length || fullCategoryTreeQuery.isLoading}
-                  />
-                </div>
-
-                {tokenizeCategorySearchQuery(debouncedCategoryClientSearch).length > 0 ? (
-                  <div className="max-h-[min(40vh,220px)] overflow-y-auto rounded-xl border border-slate-300/90 bg-white shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
-                    {fullCategoryTreeQuery.isLoading ? (
-                      <div className="flex items-center justify-center gap-2 px-3 py-6 text-xs text-slate-500 dark:text-slate-400">
-                        <Loader2 className="h-4 w-4 animate-spin text-pink-500" aria-hidden />
-                      </div>
-                    ) : categoryClientSearchResults.length === 0 ? (
-                      <div className="px-3 py-4 text-center text-[11px] text-slate-500 dark:text-slate-400">
-                        {t('catalogStockPicker.categoryClientSearchEmpty')}
-                      </div>
-                    ) : (
-                      <ul className="divide-y divide-slate-200/90 dark:divide-white/[0.06]">
-                        {categoryClientSearchResults.map((row) => (
-                          <li key={row.catalogCategoryId}>
-                            <button
-                              type="button"
-                              onClick={() => handleCategoryClientSearchPick(row)}
-                              className="flex w-full flex-col gap-0.5 px-3 py-2 crm-text-start transition-colors hover:bg-pink-50/90 dark:hover:bg-pink-500/10"
-                            >
-                              <span className="text-[12px] font-semibold leading-tight text-slate-900 dark:text-slate-100">
-                                {row.name}
-                                {row.hasChildren ? (
-                                  <Badge
-                                    variant="outline"
-                                    className="crm-ms-2 align-middle text-[9px] font-normal text-cyan-700 dark:text-cyan-300"
-                                  >
-                                    {t('catalogStockPicker.subCategoryBadge')}
-                                  </Badge>
-                                ) : (
-                                  <Badge
-                                    variant="outline"
-                                    className="crm-ms-2 align-middle text-[9px] font-normal text-pink-700 dark:text-pink-300"
-                                  >
-                                    {t('catalogStockPicker.leafBadge')}
-                                  </Badge>
-                                )}
-                              </span>
-                              <span className="line-clamp-2 font-mono text-[10px] leading-snug text-slate-500 dark:text-slate-400">
-                                {row.fullPath ?? row.code}
-                              </span>
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {categoryClientSearchResults.length >= MAX_CATEGORY_CLIENT_SEARCH_RESULTS ? (
-                      <div className="border-t border-slate-200/90 px-3 py-2 text-[10px] text-slate-500 dark:border-white/[0.06] dark:text-slate-400">
-                        {t('catalogStockPicker.categoryClientSearchCapped', { count: MAX_CATEGORY_CLIENT_SEARCH_RESULTS })}
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
-              </div>
-              </div>
-            </div>
-
-            <div className="relative flex min-h-0 flex-1 touch-pan-y flex-col overflow-hidden overscroll-contain bg-slate-100/55 px-2 py-2 [-webkit-overflow-scrolling:touch] dark:bg-zinc-950/40 sm:px-3 sm:py-2.5 xl:px-3 xl:py-2">
-              {catalogsQuery.isLoading ? (
-                <div className="flex min-h-[9rem] flex-1 flex-col justify-center py-8 text-center text-xs text-slate-500 xl:min-h-0 dark:text-slate-400">
-                  {t('catalogStockPicker.loadingCatalogs')}
-                </div>
-              ) : catalogListForQueries.length > 0 ? (
-                <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto [-webkit-overflow-scrolling:touch] touch-pan-y pb-2 crm-ps-0-5 crm-pe-1 pt-0.5 sm:[padding-inline-end:0.375rem]">
-                  <p className="shrink-0 px-0.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-                    {t('catalogStockPicker.hierarchySectionTitle')}
-                  </p>
-                  {catalogListForQueries.map((catalog, catalogIdx) => {
-                    const catalogExpanded = expandedCatalogIds.has(catalog.id);
-                    const catQ = categoryQueries[catalogIdx];
-                    const localPath = catalogPaths[catalog.id] ?? [];
-                    const categoriesForCatalog = catQ?.data ?? [];
-                    const catalogLoading =
-                      catalogExpanded && (catQ?.isPending || catQ?.isFetching) && categoriesForCatalog.length === 0;
-
-                    return (
-                      <div key={catalog.id} className="mb-1.5 last:mb-0">
-                        <button
-                          type="button"
-                          onClick={() => toggleCatalogExpanded(catalog.id)}
-                          aria-expanded={catalogExpanded}
-                          className={cn(
-                            'flex w-full items-center gap-2 rounded-lg py-2.5 crm-ps-1 crm-pe-2 crm-text-start transition-colors',
-                            catalogExpanded
-                              ? 'bg-pink-500/[0.11] dark:bg-pink-500/[0.14]'
-                              : 'hover:bg-slate-200/40 dark:hover:bg-white/[0.05]',
-                          )}
-                        >
-                          <span
-                            className={cn(
-                              'shrink-0 self-stretch rounded-full transition-[width,background-color] duration-200',
-                              catalogExpanded
-                                ? 'w-1 bg-pink-500 dark:bg-pink-400'
-                                : 'w-0 bg-transparent',
-                            )}
-                            aria-hidden
-                          />
-                          <Package
-                            className={cn(
-                              'h-4 w-4 shrink-0',
-                              catalogExpanded
-                                ? 'text-pink-600 dark:text-pink-400'
-                                : 'text-slate-500 dark:text-slate-400',
-                            )}
-                            aria-hidden
-                          />
-                          <span
-                            className={cn(
-                              'min-w-0 flex-1 truncate text-[11px] font-bold uppercase tracking-[0.08em]',
-                              catalogExpanded
-                                ? 'text-pink-700 dark:text-pink-300'
-                                : 'text-slate-800 dark:text-slate-100',
-                            )}
-                          >
-                            {catalog.name}
-                          </span>
-                          <ChevronRight
-                            className={cn(
-                              'h-4 w-4 shrink-0 transition-transform duration-200',
-                              catalogExpanded
-                                ? 'rotate-90 text-pink-600 dark:text-pink-400'
-                                : 'text-slate-600 dark:text-slate-400',
-                            )}
-                            aria-hidden
-                          />
-                        </button>
-                        {catalogExpanded ? (
-                          <div className="crm-ms-2 mt-0.5 crm-border-start border-slate-300/80 dark:border-white/12">
-                            <div className="flex flex-col gap-0.5 py-0.5">
-                              {localPath.map((segment, pathIdx) => {
-                                const isTrailEnd = pathIdx === localPath.length - 1;
-                                const trailFolderFocus =
-                                  selectedCatalog?.id === catalog.id &&
-                                  isTrailEnd &&
-                                  selectedLeafCategory?.catalogCategoryId ===
-                                    localPath[localPath.length - 1]?.catalogCategoryId;
-                                const trailPadRem = 0.75 + pathIdx * 0.65;
-                                return (
-                                  <button
-                                    key={`${catalog.id}-trail-${segment.catalogCategoryId}-${pathIdx}`}
-                                    type="button"
-                                    ref={
-                                      trailFolderFocus
-                                        ? (categorySelectionRowRef as Ref<HTMLButtonElement>)
-                                        : undefined
-                                    }
-                                    style={{ paddingInlineStart: `${trailPadRem}rem` }}
-                                    onClick={() => handleCatalogTrailSegmentClick(catalog.id, pathIdx)}
-                                    className={cn(
-                                      'flex w-full items-center justify-between gap-2 rounded-md py-2 crm-pe-2 crm-text-start text-[13px] transition-colors',
-                                      isTrailEnd
-                                        ? 'bg-pink-500/15 font-semibold text-pink-900 dark:bg-pink-500/20 dark:text-pink-100'
-                                        : 'bg-pink-500/[0.07] font-medium text-slate-800 dark:bg-pink-500/10 dark:text-slate-100',
-                                    )}
-                                  >
-                                    <span className="min-w-0 flex-1 leading-snug">{segment.name}</span>
-                                    {segment.hasChildren ? (
-                                      isTrailEnd ? (
-                                        <ChevronDown
-                                          className="h-3.5 w-3.5 shrink-0 text-pink-600 dark:text-pink-400"
-                                          aria-hidden
-                                        />
-                                      ) : (
-                                        <ChevronRight
-                                          className="h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500"
-                                          aria-hidden
-                                        />
-                                      )
-                                    ) : null}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                            {catalogLoading ? (
-                              <div
-                                className="flex items-center gap-2 py-4 text-[11px] text-slate-500 dark:text-slate-400"
-                                style={{ paddingInlineStart: `${0.75 + localPath.length * 0.65}rem` }}
-                              >
-                                <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" aria-hidden />
-                                {t('catalogStockPicker.loadingCategories')}
-                              </div>
-                            ) : categoriesForCatalog.length > 0 ? (
-                              <div
-                                className="mt-0.5 flex flex-col gap-0.5 border-t border-slate-200/80 pt-1 dark:border-white/[0.08]"
-                                style={{ paddingInlineStart: `${0.75 + localPath.length * 0.65}rem` }}
-                              >
-                                {categoriesForCatalog.map((category) => {
-                                  const isActive =
-                                    selectedLeafCategory?.catalogCategoryId === category.catalogCategoryId;
-                                  const listRowRef =
-                                    isActive &&
-                                    selectedCatalog?.id === catalog.id &&
-                                    !(
-                                      localPath.length > 0 &&
-                                      selectedLeafCategory?.catalogCategoryId ===
-                                        localPath[localPath.length - 1]?.catalogCategoryId
-                                    );
-                                  return (
-                                    <button
-                                      key={category.catalogCategoryId}
-                                      type="button"
-                                      ref={
-                                        listRowRef
-                                          ? (categorySelectionRowRef as Ref<HTMLButtonElement>)
-                                          : undefined
-                                      }
-                                      onClick={() => handleCategoryClick(catalog.id, category)}
-                                      className={cn(
-                                        'w-full rounded-md px-2 py-2 crm-text-start text-[13px] transition-colors',
-                                        isActive
-                                          ? 'bg-slate-200/90 text-slate-900 dark:bg-white/10 dark:text-slate-50'
-                                          : 'text-slate-600 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:bg-white/[0.06]',
-                                      )}
-                                    >
-                                      <div className="flex items-start justify-between gap-2">
-                                        <span className="min-w-0 flex-1 font-medium leading-snug text-slate-800 dark:text-slate-100">
-                                          {category.name}
-                                        </span>
-                                        {category.hasChildren ? (
-                                          <ChevronRight
-                                            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500"
-                                            aria-hidden
-                                          />
-                                        ) : null}
-                                      </div>
-                                    </button>
-                                  );
-                                })}
-                              </div>
-                            ) : localPath.length > 0 ? (
-                              <div
-                                className="py-3 text-center text-[11px] text-slate-500 dark:text-slate-400"
-                                style={{ paddingLeft: `${0.75 + localPath.length * 0.65}rem` }}
-                              >
-                                {t('catalogStockPicker.emptyCategories')}
-                              </div>
-                            ) : (
-                              <div className="py-3 crm-ps-3 text-center text-[11px] text-slate-500 dark:text-slate-400">
-                                {t('catalogStockPicker.emptyCategories')}
-                              </div>
-                            )}
-                          </div>
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="flex min-h-[9rem] flex-1 flex-col justify-center py-8 text-center text-sm text-slate-500 xl:min-h-0 dark:text-slate-400">
-                  {t('catalogStockPicker.noCatalogSelected')}
-                </div>
-              )}
-            </div>
-              </>
-            )}
-            </div>
-          </div>
-
-          <div
-            className={cn(
-              'flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden xl:h-full xl:min-h-0',
-              mobileStocksOpen ? 'max-lg:min-h-0' : 'max-lg:h-[2.75rem] max-lg:max-h-[2.75rem] max-lg:flex-none max-lg:shrink-0 max-lg:overflow-hidden',
-            )}
-          >
-            <button
-              type="button"
-              onClick={() => setMobileStocksOpen((v) => !v)}
-              aria-expanded={mobileStocksOpen}
-              className="flex w-full items-center justify-between gap-2 border-b border-slate-300/90 bg-slate-50 px-3 py-2 crm-text-start transition-colors hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07] lg:hidden"
-            >
-              <span className="flex min-w-0 items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                <ShoppingBag className="h-4 w-4 shrink-0 text-pink-500 dark:text-pink-400" />
-                <span className="truncate">{t('catalogStockPicker.mobileStocksAccordion')}</span>
-              </span>
-              <ChevronDown
-                className={cn(
-                  'h-5 w-5 shrink-0 text-slate-500 transition-transform duration-200 dark:text-slate-400',
-                  mobileStocksOpen && 'rotate-180',
-                )}
-                aria-hidden
-              />
-            </button>
-
-            <div
-              className={cn(
-                'flex min-h-0 flex-1 flex-col',
-                'max-lg:min-h-0 max-lg:flex-1 max-lg:overflow-y-auto max-lg:overscroll-y-contain max-lg:touch-pan-y max-lg:[-webkit-overflow-scrolling:touch]',
-                'lg:overflow-hidden',
-                !mobileStocksOpen && 'max-lg:hidden lg:flex',
-              )}
-            >
-            <div className="shrink-0 overflow-visible border-b border-slate-300/90 bg-white px-4 py-2 shadow-[inset_0_-1px_0_rgba(148,163,184,0.1)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-5 sm:py-2.5">
-              <div className="flex w-full shrink-0 flex-col gap-3 overflow-visible sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-                <div className="flex min-w-0 shrink-0 items-center justify-start gap-3 overflow-x-auto px-2 py-1.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-4 md:gap-5">
-                  <button
-                    type="button"
-                    onClick={toggleStockBrowseCampaign}
-                    aria-pressed={stockBrowseMode === 'campaign'}
-                    className={cn(
-                      'group relative isolate flex shrink-0 items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
-                      stockBrowseMode === 'campaign'
-                        ? 'scale-105 border-transparent bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white shadow-[0_8px_20px_rgba(244,63,94,0.4)] ring-4 ring-pink-100 dark:ring-pink-950/55'
-                        : 'border-rose-200 bg-gradient-to-r from-rose-50 to-rose-100/50 text-rose-600 hover:from-rose-100 hover:to-rose-100 dark:border-rose-800/50 dark:from-rose-950/45 dark:to-rose-950/20 dark:text-rose-200 dark:hover:from-rose-900/55 dark:hover:to-rose-900/25',
-                    )}
-                  >
-                    <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-xl" aria-hidden>
-                      <span
-                        className={cn(
-                          'catalog-tab-shine-layer pointer-events-none',
-                          stockBrowseMode !== 'campaign' && 'catalog-tab-shine-layer--muted',
-                        )}
-                      />
-                    </span>
-                    <span
-                      className={cn(
-                        'relative z-[2] inline-flex shrink-0',
-                        stockBrowseMode === 'campaign' && 'catalog-tab-flame-flicker text-yellow-300',
-                      )}
-                    >
-                      <Flame className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden />
-                    </span>
-                    <span className="relative z-[2] whitespace-nowrap">{t('catalogStockPicker.campaignStocksChip')}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={toggleStockBrowseFavorites}
-                    aria-pressed={stockBrowseMode === 'favorites'}
-                    className={cn(
-                      'group relative isolate flex shrink-0 items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
-                      stockBrowseMode === 'favorites'
-                        ? 'scale-105 border-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-amber-950 shadow-[0_8px_20px_rgba(251,191,36,0.4)] ring-4 ring-amber-100 dark:ring-amber-950/50'
-                        : 'border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-600 hover:from-amber-100 hover:to-yellow-100 dark:border-amber-800/45 dark:from-amber-950/40 dark:to-yellow-950/30 dark:text-amber-200 dark:hover:from-amber-900/50 dark:hover:to-yellow-900/40',
-                    )}
-                  >
-                    <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-xl" aria-hidden>
-                      <span
-                        className={cn(
-                          'catalog-tab-shine-layer catalog-tab-shine-layer--delay pointer-events-none',
-                          stockBrowseMode !== 'favorites' && 'catalog-tab-shine-layer--muted',
-                        )}
-                      />
-                    </span>
-                    <span
-                      className={cn(
-                        'relative z-[2] inline-flex shrink-0',
-                        stockBrowseMode === 'favorites' ? 'catalog-tab-star-twinkle' : 'catalog-tab-star-twinkle-soft',
-                      )}
-                    >
-                      <Star
-                        className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
-                        strokeWidth={1.75}
-                        fill={stockBrowseMode === 'favorites' ? 'currentColor' : 'none'}
-                        aria-hidden
-                      />
-                    </span>
-                    <span className="relative z-[2] whitespace-nowrap">{t('catalogStockPicker.favoriteStocksChip')}</span>
-                  </button>
-                </div>
-                <div className="flex min-w-0 flex-1 flex-wrap items-center justify-start gap-2 sm:justify-end sm:gap-3">
+                <div className="shrink-0 border-b border-slate-300/90 bg-white/90 px-2.5 py-2 dark:border-white/10 dark:bg-zinc-950/80 sm:px-3">
                   <div
-                    className="flex shrink-0 gap-0.5 rounded-lg border border-slate-300/90 bg-slate-50 p-0.5 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none"
+                    className="flex rounded-xl border border-slate-300/90 bg-slate-100/90 p-0.5 dark:border-white/10 dark:bg-white/[0.04]"
                     role="group"
-                    aria-label={t('catalogStockPicker.viewModeGroupLabel')}
+                    aria-label={t('catalogStockPicker.leftPanelModeGroupLabel')}
                   >
-                    <Button
+                    <button
                       type="button"
-                      variant={stockLayoutMode === 'list' ? 'secondary' : 'ghost'}
-                      size="sm"
+                      onClick={() => handleLeftPanelModeChange('code')}
+                      aria-pressed={leftPanelMode === 'code'}
                       className={cn(
-                        'h-8 rounded-md px-2 text-slate-600 dark:text-slate-300 sm:h-8 sm:rounded-lg sm:px-2.5',
-                        stockLayoutMode === 'list' &&
-                          'border border-pink-500/30 bg-pink-500/15 text-pink-700 shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-pink-100',
+                        'flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-2 py-2 text-[10px] font-bold uppercase tracking-wide transition-all sm:text-[11px]',
+                        leftPanelMode === 'code'
+                          ? 'bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-sm'
+                          : 'text-slate-600 hover:text-rose-700 dark:text-slate-400 dark:hover:text-rose-300',
                       )}
-                      onClick={() => setStockLayoutMode('list')}
-                      aria-pressed={stockLayoutMode === 'list'}
-                      title={t('catalogStockPicker.viewModeList')}
                     >
-                      <List className="h-4 w-4" />
-                      <span className="crm-ms-1-5 hidden text-xs font-medium sm:inline">{t('catalogStockPicker.viewModeList')}</span>
-                    </Button>
-                    <Button
+                      <ListFilter className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                      <span className="truncate">{t('catalogStockPicker.leftPanelModeCode')}</span>
+                    </button>
+                    <button
                       type="button"
-                      variant={stockLayoutMode === 'cards' ? 'secondary' : 'ghost'}
-                      size="sm"
+                      onClick={() => handleLeftPanelModeChange('catalog')}
+                      aria-pressed={leftPanelMode === 'catalog'}
                       className={cn(
-                        'h-8 rounded-md px-2 text-slate-600 dark:text-slate-300 sm:h-8 sm:rounded-lg sm:px-2.5',
-                        stockLayoutMode === 'cards' &&
-                          'border border-pink-500/30 bg-pink-500/15 text-pink-700 shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-pink-100',
+                        'flex flex-1 items-center justify-center gap-1.5 rounded-[10px] px-2 py-2 text-[10px] font-bold uppercase tracking-wide transition-all sm:text-[11px]',
+                        leftPanelMode === 'catalog'
+                          ? 'bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-sm'
+                          : 'text-slate-600 hover:text-rose-700 dark:text-slate-400 dark:hover:text-rose-300',
                       )}
-                      onClick={() => setStockLayoutMode('cards')}
-                      aria-pressed={stockLayoutMode === 'cards'}
-                      title={t('catalogStockPicker.viewModeCards')}
                     >
-                      <LayoutGrid className="h-4 w-4" />
-                      <span className="crm-ms-1-5 hidden text-xs font-medium sm:inline">{t('catalogStockPicker.viewModeCards')}</span>
-                    </Button>
+                      <FolderTree className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                      <span className="truncate">{t('catalogStockPicker.leftPanelModeCatalog')}</span>
+                    </button>
                   </div>
-                  <div className="relative min-w-0 w-full flex-1 sm:min-w-[200px] sm:max-w-md">
-                    <Search className="pointer-events-none absolute crm-start-2-5 top-2.5 h-3.5 w-3.5 text-pink-500/70 dark:text-pink-400/70 sm:[inset-inline-start:0.75rem] sm:top-2.5 sm:h-4 sm:w-4" />
-                    <Input
-                      value={stockSearch}
-                      onChange={(event) => setStockSearch(event.target.value)}
-                      placeholder={t('catalogStockPicker.searchPlaceholder')}
-                      className="h-8 rounded-xl border border-slate-300/90 bg-white crm-ps-8 text-sm text-slate-900 shadow-sm placeholder:text-slate-500 backdrop-blur-sm focus-visible:border-pink-400/60 focus-visible:ring-pink-500/20 dark:border-white/15 dark:bg-white/[0.06] dark:text-slate-100 dark:placeholder:text-slate-500 dark:shadow-none dark:focus-visible:border-pink-500/40 sm:h-9 sm:rounded-2xl sm:[padding-inline-start:2.5rem]"
-                      disabled={
-                        (stockBrowseMode === 'category' && !selectedLeafCategory) ||
-                        (leftPanelMode === 'code' && stockBrowseMode === 'specialCodes' && !specialCodeHasSelection)
-                      }
+                </div>
+
+                {leftPanelMode === 'code' ? (
+                  <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden overscroll-contain bg-slate-100/55 px-2 py-2 [-webkit-overflow-scrolling:touch] dark:bg-zinc-950/40 sm:px-3 sm:py-2.5">
+                    <CatalogSpecialCodeFilterPanel
+                      selections={specialCodeSelections}
+                      optionsByLevel={specialCodeOptionsByLevel}
+                      isLoadingOptions={specialCodeFacetPoolQuery.isLoading}
+                      onToggle={handleSpecialCodeToggle}
+                      onClear={handleSpecialCodeClear}
                     />
                   </div>
-                </div>
-              </div>
-            </div>
+                ) : (
+                  <>
+                    <div
+                      className={cn(
+                        'shrink-0 border-b border-slate-300/90 bg-gradient-to-b from-white to-transparent px-3 py-1.5 shadow-[inset_0_-1px_0_rgba(148,163,184,0.06)] dark:border-white/10 dark:from-white/[0.03] dark:shadow-none sm:px-3.5 sm:py-2 xl:px-3 xl:pb-1.5 xl:pt-1',
+                      )}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setMobileCategoryToolsOpen((v) => !v)}
+                        aria-expanded={mobileCategoryToolsOpen}
+                        className="mb-2 flex w-full items-center justify-between rounded-lg border border-slate-300/90 bg-slate-50 px-2.5 py-1.5 text-[11px] font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-200 dark:hover:bg-white/[0.08] lg:hidden"
+                      >
+                        <span>{t('catalogStockPicker.hierarchySectionTitle')}</span>
+                        <ChevronDown
+                          className={cn(
+                            'h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200 dark:text-slate-400',
+                            mobileCategoryToolsOpen && 'rotate-180',
+                          )}
+                          aria-hidden
+                        />
+                      </button>
+                      <div className={cn(!mobileCategoryToolsOpen && 'max-lg:hidden', 'lg:block')}>
+                        <div
+                          className={cn(
+                            'flex items-center justify-between gap-2',
+                            navigationPath.length === 0 && !selectedLeafCategory && 'max-lg:hidden',
+                          )}
+                        >
+                          <div className="hidden min-w-0 items-center gap-2 lg:flex">
+                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-rose-500/15 bg-rose-500/[0.06] text-rose-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)] dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
+                              <FolderTree className="h-3.5 w-3.5" aria-hidden />
+                            </span>
+                            <div className="min-w-0">
+                              <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-sky-600/95 dark:text-sky-400/90">
+                                {t('catalogStockPicker.hierarchySectionTitle')}
+                              </div>
+                            </div>
+                          </div>
+                          {navigationPath.length > 0 || canResetCategoryBranch ? (
+                            <div className="crm-ms-auto flex shrink-0 flex-wrap items-center justify-end gap-1">
+                              {navigationPath.length > 0 ? (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={handleBackLevel}
+                                  className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-rose-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-rose-200"
+                                >
+                                  <ArrowLeft className="crm-me-1 h-3.5 w-3.5" />
+                                  {t('catalogStockPicker.back')}
+                                </Button>
+                              ) : null}
+                              {canResetCategoryBranch ? (
+                                <Tooltip delayDuration={250}>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={handleResetCategoryBranch}
+                                      className="h-8 shrink-0 rounded-lg text-xs text-slate-600 hover:bg-slate-100 hover:text-rose-600 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-rose-200"
+                                      aria-label={t('catalogStockPicker.resetBranchTooltip')}
+                                    >
+                                      <RotateCcw className="crm-me-1 h-3.5 w-3.5" />
+                                      {t('catalogStockPicker.resetBranch')}
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="bottom" className="max-w-xs text-xs">
+                                    {t('catalogStockPicker.resetBranchTooltip')}
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : null}
+                            </div>
+                          ) : null}
+                        </div>
 
-            {multiSelect && (sessionPicks.length > 0 || catalogDraftSnapshotList.length > 0) ? (
-              <div className="shrink-0 border-b border-slate-300/90 bg-white px-4 py-1.5 backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 sm:px-5">
-                <div className="rounded-xl border border-pink-400/35 bg-pink-50/90 p-2 shadow-sm ring-1 ring-pink-200/40 backdrop-blur-md dark:border-pink-500/25 dark:bg-pink-500/[0.08] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:ring-0 sm:rounded-2xl sm:p-2.5">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="min-w-0">
-                      <div className="text-xs font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-sm">
-                        {t('catalogStockPicker.selectionPanelTitle')}
-                      </div>
-                      <div className="mt-0.5 line-clamp-1 text-[11px] text-slate-500 dark:text-slate-400 sm:text-xs">
-                        {t('catalogStockPicker.selectionPanelHint')}
+                        <div className="mt-3 space-y-2 border-t border-slate-200/95 pt-3 dark:border-white/[0.06]">
+                          {fullCategoryTreeQuery.isError ? (
+                            <div className="flex flex-wrap items-center gap-2 rounded-lg border border-red-300/50 bg-red-50/90 px-2.5 py-2 text-[11px] text-red-800 dark:border-red-500/30 dark:bg-red-950/40 dark:text-red-100">
+                              <span className="min-w-0 flex-1 leading-snug">{t('catalogStockPicker.categoryClientSearchError')}</span>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                className="h-7 shrink-0 border-red-300/60 text-xs text-red-800 hover:bg-red-100 dark:border-red-500/40 dark:text-red-100 dark:hover:bg-red-950/60"
+                                onClick={() => void fullCategoryTreeQuery.refetch()}
+                              >
+                                {t('catalogStockPicker.categoryClientSearchRetry')}
+                              </Button>
+                            </div>
+                          ) : null}
+
+                          {fullCategoryTreeQuery.isLoading ? (
+                            <div className="flex items-center gap-2 rounded-lg border border-dashed border-slate-300/90 bg-slate-50/80 px-2.5 py-2 text-[11px] text-slate-600 dark:border-white/10 dark:bg-white/[0.03] dark:text-slate-400">
+                              <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-rose-500" aria-hidden />
+                              <span>{t('catalogStockPicker.categoryClientSearchLoadingTree')}</span>
+                            </div>
+                          ) : null}
+
+                          <div className="relative">
+                            <Search className="pointer-events-none absolute crm-start-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-rose-500/75 dark:text-rose-400/75" aria-hidden />
+                            <Input
+                              value={categoryClientSearch}
+                              onChange={(e) => setCategoryClientSearch(e.target.value)}
+                              placeholder={t('catalogStockPicker.categoryClientSearchPlaceholder')}
+                              disabled={!fullCategoryTreeQuery.data?.length || fullCategoryTreeQuery.isLoading}
+                              className="h-10 rounded-2xl border border-slate-200/95 bg-white crm-ps-9 text-xs text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.04)] placeholder:text-slate-500 focus-visible:border-rose-400/50 focus-visible:ring-rose-500/15 dark:border-white/12 dark:bg-zinc-900/50 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus-visible:border-rose-500/40 sm:[padding-inline-start:2.5rem] sm:text-[13px]"
+                            />
+                          </div>
+
+                          <div className="flex items-center justify-between gap-2">
+                            <Label
+                              htmlFor="catalog-category-search-branches"
+                              className="cursor-pointer text-[11px] font-medium text-slate-700 dark:text-slate-300"
+                            >
+                              {t('catalogStockPicker.categoryClientSearchShowBranches')}
+                            </Label>
+                            <Switch
+                              id="catalog-category-search-branches"
+                              checked={categorySearchShowBranches}
+                              onCheckedChange={setCategorySearchShowBranches}
+                              disabled={!fullCategoryTreeQuery.data?.length || fullCategoryTreeQuery.isLoading}
+                            />
+                          </div>
+
+                          {tokenizeCategorySearchQuery(debouncedCategoryClientSearch).length > 0 ? (
+                            <div className="max-h-[min(40vh,220px)] overflow-y-auto rounded-xl border border-slate-300/90 bg-white shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
+                              {fullCategoryTreeQuery.isLoading ? (
+                                <div className="flex items-center justify-center gap-2 px-3 py-6 text-xs text-slate-500 dark:text-slate-400">
+                                  <Loader2 className="h-4 w-4 animate-spin text-rose-500" aria-hidden />
+                                </div>
+                              ) : categoryClientSearchResults.length === 0 ? (
+                                <div className="px-3 py-4 text-center text-[11px] text-slate-500 dark:text-slate-400">
+                                  {t('catalogStockPicker.categoryClientSearchEmpty')}
+                                </div>
+                              ) : (
+                                <ul className="divide-y divide-slate-200/90 dark:divide-white/[0.06]">
+                                  {categoryClientSearchResults.map((row) => (
+                                    <li key={row.catalogCategoryId}>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleCategoryClientSearchPick(row)}
+                                        className="flex w-full flex-col gap-0.5 px-3 py-2 crm-text-start transition-colors hover:bg-rose-50/90 dark:hover:bg-rose-500/10"
+                                      >
+                                        <span className="text-[12px] font-semibold leading-tight text-slate-900 dark:text-slate-100">
+                                          {row.name}
+                                          {row.hasChildren ? (
+                                            <Badge
+                                              variant="outline"
+                                              className="crm-ms-2 align-middle text-[9px] font-normal text-cyan-700 dark:text-cyan-300"
+                                            >
+                                              {t('catalogStockPicker.subCategoryBadge')}
+                                            </Badge>
+                                          ) : (
+                                            <Badge
+                                              variant="outline"
+                                              className="crm-ms-2 align-middle text-[9px] font-normal text-rose-700 dark:text-rose-300"
+                                            >
+                                              {t('catalogStockPicker.leafBadge')}
+                                            </Badge>
+                                          )}
+                                        </span>
+                                        <span className="line-clamp-2 font-mono text-[10px] leading-snug text-slate-500 dark:text-slate-400">
+                                          {row.fullPath ?? row.code}
+                                        </span>
+                                      </button>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                              {categoryClientSearchResults.length >= MAX_CATEGORY_CLIENT_SEARCH_RESULTS ? (
+                                <div className="border-t border-slate-200/90 px-3 py-2 text-[10px] text-slate-500 dark:border-white/[0.06] dark:text-slate-400">
+                                  {t('catalogStockPicker.categoryClientSearchCapped', { count: MAX_CATEGORY_CLIENT_SEARCH_RESULTS })}
+                                </div>
+                              ) : null}
+                            </div>
+                          ) : null}
+                        </div>
                       </div>
                     </div>
-                    <span className="shrink-0 rounded-full border border-pink-500/40 bg-pink-500/15 px-2 py-0.5 text-[10px] font-semibold text-pink-700 shadow-[0_0_14px_rgba(236,72,153,0.25)] dark:text-pink-100 sm:text-xs">
-                      {t('catalogStockPicker.confirmTotalCount', {
-                        count: catalogDraftSnapshotList.length + sessionPicks.length,
-                      })}
-                    </span>
-                  </div>
-                  {catalogDraftSnapshotList.length > 0 ? (
-                    <p className="mt-1.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
-                      {t('catalogStockPicker.draftRetainedInConfirm', { count: catalogDraftSnapshotList.length })}
-                    </p>
-                  ) : null}
-                  {sessionPicks.length > 0 ? (
-                    <HorizontalScrollRow
-                      syncKey={selectedScrollSyncKey}
-                      scrollBackLabel={t('catalogStockPicker.scrollBack')}
-                      scrollForwardLabel={t('catalogStockPicker.scrollForward')}
-                      className="mt-1.5"
-                      scrollStep={280}
-                    >
-                      {sessionPicks.map((pick) => (
-                        <div
-                          key={pick.pickId}
-                          className="flex max-w-[min(320px,70vw)] shrink-0 items-center gap-1.5 rounded-xl border border-slate-300/90 bg-white px-2.5 py-1.5 text-xs shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none"
-                        >
-                          <div className="min-w-0 flex-1 truncate">
-                            <span className="font-mono font-semibold text-pink-600 dark:text-pink-300">{pick.result.code}</span>
-                            <span className="text-slate-400 dark:text-slate-500"> · </span>
-                            <span className="text-slate-600 dark:text-slate-400">{pick.result.name}</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => duplicateSessionPickById(pick.pickId)}
-                            className="shrink-0 rounded-full p-1 text-slate-500 transition-colors hover:bg-emerald-100 hover:text-emerald-700 dark:text-slate-500 dark:hover:bg-emerald-500/15 dark:hover:text-emerald-300"
-                            aria-label={t('catalogStockPicker.duplicateSelection')}
-                            title={t('catalogStockPicker.duplicateSelection')}
-                          >
-                            <PlusCircle className="h-4 w-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => removeSessionPickById(pick.pickId)}
-                            className="shrink-0 rounded-full p-1 text-slate-500 transition-colors hover:bg-pink-100 hover:text-pink-600 dark:text-slate-500 dark:hover:bg-pink-500/15 dark:hover:text-pink-300"
-                            aria-label={t('catalogStockPicker.removeSelection')}
-                            title={t('catalogStockPicker.removeSelection')}
-                          >
-                            <MinusCircle className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </HorizontalScrollRow>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
 
-            {helperStrip}
+                    <div className="relative flex min-h-0 flex-1 touch-pan-y flex-col overflow-hidden overscroll-contain bg-slate-100/55 px-2 py-2 [-webkit-overflow-scrolling:touch] dark:bg-zinc-950/40 sm:px-3 sm:py-2.5 xl:px-3 xl:py-2">
+                      {catalogsQuery.isLoading ? (
+                        <div className="flex min-h-[9rem] flex-1 flex-col justify-center py-8 text-center text-xs text-slate-500 xl:min-h-0 dark:text-slate-400">
+                          {t('catalogStockPicker.loadingCatalogs')}
+                        </div>
+                      ) : catalogListForQueries.length > 0 ? (
+                        <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto [-webkit-overflow-scrolling:touch] touch-pan-y pb-2 crm-ps-0-5 crm-pe-1 pt-0.5 sm:[padding-inline-end:0.375rem]">
+                          <p className="shrink-0 px-0.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                            {t('catalogStockPicker.hierarchySectionTitle')}
+                          </p>
+                          {catalogListForQueries.map((catalog, catalogIdx) => {
+                            const catalogExpanded = expandedCatalogIds.has(catalog.id);
+                            const catQ = categoryQueries[catalogIdx];
+                            const localPath = catalogPaths[catalog.id] ?? [];
+                            const categoriesForCatalog = catQ?.data ?? [];
+                            const catalogLoading =
+                              catalogExpanded && (catQ?.isPending || catQ?.isFetching) && categoriesForCatalog.length === 0;
+
+                            return (
+                              <div key={catalog.id} className="mb-1.5 last:mb-0">
+                                <button
+                                  type="button"
+                                  onClick={() => toggleCatalogExpanded(catalog.id)}
+                                  aria-expanded={catalogExpanded}
+                                  className={cn(
+                                    'flex w-full items-center gap-2 rounded-lg py-2.5 crm-ps-1 crm-pe-2 crm-text-start transition-colors',
+                                    catalogExpanded
+                                      ? 'bg-rose-500/[0.11] dark:bg-rose-500/[0.14]'
+                                      : 'hover:bg-slate-200/40 dark:hover:bg-white/[0.05]',
+                                  )}
+                                >
+                                  <span
+                                    className={cn(
+                                      'shrink-0 self-stretch rounded-full transition-[width,background-color] duration-200',
+                                      catalogExpanded
+                                        ? 'w-1 bg-rose-500 dark:bg-rose-400'
+                                        : 'w-0 bg-transparent',
+                                    )}
+                                    aria-hidden
+                                  />
+                                  <Package
+                                    className={cn(
+                                      'h-4 w-4 shrink-0',
+                                      catalogExpanded
+                                        ? 'text-rose-600 dark:text-rose-400'
+                                        : 'text-slate-500 dark:text-slate-400',
+                                    )}
+                                    aria-hidden
+                                  />
+                                  <span
+                                    className={cn(
+                                      'min-w-0 flex-1 truncate text-[11px] font-bold uppercase tracking-[0.08em]',
+                                      catalogExpanded
+                                        ? 'text-rose-700 dark:text-rose-300'
+                                        : 'text-slate-800 dark:text-slate-100',
+                                    )}
+                                  >
+                                    {catalog.name}
+                                  </span>
+                                  <ChevronRight
+                                    className={cn(
+                                      'h-4 w-4 shrink-0 transition-transform duration-200',
+                                      catalogExpanded
+                                        ? 'rotate-90 text-rose-600 dark:text-rose-400'
+                                        : 'text-slate-600 dark:text-slate-400',
+                                    )}
+                                    aria-hidden
+                                  />
+                                </button>
+                                {catalogExpanded ? (
+                                  <div className="crm-ms-2 mt-0.5 crm-border-start border-slate-300/80 dark:border-white/12">
+                                    <div className="flex flex-col gap-0.5 py-0.5">
+                                      {localPath.map((segment, pathIdx) => {
+                                        const isTrailEnd = pathIdx === localPath.length - 1;
+                                        const trailFolderFocus =
+                                          selectedCatalog?.id === catalog.id &&
+                                          isTrailEnd &&
+                                          selectedLeafCategory?.catalogCategoryId ===
+                                          localPath[localPath.length - 1]?.catalogCategoryId;
+                                        const trailPadRem = 0.75 + pathIdx * 0.65;
+                                        return (
+                                          <button
+                                            key={`${catalog.id}-trail-${segment.catalogCategoryId}-${pathIdx}`}
+                                            type="button"
+                                            ref={
+                                              trailFolderFocus
+                                                ? (categorySelectionRowRef as Ref<HTMLButtonElement>)
+                                                : undefined
+                                            }
+                                            style={{ paddingInlineStart: `${trailPadRem}rem` }}
+                                            onClick={() => handleCatalogTrailSegmentClick(catalog.id, pathIdx)}
+                                            className={cn(
+                                              'flex w-full items-center justify-between gap-2 rounded-md py-2 crm-pe-2 crm-text-start text-[13px] transition-colors',
+                                              isTrailEnd
+                                                ? 'bg-rose-500/15 font-semibold text-rose-900 dark:bg-rose-500/20 dark:text-rose-100'
+                                                : 'bg-rose-500/[0.07] font-medium text-slate-800 dark:bg-rose-500/10 dark:text-slate-100',
+                                            )}
+                                          >
+                                            <span className="min-w-0 flex-1 leading-snug">{segment.name}</span>
+                                            {segment.hasChildren ? (
+                                              isTrailEnd ? (
+                                                <ChevronDown
+                                                  className="h-3.5 w-3.5 shrink-0 text-rose-600 dark:text-rose-400"
+                                                  aria-hidden
+                                                />
+                                              ) : (
+                                                <ChevronRight
+                                                  className="h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500"
+                                                  aria-hidden
+                                                />
+                                              )
+                                            ) : null}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                    {catalogLoading ? (
+                                      <div
+                                        className="flex items-center gap-2 py-4 text-[11px] text-slate-500 dark:text-slate-400"
+                                        style={{ paddingInlineStart: `${0.75 + localPath.length * 0.65}rem` }}
+                                      >
+                                        <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" aria-hidden />
+                                        {t('catalogStockPicker.loadingCategories')}
+                                      </div>
+                                    ) : categoriesForCatalog.length > 0 ? (
+                                      <div
+                                        className="mt-0.5 flex flex-col gap-0.5 border-t border-slate-200/80 pt-1 dark:border-white/[0.08]"
+                                        style={{ paddingInlineStart: `${0.75 + localPath.length * 0.65}rem` }}
+                                      >
+                                        {categoriesForCatalog.map((category) => {
+                                          const isActive =
+                                            selectedLeafCategory?.catalogCategoryId === category.catalogCategoryId;
+                                          const listRowRef =
+                                            isActive &&
+                                            selectedCatalog?.id === catalog.id &&
+                                            !(
+                                              localPath.length > 0 &&
+                                              selectedLeafCategory?.catalogCategoryId ===
+                                              localPath[localPath.length - 1]?.catalogCategoryId
+                                            );
+                                          return (
+                                            <button
+                                              key={category.catalogCategoryId}
+                                              type="button"
+                                              ref={
+                                                listRowRef
+                                                  ? (categorySelectionRowRef as Ref<HTMLButtonElement>)
+                                                  : undefined
+                                              }
+                                              onClick={() => handleCategoryClick(catalog.id, category)}
+                                              className={cn(
+                                                'w-full rounded-md px-2 py-2 crm-text-start text-[13px] transition-colors',
+                                                isActive
+                                                  ? 'bg-slate-200/90 text-slate-900 dark:bg-white/10 dark:text-slate-50'
+                                                  : 'text-slate-600 hover:bg-slate-100/80 dark:text-slate-400 dark:hover:bg-white/[0.06]',
+                                              )}
+                                            >
+                                              <div className="flex items-start justify-between gap-2">
+                                                <span className="min-w-0 flex-1 font-medium leading-snug text-slate-800 dark:text-slate-100">
+                                                  {category.name}
+                                                </span>
+                                                {category.hasChildren ? (
+                                                  <ChevronRight
+                                                    className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-400 dark:text-slate-500"
+                                                    aria-hidden
+                                                  />
+                                                ) : null}
+                                              </div>
+                                            </button>
+                                          );
+                                        })}
+                                      </div>
+                                    ) : localPath.length > 0 ? (
+                                      <div
+                                        className="py-3 text-center text-[11px] text-slate-500 dark:text-slate-400"
+                                        style={{ paddingLeft: `${0.75 + localPath.length * 0.65}rem` }}
+                                      >
+                                        {t('catalogStockPicker.emptyCategories')}
+                                      </div>
+                                    ) : (
+                                      <div className="py-3 crm-ps-3 text-center text-[11px] text-slate-500 dark:text-slate-400">
+                                        {t('catalogStockPicker.emptyCategories')}
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : null}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="flex min-h-[9rem] flex-1 flex-col justify-center py-8 text-center text-sm text-slate-500 xl:min-h-0 dark:text-slate-400">
+                          {t('catalogStockPicker.noCatalogSelected')}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+
             <div
               className={cn(
-                'relative min-h-0 px-3 py-2 sm:px-5 sm:py-3',
-                'bg-[radial-gradient(ellipse_90%_60%_at_50%_0%,rgba(244,63,94,0.04),transparent_55%),linear-gradient(180deg,rgba(248,250,252,0.9),rgba(241,245,249,0.55)_35%,rgba(241,245,249,0.35))]',
-                'ring-1 ring-inset ring-slate-200/90 dark:ring-0',
-                'dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent_40%)]',
-                'max-lg:flex-none max-lg:min-h-0 max-lg:overflow-visible',
-                'lg:flex-1 lg:min-h-0 lg:touch-pan-y lg:overflow-y-auto lg:overscroll-y-contain lg:[-webkit-overflow-scrolling:touch]',
+                'flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden xl:h-full xl:min-h-0',
+                mobileStocksOpen ? 'max-lg:min-h-0' : 'max-lg:h-[2.75rem] max-lg:max-h-[2.75rem] max-lg:flex-none max-lg:shrink-0 max-lg:overflow-hidden',
               )}
             >
-              {stockListScrollInner}
-            </div>
+              <button
+                type="button"
+                onClick={() => setMobileStocksOpen((v) => !v)}
+                aria-expanded={mobileStocksOpen}
+                className="flex w-full items-center justify-between gap-2 border-b border-slate-300/90 bg-slate-50 px-3 py-2 crm-text-start transition-colors hover:bg-slate-100 dark:border-white/10 dark:bg-white/[0.04] dark:hover:bg-white/[0.07] lg:hidden"
+              >
+                <span className="flex min-w-0 items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  <ShoppingBag className="h-4 w-4 shrink-0 text-rose-500 dark:text-rose-400" />
+                  <span className="truncate">{t('catalogStockPicker.mobileStocksAccordion')}</span>
+                </span>
+                <ChevronDown
+                  className={cn(
+                    'h-5 w-5 shrink-0 text-slate-500 transition-transform duration-200 dark:text-slate-400',
+                    mobileStocksOpen && 'rotate-180',
+                  )}
+                  aria-hidden
+                />
+              </button>
+
+              <div
+                className={cn(
+                  'flex min-h-0 flex-1 flex-col',
+                  'max-lg:min-h-0 max-lg:flex-1 max-lg:overflow-y-auto max-lg:overscroll-y-contain max-lg:touch-pan-y max-lg:[-webkit-overflow-scrolling:touch]',
+                  'lg:overflow-hidden',
+                  !mobileStocksOpen && 'max-lg:hidden lg:flex',
+                )}
+              >
+                <div className="shrink-0 overflow-visible border-b border-slate-300/90 bg-white px-4 py-2 shadow-[inset_0_-1px_0_rgba(148,163,184,0.1)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-5 sm:py-2.5">
+                  <div className="flex w-full shrink-0 flex-col gap-3 overflow-visible sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                    <div className="flex min-w-0 shrink-0 items-center justify-start gap-3 overflow-x-auto px-2 py-1.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-4 md:gap-5">
+                      <button
+                        type="button"
+                        onClick={toggleStockBrowseCampaign}
+                        aria-pressed={stockBrowseMode === 'campaign'}
+                        className={cn(
+                          'group relative isolate flex shrink-0 items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
+                          stockBrowseMode === 'campaign'
+                            ? 'scale-105 border-transparent bg-gradient-to-r from-rose-500 via-rose-500 to-rose-500 text-white shadow-[0_8px_20px_rgba(244,63,94,0.4)] ring-4 ring-rose-100 dark:ring-rose-950/55'
+                            : 'border-rose-200 bg-gradient-to-r from-rose-50 to-rose-100/50 text-rose-600 hover:from-rose-100 hover:to-rose-100 dark:border-rose-800/50 dark:from-rose-950/45 dark:to-rose-950/20 dark:text-rose-200 dark:hover:from-rose-900/55 dark:hover:to-rose-900/25',
+                        )}
+                      >
+                        <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-xl" aria-hidden>
+                          <span
+                            className={cn(
+                              'catalog-tab-shine-layer pointer-events-none',
+                              stockBrowseMode !== 'campaign' && 'catalog-tab-shine-layer--muted',
+                            )}
+                          />
+                        </span>
+                        <span
+                          className={cn(
+                            'relative z-[2] inline-flex shrink-0',
+                            stockBrowseMode === 'campaign' && 'catalog-tab-flame-flicker text-yellow-300',
+                          )}
+                        >
+                          <Flame className="h-4 w-4 sm:h-[18px] sm:w-[18px]" aria-hidden />
+                        </span>
+                        <span className="relative z-[2] whitespace-nowrap">{t('catalogStockPicker.campaignStocksChip')}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={toggleStockBrowseFavorites}
+                        aria-pressed={stockBrowseMode === 'favorites'}
+                        className={cn(
+                          'group relative isolate flex shrink-0 items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
+                          stockBrowseMode === 'favorites'
+                            ? 'scale-105 border-transparent bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-amber-950 shadow-[0_8px_20px_rgba(251,191,36,0.4)] ring-4 ring-amber-100 dark:ring-amber-950/50'
+                            : 'border-amber-200 bg-gradient-to-r from-amber-50 to-yellow-50 text-amber-600 hover:from-amber-100 hover:to-yellow-100 dark:border-amber-800/45 dark:from-amber-950/40 dark:to-yellow-950/30 dark:text-amber-200 dark:hover:from-amber-900/50 dark:hover:to-yellow-900/40',
+                        )}
+                      >
+                        <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-xl" aria-hidden>
+                          <span
+                            className={cn(
+                              'catalog-tab-shine-layer catalog-tab-shine-layer--delay pointer-events-none',
+                              stockBrowseMode !== 'favorites' && 'catalog-tab-shine-layer--muted',
+                            )}
+                          />
+                        </span>
+                        <span
+                          className={cn(
+                            'relative z-[2] inline-flex shrink-0',
+                            stockBrowseMode === 'favorites' ? 'catalog-tab-star-twinkle' : 'catalog-tab-star-twinkle-soft',
+                          )}
+                        >
+                          <Star
+                            className="h-4 w-4 sm:h-[18px] sm:w-[18px]"
+                            strokeWidth={1.75}
+                            fill={stockBrowseMode === 'favorites' ? 'currentColor' : 'none'}
+                            aria-hidden
+                          />
+                        </span>
+                        <span className="relative z-[2] whitespace-nowrap">{t('catalogStockPicker.favoriteStocksChip')}</span>
+                      </button>
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-wrap items-center justify-start gap-2 sm:justify-end sm:gap-3">
+                      <div
+                        className="flex shrink-0 gap-0.5 rounded-lg border border-slate-300/90 bg-slate-50 p-0.5 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04] dark:shadow-none"
+                        role="group"
+                        aria-label={t('catalogStockPicker.viewModeGroupLabel')}
+                      >
+                        <Button
+                          type="button"
+                          variant={stockLayoutMode === 'list' ? 'secondary' : 'ghost'}
+                          size="sm"
+                          className={cn(
+                            'h-8 rounded-md px-2 text-slate-600 dark:text-slate-300 sm:h-8 sm:rounded-lg sm:px-2.5',
+                            stockLayoutMode === 'list' &&
+                            'border border-rose-500/30 bg-rose-500/15 text-rose-700 shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-rose-100',
+                          )}
+                          onClick={() => setStockLayoutMode('list')}
+                          aria-pressed={stockLayoutMode === 'list'}
+                          title={t('catalogStockPicker.viewModeList')}
+                        >
+                          <List className="h-4 w-4" />
+                          <span className="crm-ms-1-5 hidden text-xs font-medium sm:inline">{t('catalogStockPicker.viewModeList')}</span>
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={stockLayoutMode === 'cards' ? 'secondary' : 'ghost'}
+                          size="sm"
+                          className={cn(
+                            'h-8 rounded-md px-2 text-slate-600 dark:text-slate-300 sm:h-8 sm:rounded-lg sm:px-2.5',
+                            stockLayoutMode === 'cards' &&
+                            'border border-rose-500/30 bg-rose-500/15 text-rose-700 shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-rose-100',
+                          )}
+                          onClick={() => setStockLayoutMode('cards')}
+                          aria-pressed={stockLayoutMode === 'cards'}
+                          title={t('catalogStockPicker.viewModeCards')}
+                        >
+                          <LayoutGrid className="h-4 w-4" />
+                          <span className="crm-ms-1-5 hidden text-xs font-medium sm:inline">{t('catalogStockPicker.viewModeCards')}</span>
+                        </Button>
+                      </div>
+                      <div className="relative min-w-0 w-full flex-1 sm:min-w-[200px] sm:max-w-md">
+                        <Search className="pointer-events-none absolute crm-start-2-5 top-2.5 h-3.5 w-3.5 text-rose-500/70 dark:text-rose-400/70 sm:[inset-inline-start:0.75rem] sm:top-2.5 sm:h-4 sm:w-4" />
+                        <Input
+                          value={stockSearch}
+                          onChange={(event) => setStockSearch(event.target.value)}
+                          placeholder={t('catalogStockPicker.searchPlaceholder')}
+                          className="h-8 rounded-xl border border-slate-300/90 bg-white crm-ps-8 text-sm text-slate-900 shadow-sm placeholder:text-slate-500 backdrop-blur-sm focus-visible:border-rose-400/60 focus-visible:ring-rose-500/20 dark:border-white/15 dark:bg-white/[0.06] dark:text-slate-100 dark:placeholder:text-slate-500 dark:shadow-none dark:focus-visible:border-rose-500/40 sm:h-9 sm:rounded-2xl sm:[padding-inline-start:2.5rem]"
+                          disabled={
+                            (stockBrowseMode === 'category' && !selectedLeafCategory) ||
+                            (leftPanelMode === 'code' && stockBrowseMode === 'specialCodes' && !specialCodeHasSelection)
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {multiSelect && (sessionPicks.length > 0 || catalogDraftSnapshotList.length > 0) ? (
+                  <div className="shrink-0 border-b border-slate-300/90 bg-white px-4 py-1.5 backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 sm:px-5">
+                    <div className="rounded-xl border border-rose-400/35 bg-rose-50/90 p-2 shadow-sm ring-1 ring-rose-200/40 backdrop-blur-md dark:border-rose-500/25 dark:bg-rose-500/[0.08] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:ring-0 sm:rounded-2xl sm:p-2.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <div className="text-xs font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-sm">
+                            {t('catalogStockPicker.selectionPanelTitle')}
+                          </div>
+                          <div className="mt-0.5 line-clamp-1 text-[11px] text-slate-500 dark:text-slate-400 sm:text-xs">
+                            {t('catalogStockPicker.selectionPanelHint')}
+                          </div>
+                        </div>
+                        <span className="shrink-0 rounded-full border border-rose-500/40 bg-rose-500/15 px-2 py-0.5 text-[10px] font-semibold text-rose-700 shadow-[0_0_14px_rgba(236,72,153,0.25)] dark:text-rose-100 sm:text-xs">
+                          {t('catalogStockPicker.confirmTotalCount', {
+                            count: catalogDraftSnapshotList.length + sessionPicks.length,
+                          })}
+                        </span>
+                      </div>
+                      {catalogDraftSnapshotList.length > 0 ? (
+                        <p className="mt-1.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+                          {t('catalogStockPicker.draftRetainedInConfirm', { count: catalogDraftSnapshotList.length })}
+                        </p>
+                      ) : null}
+                      {sessionPicks.length > 0 ? (
+                        <HorizontalScrollRow
+                          syncKey={selectedScrollSyncKey}
+                          scrollBackLabel={t('catalogStockPicker.scrollBack')}
+                          scrollForwardLabel={t('catalogStockPicker.scrollForward')}
+                          className="mt-1.5"
+                          scrollStep={280}
+                        >
+                          {sessionPicks.map((pick) => (
+                            <div
+                              key={pick.pickId}
+                              className="flex max-w-[min(320px,70vw)] shrink-0 items-center gap-1.5 rounded-xl border border-slate-300/90 bg-white px-2.5 py-1.5 text-xs shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.05] dark:shadow-none"
+                            >
+                              <div className="min-w-0 flex-1 truncate">
+                                <span className="font-mono font-semibold text-rose-600 dark:text-rose-300">{pick.result.code}</span>
+                                <span className="text-slate-400 dark:text-slate-500"> · </span>
+                                <span className="text-slate-600 dark:text-slate-400">{pick.result.name}</span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => duplicateSessionPickById(pick.pickId)}
+                                className="shrink-0 rounded-full p-1 text-slate-500 transition-colors hover:bg-emerald-100 hover:text-emerald-700 dark:text-slate-500 dark:hover:bg-emerald-500/15 dark:hover:text-emerald-300"
+                                aria-label={t('catalogStockPicker.duplicateSelection')}
+                                title={t('catalogStockPicker.duplicateSelection')}
+                              >
+                                <PlusCircle className="h-4 w-4" />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removeSessionPickById(pick.pickId)}
+                                className="shrink-0 rounded-full p-1 text-slate-500 transition-colors hover:bg-rose-100 hover:text-rose-600 dark:text-slate-500 dark:hover:bg-rose-500/15 dark:hover:text-rose-300"
+                                aria-label={t('catalogStockPicker.removeSelection')}
+                                title={t('catalogStockPicker.removeSelection')}
+                              >
+                                <MinusCircle className="h-4 w-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </HorizontalScrollRow>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
+
+                {helperStrip}
+                <div
+                  className={cn(
+                    'relative min-h-0 px-3 py-2 sm:px-5 sm:py-3',
+                    'bg-[radial-gradient(ellipse_90%_60%_at_50%_0%,rgba(244,63,94,0.04),transparent_55%),linear-gradient(180deg,rgba(248,250,252,0.9),rgba(241,245,249,0.55)_35%,rgba(241,245,249,0.35))]',
+                    'ring-1 ring-inset ring-slate-200/90 dark:ring-0',
+                    'dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.02),transparent_40%)]',
+                    'max-lg:flex-none max-lg:min-h-0 max-lg:overflow-visible',
+                    'lg:flex-1 lg:min-h-0 lg:touch-pan-y lg:overflow-y-auto lg:overscroll-y-contain lg:[-webkit-overflow-scrolling:touch]',
+                  )}
+                >
+                  {stockListScrollInner}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="relative z-10 shrink-0 px-3 pb-3 pt-2 sm:px-5 sm:pb-4">
-          <div className="rounded-2xl border border-slate-300/90 bg-white px-4 py-3 shadow-[0_-12px_40px_rgba(15,23,42,0.12),0_0_40px_rgba(236,72,153,0.08)] ring-1 ring-slate-200/70 backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-[0_-12px_40px_rgba(0,0,0,0.35),0_0_40px_rgba(236,72,153,0.08)] dark:ring-0 sm:px-5 sm:py-3.5">
-            <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-              <div className="line-clamp-2 text-[11px] text-slate-600 dark:text-slate-400 sm:text-xs lg:line-clamp-none lg:max-w-[55%]">
-                {t('catalogStockPicker.footerHint')}
-              </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border border-slate-300/90 bg-white text-slate-800 shadow-sm backdrop-blur-sm hover:border-slate-400 hover:bg-slate-50 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-white/25 dark:hover:bg-white/10"
-                  onClick={() => onOpenChange(false)}
-                >
-                  {t('cancel', { ns: 'common' })}
-                </Button>
-                {multiSelect ? (
+          <div className="relative z-10 shrink-0 px-3 pb-3 pt-2 sm:px-5 sm:pb-4">
+            <div className="rounded-2xl border border-slate-300/90 bg-white px-4 py-3 shadow-[0_-12px_40px_rgba(15,23,42,0.12),0_0_40px_rgba(236,72,153,0.08)] ring-1 ring-slate-200/70 backdrop-blur-2xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-[0_-12px_40px_rgba(0,0,0,0.35),0_0_40px_rgba(236,72,153,0.08)] dark:ring-0 sm:px-5 sm:py-3.5">
+              <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+                <div className="line-clamp-2 text-[11px] text-slate-600 dark:text-slate-400 sm:text-xs lg:line-clamp-none lg:max-w-[55%]">
+                  {t('catalogStockPicker.footerHint')}
+                </div>
+                <div className="flex items-center gap-3">
                   <Button
                     type="button"
-                    variant="ghost"
-                    onClick={() => void handleConfirmMulti()}
-                    disabled={sessionPicks.length === 0 && catalogDraftSnapshotList.length === 0}
-                    className="min-w-[180px] border border-pink-500/35 bg-gradient-to-r from-pink-600 to-fuchsia-600 text-white shadow-[0_0_24px_rgba(236,72,153,0.35)] hover:border-pink-400/60 hover:from-pink-500 hover:to-fuchsia-500 hover:bg-gradient-to-r hover:text-white disabled:opacity-40"
+                    variant="outline"
+                    className="border border-slate-300/90 bg-white text-slate-800 shadow-sm backdrop-blur-sm hover:border-slate-400 hover:bg-slate-50 dark:border-white/15 dark:bg-white/[0.05] dark:text-slate-200 dark:shadow-none dark:hover:border-white/25 dark:hover:bg-white/10"
+                    onClick={() => onOpenChange(false)}
                   >
-                    {t('catalogStockPicker.confirmSelection')}
+                    {t('cancel', { ns: 'common' })}
                   </Button>
-                ) : null}
+                  {multiSelect ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => void handleConfirmMulti()}
+                      disabled={sessionPicks.length === 0 && catalogDraftSnapshotList.length === 0}
+                      className="min-w-[180px] border border-rose-500/35 bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-[0_0_24px_rgba(236,72,153,0.35)] hover:border-rose-400/60 hover:from-rose-500 hover:to-amber-500 hover:bg-gradient-to-r hover:text-white disabled:opacity-40"
+                    >
+                      {t('catalogStockPicker.confirmSelection')}
+                    </Button>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
 
-    <Dialog open={hierarchyInfoOpen} onOpenChange={setHierarchyInfoOpen}>
-      <DialogContent
-        showCloseButton
-        className="!z-[100] max-h-[min(90dvh,880px)] w-[calc(100vw-1rem)] max-w-2xl gap-0 overflow-y-auto border border-slate-200/80 bg-white p-0 sm:p-0 dark:border-white/10 dark:bg-zinc-950"
-      >
-        <DialogHeader className="border-b border-slate-200/80 px-6 py-5 crm-text-start dark:border-white/10">
-          <DialogTitle className="text-xl">{t('catalogStockPicker.hierarchyBlueprintTitle')}</DialogTitle>
-          <DialogDescription className="crm-text-start text-sm text-muted-foreground">
-            {t('catalogStockPicker.hierarchyBlueprintDescription')}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 px-6 py-5">
-          <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-            <span className="font-semibold text-slate-900 dark:text-white">{t('catalogStockPicker.hierarchyExampleLabel')}:</span>{' '}
-            {t('catalogStockPicker.hierarchyExampleValue')}
-          </div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {(['root', 'subcategory', 'brand', 'series', 'products'] as const).map((stage, index) => (
-              <div
-                key={stage}
-                className="rounded-2xl border border-slate-200 bg-white px-3 py-3 dark:border-white/10 dark:bg-zinc-950/60"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[11px] font-semibold text-white dark:bg-white dark:text-slate-900">
-                    {index + 1}
+      <Dialog open={hierarchyInfoOpen} onOpenChange={setHierarchyInfoOpen}>
+        <DialogContent
+          showCloseButton
+          className="!z-[100] max-h-[min(90dvh,880px)] w-[calc(100vw-1rem)] max-w-2xl gap-0 overflow-y-auto border border-slate-200/80 bg-white p-0 sm:p-0 dark:border-white/10 dark:bg-zinc-950"
+        >
+          <DialogHeader className="border-b border-slate-200/80 px-6 py-5 crm-text-start dark:border-white/10">
+            <DialogTitle className="text-xl">{t('catalogStockPicker.hierarchyBlueprintTitle')}</DialogTitle>
+            <DialogDescription className="crm-text-start text-sm text-muted-foreground">
+              {t('catalogStockPicker.hierarchyBlueprintDescription')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 px-6 py-5">
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+              <span className="font-semibold text-slate-900 dark:text-white">{t('catalogStockPicker.hierarchyExampleLabel')}:</span>{' '}
+              {t('catalogStockPicker.hierarchyExampleValue')}
+            </div>
+            <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {(['root', 'subcategory', 'brand', 'series', 'products'] as const).map((stage, index) => (
+                <div
+                  key={stage}
+                  className="rounded-2xl border border-slate-200 bg-white px-3 py-3 dark:border-white/10 dark:bg-zinc-950/60"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-900 text-[11px] font-semibold text-white dark:bg-white dark:text-slate-900">
+                      {index + 1}
+                    </div>
+                    <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                      {t(`catalogStockPicker.hierarchyStages.${stage}.title`)}
+                    </div>
                   </div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                    {t(`catalogStockPicker.hierarchyStages.${stage}.title`)}
+                  <div className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-300">
+                    {t(`catalogStockPicker.hierarchyStages.${stage}.description`)}
                   </div>
                 </div>
-                <div className="mt-2 text-xs leading-5 text-slate-600 dark:text-slate-300">
-                  {t(`catalogStockPicker.hierarchyStages.${stage}.description`)}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
 
-    <RelatedStocksSelectionDialog
-      open={relatedDialogOpen}
-      onOpenChange={(nextOpen) => {
-        setRelatedDialogOpen(nextOpen);
-        if (!nextOpen) {
-          setRelatedDialogStock(null);
-          setRelatedDialogRelations([]);
-        }
-      }}
-      relatedStocks={relatedDialogRelations}
-      onConfirm={handleRelatedStocksConfirm}
-    />
+      <RelatedStocksSelectionDialog
+        open={relatedDialogOpen}
+        onOpenChange={(nextOpen) => {
+          setRelatedDialogOpen(nextOpen);
+          if (!nextOpen) {
+            setRelatedDialogStock(null);
+            setRelatedDialogRelations([]);
+          }
+        }}
+        relatedStocks={relatedDialogRelations}
+        onConfirm={handleRelatedStocksConfirm}
+      />
     </>
   );
 }

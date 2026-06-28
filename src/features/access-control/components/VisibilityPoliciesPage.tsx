@@ -161,8 +161,8 @@ export function VisibilityPoliciesPage(): ReactElement {
   return (
     <div className="w-full space-y-6">
       <div className={ACCESS_CONTROL_HEADER_CARD_CLASSNAME}>
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-500/5 blur-[80px] dark:bg-pink-500/10" />
-        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-orange-500/5 blur-[80px] dark:bg-orange-500/10" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/5 blur-[80px] dark:bg-rose-500/10" />
+        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px] dark:bg-amber-500/10" />
 
         <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="min-w-0">
@@ -179,7 +179,7 @@ export function VisibilityPoliciesPage(): ReactElement {
                 setEditingItem(null);
                 setFormOpen(true);
               }}
-              className="h-12 shrink-0 border-0 bg-linear-to-r from-pink-600 to-orange-600 px-8 text-white shadow-lg shadow-pink-500/25 transition-all hover:scale-105 active:scale-95"
+              className="h-12 shrink-0 border-0 bg-[image:var(--crm-brand-gradient)] border-0 px-8 text-white shadow-lg shadow-rose-500/25 transition-all hover:scale-105 active:scale-95"
             >
               <Plus size={20} className="mr-2" />
               {t('visibilityPolicies.add')}
@@ -190,7 +190,7 @@ export function VisibilityPoliciesPage(): ReactElement {
         <div className="relative z-10 mt-8 grid gap-4 sm:grid-cols-3">
           <div className={ACCESS_CONTROL_STAT_CARD_CLASSNAME}>
             <div className="flex items-center gap-4">
-              <div className="rounded-xl border border-pink-100 bg-pink-100 p-3 text-pink-600 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-400">
+              <div className="rounded-xl border border-rose-100 bg-rose-100 p-3 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
                 <Eye className="size-5" />
               </div>
               <div>
@@ -216,7 +216,7 @@ export function VisibilityPoliciesPage(): ReactElement {
           </div>
           <div className={ACCESS_CONTROL_STAT_CARD_CLASSNAME}>
             <div className="flex items-center gap-4">
-              <div className="rounded-xl border border-orange-100 bg-orange-100 p-3 text-orange-600 dark:border-orange-500/20 dark:bg-orange-500/10 dark:text-orange-400">
+              <div className="rounded-xl border border-amber-100 bg-amber-100 p-3 text-amber-600 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-400">
                 <Layers className="size-5" />
               </div>
               <div>

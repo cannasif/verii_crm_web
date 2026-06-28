@@ -64,8 +64,13 @@ interface ApprovalRoleGroupTableProps {
 }
 
 export const getColumnsConfig = (t: TFunction): ColumnDef<ApprovalRoleGroupDto>[] => [
-  { key: 'id', label: t('approvalRoleGroup.table.id'), ...MANAGEMENT_LIST_ID_COLUMN_DEF },
-  { key: 'name', label: t('approvalRoleGroup.table.name'), className: 'w-[200px]' },
+  { 
+    key: 'id', 
+    label: t('approvalRoleGroup.table.id'), 
+    headClassName: MANAGEMENT_LIST_ID_COLUMN_DEF.headClassName + ' md:w-[104px] md:max-w-[104px]',
+    className: MANAGEMENT_LIST_ID_COLUMN_DEF.className + ' md:w-[104px] md:max-w-[104px]',
+  },
+  { key: 'name', label: t('approvalRoleGroup.table.name'), className: 'min-w-[200px] w-full' },
   { key: 'createdDate', label: t('approvalRoleGroup.table.createdDate'), className: 'w-[160px]' },
   { key: 'createdByFullUser', label: t('approvalRoleGroup.table.createdBy'), className: 'w-[160px]' },
 ];

@@ -99,7 +99,7 @@ function DraggablePaletteItem({
       {...listeners}
       {...attributes}
       className={cn(
-        "cursor-grab rounded-lg border border-slate-300/80 bg-white/70 px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-all duration-300 hover:border-pink-500/30 hover:bg-white hover:shadow-md active:cursor-grabbing dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10",
+        "cursor-grab rounded-lg border border-slate-300/80 bg-white/70 px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition-all duration-300 hover:border-rose-500/30 hover:bg-white hover:shadow-md active:cursor-grabbing dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10",
         isDragging && "opacity-50 scale-95"
       )}
     >
@@ -217,7 +217,7 @@ function TextPropertiesPanel(): ReactElement | null {
 
   return (
     <div className="relative flex flex-col gap-3 rounded-xl border border-slate-300/80 bg-stone-50/95 p-3 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
       <div className="relative z-10 flex flex-col gap-3">
         <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
           {t('reportDesigner.properties.textTitle')}
@@ -321,7 +321,7 @@ function FieldPropertiesPanel(): ReactElement | null {
 
   return (
     <div className="relative flex flex-col gap-3 rounded-xl border border-slate-300/80 bg-stone-50/95 p-3 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
       <div className="relative z-10 flex flex-col gap-3">
         <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
           {t('reportDesigner.properties.fieldTitle')}
@@ -460,7 +460,7 @@ function ImagePropertiesPanel({
 
   return (
     <div className="relative flex flex-col gap-3 rounded-xl border border-slate-300/80 bg-stone-50/95 p-3 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
       <div className="relative z-10 flex flex-col gap-3">
         <span className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
           {t('reportDesigner.properties.imageTitle')}
@@ -595,7 +595,7 @@ export function PdfSidebar({
 
   return (
     <div className="relative flex min-h-0 w-60 shrink-0 flex-col overflow-hidden border-r border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-pink-500/0 to-orange-500/0 dark:from-pink-500/5 dark:to-orange-500/5 opacity-30" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
       <div className="relative z-10 flex shrink-0 flex-col gap-2 border-b border-slate-300/80 px-3 py-2.5 dark:border-white/5">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 flex-col gap-0.5">

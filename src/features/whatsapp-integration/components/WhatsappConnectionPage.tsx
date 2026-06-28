@@ -160,7 +160,7 @@ export function WhatsappConnectionPage(): ReactElement {
                 <Button
                   onClick={handleSave}
                   disabled={updateSettingsMutation.isPending}
-                  className="min-w-40 bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                  className="min-w-40 bg-[image:var(--crm-brand-gradient)] text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 >
                   {updateSettingsMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                   {t('settings.save')}
@@ -210,7 +210,7 @@ export function WhatsappConnectionPage(): ReactElement {
           <Button
             onClick={handleSendTest}
             disabled={!configured || testMessageMutation.isPending}
-            className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0 disabled:opacity-50 dark:disabled:opacity-50 disabled:pointer-events-none"
+            className="bg-[image:var(--crm-brand-gradient)] text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0 disabled:opacity-50 dark:disabled:opacity-50 disabled:pointer-events-none"
           >
             {testMessageMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {t('test.send')}

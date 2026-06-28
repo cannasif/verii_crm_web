@@ -133,11 +133,11 @@ export function VisibilitySimulatorPage(): ReactElement {
       <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.visibilitySimulator'), isActive: true }]} />
 
       <div className={ACCESS_CONTROL_HEADER_CARD_CLASSNAME}>
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-pink-500/5 blur-[80px] dark:bg-pink-500/10" />
-        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-orange-500/5 blur-[80px] dark:bg-orange-500/10" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/5 blur-[80px] dark:bg-rose-500/10" />
+        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px] dark:bg-amber-500/10" />
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-pink-600 dark:text-pink-400">
+          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-rose-600 dark:text-rose-400">
             <Sparkles className="size-3.5" />
             {t('sidebar.accessControl')}
           </div>
@@ -151,7 +151,7 @@ export function VisibilitySimulatorPage(): ReactElement {
           <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryStatCard
               icon={<UserRound className="size-4" />}
-              iconWrapClassName="border-pink-100 bg-pink-100 text-pink-600 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-400"
+              iconWrapClassName="border-rose-100 bg-rose-100 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400"
               label={t('visibilitySimulator.selectedUser')}
               value={selectedUserLabel}
               compact

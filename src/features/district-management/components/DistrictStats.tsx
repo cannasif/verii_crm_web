@@ -14,20 +14,22 @@ export function DistrictStats(): ReactElement {
   const { data: statsData, isLoading } = useDistrictStats();
 
   const cardStyle = `
-    bg-white/60 dark:bg-[#1a1025]/40 
-    border-1 
-    shadow-sm 
-    backdrop-blur-md 
-    group relative overflow-hidden
+    bg-white/40 dark:bg-white/[0.02] 
+    border 
+    shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.1)] 
+    backdrop-blur-xl 
+    group relative overflow-hidden transition-all duration-300
+    hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] 
+    hover:-translate-y-1
   `;
 
-  const glowStyle = "absolute inset-0 bg-linear-to-r from-pink-50/0 to-orange-50/0 dark:from-pink-500/0 dark:to-orange-500/0 group-hover:from-pink-50/50 group-hover:to-orange-50/50 dark:group-hover:from-pink-500/5 dark:group-hover:to-orange-500/5 transition-all duration-500 pointer-events-none";
+  const glowStyle = "absolute inset-0 bg-linear-to-r from-rose-50/0 to-amber-50/0 dark:from-rose-500/0 dark:to-amber-500/0 group-hover:from-rose-50/50 group-hover:to-amber-50/50 dark:group-hover:from-rose-500/5 dark:group-hover:to-amber-500/5 transition-all duration-500 pointer-events-none";
 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className={cardStyle}>
+          <Card key={i} className={`${cardStyle} border-slate-200/60 dark:border-white/10`}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
               <div className="h-4 w-24 animate-pulse rounded bg-slate-200 dark:bg-white/10" />
               <div className="h-8 w-8 animate-pulse rounded bg-slate-200 dark:bg-white/10" />
@@ -46,15 +48,15 @@ export function DistrictStats(): ReactElement {
       title: t('districtManagement.stats.totalDistricts'),
       value: statsData?.totalDistricts ?? '-',
       icon: MapPin,
-      iconContainerClass: 'bg-pink-50 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400 border-pink-100 dark:border-pink-500/20',
-      borderColor: 'border-pink-400/50 dark:border-pink-500/30',
+      iconContainerClass: 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border-rose-100 dark:border-rose-500/20',
+      borderColor: 'border-rose-400/50 dark:border-rose-500/30',
     },
     {
       title: t('districtManagement.stats.activeDistricts'),
       value: statsData?.activeDistricts ?? '-',
       icon: Activity,
-      iconContainerClass: 'bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400 border-orange-100 dark:border-orange-500/20',
-      borderColor: 'border-orange-400/50 dark:orange-green-500/30',
+      iconContainerClass: 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border-amber-100 dark:border-amber-500/20',
+      borderColor: 'border-amber-400/50 dark:border-amber-500/30',
     },
     {
       title: t('districtManagement.stats.newThisMonth'),

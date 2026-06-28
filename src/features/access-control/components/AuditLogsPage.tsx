@@ -233,7 +233,7 @@ export function AuditLogsPage(): ReactElement {
         </div>
         {traceFilter ? (
           <Button
-            className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0 border-0"
+            className="h-11 bg-[image:var(--crm-brand-gradient)] border-0 px-8 font-bold text-white shadow-lg shadow-rose-500/20 ring-1 ring-rose-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-rose-500 hover:to-amber-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0 border-0"
             onClick={() => {
               setTraceFilter(null);
               setPageNumber(1);

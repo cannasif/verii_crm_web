@@ -103,8 +103,8 @@ export function ApprovalUserRoleForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(40vw-2rem)] !max-w-[96vw] xl:max-w-[600px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white/90 dark:bg-[#130822]/90 border border-slate-200/60 dark:border-white/10 shadow-2xl rounded-[2.5rem]">
-
+      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(40vw-2rem)] !max-w-[96vw] xl:max-w-[600px] max-h-[92vh] flex flex-col p-0 overflow-visible bg-white/90 dark:bg-[#130822]/90 border border-slate-200/60 dark:border-white/10 shadow-2xl rounded-[2.5rem]">
+        <div className="flex flex-col w-full h-full overflow-hidden rounded-[2.5rem]">
         <DialogHeader className="px-6 sm:px-8 py-6 border-b border-slate-100 dark:border-white/5 shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10 backdrop-blur-sm">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-rose-500 to-amber-500 p-0.5 shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)]">
@@ -218,6 +218,7 @@ export function ApprovalUserRoleForm({
             ) : t('common.save')}
           </Button>
         </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );

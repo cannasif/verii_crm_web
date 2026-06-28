@@ -46,7 +46,7 @@ const INPUT_STYLE = `
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-500
   focus-visible:bg-white dark:focus-visible:bg-white/5
-  focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
+  focus-visible:border-rose-500/70 focus-visible:ring-2 focus-visible:ring-rose-500/10 focus-visible:ring-offset-0
   transition-all duration-200 w-full
 `;
 
@@ -112,7 +112,7 @@ export function PermissionGroupForm({
 
         <DialogHeader className="p-2 pb-0 shrink-0">
           <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-linear-to-br from-pink-500 to-orange-500 shadow-lg shadow-pink-500/20">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-[image:var(--crm-brand-gradient)] border-0 shadow-lg shadow-rose-500/20">
               <ShieldCheck size={32} className="text-white" strokeWidth={2.5} />
             </div>
             <div className="space-y-1">
@@ -142,7 +142,7 @@ export function PermissionGroupForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <FileText size={16} className="text-pink-500" />
+                          <FileText size={16} className="text-rose-500" />
                           {t('permissionGroups.form.name')}
                           <FieldHelpTooltip text={t('help.permissionGroup.name')} />
                           {isZodFieldRequired(createPermissionGroupSchema, 'name') && <span className="text-destructive ml-0.5">*</span>}
@@ -162,7 +162,7 @@ export function PermissionGroupForm({
                       <FormItem className="flex flex-row items-center justify-between rounded-[0.65rem] border border-slate-200 bg-slate-50/50 p-2.5 px-4 dark:border-white/10 dark:bg-white/5 h-[45px] mt-[34px]">
                         <div className="space-y-0.5">
                           <FormLabel className="text-sm font-bold flex items-center gap-2">
-                            <Sparkles size={16} className="text-pink-500" />
+                            <Sparkles size={16} className="text-rose-500" />
                             {t('permissionGroups.form.isActive')}
                             <FieldHelpTooltip text={t('help.permissionGroup.isActive')} />
                           </FormLabel>
@@ -181,7 +181,7 @@ export function PermissionGroupForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Info size={16} className="text-pink-500" />
+                        <Info size={16} className="text-rose-500" />
                         {t('permissionGroups.form.description')}
                       </FormLabel>
                       <FormControl>
@@ -198,7 +198,7 @@ export function PermissionGroupForm({
                   render={({ field }) => (
                     <FormItem className="w-full overflow-hidden">
                       <FormLabel className={cn(LABEL_STYLE, "mb-3")}>
-                        <Lock size={16} className="text-pink-500" />
+                        <Lock size={16} className="text-rose-500" />
                         {t('permissionGroups.form.permissions')}
                         <FieldHelpTooltip text={t('help.permissionGroup.permissions')} />
                       </FormLabel>
@@ -225,7 +225,7 @@ export function PermissionGroupForm({
                 type="submit"
                 form="permission-group-form"
                 disabled={isLoading || !isFormValid}
-                className="h-11 px-6 sm:px-10 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-pink-500/25 text-xs sm:text-sm opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="h-11 px-6 sm:px-10 rounded-xl bg-[image:var(--crm-brand-gradient)] border-0 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-rose-500/25 text-xs sm:text-sm opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {isLoading ? (
                   <>

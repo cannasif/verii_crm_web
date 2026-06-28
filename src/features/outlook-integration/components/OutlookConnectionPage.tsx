@@ -110,7 +110,7 @@ export function OutlookConnectionPage(): ReactElement {
 
               <div className="flex flex-col gap-3 pt-2">
                 {!isOAuthConfigured && (
-                  <div className="inline-flex self-start rounded-lg border border-pink-200 bg-pink-50 dark:border-[#4C3D68] dark:bg-[#2D1B4E] px-3 py-2 text-sm text-pink-600 dark:text-[#FB64B6]">
+                  <div className="inline-flex self-start rounded-lg border border-rose-200 bg-rose-50 dark:border-[#4C3D68] dark:bg-[#2D1B4E] px-3 py-2 text-sm text-rose-600 dark:text-[#FB64B6]">
                     {t('connection.oauthNotConfiguredWarning')}
                   </div>
                 )}
@@ -119,7 +119,7 @@ export function OutlookConnectionPage(): ReactElement {
                     <Button
                       onClick={() => authorizeMutation.mutate()}
                       disabled={authorizeMutation.isPending || !isOAuthConfigured}
-                      className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05]  active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                      className="bg-[image:var(--crm-brand-gradient)] text-white font-black hover:scale-[1.05]  active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                     >
                       {authorizeMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                       {t('connection.connectButton')}
@@ -129,7 +129,7 @@ export function OutlookConnectionPage(): ReactElement {
                       variant="destructive"
                       onClick={() => disconnectMutation.mutate()}
                       disabled={disconnectMutation.isPending}
-                      className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                      className="bg-[image:var(--crm-brand-gradient)] text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                     >
                       {disconnectMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                       {t('connection.disconnectButton')}

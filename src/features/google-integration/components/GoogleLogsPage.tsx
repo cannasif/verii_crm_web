@@ -371,7 +371,7 @@ export function GoogleLogsPage(): ReactElement {
               </div>
             )}
             rowClassName={(_log) =>
-              `group hover:bg-pink-50/40 dark:hover:bg-pink-500/5 transition-colors duration-200 ${
+              `group hover:bg-rose-50/40 dark:hover:bg-rose-500/5 transition-colors duration-200 ${
                 !SHOW_ACTIONS_COLUMN ? 'cursor-pointer' : ''
               }`
             }

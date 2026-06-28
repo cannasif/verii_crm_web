@@ -140,7 +140,7 @@ function SummaryBlock({
     <Card className="rounded-[2rem] border border-slate-200 bg-white/85 dark:border-white/10 dark:bg-[#180F22]">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-3 text-lg font-black text-slate-900 dark:text-white">
-          <span className="rounded-2xl bg-pink-500/10 p-3 text-pink-600 dark:text-pink-300">{icon}</span>
+          <span className="rounded-2xl bg-rose-500/10 p-3 text-rose-600 dark:text-rose-300">{icon}</span>
           {title}
         </CardTitle>
       </CardHeader>
@@ -188,7 +188,7 @@ export function AccessControlGuidePage(): ReactElement {
       <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-xl dark:border-white/10 dark:bg-[#180F22]">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-pink-200 bg-pink-50 px-3 py-1 text-xs font-black uppercase tracking-[0.22em] text-pink-700 dark:border-pink-500/20 dark:bg-pink-500/10 dark:text-pink-200">
+            <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-black uppercase tracking-[0.22em] text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200">
               <BookOpen className="size-3.5" />
               {t('common:guide')}
             </div>
@@ -229,7 +229,7 @@ export function AccessControlGuidePage(): ReactElement {
       <Card className="rounded-[2rem] border border-slate-200 bg-white/85 dark:border-white/10 dark:bg-[#180F22]">
         <CardHeader>
           <CardTitle className="flex items-center gap-3 text-2xl font-black text-slate-900 dark:text-white">
-            <Workflow className="size-5 text-orange-500" />
+            <Workflow className="size-5 text-amber-500" />
             {t('guide.screensTitle')}
           </CardTitle>
         </CardHeader>

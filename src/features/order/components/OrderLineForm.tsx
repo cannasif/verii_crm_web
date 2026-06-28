@@ -216,9 +216,9 @@ export function OrderLineForm({
     currencyOptions,
     exchangeRates,
     erpRates,
-    onDocumentUnitPriceChange: (price) => {
+    onDocumentUnitPriceChange: useCallback((price: number) => {
       handleFieldChangeRef.current('unitPrice', price);
-    },
+    }, []),
   });
   const [quantityInputValue, setQuantityInputValue] = useState<string>(() =>
     formatQuantityInputDraftFromNumber(line.quantity ?? 0, line.unit),
@@ -411,7 +411,8 @@ export function OrderLineForm({
   useEffect(() => {
     unitPriceInput.resetInputCurrencyToDocument();
     unitPriceInput.syncUnitPriceFromDocument(formData.unitPrice ?? 0);
-  }, [currency, formData.unitPrice, unitPriceInput]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency, formData.unitPrice]);
 
   useEffect(() => {
     if (!line.productCode?.trim() && formData.productCode?.trim()) {
@@ -433,7 +434,8 @@ export function OrderLineForm({
     } else {
       setRelatedLines([]);
     }
-  }, [calculateLineTotals, line, offerType, deliveryMethodName, formData.productCode, unitPriceInput]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calculateLineTotals, line, offerType, deliveryMethodName, formData.productCode]);
 
   useEffect(() => {
     if (previousOfferTypeRef.current === offerType && previousDeliveryMethodNameRef.current === deliveryMethodName) return;
@@ -452,7 +454,8 @@ export function OrderLineForm({
   useEffect(() => {
     unitPriceInput.syncUnitPriceFromDocument(formData.unitPrice ?? 0);
     setQuantityInputValue(formatQuantityInputDraftFromNumber(formData.quantity ?? 0, formData.unit));
-  }, [formData.productCode, formData.quantity, formData.unit, formData.unitPrice, line.id, unitPriceInput]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.productCode, formData.quantity, formData.unit, formData.unitPrice, line.id]);
 
   useEffect(() => {
     setFormData((prev) => {
@@ -1196,7 +1199,7 @@ export function OrderLineForm({
   const hasDiscount = totalDiscount > 0;
   const hasApprovalWarning = discountValidation.exceedsLimit || formData.approvalStatus === 1;
   const bulkDraftGrandTotal = bulkDraftLines.reduce((sum, item) => sum + (item.lineGrandTotal || 0), 0);
-  const pinkFocusClass = 'focus-visible:border-pink-500 focus-visible:ring-2 focus-visible:ring-pink-500/20';
+  const pinkFocusClass = 'focus-visible:border-rose-500 focus-visible:ring-2 focus-visible:ring-rose-500/20';
   const percentageStep = '0.1';
   const isLineStockSelected = Boolean((formData.productCode ?? '').trim());
 
@@ -1204,15 +1207,15 @@ export function OrderLineForm({
     <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
       <div className="space-y-4">
         <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
-          <Package className="h-4 w-4 text-pink-500" />
+          <Package className="h-4 w-4 text-rose-500" />
           {t('order.lines.stock')}
-          <span className="text-pink-500">*</span>
+          <span className="text-rose-500">*</span>
         </label>
 
         <div className="flex flex-col gap-3">
           <div className="flex flex-row gap-3">
             <div className="group relative min-w-0 flex-1">
-              <div className="pointer-events-none absolute left-3 top-1/2 z-20 flex -translate-y-1/2 items-center justify-center text-slate-400 transition-colors group-focus-within:text-pink-500">
+              <div className="pointer-events-none absolute left-3 top-1/2 z-20 flex -translate-y-1/2 items-center justify-center text-slate-400 transition-colors group-focus-within:text-rose-500">
                 <Search className="h-4 w-4" />
               </div>
               <LineFormStockSearchField
@@ -1225,7 +1228,7 @@ export function OrderLineForm({
               type="button"
               variant="outline"
               onClick={() => setProductDialogOpen(true)}
-              className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center justify-center"
+              className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-rose-50 dark:hover:bg-rose-500/10 text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 transition-all flex-none items-center justify-center"
             >
               <Search className="h-5 w-5" />
             </Button>
@@ -1233,7 +1236,7 @@ export function OrderLineForm({
               type="button"
               variant="outline"
               onClick={() => setCatalogDialogOpen(true)}
-              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-pink-50 dark:hover:bg-pink-500/10 text-pink-500 dark:text-pink-400 hover:text-pink-600 dark:hover:text-pink-300 transition-all flex-none items-center gap-2"
+              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-rose-50 dark:hover:bg-rose-500/10 text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 transition-all flex-none items-center gap-2"
             >
               <LayoutGrid className="h-4 w-4" />
               <span className="text-xs font-medium">{t('catalogStockPicker.openButton', { ns: 'common' })}</span>
@@ -1248,7 +1251,7 @@ export function OrderLineForm({
               <Info className="h-4 w-4" />
               <span className="text-xs font-medium">{t('common.pricingInsights.button')}</span>
               {ruleInsightCount > 0 && (
-                <span className="inline-flex min-w-5 h-5 px-1 items-center justify-center rounded-full bg-pink-500 text-white text-[10px] font-bold">
+                <span className="inline-flex min-w-5 h-5 px-1 items-center justify-center rounded-full bg-rose-500 text-white text-[10px] font-bold">
                   {ruleInsightCount}
                 </span>
               )}
@@ -1287,12 +1290,12 @@ export function OrderLineForm({
           </div>
 
           {bulkDraftLines.length > 0 && (
-            <div className="rounded-xl border border-pink-200/70 dark:border-pink-800/40 bg-pink-50/50 dark:bg-pink-950/10 p-3 space-y-2">
+            <div className="rounded-xl border border-rose-200/70 dark:border-rose-800/40 bg-rose-50/50 dark:bg-rose-950/10 p-3 space-y-2">
               <div className="flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-300">
                 <span className="font-semibold">
                   {t('order.lines.stock')} ({bulkDraftLines.length})
                 </span>
-                <span className="inline-flex items-center rounded-full border border-pink-300/70 dark:border-pink-700/50 bg-white/90 dark:bg-pink-900/30 px-2.5 py-1 text-[11px] font-bold text-pink-700 dark:text-pink-300">
+                <span className="inline-flex items-center rounded-full border border-rose-300/70 dark:border-rose-700/50 bg-white/90 dark:bg-rose-900/30 px-2.5 py-1 text-[11px] font-bold text-rose-700 dark:text-rose-300">
                   {t('quotation:lines.grandTotal')}: {formatCurrency(bulkDraftGrandTotal, currencyCode)}
                 </span>
               </div>
@@ -1301,8 +1304,8 @@ export function OrderLineForm({
                   <div
                     key={`${item.id}-${index}`}
                     className={`inline-flex items-stretch overflow-hidden rounded-full border transition-all ${index === activeBulkIndex
-                      ? 'border-pink-500 bg-pink-600 shadow-md shadow-pink-500/30 dark:border-pink-400 dark:bg-pink-500'
-                      : 'border-pink-200/80 bg-white/80 dark:border-pink-700/40 dark:bg-pink-900/20'
+                      ? 'border-rose-500 bg-rose-600 shadow-md shadow-rose-500/30 dark:border-rose-400 dark:bg-rose-500'
+                      : 'border-rose-200/80 bg-white/80 dark:border-rose-700/40 dark:bg-rose-900/20'
                       }`}
                   >
                     <button
@@ -1310,8 +1313,8 @@ export function OrderLineForm({
                       onClick={() => handleSelectBulkLine(index)}
                       title={item.productName || item.productCode || '-'}
                       className={`flex h-8 max-w-[180px] items-center gap-1.5 px-3 text-left text-sm transition-colors ${index === activeBulkIndex
-                        ? 'text-white hover:bg-pink-700/35 dark:hover:bg-white/10'
-                        : 'text-pink-700 hover:bg-pink-50 dark:text-pink-300 dark:hover:bg-pink-900/35'
+                        ? 'text-white hover:bg-rose-700/35 dark:hover:bg-white/10'
+                        : 'text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-900/35'
                         }`}
                     >
                       {(item.relatedLines?.length ?? 0) > 0 ? <Layers className="h-3.5 w-3.5 shrink-0" /> : null}
@@ -1323,8 +1326,8 @@ export function OrderLineForm({
                       title={t('common.remove')}
                       onClick={handleRemoveBulkDraftLine(index)}
                       className={`flex h-8 w-7 shrink-0 items-center justify-center border-l text-xs transition-colors ${index === activeBulkIndex
-                        ? 'border-pink-400/50 text-white/90 hover:bg-white/15 hover:text-white'
-                        : 'border-pink-200/70 text-pink-600 hover:bg-pink-100 dark:border-pink-700/50 dark:text-pink-300 dark:hover:bg-pink-900/40'
+                        ? 'border-rose-400/50 text-white/90 hover:bg-white/15 hover:text-white'
+                        : 'border-rose-200/70 text-rose-600 hover:bg-rose-100 dark:border-rose-700/50 dark:text-rose-300 dark:hover:bg-rose-900/40'
                         }`}
                     >
                       <X className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -1340,7 +1343,7 @@ export function OrderLineForm({
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
-            <Layers className="h-4 w-4 text-blue-500" />
+            <Layers className="h-4 w-4 text-sky-500" />
             {t('order.lines.quantity')}
           </label>
           <Input
@@ -1401,7 +1404,7 @@ export function OrderLineForm({
 
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
-            <Package className="h-4 w-4 text-purple-500" />
+            <Package className="h-4 w-4 text-indigo-500" />
             {t('quotation:lines.unit')}
           </label>
           <Input
@@ -1415,7 +1418,7 @@ export function OrderLineForm({
         {!hideVatRate ? (
           <div className="space-y-2">
             <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
-              <Percent className="h-4 w-4 text-orange-500" />
+              <Percent className="h-4 w-4 text-amber-500" />
               {t('order.lines.vatRate')}
             </label>
             <div className="relative">
@@ -1462,7 +1465,7 @@ export function OrderLineForm({
       <div className="grid grid-cols-1 xl:grid-cols-[17fr_6fr] gap-6 pt-4 border-t border-slate-200 dark:border-white/10">
         <div className="space-y-4 min-w-0">
           <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
-            <BadgePercent className="h-4 w-4 text-purple-500" />
+            <BadgePercent className="h-4 w-4 text-indigo-500" />
             {t('order.lines.discounts')}
           </h5>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -1603,7 +1606,7 @@ export function OrderLineForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-0 text-xs text-pink-600 hover:text-pink-700"
+                  className="h-8 px-0 text-xs text-rose-600 hover:text-rose-700"
                   onClick={() => setProfilCreateOpen(true)}
                 >
                   <CirclePlus className="mr-1 h-3.5 w-3.5" />
@@ -1630,7 +1633,7 @@ export function OrderLineForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-0 text-xs text-pink-600 hover:text-pink-700"
+                  className="h-8 px-0 text-xs text-rose-600 hover:text-rose-700"
                   onClick={() => setDemirCreateOpen(true)}
                 >
                   <CirclePlus className="mr-1 h-3.5 w-3.5" />
@@ -1657,7 +1660,7 @@ export function OrderLineForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-0 text-xs text-pink-600 hover:text-pink-700"
+                  className="h-8 px-0 text-xs text-rose-600 hover:text-rose-700"
                   onClick={() => setVidaCreateOpen(true)}
                 >
                   <CirclePlus className="mr-1 h-3.5 w-3.5" />
@@ -1691,7 +1694,7 @@ export function OrderLineForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-0 text-xs text-pink-600 hover:text-pink-700"
+                  className="h-8 px-0 text-xs text-rose-600 hover:text-rose-700"
                   onClick={() => setBaskiCreateOpen(true)}
                 >
                   <CirclePlus className="mr-1 h-3.5 w-3.5" />
@@ -1782,7 +1785,7 @@ export function OrderLineForm({
             <div className="h-px bg-slate-200 dark:bg-white/10 my-2 border-dashed" />
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
               <span className="text-base font-bold text-slate-900 dark:text-white">{t('quotation:lines.grandTotal')}</span>
-              <span className="text-2xl font-black tracking-tight text-orange-600 dark:text-orange-500">
+              <span className="text-2xl font-black tracking-tight text-amber-600 dark:text-amber-500">
                 {formatCurrency(formData.lineGrandTotal, currencyCode)}
               </span>
             </div>
@@ -1791,7 +1794,7 @@ export function OrderLineForm({
           {relatedLines.length > 0 && (
             <div className="bg-slate-50 dark:bg-white/[0.03] rounded-2xl p-4 border border-slate-200 dark:border-white/5 space-y-3 backdrop-blur-sm">
               <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 text-purple-500" />
+                <Package className="h-4 w-4 text-indigo-500" />
                 <h5 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                   {t('order.lines.relatedStocks')} ({relatedLines.length})
                 </h5>
@@ -1835,7 +1838,7 @@ export function OrderLineForm({
                       </div>
                       <div>
                         <span className="text-slate-500 dark:text-slate-400">{t('quotation:lines.lineTotal')}:</span>
-                        <span className="ml-2 font-semibold text-orange-600 dark:text-orange-400">
+                        <span className="ml-2 font-semibold text-amber-600 dark:text-amber-400">
                           {formatCurrency(relatedLine.lineGrandTotal || 0, currencyCode)}
                         </span>
                       </div>

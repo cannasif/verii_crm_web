@@ -265,7 +265,7 @@ export function SystemSettingsForm({
             <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex min-w-0 items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-pink-100 text-pink-700 dark:bg-pink-500/10 dark:text-pink-300">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400">
                     <PlugZap className="h-5 w-5" />
                   </div>
                   <div className="min-w-0 space-y-1">
@@ -766,7 +766,7 @@ export function SystemSettingsForm({
               <Button
                 type="submit"
                 disabled={isSaving}
-                className="min-w-[140px] bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.03] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="min-w-[140px] bg-[image:var(--crm-brand-gradient)] px-8 font-bold text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] ring-1 ring-white/10 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] border-0"
               >
                 {isSaving ? (
                   <>
