@@ -147,12 +147,12 @@ function recommendedActionCodeToKey(code: string): string {
 
 const MODERN_CARD_CLASS =
   'group relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 ' +
-  'before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-linear-to-r before:from-transparent before:via-pink-500/40 before:to-transparent before:opacity-60 before:transition-opacity ' +
-  'after:pointer-events-none after:absolute after:-right-16 after:-top-16 after:h-32 after:w-32 after:rounded-full after:bg-pink-500/[0.06] after:blur-2xl after:transition-opacity after:duration-300 after:opacity-0 ' +
-  'hover:-translate-y-0.5 hover:border-pink-500/30 hover:shadow-[0_12px_34px_-16px_rgba(236,72,153,0.4)] hover:before:opacity-100 hover:after:opacity-100';
+  'before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-linear-to-r before:from-transparent before:via-rose-500/40 before:to-transparent before:opacity-60 before:transition-opacity ' +
+  'after:pointer-events-none after:absolute after:-right-16 after:-top-16 after:h-32 after:w-32 after:rounded-full after:bg-rose-500/[0.06] after:blur-2xl after:transition-opacity after:duration-300 after:opacity-0 ' +
+  'hover:-translate-y-0.5 hover:border-rose-500/30 hover:shadow-[0_12px_34px_-16px_rgba(236,72,153,0.4)] hover:before:opacity-100 hover:after:opacity-100';
 
 const MODERN_ICON_CHIP_CLASS =
-  'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-pink-500/15 to-orange-500/10 text-pink-500 ring-1 ring-inset ring-pink-500/15 transition-all group-hover:from-pink-500/25 group-hover:to-orange-500/15 group-hover:ring-pink-500/30';
+  'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-rose-500/15 to-amber-500/10 text-rose-500 ring-1 ring-inset ring-rose-500/15 transition-all group-hover:from-rose-500/25 group-hover:to-amber-500/15 group-hover:ring-rose-500/30';
 
 function SectionSkeleton(): ReactElement {
   return (
@@ -255,7 +255,7 @@ function SimpleItemRow({
       <button
         type="button"
         onClick={onClick}
-        className="group flex w-full items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/20 px-2.5 py-2 text-left transition-all hover:border-pink-500/40 hover:bg-muted/50 hover:shadow-xs"
+        className="group flex w-full items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/20 px-2.5 py-2 text-left transition-all hover:border-rose-500/40 hover:bg-muted/50 hover:shadow-xs"
       >
         {content}
       </button>
@@ -489,8 +489,8 @@ function RecommendedActionsPanel({
               const title = tc(`actions.recommendedActions.${actionKey}.title`, { defaultValue: action.title });
               const reason = tc(`actions.recommendedActions.${actionKey}.reason`, { defaultValue: action.reason ?? '-' });
               return (
-              <div key={`${action.actionCode}-${action.title}`} className="group/action relative overflow-hidden rounded-xl border border-border/70 bg-muted/20 p-3 transition-all hover:border-pink-500/30 hover:bg-muted/40 hover:shadow-sm">
-                <span className="pointer-events-none absolute inset-y-0 left-0 w-0.5 bg-linear-to-b from-pink-500 to-orange-500 opacity-0 transition-opacity group-hover/action:opacity-100" />
+              <div key={`${action.actionCode}-${action.title}`} className="group/action relative overflow-hidden rounded-xl border border-border/70 bg-muted/20 p-3 transition-all hover:border-rose-500/30 hover:bg-muted/40 hover:shadow-sm">
+                <span className="pointer-events-none absolute inset-y-0 left-0 w-0.5 bg-linear-to-b from-rose-500 to-amber-500 opacity-0 transition-opacity group-hover/action:opacity-100" />
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-medium text-sm">{title}</p>
@@ -499,7 +499,7 @@ function RecommendedActionsPanel({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <span className="inline-flex">
-                        <Button size="sm" onClick={() => onExecute(action)} disabled={busy} className="rounded-lg border-0 bg-linear-to-r from-pink-600 to-orange-600 text-white transition-all hover:-translate-y-0.5 hover:text-white hover:shadow-md">
+                        <Button size="sm" onClick={() => onExecute(action)} disabled={busy} className="rounded-lg border-0 bg-[image:var(--crm-brand-gradient)] shadow-[0_4px_14px_-6px_var(--crm-brand-shadow)] hover:shadow-[0_6px_20px_-6px_var(--crm-brand-shadow)] text-white transition-all hover:-translate-y-0.5 hover:text-white hover:shadow-md">
                           {tc('actions.execute')}
                         </Button>
                       </span>
@@ -678,7 +678,7 @@ function QuickQuotationRow({
             <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${item.hasConvertedQuotation ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'}`}>
               {item.hasConvertedQuotation ? tc('quickQuotations.converted') : tc('quickQuotations.draft')}
             </span>
-            <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${item.hasApprovalRequest ? 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-300' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300'}`}>
+            <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${item.hasApprovalRequest ? 'bg-sky-50 text-sky-700 dark:bg-sky-500/10 dark:text-sky-300' : 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-300'}`}>
               {item.hasApprovalRequest ? (item.approvalStatusName ?? tc('quickQuotations.sentToApproval')) : tc('quickQuotations.notSentToApproval')}
             </span>
           </div>
@@ -720,7 +720,7 @@ function QuickQuotationRow({
               variant="ghost"
               size="sm"
               onClick={() => onOpenQuotation?.(item.quotationId as number)}
-              className="h-8 gap-1.5 text-pink-600 hover:text-pink-700 dark:text-pink-400"
+              className="h-8 gap-1.5 text-rose-600 hover:text-rose-700 dark:text-rose-400"
             >
               {tc('quickQuotations.openQuotation')}
               <ExternalLink className="h-3.5 w-3.5" />
@@ -972,7 +972,7 @@ function sanitizePhone(phone?: string | null): string | null {
 function HeroChip({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }): ReactElement {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-2.5 py-1 text-xs font-medium text-foreground/80">
-      <Icon className="h-3.5 w-3.5 text-pink-500" />
+      <Icon className="h-3.5 w-3.5 text-rose-500" />
       <span className="truncate">{children}</span>
     </span>
   );
@@ -996,7 +996,7 @@ function HeroInfoActionIcon({
       ? 'hover:bg-emerald-500/15 hover:text-emerald-600 dark:hover:text-emerald-400'
       : tone === 'call'
         ? 'hover:bg-sky-500/15 hover:text-sky-600 dark:hover:text-sky-400'
-        : 'hover:bg-pink-500/15 hover:text-pink-600 dark:hover:text-pink-400';
+        : 'hover:bg-rose-500/15 hover:text-rose-600 dark:hover:text-rose-400';
   const cls = cn(
     'flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-all duration-200 hover:scale-110 active:scale-95',
     toneClass
@@ -1040,8 +1040,8 @@ function HeroInfoLine({
   const hasValue = Boolean(value && value.trim());
   const fullValue = hasValue ? (value as string) : undefined;
   return (
-    <div className="group flex items-center gap-2.5 rounded-xl border border-border bg-muted/20 px-2.5 py-1.5 shadow-xs transition-colors hover:border-pink-500/40 hover:bg-muted/40">
-      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background text-pink-500">
+    <div className="group flex items-center gap-2.5 rounded-xl border border-border bg-muted/20 px-2.5 py-1.5 shadow-xs transition-colors hover:border-rose-500/40 hover:bg-muted/40">
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background text-rose-500">
         <Icon className="h-3.5 w-3.5" />
       </span>
       <div className="min-w-0 flex-1">
@@ -1052,7 +1052,7 @@ function HeroInfoLine({
             target={valueHref.startsWith('http') ? '_blank' : undefined}
             rel="noreferrer"
             title={fullValue}
-            className="block truncate text-sm font-medium text-foreground hover:text-pink-500"
+            className="block truncate text-sm font-medium text-foreground hover:text-rose-500"
           >
             {value}
           </a>
@@ -1096,10 +1096,10 @@ function HeroActionButton({
 }): ReactElement {
   const toneClass =
     tone === 'gradient'
-      ? 'cursor-pointer border-transparent bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-sm shadow-pink-500/20 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-pink-500/30 hover:text-white active:translate-y-0 [&_.hero-action-icon]:bg-white/20 [&_.hero-action-icon]:text-white'
+      ? 'cursor-pointer border-transparent bg-[image:var(--crm-brand-gradient)] shadow-[0_4px_14px_-6px_var(--crm-brand-shadow)] hover:shadow-[0_6px_20px_-6px_var(--crm-brand-shadow)] text-white shadow-sm shadow-rose-500/20 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-rose-500/30 hover:text-white active:translate-y-0 [&_.hero-action-icon]:bg-white/20 [&_.hero-action-icon]:text-white'
       : tone === 'whatsapp'
         ? 'border-emerald-500/30 bg-emerald-500/5 text-foreground hover:bg-emerald-500/10 [&_.hero-action-icon]:bg-emerald-500/15 [&_.hero-action-icon]:text-emerald-600 dark:[&_.hero-action-icon]:text-emerald-400'
-        : 'border-border bg-background/70 text-foreground hover:bg-muted [&_.hero-action-icon]:bg-muted [&_.hero-action-icon]:text-pink-500';
+        : 'border-border bg-background/70 text-foreground hover:bg-muted [&_.hero-action-icon]:bg-muted [&_.hero-action-icon]:text-rose-500';
 
   const className = cn(
     'group inline-flex h-10 items-center gap-2 rounded-xl border pl-1.5 pr-3.5 text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-40',
@@ -1168,14 +1168,14 @@ function CustomerHeroCard({
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-linear-to-r from-pink-600 via-fuchsia-500 to-orange-500" />
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-pink-500/[0.05] via-transparent to-orange-500/[0.03] dark:from-pink-500/[0.07] dark:to-orange-500/[0.04]" />
-      <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-pink-500/[0.06] blur-3xl dark:bg-pink-500/10" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-linear-to-r from-rose-600 via-rose-500 to-amber-500" />
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-rose-500/[0.05] via-transparent to-amber-500/[0.03] dark:from-rose-500/[0.07] dark:to-amber-500/[0.04]" />
+      <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-rose-500/[0.06] blur-3xl dark:bg-rose-500/10" />
 
       <div className="relative grid gap-4 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-5">
         <div className="flex min-w-0 flex-col gap-3">
           <div className="flex items-start gap-3.5">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-pink-500 via-fuchsia-500 to-orange-500 text-lg font-bold text-white shadow-lg shadow-pink-500/20 sm:h-16 sm:w-16 sm:text-xl">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-rose-500 via-rose-500 to-amber-500 text-lg font-bold text-white shadow-lg shadow-rose-500/20 sm:h-16 sm:w-16 sm:text-xl">
               {getInitials(name)}
             </div>
 
@@ -1275,7 +1275,7 @@ function CustomerHeroCard({
 
         <div className="rounded-2xl border border-border/60 bg-background/50 p-4 backdrop-blur-sm">
           <p className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-            <BadgeCheck className="h-3.5 w-3.5 text-pink-500" />
+            <BadgeCheck className="h-3.5 w-3.5 text-rose-500" />
             {tc('hero.infoTitle')}
           </p>
           <HeroStatRow label={tc('hero.taxNumber')} value={customer?.taxNumber || noneLabel} />
@@ -1591,9 +1591,9 @@ export function Customer360Page(): ReactElement {
                 value={tab.value}
                 className="group relative gap-2 rounded-lg border border-transparent px-3.5 py-2 text-sm font-medium text-muted-foreground transition-all data-[state=active]:border-border data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm"
               >
-                <tab.icon className="h-4 w-4 transition-colors group-data-[state=active]:text-pink-500" />
+                <tab.icon className="h-4 w-4 transition-colors group-data-[state=active]:text-rose-500" />
                 {tab.label}
-                <span className="pointer-events-none absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-linear-to-r from-pink-600 to-orange-500 opacity-0 transition-opacity group-data-[state=active]:opacity-100" />
+                <span className="pointer-events-none absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-linear-to-r from-rose-600 to-amber-500 opacity-0 transition-opacity group-data-[state=active]:opacity-100" />
               </TabsTrigger>
             ))}
           </TabsList>
@@ -1622,9 +1622,9 @@ export function Customer360Page(): ReactElement {
             ] as const).map((item) => (
               <Card
                 key={item.key}
-                className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-pink-500/30 hover:shadow-[0_12px_34px_-16px_rgba(236,72,153,0.4)]"
+                className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-500/30 hover:shadow-[0_12px_34px_-16px_rgba(236,72,153,0.4)]"
               >
-                <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-pink-500/40 to-transparent opacity-60 transition-opacity group-hover:opacity-100" />
+                <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-rose-500/40 to-transparent opacity-60 transition-opacity group-hover:opacity-100" />
                 <CardContent className="flex items-center justify-between gap-3 pt-6">
                   <div className="min-w-0">
                     <p className="truncate text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -1865,7 +1865,7 @@ export function Customer360Page(): ReactElement {
                 <Button
                   type="button"
                   onClick={handleQuickQuote}
-                  className="gap-2 rounded-xl border-0 bg-linear-to-r from-pink-600 to-orange-600 text-white hover:text-white"
+                  className="gap-2 rounded-xl border-0 bg-[image:var(--crm-brand-gradient)] shadow-[0_4px_14px_-6px_var(--crm-brand-shadow)] hover:shadow-[0_6px_20px_-6px_var(--crm-brand-shadow)] text-white hover:text-white"
                 >
                   <Plus className="h-4 w-4" />
                   {tc('hero.quickQuote')}
@@ -1936,7 +1936,7 @@ export function Customer360Page(): ReactElement {
                 size="sm"
                 onClick={() => imageInputRef.current?.click()}
                 disabled={uploadImagesMutation.isPending}
-                className="gap-2 rounded-xl border-0 bg-linear-to-r from-pink-600 to-orange-600 text-white hover:text-white"
+                className="gap-2 rounded-xl border-0 bg-[image:var(--crm-brand-gradient)] shadow-[0_4px_14px_-6px_var(--crm-brand-shadow)] hover:shadow-[0_6px_20px_-6px_var(--crm-brand-shadow)] text-white hover:text-white"
               >
                 <Upload className="h-4 w-4" />
                 {tc('images.upload')}
@@ -1955,7 +1955,7 @@ export function Customer360Page(): ReactElement {
                 <button
                   type="button"
                   onClick={() => imageInputRef.current?.click()}
-                  className="flex w-full flex-col items-center gap-3 rounded-xl border border-dashed border-border py-12 text-center transition-colors hover:border-pink-500/50 hover:bg-muted/40"
+                  className="flex w-full flex-col items-center gap-3 rounded-xl border border-dashed border-border py-12 text-center transition-colors hover:border-rose-500/50 hover:bg-muted/40"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
                     <Upload className="h-6 w-6" />

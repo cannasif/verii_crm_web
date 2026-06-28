@@ -153,7 +153,7 @@
     "description2": "Descrizione 2",
     "description3": "Descrizione 3",
     "descriptionPlaceholder": "Descrizione...",
-    "descriptionTooltipText": "Nota di produzione a livello riga. Al trasferimento all'ERP, la mappatura Netsis è: Descrizione 1 -> Descrizione extra riga 1, Descrizione 2 -> Descrizione extra riga 6, Descrizione 3 -> Descrizione extra riga 7. Per il Campo extra 2 Netsis riportato in fattura, usare il campo Profilo del CRM.",
+    "descriptionTooltipText": "Nota di produzione a livello riga. Al trasferimento all'ERP, la mappatura Netsis è: Descrizione 1 -> Campo Aggiuntivo 1, Descrizione 2 -> Campo Aggiuntivo 2, Descrizione 3 -> Descrizione Extra Riga 7.",
     "profileErpTooltip": "Questa selezione Profilo viene inviata all'ERP come Campo extra riga 2 / Descrizione extra riga 2 Netsis.",
     "rebarErpTooltip": "Questa selezione Ferro viene inviata all'ERP come Descrizione extra riga 3 Netsis.",
     "screwErpTooltip": "Questa selezione Vite viene inviata all'ERP come Descrizione extra riga 4 Netsis.",

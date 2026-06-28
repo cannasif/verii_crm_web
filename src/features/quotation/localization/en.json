@@ -180,7 +180,7 @@
     "descriptionField1Label": "Description 1",
     "descriptionField2Label": "Description 2",
     "descriptionField3Label": "Description 3",
-    "descriptionTooltipText": "Line-level production notes. When transferred to ERP, Netsis mapping is: Description 1 -> Line Extra Description 1, Description 2 -> Line Extra Description 6, Description 3 -> Line Extra Description 7.",
+    "descriptionTooltipText": "Line-level production notes. When transferred to ERP, Netsis mapping is: Description 1 -> Extra Field 1, Description 2 -> Extra Field 2, Description 3 -> Line Extra Description 7.",
     "profileErpTooltip": "This Profile selection is saved to the Netsis Line Extra Description 2 field when sent to ERP.",
     "rebarErpTooltip": "This Rebar selection is sent to ERP as the Netsis Line Extra Description 3 value.",
     "screwErpTooltip": "This Screw selection is sent to ERP as the Netsis Line Extra Description 4 value.",

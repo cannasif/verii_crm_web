@@ -235,8 +235,8 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
       return <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/70" />;
     }
     return sortDirection === 'asc'
-      ? <ArrowUp className="h-3.5 w-3.5 text-foreground" />
-      : <ArrowDown className="h-3.5 w-3.5 text-foreground" />;
+      ? <ArrowUp className="h-3.5 w-3.5 text-brand" />
+      : <ArrowDown className="h-3.5 w-3.5 text-brand" />;
   };
 
   const [selectedLog, setSelectedLog] = useState<CustomerMailLogDto | null>(null);
@@ -364,7 +364,7 @@ export function CustomerMailLogsTab({ customerId }: CustomerMailLogsTabProps): R
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                className="h-8 w-8 text-sky-600 hover:text-sky-700 hover:bg-sky-50 dark:text-sky-400 dark:hover:bg-sky-500/10"
                 onClick={() => handleOpenDetails(log)}
                 title={provider === 'google' ? t('google-integration:logs.viewDetails') : t('outlook-integration:logs.viewDetails')}
               >

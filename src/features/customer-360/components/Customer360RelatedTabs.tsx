@@ -50,11 +50,11 @@ function RelatedCard({
   children: ReactNode;
 }): ReactElement {
   return (
-    <Card className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-linear-to-r before:from-transparent before:via-pink-500/40 before:to-transparent before:opacity-60 before:transition-opacity hover:border-pink-500/30 hover:shadow-[0_12px_34px_-16px_rgba(236,72,153,0.4)] hover:before:opacity-100">
+    <Card className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-linear-to-r before:from-transparent before:via-rose-500/40 before:to-transparent before:opacity-60 before:transition-opacity hover:border-rose-500/30 hover:shadow-[0_12px_34px_-16px_rgba(236,72,153,0.4)] hover:before:opacity-100">
       <CardContent className="p-4 sm:p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 text-sm font-semibold">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-pink-500/15 to-orange-500/10 text-pink-500 ring-1 ring-inset ring-pink-500/15 transition-all group-hover:from-pink-500/25 group-hover:to-orange-500/15 group-hover:ring-pink-500/30">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-rose-500/15 to-amber-500/10 text-rose-500 ring-1 ring-inset ring-rose-500/15 transition-all group-hover:from-rose-500/25 group-hover:to-amber-500/15 group-hover:ring-rose-500/30">
               <Icon className="h-4 w-4" />
             </span>
             {title}
@@ -68,7 +68,7 @@ function RelatedCard({
             type="button"
             size="sm"
             onClick={onCreate}
-            className="gap-1.5 rounded-xl border-0 bg-linear-to-r from-pink-600 to-orange-600 text-white transition-all hover:-translate-y-0.5 hover:text-white"
+            className="gap-1.5 rounded-xl border-0 bg-[image:var(--crm-brand-gradient)] shadow-[0_4px_14px_-6px_var(--crm-brand-shadow)] hover:shadow-[0_6px_20px_-6px_var(--crm-brand-shadow)] text-white transition-all hover:-translate-y-0.5 hover:text-white"
           >
             <Plus className="h-4 w-4" />
             {createLabel}

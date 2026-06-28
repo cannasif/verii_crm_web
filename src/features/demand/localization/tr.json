@@ -163,7 +163,7 @@
     "description2": "Açıklama 2",
     "description3": "Açıklama 3",
     "descriptionPlaceholder": "Açıklama giriniz...",
-    "descriptionTooltipText": "Satır bazlı üretim açıklamasıdır. ERP'ye aktarıldığında Netsis eşleşmesi: Açıklama 1 -> Satır Ek Açıklama 1, Açıklama 2 -> Satır Ek Açıklama 6, Açıklama 3 -> Satır Ek Açıklama 7. ",
+    "descriptionTooltipText": "Satır bazlı üretim açıklamasıdır. ERP'ye aktarıldığında Netsis eşleşmesi: Açıklama 1 -> Ek Alan 1, Açıklama 2 -> Ek Alan 2, Açıklama 3 -> Satır Ek Açıklama 7.",
     "profileErpTooltip": "Bu Profil seçimi ERP'ye gönderimde Netsis Satır Ek Açıklama 2 alanına kaydedilir.",
     "rebarErpTooltip": "Bu Demir seçimi ERP'ye gönderimde Netsis Satır Ek Açıklama 3 değerine kaydedilir.",
     "screwErpTooltip": "Bu Vida seçimi ERP'ye gönderimde Netsis Satır Ek Açıklama 4 değerine kaydedilir.",

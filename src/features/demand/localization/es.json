@@ -153,7 +153,7 @@
     "description2": "Descripción 2",
     "description3": "Descripción 3",
     "descriptionPlaceholder": "Descripción...",
-    "descriptionTooltipText": "Nota de producción por línea. Al transferirse al ERP, el mapeo de línea Netsis es: Descripción 1 -> Descripción extra de línea 1, Descripción 2 -> Descripción extra de línea 6, Descripción 3 -> Descripción extra de línea 7. Para el Campo extra 2 de Netsis reflejado en la factura, use el campo Perfil de CRM.",
+    "descriptionTooltipText": "Nota de producción por línea. Al transferirse al ERP, el mapeo de Netsis es: Descripción 1 -> Campo Adicional 1, Descripción 2 -> Campo Adicional 2, Descripción 3 -> Descripción Extra de Línea 7.",
     "profileErpTooltip": "Esta selección de Perfil se envía al ERP como Campo extra 2 / Descripción extra de línea 2 de Netsis.",
     "rebarErpTooltip": "Esta selección de hierro se envía al ERP como Descripción extra de línea 3 de Netsis.",
     "screwErpTooltip": "Esta selección de tornillo se envía al ERP como Descripción extra de línea 4 de Netsis.",
