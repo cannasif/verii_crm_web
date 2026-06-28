@@ -17,6 +17,17 @@ export default defineConfig({
     assetsDir: "public/assets",
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
+      onwarn(warning, defaultHandler) {
+        const isSignalrPureAnnotationWarning =
+          warning.code === "INVALID_ANNOTATION" &&
+          typeof warning.id === "string" &&
+          warning.id.includes("@microsoft/signalr") &&
+          warning.message.includes("/*#__PURE__*/")
+
+        if (isSignalrPureAnnotationWarning) return
+
+        defaultHandler(warning)
+      },
       output: {
         manualChunks(id) {
           if (!id.includes("node_modules")) return
