@@ -135,7 +135,7 @@ function ProductSelectCatalogStockCard({
       onClick={onClick}
       className={cn(
         'group relative flex flex-col overflow-hidden rounded-xl border border-slate-300/90 bg-white crm-text-start shadow-md shadow-slate-200/45 backdrop-blur-md transition-all duration-300 ease-out will-change-transform dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none',
-        'hover:-translate-y-0.5 hover:border-pink-400/60 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-pink-500/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]',
+        'hover:-translate-y-0.5 hover:border-rose-400/60 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-rose-500/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]',
         selected &&
           'border-pink-400/70 bg-gradient-to-b from-pink-50/90 to-white shadow-[0_6px_22px_-6px_rgba(236,72,153,0.28)] ring-1 ring-pink-400/40 dark:from-pink-500/[0.08] dark:to-transparent dark:border-pink-500/55 dark:shadow-[0_0_22px_rgba(236,72,153,0.2)] dark:ring-pink-500/30',
       )}
@@ -337,7 +337,7 @@ function ProductSelectCatalogStockList({
                   key={stock.id}
                   tabIndex={0}
                   className={cn(
-                    'cursor-pointer border-b border-slate-200/90 transition-colors duration-200 hover:bg-pink-50/80 dark:border-white/5 dark:hover:bg-pink-500/[0.07]',
+                    'cursor-pointer border-b border-slate-200/90 transition-colors duration-200 hover:bg-rose-50/80 dark:border-white/5 dark:hover:bg-rose-500/[0.07]',
                     selected && 'bg-pink-50 dark:bg-pink-500/10 ring-1 ring-inset ring-pink-500/25',
                   )}
                   onClick={() => onStockClick(stock)}
@@ -851,7 +851,7 @@ export function ProductSelectDialog({
                     'shrink-0 h-10 w-10 sm:h-11 sm:w-11 rounded-xl transition-all',
                     isListening
                       ? 'animate-pulse bg-red-500 hover:bg-red-600 border-red-500 shadow-lg shadow-red-500/30'
-                      : 'bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400'
+                      : 'bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-rose-500/50 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400'
                   )}
                   title={t('productSelectDialog.voiceSearch')}
                 >
@@ -899,7 +899,7 @@ export function ProductSelectDialog({
                   <Button
                     type="button"
                     variant="outline"
-                    className="h-10 sm:h-11 rounded-xl bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-pink-500/50 hover:bg-pink-50 dark:hover:bg-pink-500/10 text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400"
+                    className="h-10 sm:h-11 rounded-xl bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-rose-500/50 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400"
                   >
                     <Filter className="h-4 w-4 crm-me-2" />
                     {t('filters', { defaultValue: 'Filtreler' })}

@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactElement } from 'react';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import {
   DndContext,
@@ -1506,7 +1506,7 @@ export function AssignedReportsDashboardSection({
             </div>
           ) : (
             <div
-              className="relative overflow-auto rounded-[24px] border border-pink-200/80 bg-[radial-gradient(circle_at_top,rgba(236,72,153,0.06),transparent_24%),linear-gradient(to_right,rgba(148,163,184,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.06)_1px,transparent_1px)] bg-size-[auto,32px_32px,32px_32px] p-4 transition-all duration-300"
+              className="relative overflow-auto rounded-[24px] border border-rose-200/80 bg-[radial-gradient(circle_at_top,rgba(244,63,94,0.06),transparent_24%),linear-gradient(to_right,rgba(148,163,184,0.06)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.06)_1px,transparent_1px)] bg-size-[auto,32px_32px,32px_32px] p-4 transition-all duration-300"
               style={{ minHeight: 720 }}
             >
               <div className="mb-4 flex items-center justify-between gap-3 px-1">

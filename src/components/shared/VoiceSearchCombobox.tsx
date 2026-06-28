@@ -508,11 +508,11 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
                       key={option.value}
                       value={option.label}
                       onSelect={() => handleOptionSelect(option)}
-                      className="cursor-pointer rounded-xl border border-transparent px-3 py-2.5 shadow-sm transition-all hover:border-slate-200 hover:bg-slate-50 data-[selected=true]:border-pink-200 data-[selected=true]:bg-pink-50 data-[selected=true]:text-slate-900 dark:hover:border-white/12 dark:hover:bg-white/8 dark:data-[selected=true]:border-pink-400/35 dark:data-[selected=true]:bg-pink-900/25 dark:data-[selected=true]:text-white"
+                      className="cursor-pointer rounded-xl border border-transparent px-3 py-2.5 shadow-sm transition-all hover:border-slate-200 hover:bg-slate-50 data-[selected=true]:border-rose-200 data-[selected=true]:bg-rose-50 data-[selected=true]:text-slate-900 dark:hover:border-white/12 dark:hover:bg-white/8 dark:data-[selected=true]:border-rose-400/35 dark:data-[selected=true]:bg-rose-950/25 dark:data-[selected=true]:text-white"
                     >
                       <Check
                         className={cn(
-                          "mr-2 h-4 w-4 text-pink-500",
+                          "mr-2 h-4 w-4 text-rose-500",
                           value === option.value ? "opacity-100" : "opacity-0"
                         )}
                       />

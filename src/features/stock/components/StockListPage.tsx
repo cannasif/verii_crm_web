@@ -710,7 +710,7 @@ export function StockListPage(): ReactElement {
             <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
               <div className="relative overflow-hidden rounded-md">
                 <div
-                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(236,72,153,0.08),transparent_55%)]"
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(244,63,94,0.06),transparent_55%),radial-gradient(ellipse_60%_40%_at_100%_100%,rgba(148,163,184,0.08),transparent_60%)] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(244,63,94,0.08),transparent_55%)]"
                   aria-hidden
                 />
                 <div className="relative max-h-[min(70vh,calc(100svh-16rem))] overflow-y-auto px-1 pt-1.5 sm:px-2 sm:pt-2">
