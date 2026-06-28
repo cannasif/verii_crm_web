@@ -79,6 +79,7 @@ import {
 import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } from '@/lib/line-form-stock-markers';
 import { mergeCreatedLineProductName } from '@/lib/merge-created-line-product-name';
 import { createClientId } from '@/lib/create-client-id';
+import { exportObjectsToXlsx } from '@/lib/xlsx-export';
 import {
   applyDocumentLinesUpdate,
   mergeRefetchedDocumentLines,
@@ -721,11 +722,7 @@ export function DemandLineTable({
   };
 
   const handleExportExcel = async (): Promise<void> => {
-    const XLSX = await import('xlsx');
-    const ws = XLSX.utils.json_to_sheet(lineTableExportData.excelRows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Talep Kalemleri');
-    XLSX.writeFile(wb, 'talep-kalemleri.xlsx');
+    await exportObjectsToXlsx('talep-kalemleri.xlsx', 'Talep Kalemleri', lineTableExportData.excelRows);
   };
 
   const handleExportPDF = async (): Promise<void> => {

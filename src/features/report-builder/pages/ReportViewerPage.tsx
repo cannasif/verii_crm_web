@@ -61,6 +61,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { exportSheetsToXlsx } from '@/lib/xlsx-export';
 
 const PreviewPanel = lazy(async () =>
   import('../components/PreviewPanel').then((mod) => ({ default: mod.PreviewPanel }))
@@ -357,15 +358,6 @@ function buildCsv(columns: string[], rows: unknown[][]): string {
   const header = columns.map(escapeCsvCell).join(',');
   const body = rows.map((row) => row.map(escapeCsvCell).join(',')).join('\n');
   return [header, body].filter(Boolean).join('\n');
-}
-
-function downloadBlobFile(filename: string, blob: Blob): void {
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.click();
-  URL.revokeObjectURL(url);
 }
 
 function buildExcelAoA(columns: string[], rows: unknown[][]): unknown[][] {
@@ -759,16 +751,10 @@ export function ReportViewerPage(): ReactElement {
 
   const exportCurrentWidgetXlsx = useCallback(async (): Promise<void> => {
     if (!preview.columns.length) return;
-    const XLSX = await import('xlsx');
     const baseName = meta.name?.trim() || 'report';
-    const ws = XLSX.utils.aoa_to_sheet(buildExcelAoA(preview.columns, preview.rows));
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Data');
-    const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    downloadBlobFile(
-      `${baseName}-widget.xlsx`,
-      new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
-    );
+    await exportSheetsToXlsx(`${baseName}-widget.xlsx`, [
+      { name: 'Data', rows: buildExcelAoA(preview.columns, preview.rows) },
+    ]);
   }, [meta.name, preview.columns, preview.rows]);
 
   const exportAllWidgetsXlsx = useCallback(async (): Promise<void> => {
@@ -777,10 +763,8 @@ export function ReportViewerPage(): ReactElement {
       await exportCurrentWidgetXlsx();
       return;
     }
-    const XLSX = await import('xlsx');
-    const wb = XLSX.utils.book_new();
     const usedNames = new Set<string>();
-    widgets.forEach((widget, index) => {
+    const sheets = widgets.map((widget, index) => {
       const data: ReportPreviewResponse | undefined =
         widget.id === config.activeWidgetId
           ? { columns: preview.columns, rows: preview.rows }
@@ -793,19 +777,12 @@ export function ReportViewerPage(): ReactElement {
         usedNames,
       );
       if (!data || !data.columns.length) {
-        const ws = XLSX.utils.aoa_to_sheet([[t('common.noData')]]);
-        XLSX.utils.book_append_sheet(wb, ws, sheetName);
-        return;
+        return { name: sheetName, rows: [[t('common.noData')]] };
       }
-      const ws = XLSX.utils.aoa_to_sheet(buildExcelAoA(data.columns, data.rows));
-      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+      return { name: sheetName, rows: buildExcelAoA(data.columns, data.rows) };
     });
     const baseName = meta.name?.trim() || 'report';
-    const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    downloadBlobFile(
-      `${baseName}-all-widgets.xlsx`,
-      new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
-    );
+    await exportSheetsToXlsx(`${baseName}-all-widgets.xlsx`, sheets);
   }, [config.activeWidgetId, config.widgets, exportCurrentWidgetXlsx, meta.name, preview.columns, preview.rows, widgetPreviews, t]);
 
   const loadReport = useCallback(async () => {

@@ -79,6 +79,7 @@ import {
 import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } from '@/lib/line-form-stock-markers';
 import { mergeCreatedLineProductName } from '@/lib/merge-created-line-product-name';
 import { createClientId } from '@/lib/create-client-id';
+import { exportObjectsToXlsx } from '@/lib/xlsx-export';
 import {
   applyDocumentLinesUpdate,
   mergeRefetchedDocumentLines,
@@ -872,11 +873,7 @@ export function OrderLineTable({
   };
 
   const handleExportExcel = async (): Promise<void> => {
-    const XLSX = await import('xlsx');
-    const ws = XLSX.utils.json_to_sheet(lineTableExportData.excelRows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Siparis Kalemleri');
-    XLSX.writeFile(wb, 'siparis-kalemleri.xlsx');
+    await exportObjectsToXlsx('siparis-kalemleri.xlsx', 'Siparis Kalemleri', lineTableExportData.excelRows);
   };
 
   const handleExportPDF = async (): Promise<void> => {

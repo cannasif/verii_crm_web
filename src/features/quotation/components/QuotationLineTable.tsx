@@ -85,6 +85,7 @@ import {
   syncDocumentLinesFromServer,
 } from '@/lib/document-line-list-update';
 import { createClientId } from '@/lib/create-client-id';
+import { exportObjectsToXlsx } from '@/lib/xlsx-export';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 import {
   DOCUMENT_LINE_TABLE_SCROLL_CONTAINER_CLASS,
@@ -496,12 +497,8 @@ export function QuotationLineTable({
     scrollRef.current.scrollLeft = scrollLeft - walkX;
   };
 
-  const handleExportExcel = async () => {
-    const XLSX = await import('xlsx');
-    const ws = XLSX.utils.json_to_sheet(lineTableExportData.excelRows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Teklif Kalemleri');
-    XLSX.writeFile(wb, 'teklif-kalemleri.xlsx');
+  const handleExportExcel = async (): Promise<void> => {
+    await exportObjectsToXlsx('teklif-kalemleri.xlsx', 'Teklif Kalemleri', lineTableExportData.excelRows);
   };
 
   const handleExportPDF = async () => {

@@ -1,3 +1,5 @@
+import { exportObjectsToXlsx } from './xlsx-export';
+
 export interface GridExportColumn {
   key: string;
   label: string;
@@ -94,23 +96,10 @@ const fallbackExportPdf = (params: GridExportParams): void => {
   popup.print();
 };
 
-interface XLSXModule {
-  utils: {
-    json_to_sheet: (data: Record<string, string | number>[]) => unknown;
-    book_new: () => unknown;
-    book_append_sheet: (workbook: unknown, sheet: unknown, name: string) => void;
-  };
-  writeFile: (workbook: unknown, filename: string) => void;
-}
-
 export async function exportGridToExcel(params: GridExportParams): Promise<void> {
   const exportRows = mapRowsForExport(params.columns, params.rows);
   try {
-    const XLSX = (await dynamicImport('xlsx')) as XLSXModule;
-    const worksheet = XLSX.utils.json_to_sheet(exportRows);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    XLSX.writeFile(workbook, `${params.fileName}.xlsx`);
+    await exportObjectsToXlsx(`${params.fileName}.xlsx`, 'Sheet1', exportRows);
   } catch {
     fallbackExportExcel(params);
   }
