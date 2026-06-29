@@ -302,23 +302,14 @@ export function QuotationDetailPage(): ReactElement {
     notesInitializedRef.current = true;
   }, [quotationId, notesData]);
 
-  useEffect(() => {
-    if (!quotationId || quotationId < 1) return;
-    if (linesDirtyRef.current) return;
-    if (!linesData || linesData.length === 0) return;
-    if (linesInitializedRef.current) return;
+  const formatLoadedQuotationLines = useCallback(async (sourceLines: QuotationLineGetDto[]): Promise<QuotationLineFormState[]> => {
+    const stockByCode = await fetchLocalizedStockMapByErpCodes(
+      sourceLines.map((line) => line.productCode ?? '')
+    );
+    const backendId = (line: { id?: number }): number =>
+      Number((line as { id?: number; Id?: number }).id ?? (line as { id?: number; Id?: number }).Id ?? 0);
 
-    let cancelled = false;
-
-    const loadLines = async (): Promise<void> => {
-      const stockByCode = await fetchLocalizedStockMapByErpCodes(
-        linesData.map((line) => line.productCode ?? '')
-      );
-      if (cancelled) return;
-
-      const backendId = (line: { id?: number }): number =>
-        Number((line as { id?: number; Id?: number }).id ?? (line as { id?: number; Id?: number }).Id ?? 0);
-      const formattedLines: QuotationLineFormState[] = deduplicateDocumentLinesByBackendId(linesData.map((line, _index) => {
+    return deduplicateDocumentLinesByBackendId(sourceLines.map((line, _index) => {
         const idNum = backendId(line);
         const amounts = calculateLineTotalsAmounts(
           line.unitPrice,
@@ -362,6 +353,25 @@ export function QuotationDetailPage(): ReactElement {
           ...amounts,
         };
       }));
+  }, [i18n.language]);
+
+  const replaceQuotationLinesFromServer = useCallback(async (sourceLines: QuotationLineGetDto[]): Promise<void> => {
+    const formattedLines = await formatLoadedQuotationLines(sourceLines);
+    linesDirtyRef.current = false;
+    setLinesState(formattedLines);
+    linesInitializedRef.current = true;
+  }, [formatLoadedQuotationLines]);
+
+  useEffect(() => {
+    if (!quotationId || quotationId < 1) return;
+    if (linesDirtyRef.current) return;
+    if (!linesData || linesData.length === 0) return;
+    if (linesInitializedRef.current) return;
+
+    let cancelled = false;
+
+    const loadLines = async (): Promise<void> => {
+      const formattedLines = await formatLoadedQuotationLines(linesData);
       if (cancelled) return;
       if (linesDirtyRef.current) {
         linesInitializedRef.current = true;
@@ -377,7 +387,7 @@ export function QuotationDetailPage(): ReactElement {
     return () => {
       cancelled = true;
     };
-  }, [quotationId, linesData, i18n.language]);
+  }, [quotationId, linesData, formatLoadedQuotationLines]);
 
   const { calculateLineTotals } = useQuotationCalculations();
   const { data: erpRates = [] } = useExchangeRate();
@@ -924,13 +934,13 @@ export function QuotationDetailPage(): ReactElement {
       await Promise.all(newRates.map((rate) => quotationApi.createQuotationExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
-      linesDirtyRef.current = false;
-      linesInitializedRef.current = false;
+      const refreshedLines = await quotationApi.getQuotationLinesByQuotationId(quotationId);
+      queryClient.setQueryData(queryKeys.quotationLines(quotationId), refreshedLines);
+      await replaceQuotationLinesFromServer(refreshedLines);
 
       await Promise.all([
         queryClient.refetchQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] }),
         queryClient.refetchQueries({ queryKey: queryKeys.quotation(quotationId) }),
-        queryClient.refetchQueries({ queryKey: queryKeys.quotationLines(quotationId) }),
       ]);
 
       toast.success(t('update.success'), {

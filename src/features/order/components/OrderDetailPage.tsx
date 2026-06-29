@@ -235,19 +235,12 @@ export function OrderDetailPage(): ReactElement {
     notesInitializedRef.current = true;
   }, [orderId, notesData]);
 
-  useEffect(() => {
-    if (linesDirtyRef.current) return;
-    if (!linesData || linesData.length === 0 || linesInitializedRef.current) return;
+  const formatLoadedOrderLines = useCallback(async (sourceLines: OrderLineGetDto[]): Promise<OrderLineFormState[]> => {
+    const stockByCode = await fetchLocalizedStockMapByErpCodes(
+      sourceLines.map((line) => line.productCode ?? '')
+    );
 
-    let cancelled = false;
-
-    const loadLines = async (): Promise<void> => {
-      const stockByCode = await fetchLocalizedStockMapByErpCodes(
-        linesData.map((line) => line.productCode ?? '')
-      );
-      if (cancelled) return;
-
-      const formattedLines: OrderLineFormState[] = deduplicateDocumentLinesByBackendId(linesData.map((line, _index) => {
+    return deduplicateDocumentLinesByBackendId(sourceLines.map((line, _index) => {
         const amounts = calculateLineTotalsAmounts(
           line.unitPrice,
           line.quantity,
@@ -290,6 +283,23 @@ export function OrderDetailPage(): ReactElement {
           ...amounts,
         };
       }));
+  }, [i18n.language]);
+
+  const replaceOrderLinesFromServer = useCallback(async (sourceLines: OrderLineGetDto[]): Promise<void> => {
+    const formattedLines = await formatLoadedOrderLines(sourceLines);
+    linesDirtyRef.current = false;
+    setLinesState(formattedLines);
+    linesInitializedRef.current = true;
+  }, [formatLoadedOrderLines]);
+
+  useEffect(() => {
+    if (linesDirtyRef.current) return;
+    if (!linesData || linesData.length === 0 || linesInitializedRef.current) return;
+
+    let cancelled = false;
+
+    const loadLines = async (): Promise<void> => {
+      const formattedLines = await formatLoadedOrderLines(linesData);
       if (cancelled) return;
       if (linesDirtyRef.current) {
         linesInitializedRef.current = true;
@@ -305,7 +315,7 @@ export function OrderDetailPage(): ReactElement {
     return () => {
       cancelled = true;
     };
-  }, [linesData, i18n.language]);
+  }, [linesData, formatLoadedOrderLines]);
 
   const { calculateLineTotals } = useOrderCalculations();
   const { data: erpRates = [] } = useExchangeRate();
@@ -603,13 +613,13 @@ export function OrderDetailPage(): ReactElement {
       await Promise.all(newRates.map((rate) => orderApi.createOrderExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
-      linesDirtyRef.current = false;
-      linesInitializedRef.current = false;
+      const refreshedLines = await orderApi.getOrderLinesByOrderId(orderId);
+      queryClient.setQueryData(queryKeys.orderLines(orderId), refreshedLines);
+      await replaceOrderLinesFromServer(refreshedLines);
 
       await Promise.all([
         queryClient.refetchQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] }),
         queryClient.refetchQueries({ queryKey: queryKeys.order(orderId) }),
-        queryClient.refetchQueries({ queryKey: queryKeys.orderLines(orderId) }),
       ]);
 
       toast.success(t('order.update.success'), {

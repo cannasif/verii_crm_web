@@ -232,19 +232,12 @@ export function DemandDetailPage(): ReactElement {
     notesInitializedRef.current = true;
   }, [demandId, notesData]);
 
-  useEffect(() => {
-    if (linesDirtyRef.current) return;
-    if (!linesData || linesData.length === 0 || linesInitializedRef.current) return;
+  const formatLoadedDemandLines = useCallback(async (sourceLines: DemandLineGetDto[]): Promise<DemandLineFormState[]> => {
+    const stockByCode = await fetchLocalizedStockMapByErpCodes(
+      sourceLines.map((line) => line.productCode ?? '')
+    );
 
-    let cancelled = false;
-
-    const loadLines = async (): Promise<void> => {
-      const stockByCode = await fetchLocalizedStockMapByErpCodes(
-        linesData.map((line) => line.productCode ?? '')
-      );
-      if (cancelled) return;
-
-      const formattedLines: DemandLineFormState[] = deduplicateDocumentLinesByBackendId(linesData.map((line, _index) => {
+    return deduplicateDocumentLinesByBackendId(sourceLines.map((line, _index) => {
         const amounts = calculateLineTotalsAmounts(
           line.unitPrice,
           line.quantity,
@@ -287,6 +280,23 @@ export function DemandDetailPage(): ReactElement {
           ...amounts,
         };
       }));
+  }, [i18n.language]);
+
+  const replaceDemandLinesFromServer = useCallback(async (sourceLines: DemandLineGetDto[]): Promise<void> => {
+    const formattedLines = await formatLoadedDemandLines(sourceLines);
+    linesDirtyRef.current = false;
+    setLinesState(formattedLines);
+    linesInitializedRef.current = true;
+  }, [formatLoadedDemandLines]);
+
+  useEffect(() => {
+    if (linesDirtyRef.current) return;
+    if (!linesData || linesData.length === 0 || linesInitializedRef.current) return;
+
+    let cancelled = false;
+
+    const loadLines = async (): Promise<void> => {
+      const formattedLines = await formatLoadedDemandLines(linesData);
       if (cancelled) return;
       if (linesDirtyRef.current) {
         linesInitializedRef.current = true;
@@ -302,7 +312,7 @@ export function DemandDetailPage(): ReactElement {
     return () => {
       cancelled = true;
     };
-  }, [linesData, i18n.language]);
+  }, [linesData, formatLoadedDemandLines]);
 
   const { calculateLineTotals } = useDemandCalculations();
   const { data: erpRates = [] } = useExchangeRate();
@@ -575,13 +585,13 @@ export function DemandDetailPage(): ReactElement {
       await Promise.all(newRates.map((rate) => demandApi.createDemandExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
-      linesDirtyRef.current = false;
-      linesInitializedRef.current = false;
+      const refreshedLines = await demandApi.getDemandLinesByDemandId(demandId);
+      queryClient.setQueryData(queryKeys.demandLines(demandId), refreshedLines);
+      await replaceDemandLinesFromServer(refreshedLines);
 
       await Promise.all([
         queryClient.refetchQueries({ queryKey: [DEMAND_QUERY_KEYS.DEMANDS] }),
         queryClient.refetchQueries({ queryKey: queryKeys.demand(demandId) }),
-        queryClient.refetchQueries({ queryKey: queryKeys.demandLines(demandId) }),
       ]);
 
       toast.success(t('update.success'), {
