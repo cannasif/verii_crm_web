@@ -30,6 +30,7 @@ import {
   DROPDOWN_SCROLL_THRESHOLD,
 } from '@/components/shared/dropdown/constants';
 import { getIconPrefixPaddingStyle } from '@/lib/form-field-with-icon';
+import { matchesSearchTerm } from '@/lib/search';
 
 export interface ComboboxOption {
   value: string;
@@ -451,7 +452,11 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
             pointerEvents: 'auto',
           }}
         >
-          <Command className="bg-transparent" shouldFilter={!isAsyncMode}>
+          <Command
+            className="bg-transparent"
+            shouldFilter={!isAsyncMode}
+            filter={(itemValue, search) => (matchesSearchTerm(search, [itemValue]) ? 1 : 0)}
+          >
             <CommandInput
               placeholder={searchPlaceholder || t('common.search')}
               value={searchQuery}
@@ -513,7 +518,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
                   {options.map((option) => (
                     <CommandItem
                       key={option.value}
-                      value={option.label}
+                      value={`${option.label} ${option.value}`}
                       onSelect={() => handleOptionSelect(option)}
                       className="cursor-pointer rounded-xl border border-transparent px-3 py-2.5 shadow-sm transition-all hover:border-slate-200 hover:bg-slate-50 data-[selected=true]:border-rose-200 data-[selected=true]:bg-rose-50 data-[selected=true]:text-slate-900 dark:hover:border-white/12 dark:hover:bg-white/8 dark:data-[selected=true]:border-rose-400/35 dark:data-[selected=true]:bg-rose-950/25 dark:data-[selected=true]:text-white"
                     >
@@ -542,4 +547,3 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
     </div>
   );
 });
-

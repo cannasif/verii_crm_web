@@ -11,6 +11,7 @@ export const useUserList = (
   const queryParams = {
     pageNumber: params.pageNumber,
     pageSize: params.pageSize,
+    search: params.search,
     sortBy: params.sortBy,
     sortDirection: params.sortDirection,
     filters: params.filters,

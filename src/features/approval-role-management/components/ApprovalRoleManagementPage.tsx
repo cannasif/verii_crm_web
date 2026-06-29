@@ -29,7 +29,6 @@ import { useCreateApprovalRole } from '../hooks/useCreateApprovalRole';
 import { useUpdateApprovalRole } from '../hooks/useUpdateApprovalRole';
 import { approvalRoleRowsToBackendFilters, APPROVAL_ROLE_FILTER_COLUMNS } from '../types/approval-role-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import type { PagedFilter } from '@/types/api';
 
 const SORT_MAP: Record<string, string> = {
   id: 'Id',
@@ -87,18 +86,9 @@ export function ApprovalRoleManagementPage(): ReactElement {
   const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
-  const searchFilters = useMemo<PagedFilter[]>(() => {
-    const trimmed = searchTerm.trim();
-    if (!trimmed) return [];
-    return [
-      { column: 'name', operator: 'Contains', value: trimmed },
-      { column: 'approvalRoleGroupName', operator: 'Contains', value: trimmed },
-    ];
-  }, [searchTerm]);
-
-  const apiFilters = useMemo<PagedFilter[]>(
-    () => [...searchFilters, ...approvalRoleRowsToBackendFilters(appliedFilterRows)],
-    [searchFilters, appliedFilterRows]
+  const apiFilters = useMemo(
+    () => approvalRoleRowsToBackendFilters(appliedFilterRows),
+    [appliedFilterRows]
   );
 
   useEffect(() => {
@@ -119,6 +109,7 @@ export function ApprovalRoleManagementPage(): ReactElement {
   const { data: apiResponse, isLoading, isFetching } = useApprovalRoleList({
     pageNumber,
     pageSize,
+    search: searchTerm.trim() || undefined,
     sortBy,
     sortDirection,
     filters: apiFilters.length > 0 ? apiFilters : undefined,

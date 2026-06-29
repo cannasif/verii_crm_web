@@ -104,15 +104,13 @@ export function ProductPricingManagementPage(): ReactElement {
     } else if (activeFilter === 'archive') {
       filters.push({ column: 'IsDeleted', operator: 'eq', value: 'true' });
     }
-    if (searchTerm.trim()) {
-      filters.push({ column: 'ErpProductCode', operator: 'contains', value: searchTerm.trim() });
-    }
     return filters;
-  }, [activeFilter, searchTerm]);
+  }, [activeFilter]);
 
   const { data: apiResponse, isLoading } = useProductPricings({
     pageNumber,
     pageSize,
+    search: searchTerm.trim() || undefined,
     sortBy,
     sortDirection,
     filters: apiFilters,
@@ -189,6 +187,7 @@ export function ProductPricingManagementPage(): ReactElement {
         productPricingApi.getList({
           pageNumber: exportPageNumber,
           pageSize: exportPageSize,
+          search: searchTerm.trim() || undefined,
           sortBy: 'Id',
           sortDirection: 'desc',
           filters: apiFilters,
@@ -209,7 +208,7 @@ export function ProductPricingManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language, apiFilters]);
+  }, [exportColumns, orderedVisibleColumns, i18n.language, apiFilters, searchTerm]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,

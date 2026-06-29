@@ -38,7 +38,6 @@ import { useCreateUser } from '../hooks/useCreateUser';
 import { useUpdateUser as useUpdateUserMutation } from '../hooks/useUpdateUser';
 import { userRowsToBackendFilters, USER_FILTER_COLUMNS } from '../types/user-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
-import type { PagedFilter } from '@/types/api';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 const PAGE_KEY = 'user-management';
@@ -89,18 +88,9 @@ export function UserManagementPage(): ReactElement {
   const [columnOrder, setColumnOrder] = useState<string[]>(() => defaultColumnKeys);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
-  const searchFilters = useMemo<PagedFilter[]>(() => {
-    const trimmed = searchTerm.trim();
-    if (!trimmed) return [];
-    return [
-      { column: 'username', operator: 'Contains', value: trimmed },
-      { column: 'email', operator: 'Contains', value: trimmed },
-    ];
-  }, [searchTerm]);
-
-  const apiFilters = useMemo<PagedFilter[]>(
-    () => [...searchFilters, ...userRowsToBackendFilters(appliedFilterRows)],
-    [searchFilters, appliedFilterRows]
+  const apiFilters = useMemo(
+    () => userRowsToBackendFilters(appliedFilterRows),
+    [appliedFilterRows]
   );
   const filtersParam = useMemo(
     () => (apiFilters.length > 0 ? apiFilters : undefined),
@@ -125,6 +115,7 @@ export function UserManagementPage(): ReactElement {
   const { data: apiResponse, isLoading } = useUserList({
     pageNumber,
     pageSize,
+    search: searchTerm.trim() || undefined,
     sortBy,
     sortDirection,
     filters: filtersParam,
