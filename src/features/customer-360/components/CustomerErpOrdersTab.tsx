@@ -1,6 +1,6 @@
 import { type ReactElement, useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 import { ChevronLeft, ChevronRight, Loader2, Package, RefreshCw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -237,7 +237,7 @@ export function CustomerErpOrdersTab({ customerCode }: CustomerErpOrdersTabProps
 
           {skipped === null && isError && (
             <div className="rounded-lg border border-dashed border-border py-10 text-center text-sm text-muted-foreground">
-              {axios.isAxiosError(error) && error.message
+              {isAxiosError(error) && error.message
                 ? error.message
                 : tc('erpOrders.error')}
             </div>

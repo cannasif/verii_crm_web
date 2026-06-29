@@ -45,7 +45,6 @@ export function perfMeasure(name: string, startMark: string, endMark: string, de
       detail,
     };
     pushMetric(record);
-    console.info(`[perf] ${name}: ${entry.duration.toFixed(2)} ms${detail ? ` (${detail})` : ''}`);
     return entry.duration;
   } catch {
     return null;

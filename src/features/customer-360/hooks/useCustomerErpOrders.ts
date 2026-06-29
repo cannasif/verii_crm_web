@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 import { useErpOrders } from '@/features/order/hooks/useErpOrders';
 import {
   filterOrdersForCustomer,
@@ -30,7 +30,7 @@ export function useCustomerErpOrders(params: {
   const isForbidden =
     skipped === 'forbidden' ||
     (erpOrdersQuery.isError &&
-      axios.isAxiosError(erpOrdersQuery.error) &&
+      isAxiosError(erpOrdersQuery.error) &&
       erpOrdersQuery.error.response?.status === 403);
 
   const orders = useMemo(() => {

@@ -72,12 +72,10 @@ class NotificationService {
     });
 
     hubConnection.onreconnecting(() => {
-      console.log('🔄 SignalR reconnecting');
       useNotificationStore.getState().setConnectionState('reconnecting');
     });
 
     hubConnection.onreconnected(() => {
-      console.log('✅ SignalR reconnected');
       useNotificationStore.getState().setConnectionState('connected');
       void this.handleAccessControlChanged({
         forceBootstrapRefresh: true,
@@ -88,8 +86,6 @@ class NotificationService {
     hubConnection.onclose((error) => {
       if (error) {
         console.error('🔌 SignalR connection closed with error:', error);
-      } else {
-        console.log('🔌 SignalR connection closed');
       }
       useNotificationStore.getState().setConnectionState('disconnected');
       this.hubConnection = null;
@@ -159,7 +155,6 @@ class NotificationService {
         if (!started) {
           return;
         }
-        console.log('✅ SignalR connected to NotificationHub');
         useNotificationStore.getState().setConnectionState('connected');
 
         await requestNotificationPermission();
@@ -190,13 +185,10 @@ class NotificationService {
   }
 
   private handleNotification(payload: NotificationDto): void {
-    console.log('📬 SignalR Notification received:', payload);
-
     const store = useNotificationStore.getState();
 
     const exists = store.realTimeNotifications.some((n) => n.id === payload.id);
     if (exists) {
-      console.log('⚠️ Duplicate notification ignored:', payload.id);
       return;
     }
 
