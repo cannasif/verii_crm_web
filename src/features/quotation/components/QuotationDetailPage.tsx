@@ -924,9 +924,13 @@ export function QuotationDetailPage(): ReactElement {
       await Promise.all(newRates.map((rate) => quotationApi.createQuotationExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
+      linesDirtyRef.current = false;
+      linesInitializedRef.current = false;
+
       await Promise.all([
         queryClient.refetchQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] }),
         queryClient.refetchQueries({ queryKey: queryKeys.quotation(quotationId) }),
+        queryClient.refetchQueries({ queryKey: queryKeys.quotationLines(quotationId) }),
       ]);
 
       toast.success(t('update.success'), {

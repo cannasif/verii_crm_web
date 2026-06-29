@@ -52,7 +52,7 @@ import {
   resolveLoadedLineUnit,
 } from '@/features/stock/utils/localized-stock-name';
 import { createClientId } from '@/lib/create-client-id';
-import { deduplicateDocumentLinesByBackendId } from '@/lib/document-line-list-update';
+import { deduplicateDocumentLinesByBackendId, resolveDocumentLineBackendId } from '@/lib/document-line-list-update';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -428,13 +428,17 @@ export function DemandDetailPage(): ReactElement {
 
     try {
       const linesToSend = lines.map((line) => {
-        const { id, isEditing, relatedLines, vidaDefinitionName, baskiDefinitionName, ...cleanLineData } =
+        const { id, backendLineId, isEditing, relatedLines, vidaDefinitionName, baskiDefinitionName, ...cleanLineData } =
           line as DemandLineFormState & { relatedLines?: unknown[] };
+        const persistedLineId = resolveDocumentLineBackendId({
+          id: typeof id === 'number' ? String(id) : id ?? '',
+          backendLineId,
+        });
         void vidaDefinitionName;
         void baskiDefinitionName;
         return {
           ...cleanLineData,
-          id: parsePersistedId(id, 'line'),
+          id: persistedLineId,
           demandId: demandId,
           productId: cleanLineData.productId ?? null,
           description: cleanLineData.description || null,
@@ -571,9 +575,13 @@ export function DemandDetailPage(): ReactElement {
       await Promise.all(newRates.map((rate) => demandApi.createDemandExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
+      linesDirtyRef.current = false;
+      linesInitializedRef.current = false;
+
       await Promise.all([
         queryClient.refetchQueries({ queryKey: [DEMAND_QUERY_KEYS.DEMANDS] }),
         queryClient.refetchQueries({ queryKey: queryKeys.demand(demandId) }),
+        queryClient.refetchQueries({ queryKey: queryKeys.demandLines(demandId) }),
       ]);
 
       toast.success(t('update.success'), {

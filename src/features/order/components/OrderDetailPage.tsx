@@ -55,7 +55,7 @@ import {
   resolveLoadedLineUnit,
 } from '@/features/stock/utils/localized-stock-name';
 import { createClientId } from '@/lib/create-client-id';
-import { deduplicateDocumentLinesByBackendId } from '@/lib/document-line-list-update';
+import { deduplicateDocumentLinesByBackendId, resolveDocumentLineBackendId } from '@/lib/document-line-list-update';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -456,13 +456,17 @@ export function OrderDetailPage(): ReactElement {
 
     try {
       const linesToSend = lines.map((line) => {
-        const { id, isEditing, relatedLines, vidaDefinitionName, baskiDefinitionName, ...cleanLineData } =
+        const { id, backendLineId, isEditing, relatedLines, vidaDefinitionName, baskiDefinitionName, ...cleanLineData } =
           line as OrderLineFormState & { relatedLines?: unknown[] };
+        const persistedLineId = resolveDocumentLineBackendId({
+          id: typeof id === 'number' ? String(id) : id ?? '',
+          backendLineId,
+        });
         void vidaDefinitionName;
         void baskiDefinitionName;
         return {
           ...cleanLineData,
-          id: parsePersistedId(id, 'line'),
+          id: persistedLineId,
           orderId: orderId,
           productId: cleanLineData.productId ?? null,
           description: cleanLineData.description || null,
@@ -599,9 +603,13 @@ export function OrderDetailPage(): ReactElement {
       await Promise.all(newRates.map((rate) => orderApi.createOrderExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
 
+      linesDirtyRef.current = false;
+      linesInitializedRef.current = false;
+
       await Promise.all([
         queryClient.refetchQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] }),
         queryClient.refetchQueries({ queryKey: queryKeys.order(orderId) }),
+        queryClient.refetchQueries({ queryKey: queryKeys.orderLines(orderId) }),
       ]);
 
       toast.success(t('order.update.success'), {

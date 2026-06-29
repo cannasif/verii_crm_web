@@ -76,7 +76,7 @@ import {
   applyQuotationLineQuickFieldPatch,
   type QuotationQuickEditField,
 } from '../utils/apply-quotation-line-quick-field-patch';
-import { mergeCreatedLineProductName } from '@/lib/merge-created-line-product-name';
+import { mergeCreatedLineProductNamesByBackendId } from '@/lib/merge-created-line-product-name';
 import {
   applyDocumentLinesUpdate,
   mergeRefetchedDocumentLines,
@@ -732,12 +732,14 @@ export function QuotationLineTable({
         try {
           const dtos: CreateQuotationLineDto[] = [toCreateDto(lineToAdd, quotationId)];
           const created = await createMutation.mutateAsync(dtos);
-          await finalizeCreatedLineImages([lineToAdd], created, quotationId);
+          const createdWithImages = await finalizeCreatedLineImages([lineToAdd], created, quotationId);
           const fresh = await quotationApi.getQuotationLinesByQuotationId(quotationId);
           queryClient.setQueryData(queryKeys.quotationLines(quotationId), fresh);
           const snapshot = linesRef.current;
-          const mapped = fresh.map((dto, index) =>
-            mergeCreatedLineProductName(dtoToFormState(dto, index), lineToAdd),
+          const mapped = mergeCreatedLineProductNamesByBackendId(
+            fresh.map((dto, index) => dtoToFormState(dto, index)),
+            createdWithImages,
+            [lineToAdd],
           );
           updateLines(syncDocumentLinesFromServer(mapped, snapshot, { keepLocalDraftLines: true }));
           setAddLineDialogOpen(false);
@@ -762,14 +764,15 @@ export function QuotationLineTable({
         try {
           const dtos: CreateQuotationLineDto[] = linesToAdd.map((l) => toCreateDto(l, quotationId));
           const created = await createMutation.mutateAsync(dtos);
-          await finalizeCreatedLineImages(linesToAdd, created, quotationId);
+          const createdWithImages = await finalizeCreatedLineImages(linesToAdd, created, quotationId);
           const fresh = await quotationApi.getQuotationLinesByQuotationId(quotationId);
           queryClient.setQueryData(queryKeys.quotationLines(quotationId), fresh);
           const snapshot = linesRef.current;
-          const mapped = fresh.map((dto, index) => {
-            const sourceLine = linesToAdd[index] ?? linesToAdd[linesToAdd.length - 1];
-            return mergeCreatedLineProductName(dtoToFormState(dto, index), sourceLine);
-          });
+          const mapped = mergeCreatedLineProductNamesByBackendId(
+            fresh.map((dto, index) => dtoToFormState(dto, index)),
+            createdWithImages,
+            linesToAdd,
+          );
           updateLines(syncDocumentLinesFromServer(mapped, snapshot, { keepLocalDraftLines: true }));
           setAddLineDialogOpen(false);
           setNewLine(null);

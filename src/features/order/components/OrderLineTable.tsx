@@ -77,7 +77,7 @@ import {
   canDocumentLinePrerequisites,
 } from '@/lib/document-line-prerequisites';
 import { linesToDocumentStockMarkers, linesToDocumentStockMarkersExceptLine } from '@/lib/line-form-stock-markers';
-import { mergeCreatedLineProductName } from '@/lib/merge-created-line-product-name';
+import { mergeCreatedLineProductNamesByBackendId } from '@/lib/merge-created-line-product-name';
 import { createClientId } from '@/lib/create-client-id';
 import { exportObjectsToXlsx } from '@/lib/xlsx-export';
 import {
@@ -634,12 +634,14 @@ export function OrderLineTable({
       if (isExistingOrder && orderId) {
         try {
           const dtos: CreateOrderLineDto[] = [toCreateDto(lineToAdd, orderId)];
-          await createMutation.mutateAsync(dtos);
+          const created = await createMutation.mutateAsync(dtos);
           const fresh = await orderApi.getOrderLinesByOrderId(orderId);
           queryClient.setQueryData(queryKeys.orderLines(orderId), fresh);
           const snapshot = linesRef.current;
-          const mapped = fresh.map((dto: OrderLineGetDto, index: number) =>
-            mergeCreatedLineProductName(dtoToFormState(dto, index), lineToAdd),
+          const mapped = mergeCreatedLineProductNamesByBackendId(
+            fresh.map((dto: OrderLineGetDto, index: number) => dtoToFormState(dto, index)),
+            created,
+            [lineToAdd],
           );
           updateLines(syncDocumentLinesFromServer(mapped, snapshot, { keepLocalDraftLines: true }));
           setAddLineDialogOpen(false);
@@ -663,14 +665,15 @@ export function OrderLineTable({
       if (isExistingOrder && orderId) {
         try {
           const dtos: CreateOrderLineDto[] = linesToAdd.map((l) => toCreateDto(l, orderId));
-          await createMutation.mutateAsync(dtos);
+          const created = await createMutation.mutateAsync(dtos);
           const fresh = await orderApi.getOrderLinesByOrderId(orderId);
           queryClient.setQueryData(queryKeys.orderLines(orderId), fresh);
           const snapshot = linesRef.current;
-          const mapped = fresh.map((dto: OrderLineGetDto, index: number) => {
-            const sourceLine = linesToAdd[index] ?? linesToAdd[linesToAdd.length - 1];
-            return mergeCreatedLineProductName(dtoToFormState(dto, index), sourceLine);
-          });
+          const mapped = mergeCreatedLineProductNamesByBackendId(
+            fresh.map((dto: OrderLineGetDto, index: number) => dtoToFormState(dto, index)),
+            created,
+            linesToAdd,
+          );
           updateLines(syncDocumentLinesFromServer(mapped, snapshot, { keepLocalDraftLines: true }));
           setAddLineDialogOpen(false);
           setNewLine(null);
