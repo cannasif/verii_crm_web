@@ -207,13 +207,29 @@ export function QuotationHeaderForm({
     }
   }, [activityOptions, customerActivitiesQuery.isLoading, form, watchedActivityId, watchedCustomerId]);
 
+  const watchedOzelKod1 = form.watch('quotation.ozelKod1');
+
+  useEffect(() => {
+    const currentOzelKod2 = form.getValues('quotation.ozelKod2');
+    if (!watchedOzelKod1) {
+      if (currentOzelKod2 !== '') {
+        form.setValue('quotation.ozelKod2', '', { shouldDirty: false, shouldValidate: true });
+      }
+      return;
+    }
+    const firstChar = watchedOzelKod1.charAt(0).toUpperCase();
+    const targetValue = ['I', 'K', 'N'].includes(firstChar) ? firstChar : '';
+    if (currentOzelKod2 !== targetValue) {
+      form.setValue('quotation.ozelKod2', targetValue, { shouldDirty: false, shouldValidate: true });
+    }
+  }, [watchedOzelKod1, form]);
+
   useEffect(() => {
     if (readOnly || quotationId) return;
 
     if (!defaultSpecialCode) return;
 
     const currentOzelKod1 = form.getValues('quotation.ozelKod1');
-    const currentOzelKod2 = form.getValues('quotation.ozelKod2');
 
     if (
       !specialCodeManualChangeRef.current.ozelKod1 &&
@@ -222,15 +238,6 @@ export function QuotationHeaderForm({
       specialCode1DefaultExists.data === true
     ) {
       form.setValue('quotation.ozelKod1', defaultSpecialCode, { shouldDirty: false, shouldValidate: true });
-    }
-
-    if (
-      !specialCodeManualChangeRef.current.ozelKod2 &&
-      canApplySpecialCodeDefault(currentOzelKod2) &&
-      currentOzelKod2 !== defaultSpecialCode &&
-      specialCode2DefaultExists.data === true
-    ) {
-      form.setValue('quotation.ozelKod2', defaultSpecialCode, { shouldDirty: false, shouldValidate: true });
     }
   }, [
     defaultSpecialCode,
@@ -1078,7 +1085,7 @@ export function QuotationHeaderForm({
                             isFetchingNextPage={specialCode2Dropdown.isFetchingNextPage}
                             placeholder={t('quotation:header.ozelKod2Placeholder')}
                             searchPlaceholder={t('quotation:header.specialCodeSearchPlaceholder')}
-                            disabled={readOnly}
+                            disabled={readOnly || true}
                           />
                         </FormControl>
                       </div>

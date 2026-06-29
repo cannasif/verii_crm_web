@@ -196,7 +196,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   ) {
     text = body
   } else {
-    text = t(String(body))
+    text = t(String(body), { defaultValue: String(body) })
   }
 
   return (

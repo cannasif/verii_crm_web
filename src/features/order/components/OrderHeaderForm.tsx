@@ -63,9 +63,9 @@ import { QuotationNotesDialog } from '@/features/quotation/components/QuotationN
 import { QuotationStructuredNotesList } from '@/features/quotation/components/QuotationStructuredNotesList';
 import { QuotationNotesAddLineButton } from '@/features/quotation/components/QuotationNotesAddLineButton';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
-import { 
-  Search, SearchX, User, Truck, Briefcase, Globe, 
-  Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
+import {
+  Search, SearchX, User, Truck, Briefcase, Globe,
+  Calendar, CreditCard, Hash, FileText, ArrowRightLeft,
   Layers, Folder, MapPin, BookUser, Check, Building2,
   Banknote
 } from 'lucide-react';
@@ -176,13 +176,29 @@ export function OrderHeaderForm({
     }
   }, [watchedOfferType, form]);
 
+  const watchedOzelKod1 = form.watch('order.ozelKod1');
+
+  useEffect(() => {
+    const currentOzelKod2 = form.getValues('order.ozelKod2');
+    if (!watchedOzelKod1) {
+      if (currentOzelKod2 !== '') {
+        form.setValue('order.ozelKod2', '', { shouldDirty: false, shouldValidate: true });
+      }
+      return;
+    }
+    const firstChar = watchedOzelKod1.charAt(0).toUpperCase();
+    const targetValue = ['I', 'K', 'N'].includes(firstChar) ? firstChar : '';
+    if (currentOzelKod2 !== targetValue) {
+      form.setValue('order.ozelKod2', targetValue, { shouldDirty: false, shouldValidate: true });
+    }
+  }, [watchedOzelKod1, form]);
+
   useEffect(() => {
     if (readOnly || orderId) return;
 
     if (!defaultSpecialCode) return;
 
     const currentOzelKod1 = form.getValues('order.ozelKod1');
-    const currentOzelKod2 = form.getValues('order.ozelKod2');
 
     if (
       !specialCodeManualChangeRef.current.ozelKod1 &&
@@ -191,15 +207,6 @@ export function OrderHeaderForm({
       specialCode1DefaultExists.data === true
     ) {
       form.setValue('order.ozelKod1', defaultSpecialCode, { shouldDirty: false, shouldValidate: true });
-    }
-
-    if (
-      !specialCodeManualChangeRef.current.ozelKod2 &&
-      canApplySpecialCodeDefault(currentOzelKod2) &&
-      currentOzelKod2 !== defaultSpecialCode &&
-      specialCode2DefaultExists.data === true
-    ) {
-      form.setValue('order.ozelKod2', defaultSpecialCode, { shouldDirty: false, shouldValidate: true });
     }
   }, [
     defaultSpecialCode,
@@ -231,12 +238,12 @@ export function OrderHeaderForm({
       })),
     [customerActivitiesQuery.data],
   );
-  
+
   const customerTypeId = useMemo(() => {
     if (watchedErpCustomerCode) return 0;
     return customer?.customerTypeId ?? 0;
   }, [watchedErpCustomerCode, customer?.customerTypeId]);
-  
+
   const { data: availableDocumentSerialTypes = [] } = useAvailableDocumentSerialTypes(
     customerTypeId,
     watchedRepresentativeId ?? undefined,
@@ -416,14 +423,14 @@ export function OrderHeaderForm({
         : typeof currentCurrency === 'string'
           ? Number(currentCurrency)
           : currentCurrency;
-    
+
     if (isInitialLoadRef.current) {
       form.setValue('order.currency', newCurrency, { shouldValidate: false, shouldDirty: false });
       return;
     }
-    
+
     if (currentCurrencyNum !== null && currentCurrencyNum === newCurrencyNum) return;
-    
+
     if (lines && lines.length > 0 && onLinesChange) {
       setPendingCurrency(newCurrency);
       setCurrencyChangeDialogOpen(true);
@@ -473,53 +480,53 @@ export function OrderHeaderForm({
     <div className="relative space-y-6 pt-2 pb-8 animate-in fade-in slide-in-from-bottom-3 duration-700">
       <div className="absolute -top-10 -left-10 w-96 h-96 bg-pink-500/10 blur-[100px] pointer-events-none rounded-full" />
       <div className="absolute top-20 right-0 w-80 h-80 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
-      
+
       {/* CUSTOMER CARD */}
       <div className={styles.glassCard}>
         <div className="p-4 sm:p-6">
           <div className="space-y-6">
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8 items-start">
-                <div className="xl:col-span-2 space-y-2">
-                  <div className={styles.label}>
-                    <div className="p-1 rounded-md bg-pink-50 dark:bg-pink-900/20 text-pink-600">
-                      <User className="w-3.5 h-3.5" />
-                    </div>
-                    {t('order:header.customer')}
+              <div className="xl:col-span-2 space-y-2">
+                <div className={styles.label}>
+                  <div className="p-1 rounded-md bg-pink-50 dark:bg-pink-900/20 text-pink-600">
+                    <User className="w-3.5 h-3.5" />
                   </div>
-                  <div className="flex gap-2">
-                    <div className="relative flex-1 group min-w-0">
-                      <div className={cn("absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-colors", customerSearchQuery?.trim() ? "text-pink-500" : "text-zinc-400 group-focus-within:text-pink-500")}>
-                        <Search className="h-4 w-4" />
-                      </div>
-                      <FormControl>
-                        <Input
-                          className={cn(styles.inputBase, "pl-10 font-medium truncate caret-pink-500")}
-                          value={customerSearchQuery}
-                          onChange={(e) => {
-                            const v = e.target.value;
-                            setCustomerSearchQuery(v);
-                            setCustomerComboboxOpen(v.trim().length > 0);
-                          }}
-                          onKeyDown={customerKeyboard.onInputKeyDown}
-                          placeholder={t('order:header.selectCustomer')}
-                          disabled={readOnly}
-                          autoComplete="off"
-                        />
-                      </FormControl>
-                      <Popover open={customerComboboxOpen} onOpenChange={setCustomerComboboxOpen}>
-                        <PopoverAnchor className="absolute top-full left-0 h-0 w-full" />
-                        <PopoverContent
-                          className="p-0 w-[90vw] sm:w-[550px] max-h-[350px] overflow-hidden bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl"
-                          align="start"
-                          sideOffset={8}
-                          onOpenAutoFocus={(e) => e.preventDefault()}
-                        >
-                          <Command shouldFilter={false}>
-                            <div
-                              ref={customerCommandListRef}
-                              className="max-h-[350px] overflow-y-auto"
-                            >
-                              <CommandList className="p-2 space-y-1">
+                  {t('order:header.customer')}
+                </div>
+                <div className="flex gap-2">
+                  <div className="relative flex-1 group min-w-0">
+                    <div className={cn("absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-colors", customerSearchQuery?.trim() ? "text-pink-500" : "text-zinc-400 group-focus-within:text-pink-500")}>
+                      <Search className="h-4 w-4" />
+                    </div>
+                    <FormControl>
+                      <Input
+                        className={cn(styles.inputBase, "pl-10 font-medium truncate caret-pink-500")}
+                        value={customerSearchQuery}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setCustomerSearchQuery(v);
+                          setCustomerComboboxOpen(v.trim().length > 0);
+                        }}
+                        onKeyDown={customerKeyboard.onInputKeyDown}
+                        placeholder={t('order:header.selectCustomer')}
+                        disabled={readOnly}
+                        autoComplete="off"
+                      />
+                    </FormControl>
+                    <Popover open={customerComboboxOpen} onOpenChange={setCustomerComboboxOpen}>
+                      <PopoverAnchor className="absolute top-full left-0 h-0 w-full" />
+                      <PopoverContent
+                        className="p-0 w-[90vw] sm:w-[550px] max-h-[350px] overflow-hidden bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-2xl"
+                        align="start"
+                        sideOffset={8}
+                        onOpenAutoFocus={(e) => e.preventDefault()}
+                      >
+                        <Command shouldFilter={false}>
+                          <div
+                            ref={customerCommandListRef}
+                            className="max-h-[350px] overflow-y-auto"
+                          >
+                            <CommandList className="p-2 space-y-1">
                               {filteredCustomerOptions.length === 0 && (
                                 <CommandEmpty className="py-8 text-center flex flex-col items-center gap-2">
                                   <SearchX className="w-5 h-5 text-zinc-400" />
@@ -536,7 +543,7 @@ export function OrderHeaderForm({
                                     className={cn(
                                       'cursor-pointer mb-1 rounded-xl px-3 py-2 data-[selected=true]:bg-rose-50 dark:data-[selected=true]:bg-rose-950/20 transition-colors',
                                       customerKeyboard.isOptionKeyboardActive(index) &&
-                                        'ring-2 ring-rose-500 ring-offset-2 ring-offset-white dark:ring-offset-zinc-950',
+                                      'ring-2 ring-rose-500 ring-offset-2 ring-offset-white dark:ring-offset-zinc-950',
                                     )}
                                   >
                                     <div className="flex items-center gap-3 w-full min-w-0">
@@ -560,66 +567,66 @@ export function OrderHeaderForm({
                                 ))}
                               </CommandGroup>
                             </CommandList>
-                            </div>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
+                          </div>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setCustomerSelectDialogOpen(true)}
+                    className="h-11 w-11 shrink-0 rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 shadow-sm"
+                    disabled={readOnly}
+                  >
+                    <BookUser className="h-5 w-5" />
+                  </Button>
+                  {canShowCustomerBalance && (
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => setCustomerSelectDialogOpen(true)}
-                      className="h-11 w-11 shrink-0 rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-rose-600 hover:border-rose-600 hover:text-white transition-all duration-300 shadow-sm"
-                      disabled={readOnly}
+                      onClick={() => setCustomerBalanceDialogOpen(true)}
+                      className="h-11 w-11 shrink-0 rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-emerald-600 hover:border-emerald-600 hover:text-white transition-all duration-300 shadow-sm"
+                      title={t('customer360:balanceDialog.openButton', { defaultValue: 'Cari bakiye özeti' })}
+                      aria-label={t('customer360:balanceDialog.openButton', { defaultValue: 'Cari bakiye özeti' })}
                     >
-                      <BookUser className="h-5 w-5" />
+                      <Banknote className="h-5 w-5" />
                     </Button>
-                    {canShowCustomerBalance && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setCustomerBalanceDialogOpen(true)}
-                        className="h-11 w-11 shrink-0 rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-emerald-600 hover:border-emerald-600 hover:text-white transition-all duration-300 shadow-sm"
-                        title={t('customer360:balanceDialog.openButton', { defaultValue: 'Cari bakiye özeti' })}
-                        aria-label={t('customer360:balanceDialog.openButton', { defaultValue: 'Cari bakiye özeti' })}
-                      >
-                        <Banknote className="h-5 w-5" />
-                      </Button>
-                    )}
-                  </div>
+                  )}
                 </div>
+              </div>
 
-                <div className="xl:col-span-1 space-y-2">
-                  <div className={styles.label}>
-                    <div className="p-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600">
-                      <Briefcase className="w-3.5 h-3.5" />
-                    </div>
-                    {t('order:header.representative')}
+              <div className="xl:col-span-1 space-y-2">
+                <div className={styles.label}>
+                  <div className="p-1 rounded-md bg-purple-50 dark:bg-purple-900/20 text-purple-600">
+                    <Briefcase className="w-3.5 h-3.5" />
                   </div>
-                  <FormField
-                    control={form.control}
-                    name="order.representativeId"
-                    render={({ field }) => (
-                      <FormItem className="space-y-0">
-                        <FormControl>
-                          <VoiceSearchCombobox
-                            options={relatedUsers.map((u) => ({
-                              value: u.userId.toString(),
-                              label: [u.firstName, u.lastName].filter(Boolean).join(' ') || String(u.userId),
-                            }))}
-                            value={field.value?.toString() || ''}
-                            onSelect={(v) => field.onChange(v ? Number(v) : null)}
-                            placeholder={t('order.select')}
-                            className={cn(styles.selectTrigger, "min-w-0 px-4 font-medium text-zinc-700 dark:text-zinc-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
-                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
-                            disabled={readOnly}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-[10px] mt-1" />
-                      </FormItem>
-                    )}
-                  />
+                  {t('order:header.representative')}
                 </div>
+                <FormField
+                  control={form.control}
+                  name="order.representativeId"
+                  render={({ field }) => (
+                    <FormItem className="space-y-0">
+                      <FormControl>
+                        <VoiceSearchCombobox
+                          options={relatedUsers.map((u) => ({
+                            value: u.userId.toString(),
+                            label: [u.firstName, u.lastName].filter(Boolean).join(' ') || String(u.userId),
+                          }))}
+                          value={field.value?.toString() || ''}
+                          onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                          placeholder={t('order.select')}
+                          className={cn(styles.selectTrigger, "min-w-0 px-4 font-medium text-zinc-700 dark:text-zinc-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                          popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
+                          disabled={readOnly}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-[10px] mt-1" />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             {selectedCustomer && (
@@ -696,7 +703,7 @@ export function OrderHeaderForm({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
-        
+
         {/* CARD 1: FINANSAL */}
         <div className={styles.glassCard}>
           <div className="p-5 h-full flex flex-col">
@@ -708,17 +715,17 @@ export function OrderHeaderForm({
                 {t('order:header.financialCardTitle')}
               </h4>
               {onExchangeRatesChange && (
-                 <Button
-                   type="button"
-                   variant="ghost"
-                   size="sm"
-                   onClick={() => setExchangeRateDialogOpen(true)}
-                   className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
-                 >
-                   <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
-                   {t('order:header.exchangeRatesLink')}
-                 </Button>
-               )}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setExchangeRateDialogOpen(true)}
+                  className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
+                >
+                  <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
+                  {t('order:header.exchangeRatesLink')}
+                </Button>
+              )}
             </div>
             <div className="space-y-4 flex-1">
               <FormField
@@ -865,7 +872,7 @@ export function OrderHeaderForm({
               </div>
               {/* FIXED: Removed 2xl:grid-cols-2 and kept it single column */}
               <div className="grid grid-cols-1 gap-4 pt-1">
-                 <FormField
+                <FormField
                   control={form.control}
                   name="order.offerDate"
                   render={({ field }) => (
@@ -874,9 +881,9 @@ export function OrderHeaderForm({
                       <div className="relative w-full min-w-0">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Calendar className="h-4 w-4" /></div>
                         <FormControl>
-                          <Input 
-                            type="date" 
-                            className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500")} 
+                          <Input
+                            type="date"
+                            className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500")}
                             {...field}
                             value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
                             onChange={(e) => field.onChange(e.target.value)}
@@ -887,7 +894,7 @@ export function OrderHeaderForm({
                     </FormItem>
                   )}
                 />
-                 <FormField
+                <FormField
                   control={form.control}
                   name="order.deliveryDate"
                   render={({ field }) => (
@@ -896,8 +903,8 @@ export function OrderHeaderForm({
                       <div className="relative w-full min-w-0">
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Truck className="h-4 w-4" /></div>
                         <FormControl>
-                          <Input 
-                            type="date" 
+                          <Input
+                            type="date"
                             className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500")}
                             {...field}
                             value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
@@ -917,221 +924,220 @@ export function OrderHeaderForm({
 
         {/* CARD 3: BELGE DETAYI */}
         <div className={styles.glassCard}>
-           <div className="p-5">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="p-1.5 rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-600">
-                  <FileText className="h-4 w-4" />
-                </div>
-                <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">{t('order:header.documentDetail')}</h4>
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="p-1.5 rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-600">
+                <FileText className="h-4 w-4" />
               </div>
-              <div className="space-y-4">
-                 {showDocumentSerialType && (
-                  <FormField
-                    control={form.control}
-                    name="order.documentSerialTypeId"
-                    render={({ field }) => (
-                      <FormItem className="space-y-0 relative group w-full min-w-0">
-                        <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.documentSerialTypeId')}>{t('order:header.serialNumber')}</FormLabel>
-                        <div className="relative w-full min-w-0">
-                          <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Hash className="h-4 w-4" /></div>
-                          <FormControl>
-                            <VoiceSearchCombobox
-                              options={availableDocumentSerialTypes
-                                .filter((d) => d.serialPrefix?.trim() !== '')
-                                .map((d) => ({ value: d.id.toString(), label: d.serialPrefix || String(d.id) }))}
-                              value={field.value?.toString() || ''}
-                              onSelect={(value) => {
-                                handleDocumentSerialTypeSelect(value ? Number(value) : null);
-                              }}
-                              placeholder={t('order.select')}
-                              className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
-                              popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
-                              disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormMessage className="mt-1" />
-                      </FormItem>
-                    )}
-                  />
-                )}
+              <h4 className="text-sm font-bold text-zinc-700 dark:text-zinc-200">{t('order:header.documentDetail')}</h4>
+            </div>
+            <div className="space-y-4">
+              {showDocumentSerialType && (
                 <FormField
                   control={form.control}
-                  name="order.projectCode"
-                  render={({ field }) => (
-                    <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
-                      <FormLabel className={styles.label}>
-                        <Folder className="h-3.5 w-3.5" />
-                        {t('order:header.projectCode')}
-                      </FormLabel>
-                      <div className="relative w-full min-w-0">
-                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Folder className="h-4 w-4" /></div>
-                        <FormControl>
-                          <VoiceSearchCombobox
-                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
-                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
-                            value={field.value || ''}
-                            onSelect={(value) => field.onChange(value)}
-                            options={projectDropdown.options}
-                            onDebouncedSearchChange={setProjectSearchTerm}
-                            onFetchNextPage={projectDropdown.fetchNextPage}
-                            hasNextPage={projectDropdown.hasNextPage}
-                            isLoading={projectDropdown.isLoading}
-                            isFetchingNextPage={projectDropdown.isFetchingNextPage}
-                            placeholder={t('order:header.projectCodePlaceholder')}
-                            searchPlaceholder={t('common.search')}
-                            disabled={readOnly}
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage className="mt-1.5" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="order.ozelKod1"
-                  render={({ field }) => (
-                    <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
-                      <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.ozelKod1')}>
-                        <Layers className="h-3.5 w-3.5" />
-                        {t('order:header.ozelKod1')}
-                      </FormLabel>
-                      <div className="relative w-full min-w-0">
-                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
-                        <FormControl>
-                          <VoiceSearchCombobox
-                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
-                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
-                            value={field.value || ''}
-                            onSelect={(value) => {
-                              specialCodeManualChangeRef.current.ozelKod1 = true;
-                              field.onChange(value);
-                            }}
-                            options={specialCode1Dropdown.options}
-                            onDebouncedSearchChange={setOzelKod1SearchTerm}
-                            onFetchNextPage={specialCode1Dropdown.fetchNextPage}
-                            hasNextPage={specialCode1Dropdown.hasNextPage}
-                            isLoading={specialCode1Dropdown.isLoading}
-                            isFetchingNextPage={specialCode1Dropdown.isFetchingNextPage}
-                            placeholder={t('order:header.ozelKod1Placeholder')}
-                            searchPlaceholder={t('order:header.specialCodeSearchPlaceholder')}
-                            disabled={readOnly}
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage className="mt-1.5" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="order.ozelKod2"
-                  render={({ field }) => (
-                    <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
-                      <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.ozelKod2')}>
-                        <Layers className="h-3.5 w-3.5" />
-                        {t('order:header.ozelKod2')}
-                      </FormLabel>
-                      <div className="relative w-full min-w-0">
-                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
-                        <FormControl>
-                          <VoiceSearchCombobox
-                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
-                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
-                            value={field.value || ''}
-                            onSelect={(value) => {
-                              specialCodeManualChangeRef.current.ozelKod2 = true;
-                              field.onChange(value);
-                            }}
-                            options={specialCode2Dropdown.options}
-                            onDebouncedSearchChange={setOzelKod2SearchTerm}
-                            onFetchNextPage={specialCode2Dropdown.fetchNextPage}
-                            hasNextPage={specialCode2Dropdown.hasNextPage}
-                            isLoading={specialCode2Dropdown.isLoading}
-                            isFetchingNextPage={specialCode2Dropdown.isFetchingNextPage}
-                            placeholder={t('order:header.ozelKod2Placeholder')}
-                            searchPlaceholder={t('order:header.specialCodeSearchPlaceholder')}
-                            disabled={readOnly}
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage className="mt-1.5" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="order.koliBaskiDefinitionId"
-                  render={({ field }) => (
-                    <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
-                      <FormLabel className={styles.label}>
-                        <Layers className="h-3.5 w-3.5" />
-                        {t('order:header.koliBaski', { defaultValue: 'Koli Baskı' })}
-                      </FormLabel>
-                      <div className="relative w-full min-w-0">
-                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
-                        <FormControl>
-                          <VoiceSearchCombobox
-                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
-                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
-                            value={field.value ? String(field.value) : ''}
-                            onSelect={(value) => field.onChange(value ? Number(value) : null)}
-                            options={koliBaskiOptions.map((option) => ({ value: String(option.id), label: option.name }))}
-                            placeholder={isKoliBaskiOptionsLoading ? t('common.loading', { defaultValue: 'Yükleniyor...' }) : t('order:header.koliBaskiPlaceholder', { defaultValue: 'Koli baskı seçin' })}
-                            searchPlaceholder={t('order:header.koliBaskiSearchPlaceholder', { defaultValue: 'Koli baskı ara...' })}
-                            disabled={readOnly || isKoliBaskiOptionsLoading}
-                          />
-                        </FormControl>
-                      </div>
-                      <FormMessage className="mt-1.5" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="order.description"
+                  name="order.documentSerialTypeId"
                   render={({ field }) => (
                     <FormItem className="space-y-0 relative group w-full min-w-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-1.5">
-                          <FormLabel className={cn(styles.label, "mb-0")}>{t('order:header.notes')}</FormLabel>
-                          <ErpFieldHint label={t('order:header.descriptionErpTooltip')} />
-                        </div>
-                        <span className={cn("text-[10px] transition-colors", (field.value?.length || 0) > 350 ? "text-red-500 font-bold" : "text-zinc-400")}>
-                          {field.value?.length || 0}/400
-                        </span>
-                      </div>
-                      <FormControl>
-                        <div className="relative w-full min-w-0">
-                          <Textarea
-                            {...field}
-                            value={field.value || ''}
-                            maxLength={400}
-                            placeholder={t('order:header.descriptionPlaceholder')}
-                            className="min-h-[100px] max-h-[160px] overflow-y-auto w-full break-all whitespace-pre-wrap rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10 shadow-sm"
-                            disabled={readOnly}
+                      <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.documentSerialTypeId')}>{t('order:header.serialNumber')}</FormLabel>
+                      <div className="relative w-full min-w-0">
+                        <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Hash className="h-4 w-4" /></div>
+                        <FormControl>
+                          <VoiceSearchCombobox
+                            options={availableDocumentSerialTypes
+                              .filter((d) => d.serialPrefix?.trim() !== '')
+                              .map((d) => ({ value: d.id.toString(), label: d.serialPrefix || String(d.id) }))}
+                            value={field.value?.toString() || ''}
+                            onSelect={(value) => {
+                              handleDocumentSerialTypeSelect(value ? Number(value) : null);
+                            }}
+                            placeholder={t('order.select')}
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
+                            disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
                           />
-                          {onQuotationNotesChange && (
-                            <QuotationNotesAddLineButton
-                              onClick={() => setNotesDialogOpen(true)}
-                              disabled={readOnly}
-                            />
-                          )}
-                        </div>
-                      </FormControl>
-                      <QuotationStructuredNotesList
-                        notes={quotationNotes}
-                        readOnly={readOnly}
-                        onRemove={onQuotationNotesChange ? handleRemoveNote : undefined}
-                        context="order"
-                      />
+                        </FormControl>
+                      </div>
                       <FormMessage className="mt-1" />
                     </FormItem>
                   )}
                 />
-              </div>
-           </div>
+              )}
+              <FormField
+                control={form.control}
+                name="order.projectCode"
+                render={({ field }) => (
+                  <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
+                    <FormLabel className={styles.label}>
+                      <Folder className="h-3.5 w-3.5" />
+                      {t('order:header.projectCode')}
+                    </FormLabel>
+                    <div className="relative w-full min-w-0">
+                      <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Folder className="h-4 w-4" /></div>
+                      <FormControl>
+                        <VoiceSearchCombobox
+                          className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                          popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
+                          value={field.value || ''}
+                          onSelect={(value) => field.onChange(value)}
+                          options={projectDropdown.options}
+                          onDebouncedSearchChange={setProjectSearchTerm}
+                          onFetchNextPage={projectDropdown.fetchNextPage}
+                          hasNextPage={projectDropdown.hasNextPage}
+                          isLoading={projectDropdown.isLoading}
+                          isFetchingNextPage={projectDropdown.isFetchingNextPage}
+                          placeholder={t('order:header.projectCodePlaceholder')}
+                          searchPlaceholder={t('common.search')}
+                          disabled={readOnly}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="mt-1.5" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="order.ozelKod1"
+                render={({ field }) => (
+                  <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
+                    <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.ozelKod1')}>
+                      <Layers className="h-3.5 w-3.5" />
+                      {t('order:header.ozelKod1')}
+                    </FormLabel>
+                    <div className="relative w-full min-w-0">
+                      <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
+                      <FormControl>
+                        <VoiceSearchCombobox
+                          className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                          popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
+                          value={field.value || ''}
+                          onSelect={(value) => {
+                            specialCodeManualChangeRef.current.ozelKod1 = true;
+                            field.onChange(value);
+                          }}
+                          options={specialCode1Dropdown.options}
+                          onDebouncedSearchChange={setOzelKod1SearchTerm}
+                          onFetchNextPage={specialCode1Dropdown.fetchNextPage}
+                          hasNextPage={specialCode1Dropdown.hasNextPage}
+                          isLoading={specialCode1Dropdown.isLoading}
+                          isFetchingNextPage={specialCode1Dropdown.isFetchingNextPage}
+                          placeholder={t('order:header.ozelKod1Placeholder')}
+                          searchPlaceholder={t('order:header.specialCodeSearchPlaceholder')}
+                          disabled={readOnly}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="mt-1.5" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="order.ozelKod2"
+                render={({ field }) => (
+                  <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
+                    <FormLabel className={styles.label} required={isZodFieldRequired(createOrderSchema, 'order.ozelKod2')}>
+                      <Layers className="h-3.5 w-3.5" />
+                      {t('order:header.ozelKod2')}
+                    </FormLabel>
+                    <div className="relative w-full min-w-0">
+                      <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
+                      <FormControl>
+                        <VoiceSearchCombobox
+                          className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                          popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
+                          value={field.value || ''}
+                          onSelect={(value) => {
+                            field.onChange(value);
+                          }}
+                          options={specialCode2Dropdown.options}
+                          onDebouncedSearchChange={setOzelKod2SearchTerm}
+                          onFetchNextPage={specialCode2Dropdown.fetchNextPage}
+                          hasNextPage={specialCode2Dropdown.hasNextPage}
+                          isLoading={specialCode2Dropdown.isLoading}
+                          isFetchingNextPage={specialCode2Dropdown.isFetchingNextPage}
+                          placeholder={t('order:header.ozelKod2Placeholder')}
+                          searchPlaceholder={t('order:header.specialCodeSearchPlaceholder')}
+                          disabled={readOnly || true}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="mt-1.5" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="order.koliBaskiDefinitionId"
+                render={({ field }) => (
+                  <FormItem className="gap-0 space-y-0 relative group w-full min-w-0">
+                    <FormLabel className={styles.label}>
+                      <Layers className="h-3.5 w-3.5" />
+                      {t('order:header.koliBaski', { defaultValue: 'Koli Baskı' })}
+                    </FormLabel>
+                    <div className="relative w-full min-w-0">
+                      <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
+                      <FormControl>
+                        <VoiceSearchCombobox
+                          className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                          popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
+                          value={field.value ? String(field.value) : ''}
+                          onSelect={(value) => field.onChange(value ? Number(value) : null)}
+                          options={koliBaskiOptions.map((option) => ({ value: String(option.id), label: option.name }))}
+                          placeholder={isKoliBaskiOptionsLoading ? t('common.loading', { defaultValue: 'Yükleniyor...' }) : t('order:header.koliBaskiPlaceholder', { defaultValue: 'Koli baskı seçin' })}
+                          searchPlaceholder={t('order:header.koliBaskiSearchPlaceholder', { defaultValue: 'Koli baskı ara...' })}
+                          disabled={readOnly || isKoliBaskiOptionsLoading}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="mt-1.5" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="order.description"
+                render={({ field }) => (
+                  <FormItem className="space-y-0 relative group w-full min-w-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-1.5">
+                        <FormLabel className={cn(styles.label, "mb-0")}>{t('order:header.notes')}</FormLabel>
+                        <ErpFieldHint label={t('order:header.descriptionErpTooltip')} />
+                      </div>
+                      <span className={cn("text-[10px] transition-colors", (field.value?.length || 0) > 350 ? "text-red-500 font-bold" : "text-zinc-400")}>
+                        {field.value?.length || 0}/400
+                      </span>
+                    </div>
+                    <FormControl>
+                      <div className="relative w-full min-w-0">
+                        <Textarea
+                          {...field}
+                          value={field.value || ''}
+                          maxLength={400}
+                          placeholder={t('order:header.descriptionPlaceholder')}
+                          className="min-h-[100px] max-h-[160px] overflow-y-auto w-full break-all whitespace-pre-wrap rounded-xl border-zinc-200 dark:border-zinc-800 bg-white/50 dark:bg-zinc-950/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10 shadow-sm"
+                          disabled={readOnly}
+                        />
+                        {onQuotationNotesChange && (
+                          <QuotationNotesAddLineButton
+                            onClick={() => setNotesDialogOpen(true)}
+                            disabled={readOnly}
+                          />
+                        )}
+                      </div>
+                    </FormControl>
+                    <QuotationStructuredNotesList
+                      notes={quotationNotes}
+                      readOnly={readOnly}
+                      onRemove={onQuotationNotesChange ? handleRemoveNote : undefined}
+                      context="order"
+                    />
+                    <FormMessage className="mt-1" />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
