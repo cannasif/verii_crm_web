@@ -2,6 +2,8 @@
 
 Bu belge `verii_crm_web` icin baglayici frontend standardidir. CRM'de oturan kurallar WMS, B2B, Aqua ve yeni Verii web projelerine de ayni yaklasimla tasinir.
 
+Ust urun ailesi standardi CRM API dokumanlarindaki `docs/V3RII_PRODUCT_FAMILY_BASE_STANDARD.md` dosyasinda tutulur. Bu dosya o standardin web frontend uygulama kurallarini detaylandirir.
+
 ## Hedef
 
 Frontend uygulamalari feature-first React + Vite yapisinda kalir:
