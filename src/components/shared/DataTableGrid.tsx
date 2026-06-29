@@ -462,30 +462,31 @@ export function DataTableGrid<TRow, TKey extends string>({
   return (
     <div className="flex min-w-0 w-full flex-col gap-2">
       {actionBar ? <DataTableActionBar {...actionBar} /> : toolbar}
-      <div
-        ref={tableScrollRef}
-        className={cn(
-          'relative rounded-md border overflow-x-auto w-full min-w-0 *:data-[slot=table-container]:overflow-visible',
-          resizingKey
-            ? 'cursor-col-resize select-none'
-            : isDragging
-              ? 'cursor-grabbing select-none'
-              : 'cursor-grab'
-        )}
-        onPointerDown={handleDragStart}
-        onPointerMove={handleDragMove}
-        onPointerUp={handleDragEnd}
-        onPointerCancel={handleDragEnd}
-        onClickCapture={handleClickCapture}
-      >
+      <div className="relative w-full min-w-0 flex-1">
         {isLoading && (
-          <div className="pointer-events-none sticky left-0 top-0 z-20 flex w-full justify-center">
-            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/95 px-3 py-1.5 text-xs font-medium text-slate-600 shadow-md backdrop-blur dark:border-white/10 dark:bg-slate-950/90 dark:text-slate-300">
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-[var(--crm-brand-text)]" />
-              {loadingText}
+          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-md bg-white/20 backdrop-blur-[1px] dark:bg-slate-950/20">
+            <div className="inline-flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-slate-900/90">
+              <Loader2 className="h-8 w-8 animate-spin text-[var(--crm-brand-text)]" />
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{loadingText}</span>
             </div>
           </div>
         )}
+        <div
+          ref={tableScrollRef}
+          className={cn(
+            'relative rounded-md border overflow-x-auto w-full min-w-0 *:data-[slot=table-container]:overflow-visible',
+            resizingKey
+              ? 'cursor-col-resize select-none'
+              : isDragging
+                ? 'cursor-grabbing select-none'
+                : 'cursor-grab'
+          )}
+          onPointerDown={handleDragStart}
+          onPointerMove={handleDragMove}
+          onPointerUp={handleDragEnd}
+          onPointerCancel={handleDragEnd}
+          onClickCapture={handleClickCapture}
+        >
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -648,6 +649,7 @@ export function DataTableGrid<TRow, TKey extends string>({
           </Table>
         </DndContext>
       </div>
+    </div>
 
       <div className="mt-1 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/90 px-3 pb-6 pt-3 sm:px-4 dark:border-white/10">
         <div className="flex min-w-0 flex-wrap items-center gap-3">

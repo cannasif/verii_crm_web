@@ -827,12 +827,12 @@ export function CatalogStockSelectDialog({
   );
   const activeStockLoading =
     stockBrowseMode === 'campaign'
-      ? campaignStocksQuery.isLoading
+      ? campaignStocksQuery.isFetching
       : stockBrowseMode === 'favorites'
-        ? favoriteStocksQuery.isPending && favoriteStockItems.length === 0
+        ? favoriteStocksQuery.isFetching && favoriteStockItems.length === 0
         : leftPanelMode === 'code' && stockBrowseMode === 'specialCodes'
-          ? specialCodeStocksQuery.isPending && specialCodePagedItems.length === 0
-          : stocksQuery.isPending && categoryStockItems.length === 0;
+          ? specialCodeStocksQuery.isFetching && specialCodePagedItems.length === 0
+          : stocksQuery.isFetching && categoryStockItems.length === 0;
   const activeStockFetchingMore =
     stockBrowseMode === 'campaign'
       ? false
