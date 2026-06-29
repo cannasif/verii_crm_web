@@ -124,6 +124,7 @@
     "editColumns": "Sütunları Düzenle",
     "visibleColumns": "Görünür Sütunlar",
     "paginationInfo": "{{start}}-{{end}} / {{total}} kayıt",
+    "paginationInfoApprox": "{{start}}-{{end}} / en az {{total}} kayıt",
     "refresh": "Yenile",
     "showing": "Gösterilen",
     "table": {

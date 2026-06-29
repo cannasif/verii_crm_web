@@ -124,6 +124,7 @@
     "editColumns": "Edit Columns",
     "visibleColumns": "Visible Columns",
     "paginationInfo": "{{start}}-{{end}} / {{total}} records",
+    "paginationInfoApprox": "{{start}}-{{end}} / at least {{total}} records",
     "refresh": "Refresh",
     "showing": "shown",
     "table": {

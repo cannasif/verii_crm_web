@@ -290,6 +290,17 @@ export function StockListPage(): ReactElement {
     : (pagedData?.totalPages ?? 1);
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
   const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+  const hasActiveSearch = searchTerm.trim().length > 0;
+  const hasApproximateSearchTotal = hasActiveSearch && hasNextPage;
+  const paginationInfoText = t(
+    hasApproximateSearchTotal ? 'common.paginationInfoApprox' : 'common.paginationInfo',
+    {
+      start: startRow,
+      end: endRow,
+      total: totalCount,
+      ns: 'common',
+    }
+  );
   const orderedVisibleColumns = columnOrder.filter((key) => visibleColumns.includes(key)) as StockColumnKey[];
 
   const filterColumns = useMemo<FilterColumnConfig[]>(
@@ -690,12 +701,7 @@ export function StockListPage(): ReactElement {
                   onNextPage={() => setPageNumber((prev) => prev + 1)}
                   previousLabel={t('list.previous')}
                   nextLabel={t('list.next')}
-                  paginationInfoText={t('common.paginationInfo', {
-                    start: startRow,
-                    end: endRow,
-                    total: totalCount,
-                    ns: 'common',
-                  })}
+                  paginationInfoText={paginationInfoText}
                   disablePaginationButtons={stockQuery.isFetching}
                   centerColumnHeaders
                   onColumnOrderChange={(newVisibleOrder) => {
@@ -786,12 +792,7 @@ export function StockListPage(): ReactElement {
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <div className="text-xs text-muted-foreground">
-                    {t('common.paginationInfo', {
-                      start: startRow,
-                      end: endRow,
-                      total: totalCount,
-                      ns: 'common',
-                    })}
+                    {paginationInfoText}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
