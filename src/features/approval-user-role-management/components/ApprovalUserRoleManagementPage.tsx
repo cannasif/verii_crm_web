@@ -101,17 +101,9 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
   const filteredUserRoles = useMemo(() => {
     if (!userRoles.length) return [];
     let result = [...userRoles];
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      result = result.filter(
-        (r) =>
-          (r.userFullName && r.userFullName.toLowerCase().includes(lower)) ||
-          (r.approvalRoleName && r.approvalRoleName.toLowerCase().includes(lower))
-      );
-    }
     result = applyApprovalUserRoleFilters(result, appliedFilterRows);
     return result;
-  }, [userRoles, searchTerm, appliedFilterRows]);
+  }, [userRoles, appliedFilterRows]);
 
   const sortedUserRoles = useMemo(() => {
     const result = [...filteredUserRoles];

@@ -101,18 +101,9 @@ export function CityManagementPage(): ReactElement {
   const filteredCities = useMemo<CityDto[]>(() => {
     if (!cities.length) return [];
     let result = [...cities];
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      result = result.filter(
-        (c) =>
-          (c.name && c.name.toLowerCase().includes(lower)) ||
-          (c.erpCode && c.erpCode?.toLowerCase().includes(lower)) ||
-          (c.countryName && c.countryName.toLowerCase().includes(lower))
-      );
-    }
     result = applyCityFilters(result, appliedFilterRows);
     return result;
-  }, [cities, searchTerm, appliedFilterRows]);
+  }, [cities, appliedFilterRows]);
 
   const sortedCities = useMemo(() => {
     const result = [...filteredCities];

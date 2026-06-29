@@ -114,18 +114,9 @@ export function ActivityTypeManagementPage(): ReactElement {
   const filteredActivityTypes = useMemo<ActivityTypeDto[]>(() => {
     if (!allActivityTypes.length) return [];
     let result = [...allActivityTypes];
-    if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter(
-        (item) =>
-          (item.name && item.name.toLowerCase().includes(lowerSearch)) ||
-          (item.description && item.description?.toLowerCase().includes(lowerSearch)) ||
-          (item.createdByFullUser && item.createdByFullUser.toLowerCase().includes(lowerSearch))
-      );
-    }
     result = applyActivityTypeFilters(result, appliedFilterRows);
     return result;
-  }, [allActivityTypes, searchTerm, appliedFilterRows]);
+  }, [allActivityTypes, appliedFilterRows]);
 
   const sortedActivityTypes = useMemo(() => {
     const result = [...filteredActivityTypes];

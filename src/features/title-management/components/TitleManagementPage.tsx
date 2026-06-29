@@ -111,17 +111,9 @@ export function TitleManagementPage(): ReactElement {
   const filteredTitles = useMemo<TitleDto[]>(() => {
     if (!titles.length) return [];
     let result = [...titles];
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      result = result.filter(
-        (c) =>
-          (c.titleName && c.titleName.toLowerCase().includes(lower)) ||
-          (c.code && c.code.toLowerCase().includes(lower))
-      );
-    }
     result = applyTitleFilters(result, appliedFilterRows);
     return result;
-  }, [titles, searchTerm, appliedFilterRows]);
+  }, [titles, appliedFilterRows]);
 
   const sortedTitles = useMemo(() => {
     const result = [...filteredTitles];

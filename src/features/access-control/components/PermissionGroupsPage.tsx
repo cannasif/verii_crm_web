@@ -114,15 +114,7 @@ export function PermissionGroupsPage(): ReactElement {
   const activeCount = useMemo(() => items.filter((item) => item.isActive).length, [items]);
   const systemAdminCount = useMemo(() => items.filter((item) => item.isSystemAdmin).length, [items]);
 
-  const filteredItems = useMemo(() => {
-    if (!searchTerm.trim()) return items;
-    const lower = searchTerm.toLowerCase();
-    return items.filter(
-      (item) =>
-        item.name.toLowerCase().includes(lower) ||
-        (item.description && item.description.toLowerCase().includes(lower))
-    );
-  }, [items, searchTerm]);
+  const filteredItems = items;
 
   useEffect(() => {
     setPageTitle(t('permissionGroups.title'));

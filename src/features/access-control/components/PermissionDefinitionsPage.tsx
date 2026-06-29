@@ -97,21 +97,7 @@ export function PermissionDefinitionsPage(): ReactElement {
     return () => setPageTitle(null);
   }, [t, setPageTitle]);
 
-  const filteredItems = useMemo(() => {
-    if (!searchTerm.trim()) return items;
-    const lower = searchTerm.toLowerCase();
-    return items.filter((item) => {
-      const displayName = getPermissionDisplayLabel(item.code, (key, fallback) =>
-        translatePermissionLabel(t, key, fallback)
-      );
-      return (
-        item.code.toLowerCase().includes(lower) ||
-        item.name.toLowerCase().includes(lower) ||
-        displayName.toLowerCase().includes(lower) ||
-        (item.description && item.description.toLowerCase().includes(lower))
-      );
-    });
-  }, [items, searchTerm, t]);
+  const filteredItems = items;
 
   const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: ['permissions', 'definitions'] });

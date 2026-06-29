@@ -110,17 +110,9 @@ export function PaymentTypeManagementPage(): ReactElement {
   const filteredPaymentTypes = useMemo<PaymentTypeDto[]>(() => {
     if (!paymentTypes.length) return [];
     let result = [...paymentTypes];
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      result = result.filter(
-        (c) =>
-          (c.name && c.name.toLowerCase().includes(lower)) ||
-          (c.description && c.description.toLowerCase().includes(lower))
-      );
-    }
     result = applyPaymentTypeFilters(result, appliedFilterRows);
     return result;
-  }, [paymentTypes, searchTerm, appliedFilterRows]);
+  }, [paymentTypes, appliedFilterRows]);
 
   const sortedPaymentTypes = useMemo(() => {
     const result = [...filteredPaymentTypes];

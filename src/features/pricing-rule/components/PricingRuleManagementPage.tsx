@@ -107,15 +107,6 @@ export function PricingRuleManagementPage(): ReactElement {
   const filteredHeaders = useMemo<PricingRuleHeaderGetDto[]>(() => {
     if (!headers.length) return [];
     let result: PricingRuleHeaderGetDto[] = [...headers];
-    if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter(
-        (h) =>
-          (h.ruleName && h.ruleName.toLowerCase().includes(lowerSearch)) ||
-          (h.ruleCode && h.ruleCode.toLowerCase().includes(lowerSearch)) ||
-          (h.customerName && h.customerName.toLowerCase().includes(lowerSearch))
-      );
-    }
     if (activeFilter === 'active') {
       const now = new Date();
       result = result.filter((h) => {
@@ -132,7 +123,7 @@ export function PricingRuleManagementPage(): ReactElement {
       });
     }
     return result;
-  }, [headers, searchTerm, activeFilter]);
+  }, [headers, activeFilter]);
 
   const sortedHeaders = useMemo(() => {
     const result = [...filteredHeaders];

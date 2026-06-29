@@ -102,15 +102,9 @@ export function ApprovalRoleGroupManagementPage(): ReactElement {
     [data?.data]
   );
 
-  const searchFiltered = useMemo(() => {
-    if (!searchTerm.trim()) return items;
-    const lower = searchTerm.toLowerCase();
-    return items.filter((item) => item.name?.toLowerCase().includes(lower));
-  }, [items, searchTerm]);
-
   const filteredItems = useMemo(
-    () => applyApprovalRoleGroupFilters(searchFiltered, appliedFilterRows),
-    [searchFiltered, appliedFilterRows]
+    () => applyApprovalRoleGroupFilters(items, appliedFilterRows),
+    [items, appliedFilterRows]
   );
 
   const sortedItems = useMemo(() => {

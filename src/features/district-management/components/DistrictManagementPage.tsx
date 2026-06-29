@@ -109,18 +109,9 @@ export function DistrictManagementPage(): ReactElement {
   const filteredDistricts = useMemo<DistrictDto[]>(() => {
     if (!districts.length) return [];
     let result = [...districts];
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      result = result.filter(
-        (d) =>
-          (d.name && d.name.toLowerCase().includes(lower)) ||
-          (d.erpCode && d.erpCode.toLowerCase().includes(lower)) ||
-          (d.cityName && d.cityName.toLowerCase().includes(lower))
-      );
-    }
     result = applyDistrictFilters(result, appliedFilterRows);
     return result;
-  }, [districts, searchTerm, appliedFilterRows]);
+  }, [districts, appliedFilterRows]);
 
   const sortedDistricts = useMemo(() => {
     const result = [...filteredDistricts];

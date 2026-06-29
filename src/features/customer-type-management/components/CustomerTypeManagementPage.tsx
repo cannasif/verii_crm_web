@@ -116,17 +116,9 @@ export function CustomerTypeManagementPage(): ReactElement {
   const filteredCustomerTypes = useMemo<CustomerTypeDto[]>(() => {
     if (!customerTypes.length) return [];
     let result = [...customerTypes];
-    if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter(
-        (item) =>
-          (item.name && item.name.toLowerCase().includes(lowerSearch)) ||
-          (item.description && item.description?.toLowerCase().includes(lowerSearch))
-      );
-    }
     result = applyCustomerTypeFilters(result, appliedFilterRows);
     return result;
-  }, [customerTypes, searchTerm, appliedFilterRows]);
+  }, [customerTypes, appliedFilterRows]);
 
   const sortedCustomerTypes = useMemo(() => {
     const result = [...filteredCustomerTypes];

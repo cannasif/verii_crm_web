@@ -110,21 +110,13 @@ export function ApprovalFlowManagementPage(): ReactElement {
 
   const filteredApprovalFlows = useMemo(() => {
     let result: ApprovalFlowDto[] = [...approvalFlows];
-    if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter(
-        (flow) =>
-          (flow.description && flow.description.toLowerCase().includes(lowerSearch)) ||
-          String(flow.id).includes(lowerSearch)
-      );
-    }
     if (activeFilter === 'active') {
       result = result.filter((flow) => flow.isActive);
     } else if (activeFilter === 'inactive') {
       result = result.filter((flow) => !flow.isActive);
     }
     return applyApprovalFlowFilters(result, appliedFilterRows);
-  }, [approvalFlows, searchTerm, activeFilter, appliedFilterRows]);
+  }, [approvalFlows, activeFilter, appliedFilterRows]);
 
   const sortedApprovalFlows = useMemo(() => {
     const result = [...filteredApprovalFlows];

@@ -111,19 +111,9 @@ export function SalesTypeManagementPage(): ReactElement {
   const filteredItems = useMemo<SalesTypeGetDto[]>(() => {
     if (!items.length) return [];
     let result = [...items];
-    if (searchTerm) {
-      const lowerSearch = searchTerm.toLowerCase();
-      result = result.filter((item) => {
-        const nameMatch = item.name && item.name.toLowerCase().includes(lowerSearch);
-        const codeMatch = item.code && item.code.toLowerCase().includes(lowerSearch);
-        const typeLabel = salesTypeLabel(item.salesType);
-        const typeMatch = typeLabel && typeLabel.toLowerCase().includes(lowerSearch);
-        return nameMatch || codeMatch || typeMatch;
-      });
-    }
     result = applySalesTypeFilters(result, appliedFilterRows);
     return result;
-  }, [items, searchTerm, appliedFilterRows, salesTypeLabel]);
+  }, [items, appliedFilterRows]);
 
   const sortedItems = useMemo(() => {
     const result = [...filteredItems];

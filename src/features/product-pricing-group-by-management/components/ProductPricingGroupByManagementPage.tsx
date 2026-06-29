@@ -103,15 +103,9 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
     [apiResponse?.data]
   );
 
-  const searchFilteredItems = useMemo<ProductPricingGroupByDto[]>(() => {
-    if (!searchTerm.trim()) return items;
-    const lower = searchTerm.toLowerCase();
-    return items.filter((item) => item.erpGroupCode?.toLowerCase().includes(lower));
-  }, [items, searchTerm]);
-
   const filteredItems = useMemo<ProductPricingGroupByDto[]>(
-    () => applyProductPricingGroupByFilters(searchFilteredItems, appliedFilterRows),
-    [searchFilteredItems, appliedFilterRows]
+    () => applyProductPricingGroupByFilters(items, appliedFilterRows),
+    [items, appliedFilterRows]
   );
 
   const sortedItems = useMemo(() => {

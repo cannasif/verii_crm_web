@@ -101,18 +101,9 @@ export function CountryManagementPage(): ReactElement {
   const filteredCountries = useMemo<CountryDto[]>(() => {
     if (!countries.length) return [];
     let result = [...countries];
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      result = result.filter(
-        (c) =>
-          (c.name && c.name.toLowerCase().includes(lower)) ||
-          (c.code && c.code.toLowerCase().includes(lower)) ||
-          (c.erpCode && c.erpCode.toLowerCase().includes(lower))
-      );
-    }
     result = applyCountryFilters(result, appliedFilterRows);
     return result;
-  }, [countries, searchTerm, appliedFilterRows]);
+  }, [countries, appliedFilterRows]);
 
   const sortedCountries = useMemo(() => {
     const result = [...filteredCountries];
