@@ -424,9 +424,10 @@ export function CatalogStockSelectDialog({
   const [favoriteStockItems, setFavoriteStockItems] = useState<CatalogStockItemDto[]>([]);
   const [specialCodePagedItems, setSpecialCodePagedItems] = useState<CatalogStockItemDto[]>([]);
   const debouncedStockSearch = useDebouncedValue(stockSearch, 300);
+  const effectiveDebouncedStockSearch = stockSearch.trim().length === 0 ? '' : debouncedStockSearch;
   const catalogStockApiSearch = useMemo(
-    (): string | undefined => toCatalogStockApiSearch(debouncedStockSearch),
-    [debouncedStockSearch],
+    (): string | undefined => toCatalogStockApiSearch(effectiveDebouncedStockSearch),
+    [effectiveDebouncedStockSearch],
   );
   const debouncedCategoryClientSearch = useDebouncedValue(categoryClientSearch, 320);
   const wasOpenRef = useRef(false);
@@ -829,10 +830,10 @@ export function CatalogStockSelectDialog({
     stockBrowseMode === 'campaign'
       ? campaignStocksQuery.isFetching
       : stockBrowseMode === 'favorites'
-        ? favoriteStocksQuery.isFetching && favoriteStockItems.length === 0
+        ? (favoriteStocksQuery.isPending || favoriteStocksQuery.isFetching) && favoriteStockItems.length === 0
         : leftPanelMode === 'code' && stockBrowseMode === 'specialCodes'
-          ? specialCodeStocksQuery.isFetching && specialCodePagedItems.length === 0
-          : stocksQuery.isFetching && categoryStockItems.length === 0;
+          ? (specialCodeStocksQuery.isPending || specialCodeStocksQuery.isFetching) && specialCodePagedItems.length === 0
+          : (stocksQuery.isPending || stocksQuery.isFetching) && categoryStockItems.length === 0;
   const activeStockFetchingMore =
     stockBrowseMode === 'campaign'
       ? false
