@@ -149,6 +149,7 @@ export function StockListCodeFilterPopover({
             isLoadingOptions={codeFilterOptionsQuery.isLoading}
             searchValue={optionSearch}
             onSearchChange={setOptionSearch}
+            areOptionsServerFiltered
             onToggle={handleToggle}
             onClear={handleClearDraft}
           />

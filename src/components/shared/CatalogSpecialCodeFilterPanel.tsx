@@ -23,6 +23,7 @@ type CatalogSpecialCodeFilterPanelProps = {
   isLoadingOptions: boolean;
   searchValue?: string;
   onSearchChange?: (value: string) => void;
+  areOptionsServerFiltered?: boolean;
   onToggle: (dimension: CatalogFilterDimension, value: string) => void;
   onClear: () => void;
 };
@@ -53,6 +54,7 @@ export function CatalogSpecialCodeFilterPanel({
   isLoadingOptions,
   searchValue,
   onSearchChange,
+  areOptionsServerFiltered = false,
   onToggle,
   onClear,
 }: CatalogSpecialCodeFilterPanelProps): ReactElement {
@@ -76,12 +78,14 @@ export function CatalogSpecialCodeFilterPanel({
   const filteredOptionsByLevel = useMemo((): Record<CatalogFilterDimension, CatalogSpecialCodeOption[]> => {
     const result = {} as Record<CatalogFilterDimension, CatalogSpecialCodeOption[]>;
     for (const dimension of CATALOG_FILTER_DIMENSIONS) {
-      result[dimension] = optionsByLevel[dimension].filter((option) =>
-        optionMatchesFilterSearch(option, normalizedFilterSearch),
-      );
+      result[dimension] = areOptionsServerFiltered
+        ? optionsByLevel[dimension]
+        : optionsByLevel[dimension].filter((option) =>
+            optionMatchesFilterSearch(option, normalizedFilterSearch),
+          );
     }
     return result;
-  }, [optionsByLevel, normalizedFilterSearch]);
+  }, [areOptionsServerFiltered, optionsByLevel, normalizedFilterSearch]);
 
   const toggleDimensionExpanded = useCallback((dimension: CatalogFilterDimension): void => {
     setExpandedByDimension((prev) => ({ ...prev, [dimension]: !prev[dimension] }));
