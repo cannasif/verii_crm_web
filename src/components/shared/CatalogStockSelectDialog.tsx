@@ -254,6 +254,7 @@ type CampaignStocksQueryData = {
 type FavoriteStocksQueryData = {
   items: CatalogStockItemDto[];
   totalCount: number;
+  hasNextPage: boolean;
 };
 
 const PAGE_SIZE = 24;
@@ -267,6 +268,25 @@ type CatalogSessionPick = {
 type CatalogStockBrowseMode = 'category' | 'specialCodes' | 'campaign' | 'favorites';
 
 type CatalogLeftPanelMode = 'catalog' | 'code';
+
+function appendUniqueCatalogStockItems(
+  previous: CatalogStockItemDto[],
+  nextPage: CatalogStockItemDto[],
+  pageNumber: number,
+): CatalogStockItemDto[] {
+  if (pageNumber <= 1) {
+    return nextPage;
+  }
+
+  const merged = new Map<number, CatalogStockItemDto>();
+  for (const item of previous) {
+    merged.set(item.stockId, item);
+  }
+  for (const item of nextPage) {
+    merged.set(item.stockId, item);
+  }
+  return Array.from(merged.values());
+}
 
 type HorizontalScrollRowProps = {
   syncKey?: string | number;
@@ -400,6 +420,9 @@ export function CatalogStockSelectDialog({
   const [categorySearchShowBranches, setCategorySearchShowBranches] = useState(false);
   const [expandedCatalogIds, setExpandedCatalogIds] = useState<Set<number>>(() => new Set());
   const [catalogPaths, setCatalogPaths] = useState<Record<number, CatalogCategoryNodeDto[]>>({});
+  const [categoryStockItems, setCategoryStockItems] = useState<CatalogStockItemDto[]>([]);
+  const [favoriteStockItems, setFavoriteStockItems] = useState<CatalogStockItemDto[]>([]);
+  const [specialCodePagedItems, setSpecialCodePagedItems] = useState<CatalogStockItemDto[]>([]);
   const debouncedStockSearch = useDebouncedValue(stockSearch, 300);
   const catalogStockApiSearch = useMemo(
     (): string | undefined => toCatalogStockApiSearch(debouncedStockSearch),
@@ -525,7 +548,7 @@ export function CatalogStockSelectDialog({
     specialCodeSelections,
   ]);
 
-  const loadedStockCount = pageNumber * PAGE_SIZE;
+  const campaignDisplayCount = pageNumber * PAGE_SIZE;
 
   const stocksQuery = useQuery({
     queryKey: [
@@ -539,8 +562,8 @@ export function CatalogStockSelectDialog({
     ],
     queryFn: () =>
       categoryDefinitionsApi.getCatalogCategoryStocks(selectedCatalog!.id, selectedLeafCategory!.catalogCategoryId, {
-        pageNumber: 1,
-        pageSize: loadedStockCount,
+        pageNumber,
+        pageSize: PAGE_SIZE,
         search: catalogStockApiSearch,
         includeDescendants,
       }),
@@ -552,9 +575,9 @@ export function CatalogStockSelectDialog({
     placeholderData: keepPreviousData,
   });
 
-  const stockItems = stocksQuery.data?.data ?? EMPTY_CATALOG_STOCK_ROWS;
-  const totalCount = stocksQuery.data?.totalCount ?? stockItems.length;
-  const hasNextPage = loadedStockCount < totalCount;
+  const categoryPageItems = stocksQuery.data?.data ?? EMPTY_CATALOG_STOCK_ROWS;
+  const totalCount = stocksQuery.data?.totalCount ?? categoryStockItems.length;
+  const hasNextPage = stocksQuery.data?.hasNextPage ?? (categoryStockItems.length < totalCount);
 
   const campaignStocksQuery = useQuery({
     queryKey: [
@@ -605,9 +628,9 @@ export function CatalogStockSelectDialog({
     );
   }, [campaignCatalogItems, debouncedStockSearch, i18n.language]);
   const campaignDisplayItems = useMemo((): CatalogStockItemDto[] => {
-    return campaignSearchFilteredItems.slice(0, loadedStockCount);
-  }, [campaignSearchFilteredItems, loadedStockCount]);
-  const campaignHasNextPage = loadedStockCount < campaignSearchFilteredItems.length;
+    return campaignSearchFilteredItems.slice(0, campaignDisplayCount);
+  }, [campaignSearchFilteredItems, campaignDisplayCount]);
+  const campaignHasNextPage = campaignDisplayCount < campaignSearchFilteredItems.length;
   const favoriteCatalogId = selectedCatalog?.id ?? catalogsQuery.data?.[0]?.id ?? null;
 
   const favoriteStocksQuery = useQuery({
@@ -619,8 +642,8 @@ export function CatalogStockSelectDialog({
     ] as const,
     queryFn: async (): Promise<FavoriteStocksQueryData> => {
       const response = await categoryDefinitionsApi.getCatalogFavorites(favoriteCatalogId!, {
-        pageNumber: 1,
-        pageSize: loadedStockCount,
+        pageNumber,
+        pageSize: PAGE_SIZE,
         search: catalogStockApiSearch,
       });
       const rawItems = response.data ?? [];
@@ -663,6 +686,7 @@ export function CatalogStockSelectDialog({
       return {
         items: enrichedItems,
         totalCount: response.totalCount ?? 0,
+        hasNextPage: response.hasNextPage ?? false,
       };
     },
     enabled: open && stockBrowseMode === 'favorites' && favoriteCatalogId != null,
@@ -670,9 +694,9 @@ export function CatalogStockSelectDialog({
     placeholderData: keepPreviousData,
   });
 
-  const favoriteItems = favoriteStocksQuery.data?.items ?? EMPTY_CATALOG_STOCK_ROWS;
-  const favoriteTotalCount = favoriteStocksQuery.data?.totalCount ?? favoriteItems.length;
-  const favoriteHasNextPage = loadedStockCount < favoriteTotalCount;
+  const favoritePageItems = favoriteStocksQuery.data?.items ?? EMPTY_CATALOG_STOCK_ROWS;
+  const favoriteTotalCount = favoriteStocksQuery.data?.totalCount ?? favoriteStockItems.length;
+  const favoriteHasNextPage = favoriteStocksQuery.data?.hasNextPage ?? (favoriteStockItems.length < favoriteTotalCount);
 
   const specialCodeHasSelection = hasSpecialCodeSelection(specialCodeSelections);
 
@@ -725,8 +749,8 @@ export function CatalogStockSelectDialog({
             filters: params.filters,
           }),
         {
-          pageNumber: 1,
-          pageSize: loadedStockCount,
+          pageNumber,
+          pageSize: PAGE_SIZE,
           search: catalogStockApiSearch,
         },
       );
@@ -740,18 +764,63 @@ export function CatalogStockSelectDialog({
     placeholderData: keepPreviousData,
   });
 
-  const specialCodeStockItems = specialCodeStocksQuery.data?.data ?? EMPTY_CATALOG_STOCK_ROWS;
-  const specialCodeTotalCount = specialCodeStocksQuery.data?.totalCount ?? 0;
-  const specialCodeHasNextPage = loadedStockCount < specialCodeTotalCount;
+  const specialCodePageItems = specialCodeStocksQuery.data?.data ?? EMPTY_CATALOG_STOCK_ROWS;
+  const specialCodeTotalCount = specialCodeStocksQuery.data?.totalCount ?? specialCodePagedItems.length;
+  const specialCodeHasNextPage = specialCodePagedItems.length < specialCodeTotalCount;
+
+  useEffect(() => {
+    setCategoryStockItems([]);
+  }, [
+    open,
+    selectedCatalog?.id,
+    selectedLeafCategory?.catalogCategoryId,
+    includeDescendants,
+    catalogStockApiSearch,
+  ]);
+
+  useEffect(() => {
+    if (!stocksQuery.data || stocksQuery.isPlaceholderData) {
+      return;
+    }
+    setCategoryStockItems((previous) =>
+      appendUniqueCatalogStockItems(previous, categoryPageItems, pageNumber),
+    );
+  }, [categoryPageItems, pageNumber, stocksQuery.data, stocksQuery.isPlaceholderData]);
+
+  useEffect(() => {
+    setFavoriteStockItems([]);
+  }, [open, favoriteCatalogId, catalogStockApiSearch]);
+
+  useEffect(() => {
+    if (!favoriteStocksQuery.data || favoriteStocksQuery.isPlaceholderData) {
+      return;
+    }
+    setFavoriteStockItems((previous) =>
+      appendUniqueCatalogStockItems(previous, favoritePageItems, pageNumber),
+    );
+  }, [favoritePageItems, favoriteStocksQuery.data, favoriteStocksQuery.isPlaceholderData, pageNumber]);
+
+  useEffect(() => {
+    setSpecialCodePagedItems([]);
+  }, [open, catalogStockApiSearch, specialCodeSelections]);
+
+  useEffect(() => {
+    if (!specialCodeStocksQuery.data || specialCodeStocksQuery.isPlaceholderData) {
+      return;
+    }
+    setSpecialCodePagedItems((previous) =>
+      appendUniqueCatalogStockItems(previous, specialCodePageItems, pageNumber),
+    );
+  }, [pageNumber, specialCodePageItems, specialCodeStocksQuery.data, specialCodeStocksQuery.isPlaceholderData]);
 
   const rawActiveStockRows: CatalogStockItemDto[] =
     stockBrowseMode === 'campaign'
       ? campaignDisplayItems
       : stockBrowseMode === 'favorites'
-        ? favoriteItems
+        ? favoriteStockItems
         : leftPanelMode === 'code' && stockBrowseMode === 'specialCodes'
-          ? specialCodeStockItems
-          : stockItems;
+          ? specialCodePagedItems
+          : categoryStockItems;
   const activeStockRows = useMemo(
     () => dedupeStocksByErpStockCode(rawActiveStockRows),
     [rawActiveStockRows],
@@ -760,10 +829,10 @@ export function CatalogStockSelectDialog({
     stockBrowseMode === 'campaign'
       ? campaignStocksQuery.isLoading
       : stockBrowseMode === 'favorites'
-        ? favoriteStocksQuery.isPending && favoriteItems.length === 0
+        ? favoriteStocksQuery.isPending && favoriteStockItems.length === 0
         : leftPanelMode === 'code' && stockBrowseMode === 'specialCodes'
-          ? specialCodeStocksQuery.isPending && specialCodeStockItems.length === 0
-          : stocksQuery.isPending && stockItems.length === 0;
+          ? specialCodeStocksQuery.isPending && specialCodePagedItems.length === 0
+          : stocksQuery.isPending && categoryStockItems.length === 0;
   const activeStockFetchingMore =
     stockBrowseMode === 'campaign'
       ? false
@@ -1121,7 +1190,7 @@ export function CatalogStockSelectDialog({
       }
       return hasAnyPicksOrDraft
         ? t('catalogStockPicker.selectionReadyTitle')
-        : specialCodeStockItems.length > 0
+        : specialCodePagedItems.length > 0
           ? t('catalogStockPicker.stocksFoundTitle', { count: specialCodeTotalCount })
           : t('catalogStockPicker.emptyStocksTitle');
     }
@@ -1140,21 +1209,22 @@ export function CatalogStockSelectDialog({
     }
     return hasAnyPicksOrDraft
       ? t('catalogStockPicker.selectionReadyTitle')
-      : stockItems.length > 0
-        ? t('catalogStockPicker.stocksFoundTitle', { count: stockItems.length })
+      : categoryStockItems.length > 0
+        ? t('catalogStockPicker.stocksFoundTitle', { count: totalCount })
         : t('catalogStockPicker.emptyStocksTitle');
   }, [
     stockBrowseMode,
     leftPanelMode,
     specialCodeHasSelection,
     specialCodeStocksQuery.isLoading,
-    specialCodeStockItems.length,
+    specialCodePagedItems.length,
     specialCodeTotalCount,
     campaignStocksQuery.isLoading,
     hasAnyPicksOrDraft,
     campaignSearchFilteredItems.length,
     selectedLeafCategory,
-    stockItems.length,
+    categoryStockItems.length,
+    totalCount,
     t,
   ]);
 
@@ -1168,7 +1238,7 @@ export function CatalogStockSelectDialog({
       }
       return hasAnyPicksOrDraft
         ? t('catalogStockPicker.selectionReadyHint')
-        : specialCodeStockItems.length > 0
+        : specialCodePagedItems.length > 0
           ? t('catalogStockPicker.rightPanelLeafHint')
           : t('catalogStockPicker.emptyStocks');
     }
@@ -1190,7 +1260,7 @@ export function CatalogStockSelectDialog({
     }
     return hasAnyPicksOrDraft
       ? t('catalogStockPicker.selectionReadyHint')
-      : stockItems.length > 0
+      : categoryStockItems.length > 0
         ? t('catalogStockPicker.rightPanelLeafHint')
         : t('catalogStockPicker.emptyStocks');
   }, [
@@ -1198,12 +1268,12 @@ export function CatalogStockSelectDialog({
     leftPanelMode,
     specialCodeHasSelection,
     specialCodeStocksQuery.isLoading,
-    specialCodeStockItems.length,
+    specialCodePagedItems.length,
     campaignStocksQuery.isLoading,
     hasAnyPicksOrDraft,
     campaignSearchFilteredItems.length,
     selectedLeafCategory,
-    stockItems.length,
+    categoryStockItems.length,
     t,
   ]);
 
