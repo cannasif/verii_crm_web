@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
+import { normalizeSearchValue } from '@/lib/search';
 import { arraysEqual } from '@/lib/utils';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
@@ -87,11 +88,11 @@ export function ErpCustomerManagementPage(): ReactElement {
   const searchFiltered = useMemo(() => {
     if (!customers) return [];
     if (!searchTerm.trim()) return customers;
-    const lower = searchTerm.toLowerCase();
+    const lower = normalizeSearchValue(searchTerm);
     return customers.filter(
       (c) =>
-        (c.customerName && c.customerName.toLowerCase().includes(lower)) ||
-        (c.customerCode && c.customerCode.toLowerCase().includes(lower))
+        normalizeSearchValue(c.customerName).includes(lower) ||
+        normalizeSearchValue(c.customerCode).includes(lower)
     );
   }, [customers, searchTerm]);
 

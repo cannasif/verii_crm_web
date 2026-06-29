@@ -26,6 +26,7 @@ import {
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
+import { normalizeSearchValue } from '@/lib/search';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Edit2, Trash2, ArrowLeft, TableProperties, X, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
@@ -143,12 +144,12 @@ export function PdfTablePresetManagementPage(): ReactElement {
 
   const filteredPresets = useMemo(() => {
     if (!searchTerm.trim()) return presets;
-    const lower = searchTerm.toLowerCase();
+    const lower = normalizeSearchValue(searchTerm);
     return presets.filter(
       (p) =>
-        p.name.toLowerCase().includes(lower) ||
-        p.key.toLowerCase().includes(lower) ||
-        (RULE_TYPE_LABEL_KEYS[p.ruleType] && t(RULE_TYPE_LABEL_KEYS[p.ruleType]).toLowerCase().includes(lower))
+        normalizeSearchValue(p.name).includes(lower) ||
+        normalizeSearchValue(p.key).includes(lower) ||
+        (RULE_TYPE_LABEL_KEYS[p.ruleType] && normalizeSearchValue(t(RULE_TYPE_LABEL_KEYS[p.ruleType])).includes(lower))
     ).sort((a, b) => {
       const getVal = (item: PdfTablePresetDto, key: PdfTablePresetColumnKey) => {
         if (key === 'columnCount') return item.columns.length;

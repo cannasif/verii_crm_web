@@ -32,6 +32,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { normalizeSearchValue } from '@/lib/search';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 const LIST_PARAMS = { pageNumber: 1, pageSize: 100 };
@@ -56,11 +57,11 @@ export function GroupReportDefinitionList(): ReactElement {
   const items = useMemo(() => data?.data ?? [], [data]);
   const filteredItems = useMemo(() => {
     if (!searchTerm) return items;
-    const lower = searchTerm.toLowerCase();
+    const lower = normalizeSearchValue(searchTerm);
     return items.filter(
       (x) =>
-        (x.groupName && x.groupName.toLowerCase().includes(lower)) ||
-        (x.reportDefinitionName && x.reportDefinitionName.toLowerCase().includes(lower))
+        normalizeSearchValue(x.groupName).includes(lower) ||
+        normalizeSearchValue(x.reportDefinitionName).includes(lower)
     );
   }, [items, searchTerm]);
 

@@ -14,6 +14,7 @@ import {
 } from '../utils/permission-config';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
+import { normalizeSearchValue } from '@/lib/search';
 import { cn } from '@/lib/utils';
 
 interface PermissionDefinitionMultiSelectProps {
@@ -107,11 +108,11 @@ export function PermissionDefinitionMultiSelect({
   );
 
   const filteredItems = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = normalizeSearchValue(search);
     if (!q) return items;
     return items.filter((item) => {
       const display = getDisplayLabel(item.code, item.name);
-      return (item.code ?? '').toLowerCase().includes(q) || (item.name ?? '').toLowerCase().includes(q) || display.toLowerCase().includes(q);
+      return normalizeSearchValue(item.code).includes(q) || normalizeSearchValue(item.name).includes(q) || normalizeSearchValue(display).includes(q);
     });
   }, [items, search, getDisplayLabel]);
 

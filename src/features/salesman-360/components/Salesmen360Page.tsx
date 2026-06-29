@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { CalendarDays, ChevronDown, CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins, type LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { normalizeSearchValue } from '@/lib/search';
 import {
   Tooltip,
   TooltipContent,
@@ -189,12 +190,12 @@ function Salesmen360SalespersonCombobox({
             if (!item) {
               return 0;
             }
-            const q = search.trim().toLowerCase();
+            const q = normalizeSearchValue(search);
             if (!q) {
               return 1;
             }
-            const name = (item.fullName ?? '').toLowerCase();
-            const email = (item.email ?? '').toLowerCase();
+            const name = normalizeSearchValue(item.fullName);
+            const email = normalizeSearchValue(item.email);
             const idStr = String(item.userId);
             if (name.includes(q) || email.includes(q) || idStr.includes(q)) {
               return 1;
