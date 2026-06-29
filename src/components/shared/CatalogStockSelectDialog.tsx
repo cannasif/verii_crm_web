@@ -70,7 +70,6 @@ import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } f
 import { CatalogSpecialCodeFilterPanel } from './CatalogSpecialCodeFilterPanel';
 import {
   CATALOG_SPECIAL_CODE_FACET_POOL_SIZE,
-  fetchCatalogSpecialCodeStocksPage,
   clearSpecialCodeSelections,
   EMPTY_SPECIAL_CODE_SELECTIONS,
   CATALOG_FILTER_DIMENSIONS,
@@ -737,27 +736,19 @@ export function CatalogStockSelectDialog({
       specialCodeSelections,
     ] as const,
     queryFn: async (): Promise<{ data: CatalogStockItemDto[]; totalCount: number }> => {
-      const result = await fetchCatalogSpecialCodeStocksPage(
-        specialCodeSelections,
-        (params) =>
-          stockApi.getListWithImages({
-            pageNumber: params.pageNumber,
-            pageSize: params.pageSize,
-            search: params.search ?? '',
-            sortBy: params.sortBy ?? 'Id',
-            sortDirection: params.sortDirection ?? 'desc',
-            filterLogic: params.filterLogic ?? 'and',
-            filters: params.filters,
-          }),
-        {
-          pageNumber,
-          pageSize: PAGE_SIZE,
-          search: catalogStockApiSearch,
-        },
-      );
+      const result = await stockApi.getListWithImagesByCodeFilters({
+        pageNumber,
+        pageSize: PAGE_SIZE,
+        search: catalogStockApiSearch ?? '',
+        sortBy: 'Id',
+        sortDirection: 'desc',
+        filterLogic: 'and',
+        filters: [],
+        codeFilters: specialCodeSelections,
+      });
       return {
         data: result.data.map((row) => mapStockGetToCatalogItem(row)),
-        totalCount: result.totalCount,
+        totalCount: result.totalCount ?? result.data.length,
       };
     },
     enabled: open && leftPanelMode === 'code' && specialCodeHasSelection,
