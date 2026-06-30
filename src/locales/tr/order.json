@@ -201,7 +201,8 @@
       "confirmMessage": "Bu satırı silmek istediğinizden emin misiniz?",
       "confirmTitleMultiple": "Satırları Sil",
       "confirmMessageMultiple": "Seçili satırları silmek istediğinizden emin misiniz?"
-    }
+    },
+    "stockSelectionRequired": "Stok Seçimi"
   },
   "exchangeRates": {
     "title": "Döviz Kurları",

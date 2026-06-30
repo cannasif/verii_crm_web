@@ -54,6 +54,7 @@ interface VoiceSearchComboboxProps
   popoverContentClassName?: string;
   disabled?: boolean;
   modal?: boolean;
+  disableToggleOff?: boolean;
 }
 
 export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComboboxProps>(function VoiceSearchCombobox({
@@ -72,6 +73,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
   popoverContentClassName,
   disabled = false,
   modal: _modal = true,
+  disableToggleOff = false,
   ...triggerProps
 }, ref) {
   const { t, i18n } = useTranslation();
@@ -373,7 +375,13 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
   const listMinHeight = options.length > 0 || isFetchingNextPage ? DROPDOWN_MAX_HEIGHT_PX : undefined;
 
   const handleOptionSelect = (option: ComboboxOption): void => {
-    const nextValue = option.value === value ? null : option.value;
+    let nextValue: string | null = null;
+    if (option.value === value) {
+      nextValue = disableToggleOff ? value : null;
+    } else {
+      nextValue = option.value;
+    }
+
     if (nextValue) {
       setPinnedSelection({ value: nextValue, label: option.label });
     } else {

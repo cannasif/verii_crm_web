@@ -3,7 +3,9 @@
 import { type ChangeEvent, type ReactElement, type MouseEvent, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { z } from 'zod';
 import { toast } from 'sonner';
+import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { PricingRuleInsightDialog } from '@/components/shared/PricingRuleInsightDialog';
@@ -1588,7 +1590,7 @@ export function DemandLineForm({
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                    {t('lines.windoProfileLabel')}
+                    {t('lines.windoProfileLabel')} <span className="text-rose-500">*</span>
                   </label>
                   <ErpFieldHint label={t('lines.profileErpTooltip')} />
                 </div>
@@ -1677,10 +1679,11 @@ export function DemandLineForm({
                   options={baskiComboboxOptions}
                   value={formData.baskiDefinitionId ? String(formData.baskiDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('baskiDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.unprinted', { defaultValue: 'Baskısız' })}
+                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectPrint', { defaultValue: 'Baskı seçin' })}
                   searchPlaceholder={t('lines.searchWindoPrint', { defaultValue: 'Baskı ara...' })}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
                   disabled={isDefinitionOptionsLoading}
+                  disableToggleOff
                 />
                 <Input
                   value={formData.baskiAciklama ?? ''}
@@ -1858,28 +1861,50 @@ export function DemandLineForm({
             >
               {t('cancel')}
             </Button>
-            <Button
-              type="button"
-              onClick={bulkDraftLines.length > 0 ? handleBulkDraftConfirm : () => handleSave()}
-              disabled={
-                (bulkDraftLines.length > 0 ? bulkDraftLines.length === 0 : !formData.productCode || !formData.productName) ||
-                isSaving
+            {(() => {
+              const missingFields: string[] = [];
+              if (bulkDraftLines.length === 0) {
+                if (!formData.productCode || !formData.productName) {
+                  missingFields.push(t('lines.stockSelectionRequired', { defaultValue: 'Stok Seçimi' }));
+                }
+                if (!formData.profilDefinitionId) {
+                  missingFields.push(t('lines.windoProfileLabel', { defaultValue: 'Profil' }));
+                }
               }
-              className={DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS}
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  {t('saving')}
-                </>
-              ) : (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  {t('save')}
-                  {bulkDraftLines.length > 0 ? ` (${bulkDraftLines.length})` : ''}
-                </>
-              )}
-            </Button>
+
+              return (
+                <FormSubmitTooltipWrap
+                  schema={z.any()}
+                  value={{}}
+                  isValid={missingFields.length === 0}
+                  isPending={isSaving}
+                  manualHintLines={missingFields}
+                >
+                  <Button
+                    type="button"
+                    onClick={bulkDraftLines.length > 0 ? handleBulkDraftConfirm : () => handleSave()}
+                    disabled={
+                      (bulkDraftLines.length > 0 ? bulkDraftLines.length === 0 : !formData.productCode || !formData.productName || !formData.profilDefinitionId) ||
+                      isSaving
+                    }
+                    className={DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS}
+                  >
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        {t('saving')}
+                      </>
+                    ) : (
+                      <>
+                        <Check className="h-4 w-4 mr-2" />
+                        {t('save')}
+                        {bulkDraftLines.length > 0 ? ` (${bulkDraftLines.length})` : ''}
+                      </>
+                    )}
+                  </Button>
+                </FormSubmitTooltipWrap>
+              );
+            })()}
           </div>
         </div>
       </div>

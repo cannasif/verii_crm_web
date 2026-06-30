@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useTheme } from '@/components/theme-provider';
-import { brandThemes } from '@/lib/brand-themes';
+import { brandThemes, type BrandTheme } from '@/lib/brand-themes';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUserDetailByUserId } from '@/features/user-detail-management/hooks/useUserDetailByUserId';
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
@@ -114,7 +114,7 @@ export function UserProfileModal({
 
         <div className="flex flex-col md:flex-row w-full h-full overflow-y-auto md:overflow-hidden">
           <div className={cn(
-            "w-full md:w-[320px] lg:w-[380px] rounded-[1.5rem] md:rounded-[2rem] flex flex-col items-center justify-center md:justify-start md:pt-16 p-6 md:p-10 border-b md:border-b-0 md:border-r shrink-0 relative overflow-hidden transition-all duration-500",
+            "w-full md:w-[280px] lg:w-[340px] rounded-[1.5rem] md:rounded-[2rem] flex flex-col items-center justify-center md:justify-start md:pt-16 p-6 md:p-10 border-b md:border-b-0 md:border-r shrink-0 relative overflow-hidden transition-all duration-500",
             "bg-slate-50/80 border-slate-100 dark:border-white/5 dark:bg-[linear-gradient(180deg,var(--crm-app-panel-strong)_0%,var(--crm-app-panel)_100%)]"
           )}>
             <div className="absolute left-[-20%] top-[-20%] h-64 w-64 rounded-full bg-[var(--crm-brand-soft)] blur-[80px]" />
@@ -219,8 +219,10 @@ export function UserProfileModal({
                         key={l.code}
                         value={l.code}
                         className={cn(
-                          "my-1 cursor-pointer rounded-xl transition-colors focus:bg-[var(--crm-brand-primary)] focus:text-white",
-                          "hover:bg-slate-100 dark:hover:bg-white/5"
+                          "my-1 cursor-pointer rounded-xl transition-all duration-200",
+                          currentLanguage.code === l.code
+                            ? "bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)] font-bold"
+                            : "hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5"
                         )}
                       >
                         <span className="flex items-center gap-2">
@@ -233,82 +235,82 @@ export function UserProfileModal({
                 </Select>
               </div>
 
-              <div className={cn(
-                "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
-                "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
-              )}>
-                <div className="flex items-center gap-3 md:gap-4">
-                  <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400")}>
-                    {isDark ? <Moon02Icon size={18} className="md:w-6 md:h-6" /> : <Sun01Icon size={18} className="md:w-6 md:h-6" />}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+                <div className={cn(
+                  "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
+                  "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
+                )}>
+                  <div className="flex items-center gap-3 md:gap-4">
+                    <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400")}>
+                      {isDark ? <Moon02Icon size={18} className="md:w-6 md:h-6" /> : <Sun01Icon size={18} className="md:w-6 md:h-6" />}
+                    </div>
+                    <div className="text-left">
+                      <p className="font-bold text-sm md:text-base lg:text-lg">{t('appearance')}</p>
+                    </div>
                   </div>
-                  <div className="text-left">
-                    <p className="font-bold text-sm md:text-base lg:text-lg">{t('appearance')}</p>
-                  </div>
-                </div>
-                <Switch
-                  checked={isDark}
-                  onCheckedChange={() => setTheme(isDark ? 'light' : 'dark')}
-                  className="scale-75 data-[state=checked]:bg-[var(--crm-brand-primary)] md:scale-100"
-                />
-              </div>
-
-              <div className={cn(
-                "w-full rounded-[1.5rem] border p-3 transition-all md:rounded-[2rem] md:p-4",
-                "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
-              )}>
-                <div className="mb-3 flex items-start gap-3 md:gap-4">
-                  <div className="rounded-2xl bg-[var(--crm-brand-soft)] p-2.5 text-[var(--crm-brand-primary)] shadow-lg md:p-4">
-                    <Palette size={18} className="md:h-6 md:w-6" />
-                  </div>
-                  <div className="min-w-0 text-left">
-                    <p className="text-sm font-bold md:text-base lg:text-lg">Kurumsal Tema</p>
-                    <p className="mt-0.5 hidden text-xs text-[var(--crm-app-text-muted)] sm:block">
-                      CRM genel görünümünü marka kimliğine göre değiştirin
-                    </p>
-                  </div>
+                  <Switch
+                    checked={isDark}
+                    onCheckedChange={() => setTheme(isDark ? 'light' : 'dark')}
+                    className="scale-75 data-[state=checked]:bg-[var(--crm-brand-primary)] md:scale-100"
+                  />
                 </div>
 
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {brandThemes.map((item) => {
-                    const isSelected = item.id === brandTheme;
-                    return (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => setBrandTheme(item.id)}
-                        className={cn(
-                          "group flex min-h-16 items-center gap-3 rounded-2xl border p-3 text-left transition-all duration-200",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--crm-brand-ring)]",
-                          isSelected
-                            ? "border-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)] shadow-[0_12px_30px_-22px_var(--crm-brand-shadow)]"
-                            : "border-slate-200 bg-white/70 hover:border-[var(--crm-brand-ring)] hover:bg-white dark:border-white/10 dark:bg-black/10 dark:hover:bg-white/5"
-                        )}
-                        aria-pressed={isSelected}
-                      >
-                        <span className="flex h-9 w-12 shrink-0 overflow-hidden rounded-xl border border-white/40 shadow-sm">
-                          {item.swatches.map((color) => (
-                            <span key={color} className="h-full flex-1" style={{ backgroundColor: color }} />
-                          ))}
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-xs font-black md:text-sm">{item.label}</span>
-                          <span className="mt-0.5 line-clamp-1 text-[10px] font-medium text-[var(--crm-app-text-muted)] md:text-[11px]">
-                            {item.description}
-                          </span>
-                        </span>
-                        <span
-                          className={cn(
-                            "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all",
-                            isSelected
-                              ? "border-[var(--crm-brand-primary)] bg-[var(--crm-brand-primary)] text-white"
-                              : "border-slate-200 text-transparent dark:border-white/10"
-                          )}
-                        >
-                          <Check size={14} strokeWidth={3} />
-                        </span>
-                      </button>
-                    );
-                  })}
+                <div className={cn(
+                  "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
+                  "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
+                )}>
+                  <div className="flex items-center gap-3 md:gap-4 flex-1">
+                    <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)]")}>
+                      <Palette size={18} className="md:h-6 md:w-6" />
+                    </div>
+                    <div className="text-left min-w-0">
+                      <p className="font-bold text-sm md:text-base lg:text-lg">Tema</p>
+                    </div>
+                  </div>
+                  <Select value={brandTheme} onValueChange={(val) => setBrandTheme(val as BrandTheme)}>
+                    <SelectTrigger className={cn(
+                      "w-24 md:w-28 lg:w-32 h-9 md:h-10 shadow-none focus:ring-0 font-black text-xs md:text-sm transition-all",
+                      "bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 dark:bg-white/10 dark:border-none dark:hover:bg-white/20 dark:text-white"
+                    )}>
+                      <span className="truncate">{brandThemes.find(t => t.id === brandTheme)?.label || 'Tema'}</span>
+                    </SelectTrigger>
+                    <SelectContent align="end" className={cn(
+                      "rounded-2xl border shadow-2xl p-2 w-[300px] sm:w-[500px]",
+                      "bg-white border-slate-200 text-slate-900 dark:bg-[#1a1025] dark:border-white/10 dark:text-white"
+                    )}>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {brandThemes.map((item) => (
+                          <SelectItem
+                            key={item.id}
+                            value={item.id}
+                            className={cn(
+                              "flex min-h-16 items-center gap-3 cursor-pointer rounded-xl border p-3 px-3 transition-colors",
+                              "hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5",
+                              "border-slate-100 dark:border-white/5 data-[state=checked]:border-[var(--crm-brand-primary)] data-[state=checked]:bg-[var(--crm-brand-soft)]",
+                              "focus:text-inherit [&>span.absolute]:hidden"
+                            )}
+                          >
+                            <div className="flex items-center gap-3 w-full">
+                              <span className="flex h-9 w-12 shrink-0 overflow-hidden rounded-xl border border-white/40 shadow-sm">
+                                {item.swatches.map((color) => (
+                                  <span key={color} className="h-full flex-1" style={{ backgroundColor: color }} />
+                                ))}
+                              </span>
+                              <span className="min-w-0 flex-1 flex flex-col items-start text-left">
+                                <span className="block truncate text-xs font-black md:text-sm">{item.label}</span>
+                                <span className="mt-0.5 line-clamp-1 text-[10px] font-medium text-[var(--crm-app-text-muted)] md:text-[11px] whitespace-normal">
+                                  {item.description}
+                                </span>
+                              </span>
+                              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--crm-brand-primary)] bg-[var(--crm-brand-primary)] text-white opacity-0 transition-opacity [[data-state=checked]_&]:opacity-100">
+                                <Check size={14} strokeWidth={3} />
+                              </span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </div>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </div>

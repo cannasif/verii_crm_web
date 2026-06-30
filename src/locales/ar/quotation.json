@@ -201,7 +201,8 @@
     "addNewScrew": "إضافة برغي جديد",
     "addNewPrint": "إضافة طباعة جديدة",
     "windoNoneSelected": "لا شيء",
-    "lineDetailPair": "{{label}}: {{value}}"
+    "lineDetailPair": "{{label}}: {{value}}",
+    "stockSelectionRequired": "اختيار المخزون"
   },
   "exchangeRates": {
     "title": "أسعار الصرف",

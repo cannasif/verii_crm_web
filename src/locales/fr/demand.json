@@ -202,7 +202,8 @@
     "addNewScrew": "Ajouter une nouvelle vis",
     "addNewPrint": "Ajouter une nouvelle impression",
     "windoNoneSelected": "Aucun",
-    "lineDetailPair": "{{label}}: {{value}}"
+    "lineDetailPair": "{{label}}: {{value}}",
+    "stockSelectionRequired": "Sélection de stock"
   },
   "exchangeRates": {
     "title": "Taux de Change",

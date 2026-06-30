@@ -34,6 +34,7 @@ import { quotationApi } from '../api/quotation-api';
 import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { SalesDocumentDraftRestoreDialog } from '@/features/sales-drafts/SalesDocumentDraftRestoreDialog';
 import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentDraft';
 import { usePrefetchLineImagesForPdf } from '../hooks/usePrefetchLineImagesForPdf';
@@ -214,6 +215,7 @@ export function QuotationCreateForm(): ReactElement {
   );
   const { koliBaskiMap, profilMap, demirMap, vidaMap, baskiMap } = useWindoDefinitionOptions();
   const { data: paymentTypes = [] } = usePaymentTypes();
+  const effectiveSystemSettings = useSystemSettingsStore((state) => state.settings);
   const { data: shippingAddresses = [] } = useShippingAddresses(
     watchedCustomerId != null && watchedCustomerId > 0 ? watchedCustomerId : undefined,
   );
@@ -610,6 +612,7 @@ export function QuotationCreateForm(): ReactElement {
       lineDiscountLabels,
       showDiscount: showDiscount ?? defaultShowDiscountDetails,
       draft,
+      hideVat: effectiveSystemSettings.hideQuotationVatRate,
     });
   }, [
     lines,
@@ -629,6 +632,7 @@ export function QuotationCreateForm(): ReactElement {
     vidaMap,
     baskiMap,
     defaultShowDiscountDetails,
+    effectiveSystemSettings.hideQuotationVatRate,
   ]);
 
   const openPdfExportPreview = (): void => {

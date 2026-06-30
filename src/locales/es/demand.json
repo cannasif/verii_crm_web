@@ -202,7 +202,8 @@
     "addNewScrew": "Añadir nuevo tornillo",
     "addNewPrint": "Añadir nueva impresión",
     "windoNoneSelected": "Ninguno",
-    "lineDetailPair": "{{label}}: {{value}}"
+    "lineDetailPair": "{{label}}: {{value}}",
+    "stockSelectionRequired": "Selección de stock"
   },
   "exchangeRates": {
     "title": "Tipos de Cambio",

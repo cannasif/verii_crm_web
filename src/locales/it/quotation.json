@@ -201,7 +201,8 @@
     "addNewScrew": "Aggiungi nuova vite",
     "addNewPrint": "Aggiungi nuova stampa",
     "windoNoneSelected": "Nessuno",
-    "lineDetailPair": "{{label}}: {{value}}"
+    "lineDetailPair": "{{label}}: {{value}}",
+    "stockSelectionRequired": "Selezione stock"
   },
   "exchangeRates": {
     "title": "Tassi di Cambio",

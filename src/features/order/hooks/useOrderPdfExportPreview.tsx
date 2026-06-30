@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { resolveQuotationCustomerLabelForPdf } from '@/lib/resolve-quotation-customer-label';
 import type { QuotationCustomerLabelOption } from '@/lib/resolve-quotation-customer-label';
 import { useAuthStore } from '@/stores/auth-store';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { QuotationPdfExportPreviewDialog } from '@/features/quotation/components/QuotationPdfExportPreviewDialog';
 import { QuotationWhatsappSendDialog } from '@/features/quotation/components/QuotationWhatsappSendDialog';
 import {
@@ -87,6 +88,7 @@ export function useOrderPdfExportPreview({
   const branch = useAuthStore((state) => state.branch);
   const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
   const { data: paymentTypes = [] } = usePaymentTypes();
+  const effectiveSystemSettings = useSystemSettingsStore((state) => state.settings);
   const previewCustomerId = orderFormSlice.potentialCustomerId ?? order?.potentialCustomerId ?? undefined;
   const { data: shippingAddresses = [] } = useShippingAddresses(
     previewCustomerId != null && previewCustomerId > 0 ? previewCustomerId : undefined,
@@ -198,6 +200,7 @@ export function useOrderPdfExportPreview({
         lineDiscountLabels,
         showDiscount,
         draft: options?.draft ?? false,
+        hideVat: effectiveSystemSettings.hideOrderVatRate,
       });
     },
     [
@@ -219,6 +222,7 @@ export function useOrderPdfExportPreview({
       quotationNotes,
       shippingAddresses,
       defaultShowDiscountDetails,
+      effectiveSystemSettings.hideOrderVatRate,
     ],
   );
 

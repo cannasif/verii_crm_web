@@ -198,7 +198,8 @@
     "addNewScrew": "Add new screw",
     "addNewPrint": "Add new print",
     "windoNoneSelected": "None selected",
-    "lineDetailPair": "{{label}}: {{value}}"
+    "lineDetailPair": "{{label}}: {{value}}",
+    "stockSelectionRequired": "Stock Selection"
   },
   "exchangeRates": {
     "title": "Exchange Rates",

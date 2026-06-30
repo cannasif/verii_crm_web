@@ -195,7 +195,8 @@
     "addNewScrew": "Neue Schraube hinzufügen",
     "addNewPrint": "Neuen Druck hinzufügen",
     "windoNoneSelected": "Keine",
-    "lineDetailPair": "{{label}}: {{value}}"
+    "lineDetailPair": "{{label}}: {{value}}",
+    "stockSelectionRequired": "Bestandsauswahl"
   },
   "exchangeRates": {
     "title": "Wechselkurse",

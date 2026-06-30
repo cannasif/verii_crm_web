@@ -126,10 +126,10 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/customer-management')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-stone-200/60 dark:hover:bg-pink-500/10 focus:bg-stone-200/60 dark:focus:bg-pink-500/10 outline-none"
+                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
                     <UserPlus size={16} />
                   </div>
                   <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
@@ -146,10 +146,10 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/demands/create')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-stone-200/60 dark:hover:bg-pink-500/10 focus:bg-stone-200/60 dark:focus:bg-pink-500/10 outline-none"
+                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
                     <PlusCircle size={16} />
                   </div>
                   <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
@@ -160,10 +160,10 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/quotations/create')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-stone-200/60 dark:hover:bg-pink-500/10 focus:bg-stone-200/60 dark:focus:bg-pink-500/10 outline-none"
+                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
                     <FilePlus size={16} />
                   </div>
                   <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
@@ -174,10 +174,10 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/orders/create')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-stone-200/60 dark:hover:bg-pink-500/10 focus:bg-stone-200/60 dark:focus:bg-pink-500/10 outline-none"
+                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
                     <ShoppingBag size={16} />
                   </div>
                   <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
@@ -188,10 +188,10 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/orders/erp')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 transition-all duration-200 hover:bg-stone-200/60 dark:hover:bg-pink-500/10 focus:bg-stone-200/60 dark:focus:bg-pink-500/10 outline-none"
+                className="group cursor-pointer rounded-lg py-2.5 px-2 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
                     <Database size={16} />
                   </div>
                   <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
@@ -208,10 +208,10 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/activity-management')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 transition-all duration-200 hover:bg-stone-200/60 dark:hover:bg-pink-500/10 focus:bg-stone-200/60 dark:focus:bg-pink-500/10 outline-none"
+                className="group cursor-pointer rounded-lg py-2.5 px-2 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 group-focus:text-pink-600 dark:group-focus:text-pink-400 transition-colors">
+                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
                     <CalendarPlus size={16} />
                   </div>
                   <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">

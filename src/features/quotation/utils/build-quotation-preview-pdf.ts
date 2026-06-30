@@ -100,6 +100,7 @@ export interface BuildQuotationPreviewPdfParams {
   lineDiscountLabels?: PreviewPdfLineDiscountLabels;
   showDiscount?: boolean;
   draft?: boolean;
+  hideVat?: boolean;
 }
 
 const NAVY: [number, number, number] = [60, 22, 54];
@@ -509,14 +510,17 @@ function drawFooter(
     detailRows.push([params.labels.netSubtotal, totals.discountedNetTotal, false]);
   }
 
-  detailRows.push([params.labels.totalVat, totals.totalVat, false]);
+  if (!params.hideVat) {
+    detailRows.push([params.labels.totalVat, totals.totalVat, false]);
+  }
 
   const cardW = 88;
   const cardX = PAGE_W - M - cardW;
   const headerH = 8;
   const rowH = 5.6;
-  const grandH = 12;
-  const cardH = headerH + detailRows.length * rowH + 4 + grandH + 3;
+  const grandH = params.hideVat ? 0 : 12;
+  const bottomGap = params.hideVat ? 4 : 3;
+  const cardH = headerH + detailRows.length * rowH + 4 + grandH + bottomGap;
 
   const footerDetails = params.footerDetails ?? [];
   const rightCardW = 88;
@@ -579,22 +583,24 @@ function drawFooter(
   });
 
   const grandY = rowY + 1;
-  const grandMidY = grandY + grandH / 2;
-  drawHorizontalGradient(doc, cardX + 3, grandY, cardW - 6, grandH, GRAD_FROM, GRAD_TO);
-  doc.setFont(bodyFont, 'bold');
-  doc.setFontSize(7.5);
-  doc.setTextColor(255, 255, 255);
-  doc.text(params.labels.grandTotalWithVat.toUpperCase(), cardX + 7, grandMidY, {
-    baseline: 'middle',
-  });
-  doc.setFontSize(12.5);
-  doc.setDrawColor(255, 255, 255);
-  doc.setLineWidth(0.18);
-  doc.text(formatCurrency(totals.grandTotal, params.currencyCode), cardX + cardW - 7, grandMidY, {
-    align: 'right',
-    baseline: 'middle',
-    renderingMode: 'fillThenStroke',
-  });
+  if (!params.hideVat) {
+    const grandMidY = grandY + grandH / 2;
+    drawHorizontalGradient(doc, cardX + 3, grandY, cardW - 6, grandH, GRAD_FROM, GRAD_TO);
+    doc.setFont(bodyFont, 'bold');
+    doc.setFontSize(7.5);
+    doc.setTextColor(255, 255, 255);
+    doc.text(params.labels.grandTotalWithVat.toUpperCase(), cardX + 7, grandMidY, {
+      baseline: 'middle',
+    });
+    doc.setFontSize(12.5);
+    doc.setDrawColor(255, 255, 255);
+    doc.setLineWidth(0.18);
+    doc.text(formatCurrency(totals.grandTotal, params.currencyCode), cardX + cardW - 7, grandMidY, {
+      align: 'right',
+      baseline: 'middle',
+      renderingMode: 'fillThenStroke',
+    });
+  }
 }
 
 type JsPdfGStateExtension = {

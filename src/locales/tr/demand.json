@@ -207,7 +207,8 @@
     "addNewScrew": "Yeni vida ekle",
     "addNewPrint": "Yeni baskı ekle",
     "windoNoneSelected": "Seçilmedi",
-    "lineDetailPair": "{{label}}: {{value}}"
+    "lineDetailPair": "{{label}}: {{value}}",
+    "stockSelectionRequired": "Stok Seçimi"
   },
   "exchangeRates": {
     "title": "Döviz Kurları",
