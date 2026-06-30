@@ -1870,6 +1870,10 @@ export function DemandLineForm({
                 if (!formData.profilDefinitionId) {
                   missingFields.push(t('lines.windoProfileLabel', { defaultValue: 'Profil' }));
                 }
+              } else {
+                if (bulkDraftLines.some(line => !line.profilDefinitionId)) {
+                  missingFields.push(t('lines.windoProfileLabel', { defaultValue: 'Profil' }));
+                }
               }
 
               return (
@@ -1884,8 +1888,7 @@ export function DemandLineForm({
                     type="button"
                     onClick={bulkDraftLines.length > 0 ? handleBulkDraftConfirm : () => handleSave()}
                     disabled={
-                      (bulkDraftLines.length > 0 ? bulkDraftLines.length === 0 : !formData.productCode || !formData.productName || !formData.profilDefinitionId) ||
-                      isSaving
+                      (bulkDraftLines.length > 0 ? bulkDraftLines.some(line => !line.profilDefinitionId) : (!formData.productCode || !formData.productName || !formData.profilDefinitionId)) || isSaving
                     }
                     className={DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS}
                   >

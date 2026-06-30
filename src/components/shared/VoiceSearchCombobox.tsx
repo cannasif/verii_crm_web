@@ -464,6 +464,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
             className="bg-transparent"
             shouldFilter={!isAsyncMode}
             filter={(itemValue, search) => (matchesSearchTerm(search, [itemValue]) ? 1 : 0)}
+            defaultValue={value && selectedLabel ? `${selectedLabel} ${value}` : undefined}
           >
             <CommandInput
               placeholder={searchPlaceholder || t('common.search')}
@@ -492,7 +493,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
                   size="icon"
                   className={cn(
                     "h-8 w-8 mr-1 shrink-0 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5",
-                    isListening && "text-rose-500 animate-pulse bg-rose-50 dark:bg-rose-900/20"
+                    isListening && "text-[var(--crm-brand-primary)] animate-pulse bg-[var(--crm-brand-soft)] dark:bg-[var(--crm-brand-primary)]/20"
                   )}
                   onClick={handleVoiceSearch}
                   title={t('common.voiceSearch')}
@@ -528,11 +529,14 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
                       key={option.value}
                       value={`${option.label} ${option.value}`}
                       onSelect={() => handleOptionSelect(option)}
-                      className="cursor-pointer rounded-xl border border-transparent px-3 py-2.5 shadow-sm transition-all hover:border-slate-200 hover:bg-slate-50 data-[selected=true]:border-rose-200 data-[selected=true]:bg-rose-50 data-[selected=true]:text-slate-900 dark:hover:border-white/12 dark:hover:bg-white/8 dark:data-[selected=true]:border-rose-400/35 dark:data-[selected=true]:bg-rose-950/25 dark:data-[selected=true]:text-white"
+                      className={cn(
+                        "cursor-pointer rounded-xl border border-transparent px-3 py-2.5 shadow-sm transition-all",
+                        value === option.value && "font-semibold text-slate-900 dark:text-white"
+                      )}
                     >
                       <Check
                         className={cn(
-                          "mr-2 h-4 w-4 text-rose-500",
+                          "mr-2 h-4 w-4 text-[var(--crm-brand-primary)]",
                           value === option.value ? "opacity-100" : "opacity-0"
                         )}
                       />

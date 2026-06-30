@@ -109,7 +109,7 @@ function CustomerCard({
           'inline-flex shrink-0 items-center rounded-md px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide sm:text-[10px]',
           type === 'erp'
             ? 'bg-purple-100 text-purple-800 dark:bg-purple-500/20 dark:text-purple-200'
-            : 'bg-rose-100 text-rose-800 dark:bg-rose-950/50 dark:text-rose-200'
+            : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
         )}
       >
         {type === 'erp' ? t('customerSelectDialog.badgeKindErp') : t('customerSelectDialog.badgeKindPotential')}
@@ -122,8 +122,8 @@ function CustomerCard({
         onClick={onClick}
         className={cn(
           'group flex h-full cursor-pointer flex-col gap-2 rounded-lg border p-2.5 transition-all duration-200 sm:p-3',
-          'border-slate-400/80 bg-white shadow-sm dark:border-white/5 dark:bg-white/5',
-          'hover:border-rose-300/80 hover:bg-rose-50/40 hover:shadow-sm dark:hover:border-rose-400/20 dark:hover:bg-white/10'
+          'border-slate-200 bg-white shadow-sm dark:border-white/5 dark:bg-white/5',
+          'hover:border-primary/30 hover:bg-primary/5 hover:shadow-md dark:hover:border-white/10 dark:hover:bg-white/10'
         )}
       >
         <div className="flex w-full items-start justify-between gap-2">
@@ -132,7 +132,7 @@ function CustomerCard({
               'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg shadow-sm sm:h-10 sm:w-10',
               type === 'erp'
                 ? 'bg-purple-100 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400'
-                : 'bg-rose-50 text-rose-600 dark:bg-pink-950/40 dark:text-pink-300'
+                : 'bg-slate-100 text-slate-600 dark:bg-slate-800/60 dark:text-slate-400'
             )}
           >
             {type === 'erp' ? <Building2 size={18} className="sm:h-5 sm:w-5" /> : <UserRound size={18} className="sm:h-5 sm:w-5" />}
@@ -178,8 +178,8 @@ function CustomerCard({
       onClick={onClick}
       className={cn(
         'group flex cursor-pointer items-center gap-2 rounded-lg border p-2 transition-all duration-200 sm:gap-2.5 sm:p-2.5',
-        'border-slate-400/80 bg-white shadow-sm dark:border-white/5 dark:bg-white/5',
-        'hover:border-rose-300/80 hover:bg-rose-50/35 dark:hover:border-rose-400/20 dark:hover:bg-white/10'
+        'border-slate-200 bg-white shadow-sm dark:border-white/5 dark:bg-white/5',
+        'hover:border-primary/30 hover:bg-primary/5 dark:hover:border-white/10 dark:hover:bg-white/10'
       )}
     >
       <div
@@ -187,7 +187,7 @@ function CustomerCard({
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-full sm:h-9 sm:w-9',
           type === 'erp'
             ? 'bg-purple-100 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400'
-            : 'bg-rose-50 text-rose-600 dark:bg-pink-950/40 dark:text-pink-300'
+            : 'bg-slate-100 text-slate-600 dark:bg-slate-800/60 dark:text-slate-400'
         )}
       >
         {type === 'erp' ? <Building2 size={15} className="sm:h-4 sm:w-4" /> : <UserRound size={15} className="sm:h-4 sm:w-4" />}
@@ -540,13 +540,13 @@ export function CustomerSelectDialog({
                 className={cn(
                   'relative h-11 w-11 rounded-xl border-slate-300 bg-white shadow-sm transition-all dark:border-white/10 dark:bg-transparent sm:h-12 sm:w-12',
                   isFilterPanelOpen || hasAdvancedFilters
-                    ? 'border-pink-200 bg-pink-50/90 text-pink-700 dark:border-pink-400/25 dark:bg-pink-950/35 dark:text-pink-200'
-                    : 'text-slate-600 hover:bg-rose-50/50 hover:text-rose-600 dark:text-slate-400 dark:hover:bg-rose-950/25 dark:hover:text-rose-200'
+                    ? 'border-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)] dark:border-white/20 dark:bg-white/10 dark:text-white'
+                    : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
                 )}
               >
                 <SlidersHorizontal size={18} />
                 {appliedFilterCount > 0 && (
-                  <Badge className="absolute -top-1.5 crm--end-1-5 flex h-4 min-w-4 items-center justify-center border border-pink-200/80 bg-pink-100 px-1 text-[10px] font-medium text-pink-800 dark:border-pink-400/30 dark:bg-pink-950/50 dark:text-pink-100">
+                  <Badge className="absolute -top-1.5 crm--end-1-5 flex h-4 min-w-4 items-center justify-center border border-[var(--crm-brand-primary)] bg-[var(--crm-brand-primary)] px-1 text-[10px] font-medium text-white shadow-sm dark:border-white/20 dark:bg-white/20">
                     {appliedFilterCount}
                   </Badge>
                 )}
@@ -560,8 +560,8 @@ export function CustomerSelectDialog({
                   className={cn(
                     'h-9 w-9 rounded-lg transition-all sm:h-10 sm:w-10',
                     viewMode === 'list'
-                      ? 'border border-pink-200/90 bg-pink-100/90 text-pink-800 shadow-sm dark:border-pink-400/25 dark:bg-pink-950/40 dark:text-pink-100'
-                      : 'text-slate-600 hover:bg-rose-50/80 hover:text-rose-700 dark:text-slate-400 dark:hover:bg-rose-950/30 dark:hover:text-rose-200'
+                      ? 'border border-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)] shadow-sm dark:border-white/20 dark:bg-white/10 dark:text-white'
+                      : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
                   )}
                 >
                   <List size={18} className="sm:h-5 sm:w-5" />
@@ -573,8 +573,8 @@ export function CustomerSelectDialog({
                   className={cn(
                     'h-9 w-9 rounded-lg transition-all sm:h-10 sm:w-10',
                     viewMode === 'grid'
-                      ? 'border border-pink-200/90 bg-pink-100/90 text-pink-800 shadow-sm dark:border-pink-400/25 dark:bg-pink-950/40 dark:text-pink-100'
-                      : 'text-slate-600 hover:bg-rose-50/80 hover:text-rose-700 dark:text-slate-400 dark:hover:bg-rose-950/30 dark:hover:text-rose-200'
+                      ? 'border border-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)] shadow-sm dark:border-white/20 dark:bg-white/10 dark:text-white'
+                      : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
                   )}
                 >
                   <LayoutGrid size={18} className="sm:h-5 sm:w-5" />
@@ -601,13 +601,13 @@ export function CustomerSelectDialog({
             <TabsList className="grid h-auto w-full grid-cols-2 rounded-xl border border-slate-300 bg-slate-100 p-1 shadow-sm dark:border-white/10 dark:bg-[#1a1025]">
               <TabsTrigger
                 value="all"
-                className="rounded-lg py-2 text-xs font-medium text-slate-600 transition-all hover:bg-rose-50/70 hover:text-rose-700 data-[state=active]:border data-[state=active]:border-rose-200/90 data-[state=active]:bg-rose-100/80 data-[state=active]:text-rose-900 data-[state=active]:shadow-sm data-[state=active]:hover:bg-rose-200/50 dark:text-slate-400 dark:hover:bg-rose-950/30 dark:hover:text-rose-200 dark:data-[state=active]:border-rose-400/20 dark:data-[state=active]:bg-rose-950/45 dark:data-[state=active]:text-rose-100 dark:data-[state=active]:hover:bg-rose-950/55 sm:text-sm"
+                className="rounded-lg py-2 text-xs font-medium text-slate-600 transition-all hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10 data-[state=active]:border data-[state=active]:border-[var(--crm-brand-primary)] data-[state=active]:bg-[var(--crm-brand-soft)] data-[state=active]:text-[var(--crm-brand-primary)] data-[state=active]:shadow-sm dark:data-[state=active]:border-white/20 dark:data-[state=active]:bg-white/10 dark:data-[state=active]:text-white sm:text-sm"
               >
                 {t('customerSelectDialog.allCustomers')}
               </TabsTrigger>
               <TabsTrigger
                 value="potential"
-                className="rounded-lg py-2 text-xs font-medium text-slate-600 transition-all hover:bg-rose-50/70 hover:text-rose-700 data-[state=active]:border data-[state=active]:border-rose-200/90 data-[state=active]:bg-rose-100/80 data-[state=active]:text-rose-900 data-[state=active]:shadow-sm data-[state=active]:hover:bg-rose-200/50 dark:text-slate-400 dark:hover:bg-rose-950/30 dark:hover:text-rose-200 dark:data-[state=active]:border-rose-400/20 dark:data-[state=active]:bg-rose-950/45 dark:data-[state=active]:text-rose-100 dark:data-[state=active]:hover:bg-rose-950/55 sm:text-sm"
+                className="rounded-lg py-2 text-xs font-medium text-slate-600 transition-all hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10 data-[state=active]:border data-[state=active]:border-[var(--crm-brand-primary)] data-[state=active]:bg-[var(--crm-brand-soft)] data-[state=active]:text-[var(--crm-brand-primary)] data-[state=active]:shadow-sm dark:data-[state=active]:border-white/20 dark:data-[state=active]:bg-white/10 dark:data-[state=active]:text-white sm:text-sm"
               >
                 {t('customerSelectDialog.potentialCustomers')}
               </TabsTrigger>

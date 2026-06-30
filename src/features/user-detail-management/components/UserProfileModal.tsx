@@ -235,9 +235,9 @@ export function UserProfileModal({
                 </Select>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 md:gap-4">
                 <div className={cn(
-                  "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
+                  "sm:col-span-2 group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
                   "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
                 )}>
                   <div className="flex items-center gap-3 md:gap-4">
@@ -256,7 +256,7 @@ export function UserProfileModal({
                 </div>
 
                 <div className={cn(
-                  "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
+                  "sm:col-span-3 group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
                   "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
                 )}>
                   <div className="flex items-center gap-3 md:gap-4 flex-1">
@@ -269,7 +269,7 @@ export function UserProfileModal({
                   </div>
                   <Select value={brandTheme} onValueChange={(val) => setBrandTheme(val as BrandTheme)}>
                     <SelectTrigger className={cn(
-                      "w-24 md:w-28 lg:w-32 h-9 md:h-10 shadow-none focus:ring-0 font-black text-xs md:text-sm transition-all",
+                      "w-32 md:w-40 lg:w-48 h-9 md:h-10 shadow-none focus:ring-0 font-black text-xs md:text-sm transition-all",
                       "bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 dark:bg-white/10 dark:border-none dark:hover:bg-white/20 dark:text-white"
                     )}>
                       <span className="truncate">{brandThemes.find(t => t.id === brandTheme)?.label || 'Tema'}</span>
