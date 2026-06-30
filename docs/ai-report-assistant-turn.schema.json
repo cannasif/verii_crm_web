@@ -1,0 +1,280 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://v3rii.com/schemas/crm/ai-report-assistant-turn.schema.json",
+  "title": "V3RII CRM AI Report Assistant Turn",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["turnType", "message", "actions", "state"],
+  "properties": {
+    "turnType": {
+      "type": "string",
+      "enum": [
+        "greeting",
+        "ask_clarification",
+        "suggest_source",
+        "suggest_fields",
+        "suggest_widgets",
+        "confirm_design",
+        "create_report_plan",
+        "propose_data_source",
+        "error"
+      ]
+    },
+    "message": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "topic": {
+          "type": "string",
+          "description": "Ornek: satis, teklif, siparis, stok, aktivite, cari."
+        },
+        "selectedSourceName": {
+          "type": "string"
+        },
+        "selectedSourceType": {
+          "type": "string",
+          "enum": ["view", "function"]
+        },
+        "selectedKpis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "selectedColumns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "selectedChartType": {
+          "type": "string",
+          "enum": ["table", "bar", "stackedBar", "line", "pie", "donut", "kpi", "matrix"]
+        },
+        "selectedPdfPreset": {
+          "type": "string",
+          "description": "PDF Builder icin secilen tasarim tipi.",
+          "enum": ["corporate", "cover", "compact", "production", "premium"]
+        },
+        "uploadedAssets": {
+          "type": "array",
+          "description": "Kullanicinin AI'a yukledigi ve rapor/PDF tasariminda kullanilabilecek gorsel varliklar.",
+          "items": {
+            "$ref": "#/$defs/uploadedAsset"
+          },
+          "default": []
+        },
+        "dateRange": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "preset": {
+              "type": "string",
+              "enum": ["today", "thisWeek", "thisMonth", "lastMonth", "last3Months", "last6Months", "thisYear", "custom"]
+            },
+            "startDate": {
+              "type": "string"
+            },
+            "endDate": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "sourceSuggestions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sourceSuggestion"
+      },
+      "default": []
+    },
+    "fieldSuggestions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/fieldSuggestion"
+      },
+      "default": []
+    },
+    "kpiSuggestions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/widgetSuggestion"
+      },
+      "default": []
+    },
+    "chartSuggestions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/widgetSuggestion"
+      },
+      "default": []
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/question"
+      },
+      "default": []
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/action"
+      }
+    },
+    "reportPlan": {
+      "description": "Kullanici tasarimi onayladiginda ai-report-plan.schema.json ile uyumlu plan dondurulur.",
+      "type": "object"
+    },
+    "dataSourceProposal": {
+      "description": "Mevcut AI-ready kaynaklar yetmediginde ai-report-plan.schema.json icindeki dataSourceProposal modeliyle uyumlu proposal dondurulur.",
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "uploadedAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fileName": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string",
+          "enum": ["cover", "logo", "inline", "background", "attachment"]
+        },
+        "altText": {
+          "type": "string",
+          "maxLength": 240
+        }
+      }
+    },
+    "sourceSuggestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceName", "sourceType", "label", "reason"],
+      "properties": {
+        "sourceName": {
+          "type": "string"
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": ["view", "function"]
+        },
+        "label": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "businessTerms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "fieldSuggestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "displayName", "semanticType", "recommendedUse"],
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "semanticType": {
+          "type": "string",
+          "enum": ["text", "number", "date", "boolean"]
+        },
+        "recommendedUse": {
+          "type": "string",
+          "enum": ["kpi", "axis", "legend", "tableColumn", "filter"]
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "widgetSuggestion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "chartType", "reason"],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "chartType": {
+          "type": "string",
+          "enum": ["table", "bar", "stackedBar", "line", "pie", "donut", "kpi", "matrix"]
+        },
+        "field": {
+          "type": "string"
+        },
+        "aggregation": {
+          "type": "string",
+          "enum": ["sum", "count", "avg", "min", "max"]
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text", "kind"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["singleChoice", "multiChoice", "text", "dateRange"]
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "label"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["continue", "select_source", "select_fields", "select_widgets", "upload_asset", "apply_asset", "preview", "save", "propose_source", "cancel"]
+        },
+        "label": {
+          "type": "string"
+        },
+        "payload": {}
+      }
+    }
+  }
+}

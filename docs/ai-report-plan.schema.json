@@ -1,0 +1,420 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://v3rii.com/schemas/crm/ai-report-plan.schema.json",
+  "title": "V3RII CRM AI Report Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["intent", "confidence", "report", "widgets", "questionsForUser"],
+  "properties": {
+    "intent": {
+      "type": "string",
+      "enum": ["create_report", "clarify_report_request", "propose_data_source"]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "report": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "connectionKey", "dataSourceType", "dataSourceName"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "connectionKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20
+        },
+        "dataSourceType": {
+          "type": "string",
+          "description": "AI-ready raporlarda view icin RII_AI_VW_*, function icin RII_AI_FN_* kaynaklari tercih edilir.",
+          "enum": ["view", "function"]
+        },
+        "dataSourceName": {
+          "type": "string",
+          "description": "AI-ready kaynak adi. Ornek: dbo.RII_AI_VW_SalesPipeline veya dbo.RII_AI_FN_SalesPerformance.",
+          "minLength": 1,
+          "maxLength": 128
+        }
+      }
+    },
+    "datasetParameters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/datasetParameter"
+      },
+      "default": []
+    },
+    "calculatedFields": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/calculatedField"
+      },
+      "default": []
+    },
+    "widgets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 12,
+      "items": {
+        "$ref": "#/$defs/widget"
+      }
+    },
+    "questionsForUser": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      },
+      "maxItems": 5
+    },
+    "dataSourceProposal": {
+      "$ref": "#/$defs/dataSourceProposal"
+    }
+  },
+  "$defs": {
+    "chartType": {
+      "type": "string",
+      "enum": ["table", "bar", "stackedBar", "line", "pie", "donut", "kpi", "matrix"]
+    },
+    "aggregation": {
+      "type": "string",
+      "enum": ["sum", "count", "avg", "min", "max"]
+    },
+    "axis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field"],
+      "properties": {
+        "field": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "dateGrouping": {
+          "type": "string",
+          "enum": ["day", "week", "month", "year"]
+        }
+      }
+    },
+    "value": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "aggregation"],
+      "properties": {
+        "field": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "aggregation": {
+          "$ref": "#/$defs/aggregation"
+        }
+      }
+    },
+    "legend": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field"],
+      "properties": {
+        "field": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "sorting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["by", "direction"],
+      "properties": {
+        "by": {
+          "type": "string",
+          "enum": ["axis", "value"]
+        },
+        "direction": {
+          "type": "string",
+          "enum": ["asc", "desc"]
+        },
+        "valueField": {
+          "type": "string"
+        }
+      }
+    },
+    "filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "operator"],
+      "properties": {
+        "field": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operator": {
+          "type": "string",
+          "enum": ["eq", "ne", "gt", "gte", "lt", "lte", "contains", "startswith", "endswith", "in", "between"]
+        },
+        "value": {},
+        "values": {
+          "type": "array",
+          "items": {}
+        },
+        "from": {},
+        "to": {}
+      }
+    },
+    "appearance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "subtitle": {
+          "type": "string"
+        },
+        "accentColor": {
+          "type": "string"
+        },
+        "tone": {
+          "type": "string",
+          "enum": ["neutral", "soft", "bold"]
+        },
+        "tableDensity": {
+          "type": "string",
+          "enum": ["comfortable", "compact"]
+        },
+        "themePreset": {
+          "type": "string",
+          "enum": ["executive", "operations", "performance"]
+        },
+        "titleAlign": {
+          "type": "string",
+          "enum": ["left", "center"]
+        },
+        "kpiFormat": {
+          "type": "string",
+          "enum": ["number", "currency", "percent"]
+        },
+        "backgroundStyle": {
+          "type": "string",
+          "enum": ["card", "glass", "gradient", "muted"]
+        },
+        "kpiLayout": {
+          "type": "string",
+          "enum": ["split", "spotlight", "compact"]
+        },
+        "valueFormat": {
+          "type": "string",
+          "enum": ["default", "number", "currency", "percent"]
+        },
+        "decimalPlaces": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        }
+      }
+    },
+    "widget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "chartType", "values", "filters"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "size": {
+          "type": "string",
+          "enum": ["third", "half", "full"]
+        },
+        "height": {
+          "type": "string",
+          "enum": ["sm", "md", "lg"]
+        },
+        "chartType": {
+          "$ref": "#/$defs/chartType"
+        },
+        "axis": {
+          "$ref": "#/$defs/axis"
+        },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/value"
+          }
+        },
+        "legend": {
+          "$ref": "#/$defs/legend"
+        },
+        "sorting": {
+          "$ref": "#/$defs/sorting"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/filter"
+          }
+        },
+        "appearance": {
+          "$ref": "#/$defs/appearance"
+        }
+      }
+    },
+    "datasetParameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "source"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "type": "string",
+          "enum": ["literal", "currentUserId", "currentUserEmail", "today", "now"]
+        },
+        "value": {
+          "type": "string"
+        },
+        "allowViewerOverride": {
+          "type": "boolean"
+        },
+        "viewerLabel": {
+          "type": "string"
+        }
+      }
+    },
+    "calculatedField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "leftField", "rightField", "operation"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string"
+        },
+        "leftField": {
+          "type": "string",
+          "minLength": 1
+        },
+        "rightField": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation": {
+          "type": "string",
+          "enum": ["add", "subtract", "multiply", "divide"]
+        }
+      }
+    },
+    "dataSourceProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reason", "sourceType", "sourceName", "columns"],
+      "properties": {
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": ["view", "function"]
+        },
+        "sourceName": {
+          "type": "string",
+          "pattern": "^([A-Za-z0-9_]+\\.)?RII_AI_(VW|FN)_[A-Za-z0-9_]+$",
+          "description": "Ornek: dbo.RII_AI_VW_CustomerSummary veya dbo.RII_AI_FN_SalesRepPerformance."
+        },
+        "parameters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dataSourceParameterProposal"
+          },
+          "default": []
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "$ref": "#/$defs/dataSourceColumnProposal"
+          }
+        },
+        "performanceNotes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "default": []
+        }
+      }
+    },
+    "dataSourceParameterProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "semanticType", "required"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "semanticType": {
+          "type": "string",
+          "enum": ["text", "number", "date", "boolean"]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "dataSourceColumnProposal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "semanticType"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "displayName": {
+          "type": "string"
+        },
+        "semanticType": {
+          "type": "string",
+          "enum": ["text", "number", "date", "boolean"]
+        },
+        "defaultAggregation": {
+          "$ref": "#/$defs/aggregation"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

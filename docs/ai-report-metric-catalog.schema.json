@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://v3rii.com/schemas/crm/ai-report-metric-catalog.schema.json",
+  "title": "V3RII CRM AI Report Metric Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "metrics"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "metrics": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/metric"
+      }
+    }
+  },
+  "$defs": {
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metricKey",
+        "displayName",
+        "description",
+        "domain",
+        "sourceName",
+        "field",
+        "aggregation",
+        "format",
+        "synonyms"
+      ],
+      "properties": {
+        "metricKey": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "domain": {
+          "type": "string",
+          "enum": ["sales", "approval", "activity", "customer", "stock", "finance", "discount"]
+        },
+        "sourceName": {
+          "type": "string",
+          "pattern": "^([A-Za-z0-9_]+\\.)?RII_AI_(VW|FN)_[A-Za-z0-9_]+$"
+        },
+        "field": {
+          "type": "string",
+          "minLength": 1
+        },
+        "aggregation": {
+          "type": "string",
+          "enum": ["sum", "count", "avg", "min", "max", "ratio", "custom"]
+        },
+        "format": {
+          "type": "string",
+          "enum": ["number", "currency", "percent", "date", "text"]
+        },
+        "allowedBreakdowns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "defaultFilters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/filter"
+          },
+          "default": []
+        },
+        "formula": {
+          "type": "string",
+          "description": "ratio/custom metriklerde okunabilir hesap aciklamasi."
+        },
+        "synonyms": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "dataQualityNotes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      }
+    },
+    "filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "operator"],
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "operator": {
+          "type": "string",
+          "enum": ["eq", "ne", "gt", "gte", "lt", "lte", "contains", "startswith", "endswith", "in", "between"]
+        },
+        "value": {},
+        "values": {
+          "type": "array",
+          "items": {}
+        },
+        "from": {},
+        "to": {}
+      }
+    }
+  }
+}

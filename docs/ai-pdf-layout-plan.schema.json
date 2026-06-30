@@ -1,0 +1,444 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://v3rii.com/schemas/crm/ai-pdf-layout-plan.schema.json",
+  "title": "V3RII CRM AI PDF Layout Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["intent", "documentType", "title", "layoutPreset", "page", "theme", "sections", "questionsForUser"],
+  "properties": {
+    "intent": {
+      "type": "string",
+      "enum": ["create_pdf_template", "clarify_pdf_template_request"]
+    },
+    "documentType": {
+      "type": "string",
+      "enum": ["Demand", "Quotation", "Order", "Report", "Dashboard"]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 800
+    },
+    "layoutPreset": {
+      "type": "string",
+      "description": "AI'in sececegi PDF tasarim tipi. Backend bu degeri mevcut PdfBuilder template elementlerine deterministik map eder.",
+      "enum": ["corporate", "cover", "compact", "production", "premium"]
+    },
+    "assetInstructions": {
+      "type": "array",
+      "description": "Yuklenen gorsellerin PDF icinde nasil kullanilacagini tarif eder. Kapak gibi genis gorseller okunurlugu bozmamak icin kontrollu header/banner alaninda kullanilmalidir.",
+      "items": {
+        "$ref": "#/$defs/assetInstruction"
+      },
+      "default": []
+    },
+    "page": {
+      "$ref": "#/$defs/page"
+    },
+    "theme": {
+      "$ref": "#/$defs/theme"
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/section"
+      }
+    },
+    "questionsForUser": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 240
+      },
+      "default": []
+    },
+    "qualityChecks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/qualityCheck"
+      },
+      "default": []
+    }
+  },
+  "$defs": {
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "unit"],
+      "properties": {
+        "width": {
+          "type": "number",
+          "const": 210
+        },
+        "height": {
+          "type": "number",
+          "const": 297
+        },
+        "unit": {
+          "type": "string",
+          "const": "mm"
+        },
+        "pageCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 1
+        }
+      }
+    },
+    "assetInstruction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["assetKey", "usage"],
+      "properties": {
+        "assetKey": {
+          "type": "string",
+          "minLength": 1
+        },
+        "usage": {
+          "type": "string",
+          "enum": ["cover", "logo", "inline", "background"]
+        },
+        "targetSection": {
+          "type": "string",
+          "enum": ["header", "content", "footer"]
+        },
+        "imageFit": {
+          "type": "string",
+          "enum": ["contain", "cover"],
+          "default": "cover"
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 240
+        }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preset"],
+      "properties": {
+        "preset": {
+          "type": "string",
+          "enum": ["v3rii", "corporate", "minimal", "industrial", "finance", "highContrast"]
+        },
+        "primaryColor": {
+          "type": "string"
+        },
+        "accentColor": {
+          "type": "string"
+        },
+        "fontFamily": {
+          "type": "string"
+        },
+        "density": {
+          "type": "string",
+          "enum": ["comfortable", "compact"]
+        }
+      }
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "blocks"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "enum": ["header", "content", "footer"]
+        },
+        "height": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 297
+        },
+        "blocks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 80,
+          "items": {
+            "$ref": "#/$defs/block"
+          }
+        }
+      }
+    },
+    "block": {
+      "oneOf": [
+        { "$ref": "#/$defs/textBlock" },
+        { "$ref": "#/$defs/fieldBlock" },
+        { "$ref": "#/$defs/imageBlock" },
+        { "$ref": "#/$defs/shapeBlock" },
+        { "$ref": "#/$defs/tableBlock" },
+        { "$ref": "#/$defs/summaryBlock" },
+        { "$ref": "#/$defs/quotationTotalsBlock" },
+        { "$ref": "#/$defs/pageNumberBlock" }
+      ]
+    },
+    "baseBlock": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["type", "x", "y", "width", "height"],
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 210
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 297
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 210
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 297
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "visibilityRules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/visibilityRule"
+          },
+          "default": []
+        }
+      }
+    },
+    "textBlock": {
+      "allOf": [
+        { "$ref": "#/$defs/baseBlock" },
+        {
+          "type": "object",
+          "required": ["type", "text"],
+          "properties": {
+            "type": { "const": "text" },
+            "text": { "type": "string" },
+            "textOverflow": { "$ref": "#/$defs/textOverflow" }
+          }
+        }
+      ]
+    },
+    "fieldBlock": {
+      "allOf": [
+        { "$ref": "#/$defs/baseBlock" },
+        {
+          "type": "object",
+          "required": ["type", "path"],
+          "properties": {
+            "type": { "const": "field" },
+            "label": { "type": "string" },
+            "path": { "type": "string", "minLength": 1 },
+            "format": { "$ref": "#/$defs/format" },
+            "textOverflow": { "$ref": "#/$defs/textOverflow" }
+          }
+        }
+      ]
+    },
+    "imageBlock": {
+      "allOf": [
+        { "$ref": "#/$defs/baseBlock" },
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "image" },
+            "path": { "type": "string" },
+            "assetKey": { "type": "string" },
+            "imageFit": { "type": "string", "enum": ["contain", "cover"] }
+          }
+        }
+      ]
+    },
+    "shapeBlock": {
+      "allOf": [
+        { "$ref": "#/$defs/baseBlock" },
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "shape" },
+            "shape": { "type": "string", "enum": ["rectangle", "line"] }
+          }
+        }
+      ]
+    },
+    "tableBlock": {
+      "allOf": [
+        { "$ref": "#/$defs/baseBlock" },
+        {
+          "type": "object",
+          "required": ["type", "columns"],
+          "properties": {
+            "type": { "const": "table" },
+            "columns": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 16,
+              "items": { "$ref": "#/$defs/tableColumn" }
+            },
+            "tableOptions": { "$ref": "#/$defs/tableOptions" }
+          }
+        }
+      ]
+    },
+    "summaryBlock": {
+      "allOf": [
+        { "$ref": "#/$defs/baseBlock" },
+        {
+          "type": "object",
+          "required": ["type", "items"],
+          "properties": {
+            "type": { "const": "summary" },
+            "items": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/summaryItem" }
+            }
+          }
+        }
+      ]
+    },
+    "quotationTotalsBlock": {
+      "allOf": [
+        { "$ref": "#/$defs/baseBlock" },
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "quotationTotals" },
+            "layout": { "type": "string", "enum": ["single", "two-column"] },
+            "emphasizeGrandTotal": { "type": "boolean" }
+          }
+        }
+      ]
+    },
+    "pageNumberBlock": {
+      "allOf": [
+        { "$ref": "#/$defs/baseBlock" },
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "pageNumber" }
+          }
+        }
+      ]
+    },
+    "tableColumn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "path", "width"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "path": { "type": "string", "minLength": 1 },
+        "width": { "type": "number", "exclusiveMinimum": 0 },
+        "align": { "type": "string", "enum": ["left", "center", "right"] },
+        "format": { "$ref": "#/$defs/format" }
+      }
+    },
+    "summaryItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "path"],
+      "properties": {
+        "label": { "type": "string" },
+        "path": { "type": "string" },
+        "format": { "$ref": "#/$defs/format" }
+      }
+    },
+    "tableOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "repeatHeader": { "type": "boolean" },
+        "pageBreak": { "type": "string", "enum": ["auto", "avoid", "always"] },
+        "dense": { "type": "boolean" },
+        "showBorders": { "type": "boolean" },
+        "groupByPath": { "type": "string" },
+        "showGroupFooter": { "type": "boolean" },
+        "detailPaths": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fontSize": { "type": "number", "minimum": 6, "maximum": 36 },
+        "fontWeight": { "type": ["string", "number"] },
+        "textAlign": { "type": "string", "enum": ["left", "center", "right"] },
+        "verticalAlign": { "type": "string", "enum": ["top", "middle", "bottom"] },
+        "color": { "type": "string" },
+        "background": { "type": "string" },
+        "border": { "type": "string" },
+        "radius": { "type": "number", "minimum": 0, "maximum": 16 },
+        "padding": { "type": ["number", "string"] }
+      }
+    },
+    "visibilityRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fieldPath", "operator"],
+      "properties": {
+        "fieldPath": { "type": "string" },
+        "operator": {
+          "type": "string",
+          "enum": ["equals", "notEquals", "isEmpty", "isNotEmpty", "greaterThan", "greaterOrEqual", "lessThan", "lessOrEqual", "contains"]
+        },
+        "value": { "type": "string" }
+      }
+    },
+    "qualityCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "severity"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "enum": ["bounds", "overlap", "fieldPaths", "tableWidth", "overflow", "emptyRender", "placeholderText"]
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["warning", "error"]
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "format": {
+      "type": "string",
+      "enum": ["text", "number", "currency", "date", "image"]
+    },
+    "textOverflow": {
+      "type": "string",
+      "enum": ["wrap", "ellipsis", "clip", "autoHeight"]
+    }
+  }
+}
