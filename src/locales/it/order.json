@@ -171,7 +171,7 @@
     "updateError": "Sipariş satırları güncellenemedi.",
     "deleteSuccess": "Sipariş satırı silindi.",
     "deleteError": "Sipariş satırı silinemedi.",
-    "descriptionFieldsTitle": "Profilo, tondino, vite",
+    "descriptionFieldsTitle": "Campi descrizione",
     "descriptionField1Label": "Descrizione 1",
     "descriptionField2Label": "Descrizione 2",
     "descriptionField3Label": "Descrizione 3",

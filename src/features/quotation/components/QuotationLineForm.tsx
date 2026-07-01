@@ -1586,10 +1586,10 @@ export function QuotationLineForm({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
                     {description1Label}
                   </label>
-                  <ErpFieldHint label={t('lines.descriptionTooltipText')} />
+                  <ErpFieldHint label={`${t('lines.descriptionTooltipPrefix', { defaultValue: "Satır bazlı üretim açıklamasıdır. ERP'ye aktarıldığında Netsis eşleşmesi:" })} ${description1Label} -> ${t('lines.erpTargetExtraField1', { defaultValue: 'Ek Alan 1' })}.`} />
                 </div>
                 <Input
                   value={formData.description1 ?? ''}
@@ -1601,10 +1601,10 @@ export function QuotationLineForm({
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
                     {description2Label}
                   </label>
-                  <ErpFieldHint label={t('lines.descriptionTooltipText')} />
+                  <ErpFieldHint label={`${t('lines.descriptionTooltipPrefix', { defaultValue: "Satır bazlı üretim açıklamasıdır. ERP'ye aktarıldığında Netsis eşleşmesi:" })} ${description2Label} -> ${t('lines.erpTargetExtraField2', { defaultValue: 'Ek Alan 2' })}.`} />
                 </div>
                 <Input
                   value={formData.description2 ?? ''}
@@ -1616,10 +1616,10 @@ export function QuotationLineForm({
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
                     {description3Label}
                   </label>
-                  <ErpFieldHint label={t('lines.descriptionTooltipText')} />
+                  <ErpFieldHint label={`${t('lines.descriptionTooltipPrefix', { defaultValue: "Satır bazlı üretim açıklamasıdır. ERP'ye aktarıldığında Netsis eşleşmesi:" })} ${description3Label} -> ${t('lines.erpTargetLineExtraDesc7', { defaultValue: 'Satır Ek Açıklama 7' })}.`} />
                 </div>
                 <Input
                   value={formData.description3 ?? ''}
@@ -1633,7 +1633,7 @@ export function QuotationLineForm({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
                     {t('lines.windoProfileLabel')} <span className="text-rose-500">*</span>
                   </label>
                   <ErpFieldHint label={t('lines.profileErpTooltip')} />
@@ -1660,7 +1660,7 @@ export function QuotationLineForm({
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
                     {t('lines.windoRebarLabel')}
                   </label>
                   <ErpFieldHint label={t('lines.rebarErpTooltip')} />
@@ -1687,7 +1687,7 @@ export function QuotationLineForm({
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
                     {t('lines.windoScrewLabel')}
                   </label>
                   <ErpFieldHint label={t('lines.screwErpTooltip')} />
@@ -1714,7 +1714,7 @@ export function QuotationLineForm({
               </div>
               <div className="space-y-1.5 sm:col-span-2 lg:col-span-1 lg:col-start-auto">
                 <div className="flex items-center gap-1.5 ml-1">
-                  <label className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
                     {t('lines.windoPrintLabel', { defaultValue: 'Baskı' })}
                   </label>
                   <ErpFieldHint label={t('lines.printErpTooltip')} />

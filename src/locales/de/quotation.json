@@ -180,7 +180,7 @@
     "updateError": "Teklif satırları güncellenemedi.",
     "deleteSuccess": "Teklif satırı silindi.",
     "deleteError": "Teklif satırı silinemedi.",
-    "descriptionFieldsTitle": "Profil, Rebar, Schraube",
+    "descriptionFieldsTitle": "Beschreibungsfelder",
     "descriptionField1Label": "Beschreibung 1",
     "descriptionField2Label": "Beschreibung 2",
     "descriptionField3Label": "Beschreibung 3",

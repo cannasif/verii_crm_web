@@ -171,7 +171,7 @@
     "updateError": "Sipariş satırları güncellenemedi.",
     "deleteSuccess": "Sipariş satırı silindi.",
     "deleteError": "Sipariş satırı silinemedi.",
-    "descriptionFieldsTitle": "Perfil, varilla, tornillo",
+    "descriptionFieldsTitle": "Campos de descripción",
     "descriptionField1Label": "Descripción 1",
     "descriptionField2Label": "Descripción 2",
     "descriptionField3Label": "Descripción 3",

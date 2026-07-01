@@ -2,7 +2,12 @@
   "lines": {
     "doubleClickToEdit": "Zum Bearbeiten doppelklicken",
     "unit": "Einheit",
+    "descriptionFieldsTitle": "Beschreibungsfelder",
     "descriptionTooltipText": "Zeilenbezogene Produktionsnotiz. Bei der ERP-Übertragung gilt die Netsis-Zuordnung: Beschreibung 1 -> Zusatzfeld 1, Beschreibung 2 -> Zusatzfeld 2, Beschreibung 3 -> Zeilen-Zusatzbeschreibung 7.",
+    "descriptionTooltipPrefix": "Zeilenbezogene Produktionsnotiz. Bei der ERP-Übertragung gilt die Netsis-Zuordnung:",
+    "erpTargetExtraField1": "Zusatzfeld 1",
+    "erpTargetExtraField2": "Zusatzfeld 2",
+    "erpTargetLineExtraDesc7": "Zeilen-Zusatzbeschreibung 7",
     "profileErpTooltip": "Diese Profil-Auswahl wird bei der ERP-Übertragung als Netsis Zeilen-Zusatzfeld 2 / Zeilen-Zusatzbeschreibung 2 gespeichert.",
     "rebarErpTooltip": "Diese Eisen-Auswahl wird bei der ERP-Übertragung als Netsis Zeilen-Zusatzbeschreibung 3 gespeichert.",
     "screwErpTooltip": "Diese Schrauben-Auswahl wird bei der ERP-Übertragung als Netsis Zeilen-Zusatzbeschreibung 4 gespeichert.",

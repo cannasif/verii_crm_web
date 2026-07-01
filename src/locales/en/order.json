@@ -174,7 +174,7 @@
     "updateError": "Sipariş satırları güncellenemedi.",
     "deleteSuccess": "Sipariş satırı silindi.",
     "deleteError": "Sipariş satırı silinemedi.",
-    "descriptionFieldsTitle": "Profile, rebar, screw",
+    "descriptionFieldsTitle": "Description fields",
     "descriptionField1Label": "Description 1",
     "descriptionField2Label": "Description 2",
     "descriptionField3Label": "Description 3",
