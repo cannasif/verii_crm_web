@@ -54,7 +54,11 @@
       "request": "Talep",
       "demand": "Talep",
       "quotation": "Teklif",
-      "order": "Sipariş"
+      "order": "Sipariş",
+      "purchaseRequest": "Satınalma Talebi",
+      "purchaseRfq": "Tedarikçi Teklif İsteği (RFQ)",
+      "supplierQuotation": "Tedarikçi Teklifi",
+      "purchaseOrder": "Satınalma Siparişi"
     },
     "messages": {
       "deleteSuccess": "Onay akışı başarıyla silindi",

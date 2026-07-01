@@ -52,7 +52,11 @@
       "request": "Request",
       "order": "Order",
       "demand": "Demand",
-      "quotation": "Quotation"
+      "quotation": "Quotation",
+      "purchaseRequest": "Purchase Request",
+      "purchaseRfq": "Request for Quotation (RFQ)",
+      "supplierQuotation": "Supplier Quotation",
+      "purchaseOrder": "Purchase Order"
     },
     "advancedFilter": {
       "columnDocumentType": "Document Type",

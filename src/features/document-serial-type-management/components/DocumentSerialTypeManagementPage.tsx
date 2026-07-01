@@ -203,12 +203,12 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
 
   const getRuleTypeLabel = useCallback((ruleType: PricingRuleType | string | number | null | undefined): string => {
     const normalizedRuleType = normalizePricingRuleType(ruleType);
-    const labels: Record<PricingRuleType, string> = {
+    const labels: Partial<Record<PricingRuleType, string>> = {
       [PricingRuleType.Demand]: resolveLabel(t, 'pricingRule.ruleType.demand', 'Talep', { ns: 'pricing-rule' }),
       [PricingRuleType.Quotation]: resolveLabel(t, 'pricingRule.ruleType.quotation', 'Teklif', { ns: 'pricing-rule' }),
       [PricingRuleType.Order]: resolveLabel(t, 'pricingRule.ruleType.order', 'Sipariş', { ns: 'pricing-rule' }),
     };
-    return normalizedRuleType
+    return normalizedRuleType && labels[normalizedRuleType]
       ? labels[normalizedRuleType]
       : resolveLabel(t, 'pricingRule.ruleType.unknown', 'Bilinmiyor', { ns: 'pricing-rule' });
   }, [t]);

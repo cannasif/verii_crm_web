@@ -17,6 +17,7 @@ import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Alert02Icon } from 'hugeicons-react';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { MANAGEMENT_LIST_ID_COLUMN_DEF } from '@/lib/management-list-layout';
+import { getApprovalDocumentTypeLabel } from '../utils/approval-document-types';
 
 export interface ColumnDef<T> {
   key: keyof T | 'actions';
@@ -216,13 +217,7 @@ export function ApprovalFlowTable({
             {selectedApprovalFlow && (
               <div className="w-full bg-slate-50 dark:bg-white/5 rounded-xl p-3 border border-slate-100 dark:border-white/5">
                 <div className="text-sm font-medium text-slate-900 dark:text-white">
-                  {selectedApprovalFlow.documentType === 1
-                    ? t('approvalFlow.documentType.demand')
-                    : selectedApprovalFlow.documentType === 2
-                      ? t('approvalFlow.documentType.quotation')
-                      : selectedApprovalFlow.documentType === 3
-                        ? t('approvalFlow.documentType.order')
-                        : '-'}
+                  {getApprovalDocumentTypeLabel(t, selectedApprovalFlow.documentType)}
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-mono">
                   {selectedApprovalFlow.description || '-'}

@@ -24,10 +24,10 @@ import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { Switch } from '@/components/ui/switch';
 import { approvalFlowFormSchema, type ApprovalFlowFormSchema } from '../types/approval-flow-types';
 import type { ApprovalFlowDto } from '../types/approval-flow-types';
-import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { ApprovalFlowStepList } from './ApprovalFlowStepList';
 import { Package, X, Loader2 } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import { APPROVAL_DOCUMENT_TYPES, getApprovalDocumentTypeLabel } from '../utils/approval-document-types';
 
 interface ApprovalFlowFormProps {
   open: boolean;
@@ -111,19 +111,6 @@ export function ApprovalFlowForm({
     }
   };
 
-  const getDocumentTypeLabel = (type: number): string => {
-    switch (type) {
-      case PricingRuleType.Demand:
-        return t('approvalFlow.documentType.demand');
-      case PricingRuleType.Quotation:
-        return t('approvalFlow.documentType.quotation');
-      case PricingRuleType.Order:
-        return t('approvalFlow.documentType.order');
-      default:
-        return '';
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[850px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white/90 dark:bg-[#130822]/90 border border-slate-200/60 dark:border-white/10 shadow-2xl rounded-[2.5rem]">
@@ -173,13 +160,9 @@ export function ApprovalFlowForm({
                     <VoiceSearchCombobox
                       value={field.value && field.value !== 0 ? field.value.toString() : ''}
                       onSelect={(value) => field.onChange(value ? Number(value) : 0)}
-                      options={[
-                        PricingRuleType.Demand,
-                        PricingRuleType.Quotation,
-                        PricingRuleType.Order,
-                      ].map((type) => ({
+                      options={APPROVAL_DOCUMENT_TYPES.map((type) => ({
                         value: type.toString(),
-                        label: getDocumentTypeLabel(type),
+                        label: getApprovalDocumentTypeLabel(t, type),
                       }))}
                       placeholder={t('approvalFlow.form.selectDocumentType')}
                       searchPlaceholder={t('common.search')}

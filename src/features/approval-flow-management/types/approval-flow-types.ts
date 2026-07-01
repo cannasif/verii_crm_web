@@ -2,9 +2,13 @@ import { z } from 'zod';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 
 export const DocumentTypeEnum = {
-  Offer: PricingRuleType.Demand,
-  Request: PricingRuleType.Quotation,
+  Demand: PricingRuleType.Demand,
+  Quotation: PricingRuleType.Quotation,
   Order: PricingRuleType.Order,
+  PurchaseRequest: PricingRuleType.PurchaseRequest,
+  PurchaseRfq: PricingRuleType.PurchaseRfq,
+  SupplierQuotation: PricingRuleType.SupplierQuotation,
+  PurchaseOrder: PricingRuleType.PurchaseOrder,
 } as const;
 
 export type DocumentTypeEnum = typeof DocumentTypeEnum[keyof typeof DocumentTypeEnum];

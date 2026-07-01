@@ -29,6 +29,7 @@ import { useCreateApprovalFlow } from '../hooks/useCreateApprovalFlow';
 import { useUpdateApprovalFlow } from '../hooks/useUpdateApprovalFlow';
 import { applyApprovalFlowFilters, APPROVAL_FLOW_FILTER_COLUMNS } from '../types/approval-flow-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { getApprovalDocumentTypeLabel } from '../utils/approval-document-types';
 
 const EMPTY_APPROVAL_FLOWS: ApprovalFlowDto[] = [];
 const PAGE_KEY = 'approval-flow-management';
@@ -36,19 +37,6 @@ const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
 type ApprovalFlowColumnKey = keyof ApprovalFlowDto;
 
-
-function getDocumentTypeLabel(t: (key: string) => string, type: number): string {
-  switch (type) {
-    case 1:
-      return t('approvalFlow.documentType.demand');
-    case 2:
-      return t('approvalFlow.documentType.quotation');
-    case 3:
-      return t('approvalFlow.documentType.order');
-    default:
-      return '-';
-  }
-}
 
 export function ApprovalFlowManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['approval-flow-management', 'common']);
@@ -163,7 +151,7 @@ export function ApprovalFlowManagementPage(): ReactElement {
       if (key === 'createdDate' && val) {
         row[key] = new Date(String(val)).toLocaleDateString(i18n.language);
       } else if (key === 'documentType') {
-        row[key] = getDocumentTypeLabel(t, f.documentType);
+        row[key] = getApprovalDocumentTypeLabel(t, f.documentType);
       } else if (key === 'isActive') {
         row[key] = f.isActive ? t('approvalFlow.active') : t('approvalFlow.inactive');
       } else {
@@ -323,7 +311,7 @@ export function ApprovalFlowManagementPage(): ReactElement {
               rowKey={(r) => r.id}
               renderCell={(row, key, colWidth) => {
                 const val = row[key];
-                if (key === 'documentType') return getDocumentTypeLabel(t, row.documentType);
+                if (key === 'documentType') return getApprovalDocumentTypeLabel(t, row.documentType);
                 if (key === 'isActive') {
                   return (
                     <span
