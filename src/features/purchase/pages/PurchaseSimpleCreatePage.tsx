@@ -19,6 +19,7 @@ import {
   Save,
   Send,
   ShieldCheck,
+  ShoppingCart,
   StickyNote,
   Trash2,
   Wallet,
@@ -463,6 +464,7 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
     };
   }, [generalDiscountAmount, generalDiscountRate, visibleLines]);
   const canStartApproval = isEditMode && !isRequest && canStartPurchaseApproval(kind, detailQuery.data?.status ?? detailQuery.data?.Status);
+  const canConvertToOrder = isEditMode && kind === 'supplierQuotation';
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -485,6 +487,34 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : 'Satınalma kaydı kaydedilemedi.');
+    },
+  });
+
+  const convertToOrderMutation = useMutation({
+    mutationFn: async () => {
+      if (!documentId) {
+        throw new Error('Siparişe çevrilecek tedarikçi teklifi bulunamadı.');
+      }
+
+      const response = await api.post<ApiResponse<CreatedPurchaseDocument>>(
+        `${config.endpoint}/${documentId}/convert-to-order`,
+        {},
+      );
+
+      if (!response.success || !response.data?.id) {
+        throw new Error(response.message || 'Tedarikçi teklifi satınalma siparişine dönüştürülemedi.');
+      }
+
+      return response.data.id;
+    },
+    onSuccess: (purchaseOrderId) => {
+      toast.success('Tedarikçi teklifi satınalma siparişine dönüştürüldü.');
+      void queryClient.invalidateQueries({ queryKey: ['purchase', 'supplierQuotation'] });
+      void queryClient.invalidateQueries({ queryKey: ['purchase', 'order'] });
+      navigate(`/purchase/orders/${purchaseOrderId}`);
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : 'Tedarikçi teklifi satınalma siparişine dönüştürülemedi.');
     },
   });
 
@@ -698,6 +728,17 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
             <Save className="mr-2 h-4 w-4" />
             {saveMutation.isPending ? 'Kaydediliyor' : isEditMode ? 'Güncelle' : 'Kaydet'}
           </Button>
+          {canConvertToOrder ? (
+            <Button
+              type="button"
+              disabled={convertToOrderMutation.isPending || saveMutation.isPending || detailQuery.isFetching}
+              onClick={() => convertToOrderMutation.mutate()}
+              className="h-12 min-w-[190px] rounded-[8px] bg-emerald-600 font-black text-white shadow-lg hover:bg-emerald-700"
+            >
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              {convertToOrderMutation.isPending ? 'Çevriliyor' : 'Siparişe Çevir'}
+            </Button>
+          ) : null}
           {canStartApproval ? (
             <Button
               type="button"
