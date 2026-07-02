@@ -14,6 +14,10 @@ const DOCUMENTS: Array<{ type: DocumentFieldLabelDocumentType; label: string }> 
   { type: 'Demand', label: 'Talep' },
   { type: 'Quotation', label: 'Teklif' },
   { type: 'Order', label: 'Sipariş' },
+  { type: 'PurchaseRequest', label: 'Satınalma Talebi' },
+  { type: 'PurchaseRfq', label: 'RFQ' },
+  { type: 'SupplierQuotation', label: 'Tedarikçi Teklifi' },
+  { type: 'PurchaseOrder', label: 'Satınalma Siparişi' },
 ];
 
 const SCOPES: Array<{ scope: DocumentFieldLabelScope; label: string; description: string }> = [
@@ -137,7 +141,7 @@ export function DocumentFieldLabelsSettingsPanel({
           <div className="space-y-1">
             <p className="text-sm font-semibold">Belge alan başlıkları</p>
             <p className="text-muted-foreground text-sm">
-              Talep, teklif ve sipariş not penceresi ile satır açıklama alanlarındaki başlıkları müşteri terminolojisine göre değiştirir. Boş bırakılan alanlarda mevcut sistem adı kullanılır. Burada yapılan başlık değişikliği dil değişiminden etkilenmez.
+              Talep, teklif, sipariş ve satınalma belgelerindeki not penceresi ile satır açıklama alanlarının başlıklarını müşteri terminolojisine göre değiştirir. Boş bırakılan alanlarda mevcut sistem adı kullanılır. Burada yapılan başlık değişikliği dil değişiminden etkilenmez.
             </p>
           </div>
         </div>

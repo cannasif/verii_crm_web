@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import {
@@ -26,11 +26,24 @@ import { api } from '@/lib/axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import type { IntegratedSupplierOption } from '@/features/purchase/hooks/useIntegratedSupplierSearch';
 import type { ApiResponse } from '@/types/api';
 import { areDiscountRatesValid, getDiscountRateTotal } from '@/lib/discount-rate-validation';
 import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
+import { getImageUrl } from '@/lib/image-url';
+import { useDocumentFieldLabelMap } from '@/features/document-field-labels/hooks/useDocumentFieldLabels';
+import type { DocumentContextKey } from '@/features/document-field-labels/types/documentFieldLabels';
+import { usePaymentTypeOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
+import { useDocumentSerialTypeList } from '@/features/document-serial-type-management/hooks/useDocumentSerialTypeList';
+import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
+import { useSpecialCodeExists, useSpecialCodesInfinite } from '@/services/hooks/useSpecialCodesInfinite';
+import {
+  canApplySpecialCodeDefault,
+  getDefaultSpecialCodeForOfferType,
+} from '@/lib/sales-document-special-code-defaults';
 import {
   createEmptyExchangeRate,
   createEmptyLine,
@@ -70,6 +83,40 @@ function parseIdList(value: string, label: string): number[] {
   return Array.from(new Set(ids));
 }
 
+function getDocumentContext(kind: PurchaseCreateKind): DocumentContextKey {
+  if (kind === 'supplierQuotation') return 'supplierQuotation';
+  if (kind === 'order') return 'purchaseOrder';
+  return 'purchaseRequest';
+}
+
+function getPricingRuleType(kind: PurchaseCreateKind): PricingRuleType {
+  if (kind === 'supplierQuotation') return PricingRuleType.SupplierQuotation;
+  if (kind === 'order') return PricingRuleType.PurchaseOrder;
+  return PricingRuleType.PurchaseRequest;
+}
+
+function getHeaderNoteLabel(labels: ReturnType<typeof useDocumentFieldLabelMap>, index: number): string {
+  return labels[`Note${index + 1}`]?.effectiveLabel || `Not ${index + 1}`;
+}
+
+function getHeaderNotePlaceholder(labels: ReturnType<typeof useDocumentFieldLabelMap>, index: number): string {
+  return labels[`Note${index + 1}`]?.placeholder || `Belge notu ${index + 1}`;
+}
+
+function getLineDescriptionLabel(
+  labels: ReturnType<typeof useDocumentFieldLabelMap>,
+  fieldKey: 'Description1' | 'Description2' | 'Description3',
+): string {
+  return labels[fieldKey]?.effectiveLabel || fieldKey.replace('Description', 'Açıklama ');
+}
+
+function getLineDescriptionPlaceholder(
+  labels: ReturnType<typeof useDocumentFieldLabelMap>,
+  fieldKey: 'Description1' | 'Description2' | 'Description3',
+): string {
+  return labels[fieldKey]?.placeholder || 'Satır bazlı kalem açıklaması';
+}
+
 export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps) {
   const navigate = useNavigate();
   const config = purchaseCreateConfigs[kind];
@@ -103,6 +150,73 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
   const [lines, setLines] = useState<PurchaseLineForm[]>([createEmptyLine()]);
   const [productDialogOpen, setProductDialogOpen] = useState(false);
   const [targetLineIndex, setTargetLineIndex] = useState<number | null>(null);
+  const [paymentTypeSearchTerm, setPaymentTypeSearchTerm] = useState('');
+  const [documentSerialSearchTerm, setDocumentSerialSearchTerm] = useState('');
+  const [projectSearchTerm, setProjectSearchTerm] = useState('');
+  const [headerProjectSearchTerm, setHeaderProjectSearchTerm] = useState('');
+  const [ozelKod1SearchTerm, setOzelKod1SearchTerm] = useState('');
+  const [ozelKod2SearchTerm, setOzelKod2SearchTerm] = useState('');
+  const specialCodeManualChangeRef = useRef({ ozelKod1: false, ozelKod2: false });
+  const documentContext = getDocumentContext(kind);
+  const headerFieldLabels = useDocumentFieldLabelMap(documentContext, 'HeaderNote');
+  const lineDescriptionLabels = useDocumentFieldLabelMap(documentContext, 'LineDescription');
+  const pricingRuleType = getPricingRuleType(kind);
+  const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, !isRequest);
+  const specialCode1Dropdown = useSpecialCodesInfinite(1, ozelKod1SearchTerm, !isRequest);
+  const specialCode2Dropdown = useSpecialCodesInfinite(2, ozelKod2SearchTerm, !isRequest);
+  const defaultSpecialCode = getDefaultSpecialCodeForOfferType(purchaseType);
+  const specialCode1DefaultExists = useSpecialCodeExists(1, defaultSpecialCode, !isRequest);
+  const headerProjectDropdown = useErpProjectCodesInfinite(headerProjectSearchTerm, !isRequest);
+  const lineProjectDropdown = useErpProjectCodesInfinite(projectSearchTerm, true);
+  const { data: documentSerialTypesPage, isLoading: isDocumentSerialTypesLoading } = useDocumentSerialTypeList({
+    pageNumber: 1,
+    pageSize: 20,
+    search: documentSerialSearchTerm,
+    sortBy: 'SerialPrefix',
+    sortDirection: 'asc',
+    filters: [{ column: 'ruleType', operator: 'eq', value: String(pricingRuleType) }],
+  });
+  const documentSerialOptions = useMemo(
+    () =>
+      (documentSerialTypesPage?.data ?? []).map((item) => ({
+        value: String(item.id),
+        label: [
+          item.serialPrefix || `#${item.id}`,
+          item.serialLength ? `${item.serialLength} hane` : null,
+          item.serialCurrent != null ? `Son: ${item.serialCurrent}` : null,
+        ].filter(Boolean).join(' - '),
+      })),
+    [documentSerialTypesPage?.data],
+  );
+
+  useEffect(() => {
+    if (isRequest) return;
+
+    if (!ozelKod1) {
+      if (!specialCodeManualChangeRef.current.ozelKod2 && ozelKod2 !== '') {
+        setOzelKod2('');
+      }
+      return;
+    }
+
+    if (specialCodeManualChangeRef.current.ozelKod2) return;
+
+    const firstChar = ozelKod1.charAt(0).toUpperCase();
+    const targetValue = ['I', 'K', 'N'].includes(firstChar) ? firstChar : '';
+    if (ozelKod2 !== targetValue) {
+      setOzelKod2(targetValue);
+    }
+  }, [isRequest, ozelKod1, ozelKod2]);
+
+  useEffect(() => {
+    if (isRequest || !defaultSpecialCode) return;
+    if (specialCodeManualChangeRef.current.ozelKod1) return;
+    if (!canApplySpecialCodeDefault(ozelKod1)) return;
+    if (specialCode1DefaultExists.data !== true) return;
+    if (ozelKod1 !== defaultSpecialCode) {
+      setOzelKod1(defaultSpecialCode);
+    }
+  }, [defaultSpecialCode, isRequest, ozelKod1, specialCode1DefaultExists.data]);
 
   const visibleLines = useMemo(
     () => lines.filter((line) => line.productName.trim() || line.productCode.trim()),
@@ -497,15 +611,61 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                       </label>
                       <label className="space-y-2">
                         <FieldLabel>ERP Proje Kodu</FieldLabel>
-                        <Input className={INPUT_CLASSNAME} value={erpProjectCode} onChange={(event) => setErpProjectCode(event.target.value)} placeholder="Opsiyonel" />
+                        <VoiceSearchCombobox
+                          className={INPUT_CLASSNAME}
+                          value={erpProjectCode || null}
+                          onSelect={(value) => setErpProjectCode(value ?? '')}
+                          options={headerProjectDropdown.options}
+                          onDebouncedSearchChange={setHeaderProjectSearchTerm}
+                          onFetchNextPage={headerProjectDropdown.fetchNextPage}
+                          hasNextPage={headerProjectDropdown.hasNextPage}
+                          isLoading={headerProjectDropdown.isLoading}
+                          isFetchingNextPage={headerProjectDropdown.isFetchingNextPage}
+                          placeholder="ERP proje kodu seçin"
+                          searchPlaceholder="Proje kodu veya açıklaması ile ara..."
+                        />
                       </label>
                       <label className="space-y-2">
-                        <FieldLabel>Özel Kod 1</FieldLabel>
-                        <Input className={INPUT_CLASSNAME} value={ozelKod1} onChange={(event) => setOzelKod1(event.target.value)} maxLength={10} />
+                        <FieldLabel help="Satış belgelerindeki Özel Kod 1 mantığı ile aynı ERP özel kod havuzundan seçilir. Satınalma tipi Yurtiçi/Yurtdışı ise uygun varsayılan kod, kullanıcı elle değiştirmediyse otomatik uygulanır.">
+                          Özel Kod 1
+                        </FieldLabel>
+                        <VoiceSearchCombobox
+                          className={INPUT_CLASSNAME}
+                          value={ozelKod1 || null}
+                          onSelect={(value) => {
+                            specialCodeManualChangeRef.current.ozelKod1 = true;
+                            setOzelKod1(value ?? '');
+                          }}
+                          options={specialCode1Dropdown.options}
+                          onDebouncedSearchChange={setOzelKod1SearchTerm}
+                          onFetchNextPage={specialCode1Dropdown.fetchNextPage}
+                          hasNextPage={specialCode1Dropdown.hasNextPage}
+                          isLoading={specialCode1Dropdown.isLoading}
+                          isFetchingNextPage={specialCode1Dropdown.isFetchingNextPage}
+                          placeholder="Özel Kod 1 seçin"
+                          searchPlaceholder="Özel kod ara..."
+                        />
                       </label>
                       <label className="space-y-2">
-                        <FieldLabel>Özel Kod 2</FieldLabel>
-                        <Input className={INPUT_CLASSNAME} value={ozelKod2} onChange={(event) => setOzelKod2(event.target.value)} maxLength={10} />
+                        <FieldLabel help="Özel Kod 1 değerinin ilk karakterinden otomatik türetilir. Kullanıcı elle seçim yaparsa sonraki otomatik değişiklikler bu alanın üzerine yazmaz.">
+                          Özel Kod 2
+                        </FieldLabel>
+                        <VoiceSearchCombobox
+                          className={INPUT_CLASSNAME}
+                          value={ozelKod2 || null}
+                          onSelect={(value) => {
+                            specialCodeManualChangeRef.current.ozelKod2 = true;
+                            setOzelKod2(value ?? '');
+                          }}
+                          options={specialCode2Dropdown.options}
+                          onDebouncedSearchChange={setOzelKod2SearchTerm}
+                          onFetchNextPage={specialCode2Dropdown.fetchNextPage}
+                          hasNextPage={specialCode2Dropdown.hasNextPage}
+                          isLoading={specialCode2Dropdown.isLoading}
+                          isFetchingNextPage={specialCode2Dropdown.isFetchingNextPage}
+                          placeholder="Özel Kod 2 seçin"
+                          searchPlaceholder="Özel kod ara..."
+                        />
                       </label>
                       <label className="space-y-2 xl:col-span-1">
                         <FieldLabel help="Tedarikçi ile anlaşılan teslim şartı. PDF/rapor ve satınalma takibinde kullanılabilir.">Teslim Şartı</FieldLabel>
@@ -557,13 +717,36 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                     <label className="space-y-2">
                       <FieldLabel>
                         <CreditCard className="h-4 w-4" />
-                        Ödeme Tipi ID
+                        Ödeme Tipi
                       </FieldLabel>
-                      <Input className={INPUT_CLASSNAME} value={paymentTypeId} onChange={(event) => setPaymentTypeId(event.target.value)} inputMode="numeric" placeholder="Opsiyonel" />
+                      <VoiceSearchCombobox
+                        className={INPUT_CLASSNAME}
+                        value={paymentTypeId || null}
+                        onSelect={(value) => setPaymentTypeId(value ?? '')}
+                        options={paymentTypeDropdown.options}
+                        onDebouncedSearchChange={setPaymentTypeSearchTerm}
+                        onFetchNextPage={paymentTypeDropdown.fetchNextPage}
+                        hasNextPage={paymentTypeDropdown.hasNextPage}
+                        isLoading={paymentTypeDropdown.isLoading}
+                        isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
+                        placeholder="Ödeme tipi seçin"
+                        searchPlaceholder="Ödeme tipi ara..."
+                      />
                     </label>
                     <label className="space-y-2">
-                      <FieldLabel>Belge Seri ID</FieldLabel>
-                      <Input className={INPUT_CLASSNAME} value={documentSerialTypeId} onChange={(event) => setDocumentSerialTypeId(event.target.value)} inputMode="numeric" placeholder="Opsiyonel" />
+                      <FieldLabel help="Seçilen satınalma belge tipi için tanımlı seri numarasıdır. Şimdilik numara üretimini değiştirmeden yalnızca seçilen seri ID'si API'ye gönderilir.">
+                        Belge Seri
+                      </FieldLabel>
+                      <VoiceSearchCombobox
+                        className={INPUT_CLASSNAME}
+                        value={documentSerialTypeId || null}
+                        onSelect={(value) => setDocumentSerialTypeId(value ?? '')}
+                        options={documentSerialOptions}
+                        onDebouncedSearchChange={setDocumentSerialSearchTerm}
+                        isLoading={isDocumentSerialTypesLoading}
+                        placeholder="Belge seri seçin"
+                        searchPlaceholder="Seri prefix ile ara..."
+                      />
                     </label>
                     <label className="space-y-2">
                       <FieldLabel>
@@ -768,10 +951,67 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                             <Input className={INPUT_CLASSNAME} value={line.imagePath} onChange={(event) => updateLine(index, { imagePath: event.target.value })} placeholder="/uploads/..." />
                           </label>
                         </div>
-                        <Input className={INPUT_CLASSNAME} value={line.erpProjectCode} onChange={(event) => updateLine(index, { erpProjectCode: event.target.value })} placeholder="Satır ERP proje kodu" />
-                        <Input className={INPUT_CLASSNAME} value={line.description1} onChange={(event) => updateLine(index, { description1: event.target.value })} placeholder="Açıklama 1" />
-                        <Input className={INPUT_CLASSNAME} value={line.description2} onChange={(event) => updateLine(index, { description2: event.target.value })} placeholder="Açıklama 2" />
-                        <Input className={INPUT_CLASSNAME} value={line.description3} onChange={(event) => updateLine(index, { description3: event.target.value })} placeholder="Açıklama 3" />
+                        {line.imagePath.trim() ? (
+                          <div className="overflow-hidden rounded-[8px] border border-slate-200 bg-white dark:border-white/10 dark:bg-black/20">
+                            <img
+                              src={getImageUrl(line.imagePath) ?? line.imagePath}
+                              alt={`${line.productName || 'Satınalma kalemi'} görseli`}
+                              className="h-32 w-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                        ) : null}
+                        <label className="space-y-2">
+                          <FieldLabel help="Satır bazında ERP proje kodu farklıysa burada seçilir. Boş bırakılırsa başlık proje bilgisi kullanılabilir.">
+                            Satır ERP Proje Kodu
+                          </FieldLabel>
+                          <VoiceSearchCombobox
+                            className={INPUT_CLASSNAME}
+                            value={line.erpProjectCode || null}
+                            onSelect={(value) => updateLine(index, { erpProjectCode: value ?? '' })}
+                            options={lineProjectDropdown.options}
+                            onDebouncedSearchChange={setProjectSearchTerm}
+                            onFetchNextPage={lineProjectDropdown.fetchNextPage}
+                            hasNextPage={lineProjectDropdown.hasNextPage}
+                            isLoading={lineProjectDropdown.isLoading}
+                            isFetchingNextPage={lineProjectDropdown.isFetchingNextPage}
+                            placeholder="Satır ERP proje kodu"
+                            searchPlaceholder="Proje kodu veya açıklaması ile ara..."
+                          />
+                        </label>
+                        <label className="space-y-2">
+                          <FieldLabel help={lineDescriptionLabels.Description1?.helpText ?? 'Satır bazlı üretim/satınalma açıklaması.'}>
+                            {getLineDescriptionLabel(lineDescriptionLabels, 'Description1')}
+                          </FieldLabel>
+                          <Input
+                            className={INPUT_CLASSNAME}
+                            value={line.description1}
+                            onChange={(event) => updateLine(index, { description1: event.target.value })}
+                            placeholder={getLineDescriptionPlaceholder(lineDescriptionLabels, 'Description1')}
+                          />
+                        </label>
+                        <label className="space-y-2">
+                          <FieldLabel help={lineDescriptionLabels.Description2?.helpText ?? 'Satır Ekalan1 karşılığı olarak kullanılacak açıklama alanı.'}>
+                            {getLineDescriptionLabel(lineDescriptionLabels, 'Description2')}
+                          </FieldLabel>
+                          <Input
+                            className={INPUT_CLASSNAME}
+                            value={line.description2}
+                            onChange={(event) => updateLine(index, { description2: event.target.value })}
+                            placeholder={getLineDescriptionPlaceholder(lineDescriptionLabels, 'Description2')}
+                          />
+                        </label>
+                        <label className="space-y-2">
+                          <FieldLabel help={lineDescriptionLabels.Description3?.helpText ?? 'Satır bazlı ek açıklama alanı.'}>
+                            {getLineDescriptionLabel(lineDescriptionLabels, 'Description3')}
+                          </FieldLabel>
+                          <Input
+                            className={INPUT_CLASSNAME}
+                            value={line.description3}
+                            onChange={(event) => updateLine(index, { description3: event.target.value })}
+                            placeholder={getLineDescriptionPlaceholder(lineDescriptionLabels, 'Description3')}
+                          />
+                        </label>
                       </div>
                     </div>
                   ))}
@@ -785,13 +1025,15 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                 <div className="grid gap-3 p-5 md:grid-cols-3">
                   {notes.map((note, index) => (
                     <label key={index} className="space-y-2">
-                      <FieldLabel>Not {index + 1}</FieldLabel>
+                      <FieldLabel help={headerFieldLabels[`Note${index + 1}`]?.helpText ?? 'Belge geneli not alanı.'}>
+                        {getHeaderNoteLabel(headerFieldLabels, index)}
+                      </FieldLabel>
                       <Input
                         className={INPUT_CLASSNAME}
                         value={note}
                         maxLength={100}
                         onChange={(event) => setNotes((current) => current.map((item, itemIndex) => (itemIndex === index ? event.target.value : item)))}
-                        placeholder={`Belge notu ${index + 1}`}
+                        placeholder={getHeaderNotePlaceholder(headerFieldLabels, index)}
                       />
                     </label>
                   ))}

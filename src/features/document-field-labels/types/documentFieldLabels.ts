@@ -1,4 +1,11 @@
-export type DocumentFieldLabelDocumentType = 'Demand' | 'Quotation' | 'Order';
+export type DocumentFieldLabelDocumentType =
+  | 'Demand'
+  | 'Quotation'
+  | 'Order'
+  | 'PurchaseRequest'
+  | 'PurchaseRfq'
+  | 'SupplierQuotation'
+  | 'PurchaseOrder';
 export type DocumentFieldLabelScope = 'HeaderNote' | 'LineDescription';
 
 export interface DocumentFieldLabelDto {
@@ -29,10 +36,21 @@ export interface UpdateDocumentFieldLabelsRequest {
   items: UpdateDocumentFieldLabelDto[];
 }
 
-export type DocumentContextKey = 'demand' | 'quotation' | 'order';
+export type DocumentContextKey =
+  | 'demand'
+  | 'quotation'
+  | 'order'
+  | 'purchaseRequest'
+  | 'purchaseRfq'
+  | 'supplierQuotation'
+  | 'purchaseOrder';
 
 export const DOCUMENT_CONTEXT_TO_TYPE: Record<DocumentContextKey, DocumentFieldLabelDocumentType> = {
   demand: 'Demand',
   quotation: 'Quotation',
   order: 'Order',
+  purchaseRequest: 'PurchaseRequest',
+  purchaseRfq: 'PurchaseRfq',
+  supplierQuotation: 'SupplierQuotation',
+  purchaseOrder: 'PurchaseOrder',
 };
