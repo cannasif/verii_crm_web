@@ -107,20 +107,20 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
         className={cn(
             "relative group border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-300",
             isDragging 
-                ? "border-rose-500 bg-rose-50 dark:bg-rose-900/10 scale-[1.01]" 
-                : "border-zinc-200 dark:border-zinc-700 hover:border-rose-400 hover:bg-zinc-50 dark:hover:bg-zinc-900/50"
+                ? "border-primary bg-accent scale-[1.01] dark:bg-primary/10" 
+                : "border-zinc-200 dark:border-zinc-700 hover:border-primary/45 hover:bg-accent/50 dark:hover:border-primary/40 dark:hover:bg-primary/5"
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-amber-500/5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 rounded-xl bg-accent/40 opacity-0 transition-opacity group-hover:opacity-100 dark:bg-primary/5" />
         
         <div className="relative z-10 flex flex-col items-center gap-3">
             <div className={cn(
-                "p-4 rounded-full bg-zinc-100 dark:bg-zinc-800 transition-colors duration-300",
-                isDragging ? "bg-rose-100 text-rose-600 dark:bg-rose-900/30" : "group-hover:text-rose-600"
+                "p-4 rounded-full bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400 transition-colors duration-300",
+                isDragging ? "bg-accent text-primary dark:bg-primary/15 dark:text-primary" : "group-hover:bg-accent group-hover:text-primary dark:group-hover:bg-primary/10"
             )}>
                 <CloudUpload className="h-8 w-8" />
             </div>

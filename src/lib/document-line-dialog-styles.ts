@@ -4,8 +4,14 @@ export const DOCUMENT_LINE_DIALOG_CONTENT_CLASS =
 export const DOCUMENT_LINE_DIALOG_GRADIENT_OVERLAY_CLASS =
   'pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(244,63,94,0.07),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.04),transparent_45%)] dark:bg-[radial-gradient(ellipse_120%_80%_at_50%_-40%,rgba(244,63,94,0.14),transparent_50%),radial-gradient(ellipse_70%_50%_at_100%_100%,rgba(59,130,246,0.08),transparent_45%)]';
 
+export const DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS =
+  'flex items-center justify-center rounded-lg border border-slate-300/90 bg-white text-slate-600 shadow-sm backdrop-blur-sm transition-all hover:border-primary/40 hover:bg-accent hover:text-primary dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 dark:hover:border-primary/40 dark:hover:bg-primary/10 dark:hover:text-primary';
+
+export const DOCUMENT_PAGE_NAV_BUTTON_CLASS =
+  `h-10 w-10 shrink-0 rounded-xl transition-colors duration-200 ${DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS}`;
+
 export const DOCUMENT_LINE_DIALOG_CLOSE_BUTTON_CLASS =
-  'absolute right-2 top-2 z-30 flex h-8 w-8 items-center justify-center rounded-lg border border-slate-300/90 bg-white text-slate-600 shadow-sm backdrop-blur-sm transition-all hover:border-red-400/60 hover:bg-red-50 hover:text-red-600 hover:shadow-[0_0_16px_rgba(239,68,68,0.35)] dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:shadow-[0_0_18px_rgba(239,68,68,0.3)] sm:right-2.5 sm:top-2';
+  `absolute right-2 top-2 z-30 h-8 w-8 sm:right-2.5 sm:top-2 ${DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS}`;
 
 export const DOCUMENT_LINE_DIALOG_HEADER_CLASS =
   'relative z-10 shrink-0 border-b border-slate-300/90 bg-white px-4 py-2.5 pr-11 shadow-[inset_0_-1px_0_rgba(148,163,184,0.12)] backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 dark:shadow-none sm:px-6 sm:py-3 sm:pr-12';
@@ -14,16 +20,16 @@ export const DOCUMENT_LINE_DIALOG_BODY_CLASS =
   'relative z-10 flex-1 min-h-0 overflow-y-auto px-3 sm:px-6 py-3 sm:py-4';
 
 export const DOCUMENT_LINE_DIALOG_ICON_WRAP_CLASS =
-  'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-rose-500/20 bg-rose-50 text-rose-500 shadow-sm dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300 sm:h-10 sm:w-10';
+  'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-accent text-primary shadow-sm dark:border-primary/30 dark:bg-primary/15 dark:text-primary sm:h-10 sm:w-10';
 
 export const DOCUMENT_LINE_DIALOG_ICON_WRAP_EDIT_CLASS =
   'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-indigo-500/20 bg-indigo-50 text-indigo-500 shadow-sm dark:border-indigo-500/30 dark:bg-indigo-500/15 dark:text-indigo-300 sm:h-10 sm:w-10';
 
 export const DOCUMENT_LINE_FORM_CANCEL_BUTTON_CLASS =
-  'h-12 px-6 w-full sm:w-auto rounded-xl border border-slate-300/90 bg-white text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:border-red-400/60 hover:bg-red-50 hover:text-red-600 hover:shadow-[0_0_16px_rgba(239,68,68,0.25)] dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:hover:border-red-500/40 dark:hover:bg-red-500/10 dark:hover:text-red-300 dark:hover:shadow-[0_0_18px_rgba(239,68,68,0.22)] font-medium disabled:opacity-50';
+  'h-12 px-6 w-full sm:w-auto rounded-xl border border-slate-300/90 bg-white text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:border-slate-400/60 hover:bg-slate-100 hover:text-slate-900 dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:hover:border-white/25 dark:hover:bg-white/[0.08] dark:hover:text-slate-100 font-medium disabled:opacity-50';
 
 export const DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS =
-  'h-12 px-8 w-full sm:w-auto rounded-xl bg-linear-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white shadow-lg shadow-rose-600/20 hover:shadow-xl font-bold transition-all active:scale-95';
+  'h-12 px-8 w-full sm:w-auto rounded-xl bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white shadow-lg shadow-primary/20 hover:shadow-xl font-bold transition-all active:scale-95 border-0';
 
 export const DOCUMENT_LINE_FORM_FIELD_SURFACE_CLASS =
   'border-slate-300/90 bg-white text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100';

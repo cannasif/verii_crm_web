@@ -86,7 +86,7 @@ type Salesmen360CurrencyFilterOption = {
 };
 
 const SALESMEN_360_FILTER_OUTER =
-  'group/filter flex min-h-11 w-fit max-w-full items-stretch overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm ring-1 ring-slate-950/[0.03] transition-[box-shadow,border-color] duration-200 hover:border-rose-200/80 hover:shadow-md hover:shadow-rose-500/[0.07] dark:border-white/10 dark:bg-linear-to-br dark:from-[#1E1627]/95 dark:to-[#130822]/98 dark:ring-white/[0.05] dark:hover:border-rose-400/30 dark:hover:shadow-rose-500/10';
+  'flex min-h-11 w-fit max-w-full items-stretch overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm ring-1 ring-slate-950/[0.03] dark:border-white/10 dark:bg-linear-to-br dark:from-[#1E1627]/95 dark:to-[#130822]/98 dark:ring-white/[0.05]';
 
 const SALESMEN_360_FILTER_LABEL_SEGMENT =
   'flex shrink-0 items-center gap-2.5 border-r border-slate-200/80 bg-linear-to-b from-slate-50/98 to-slate-100/35 px-3 py-2 dark:border-white/10 dark:from-white/[0.07] dark:to-transparent';
@@ -95,13 +95,13 @@ const SALESMEN_360_FILTER_MICRO_LABEL =
   'max-w-[5rem] truncate text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 sm:max-w-[7rem] dark:text-slate-400';
 
 const SALESMEN_360_FILTER_TRIGGER =
-  'h-11 min-h-11 w-full min-w-0 border-0 bg-transparent px-3 text-sm font-semibold text-slate-800 shadow-none transition-colors rounded-none rounded-r-2xl hover:bg-rose-50/45 focus:ring-0 focus:ring-offset-0 focus-visible:bg-rose-50/55 focus-visible:outline-none data-[state=open]:bg-rose-50/50 dark:text-white/95 dark:hover:bg-white/[0.05] dark:focus-visible:bg-rose-500/[0.14] dark:data-[state=open]:bg-rose-500/15 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-rose-500/55 [&_svg]:opacity-80 dark:[&_svg]:text-rose-400/80';
+  'h-11 min-h-11 w-full min-w-0 border-0 bg-transparent px-3 text-sm font-semibold text-slate-800 shadow-none transition-colors rounded-none rounded-r-2xl hover:bg-accent/50 focus:ring-0 focus:ring-offset-0 focus-visible:bg-accent/60 focus-visible:outline-none data-[state=open]:bg-accent/60 dark:text-white/95 dark:hover:bg-primary/10 dark:focus-visible:bg-primary/12 dark:data-[state=open]:bg-primary/12 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:text-slate-400 [&_svg]:opacity-80 dark:[&_svg]:text-slate-500';
 
 const SALESMEN_360_FILTER_CONTENT =
   'z-50 max-h-72 overflow-y-auto rounded-2xl border border-slate-200/90 bg-white/98 p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1E1627]/98';
 
 const SALESMEN_360_FILTER_ITEM =
-  'cursor-pointer rounded-xl py-2.5 pl-3 pr-9 text-sm font-medium text-slate-700 transition-colors focus:bg-rose-50 focus:text-rose-950 data-[highlighted]:bg-rose-50 data-[state=checked]:bg-rose-50/90 dark:text-slate-200 dark:focus:bg-rose-500/18 dark:focus:text-rose-50 dark:data-[highlighted]:bg-rose-500/18 dark:data-[state=checked]:bg-rose-500/22';
+  'cursor-pointer rounded-xl py-2.5 pl-3 pr-9 text-sm font-medium text-slate-700 transition-colors focus:bg-accent focus:text-foreground data-[highlighted]:bg-accent/80 data-[highlighted]:text-foreground data-[selected=true]:bg-accent data-[selected=true]:text-foreground data-[state=checked]:bg-accent data-[state=checked]:text-primary dark:text-slate-200 dark:focus:bg-primary/12 dark:focus:text-slate-100 dark:data-[highlighted]:bg-primary/12 dark:data-[highlighted]:text-slate-100 dark:data-[selected=true]:bg-primary/12 dark:data-[selected=true]:text-primary dark:data-[state=checked]:bg-primary/15 dark:data-[state=checked]:text-primary';
 
 const SALESMEN_360_FILTER_ICON_WRAP = {
   salesman:
@@ -169,7 +169,7 @@ function Salesmen360SalespersonCombobox({
                 className={cn('flex min-w-0 items-center justify-between gap-2 text-left', triggerClassName)}
               >
                 <span className="min-w-0 flex-1 truncate">{selectedLabel ?? String(selectedUserId)}</span>
-                <ChevronDown className="size-4 shrink-0 text-rose-500/55 opacity-80 dark:text-rose-400/80" aria-hidden />
+                <ChevronDown className="size-4 shrink-0 text-slate-400 opacity-80 dark:text-slate-500" aria-hidden />
               </button>
             </PopoverTrigger>
           </div>
@@ -180,7 +180,7 @@ function Salesmen360SalespersonCombobox({
         alignOffset={0}
         side="bottom"
         sideOffset={6}
-        className="z-50 w-[min(22rem,calc(100vw-2rem))] max-h-[min(20rem,70dvh)] overflow-hidden rounded-2xl border border-slate-200/90 bg-white/98 p-0 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1E1627]/98"
+        className={cn(SALESMEN_360_FILTER_CONTENT, 'z-50 w-[min(22rem,calc(100vw-2rem))] max-h-[min(20rem,70dvh)] overflow-hidden p-0')}
       >
         <Command
           className="max-h-[min(18rem,65dvh)] rounded-none border-0 bg-transparent shadow-none [&_[cmdk-input-wrapper]]:border-b [&_[cmdk-input-wrapper]]:border-slate-200/80 dark:[&_[cmdk-input-wrapper]]:border-white/10"
@@ -218,10 +218,7 @@ function Salesmen360SalespersonCombobox({
                     onSelectUserId(Number(currentValue));
                     setOpen(false);
                   }}
-                  className={cn(
-                    SALESMEN_360_FILTER_ITEM,
-                    'cursor-pointer data-[selected=true]:bg-rose-50 data-[selected=true]:text-rose-950 dark:data-[selected=true]:bg-rose-950/20 dark:data-[selected=true]:text-rose-50'
-                  )}
+                  className={SALESMEN_360_FILTER_ITEM}
                 >
                   {buildSalespersonOptionLabel(item, meLabel)}
                 </CommandItem>
@@ -466,8 +463,7 @@ function RecommendedActionsPanel({
                       size="sm"
                       onClick={() => onExecute(action)}
                       disabled={busy}
-                      className="shrink-0 h-9 rounded-xl bg-linear-to-r from-rose-600 to-amber-600 text-white hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md font-bold px-4 gap-1.5 border-0
-                      opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                      className="shrink-0 h-9 rounded-xl border-0 bg-[image:var(--crm-brand-gradient)] px-4 font-bold text-white shadow-[0_4px_14px_-6px_var(--crm-brand-shadow)] transition-all hover:-translate-y-0.5 hover:text-white hover:shadow-[0_6px_20px_-6px_var(--crm-brand-shadow)] active:translate-y-0 gap-1.5"
                     >
                       {busy ? <Loader2 className="size-3.5 animate-spin" /> : <Zap className="size-3.5" />}
                       {t('salesman360.actions.execute')}
@@ -897,9 +893,8 @@ export function Salesmen360Page(): ReactElement {
       <div className="w-full px-1.5 pt-0 pb-8 space-y-6 animate-in fade-in duration-500">
         <div className="flex flex-col gap-5 pt-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <LineChart className="h-8 w-8 text-rose-600 dark:text-rose-400 relative z-10" />
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-accent shadow-inner dark:border-primary/30 dark:bg-primary/10">
+              <LineChart className="h-8 w-8 text-primary" />
             </div>
             <div className="space-y-1">
               <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
@@ -992,11 +987,17 @@ export function Salesmen360Page(): ReactElement {
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'overview' | 'analytics')} className="space-y-6">
           <div className="flex justify-center sm:justify-start">
             <TabsList className="h-11 p-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-inner">
-              <TabsTrigger value="overview" className="rounded-xl px-6 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-[#130822] data-[state=active]:text-rose-600 dark:data-[state=active]:text-rose-400 data-[state=active]:shadow-md transition-all">
+              <TabsTrigger
+                value="overview"
+                className="rounded-xl px-6 font-bold text-muted-foreground transition-all data-[state=active]:bg-accent data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-primary/12 dark:data-[state=active]:text-primary"
+              >
                 {t('salesman360.tabs.overview')}
               </TabsTrigger>
               {!isAllSalesmen && (
-                <TabsTrigger value="analytics" className="rounded-xl px-6 font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-[#130822] data-[state=active]:text-rose-600 dark:data-[state=active]:text-rose-400 data-[state=active]:shadow-md transition-all">
+                <TabsTrigger
+                  value="analytics"
+                  className="rounded-xl px-6 font-bold text-muted-foreground transition-all data-[state=active]:bg-accent data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-primary/12 dark:data-[state=active]:text-primary"
+                >
                   {t('salesman360.tabs.analytics')}
                 </TabsTrigger>
               )}

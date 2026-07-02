@@ -28,6 +28,7 @@ import type { StockGetDto } from '@/features/stock/types';
 import { dedupeStocksByErpStockCode } from '@/features/stock/utils/dedupe-stocks-by-erp-code';
 import { getLocalizedStockName } from '@/features/stock/utils/localized-stock-name';
 import { getCatalogFieldLabel } from '@/lib/catalog-field-labels';
+import { DOCUMENT_LINE_FORM_FIELD_SURFACE_CLASS } from '@/lib/document-line-dialog-styles';
 import { cn } from '@/lib/utils';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
 
@@ -226,7 +227,8 @@ export function LineFormStockSearchField({
           }}
           onKeyDown={stockKeyboard.onInputKeyDown}
           className={cn(
-            'h-11 rounded-xl border-slate-200 bg-white font-mono text-sm text-slate-900 shadow-sm dark:border-white/10 dark:bg-[#0f0a18] dark:text-white',
+            'h-11 rounded-xl font-mono text-sm shadow-sm',
+            DOCUMENT_LINE_FORM_FIELD_SURFACE_CLASS,
             inputClassName,
           )}
         />
@@ -235,7 +237,10 @@ export function LineFormStockSearchField({
             <div className="absolute top-full left-0 h-0 w-full" />
           </PopoverTrigger>
           <PopoverContent
-            className="w-[min(96vw,560px)] max-w-[560px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl dark:border-white/10 dark:bg-[#130822]"
+            className={cn(
+              'w-[min(96vw,560px)] max-w-[560px] overflow-hidden rounded-2xl p-0 shadow-2xl ring-1 ring-slate-300/40 dark:ring-0',
+              DOCUMENT_LINE_FORM_FIELD_SURFACE_CLASS,
+            )}
             align="start"
             sideOffset={8}
             onOpenAutoFocus={(e) => e.preventDefault()}
@@ -276,14 +281,14 @@ export function LineFormStockSearchField({
                           void handlePickStock(stock);
                         }}
                         className={cn(
-                          'mb-1 cursor-pointer rounded-xl px-3 py-2.5 transition-colors',
-                          'data-[selected=true]:bg-rose-50 dark:data-[selected=true]:bg-rose-950/20',
+                          'mb-1 cursor-pointer rounded-xl border border-transparent px-3 py-2.5 transition-[color,background-color,border-color,box-shadow] duration-200',
+                          'data-[selected=true]:border-primary/40 data-[selected=true]:bg-accent/60 data-[selected=true]:text-slate-900 dark:data-[selected=true]:border-primary/45 dark:data-[selected=true]:bg-primary/[0.07] dark:data-[selected=true]:text-slate-100',
                           stockKeyboard.isOptionKeyboardActive(index) &&
-                          'ring-2 ring-rose-500 ring-offset-2 ring-offset-white dark:ring-offset-[#130822]',
+                            'border-primary/55 ring-1 ring-inset ring-primary/20',
                         )}
                       >
                         <div className="flex min-w-0 flex-col gap-0.5">
-                          <span className="truncate font-mono text-xs font-semibold text-pink-700 dark:text-pink-300">
+                          <span className="truncate font-mono text-xs font-semibold tracking-wide text-primary dark:text-primary">
                             {stock.erpStockCode}
                           </span>
                           <span className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">

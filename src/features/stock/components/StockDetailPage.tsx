@@ -154,9 +154,9 @@ export function StockDetailPage(): ReactElement {
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <div className="border-b border-zinc-200/50 dark:border-white/5 px-6 pt-4">
                     <TabsList className="bg-transparent h-auto p-0 w-full justify-start gap-8">
-                        <TabItem value="basic" icon={Info} label={t('detail.basicInfo')} active={activeTab === 'basic'} />
-                        <TabItem value="images" icon={ImageIcon} label={t('detail.images')} active={activeTab === 'images'} />
-                        <TabItem value="relations" icon={Layers} label={t('detail.relations')} active={activeTab === 'relations'} />
+                        <TabItem value="basic" icon={Info} label={t('detail.basicInfo')} />
+                        <TabItem value="images" icon={ImageIcon} label={t('detail.images')} />
+                        <TabItem value="relations" icon={Layers} label={t('detail.relations')} />
                     </TabsList>
                 </div>
 
@@ -197,7 +197,7 @@ export function StockDetailPage(): ReactElement {
                         <Suspense fallback={<StockTabSkeleton />}>
                             {activeTab === 'images' ? (
                                 <div className="space-y-8">
-                                    <div className="bg-zinc-50/50 dark:bg-white/5 border-2 border-dashed border-zinc-200 dark:border-white/10 rounded-xl p-8 hover:bg-zinc-50 dark:hover:bg-white/10 transition-colors">
+                                    <div className="rounded-xl border-2 border-dashed border-zinc-200 bg-zinc-50/50 p-8 transition-colors hover:border-primary/30 hover:bg-accent/30 dark:border-white/10 dark:bg-white/5 dark:hover:border-primary/35 dark:hover:bg-primary/5">
                                         {canModify ? <StockImageUpload stockId={stockId} /> : null}
                                     </div>
                                     <div className="relative">
@@ -249,23 +249,25 @@ function StockTabSkeleton({ tall = false }: { tall?: boolean }): ReactElement {
   );
 }
 
-function TabItem({ value, icon: Icon, label, active }: { value: string, icon: React.ElementType, label: string, active: boolean }) {
-    return (
-        <TabsTrigger 
-            value={value} 
-            className={cn(
-                "relative pb-4 rounded-none bg-transparent shadow-none border-b-2 border-transparent transition-all duration-300 data-[state=active]:bg-transparent",
-                "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200",
-                active && "text-pink-600 dark:text-pink-500 border-pink-600 dark:border-pink-500 font-medium"
-            )}
-        >
-            <div className="flex items-center gap-2">
-                <Icon className={cn("w-4 h-4 transition-transform duration-300", active ? "scale-110" : "")} />
-                <span>{label}</span>
-            </div>
-            {active && (
-                <div className="absolute bottom-[-2px] left-0 right-0 h-[2px] bg-pink-600 dark:bg-pink-500 shadow-[0_0_10px_rgba(219,39,119,0.5)]" />
-            )}
-        </TabsTrigger>
-    );
+function TabItem({ value, icon: Icon, label }: { value: string; icon: React.ElementType; label: string }): ReactElement {
+  return (
+    <TabsTrigger
+      value={value}
+      className={cn(
+        'group relative rounded-none border-b-2 border-transparent bg-transparent pb-4 shadow-none transition-all duration-300',
+        'text-zinc-500 hover:text-foreground dark:text-zinc-400 dark:hover:text-zinc-200',
+        'data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:font-medium data-[state=active]:text-primary data-[state=active]:shadow-none',
+        'hover:data-[state=active]:text-primary',
+      )}
+    >
+      <div className="flex items-center gap-2">
+        <Icon className="h-4 w-4 transition-transform duration-300 group-data-[state=active]:scale-110 group-data-[state=active]:text-primary" />
+        <span>{label}</span>
+      </div>
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-primary opacity-0 shadow-[0_0_8px_var(--crm-brand-ring)] transition-opacity group-data-[state=active]:opacity-100 group-hover:group-data-[state=active]:shadow-[0_0_10px_var(--crm-brand-shadow)]"
+      />
+    </TabsTrigger>
+  );
 }

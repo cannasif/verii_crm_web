@@ -391,9 +391,9 @@ export function ProductPricingForm({
                     </div>
                   </div>
 
-                  <div className="relative overflow-hidden rounded-[2rem] border border-rose-500/20 bg-rose-50/30 dark:bg-rose-500/[0.02] p-6 space-y-4">
-                    <div className="flex items-center gap-3 text-sm font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest relative z-10">
-                      <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center">
+                  <div className="relative overflow-hidden rounded-[2rem] border border-primary/15 bg-accent/35 p-6 space-y-4 dark:bg-primary/5">
+                    <div className="relative z-10 flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-primary">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-primary dark:bg-primary/15">
                         <Calculator size={16} />
                       </div>
                       {t('priceCalculation')}

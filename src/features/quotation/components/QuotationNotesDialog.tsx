@@ -19,6 +19,7 @@ import {
   type DocumentNotesContext,
 } from '../hooks/useDocumentNotesLabels';
 import { useDocumentFieldLabelMap } from '@/features/document-field-labels/hooks/useDocumentFieldLabels';
+import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 
 const MAX_NOTE_LENGTH = 100;
 const NOTES_PER_PAGE = 3;
@@ -124,7 +125,7 @@ export function QuotationNotesDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-500/15 dark:hover:text-red-400"
+            className={cn('h-9 w-9 shrink-0', DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS)}
           >
             <X className="h-4 w-4" />
           </button>

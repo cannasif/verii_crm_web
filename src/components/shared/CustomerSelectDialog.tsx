@@ -35,6 +35,7 @@ import type { FilterRow } from '@/lib/advanced-filter-types';
 import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
 import { AdvancedFilter } from '@/components/shared/AdvancedFilter';
 import { CUSTOMER_FILTER_COLUMNS } from '@/features/customer-management/types/customer-filter.types';
+import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 const POPUP_SEARCH_DEBOUNCE_MS = 700;
@@ -484,7 +485,7 @@ export function CustomerSelectDialog({
               variant="outline"
               size="icon"
               onClick={() => onOpenChange(false)}
-              className="h-10 w-10 shrink-0 rounded-xl border-slate-300 bg-white text-slate-700 shadow-sm transition-colors hover:border-red-400 hover:bg-red-50 hover:text-red-600 dark:border-white/15 dark:bg-[#1a1025] dark:text-slate-200 dark:hover:border-red-500/50 dark:hover:bg-red-950/40 dark:hover:text-red-400"
+              className={cn('h-10 w-10 shrink-0 rounded-xl', DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS)}
               aria-label={t('close', { ns: 'common' })}
             >
               <X size={20} />
