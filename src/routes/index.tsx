@@ -64,20 +64,6 @@ const ErpOrderListPage = lazyImport(() => import('@/features/order'), 'ErpOrderL
 const ErpDocumentCleanupLogPage = lazyImport(() => import('@/features/order'), 'ErpDocumentCleanupLogPage');
 const OrderListPage = lazyImport(() => import('@/features/order'), 'OrderListPage');
 const OrderWaitingApprovalsPage = lazyImport(() => import('@/features/order'), 'WaitingApprovalsPage');
-const PurchaseModulePage = lazyImport(() => import('@/features/purchase'), 'PurchaseModulePage');
-const PurchaseRequestListPage = lazyImport(() => import('@/features/purchase'), 'PurchaseRequestListPage');
-const PurchaseRfqListPage = lazyImport(() => import('@/features/purchase'), 'PurchaseRfqListPage');
-const PurchaseRfqCreatePage = lazyImport(() => import('@/features/purchase'), 'PurchaseRfqCreatePage');
-const PurchaseRfqDetailPage = lazyImport(() => import('@/features/purchase'), 'PurchaseRfqDetailPage');
-const PurchaseRequestCreatePage = lazyImport(() => import('@/features/purchase'), 'PurchaseRequestCreatePage');
-const SupplierQuotationCreatePage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationCreatePage');
-const SupplierQuotationDetailPage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationDetailPage');
-const PurchaseOrderCreatePage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderCreatePage');
-const PurchaseOrderDetailPage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderDetailPage');
-const SupplierQuotationListPage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationListPage');
-const PurchaseOrderListPage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderListPage');
-const SupplierQuotationWaitingApprovalsPage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationWaitingApprovalsPage');
-const PurchaseOrderWaitingApprovalsPage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderWaitingApprovalsPage');
 const PricingRuleManagementPage = lazyImport(() => import('@/features/pricing-rule'), 'PricingRuleManagementPage');
 const StockListPage = lazyImport(() => import('@/features/stock'), 'StockListPage');
 const StockDetailPage = lazyImport(() => import('@/features/stock'), 'StockDetailPage');
@@ -208,22 +194,6 @@ export function createAppRouter() {
         { path: 'sales/erp-cleanup-logs', element: <ErpDocumentCleanupLogPage /> },
         { path: 'orders/waiting-approvals', element: <OrderWaitingApprovalsPage /> },
         { path: 'orders/:id', element: <OrderDetailPage /> },
-        { path: 'purchase', element: <PurchaseModulePage /> },
-        { path: 'purchase/requests', element: <PurchaseRequestListPage /> },
-        { path: 'purchase/requests/create', element: <PurchaseRequestCreatePage /> },
-        { path: 'purchase/requests/waiting-approvals', element: <PurchaseRequestListPage /> },
-        { path: 'purchase/rfqs', element: <PurchaseRfqListPage /> },
-        { path: 'purchase/rfqs/create', element: <PurchaseRfqCreatePage /> },
-        { path: 'purchase/rfqs/:id', element: <PurchaseRfqDetailPage /> },
-        { path: 'purchase/supplier-quotations', element: <SupplierQuotationListPage /> },
-        { path: 'purchase/supplier-quotations/create', element: <SupplierQuotationCreatePage /> },
-        { path: 'purchase/supplier-quotations/compare', element: <SupplierQuotationListPage /> },
-        { path: 'purchase/supplier-quotations/waiting-approvals', element: <SupplierQuotationWaitingApprovalsPage /> },
-        { path: 'purchase/supplier-quotations/:id', element: <SupplierQuotationDetailPage /> },
-        { path: 'purchase/orders', element: <PurchaseOrderListPage /> },
-        { path: 'purchase/orders/create', element: <PurchaseOrderCreatePage /> },
-        { path: 'purchase/orders/waiting-approvals', element: <PurchaseOrderWaitingApprovalsPage /> },
-        { path: 'purchase/orders/:id', element: <PurchaseOrderDetailPage /> },
         { path: 'pricing-rules', element: <PricingRuleManagementPage /> },
         { path: 'stocks', element: <StockListPage /> },
         { path: 'stocks/:id', element: <StockDetailPage /> },

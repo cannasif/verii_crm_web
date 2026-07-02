@@ -6,10 +6,6 @@ const SUPPORTED_PRICING_RULE_TYPES = [
   PricingRuleType.Demand,
   PricingRuleType.Quotation,
   PricingRuleType.Order,
-  PricingRuleType.PurchaseRequest,
-  PricingRuleType.PurchaseRfq,
-  PricingRuleType.SupplierQuotation,
-  PricingRuleType.PurchaseOrder,
 ] as const;
 
 export const pricingRuleHeaderSchema = z

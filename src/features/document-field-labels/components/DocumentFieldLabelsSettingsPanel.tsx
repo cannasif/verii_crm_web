@@ -14,10 +14,6 @@ const DOCUMENTS: Array<{ type: DocumentFieldLabelDocumentType; label: string }> 
   { type: 'Demand', label: 'Talep' },
   { type: 'Quotation', label: 'Teklif' },
   { type: 'Order', label: 'Sipariş' },
-  { type: 'PurchaseRequest', label: 'Satınalma Talebi' },
-  { type: 'PurchaseRfq', label: 'RFQ' },
-  { type: 'SupplierQuotation', label: 'Tedarikçi Teklifi' },
-  { type: 'PurchaseOrder', label: 'Satınalma Siparişi' },
 ];
 
 const SCOPES: Array<{ scope: DocumentFieldLabelScope; label: string; description: string }> = [

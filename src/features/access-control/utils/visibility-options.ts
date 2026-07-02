@@ -10,10 +10,6 @@ export const VISIBILITY_ENTITY_OPTIONS = [
   { value: 'Quotation', labelKey: 'visibilityPolicies.entity.quotation', fallback: 'Teklif' },
   { value: 'Demand', labelKey: 'visibilityPolicies.entity.demand', fallback: 'Talep' },
   { value: 'Order', labelKey: 'visibilityPolicies.entity.order', fallback: 'Sipariş' },
-  { value: 'PurchaseRequest', labelKey: 'visibilityPolicies.entity.purchaseRequest', fallback: 'Satınalma Talebi' },
-  { value: 'PurchaseRfq', labelKey: 'visibilityPolicies.entity.purchaseRfq', fallback: 'Satınalma RFQ' },
-  { value: 'SupplierQuotation', labelKey: 'visibilityPolicies.entity.supplierQuotation', fallback: 'Tedarikçi Teklifi' },
-  { value: 'PurchaseOrder', labelKey: 'visibilityPolicies.entity.purchaseOrder', fallback: 'Satınalma Siparişi' },
   { value: 'Salesman360', labelKey: 'visibilityPolicies.entity.salesman360', fallback: 'Satışçı KPI' },
 ] as const;
 

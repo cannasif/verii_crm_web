@@ -84,39 +84,6 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         ],
       },
       {
-        title: t('sidebar.purchaseManagement', { defaultValue: 'Satınalma Yönetimi' }),
-        icon: <ShoppingBag03Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
-        children: [
-          { title: t('sidebar.purchaseDashboard', { defaultValue: 'Satınalma Ana Sayfa' }), href: '/purchase' },
-          {
-            title: t('sidebar.purchaseRequests', { defaultValue: 'Satınalma Talepleri' }),
-            children: [
-              { title: t('sidebar.purchaseRequestCreate', { defaultValue: 'Yeni Satınalma Talebi' }), href: '/purchase/requests/create' },
-              { title: t('sidebar.purchaseRequestWaitingApprovals', { defaultValue: 'Onay Bekleyen Satınalma Talepleri' }), href: '/purchase/requests/waiting-approvals' },
-              { title: t('sidebar.purchaseRequestList', { defaultValue: 'Satınalma Talep Listesi' }), href: '/purchase/requests' },
-            ],
-          },
-          {
-            title: t('sidebar.supplierQuotations', { defaultValue: 'Tedarikçi Teklifleri' }),
-            children: [
-              { title: t('sidebar.purchaseRfqCreate', { defaultValue: 'Yeni Teklif İsteği (RFQ)' }), href: '/purchase/rfqs/create' },
-              { title: t('sidebar.purchaseRfqList', { defaultValue: 'Teklif İstekleri (RFQ)' }), href: '/purchase/rfqs' },
-              { title: t('sidebar.supplierQuotationCreate', { defaultValue: 'Yeni Tedarikçi Teklifi' }), href: '/purchase/supplier-quotations/create' },
-              { title: t('sidebar.supplierQuotationComparison', { defaultValue: 'Teklif Karşılaştırma' }), href: '/purchase/supplier-quotations/compare' },
-              { title: t('sidebar.supplierQuotationList', { defaultValue: 'Tedarikçi Teklif Listesi' }), href: '/purchase/supplier-quotations' },
-            ],
-          },
-          {
-            title: t('sidebar.purchaseOrders', { defaultValue: 'Satınalma Siparişleri' }),
-            children: [
-              { title: t('sidebar.purchaseOrderCreate', { defaultValue: 'Yeni Satınalma Siparişi' }), href: '/purchase/orders/create' },
-              { title: t('sidebar.purchaseOrderWaitingApprovals', { defaultValue: 'Onay Bekleyen Satınalma Siparişleri' }), href: '/purchase/orders/waiting-approvals' },
-              { title: t('sidebar.purchaseOrderList', { defaultValue: 'Satınalma Sipariş Listesi' }), href: '/purchase/orders' },
-            ],
-          },
-        ],
-      },
-      {
         title: t('sidebar.customers'),
         icon: <UserGroupIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [

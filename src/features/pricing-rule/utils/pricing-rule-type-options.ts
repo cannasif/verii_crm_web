@@ -1,10 +1,6 @@
 import {
-  ClipboardList,
-  FileQuestion,
   FileText,
   List,
-  Package,
-  ShoppingBag,
   ShoppingCart,
   TrendingUp,
 } from 'lucide-react';
@@ -15,10 +11,6 @@ export const PRICING_RULE_TYPE_OPTIONS = [
   { value: PricingRuleType.Demand, labelKey: 'pricingRule.ruleType.demand' },
   { value: PricingRuleType.Quotation, labelKey: 'pricingRule.ruleType.quotation' },
   { value: PricingRuleType.Order, labelKey: 'pricingRule.ruleType.order' },
-  { value: PricingRuleType.PurchaseRequest, labelKey: 'pricingRule.ruleType.purchaseRequest' },
-  { value: PricingRuleType.PurchaseRfq, labelKey: 'pricingRule.ruleType.purchaseRfq' },
-  { value: PricingRuleType.SupplierQuotation, labelKey: 'pricingRule.ruleType.supplierQuotation' },
-  { value: PricingRuleType.PurchaseOrder, labelKey: 'pricingRule.ruleType.purchaseOrder' },
 ] as const;
 
 export function isSupportedPricingRuleType(value: unknown): value is PricingRuleType {
@@ -38,10 +30,6 @@ export function normalizePricingRuleTypeValue(value: PricingRuleType | string | 
   if (normalized === 'demand') return PricingRuleType.Demand;
   if (normalized === 'quotation') return PricingRuleType.Quotation;
   if (normalized === 'order') return PricingRuleType.Order;
-  if (normalized === 'purchaserequest') return PricingRuleType.PurchaseRequest;
-  if (normalized === 'purchaserfq') return PricingRuleType.PurchaseRfq;
-  if (normalized === 'supplierquotation') return PricingRuleType.SupplierQuotation;
-  if (normalized === 'purchaseorder') return PricingRuleType.PurchaseOrder;
 
   return null;
 }
@@ -60,14 +48,6 @@ export function getPricingRuleTypeIcon(type: PricingRuleType | number | string |
       return FileText;
     case PricingRuleType.Order:
       return ShoppingCart;
-    case PricingRuleType.PurchaseRequest:
-      return ClipboardList;
-    case PricingRuleType.PurchaseRfq:
-      return FileQuestion;
-    case PricingRuleType.SupplierQuotation:
-      return ShoppingBag;
-    case PricingRuleType.PurchaseOrder:
-      return Package;
     default:
       return TrendingUp;
   }

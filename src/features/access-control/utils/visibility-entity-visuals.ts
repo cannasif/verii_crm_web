@@ -5,8 +5,6 @@ import {
   Eye,
   FileText,
   Package,
-  ShoppingBag,
-  ShoppingCart,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -15,10 +13,6 @@ export const VISIBILITY_ENTITY_ICON_MAP: Record<string, LucideIcon> = {
   Quotation: FileText,
   Demand: ClipboardList,
   Order: Package,
-  PurchaseRequest: ClipboardList,
-  PurchaseRfq: ShoppingBag,
-  SupplierQuotation: FileText,
-  PurchaseOrder: ShoppingCart,
   Salesman360: BarChart3,
 };
 
@@ -27,10 +21,6 @@ const VISIBILITY_ENTITY_ACCENT_MAP: Record<string, string> = {
   Quotation: 'pink',
   Demand: 'sky',
   Order: 'emerald',
-  PurchaseRequest: 'indigo',
-  PurchaseRfq: 'amber',
-  SupplierQuotation: 'rose',
-  PurchaseOrder: 'teal',
   Salesman360: 'orange',
 };
 

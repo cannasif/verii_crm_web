@@ -43,7 +43,7 @@ export interface DocumentApprovalFlowReport {
   steps: DocumentApprovalFlowStep[];
 }
 
-export type DocumentApprovalTranslationNamespace = 'quotation' | 'demand' | 'order' | 'purchase';
+export type DocumentApprovalTranslationNamespace = 'quotation' | 'demand' | 'order';
 
 interface DocumentApprovalFlowReportViewProps {
   translationNamespace: DocumentApprovalTranslationNamespace;

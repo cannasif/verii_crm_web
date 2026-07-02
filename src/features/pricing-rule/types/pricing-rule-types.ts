@@ -4,10 +4,6 @@ export const PricingRuleType = {
   Demand: 1,
   Quotation: 2,
   Order: 3,
-  PurchaseRequest: 10,
-  PurchaseRfq: 11,
-  SupplierQuotation: 12,
-  PurchaseOrder: 13,
 } as const;
 
 export type PricingRuleType = (typeof PricingRuleType)[keyof typeof PricingRuleType];
