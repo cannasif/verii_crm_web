@@ -464,7 +464,10 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
     };
   }, [generalDiscountAmount, generalDiscountRate, visibleLines]);
   const canStartApproval = isEditMode && !isRequest && canStartPurchaseApproval(kind, detailQuery.data?.status ?? detailQuery.data?.Status);
-  const canConvertToOrder = isEditMode && kind === 'supplierQuotation';
+  const canConvertToOrder =
+    isEditMode &&
+    kind === 'supplierQuotation' &&
+    getStatusNumber(detailQuery.data?.status ?? detailQuery.data?.Status) !== 6;
 
   const saveMutation = useMutation({
     mutationFn: async () => {
