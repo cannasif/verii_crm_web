@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
-  ArrowLeft,
   ArrowRightLeft,
   Building2,
   Calculator,
@@ -23,12 +22,15 @@ import {
   StickyNote,
   Trash2,
   Wallet,
+  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { api } from '@/lib/axios';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { DescriptionCell } from '@/components/shared';
+import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import {
@@ -52,6 +54,18 @@ import {
   getDefaultSpecialCodeForOfferType,
 } from '@/lib/sales-document-special-code-defaults';
 import {
+  DOCUMENT_DETAIL_BUTTON_BASE,
+  DOCUMENT_DETAIL_BUTTON_SAVE,
+} from '@/lib/document-detail-button-styles';
+import { cn } from '@/lib/utils';
+import {
+  DOCUMENT_LINE_TABLE_CLASS,
+  DOCUMENT_LINE_TABLE_SCROLL_CONTAINER_CLASS,
+  DOCUMENT_LINE_TABLE_STICKY_HEAD_CLASS,
+  getDocumentLineTableBodyCellClass,
+  getDocumentLineTableStickyStockCellClass,
+} from '@/lib/document-line-table-layout';
+import {
   createEmptyExchangeRate,
   createEmptyLine,
   formatMoney,
@@ -69,6 +83,7 @@ import {
   INPUT_CLASSNAME,
   PurchaseSupplierCombobox,
   SECTION_CARD_CLASSNAME,
+  SECTION_FORM_SURFACE_CLASSNAME,
   SectionTitle,
 } from '../components/PurchaseCreateUi';
 
@@ -83,6 +98,20 @@ type PurchaseDocumentDetail = Record<string, unknown> & {
   exchangeRates?: Array<Record<string, unknown>>;
   lines?: Array<Record<string, unknown>>;
   purchaseRequestIds?: number[];
+};
+
+const PURCHASE_LINE_TABLE_STYLES = {
+  tableHeadRow: 'bg-zinc-50 text-zinc-500 dark:bg-zinc-900/70 dark:text-zinc-400',
+  tableHead:
+    'h-12 px-4 text-xs font-bold uppercase tracking-wide border-b border-zinc-200 dark:border-white/10',
+  tableHeadRight:
+    'h-12 px-4 text-xs font-bold uppercase tracking-wide text-right border-b border-zinc-200 dark:border-white/10',
+  tableCell:
+    'p-2 align-middle whitespace-nowrap border-b border-zinc-100 dark:border-white/5 text-zinc-700 dark:text-zinc-200',
+  tableCellRight:
+    'p-2 align-middle whitespace-nowrap text-right border-b border-zinc-100 dark:border-white/5 text-zinc-700 dark:text-zinc-200',
+  actionButton:
+    'h-9 w-9 rounded-lg border border-zinc-200 bg-white text-zinc-500 shadow-sm transition hover:border-pink-400 hover:text-pink-600 dark:border-white/10 dark:bg-zinc-900 dark:text-zinc-300',
 };
 
 function parseIdList(value: string, label: string): number[] {
@@ -468,6 +497,21 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
     isEditMode &&
     kind === 'supplierQuotation' &&
     getStatusNumber(detailQuery.data?.status ?? detailQuery.data?.Status) !== 6;
+  const helpSteps = isRequest
+    ? [
+        'Satınalma talebi/RFQ aşamasında tedarikçi seçimi zorunlu değildir; ihtiyaç kalemleri ve açıklamalar girilir.',
+        'Tedarikçiler teklif aşamasında seçilir; bir talep birden fazla tedarikçiye teklif isteği olarak bağlanabilir.',
+        'Kalemleri RII_STOK üzerinden seçerseniz stok kodu, ad, birim ve KDV bilgileri otomatik dolar.',
+        'Kaydet sonrası talep, tedarikçi teklifine veya satınalma sipariş sürecine kaynak olarak kullanılabilir.',
+      ]
+    : [
+        'Tedarikçi yalnızca ERP entegre ve cari kodu dolu müşteri kayıtlarından seçilir.',
+        'Başlık bilgileri satış teklif/sipariş ekranındaki seri, özel kod, proje, kur ve ödeme mantığıyla aynı şekilde izlenir.',
+        'Satırlarda miktar, fiyat, KDV ve üç kademeli iskonto satış ekranındaki efektif iskonto kuralıyla kontrol edilir.',
+        kind === 'supplierQuotation'
+          ? 'Kayıt tamamlandıktan sonra tedarikçi teklifi onaya gönderilebilir veya satınalma siparişine çevrilebilir.'
+          : 'Satınalma siparişi kayıt sonrası onaya gönderilebilir ve bağlı tedarikçi teklif/talep referanslarıyla izlenir.',
+      ];
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -705,55 +749,17 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
   };
 
   return (
-    <div className="min-h-screen bg-[var(--crm-page-bg)] px-4 py-6 text-[var(--crm-text-primary)] sm:px-6 lg:px-8">
-      <div className="mx-auto w-full max-w-[1600px] space-y-6">
-        <header className="flex flex-wrap items-center justify-between gap-4 pt-2">
-          <div className="flex min-w-0 items-center gap-3">
-            <Button asChild variant="outline" size="icon" className="h-12 w-12 rounded-[8px] border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-[#130d21]">
-              <Link to={config.listPath} aria-label="Listeye dön">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-            </Button>
-            <div className="min-w-0 space-y-1">
-              <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white">{config.title}</h1>
-              <p className="flex items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-400">
-                <span className="h-2 w-2 rounded-full bg-[var(--crm-brand-primary)] shadow-[0_0_8px_color-mix(in_srgb,var(--crm-brand-primary)_65%,transparent)]" />
-                {config.description}
-              </p>
-            </div>
-          </div>
-          <Button
-            type="button"
-            disabled={saveMutation.isPending || detailQuery.isLoading}
-            onClick={() => saveMutation.mutate()}
-            className="h-12 min-w-[150px] rounded-[8px] bg-linear-to-r from-[var(--crm-brand-primary)] to-[var(--crm-brand-secondary)] font-black text-white shadow-lg"
-          >
-            <Save className="mr-2 h-4 w-4" />
-            {saveMutation.isPending ? 'Kaydediliyor' : isEditMode ? 'Güncelle' : 'Kaydet'}
-          </Button>
-          {canConvertToOrder ? (
-            <Button
-              type="button"
-              disabled={convertToOrderMutation.isPending || saveMutation.isPending || detailQuery.isFetching}
-              onClick={() => convertToOrderMutation.mutate()}
-              className="h-12 min-w-[190px] rounded-[8px] bg-emerald-600 font-black text-white shadow-lg hover:bg-emerald-700"
-            >
-              <ShoppingCart className="mr-2 h-4 w-4" />
-              {convertToOrderMutation.isPending ? 'Çevriliyor' : 'Siparişe Çevir'}
-            </Button>
-          ) : null}
-          {canStartApproval ? (
-            <Button
-              type="button"
-              disabled={startApprovalMutation.isPending || saveMutation.isPending || detailQuery.isFetching}
-              onClick={() => startApprovalMutation.mutate()}
-              className="h-12 min-w-[160px] rounded-[8px] bg-blue-600 font-black text-white shadow-lg hover:bg-blue-700"
-            >
-              <Send className="mr-2 h-4 w-4" />
-              {startApprovalMutation.isPending ? 'Gönderiliyor' : 'Onaya Gönder'}
-            </Button>
-          ) : null}
-        </header>
+    <div className="w-full max-w-[1600px] mx-auto relative pb-10 px-4 md:px-6 text-[var(--crm-text-primary)]">
+      <div className="space-y-6">
+        <DocumentCreatePageHeader
+          title={config.title}
+          description={config.description}
+          onBack={() => navigate(config.listPath)}
+          backLabel="Listeye dön"
+          helpTitle={`${config.title} akışı`}
+          helpTriggerLabel="Satınalma belge yardımı"
+          helpSteps={helpSteps}
+        />
 
         {detailQuery.isError ? (
           <div className="rounded-[8px] border border-red-300 bg-red-50 px-4 py-3 text-sm font-bold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
@@ -767,11 +773,11 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
           </div>
         ) : null}
 
-        <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_360px]">
-          <main className="space-y-6">
+        <div className="mt-6 grid grid-cols-1 items-start gap-8 xl:grid-cols-[1fr_340px] xl:gap-10">
+          <main className="flex min-w-0 flex-col gap-6">
             <section className={SECTION_CARD_CLASSNAME}>
               <SectionTitle index={1} icon={FileText} title="Başlık Bilgileri" />
-              <div className="space-y-5 p-5">
+              <div className={cn('space-y-5 border-t border-slate-300/75 bg-white/88 p-5 dark:border-white/8 dark:bg-[#130d21]/52', SECTION_FORM_SURFACE_CLASSNAME)}>
                 <div className="rounded-2xl border border-slate-300 bg-white p-4 shadow-sm dark:border-white/12 dark:bg-[#100b1a]/80">
                   <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
                     <label className="space-y-2">
@@ -978,7 +984,7 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
             {!isRequest ? (
               <section className={SECTION_CARD_CLASSNAME}>
                 <SectionTitle index={2} icon={CreditCard} title="Finans, Kur ve İskonto" />
-                <div className="grid gap-5 p-5 lg:grid-cols-[1fr_1.15fr]">
+                <div className={cn('grid gap-5 border-t border-slate-300/75 bg-white/88 p-5 dark:border-white/8 dark:bg-[#130d21]/52 lg:grid-cols-[1fr_1.15fr]', SECTION_FORM_SURFACE_CLASSNAME)}>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <label className="space-y-2">
                       <FieldLabel required>
@@ -1027,17 +1033,6 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                         placeholder="Belge seri seçin"
                         searchPlaceholder="Seri prefix ile ara..."
                       />
-                    </label>
-                    <label className="space-y-2">
-                      <FieldLabel>
-                        <Percent className="h-4 w-4" />
-                        Genel İskonto %
-                      </FieldLabel>
-                      <Input className={INPUT_CLASSNAME} value={generalDiscountRate} onChange={(event) => setGeneralDiscountRate(event.target.value)} inputMode="decimal" />
-                    </label>
-                    <label className="space-y-2">
-                      <FieldLabel>Genel İskonto Tutarı</FieldLabel>
-                      <Input className={INPUT_CLASSNAME} value={generalDiscountAmount} onChange={(event) => setGeneralDiscountAmount(event.target.value)} inputMode="decimal" />
                     </label>
                   </div>
 
@@ -1088,23 +1083,21 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                     Katalogdan Seç
                   </Button>
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="min-w-[1280px] w-full border-separate border-spacing-0 text-sm">
+                <div className={DOCUMENT_LINE_TABLE_SCROLL_CONTAINER_CLASS}>
+                  <table className={cn(DOCUMENT_LINE_TABLE_CLASS, isRequest ? 'min-w-[1020px]' : 'min-w-[1480px]')}>
                     <thead>
-                      <tr className="bg-slate-100 text-left text-[11px] font-black uppercase tracking-wide text-slate-600 dark:bg-white/[0.06] dark:text-slate-300">
-                        <th className="w-12 px-4 py-3">#</th>
-                        <th className="min-w-[230px] px-3 py-3">Stok Kodu</th>
-                        <th className="min-w-[280px] px-3 py-3">Stok / Hizmet Adı</th>
-                        <th className="w-28 px-3 py-3">Miktar</th>
-                        <th className="w-24 px-3 py-3">Birim</th>
-                        {!isRequest ? <th className="w-32 px-3 py-3">Birim Fiyat</th> : null}
-                        {!isRequest ? <th className="w-28 px-3 py-3">İsk. 1</th> : null}
-                        {!isRequest ? <th className="w-28 px-3 py-3">İsk. 2</th> : null}
-                        {!isRequest ? <th className="w-28 px-3 py-3">İsk. 3</th> : null}
-                        {!isRequest ? <th className="w-24 px-3 py-3">KDV</th> : null}
-                        <th className="w-40 px-3 py-3">Teslim Tarihi</th>
-                        {!isRequest ? <th className="w-40 px-3 py-3">Satır Toplam</th> : null}
-                        <th className="w-14 px-3 py-3" />
+                      <tr className={PURCHASE_LINE_TABLE_STYLES.tableHeadRow}>
+                        <th className={DOCUMENT_LINE_TABLE_STICKY_HEAD_CLASS}>Stok</th>
+                        <th className={PURCHASE_LINE_TABLE_STYLES.tableHeadRight}>Miktar</th>
+                        <th className={PURCHASE_LINE_TABLE_STYLES.tableHead}>Birim</th>
+                        {!isRequest ? <th className={PURCHASE_LINE_TABLE_STYLES.tableHeadRight}>Birim Fiyat</th> : null}
+                        {!isRequest ? <th className={PURCHASE_LINE_TABLE_STYLES.tableHeadRight}>İskonto 1</th> : null}
+                        {!isRequest ? <th className={PURCHASE_LINE_TABLE_STYLES.tableHeadRight}>İskonto 2</th> : null}
+                        {!isRequest ? <th className={PURCHASE_LINE_TABLE_STYLES.tableHeadRight}>İskonto 3</th> : null}
+                        {!isRequest ? <th className={PURCHASE_LINE_TABLE_STYLES.tableHeadRight}>KDV</th> : null}
+                        <th className={PURCHASE_LINE_TABLE_STYLES.tableHead}>Teslim Tarihi</th>
+                        {!isRequest ? <th className={PURCHASE_LINE_TABLE_STYLES.tableHeadRight}>Tutarlar</th> : null}
+                        <th className={PURCHASE_LINE_TABLE_STYLES.tableHeadRight}>İşlem</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1129,37 +1122,57 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                         });
 
                         return (
-                          <tr key={line.clientKey} className="align-top odd:bg-white even:bg-slate-50/70 dark:odd:bg-[#100b1a] dark:even:bg-white/[0.03]">
-                            <td className="border-b border-slate-200 px-4 py-3 font-black text-slate-500 dark:border-white/10">{index + 1}</td>
-                            <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
-                              <div className="flex gap-2">
-                                <Input className={INPUT_CLASSNAME} value={line.productCode} onChange={(event) => updateLine(index, { productCode: event.target.value })} placeholder="Stok kodu" />
-                                <Button type="button" variant="outline" size="icon" className="h-12 w-12 shrink-0 rounded-[8px]" onClick={() => openProductDialogForLine(index)}>
+                          <tr key={line.clientKey} className="group align-top transition-colors">
+                            <td className={getDocumentLineTableStickyStockCellClass(PURCHASE_LINE_TABLE_STYLES.tableCell, invalidDiscount)}>
+                              <div className="flex min-w-0 items-start gap-3">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-zinc-100 text-zinc-500 ring-1 ring-zinc-200 dark:bg-white/5 dark:text-zinc-300 dark:ring-white/10">
                                   <Package className="h-4 w-4" />
-                                </Button>
+                                </div>
+                                <div className="min-w-0 flex-1 space-y-2">
+                                  <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                      <div className="text-[11px] font-black uppercase tracking-widest text-pink-600 dark:text-pink-300">
+                                        {line.productCode || `Satır ${index + 1}`}
+                                      </div>
+                                      <DescriptionCell
+                                        content={line.productName || 'Ürün/hizmet adı girin'}
+                                        hideIcon
+                                        className="max-w-[250px]"
+                                        textClassName="font-black text-zinc-900 dark:text-zinc-100"
+                                      />
+                                    </div>
+                                    <span className="shrink-0 rounded-md bg-zinc-100 px-2 py-1 text-[10px] font-black text-zinc-500 dark:bg-white/10 dark:text-zinc-300">
+                                      {line.unit || '-'}
+                                    </span>
+                                  </div>
+                                  <div className="grid grid-cols-[1fr_auto] gap-2">
+                                    <Input className={INPUT_CLASSNAME} value={line.productCode} onChange={(event) => updateLine(index, { productCode: event.target.value })} placeholder="Stok kodu" />
+                                    <Button type="button" variant="outline" size="icon" className={PURCHASE_LINE_TABLE_STYLES.actionButton} onClick={() => openProductDialogForLine(index)}>
+                                      <Package className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                  <Input className={INPUT_CLASSNAME} value={line.productName} onChange={(event) => updateLine(index, { productName: event.target.value })} placeholder="Ürün/hizmet adı" />
+                                </div>
                               </div>
                             </td>
-                            <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
-                              <Input className={INPUT_CLASSNAME} value={line.productName} onChange={(event) => updateLine(index, { productName: event.target.value })} placeholder="Ürün/hizmet adı" />
-                            </td>
-                            <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
+                            <td className={getDocumentLineTableBodyCellClass(PURCHASE_LINE_TABLE_STYLES.tableCellRight, invalidDiscount)}>
                               <Input className={INPUT_CLASSNAME} value={line.quantity} onChange={(event) => updateLine(index, { quantity: event.target.value })} inputMode="decimal" />
                             </td>
-                            <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
+                            <td className={getDocumentLineTableBodyCellClass(PURCHASE_LINE_TABLE_STYLES.tableCell, invalidDiscount)}>
                               <Input className={INPUT_CLASSNAME} value={line.unit} onChange={(event) => updateLine(index, { unit: event.target.value })} placeholder="AD" />
                             </td>
                             {!isRequest ? (
                               <>
-                                <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
+                                <td className={getDocumentLineTableBodyCellClass(PURCHASE_LINE_TABLE_STYLES.tableCellRight, invalidDiscount)}>
                                   <Input className={INPUT_CLASSNAME} value={line.unitPrice} onChange={(event) => updateLine(index, { unitPrice: event.target.value })} inputMode="decimal" />
                                 </td>
-                                <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
+                                <td className={getDocumentLineTableBodyCellClass(PURCHASE_LINE_TABLE_STYLES.tableCellRight, invalidDiscount)}>
                                   <Input className={INPUT_CLASSNAME} value={line.discount1} onChange={(event) => updateLine(index, { discount1: event.target.value })} inputMode="decimal" />
                                 </td>
-                                <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
+                                <td className={getDocumentLineTableBodyCellClass(PURCHASE_LINE_TABLE_STYLES.tableCellRight, invalidDiscount)}>
                                   <Input className={INPUT_CLASSNAME} value={line.discount2} onChange={(event) => updateLine(index, { discount2: event.target.value })} inputMode="decimal" />
                                 </td>
-                                <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
+                                <td className={getDocumentLineTableBodyCellClass(PURCHASE_LINE_TABLE_STYLES.tableCellRight, invalidDiscount)}>
                                   <Input className={INPUT_CLASSNAME} value={line.discount3} onChange={(event) => updateLine(index, { discount3: event.target.value })} inputMode="decimal" />
                                   {invalidDiscount ? (
                                     <p className="mt-1 text-[11px] font-bold text-red-500">Efektif iskonto %100 olamaz.</p>
@@ -1167,21 +1180,28 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                                     <p className="mt-1 text-[11px] font-semibold text-slate-400">Efektif %{effectiveDiscount.toFixed(2)}</p>
                                   )}
                                 </td>
-                                <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
+                                <td className={getDocumentLineTableBodyCellClass(PURCHASE_LINE_TABLE_STYLES.tableCellRight, invalidDiscount)}>
                                   <Input className={INPUT_CLASSNAME} value={line.vatRate} onChange={(event) => updateLine(index, { vatRate: event.target.value })} inputMode="decimal" />
                                 </td>
                               </>
                             ) : null}
-                            <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
+                            <td className={getDocumentLineTableBodyCellClass(PURCHASE_LINE_TABLE_STYLES.tableCell, invalidDiscount)}>
                               <Input className={INPUT_CLASSNAME} type="date" value={line.deliveryDate} onChange={(event) => updateLine(index, { deliveryDate: event.target.value })} />
                             </td>
                             {!isRequest ? (
-                              <td className="border-b border-slate-200 px-3 py-3 font-black text-slate-900 dark:border-white/10 dark:text-white">
-                                {formatMoney(lineAmounts.lineGrandTotal, currencyCode)}
+                              <td className={getDocumentLineTableBodyCellClass(PURCHASE_LINE_TABLE_STYLES.tableCellRight, invalidDiscount)}>
+                                <div className="space-y-1 text-right">
+                                  <div className="text-[11px] font-bold uppercase tracking-wide text-zinc-400">KDV Hariç</div>
+                                  <div className="font-black text-zinc-900 dark:text-white">{formatMoney(lineAmounts.lineTotal, currencyCode)}</div>
+                                  <div className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400">KDV: {formatMoney(lineAmounts.vatAmount, currencyCode)}</div>
+                                  <div className="text-sm font-black text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-purple-600">
+                                    {formatMoney(lineAmounts.lineGrandTotal, currencyCode)}
+                                  </div>
+                                </div>
                               </td>
                             ) : null}
-                            <td className="border-b border-slate-200 px-3 py-3 dark:border-white/10">
-                              <Button type="button" variant="outline" size="icon" onClick={() => setLines((current) => current.filter((_, lineIndex) => lineIndex !== index))}>
+                            <td className={getDocumentLineTableBodyCellClass(PURCHASE_LINE_TABLE_STYLES.tableCellRight, invalidDiscount)}>
+                              <Button type="button" variant="outline" size="icon" className={PURCHASE_LINE_TABLE_STYLES.actionButton} onClick={() => setLines((current) => current.filter((_, lineIndex) => lineIndex !== index))}>
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </td>
@@ -1302,7 +1322,7 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
             {!isRequest ? (
               <section className={SECTION_CARD_CLASSNAME}>
                 <SectionTitle index={4} icon={StickyNote} title="Belge Notları" />
-                <div className="grid gap-3 p-5 md:grid-cols-3">
+                <div className={cn('grid gap-3 border-t border-slate-300/75 bg-white/88 p-5 dark:border-white/8 dark:bg-[#130d21]/52 md:grid-cols-3', SECTION_FORM_SURFACE_CLASSNAME)}>
                   {notes.map((note, index) => (
                     <label key={index} className="space-y-2">
                       <FieldLabel help={headerFieldLabels[`Note${index + 1}`]?.helpText ?? 'Belge geneli not alanı.'}>
@@ -1324,7 +1344,7 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
             {!isRequest && isEditMode ? (
               <section className={SECTION_CARD_CLASSNAME}>
                 <SectionTitle index={5} icon={ShieldCheck} title="Onay Akışı" />
-                <div className="p-5">
+                <div className="border-t border-slate-300/75 bg-white/88 p-5 dark:border-white/8 dark:bg-[#130d21]/52">
                   <DocumentApprovalFlowReportView
                     translationNamespace="purchase"
                     report={approvalReportQuery.data}
@@ -1337,18 +1357,55 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
             ) : null}
           </main>
 
-          <aside className="xl:sticky xl:top-6">
+          <aside className="w-full xl:sticky xl:top-6">
             <section className={SECTION_CARD_CLASSNAME}>
               <SectionTitle index={isRequest ? 3 : isEditMode ? 6 : 5} icon={Calculator} title="Özet" />
-              <div className="space-y-4 p-5">
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.04]">
-                  <div className="flex items-center justify-between text-sm font-bold text-slate-500 dark:text-slate-400">
-                    <span>Satır Sayısı</span>
-                    <span className="text-slate-950 dark:text-white">{visibleLines.length}</span>
+              <div className="border-t border-slate-300/75 bg-white/95 p-5 dark:border-white/8 dark:bg-zinc-900/50 sm:p-6">
+                <div className="mb-6 flex items-center gap-2.5 border-b border-zinc-100 pb-4 text-zinc-900 dark:border-white/5 dark:text-white">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-zinc-100 shadow-sm dark:bg-zinc-800">
+                    <Calculator className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="mb-1 text-sm font-bold leading-none tracking-tight">Özet</h3>
+                    <span className="text-[10px] font-medium uppercase tracking-tight text-zinc-400">Genel toplama analizi</span>
                   </div>
                 </div>
                 {!isRequest ? (
                   <>
+                    <div className="mb-4 grid grid-cols-2 items-end gap-4">
+                      <label className="flex min-w-0 flex-col gap-1.5">
+                        <FieldLabel>
+                          <Percent className="h-3.5 w-3.5" />
+                          Genel İskonto (%)
+                        </FieldLabel>
+                        <div className="relative">
+                          <Input
+                            className={cn(INPUT_CLASSNAME, 'h-10 pr-8 text-right font-mono tabular-nums')}
+                            value={generalDiscountRate}
+                            onChange={(event) => setGeneralDiscountRate(event.target.value)}
+                            inputMode="decimal"
+                            placeholder="0"
+                          />
+                          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-400">%</span>
+                        </div>
+                      </label>
+                      <label className="flex min-w-0 flex-col gap-1.5">
+                        <FieldLabel>Genel İskonto Tutarı</FieldLabel>
+                        <Input
+                          className={cn(INPUT_CLASSNAME, 'h-10 text-right font-mono tabular-nums')}
+                          value={generalDiscountAmount}
+                          onChange={(event) => setGeneralDiscountAmount(event.target.value)}
+                          inputMode="decimal"
+                          placeholder="0,00"
+                        />
+                      </label>
+                    </div>
+                    <div className="mb-6 flex gap-3 rounded-xl border border-pink-100 bg-pink-50/50 p-3 shadow-sm dark:border-pink-900/20 dark:bg-pink-900/10">
+                      <Percent className="mt-0.5 h-4 w-4 shrink-0 text-pink-600 dark:text-pink-400" />
+                      <p className="text-[10px] font-medium leading-tight text-pink-800 dark:text-pink-300">
+                        Bu alan tüm satınalma belge toplamına uygulanacak genel iskontoyu ifade eder.
+                      </p>
+                    </div>
                     <div className="space-y-3 text-sm">
                       <div className="flex justify-between gap-4">
                         <span className="font-bold text-slate-500 dark:text-slate-400">Ara Toplam</span>
@@ -1367,10 +1424,15 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                         <strong className="text-slate-950 dark:text-white">{formatMoney(totals.vatTotal, currencyCode)}</strong>
                       </div>
                     </div>
-                    <div className="rounded-2xl border border-[var(--crm-brand-primary)]/30 bg-[var(--crm-brand-primary)]/10 p-4">
-                      <div className="text-[11px] font-black uppercase tracking-wide text-[var(--crm-brand-primary)]">Genel Toplam</div>
-                      <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
+                    <div className="mt-4 border-t-2 border-zinc-200 pt-5 dark:border-zinc-800">
+                      <div className="flex items-center justify-between gap-3">
+                        <span className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-zinc-900 dark:text-white">
+                          <Wallet className="h-4 w-4 text-pink-500" />
+                          Genel Toplam
+                        </span>
+                        <span className="shrink-0 whitespace-nowrap bg-linear-to-r from-pink-600 to-purple-600 bg-clip-text text-right font-mono text-lg font-black tabular-nums text-transparent">
                         {formatMoney(totals.grandTotal, currencyCode)}
+                        </span>
                       </div>
                     </div>
                   </>
@@ -1379,29 +1441,55 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                     Satınalma talebi tedarikçisiz ihtiyaç kaydıdır. RFQ ya da tedarikçi teklifine dönüştürülürken tedarikçi ve fiyat bilgisi detaylandırılır.
                   </div>
                 )}
-                <Button
-                  type="button"
-                  disabled={saveMutation.isPending || detailQuery.isLoading}
-                  onClick={() => saveMutation.mutate()}
-                  className="h-12 w-full rounded-[8px] bg-linear-to-r from-[var(--crm-brand-primary)] to-[var(--crm-brand-secondary)] font-black text-white shadow-lg"
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  {saveMutation.isPending ? 'Kaydediliyor' : isEditMode ? 'Güncelle' : 'Kaydet'}
-                </Button>
-                {canStartApproval ? (
-                  <Button
-                    type="button"
-                    disabled={startApprovalMutation.isPending || saveMutation.isPending || detailQuery.isFetching}
-                    onClick={() => startApprovalMutation.mutate()}
-                    className="h-12 w-full rounded-[8px] bg-blue-600 font-black text-white shadow-lg hover:bg-blue-700"
-                  >
-                    <Send className="mr-2 h-4 w-4" />
-                    {startApprovalMutation.isPending ? 'Gönderiliyor' : 'Onaya Gönder'}
-                  </Button>
-                ) : null}
               </div>
             </section>
           </aside>
+        </div>
+
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => navigate(config.listPath)}
+            className="group w-full sm:w-auto"
+          >
+            <X className="mr-2 h-4 w-4" />
+            İptal
+          </Button>
+
+          {canConvertToOrder ? (
+            <Button
+              type="button"
+              disabled={convertToOrderMutation.isPending || saveMutation.isPending || detailQuery.isFetching}
+              onClick={() => convertToOrderMutation.mutate()}
+              className="group w-full rounded-[8px] bg-emerald-600 font-black text-white shadow-lg hover:bg-emerald-700 sm:w-auto sm:min-w-[180px]"
+            >
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              {convertToOrderMutation.isPending ? 'Çevriliyor' : 'Siparişe Çevir'}
+            </Button>
+          ) : null}
+
+          {canStartApproval ? (
+            <Button
+              type="button"
+              disabled={startApprovalMutation.isPending || saveMutation.isPending || detailQuery.isFetching}
+              onClick={() => startApprovalMutation.mutate()}
+              className="group w-full rounded-[8px] bg-blue-600 font-black text-white shadow-lg hover:bg-blue-700 sm:w-auto sm:min-w-[160px]"
+            >
+              <Send className="mr-2 h-4 w-4" />
+              {startApprovalMutation.isPending ? 'Gönderiliyor' : 'Onaya Gönder'}
+            </Button>
+          ) : null}
+
+          <Button
+            type="button"
+            disabled={saveMutation.isPending || detailQuery.isLoading}
+            onClick={() => saveMutation.mutate()}
+            className={`group w-full sm:w-auto sm:min-w-[140px] ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_SAVE}`}
+          >
+            <Save className="mr-2 h-4 w-4" />
+            {saveMutation.isPending ? 'Kaydediliyor' : isEditMode ? 'Güncelle' : 'Kaydet'}
+          </Button>
         </div>
       </div>
       <ProductSelectDialog
