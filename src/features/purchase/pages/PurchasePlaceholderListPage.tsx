@@ -1,14 +1,24 @@
 import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
-import { File01Icon } from 'hugeicons-react';
-import { Plus, RefreshCw, Search } from 'lucide-react';
+import { Eye, Plus } from 'lucide-react';
 import { api } from '@/lib/axios';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
-import type { ApiResponse, PagedResponse } from '@/types/api';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, ManagementListPageHeader, type DataTableGridColumn } from '@/components/shared';
+import type { FilterRow } from '@/lib/advanced-filter-types';
+import { rowsToBackendFilters } from '@/lib/advanced-filter-types';
+import type { FilterColumnConfig } from '@/lib/advanced-filter-types';
+import {
+  MANAGEMENT_LIST_CARD_CLASSNAME,
+  MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
+  MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
+  MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
+  MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
+  ADD_BUTTON_CLASS,
+} from '@/lib/management-list-layout';
+import type { ApiResponse, PagedFilter, PagedResponse } from '@/types/api';
 
 type PurchaseEndpoint = 'PurchaseRequest' | 'PurchaseRfq' | 'SupplierQuotation' | 'PurchaseOrder';
 type ColumnKey =
@@ -41,6 +51,8 @@ interface PurchasePlaceholderListPageProps {
   description: string;
   endpoint: PurchaseEndpoint;
   documentNoLabel: string;
+  createPath: string;
+  createLabel: string;
 }
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
@@ -58,7 +70,7 @@ const columns: DataTableGridColumn<ColumnKey>[] = [
   { key: 'description', label: 'Açıklama', sortable: true },
 ];
 
-const visibleColumns: ColumnKey[] = [
+const DEFAULT_VISIBLE_COLUMNS: ColumnKey[] = [
   'id',
   'documentNo',
   'status',
@@ -77,7 +89,8 @@ async function fetchPurchaseRows(
   pageSize: number,
   search: string,
   sortBy: string,
-  sortDirection: 'asc' | 'desc'
+  sortDirection: 'asc' | 'desc',
+  filters: PagedFilter[]
 ): Promise<PagedResponse<PurchaseListRow>> {
   const response = await api.post<ApiResponse<PagedResponse<Record<string, unknown>> & { items?: Record<string, unknown>[] }>>(
     `/api/${endpoint}/query`,
@@ -88,7 +101,7 @@ async function fetchPurchaseRows(
       sortBy,
       sortDirection,
       filterLogic: 'and',
-      filters: [],
+      filters,
     }
   );
 
@@ -164,17 +177,24 @@ function formatMoney(value?: number | null): string {
   return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 }
 
-export function PurchasePlaceholderListPage({ title, description, endpoint, documentNoLabel }: PurchasePlaceholderListPageProps) {
+export function PurchasePlaceholderListPage({ title, description, endpoint, documentNoLabel, createPath, createLabel }: PurchasePlaceholderListPageProps) {
+  const pageKey = `purchase-${endpoint.toLowerCase()}-list`;
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState<ColumnKey>('id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [visibleColumns, setVisibleColumns] = useState<ColumnKey[]>(DEFAULT_VISIBLE_COLUMNS);
+  const [columnOrder, setColumnOrder] = useState<ColumnKey[]>(DEFAULT_VISIBLE_COLUMNS);
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
+  const [searchResetKey, setSearchResetKey] = useState(0);
   const debouncedSearch = useDebouncedValue(search, 450);
+  const backendFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
 
   const query = useQuery({
-    queryKey: ['purchase', endpoint, pageNumber, pageSize, debouncedSearch, sortBy, sortDirection],
-    queryFn: () => fetchPurchaseRows(endpoint, pageNumber, pageSize, debouncedSearch, resolveApiSort(endpoint, sortBy), sortDirection),
+    queryKey: ['purchase', endpoint, pageNumber, pageSize, debouncedSearch, sortBy, sortDirection, backendFilters],
+    queryFn: () => fetchPurchaseRows(endpoint, pageNumber, pageSize, debouncedSearch, resolveApiSort(endpoint, sortBy), sortDirection, backendFilters),
     staleTime: 30_000,
   });
 
@@ -185,6 +205,41 @@ export function PurchasePlaceholderListPage({ title, description, endpoint, docu
   const resolvedColumns = useMemo(
     () => columns.map((column) => (column.key === 'documentNo' ? { ...column, label: documentNoLabel } : column)),
     [documentNoLabel]
+  );
+  const orderedVisibleColumns = useMemo(
+    () => columnOrder.filter((key) => visibleColumns.includes(key)),
+    [columnOrder, visibleColumns]
+  );
+  const filterColumns = useMemo<FilterColumnConfig[]>(
+    () => [
+      { value: resolveApiSort(endpoint, 'documentNo'), type: 'string', labelKey: documentNoLabel },
+      { value: 'Status', type: 'string', labelKey: 'Durum' },
+      { value: 'SupplierNameSnapshot', type: 'string', labelKey: 'Tedarikçi' },
+      { value: 'BuyerUserId', type: 'number', labelKey: 'Satınalmacı' },
+      { value: 'CurrencyCode', type: 'string', labelKey: 'Para Birimi' },
+      { value: 'GrandTotal', type: 'number', labelKey: 'Toplam' },
+      { value: resolveApiSort(endpoint, 'documentDate'), type: 'date', labelKey: 'Tarih' },
+      { value: 'Description', type: 'string', labelKey: 'Açıklama' },
+    ],
+    [documentNoLabel, endpoint]
+  );
+  const exportRows = useMemo(
+    () =>
+      rows.map((row) =>
+        resolvedColumns.reduce<Record<string, unknown>>((acc, column) => {
+          acc[column.label] = column.key === 'grandTotal'
+            ? formatMoney(row.grandTotal)
+            : column.key === 'documentDate'
+              ? formatDate(row.documentDate)
+              : row[column.key] ?? '-';
+          return acc;
+        }, {})
+      ),
+    [resolvedColumns, rows]
+  );
+  const exportColumns = useMemo(
+    () => resolvedColumns.map((column) => ({ key: column.label, label: column.label })),
+    [resolvedColumns]
   );
 
   const handleSort = (key: ColumnKey): void => {
@@ -198,85 +253,126 @@ export function PurchasePlaceholderListPage({ title, description, endpoint, docu
   };
 
   return (
-    <div className="min-h-screen bg-[var(--crm-page-bg)] px-6 py-8 text-[var(--crm-text-primary)]">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-[8px] border border-[var(--crm-border)] bg-[var(--crm-card-bg)] shadow-sm">
-              <File01Icon size={24} className="text-[var(--crm-brand-primary)]" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold">{title}</h1>
-              <p className="mt-1 text-sm text-[var(--crm-text-muted)]">{description}</p>
-            </div>
-          </div>
-          {endpoint === 'PurchaseRfq' && (
-            <Button asChild>
-              <Link to="/purchase/rfqs/create">
+    <div className="min-h-screen bg-[var(--crm-page-bg)] px-4 py-6 text-[var(--crm-text-primary)] sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-[min(1600px,calc(100vw-3rem))] space-y-6">
+        <ManagementListPageHeader
+          title={title}
+          description={description}
+          backLabel="Geri"
+          actions={
+            <Button asChild className={ADD_BUTTON_CLASS}>
+              <Link to={createPath}>
                 <Plus className="mr-2 h-4 w-4" />
-                Yeni RFQ
+                {createLabel}
               </Link>
             </Button>
-          )}
-        </header>
+          }
+        />
 
-        <ManagementDataTableChrome>
-          <DataTableGrid<PurchaseListRow, ColumnKey>
-            toolbar={
-              <div className="flex flex-wrap items-center justify-between gap-3 p-4">
-                <div className="relative min-w-[260px] flex-1 max-w-xl">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--crm-text-muted)]" />
-                  <Input
-                    value={search}
-                    onChange={(event) => {
-                      setSearch(event.target.value);
-                      setPageNumber(1);
-                    }}
-                    placeholder="Ara"
-                    className="h-10 pl-10"
-                  />
-                </div>
-                <Button variant="outline" onClick={() => void query.refetch()} disabled={query.isFetching}>
-                  <RefreshCw className={`mr-2 h-4 w-4 ${query.isFetching ? 'animate-spin' : ''}`} />
-                  Yenile
-                </Button>
-              </div>
-            }
-            columns={resolvedColumns}
-            visibleColumnKeys={visibleColumns}
-            rows={rows}
-            rowKey={(row) => row.id}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
-            onSort={handleSort}
-            isLoading={query.isLoading || query.isFetching}
-            isError={query.isError}
-            loadingText="Satınalma verileri yükleniyor..."
-            errorText="Satınalma listesi yüklenemedi."
-            emptyText="Kayıt bulunamadı."
-            minTableWidthClassName="min-w-[1200px]"
-            pageSize={pageSize}
-            pageSizeOptions={PAGE_SIZE_OPTIONS}
-            onPageSizeChange={(size) => {
-              setPageSize(size);
-              setPageNumber(1);
-            }}
-            pageNumber={pageNumber}
-            totalPages={totalPages}
-            hasPreviousPage={pageNumber > 1}
-            hasNextPage={pageNumber < totalPages}
-            onPreviousPage={() => setPageNumber((current) => Math.max(1, current - 1))}
-            onNextPage={() => setPageNumber((current) => Math.min(totalPages, current + 1))}
-            previousLabel="Önceki"
-            nextLabel="Sonraki"
-            paginationInfoText={`${rows.length ? (pageNumber - 1) * pageSize + 1 : 0}-${Math.min(pageNumber * pageSize, totalCount)} / ${totalCount} kayıt`}
-            renderCell={(row, key) => {
-              if (key === 'grandTotal') return formatMoney(row.grandTotal);
-              if (key === 'documentDate') return formatDate(row.documentDate);
-              return String(row[key] ?? '-');
-            }}
-          />
-        </ManagementDataTableChrome>
+        <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
+          <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
+            <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{title}</CardTitle>
+            <DataTableActionBar
+              pageKey={pageKey}
+              columns={resolvedColumns}
+              visibleColumns={visibleColumns}
+              columnOrder={columnOrder}
+              onVisibleColumnsChange={(next) => setVisibleColumns(next as ColumnKey[])}
+              onColumnOrderChange={(next) => setColumnOrder(next as ColumnKey[])}
+              exportFileName={pageKey}
+              exportColumns={exportColumns}
+              exportRows={exportRows}
+              filterColumns={filterColumns}
+              defaultFilterColumn={filterColumns[0]?.value ?? 'Id'}
+              draftFilterRows={draftFilterRows}
+              onDraftFilterRowsChange={setDraftFilterRows}
+              onApplyFilters={() => {
+                setAppliedFilterRows(draftFilterRows);
+                setPageNumber(1);
+              }}
+              onClearFilters={() => {
+                setDraftFilterRows([]);
+                setAppliedFilterRows([]);
+                setSearchResetKey((current) => current + 1);
+                setPageNumber(1);
+              }}
+              appliedFilterCount={appliedFilterRows.length}
+              search={{
+                onSearchChange: (value) => {
+                  setSearch(value);
+                  setPageNumber(1);
+                },
+                placeholder: 'Ara',
+                minLength: 1,
+                resetKey: searchResetKey,
+              }}
+              refresh={{
+                onRefresh: () => {
+                  void query.refetch();
+                },
+                isLoading: query.isFetching,
+                cooldownSeconds: 10,
+                label: 'Yenile',
+              }}
+            />
+          </CardHeader>
+          <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
+            <div className={MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME}>
+              <ManagementDataTableChrome>
+                <DataTableGrid<PurchaseListRow, ColumnKey>
+                  columns={resolvedColumns}
+                  visibleColumnKeys={orderedVisibleColumns}
+                  rows={rows}
+                  rowKey={(row) => row.id}
+                  sortBy={sortBy}
+                  sortDirection={sortDirection}
+                  onSort={handleSort}
+                  isLoading={query.isLoading || query.isFetching}
+                  isError={query.isError}
+                  loadingText="Satınalma verileri yükleniyor..."
+                  errorText="Satınalma listesi yüklenemedi."
+                  emptyText="Kayıt bulunamadı."
+                  minTableWidthClassName="min-w-[1200px]"
+                  pageSize={pageSize}
+                  pageSizeOptions={PAGE_SIZE_OPTIONS}
+                  onPageSizeChange={(size) => {
+                    setPageSize(size);
+                    setPageNumber(1);
+                  }}
+                  pageNumber={pageNumber}
+                  totalPages={totalPages}
+                  hasPreviousPage={pageNumber > 1}
+                  hasNextPage={pageNumber < totalPages}
+                  onPreviousPage={() => setPageNumber((current) => Math.max(1, current - 1))}
+                  onNextPage={() => setPageNumber((current) => Math.min(totalPages, current + 1))}
+                  previousLabel="Önceki"
+                  nextLabel="Sonraki"
+                  paginationInfoText={`${rows.length ? (pageNumber - 1) * pageSize + 1 : 0}-${Math.min(pageNumber * pageSize, totalCount)} / ${totalCount} kayıt`}
+                  disablePaginationButtons={query.isFetching}
+                  centerColumnHeaders
+                  showActionsColumn={endpoint === 'PurchaseRfq'}
+                  actionsHeaderLabel="İşlemler"
+                  actionsCellClassName="text-center"
+                  renderActionsCell={(row) =>
+                    endpoint === 'PurchaseRfq' ? (
+                      <Button asChild variant="ghost" size="icon" className="h-9 w-9">
+                        <Link to={`/purchase/rfqs/${row.id}`} aria-label="RFQ detayını aç">
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    ) : null
+                  }
+                  onColumnOrderChange={(next) => setColumnOrder(next as ColumnKey[])}
+                  renderCell={(row, key) => {
+                    if (key === 'grandTotal') return formatMoney(row.grandTotal);
+                    if (key === 'documentDate') return formatDate(row.documentDate);
+                    return String(row[key] ?? '-');
+                  }}
+                />
+              </ManagementDataTableChrome>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
@@ -311,6 +407,8 @@ export function PurchaseRequestListPage() {
       description="Satınalma talepleri satış taleplerinden bağımsız tabloda izlenir."
       endpoint="PurchaseRequest"
       documentNoLabel="Talep No"
+      createPath="/purchase/requests/create"
+      createLabel="Yeni Talep"
     />
   );
 }
@@ -322,6 +420,8 @@ export function PurchaseRfqListPage() {
       description="Satınalma taleplerinden bir veya birkaç tedarikçiye RFQ/e-posta gönderim süreci izlenir."
       endpoint="PurchaseRfq"
       documentNoLabel="RFQ No"
+      createPath="/purchase/rfqs/create"
+      createLabel="Yeni RFQ"
     />
   );
 }
@@ -333,6 +433,8 @@ export function SupplierQuotationListPage() {
       description="Bir talep için birden fazla tedarikçi teklifi veya bir teklif içinde birden fazla talep izlenebilir."
       endpoint="SupplierQuotation"
       documentNoLabel="Teklif No"
+      createPath="/purchase/supplier-quotations/create"
+      createLabel="Yeni Tedarikçi Teklifi"
     />
   );
 }
@@ -344,6 +446,8 @@ export function PurchaseOrderListPage() {
       description="Satınalma siparişleri ERP gönderimi ve WMS mal kabul durum referansı ile izlenir."
       endpoint="PurchaseOrder"
       documentNoLabel="Sipariş No"
+      createPath="/purchase/orders/create"
+      createLabel="Yeni Sipariş"
     />
   );
 }

@@ -68,6 +68,10 @@ const PurchaseModulePage = lazyImport(() => import('@/features/purchase'), 'Purc
 const PurchaseRequestListPage = lazyImport(() => import('@/features/purchase'), 'PurchaseRequestListPage');
 const PurchaseRfqListPage = lazyImport(() => import('@/features/purchase'), 'PurchaseRfqListPage');
 const PurchaseRfqCreatePage = lazyImport(() => import('@/features/purchase'), 'PurchaseRfqCreatePage');
+const PurchaseRfqDetailPage = lazyImport(() => import('@/features/purchase'), 'PurchaseRfqDetailPage');
+const PurchaseRequestCreatePage = lazyImport(() => import('@/features/purchase'), 'PurchaseRequestCreatePage');
+const SupplierQuotationCreatePage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationCreatePage');
+const PurchaseOrderCreatePage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderCreatePage');
 const SupplierQuotationListPage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationListPage');
 const PurchaseOrderListPage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderListPage');
 const PricingRuleManagementPage = lazyImport(() => import('@/features/pricing-rule'), 'PricingRuleManagementPage');
@@ -202,15 +206,16 @@ export function createAppRouter() {
         { path: 'orders/:id', element: <OrderDetailPage /> },
         { path: 'purchase', element: <PurchaseModulePage /> },
         { path: 'purchase/requests', element: <PurchaseRequestListPage /> },
-        { path: 'purchase/requests/create', element: <PurchaseRequestListPage /> },
+        { path: 'purchase/requests/create', element: <PurchaseRequestCreatePage /> },
         { path: 'purchase/requests/waiting-approvals', element: <PurchaseRequestListPage /> },
         { path: 'purchase/rfqs', element: <PurchaseRfqListPage /> },
         { path: 'purchase/rfqs/create', element: <PurchaseRfqCreatePage /> },
+        { path: 'purchase/rfqs/:id', element: <PurchaseRfqDetailPage /> },
         { path: 'purchase/supplier-quotations', element: <SupplierQuotationListPage /> },
-        { path: 'purchase/supplier-quotations/create', element: <SupplierQuotationListPage /> },
+        { path: 'purchase/supplier-quotations/create', element: <SupplierQuotationCreatePage /> },
         { path: 'purchase/supplier-quotations/compare', element: <SupplierQuotationListPage /> },
         { path: 'purchase/orders', element: <PurchaseOrderListPage /> },
-        { path: 'purchase/orders/create', element: <PurchaseOrderListPage /> },
+        { path: 'purchase/orders/create', element: <PurchaseOrderCreatePage /> },
         { path: 'purchase/orders/waiting-approvals', element: <PurchaseOrderListPage /> },
         { path: 'pricing-rules', element: <PricingRuleManagementPage /> },
         { path: 'stocks', element: <StockListPage /> },
