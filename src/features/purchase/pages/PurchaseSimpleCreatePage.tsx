@@ -18,6 +18,7 @@ import {
   Plus,
   Save,
   Send,
+  ShieldCheck,
   StickyNote,
   Trash2,
   Wallet,
@@ -29,6 +30,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
+import {
+  DocumentApprovalFlowReportView,
+  type DocumentApprovalFlowReport,
+} from '@/components/shared/DocumentApprovalFlowReportView';
 import type { IntegratedSupplierOption } from '@/features/purchase/hooks/useIntegratedSupplierSearch';
 import type { ApiResponse } from '@/types/api';
 import { areDiscountRatesValid, getDiscountRateTotal } from '@/lib/discount-rate-validation';
@@ -299,6 +304,19 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
     staleTime: 30_000,
   });
 
+  const approvalReportQuery = useQuery({
+    queryKey: ['purchase', kind, 'approval-flow-report', documentId],
+    enabled: isEditMode && !isRequest,
+    queryFn: async () => {
+      const response = await api.get<ApiResponse<DocumentApprovalFlowReport>>(`${config.endpoint}/${documentId}/approval-flow-report`);
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Satınalma onay akışı yüklenemedi.');
+      }
+      return response.data;
+    },
+    staleTime: 30_000,
+  });
+
   const startApprovalMutation = useMutation({
     mutationFn: async () => {
       const documentType = getPurchaseDocumentType(kind);
@@ -322,7 +340,9 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
       toast.success('Satınalma kaydı onaya gönderildi.');
       void queryClient.invalidateQueries({ queryKey: ['purchase', kind] });
       void queryClient.invalidateQueries({ queryKey: ['purchase', kind, 'detail', documentId] });
+      void queryClient.invalidateQueries({ queryKey: ['purchase', kind, 'approval-flow-report', documentId] });
       void detailQuery.refetch();
+      void approvalReportQuery.refetch();
     },
     onError: (error) => {
       toast.error(error instanceof Error ? error.message : 'Satınalma kaydı onaya gönderilemedi.');
@@ -1256,11 +1276,26 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                 </div>
               </section>
             ) : null}
+
+            {!isRequest && isEditMode ? (
+              <section className={SECTION_CARD_CLASSNAME}>
+                <SectionTitle index={5} icon={ShieldCheck} title="Onay Akışı" />
+                <div className="p-5">
+                  <DocumentApprovalFlowReportView
+                    translationNamespace="purchase"
+                    report={approvalReportQuery.data}
+                    isLoading={approvalReportQuery.isLoading}
+                    error={approvalReportQuery.error instanceof Error ? approvalReportQuery.error : null}
+                    locale="tr-TR"
+                  />
+                </div>
+              </section>
+            ) : null}
           </main>
 
           <aside className="xl:sticky xl:top-6">
             <section className={SECTION_CARD_CLASSNAME}>
-              <SectionTitle index={isRequest ? 3 : 5} icon={Calculator} title="Özet" />
+              <SectionTitle index={isRequest ? 3 : isEditMode ? 6 : 5} icon={Calculator} title="Özet" />
               <div className="space-y-4 p-5">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.04]">
                   <div className="flex items-center justify-between text-sm font-bold text-slate-500 dark:text-slate-400">

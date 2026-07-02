@@ -43,8 +43,10 @@ export interface DocumentApprovalFlowReport {
   steps: DocumentApprovalFlowStep[];
 }
 
+export type DocumentApprovalTranslationNamespace = 'quotation' | 'demand' | 'order' | 'purchase';
+
 interface DocumentApprovalFlowReportViewProps {
-  translationNamespace: 'quotation' | 'demand' | 'order';
+  translationNamespace: DocumentApprovalTranslationNamespace;
   report: DocumentApprovalFlowReport | null | undefined;
   isLoading: boolean;
   error: Error | null;
@@ -141,18 +143,18 @@ function StepCard({
 }: {
   step: DocumentApprovalFlowStep;
   locale: string;
-  translationNamespace: DocumentApprovalFlowReportViewProps['translationNamespace'];
+  translationNamespace: DocumentApprovalTranslationNamespace;
 }): ReactElement {
   const { t } = useTranslation([translationNamespace, 'common']);
 
   const stepStatusLabel =
     step.stepStatus === 'Completed'
-      ? t('approvalFlow.stepCompleted')
+      ? t('approvalFlow.stepCompleted', { defaultValue: 'Tamamlandı' })
       : step.stepStatus === 'InProgress'
-        ? t('approvalFlow.stepInProgress')
+        ? t('approvalFlow.stepInProgress', { defaultValue: 'Devam ediyor' })
         : step.stepStatus === 'Rejected'
-          ? t('approvalFlow.stepRejected')
-          : t('approvalFlow.stepNotStarted');
+          ? t('approvalFlow.stepRejected', { defaultValue: 'Reddedildi' })
+          : t('approvalFlow.stepNotStarted', { defaultValue: 'Başlamadı' });
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-600/90 bg-white/70 dark:bg-zinc-950/40 backdrop-blur-xl shadow-sm transition-all duration-300 group ml-6 sm:ml-12">
@@ -292,7 +294,7 @@ export function DocumentApprovalFlowReportView({
       <div className="flex flex-col items-center justify-center min-h-[300px] rounded-2xl border border-dashed border-zinc-200 dark:border-zinc-600/90 bg-zinc-50/50 dark:bg-zinc-900/30 p-8 text-center">
         <Circle className="h-8 w-8 text-zinc-300 dark:text-zinc-600 mb-3" />
         <p className="text-zinc-500 dark:text-zinc-400 font-medium">
-          {t('approvalFlow.noData')}
+          {t('approvalFlow.noData', { defaultValue: 'Onay adımı bulunamadı.' })}
         </p>
       </div>
     );
@@ -308,7 +310,7 @@ export function DocumentApprovalFlowReportView({
           {t('approvalFlow.notStartedTitle', { defaultValue: 'Onay Süreci Başlamadı' })}
         </h3>
         <p className="text-zinc-500 dark:text-zinc-400 max-w-sm mx-auto font-medium">
-          {t('approvalFlow.notStarted')}
+          {t('approvalFlow.notStarted', { defaultValue: 'Bu belge için onay süreci henüz başlatılmadı.' })}
         </p>
       </div>
     );
