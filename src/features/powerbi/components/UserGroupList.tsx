@@ -117,9 +117,8 @@ export function UserGroupList(): ReactElement {
     <div className="w-full space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <UserPlus className="h-7 w-7 text-rose-600 dark:text-rose-400 relative z-10" />
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
+            <UserPlus className="h-7 w-7" />
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
@@ -148,7 +147,7 @@ export function UserGroupList(): ReactElement {
             placeholder={t('common.search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-10 rounded-xl bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 pl-9 focus-visible:ring-rose-500/50"
+            className="h-10 rounded-xl bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 pl-9 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25"
           />
           {searchTerm && (
             <Button
@@ -165,7 +164,7 @@ export function UserGroupList(): ReactElement {
           placeholder={t('powerbi.filterPlaceholder')}
           value={filterPlaceholder}
           onChange={(e) => setFilterPlaceholder(e.target.value)}
-          className="h-10 rounded-xl bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 max-w-xs focus-visible:ring-rose-500/50"
+          className="h-10 rounded-xl bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 max-w-xs focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25"
         />
         <Button
           variant="outline"
@@ -207,7 +206,7 @@ export function UserGroupList(): ReactElement {
                 </TableRow>
               ) : (
                 filteredItems.map((row) => (
-                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-rose-50/30 dark:hover:bg-rose-500/5 transition-colors">
+                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 transition-colors hover:bg-accent/35 dark:hover:bg-primary/8">
                     <TableCell className="font-bold text-slate-700 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{row.userName ?? row.userId}</TableCell>
                     <TableCell className="text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-white/5">{row.groupName ?? row.groupId}</TableCell>
                     <TableCell className="text-right">

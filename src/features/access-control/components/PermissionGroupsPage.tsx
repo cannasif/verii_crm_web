@@ -48,6 +48,7 @@ import {
   ACCESS_CONTROL_HEADER_CARD_CLASSNAME,
   ACCESS_CONTROL_STAT_CARD_CLASSNAME,
 } from '../utils/access-control-layout';
+import { DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS } from '@/lib/document-line-dialog-styles';
 import { arraysEqual, cn } from '@/lib/utils';
 
 const EMPTY_ITEMS: PermissionGroupDto[] = [];
@@ -279,8 +280,8 @@ export function PermissionGroupsPage(): ReactElement {
   return (
     <div className="w-full space-y-6">
       <div className={headerCardStyle}>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/5 dark:bg-rose-500/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-500/5 dark:bg-amber-500/10 blur-[80px] rounded-full -ml-20 -mb-20 pointer-events-none" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px] dark:bg-primary/10" />
+        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px] dark:bg-primary/8" />
 
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10">
           <div className="min-w-0">
@@ -296,7 +297,7 @@ export function PermissionGroupsPage(): ReactElement {
             <div className="flex shrink-0">
               <Button
                 onClick={handleAddClick}
-                className="h-12 px-8 bg-[image:var(--crm-brand-gradient)] border-0 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-rose-500/25 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className={cn(DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS, 'h-12 shrink-0 px-8')}
               >
                 <Plus size={20} className="mr-2" />
                 {t('permissionGroups.add')}

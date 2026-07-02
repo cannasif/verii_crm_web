@@ -27,6 +27,8 @@ import {
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
 import { normalizeSearchValue } from '@/lib/search';
+import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
+import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Edit2, Trash2, ArrowLeft, TableProperties, X, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
@@ -389,14 +391,19 @@ export function PdfTablePresetManagementPage(): ReactElement {
           <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-50" />
 
           <div className="relative z-10">
-            <DialogClose className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full border border-slate-200/60 bg-white/50 text-slate-400 transition-all duration-300 hover:bg-white hover:text-rose-500 hover:rotate-90 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-rose-400">
+            <DialogClose
+              className={cn(
+                'absolute right-4 top-4 z-20 size-8 rounded-xl transition-all duration-300',
+                DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS
+              )}
+            >
               <X className="size-4" />
               <span className="sr-only">{t('pdfReportDesigner.tablePresetManagement.close')}</span>
             </DialogClose>
 
             <DialogHeader className="px-6 pt-6">
               <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-rose-500/10 text-rose-500 ring-1 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400">
+                <div className="flex size-10 items-center justify-center rounded-xl border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
                   <TableProperties className="size-5" />
                 </div>
                 <div>

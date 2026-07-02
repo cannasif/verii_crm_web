@@ -285,9 +285,9 @@ export function ApprovalFlowManagementPage(): ReactElement {
                     variant="ghost"
                     size="sm"
                     onClick={() => setActiveFilter(filter)}
-                    className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${activeFilter === filter
-                      ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
-                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                    className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 transition-colors ${activeFilter === filter
+                      ? 'border border-primary/20 bg-accent text-primary dark:border-primary/25 dark:bg-primary/10'
+                      : 'text-slate-500 hover:bg-accent/40 hover:text-primary dark:text-slate-400 dark:hover:bg-primary/10 dark:hover:text-primary'
                       }`}
                   >
                     {filter === 'all'

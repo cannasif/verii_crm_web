@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useLayoutEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -26,10 +26,14 @@ import {
 import type { UserPowerBIGroupGetDto } from '../types/userPowerbiGroup.types';
 import { usePowerbiGroupList } from '../hooks/usePowerbiGroup';
 import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
+import { DROPDOWN_MAX_HEIGHT_PX } from '@/components/shared/dropdown/constants';
 import { Loader2, UserPlus, X } from 'lucide-react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
+import { cn } from '@/lib/utils';
+import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 
 const GROUP_LIST_PARAMS = { pageNumber: 1, pageSize: 500 };
+const USER_GROUP_COMBOBOX_POPOVER_CLASS = 'user-group-form-combobox-popover';
 
 interface UserGroupFormProps {
   open: boolean;
@@ -77,6 +81,83 @@ export function UserGroupForm({
     }
   }, [initial, form, open]);
 
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const dialog = document.querySelector('[data-user-group-form-dialog]');
+    if (!(dialog instanceof HTMLElement)) {
+      return;
+    }
+
+    const previousOverflow = dialog.style.overflow;
+    dialog.style.overflow = 'visible';
+
+    return () => {
+      dialog.style.overflow = previousOverflow;
+    };
+  }, [open]);
+
+  useLayoutEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const dialog = document.querySelector('[data-user-group-form-dialog]');
+    if (!(dialog instanceof HTMLElement)) {
+      return;
+    }
+
+    const repositionPopovers = (): void => {
+      const popovers = dialog.querySelectorAll(`.${USER_GROUP_COMBOBOX_POPOVER_CLASS}`);
+      popovers.forEach((popover) => {
+        if (!(popover instanceof HTMLElement)) {
+          return;
+        }
+
+        const popoverId = popover.id;
+        if (!popoverId) {
+          return;
+        }
+
+        const trigger = dialog.querySelector(`button[aria-controls="${popoverId}"]`);
+        if (!(trigger instanceof HTMLElement)) {
+          return;
+        }
+
+        const rect = trigger.getBoundingClientRect();
+        const popoverHeight = popover.offsetHeight || DROPDOWN_MAX_HEIGHT_PX + 56;
+        const viewportHeight = window.innerHeight;
+        const spaceBelow = viewportHeight - rect.bottom - 8;
+        const spaceAbove = rect.top - 8;
+        const openUpward = spaceBelow < popoverHeight && spaceAbove > spaceBelow;
+
+        popover.style.position = 'fixed';
+        popover.style.top = openUpward
+          ? `${Math.max(8, rect.top - popoverHeight - 4)}px`
+          : `${rect.bottom + 4}px`;
+        popover.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - rect.width - 8))}px`;
+        popover.style.width = `${rect.width}px`;
+        popover.style.zIndex = '1000';
+      });
+    };
+
+    repositionPopovers();
+
+    const observer = new MutationObserver(repositionPopovers);
+    observer.observe(dialog, { childList: true, subtree: true });
+
+    window.addEventListener('resize', repositionPopovers);
+    window.addEventListener('scroll', repositionPopovers, true);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', repositionPopovers);
+      window.removeEventListener('scroll', repositionPopovers, true);
+    };
+  }, [open]);
+
   const handleSubmit = async (data: UserPowerBIGroupFormSchema): Promise<void> => {
     await onSubmit(data);
     if (!isSubmitting) {
@@ -85,21 +166,29 @@ export function UserGroupForm({
     }
   };
 
-  const inputClass = "w-full h-10 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-medium";
+  const inputClass = "w-full h-10 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25 transition-all font-medium";
   const labelClass = "text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] !max-w-[900px] p-0 border-0 shadow-2xl bg-white dark:bg-[#180F22] rounded-3xl ring-1 ring-slate-200 dark:ring-white/10 flex flex-col overflow-hidden">
-        <DialogPrimitive.Close className="absolute right-6 top-6 z-50 rounded-2xl bg-slate-100 p-2.5 text-slate-400 transition-all duration-200 hover:bg-red-600 hover:text-white active:scale-90 dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-600 dark:hover:text-white">
+      <DialogContent
+        data-user-group-form-dialog
+        showCloseButton={false}
+        className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] !max-w-[900px] max-h-[calc(100dvh-1.5rem)] p-0 border-0 shadow-2xl bg-white dark:bg-[#180F22] rounded-3xl ring-1 ring-slate-200 dark:ring-white/10 flex flex-col overflow-visible"
+      >
+        <DialogPrimitive.Close
+          className={cn(
+            'absolute right-6 top-6 z-50 size-10 rounded-2xl p-2.5 active:scale-90',
+            DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS
+          )}
+        >
           <X size={20} strokeWidth={2.5} />
         </DialogPrimitive.Close>
 
-        <DialogHeader className="p-6 pb-4 border-b border-slate-100 dark:border-white/5 text-left">
+        <DialogHeader className="shrink-0 p-6 pb-4 border-b border-slate-100 dark:border-white/5 text-left">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <UserPlus className="h-6 w-6 text-rose-600 dark:text-rose-400 relative z-10" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
+              <UserPlus className="h-6 w-6" />
             </div>
             <div>
               <DialogTitle className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -113,8 +202,8 @@ export function UserGroupForm({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)}>
-            <div className="grid grid-cols-1 md:grid-cols-1 gap-6 px-6 pt-2 pb-5">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="flex min-h-0 flex-1 flex-col overflow-visible">
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-6 overflow-visible px-6 pt-2 pb-5 md:grid-cols-1">
               <FormField
                 control={form.control}
                 name="userId"
@@ -133,6 +222,7 @@ export function UserGroupForm({
                         isFetchingNextPage={userDropdown.isFetchingNextPage}
                         placeholder={t('powerbi.userGroup.selectUser')}
                         className={inputClass}
+                        popoverContentClassName={USER_GROUP_COMBOBOX_POPOVER_CLASS}
                       />
                     </FormControl>
                     <FormMessage />
@@ -152,6 +242,7 @@ export function UserGroupForm({
                         onSelect={(v) => field.onChange(v ? Number(v) : 0)}
                         placeholder={t('powerbi.userGroup.selectGroup')}
                         className={inputClass}
+                        popoverContentClassName={USER_GROUP_COMBOBOX_POPOVER_CLASS}
                       />
                     </FormControl>
                     <FormMessage />
@@ -160,7 +251,7 @@ export function UserGroupForm({
               />
             </div>
 
-            <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-6 py-4 flex-col sm:flex-row gap-3">
+            <DialogFooter className="shrink-0 border-t border-slate-100 dark:border-white/5 px-6 py-4 flex-col sm:flex-row gap-3">
               <Button
                 type="button"
                 variant="outline"

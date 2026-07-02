@@ -17,6 +17,7 @@ import {
   ACCESS_CONTROL_WORKSPACE_CLASSNAME,
 } from '../utils/access-control-layout';
 import { cn } from '@/lib/utils';
+import { DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS } from '@/lib/document-line-dialog-styles';
 
 const INNER_PANEL_CLASSNAME =
   'rounded-xl border border-slate-200 bg-white/90 p-4 dark:border-white/10 dark:bg-[#180F22]';
@@ -78,11 +79,11 @@ export function UserGroupAssignmentsPage(): ReactElement {
     <div className="w-full space-y-6">
       <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.userGroupAssignments'), isActive: true }]} />
       <div className={headerCardStyle}>
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/5 blur-[80px] dark:bg-rose-500/10" />
-        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px] dark:bg-amber-500/10" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px] dark:bg-primary/10" />
+        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px] dark:bg-primary/8" />
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-rose-600 dark:text-rose-400">
+          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-primary dark:text-primary">
             <Sparkles className="size-3.5" />
             {t('sidebar.accessControl')}
           </div>
@@ -202,7 +203,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
                     <Button
                       onClick={handleSave}
                       disabled={setUserGroups.isPending}
-                      className="rounded-xl border-0 bg-[image:var(--crm-brand-gradient)] border-0 text-white shadow-lg shadow-rose-500/20 hover:text-white"
+                      className={cn(DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS, 'h-11 px-6')}
                     >
                       {setUserGroups.isPending ? t('common.saving') : t('common.save')}
                     </Button>

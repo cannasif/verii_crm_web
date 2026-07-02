@@ -126,7 +126,7 @@ export function PowerbiRlsList({
                 </TableRow>
               ) : (
                 items.map((row) => (
-                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-rose-50/30 dark:hover:bg-rose-500/5 transition-colors">
+                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 transition-colors hover:bg-accent/35 dark:hover:bg-primary/8">
                     <TableCell className="font-bold text-slate-700 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{row.reportName ?? '-'}</TableCell>
                     <TableCell className="border-r border-slate-200 dark:border-white/5">{row.roleName ?? '-'}</TableCell>
                     <TableCell className="max-w-[200px] truncate border-r border-slate-200 dark:border-white/5" title={row.rlsRoles}>{row.rlsRoles}</TableCell>

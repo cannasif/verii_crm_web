@@ -31,6 +31,7 @@ import { useUserDetailByUserId } from '@/features/user-detail-management/hooks/u
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 
 interface UserProfileModalProps {
   open: boolean;
@@ -102,9 +103,9 @@ export function UserProfileModal({
         "bg-[var(--crm-app-panel)] text-slate-900 dark:text-white"
       )}>
         <DialogPrimitive.Close className={cn(
-          "absolute right-4 top-4 md:right-6 md:top-6 z-50 rounded-2xl p-2.5 transition-all duration-200",
+          "absolute right-4 top-4 md:right-6 md:top-6 z-50 h-10 w-10 rounded-full p-0",
           "active:scale-90",
-          "bg-slate-100 text-slate-400 hover:bg-red-600 hover:text-white dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-600 dark:hover:text-white"
+          DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS
         )}>
           <Cancel01Icon size={20} strokeWidth={2.5} />
           <span className="sr-only">{t('common.close')}</span>

@@ -137,7 +137,7 @@ export function VisibilitySimulatorPage(): ReactElement {
         <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px] dark:bg-amber-500/10" />
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-rose-600 dark:text-rose-400">
+          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-primary dark:text-primary">
             <Sparkles className="size-3.5" />
             {t('sidebar.accessControl')}
           </div>

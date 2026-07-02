@@ -16,6 +16,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import { useUserOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import { cn } from '@/lib/utils';
+import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 import { useSalesRepOptionsInfinite } from '../hooks/useSalesRepOptionsInfinite';
 import {
   salesRepMatchFormSchema,
@@ -35,9 +37,8 @@ const INPUT_STYLE = `
   bg-slate-50 dark:bg-[#0c0516]
   border border-slate-200 dark:border-white/10
   text-slate-900 dark:text-white text-sm
-  focus-visible:ring-0 focus-visible:ring-offset-0
-  focus:bg-white focus:border-rose-500 focus:shadow-[0_0_0_3px_rgba(244,63,94,0.15)]
-  dark:focus:bg-[#0c0516] dark:focus:border-rose-500/60 dark:focus:shadow-[0_0_0_3px_rgba(244,63,94,0.1)]
+  focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 focus-visible:border-primary
+  focus:bg-white dark:focus:bg-[#0c0516] dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25
   transition-all duration-200
 `;
 
@@ -77,10 +78,8 @@ export function SalesRepMatchForm({
         <div className="flex flex-col w-full h-full overflow-hidden rounded-[2.5rem]">
           <DialogHeader className="px-6 sm:px-8 py-6 border-b border-slate-100 dark:border-white/5  shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-[image:var(--crm-brand-gradient)] p-0.5 shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)]">
-              <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                <Link2 size={24} className="text-rose-600 dark:text-rose-400" />
-              </div>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
+              <Link2 size={24} />
             </div>
             <div>
               <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
@@ -92,11 +91,14 @@ export function SalesRepMatchForm({
             </div>
           </div>
           <button
+            type="button"
             onClick={() => onOpenChange(false)}
-            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-rose-500 hover:text-white transition-all duration-300 hover:rotate-90 shadow-sm"
+            className={cn(
+              'h-10 w-10 rounded-full shadow-sm active:scale-90',
+              DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS
+            )}
           >
-            <X size={20} className="relative z-10" />
-            <div className="absolute inset-0 rounded-full bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <X size={20} />
           </button>
         </DialogHeader>
 

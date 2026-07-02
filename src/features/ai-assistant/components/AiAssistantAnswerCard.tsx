@@ -30,14 +30,14 @@ export function AiAssistantAnswerCard({ title, answer }: AiAssistantAnswerCardPr
 
   return (
     <div className="rounded-[1.6rem] rounded-ss-md border border-slate-200/80 bg-white/85 p-4 text-sm font-semibold leading-6 text-slate-800 shadow-sm shadow-slate-950/5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-100">
-      <div className="mb-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-emerald-600 dark:text-emerald-300">
+      <div className="mb-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-primary">
         {title}
       </div>
       <span>{visibleAnswer}</span>
       {isStreaming && (
         <span
           aria-hidden="true"
-          className="ms-1 inline-block h-4 w-1 animate-pulse rounded-full bg-emerald-600 align-middle dark:bg-emerald-300"
+          className="ms-1 inline-block h-4 w-1 animate-pulse rounded-full bg-primary align-middle"
         />
       )}
     </div>

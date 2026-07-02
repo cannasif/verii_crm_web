@@ -13,7 +13,7 @@ interface PermissionGroupMultiSelectProps {
 }
 
 const CHECKBOX_CLASSNAME =
-  'h-5 w-5 rounded-md border-2 border-slate-300 bg-white shadow-sm transition-all data-[state=checked]:border-rose-500 data-[state=checked]:bg-rose-500 data-[state=checked]:text-white dark:border-white/25 dark:bg-white/[0.04] dark:data-[state=checked]:border-rose-500 dark:data-[state=checked]:bg-rose-500';
+  'h-5 w-5 rounded-md border-2 border-slate-300 bg-white shadow-sm transition-all data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-white dark:border-white/25 dark:bg-white/[0.04] dark:data-[state=checked]:border-primary dark:data-[state=checked]:bg-primary';
 
 export function PermissionGroupMultiSelect({
   value,
@@ -58,7 +58,7 @@ export function PermissionGroupMultiSelect({
         className={cn(
           'flex items-center gap-3 rounded-xl border px-3.5 py-3 transition-all',
           allSelected || someSelected
-            ? 'border-rose-200/80 bg-rose-50/80 dark:border-rose-500/30 dark:bg-rose-500/10'
+            ? 'border-primary/20 bg-accent/50 dark:border-primary/25 dark:bg-primary/10'
             : 'border-slate-200/80 bg-slate-50/60 dark:border-white/10 dark:bg-white/[0.03]',
           !disabled && 'cursor-pointer hover:border-slate-300 dark:hover:border-white/20'
         )}
@@ -96,7 +96,7 @@ export function PermissionGroupMultiSelect({
                 className={cn(
                   'flex items-center gap-3 rounded-xl border px-3.5 py-3 transition-all duration-150',
                   isChecked
-                    ? 'border-rose-300/80 bg-rose-500/10 shadow-sm dark:border-rose-500/35 dark:bg-rose-500/12'
+                    ? 'border-primary/30 bg-accent/60 shadow-sm dark:border-primary/35 dark:bg-primary/12'
                     : 'border-slate-200/70 bg-white/70 dark:border-white/8 dark:bg-white/[0.02]',
                   !disabled && 'cursor-pointer hover:border-slate-300 hover:bg-slate-50/90 dark:hover:border-white/15 dark:hover:bg-white/[0.05]'
                 )}
@@ -122,7 +122,7 @@ export function PermissionGroupMultiSelect({
                     {item.isSystemAdmin ? <ShieldCheck className="size-4" /> : <KeyRound className="size-4" />}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className={cn('block text-sm font-semibold', isChecked ? 'text-rose-900 dark:text-rose-100' : 'text-slate-800 dark:text-slate-100')}>
+                    <span className={cn('block text-sm font-semibold', isChecked ? 'text-primary dark:text-primary' : 'text-slate-800 dark:text-slate-100')}>
                       {item.name}
                     </span>
                     {item.description && (

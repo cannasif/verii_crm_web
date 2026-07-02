@@ -206,7 +206,7 @@ export function ReportDefinitionList(): ReactElement {
                 </TableRow>
               ) : (
                 filteredItems.map((row) => (
-                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-rose-50/30 dark:hover:bg-rose-500/5 transition-colors">
+                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 transition-colors hover:bg-accent/35 dark:hover:bg-primary/8">
                     <TableCell className="font-bold text-slate-700 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{row.name}</TableCell>
                     <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-white/5">{row.workspaceId}</TableCell>
                     <TableCell className="font-mono text-xs text-slate-500 dark:text-slate-400 border-r border-slate-200 dark:border-white/5">{row.reportId}</TableCell>

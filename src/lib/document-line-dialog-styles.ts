@@ -29,7 +29,7 @@ export const DOCUMENT_LINE_FORM_CANCEL_BUTTON_CLASS =
   'h-12 px-6 w-full sm:w-auto rounded-xl border border-slate-300/90 bg-white text-slate-700 shadow-sm backdrop-blur-sm transition-all hover:border-slate-400/60 hover:bg-slate-100 hover:text-slate-900 dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:hover:border-white/25 dark:hover:bg-white/[0.08] dark:hover:text-slate-100 font-medium disabled:opacity-50';
 
 export const DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS =
-  'h-12 px-8 w-full sm:w-auto rounded-xl bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white shadow-lg shadow-primary/20 hover:shadow-xl font-bold transition-all active:scale-95 border-0';
+  'h-12 px-8 w-full sm:w-auto rounded-xl bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white shadow-lg shadow-primary/20 hover:shadow-xl font-bold transition-all active:scale-95 border border-transparent hover:border-primary/40 focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0';
 
 export const DOCUMENT_LINE_FORM_FIELD_SURFACE_CLASS =
   'border-slate-300/90 bg-white text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-100';

@@ -508,7 +508,7 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
       ref={setNodeRef}
       className={cn(
         "flex h-full min-h-8 w-full flex-col overflow-hidden border border-slate-200 bg-white/95 shadow-sm transition-all duration-300",
-        isOver ? "ring-2 ring-inset ring-rose-500/50" : ""
+        isOver ? "ring-2 ring-inset ring-primary/35 bg-accent/30" : ""
       )}
     >
       {table.columns.length === 0 ? (
@@ -934,7 +934,7 @@ function ContainerElementBlock({ element }: { element: PdfReportElement }): Reac
       ref={setNodeRef}
       className={cn(
         "flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400 transition-all duration-300",
-        isOver ? "ring-2 ring-inset ring-rose-500/50 bg-rose-500/5" : ""
+        isOver ? "ring-2 ring-inset ring-primary/35 bg-accent/30" : ""
       )}
       style={{
         background: style.background ?? 'transparent',
@@ -1274,7 +1274,7 @@ function DroppableSection({
       className={cn(
         className,
         "transition-all duration-300",
-        isOver ? "ring-2 ring-inset ring-rose-500/50 bg-rose-500/5" : ""
+        isOver ? "ring-2 ring-inset ring-primary/35 bg-accent/30" : ""
       )}
     >
       {children}
@@ -1395,25 +1395,26 @@ export function PdfA4Canvas({
   const activePageRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col items-center gap-10 overflow-auto bg-stone-100/40 px-8 py-10 dark:bg-[#0f0a15]">
+    <div className="relative flex min-h-0 flex-1 flex-col items-center gap-10 overflow-auto bg-muted/35 px-8 py-10 dark:bg-slate-950/95">
+      <div className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-20 dark:opacity-10" />
       {Array.from({ length: pageCount }, (_, i) => i + 1).map((pageNum) => {
         const isActivePage = pageNum === currentPage;
         const resolvedForPage = resolveCanvasElements(elements, pageNum);
 
         const pageContent = (
-          <div key={pageNum} id={`pdf-canvas-page-${pageNum}`} className="flex flex-col items-center gap-2">
+          <div key={pageNum} id={`pdf-canvas-page-${pageNum}`} className="relative z-10 flex flex-col items-center gap-2">
             <div className={cn(
               "flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300",
-              isActivePage ? "text-rose-600 dark:text-rose-400" : "text-slate-400 dark:text-slate-600"
+              isActivePage ? "text-primary" : "text-slate-400 dark:text-slate-600"
             )}>
-              <div className={cn("h-px w-10 transition-all duration-300", isActivePage ? "bg-rose-500/50" : "bg-slate-300/50 dark:bg-slate-800")} />
+              <div className={cn("h-px w-10 transition-all duration-300", isActivePage ? "bg-primary/50" : "bg-slate-300/50 dark:bg-slate-800")} />
               {t('pdfReportDesigner.pageNumber', { page: pageNum })}
               {isActivePage && (
-                <span className="rounded-full bg-rose-500/10 px-2 py-0.5 text-[9px] font-bold text-rose-600 ring-1 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400">
+                <span className="rounded-full border border-primary/15 bg-accent px-2 py-0.5 text-[9px] font-bold text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
                   {t('pdfReportDesigner.canvasActiveBadge', { defaultValue: 'ACTIVE' })}
                 </span>
               )}
-              <div className={cn("h-px w-10 transition-all duration-300", isActivePage ? "bg-rose-500/50" : "bg-slate-300/50 dark:bg-slate-800")} />
+              <div className={cn("h-px w-10 transition-all duration-300", isActivePage ? "bg-primary/50" : "bg-slate-300/50 dark:bg-slate-800")} />
             </div>
 
             <div
@@ -1429,7 +1430,7 @@ export function PdfA4Canvas({
                 className={cn(
                   "absolute left-[28px] top-[28px] bg-white transition-all duration-300 shadow-2xl",
                   isActivePage
-                    ? "ring-2 ring-rose-500/40 ring-offset-4 dark:ring-offset-[#0f0a15]"
+                    ? "ring-2 ring-primary/35 ring-offset-4 dark:ring-offset-slate-950"
                     : "cursor-pointer opacity-60 grayscale-[0.5] hover:opacity-100 hover:grayscale-0"
                 )}
                 style={{ width: A4_CANVAS_WIDTH, height: A4_CANVAS_HEIGHT }}
@@ -1525,7 +1526,7 @@ export function PdfA4Canvas({
                           isInvalid
                             ? 'border-red-500 ring-2 ring-red-500/70'
                             : isSelected
-                              ? 'border-blue-400 ring-1 ring-blue-400'
+                              ? 'border-primary/50 ring-1 ring-primary/30'
                               : 'border-slate-200'
                         )}
                         style={{
@@ -1582,8 +1583,8 @@ export function PdfA4Canvas({
                           : isFlashing
                           ? "border-amber-400 ring-4 ring-amber-400 ring-offset-1 animate-pulse"
                           : isSelected
-                          ? "border-rose-500/60 ring-1 ring-rose-500/40 shadow-lg shadow-rose-500/5"
-                          : "border-slate-200/80 hover:border-slate-300"
+                          ? "border-primary/50 ring-1 ring-primary/30 shadow-lg shadow-[0_8px_24px_-12px_var(--crm-brand-shadow)]"
+                          : "border-slate-200/80 hover:border-primary/25"
                       )}
                       style={{
                         opacity: el.style?.opacity ?? 1,
@@ -1646,7 +1647,7 @@ export function PdfA4Canvas({
               {isActivePage && resolvedForPage.length === 0 ? (
                 <div className="pointer-events-none absolute inset-0 z-1 flex items-center justify-center p-8">
                   <div className="pointer-events-auto max-w-xs rounded-xl border border-dashed border-slate-300 bg-white/80 p-5 text-center shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80">
-                    <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-500 ring-1 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400">
+                    <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
                       <GripVertical className="size-6" />
                     </div>
                     <div className="mb-1 text-sm font-semibold text-slate-700 dark:text-slate-200">

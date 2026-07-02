@@ -26,6 +26,7 @@ import type { CreateVisibilityPolicySchema } from '../schemas/visibility-policy-
 import type { PagedRequest, VisibilityPolicyDto } from '../types/access-control.types';
 import { getVisibilityEntityMeta, getVisibilityScopeMeta } from '../utils/visibility-options';
 import { getVisibilityScopeBadgeClassName } from '../utils/visibility-entity-visuals';
+import { DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS } from '@/lib/document-line-dialog-styles';
 import {
   ACCESS_CONTROL_HEADER_CARD_CLASSNAME,
   ACCESS_CONTROL_STAT_CARD_CLASSNAME,
@@ -179,7 +180,7 @@ export function VisibilityPoliciesPage(): ReactElement {
                 setEditingItem(null);
                 setFormOpen(true);
               }}
-              className="h-12 shrink-0 border-0 bg-[image:var(--crm-brand-gradient)] border-0 px-8 text-white shadow-lg shadow-rose-500/25 transition-all hover:scale-105 active:scale-95"
+              className={cn(DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS, 'h-12 shrink-0 px-8')}
             >
               <Plus size={20} className="mr-2" />
               {t('visibilityPolicies.add')}

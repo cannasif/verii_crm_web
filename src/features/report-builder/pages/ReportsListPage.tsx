@@ -445,13 +445,13 @@ export function ReportsListPage(): ReactElement {
             return (
               <Card
                 key={r.id}
-                className="group cursor-pointer transition-all hover:bg-white dark:hover:bg-white/5 border-slate-200 dark:border-white/10 hover:border-rose-500/30 dark:hover:border-rose-500/30 bg-white/80 dark:bg-white/[0.03] shadow-sm hover:shadow-md rounded-2xl overflow-hidden"
+                className="group cursor-pointer transition-all border-slate-200 bg-white/80 shadow-sm rounded-2xl overflow-hidden dark:border-white/10 dark:bg-white/[0.03] hover:border-primary/25 hover:bg-accent/35 hover:shadow-[0_12px_34px_-16px_var(--crm-brand-shadow)] dark:hover:border-primary/30 dark:hover:bg-primary/8"
                 onClick={() => navigate(isMyReports ? `/reports/my/${r.id}` : `/reports/${r.id}`)}
               >
                 <CardContent className="flex flex-row items-center justify-between gap-4 py-5 px-6">
                   <div className="flex items-center gap-5">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm group-hover:scale-105 transition-transform">
-                      <LayoutGrid className="size-6 text-slate-500 dark:text-slate-400 group-hover:text-rose-500 transition-colors" />
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 shadow-sm transition-all group-hover:scale-105 group-hover:border-primary/20 group-hover:bg-accent dark:border-white/10 dark:bg-white/5 dark:group-hover:border-primary/25 dark:group-hover:bg-primary/10">
+                      <LayoutGrid className="size-6 text-slate-500 transition-colors group-hover:text-primary dark:text-slate-400" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">

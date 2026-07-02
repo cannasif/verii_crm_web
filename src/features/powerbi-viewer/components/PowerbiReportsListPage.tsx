@@ -43,9 +43,8 @@ export function PowerbiReportsListPage(): ReactElement {
     <div className="w-full space-y-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
-            <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <BarChart2 className="h-7 w-7 text-rose-600 dark:text-rose-400 relative z-10" />
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
+            <BarChart2 className="h-7 w-7" />
           </div>
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
@@ -83,18 +82,19 @@ export function PowerbiReportsListPage(): ReactElement {
                 </TableRow>
               ) : (
                 items.map((row: PowerBIReportListItemDto) => (
-                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 hover:bg-rose-50/30 dark:hover:bg-rose-500/5 transition-colors">
+                  <TableRow key={row.id} className="border-b border-slate-200 dark:border-white/5 transition-colors hover:bg-accent/35 dark:hover:bg-primary/8">
                     <TableCell className="font-bold text-slate-700 dark:text-white py-4 border-r border-slate-200 dark:border-white/5">{row.name}</TableCell>
                     <TableCell className="text-slate-500 dark:text-slate-400 max-w-md truncate border-r border-slate-200 dark:border-white/5">
                       {row.description ?? '—'}
                     </TableCell>
                     <TableCell className="border-r border-slate-200 dark:border-white/5">
                       <Badge
-                        variant={row.isActive ? 'default' : 'secondary'}
-                        className={`rounded-lg font-bold ${row.isActive
-                          ? 'border border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-400'
-                          : 'border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-500 dark:text-slate-400'
-                          }`}
+                        variant="outline"
+                        className={
+                          row.isActive
+                            ? 'rounded-lg border border-emerald-200 bg-emerald-50 font-bold text-emerald-700 hover:bg-emerald-100 hover:text-emerald-900 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300 dark:hover:bg-emerald-500/20 dark:hover:text-emerald-100'
+                            : 'rounded-lg border border-slate-200 bg-slate-50 font-bold text-slate-600 hover:bg-slate-100 hover:text-slate-800 dark:border-white/10 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-200'
+                        }
                       >
                         {row.isActive ? t('status.active') : t('status.inactive')}
                       </Badge>

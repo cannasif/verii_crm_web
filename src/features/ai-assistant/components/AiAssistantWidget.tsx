@@ -345,11 +345,12 @@ export function AiAssistantWidget(): ReactElement {
         }
       `}</style>
       {isOpen ? (
-        <section className={`ai-widget-container flex w-[calc(100vw-1.25rem)] transition-all duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-rose-100 bg-[radial-gradient(circle_at_20%_0%,rgba(244,63,94,0.20),transparent_32%),radial-gradient(circle_at_100%_10%,rgba(245,158,11,0.16),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(248,250,252,0.92))] shadow-2xl shadow-rose-950/25 backdrop-blur-2xl dark:border-white/10 dark:bg-[radial-gradient(circle_at_20%_0%,rgba(244,63,94,0.18),transparent_32%),radial-gradient(circle_at_100%_10%,rgba(245,158,11,0.14),transparent_28%),linear-gradient(180deg,rgba(2,6,23,0.98),rgba(15,23,42,0.94))] ${isExpanded
+        <section className={`ai-widget-container relative flex w-[calc(100vw-1.25rem)] transition-all duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-primary/15 bg-background/98 shadow-2xl shadow-[0_24px_60px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/20 dark:bg-slate-950/98 ${isExpanded
           ? 'is-expanded sm:max-w-[850px] h-[min(92dvh,850px)]'
           : 'max-w-[500px] h-[min(80dvh,700px)]'
           }`}>
-          <header className="flex items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03]">
+          <div className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-35 dark:opacity-20" />
+          <header className="relative flex items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03]">
             <div className="flex min-w-0 items-center gap-3">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)]">
                 <Bot size={22} />
@@ -397,18 +398,18 @@ export function AiAssistantWidget(): ReactElement {
           </header>
 
           <div
-            className="flex-1 space-y-4 overflow-y-auto px-4 py-5"
+            className="relative flex-1 space-y-4 overflow-y-auto px-4 py-5"
             role="log"
             aria-live="polite"
             aria-relevant="additions text"
           >
             {messages.length === 0 && (
               <div className="flex items-start gap-3">
-                <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-500 text-white shadow-lg shadow-emerald-950/20">
+                <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10">
                   <Sparkles size={17} />
                 </div>
-                <div className="max-w-[86%] rounded-[1.6rem] rounded-ss-md border border-rose-500/15 bg-white/80 p-4 shadow-sm backdrop-blur-xl dark:bg-white/[0.06]">
-                  <div className="mb-2 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-rose-600 dark:text-rose-300">
+                <div className="max-w-[86%] rounded-[1.6rem] rounded-ss-md border border-primary/15 bg-white/80 p-4 shadow-sm backdrop-blur-xl dark:bg-white/[0.06]">
+                  <div className="mb-2 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-primary">
                     {readText('eyebrow')}
                   </div>
                   <p className="text-sm font-semibold leading-6 text-slate-600 dark:text-slate-200">
@@ -443,7 +444,7 @@ export function AiAssistantWidget(): ReactElement {
                 ) : (
                   <>
                     <div className="flex items-start gap-3">
-                      <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-500 text-white shadow-lg shadow-emerald-950/20">
+                      <div className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10">
                         <Bot size={17} />
                       </div>
                       <div className="max-w-[86%] flex-1">
@@ -456,7 +457,7 @@ export function AiAssistantWidget(): ReactElement {
                             type="button"
                             variant="ghost"
                             size="sm"
-                            className="h-8 rounded-xl px-3 text-xs font-black text-slate-500 hover:text-rose-600 dark:text-slate-300"
+                            className="h-8 rounded-xl px-3 text-xs font-black text-slate-500 hover:text-primary dark:text-slate-300"
                             onClick={() => void copyAssistantMessage(message)}
                           >
                             {copiedMessageId === message.id ? (
@@ -556,7 +557,7 @@ export function AiAssistantWidget(): ReactElement {
                   type="button"
                   disabled={isAssistantBusy}
                   onClick={() => void askQuestion(suggestion)}
-                  className="rounded-full border border-slate-200 bg-white/70 px-3.5 py-2 text-start text-xs font-black text-slate-700 shadow-sm transition hover:border-rose-300 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-rose-400/60 dark:hover:bg-rose-500/10"
+                  className="rounded-full border border-slate-200 bg-white/70 px-3.5 py-2 text-start text-xs font-black text-slate-700 shadow-sm transition hover:border-primary/25 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-primary/30 dark:hover:bg-primary/10"
                 >
                   {suggestion}
                 </button>
@@ -566,7 +567,7 @@ export function AiAssistantWidget(): ReactElement {
             <div ref={messagesEndRef} />
           </div>
 
-          <form className="border-t border-slate-200/80 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-black/30" onSubmit={handleSubmit}>
+          <form className="relative border-t border-slate-200/80 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-black/30" onSubmit={handleSubmit}>
             <input
               ref={fileInputRef}
               type="file"
@@ -575,13 +576,13 @@ export function AiAssistantWidget(): ReactElement {
               onChange={(event) => void handleAttachmentChange(event)}
             />
             {selectedAttachment && (
-              <div className="mb-3 flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-rose-400/30 bg-rose-500/10 px-3 py-2 text-xs font-black text-rose-700 dark:text-rose-100">
+              <div className="mb-3 flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-black text-primary dark:text-primary-foreground">
                 <FileImage size={14} className="shrink-0" />
                 <span className="min-w-0 truncate">{selectedAttachment.fileName}</span>
                 <span className="shrink-0 opacity-75">{formatAttachmentSize(selectedAttachment.size)}</span>
                 <button
                   type="button"
-                  className="ms-1 rounded-full p-0.5 hover:bg-rose-500/15"
+                  className="ms-1 rounded-full p-0.5 hover:bg-primary/15"
                   aria-label={readText('removeImage')}
                   onClick={clearSelectedAttachment}
                 >
@@ -594,7 +595,7 @@ export function AiAssistantWidget(): ReactElement {
                 <span className="min-w-0 truncate">{questionError || askMutation.error?.message}</span>
               </div>
             )}
-            <div className="flex flex-col rounded-[1.6rem] border border-slate-200 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/[0.06] overflow-hidden focus-within:ring-2 focus-within:ring-rose-500/25 dark:focus-within:ring-rose-500/20 transition-all duration-200">
+            <div className="flex flex-col rounded-[1.6rem] border border-slate-200 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/[0.06] overflow-hidden focus-within:ring-2 focus-within:ring-primary/25 dark:focus-within:ring-primary/20 transition-all duration-200">
               <div className="px-4 pt-3 pb-1">
                 <Textarea
                   ref={textareaRef}
@@ -620,8 +621,8 @@ export function AiAssistantWidget(): ReactElement {
                     size="icon"
                     disabled={isAssistantBusy}
                     className={`h-9 w-9 shrink-0 rounded-full border transition-all duration-200 ${isActionsMenuOpen
-                      ? 'rotate-45 border-rose-400/50 bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30'
-                      : 'border-slate-200 dark:border-white/10 hover:border-rose-300 dark:hover:border-rose-500/30'
+                      ? 'rotate-45 border-primary/40 bg-accent text-primary dark:bg-primary/10 dark:text-primary dark:border-primary/30'
+                      : 'border-slate-200 dark:border-white/10 hover:border-primary/30 dark:hover:border-primary/30'
                       }`}
                     aria-expanded={isActionsMenuOpen}
                     onClick={() => setIsActionsMenuOpen(!isActionsMenuOpen)}
@@ -636,7 +637,7 @@ export function AiAssistantWidget(): ReactElement {
                         variant="outline"
                         size="sm"
                         disabled={isAssistantBusy}
-                        className="h-9 rounded-2xl border-slate-200 bg-white/80 px-3 text-xs font-black dark:border-white/10 dark:bg-white/[0.06] hover:border-rose-300 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                        className="h-9 rounded-2xl border-slate-200 bg-white/80 px-3 text-xs font-black dark:border-white/10 dark:bg-white/[0.06] hover:border-primary/30 hover:bg-accent dark:hover:bg-primary/10 transition-colors"
                         onClick={() => {
                           fileInputRef.current?.click();
                           setIsActionsMenuOpen(false);
@@ -666,7 +667,7 @@ export function AiAssistantWidget(): ReactElement {
           type="button"
           aria-label={readText('openChat')}
           onClick={() => setIsOpen(true)}
-          className="group flex items-center gap-3 rounded-full border border-white/20 bg-[image:var(--crm-brand-gradient)] px-4 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:scale-[1.02] hover:shadow-rose-600/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 dark:ring-offset-slate-950"
+          className="group flex items-center gap-3 rounded-full border border-white/20 bg-[image:var(--crm-brand-gradient)] px-4 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:scale-[1.02] hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950"
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
             <MessageCircle size={20} />

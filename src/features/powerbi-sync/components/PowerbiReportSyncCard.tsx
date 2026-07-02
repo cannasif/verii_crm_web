@@ -51,7 +51,7 @@ export function PowerbiReportSyncCard(): ReactElement {
               setWorkspaceId(e.target.value);
               if (localError) setLocalError(null);
             }}
-            className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
+            className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25 transition-all font-mono text-sm"
           />
         </div>
 

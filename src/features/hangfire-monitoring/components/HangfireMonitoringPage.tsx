@@ -35,6 +35,7 @@ import type {
   HangfireSuccessJobItemDto,
 } from '../types/hangfireMonitoring.types';
 import { cn } from '@/lib/utils';
+import { DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS } from '@/lib/document-line-dialog-styles';
 
 const DEFAULT_PAGE_SIZE = 10;
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -368,9 +369,7 @@ export function HangfireMonitoringPage(): ReactElement {
               <Button
                 onClick={() => selectedRecurringJobId && triggerRecurringJobMutation.mutate(selectedRecurringJobId)}
                 disabled={!selectedRecurringJobId || triggerRecurringJobMutation.isPending}
-                className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl 
-                opacity-90 grayscale-[0] 
-                dark:opacity-100 dark:grayscale-0"
+                className={cn(DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS, 'h-11 px-6 focus-visible:outline-none')}
               >
                 {triggerRecurringJobMutation.isPending ? (
                   <Loader2 size={16} className="mr-2 animate-spin" />
@@ -463,8 +462,8 @@ export function HangfireMonitoringPage(): ReactElement {
                 </div>
               </div>
             </div>
-            <div className="p-4 rounded-2xl bg-linear-to-br from-pink-500/5 to-orange-500/5 border border-pink-400 dark:from-pink-500/10 dark:to-orange-500/10 dark:border-pink-500/30">
-              <p className="text-xs font-medium text-slate-600 dark:text-slate-400 leading-relaxed italic">
+            <div className="rounded-2xl border border-primary/15 bg-accent/50 p-4 ring-1 ring-inset ring-primary/10 dark:border-primary/25 dark:bg-primary/10">
+              <p className="text-xs font-medium leading-relaxed text-slate-600 dark:text-slate-300">
                 {t('summary.help', {
                   defaultValue: 'Bu ekran, zamanlanmış işleri hızla tetiklemek ve başarılı/başarısız job akışını tek noktadan izlemek için ürünleştirilmiştir.',
                 })}

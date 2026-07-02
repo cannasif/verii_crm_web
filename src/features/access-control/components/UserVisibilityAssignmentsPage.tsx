@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
+import { DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS } from '@/lib/document-line-dialog-styles';
 import { Breadcrumb } from '@/components/ui/breadcrumb';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -51,16 +52,16 @@ const ENTITY_ICON_MAP: Record<string, LucideIcon> = {
 };
 
 const POLICY_SELECT_TRIGGER_CLASSNAME =
-  'h-10 w-full rounded-xl border border-slate-200/90 bg-slate-50/90 px-3.5 text-sm font-medium text-slate-900 shadow-sm transition-all duration-200 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:shadow-none hover:border-slate-300 dark:hover:border-white/20 focus-visible:border-rose-500/60 focus-visible:ring-2 focus-visible:ring-rose-500/15 focus-visible:ring-offset-0 data-[placeholder]:text-slate-400 dark:data-[placeholder]:text-slate-500';
+  'h-10 w-full rounded-xl border border-slate-200/90 bg-slate-50/90 px-3.5 text-sm font-medium text-slate-900 shadow-sm transition-all duration-200 dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:shadow-none hover:border-primary/40 hover:bg-accent/40 dark:hover:border-primary/30 dark:hover:bg-primary/10 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 data-[placeholder]:text-slate-400 dark:data-[placeholder]:text-slate-500';
 
 const POLICY_SELECT_CONTENT_CLASSNAME =
   'overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-[0_12px_40px_-16px_rgba(15,23,42,0.35)] dark:border-white/12 dark:bg-[#1a1028] dark:shadow-black/50 [&_[data-slot=select-scroll-up-button]+div]:p-2';
 
 const POLICY_SELECT_ITEM_CLASSNAME =
-  'mb-1.5 last:mb-0 rounded-lg border border-transparent py-2.5 pl-3 pr-9 text-sm text-slate-700 transition-all duration-150 dark:text-slate-200 focus:border-slate-200/90 focus:bg-slate-50 dark:focus:border-white/12 dark:focus:bg-white/[0.06] data-[state=checked]:border-rose-300/80 data-[state=checked]:bg-rose-500/10 data-[state=checked]:font-semibold data-[state=checked]:text-rose-700 data-[state=checked]:shadow-sm dark:data-[state=checked]:border-rose-500/35 dark:data-[state=checked]:bg-rose-500/15 dark:data-[state=checked]:text-rose-300 [&_svg]:text-rose-600 dark:[&_svg]:text-rose-400';
+  'mb-1.5 last:mb-0 rounded-lg border border-transparent py-2.5 pl-3 pr-9 text-sm text-slate-700 transition-all duration-150 dark:text-slate-200 focus:bg-accent focus:text-primary data-[highlighted]:bg-accent/80 data-[highlighted]:text-primary dark:focus:bg-primary/12 dark:data-[highlighted]:bg-primary/12 data-[state=checked]:border-primary/30 data-[state=checked]:bg-accent/60 data-[state=checked]:font-semibold data-[state=checked]:text-primary data-[state=checked]:shadow-sm dark:data-[state=checked]:border-primary/35 dark:data-[state=checked]:bg-primary/12 dark:data-[state=checked]:text-primary [&_svg]:text-primary dark:[&_svg]:text-primary';
 
 const POLICY_SELECT_NONE_ITEM_CLASSNAME =
-  'mb-1.5 rounded-lg border border-dashed border-slate-200/80 py-2.5 pl-3 pr-9 text-sm text-slate-500 transition-all duration-150 dark:border-white/10 dark:text-slate-400 focus:border-slate-300 focus:bg-slate-50 dark:focus:border-white/15 dark:focus:bg-white/[0.04]';
+  'mb-1.5 rounded-lg border border-dashed border-slate-200/80 py-2.5 pl-3 pr-9 text-sm text-slate-500 transition-all duration-150 dark:border-white/10 dark:text-slate-400 focus:bg-accent focus:text-primary data-[highlighted]:bg-accent/80 data-[highlighted]:text-primary dark:focus:bg-primary/12 dark:data-[highlighted]:bg-primary/12';
 
 const ENTITY_ACCENT_MAP: Record<string, string> = {
   Activity: 'violet',
@@ -396,11 +397,11 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
       />
 
       <div className={HEADER_CARD_CLASSNAME}>
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/5 blur-[80px] dark:bg-rose-500/10" />
-        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px] dark:bg-amber-500/10" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px] dark:bg-primary/10" />
+        <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px] dark:bg-primary/8" />
 
         <div className="relative z-10">
-          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-rose-600 dark:text-rose-400">
+          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.28em] text-primary dark:text-primary">
             <Sparkles className="size-3.5" />
             {t('sidebar.accessControl')}
           </div>
@@ -608,7 +609,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
                         <SelectTrigger
                           className={cn(
                             POLICY_SELECT_TRIGGER_CLASSNAME,
-                            isEntityDirty && 'border-rose-300/70 dark:border-rose-500/35'
+                            isEntityDirty && 'border-primary/40 dark:border-primary/35'
                           )}
                         >
                           <SelectValue placeholder={t('userVisibilityAssignments.selectPolicyPlaceholder')} />
@@ -673,7 +674,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
                               size="sm"
                               disabled={isEntitySaving}
                               onClick={() => void handleSaveEntity(entity.value)}
-                              className="h-8 rounded-lg bg-[image:var(--crm-brand-gradient)] border-0 px-3 text-white shadow-sm shadow-rose-500/20 hover:text-white"
+                              className={cn(DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS, 'h-8 px-3 text-sm')}
                             >
                               {isEntitySaving ? (
                                 <>

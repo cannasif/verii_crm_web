@@ -33,6 +33,8 @@ import { shippingAddressFormSchema, type ShippingAddressFormSchema } from '../ty
 import type { ShippingAddressDto } from '../types/shipping-address-types';
 import { MapPin, Loader2, User, Phone, FileText, Hash, Globe, Building, X } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import { cn } from '@/lib/utils';
+import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 
 interface ShippingAddressFormProps {
   open: boolean;
@@ -48,9 +50,8 @@ const INPUT_STYLE = `
   border border-slate-200 dark:border-white/10
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-600
-  focus-visible:ring-0 focus-visible:ring-offset-0
-  focus:bg-white focus:border-pink-500 focus:shadow-[0_0_0_3px_rgba(236,72,153,0.15)]
-  dark:focus:bg-[#0c0516] dark:focus:border-pink-500/60 dark:focus:shadow-[0_0_0_3px_rgba(236,72,153,0.1)]
+  focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 focus-visible:border-primary
+  focus:bg-white dark:focus:bg-[#0c0516] dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25
   transition-all duration-200
 `;
 
@@ -183,11 +184,14 @@ export function ShippingAddressForm({
             </div>
           </div>
           <button
+            type="button"
             onClick={() => onOpenChange(false)}
-            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:rotate-90 shadow-sm"
+            className={cn(
+              'h-10 w-10 rounded-full shadow-sm active:scale-90',
+              DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS
+            )}
           >
-            <X size={20} className="relative z-10" />
-            <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <X size={20} />
           </button>
         </DialogHeader>
 

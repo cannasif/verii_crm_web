@@ -113,7 +113,7 @@ export function PowerbiConfigurationForm({
                         <Input
                           {...field}
                           placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
+                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25 transition-all font-mono text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -132,7 +132,7 @@ export function PowerbiConfigurationForm({
                         <Input
                           {...field}
                           placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
+                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25 transition-all font-mono text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -153,7 +153,7 @@ export function PowerbiConfigurationForm({
                       <Input
                         {...field}
                         placeholder="00000000-0000-0000-0000-000000000000"
-                        className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
+                        className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25 transition-all font-mono text-sm"
                       />
                     </FormControl>
                     <FormMessage />
@@ -176,7 +176,7 @@ export function PowerbiConfigurationForm({
                           value={field.value ?? ''}
                           type="url"
                           placeholder={DEFAULT_API_BASE_URL}
-                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
+                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25 transition-all font-mono text-sm"
                         />
                       </FormControl>
                       <FormMessage />
@@ -196,7 +196,7 @@ export function PowerbiConfigurationForm({
                           {...field}
                           value={field.value ?? ''}
                           placeholder={DEFAULT_SCOPE}
-                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-mono text-sm"
+                          className="h-12 rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25 transition-all font-mono text-sm"
                         />
                       </FormControl>
                       <FormMessage />

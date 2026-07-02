@@ -1,4 +1,4 @@
-﻿import { type ChangeEvent, type ReactElement, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, type ReactElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FolderPlus, X } from 'lucide-react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
@@ -26,6 +26,35 @@ import { Combobox } from '@/components/ui/combobox';
 import { categoryDefinitionsApi } from '../api/category-definitions-api';
 import type { CatalogCategoryCreateDto, CatalogCategoryNodeDto } from '../types/category-definition-types';
 import { getCategoryVisualPresetOption, getCategoryVisualPresetOptions } from '../lib/category-visual-presets';
+import { cn } from '@/lib/utils';
+import {
+  DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS,
+  DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS,
+} from '@/lib/document-line-dialog-styles';
+
+const INPUT_STYLE = `
+  h-12 rounded-xl
+  bg-slate-50 dark:bg-[#1a1025]
+  border border-slate-200 dark:border-white/10
+  text-slate-900 dark:text-white text-sm
+  placeholder:text-slate-400 dark:placeholder:text-slate-600
+  focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 focus-visible:border-primary
+  focus:bg-white dark:focus:bg-[#1a1025] dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25
+  transition-all duration-200 font-medium
+`;
+
+const SELECT_TRIGGER_STYLE = `
+  h-12 rounded-xl w-full
+  bg-slate-50 dark:bg-[#1a1025]
+  border border-slate-200 dark:border-white/10
+  text-slate-900 dark:text-white text-sm
+  focus:ring-2 focus:ring-primary/20 focus:ring-offset-0 focus:border-primary
+  dark:focus:border-primary/40 dark:focus:ring-primary/25
+  transition-all duration-200 font-medium
+`;
+
+const SELECT_ITEM_STYLE =
+  'font-medium focus:bg-accent focus:text-primary data-[highlighted]:bg-accent/80 data-[highlighted]:text-primary dark:focus:bg-primary/12 dark:data-[highlighted]:bg-primary/12';
 
 interface CreateCategoryDialogProps {
   open: boolean;
@@ -147,14 +176,18 @@ export function CreateCategoryDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] !max-w-[840px] max-h-[calc(100dvh-1.5rem)] p-0 border-0 shadow-2xl bg-white dark:bg-[#1a1025] rounded-3xl ring-1 ring-slate-200 dark:ring-white/10 flex flex-col overflow-hidden">
-        <DialogPrimitive.Close className="absolute right-6 top-6 z-50 rounded-2xl bg-slate-100 p-2.5 text-slate-400 transition-all duration-200 hover:bg-red-600 hover:text-white active:scale-90 dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-600 dark:hover:text-white">
+        <DialogPrimitive.Close
+          className={cn(
+            'absolute right-6 top-6 z-50 h-10 w-10 rounded-full shadow-sm active:scale-90',
+            DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS
+          )}
+        >
           <X size={20} strokeWidth={2.5} />
         </DialogPrimitive.Close>
         <DialogHeader className="p-8 pb-4 border-b border-slate-100 dark:border-white/5 text-left shrink-0">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <FolderPlus className="h-6 w-6 text-rose-600 dark:text-rose-400 relative z-10" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
+              <FolderPlus className="h-6 w-6" />
             </div>
             <div>
               <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -171,8 +204,8 @@ export function CreateCategoryDialog({
 
         <div className="flex-1 overflow-y-auto px-8 py-6 custom-scrollbar">
           <div className="space-y-6">
-            <div className="rounded-2xl border border-dashed border-pink-200 dark:border-pink-500/30 bg-pink-50/50 dark:bg-pink-500/5 px-4 py-3 text-sm font-medium text-rose-600 dark:text-rose-400">
-              {t('categoryDefinitions.createCategoryTarget')}: <span className="font-bold text-pink-700 dark:text-pink-300 ml-1">{targetLabel}</span>
+            <div className="rounded-2xl border border-dashed border-primary/20 dark:border-primary/25 bg-accent/50 dark:bg-primary/10 px-4 py-3 text-sm font-medium text-primary dark:text-primary">
+              {t('categoryDefinitions.createCategoryTarget')}: <span className="font-bold text-primary dark:text-primary ml-1">{targetLabel}</span>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
@@ -186,7 +219,7 @@ export function CreateCategoryDialog({
                   value={form.name}
                   onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
                   placeholder={t('categoryDefinitions.form.categoryNamePlaceholder')}
-                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                  className={INPUT_STYLE}
                 />
               </div>
 
@@ -200,7 +233,7 @@ export function CreateCategoryDialog({
                   value={form.code}
                   onChange={(event) => setForm((prev) => ({ ...prev, code: event.target.value.toUpperCase() }))}
                   placeholder={t('categoryDefinitions.form.categoryCodePlaceholder')}
-                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono uppercase tracking-wider font-semibold"
+                  className={`${INPUT_STYLE} font-mono uppercase tracking-wider font-semibold`}
                 />
               </div>
             </div>
@@ -214,12 +247,12 @@ export function CreateCategoryDialog({
                   value={form.isLeaf ? 'leaf' : 'branch'}
                   onValueChange={(value) => setForm((prev) => ({ ...prev, isLeaf: value === 'leaf' }))}
                 >
-                  <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all font-medium">
+                  <SelectTrigger className={SELECT_TRIGGER_STYLE}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1025] shadow-xl">
-                    <SelectItem value="leaf" className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-rose-600 dark:focus:text-rose-400">{t('categoryDefinitions.leaf')}</SelectItem>
-                    <SelectItem value="branch" className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-rose-600 dark:focus:text-rose-400">{t('categoryDefinitions.branch')}</SelectItem>
+                    <SelectItem value="leaf" className={SELECT_ITEM_STYLE}>{t('categoryDefinitions.leaf')}</SelectItem>
+                    <SelectItem value="branch" className={SELECT_ITEM_STYLE}>{t('categoryDefinitions.branch')}</SelectItem>
                   </SelectContent>
                 </Select>
                 <p className="text-xs font-medium text-slate-400 dark:text-slate-500 mt-1">
@@ -237,7 +270,7 @@ export function CreateCategoryDialog({
                   type="number"
                   value={form.sortOrder}
                   onChange={(event) => setForm((prev) => ({ ...prev, sortOrder: Number(event.target.value) }))}
-                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                  className={INPUT_STYLE}
                 />
               </div>
             </div>
@@ -251,7 +284,7 @@ export function CreateCategoryDialog({
                 onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
                 placeholder={t('categoryDefinitions.form.descriptionPlaceholder')}
                 rows={3}
-                className="rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium resize-none"
+                className={`${INPUT_STYLE} resize-none`}
               />
             </div>
 
@@ -311,8 +344,8 @@ export function CreateCategoryDialog({
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1a1025] p-5 shadow-sm transition-all hover:border-pink-500/30 group">
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-pink-500 dark:group-hover:text-rose-400 transition-colors">
+              <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1a1025] p-5 shadow-sm transition-all hover:border-primary/30 group">
+                <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">
                   {t('categoryDefinitions.visualPreviewTitle')}
                 </div>
                 <div className="mt-4 flex flex-col items-center gap-3 text-center">
@@ -341,7 +374,7 @@ export function CreateCategoryDialog({
 
         <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-8 py-4 flex-col sm:flex-row gap-3 shrink-0">
           <div className="flex-1 flex items-center text-xs font-semibold text-slate-400">
-            <span className="text-pink-500 mr-1">*</span> {t('required', { ns: 'common' })}
+            <span className="text-primary mr-1">*</span> {t('required', { ns: 'common' })}
           </div>
           <Button
             variant="outline"
@@ -354,7 +387,7 @@ export function CreateCategoryDialog({
           <Button
             onClick={() => void handleSubmit()}
             disabled={isDisabled}
-            className="rounded-xl bg-linear-to-r from-rose-600 to-rose-500 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11 "
+            className={cn('rounded-xl px-8 h-11', DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS)}
           >
             {isLoading ? t('saving', { ns: 'common' }) : initialData ? t('update', { ns: 'common' }) : t('categoryDefinitions.actions.createCategory')}
           </Button>

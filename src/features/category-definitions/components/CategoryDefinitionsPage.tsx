@@ -1,4 +1,4 @@
-﻿import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   AlertDialog,
@@ -467,7 +467,7 @@ export function CategoryDefinitionsPage(): ReactElement {
         <AlertDescription className="mt-3 grid gap-3 lg:grid-cols-3">
           <div className="rounded-xl border bg-white/80 p-3 dark:border-white/10 dark:bg-white/5">
             <div className="flex items-center gap-2 mb-2">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-linear-to-r from-rose-600 to-rose-500 text-[10px] font-bold text-white shadow-md shadow-rose-500/20 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-accent text-[10px] font-bold text-primary shadow-sm ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
                 1
               </div>
               <div className="text-xs font-bold uppercase tracking-wide text-slate-800 dark:text-slate-200">
@@ -478,7 +478,7 @@ export function CategoryDefinitionsPage(): ReactElement {
           </div>
           <div className="rounded-xl border bg-white/80 p-3 dark:border-white/10 dark:bg-white/5">
             <div className="flex items-center gap-2 mb-2">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-linear-to-r from-rose-600 to-rose-500 text-[10px] font-bold text-white shadow-md shadow-rose-500/20 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-accent text-[10px] font-bold text-primary shadow-sm ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
                 2
               </div>
               <div className="text-xs font-bold uppercase tracking-wide text-slate-800 dark:text-slate-200">
@@ -489,7 +489,7 @@ export function CategoryDefinitionsPage(): ReactElement {
           </div>
           <div className="rounded-xl border bg-white/80 p-3 dark:border-white/10 dark:bg-white/5">
             <div className="flex items-center gap-2 mb-2">
-              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-linear-to-r from-rose-600 to-rose-500 text-[10px] font-bold text-white shadow-md shadow-rose-500/20 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-accent text-[10px] font-bold text-primary shadow-sm ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
                 3
               </div>
               <div className="text-xs font-bold uppercase tracking-wide text-slate-800 dark:text-slate-200">
@@ -517,7 +517,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                 className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-r from-rose-600 to-rose-500 text-xs font-bold text-white shadow-lg shadow-rose-500/20 ring-1 ring-white/20 opacity-50 grayscale-[0] dark:opacity-100 dark:grayscale-0">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-accent text-xs font-bold text-primary shadow-sm ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
                     {index + 1}
                   </div>
                   <div className="text-sm font-semibold text-foreground">
@@ -538,7 +538,7 @@ export function CategoryDefinitionsPage(): ReactElement {
         </CardContent>
       </Card>
 
-      <Card className="border-rose-200/70 bg-rose-50/50 dark:border-rose-500/20 dark:bg-rose-500/5">
+      <Card className="border-primary/20 bg-accent/50 dark:border-primary/25 dark:bg-primary/10">
         <CardContent className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-1">
             <div className="text-sm font-semibold text-foreground">{t('categoryDefinitions.easyModeTitle')}</div>
@@ -593,9 +593,8 @@ export function CategoryDefinitionsPage(): ReactElement {
         <Card className="overflow-hidden rounded-[2rem] border-none bg-white dark:bg-[#1a1025]/60 shadow-xl relative z-10">
           <CardHeader className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Layers3 className="h-6 w-6 text-rose-600 dark:text-rose-400 relative z-10" />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
+                <Layers3 className="h-6 w-6" />
               </div>
               <div>
                 <CardTitle className="text-xl font-bold">{t('categoryDefinitions.catalogsTitle')}</CardTitle>
@@ -604,7 +603,7 @@ export function CategoryDefinitionsPage(): ReactElement {
             </div>
 
             <Button
-              className="w-full h-11 bg-linear-to-r from-rose-600 to-rose-500 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] rounded-xl
+              className="w-full h-11 bg-[image:var(--crm-brand-gradient)] text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] rounded-xl
               "
               onClick={() => setIsCreateCatalogOpen(true)}
             >
@@ -617,7 +616,7 @@ export function CategoryDefinitionsPage(): ReactElement {
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
                   <span className="font-medium">{t('categoryDefinitions.selectionCatalog')}</span>
-                  <Badge variant={selectedCatalog ? 'default' : 'outline'} className={cn("rounded-lg", selectedCatalog ? "bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400 border-none" : "")}>
+                  <Badge variant={selectedCatalog ? 'default' : 'outline'} className={cn("rounded-lg", selectedCatalog ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary border-none" : "")}>
                     {selectedCatalog ? t('categoryDefinitions.ready') : t('categoryDefinitions.pending')}
                   </Badge>
                 </div>
@@ -643,23 +642,23 @@ export function CategoryDefinitionsPage(): ReactElement {
                   className={cn(
                     'relative w-full rounded-2xl border px-5 py-4 text-left transition-all duration-300 overflow-hidden group',
                     isActive
-                      ? 'border-transparent bg-slate-50 dark:bg-white/[0.04] shadow-lg ring-1 ring-rose-500/30'
-                      : 'border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-rose-400/50 dark:hover:border-rose-500/50'
+                      ? 'border-transparent bg-slate-50 dark:bg-white/[0.04] shadow-lg ring-1 ring-primary/30'
+                      : 'border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-primary/40 dark:hover:border-primary/50'
                   )}
                 >
                   {isActive && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-linear-to-b from-rose-500 to-orange-500" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-primary" />
                   )}
                   <div className="flex items-start justify-between gap-3 relative z-10">
                     <div>
-                      <div className={cn("font-bold text-base", isActive ? "text-rose-700 dark:text-rose-400" : "text-slate-800 dark:text-white")}>
+                      <div className={cn("font-bold text-base", isActive ? "text-primary dark:text-primary" : "text-slate-800 dark:text-white")}>
                         {catalog.name}
                       </div>
                       <div className="mt-1 font-mono text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400">
                         #{catalog.code}
                       </div>
                     </div>
-                    <Badge variant="outline" className={cn("rounded-lg border-slate-200 dark:border-white/10", isActive && "border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400")}>
+                    <Badge variant="outline" className={cn("rounded-lg border-slate-200 dark:border-white/10", isActive && "border-primary/20 dark:border-primary/30 text-primary dark:text-primary")}>
                       {typeLabel}
                     </Badge>
                   </div>
@@ -677,7 +676,7 @@ export function CategoryDefinitionsPage(): ReactElement {
             ) : null}
 
             {selectedCatalog ? (
-              <div className="rounded-2xl border border-dashed border-rose-200 dark:border-rose-500/30 bg-rose-50/50 dark:bg-rose-500/5 p-4 text-sm font-medium text-rose-600 dark:text-rose-400">
+              <div className="rounded-2xl border border-dashed border-primary/20 dark:border-primary/25 bg-accent/50 dark:bg-primary/10 p-4 text-sm font-medium text-primary dark:text-primary">
                 <Sparkles className="inline-block w-4 h-4 mr-2 mb-0.5" />
                 {t('categoryDefinitions.catalogHelperText')}
               </div>
@@ -689,9 +688,8 @@ export function CategoryDefinitionsPage(): ReactElement {
           <CardHeader className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <ListTree className="h-6 w-6 text-rose-600 dark:text-rose-400 relative z-10" />
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
+                  <ListTree className="h-6 w-6" />
                 </div>
                 <div>
                   <CardTitle className="text-xl font-bold">{t('categoryDefinitions.treeTitle')}</CardTitle>
@@ -700,7 +698,7 @@ export function CategoryDefinitionsPage(): ReactElement {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <Button
-                  className="bg-linear-to-r from-rose-600 to-rose-500 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] rounded-xl
+                  className="bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] rounded-xl
                   "
                   size="sm"
                   onClick={() => setIsCreateCategoryOpen(true)}
@@ -733,7 +731,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                   size="sm"
                   onClick={() => void handlePreviewStockHierarchyImport()}
                   disabled={!canManageSelectedCatalog || previewStockHierarchyImport.isPending}
-                  className="rounded-xl border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300 dark:hover:bg-rose-500/20 font-semibold"
+                  className="rounded-xl border-primary/20 bg-accent/50 text-primary hover:bg-accent dark:border-primary/25 dark:bg-primary/10 dark:text-primary dark:hover:bg-primary/15 font-semibold"
                 >
                   <WandSparkles className="mr-2 h-4 w-4" />
                   {t('categoryDefinitions.actions.importFromRiiStock')}
@@ -752,7 +750,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                 ))}
               </div>
               <p className="mt-3 text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-rose-500" />
+                <Sparkles className="h-3.5 w-3.5 text-primary" />
                 {t('categoryDefinitions.treeReorderHint')}
               </p>
             </div>
@@ -800,22 +798,22 @@ export function CategoryDefinitionsPage(): ReactElement {
                     className={cn(
                       'relative w-full rounded-2xl border p-5 text-left transition-all duration-300 overflow-hidden group',
                       isSelected
-                        ? 'border-transparent bg-slate-50 dark:bg-white/[0.04] shadow-lg ring-1 ring-rose-500/30'
-                        : 'border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-rose-400/50 dark:hover:border-rose-500/50',
+                        ? 'border-transparent bg-slate-50 dark:bg-white/[0.04] shadow-lg ring-1 ring-primary/30'
+                        : 'border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:border-primary/40 dark:hover:border-primary/50',
                       draggedCategoryId === node.catalogCategoryId && 'opacity-50 scale-[0.98]',
-                      dragOverCategoryId === node.catalogCategoryId && draggedCategoryId !== node.catalogCategoryId && 'ring-2 ring-rose-400/60 bg-rose-50/30 dark:bg-rose-500/10'
+                      dragOverCategoryId === node.catalogCategoryId && draggedCategoryId !== node.catalogCategoryId && 'ring-2 ring-primary/40 bg-accent/40 dark:bg-primary/10'
                     )}
                   >
                     {isSelected && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-linear-to-b from-rose-500 to-orange-500" />
+                      <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-primary" />
                     )}
                     <div className="flex items-start justify-between gap-3 relative z-10">
                       <div className="flex items-start gap-3">
-                        <span className={cn("mt-1 flex items-center justify-center p-1 rounded-md cursor-grab active:cursor-grabbing", isSelected ? "text-rose-500 dark:text-rose-400 bg-rose-100 dark:bg-rose-500/20" : "text-slate-400 bg-slate-100 dark:bg-white/5")}>
+                        <span className={cn("mt-1 flex items-center justify-center p-1 rounded-md cursor-grab active:cursor-grabbing", isSelected ? "text-primary dark:text-primary bg-accent dark:bg-primary/15" : "text-slate-400 bg-slate-100 dark:bg-white/5")}>
                           <GripVertical className="h-4 w-4" />
                         </span>
                         <div>
-                          <div className={cn("font-bold text-base", isSelected ? "text-rose-700 dark:text-rose-400" : "text-slate-800 dark:text-white")}>{node.name}</div>
+                          <div className={cn("font-bold text-base", isSelected ? "text-primary dark:text-primary" : "text-slate-800 dark:text-white")}>{node.name}</div>
                           <div className="mt-1 font-mono text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400">#{node.code}</div>
                           <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                             <span className="rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] px-2.5 py-1">
@@ -833,8 +831,8 @@ export function CategoryDefinitionsPage(): ReactElement {
                           variant="ghost"
                           size="sm"
                           className={cn(
-                            'h-8 w-8 rounded-lg p-0 text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10',
-                            node.isFavorite && 'text-rose-600 dark:text-rose-400'
+                            'h-8 w-8 rounded-lg p-0 text-slate-400 hover:bg-accent hover:text-primary dark:hover:bg-primary/10',
+                            node.isFavorite && 'text-primary dark:text-primary'
                           )}
                           disabled={toggleCatalogCategoryFavorite.isPending}
                           aria-label={node.isFavorite ? t('categoryDefinitions.actions.removeCategoryFavorite') : t('categoryDefinitions.actions.addCategoryFavorite')}
@@ -856,7 +854,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                     {node.description ? (
                       <p className="mt-4 line-clamp-2 text-sm font-medium text-slate-500 dark:text-slate-400 relative z-10">{node.description}</p>
                     ) : null}
-                    <div className="mt-5 flex items-center justify-between text-xs font-bold text-slate-400 dark:text-slate-500 relative z-10 group-hover:text-rose-500 transition-colors">
+                    <div className="mt-5 flex items-center justify-between text-xs font-bold text-slate-400 dark:text-slate-500 relative z-10 group-hover:text-primary transition-colors">
                       <span>
                         {node.isLeaf ? t('categoryDefinitions.selectLeafAction') : t('categoryDefinitions.openBranchAction')}
                       </span>
@@ -884,9 +882,8 @@ export function CategoryDefinitionsPage(): ReactElement {
         <Card className="overflow-hidden rounded-[2rem] border-none bg-white dark:bg-[#1a1025]/60 shadow-xl relative z-10 flex flex-col h-full">
           <CardHeader className="space-y-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Package2 className="h-6 w-6 text-rose-600 dark:text-rose-400 relative z-10" />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
+                <Package2 className="h-6 w-6" />
               </div>
               <div>
                 <CardTitle className="text-xl font-bold">{t('categoryDefinitions.stocksTitle')}</CardTitle>
@@ -897,23 +894,23 @@ export function CategoryDefinitionsPage(): ReactElement {
           <CardContent className="flex-1">
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'summary' | 'stocks' | 'favorites' | 'rules' | 'tips')} className="space-y-6">
               <TabsList className="grid w-full grid-cols-5 bg-slate-100 dark:bg-white/5 rounded-xl p-1 shadow-inner min-h-12 h-auto">
-                <TabsTrigger value="summary" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-white/[0.04] data-[state=active]:text-rose-600 data-[state=active]:dark:text-rose-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.summary')}</TabsTrigger>
-                <TabsTrigger value="stocks" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-white/[0.04] data-[state=active]:text-rose-600 data-[state=active]:dark:text-rose-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.stocks')}</TabsTrigger>
-                <TabsTrigger value="favorites" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-white/[0.04] data-[state=active]:text-rose-600 data-[state=active]:dark:text-rose-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.favorites')}</TabsTrigger>
-                <TabsTrigger value="rules" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-white/[0.04] data-[state=active]:text-rose-600 data-[state=active]:dark:text-rose-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.rules')}</TabsTrigger>
-                <TabsTrigger value="tips" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-white/[0.04] data-[state=active]:text-rose-600 data-[state=active]:dark:text-rose-400 data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.tips')}</TabsTrigger>
+                <TabsTrigger value="summary" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-white/[0.04] data-[state=active]:text-primary data-[state=active]:dark:text-primary data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.summary')}</TabsTrigger>
+                <TabsTrigger value="stocks" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-white/[0.04] data-[state=active]:text-primary data-[state=active]:dark:text-primary data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.stocks')}</TabsTrigger>
+                <TabsTrigger value="favorites" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-white/[0.04] data-[state=active]:text-primary data-[state=active]:dark:text-primary data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.favorites')}</TabsTrigger>
+                <TabsTrigger value="rules" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-white/[0.04] data-[state=active]:text-primary data-[state=active]:dark:text-primary data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.rules')}</TabsTrigger>
+                <TabsTrigger value="tips" className="min-w-0 rounded-lg px-2 py-2 text-xs leading-tight data-[state=active]:bg-white data-[state=active]:dark:bg-white/[0.04] data-[state=active]:text-primary data-[state=active]:dark:text-primary data-[state=active]:shadow-sm font-semibold transition-all">{t('categoryDefinitions.tabs.tips')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="summary" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
-                <Alert className="border-rose-200 dark:border-rose-500/30 bg-rose-50/80 dark:bg-rose-500/5 rounded-2xl shadow-sm">
-                  <Sparkles className="h-5 w-5 text-rose-600 dark:text-rose-400" />
-                  <AlertTitle className="font-bold text-rose-800 dark:text-rose-300">{t('categoryDefinitions.summaryGuideTitle')}</AlertTitle>
-                  <AlertDescription className="text-rose-700/80 dark:text-rose-400/80 font-medium mt-1">{nextStepLabel}</AlertDescription>
+                <Alert className="border-primary/20 dark:border-primary/25 bg-accent/50 dark:bg-primary/10 rounded-2xl shadow-sm">
+                  <Sparkles className="h-5 w-5 text-primary dark:text-primary" />
+                  <AlertTitle className="font-bold text-slate-800 dark:text-slate-200">{t('categoryDefinitions.summaryGuideTitle')}</AlertTitle>
+                  <AlertDescription className="text-slate-600 dark:text-slate-400 font-medium mt-1">{nextStepLabel}</AlertDescription>
                 </Alert>
 
                 <div className="grid gap-4">
-                  <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] p-5 shadow-sm transition-all hover:border-rose-500/30 group">
-                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-rose-500 dark:group-hover:text-rose-400 transition-colors">
+                  <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] p-5 shadow-sm transition-all hover:border-primary/30 group">
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">
                       {t('categoryDefinitions.selectionCatalog')}
                     </div>
                     <div className="mt-2 text-lg font-bold text-slate-800 dark:text-white">
@@ -923,7 +920,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                     {selectedCatalog ? (
                       <div className="mt-4 flex gap-2">
                         <Button variant="outline" size="sm" className="rounded-lg border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/5 font-semibold" onClick={() => { setEditingCatalog(selectedCatalog); setIsCreateCatalogOpen(true); }}>
-                          <Pencil className="mr-2 h-4 w-4 text-rose-500" />
+                          <Pencil className="mr-2 h-4 w-4 text-primary" />
                           {t('edit', { ns: 'common' })}
                         </Button>
                         <Button variant="outline" size="sm" className="rounded-lg border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 font-semibold" onClick={() => setCatalogToDelete(selectedCatalog)}>
@@ -934,34 +931,34 @@ export function CategoryDefinitionsPage(): ReactElement {
                     ) : null}
                   </div>
 
-                  <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] p-5 shadow-sm transition-all hover:border-rose-500/30 group">
-                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-rose-500 dark:group-hover:text-rose-400 transition-colors">
+                  <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] p-5 shadow-sm transition-all hover:border-primary/30 group">
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">
                       {t('categoryDefinitions.selectionCurrentLevel')}
                     </div>
                     <div className="mt-2 text-lg font-bold text-slate-800 dark:text-white">
                       {activeParent?.name || t('categoryDefinitions.root')}
                     </div>
                     <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-400 dark:text-slate-500">
-                      <span className="text-rose-500 dark:text-rose-400">{t('categoryDefinitions.selectionPath')}:</span>
+                      <span className="text-primary dark:text-primary">{t('categoryDefinitions.selectionPath')}:</span>
                       {currentPath.length > 0 ? currentPath.map((item) => item.name).join(' / ') : t('categoryDefinitions.root')}
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] p-5 shadow-sm transition-all hover:border-rose-500/30 group">
-                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-rose-500 dark:group-hover:text-rose-400 transition-colors">
+                  <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] p-5 shadow-sm transition-all hover:border-primary/30 group">
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 group-hover:text-primary dark:group-hover:text-primary transition-colors">
                       {t('categoryDefinitions.selectionCategory')}
                     </div>
                     <div className="mt-2 text-lg font-bold text-slate-800 dark:text-white">
                       {selectedLeaf?.name || t('categoryDefinitions.selectionValueEmpty')}
                     </div>
                     <div className="mt-2 text-xs font-semibold text-slate-400 dark:text-slate-500">
-                      <span className="text-rose-500 dark:text-rose-400 mr-1">{t('categoryDefinitions.selectionTotalStocks')}:</span>
+                      <span className="text-primary dark:text-primary mr-1">{t('categoryDefinitions.selectionTotalStocks')}:</span>
                       {selectedLeaf ? (stocksQuery.data?.totalCount ?? 0) : 0}
                     </div>
                     {selectedLeaf ? (
                       <div className="mt-4 flex gap-2">
                         <Button variant="outline" size="sm" className="rounded-lg border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/5 font-semibold" onClick={() => { setEditingCategory(selectedLeaf); setIsCreateCategoryOpen(true); }}>
-                          <Pencil className="mr-2 h-4 w-4 text-rose-500" />
+                          <Pencil className="mr-2 h-4 w-4 text-primary" />
                           {t('edit', { ns: 'common' })}
                         </Button>
                         <Button variant="outline" size="sm" className="rounded-lg border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.02] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 font-semibold" onClick={() => setCategoryToDelete(selectedLeaf)}>
@@ -974,13 +971,13 @@ export function CategoryDefinitionsPage(): ReactElement {
 
                   <div className="rounded-2xl border border-dashed border-slate-300 dark:border-white/20 p-5 mt-2 bg-slate-50/50 dark:bg-white/[0.04]/50">
                     <div className="flex items-center gap-2 font-bold text-slate-700 dark:text-slate-200">
-                      <GitBranchPlus className="h-5 w-5 text-rose-500" />
+                      <GitBranchPlus className="h-5 w-5 text-primary" />
                       {t('categoryDefinitions.nextStepTitle')}
                     </div>
                     <p className="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400">{nextStepLabel}</p>
                     <div className="mt-4 flex flex-wrap gap-2">
                       {selectedCatalog && !selectedLeaf ? (
-                        <Button className="bg-linear-to-r from-rose-600 to-rose-500 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] rounded-xl
+                        <Button className="bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] rounded-xl
                         " size="sm" onClick={() => setIsCreateCategoryOpen(true)}>
                           <CirclePlus className="mr-2 h-4 w-4" />
                           {targetParent
@@ -991,7 +988,7 @@ export function CategoryDefinitionsPage(): ReactElement {
 
                       {selectedLeaf ? (
                         <>
-                          <Button className="bg-linear-to-r from-rose-600 to-rose-500 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] rounded-xl" size="sm" onClick={() => { setActiveTab('stocks'); setIsProductSelectOpen(true); }}>
+                          <Button className="bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] rounded-xl" size="sm" onClick={() => { setActiveTab('stocks'); setIsProductSelectOpen(true); }}>
                             <CirclePlus className="mr-2 h-4 w-4" />
                             {t('categoryDefinitions.actions.addStock')}
                           </Button>
@@ -1007,15 +1004,15 @@ export function CategoryDefinitionsPage(): ReactElement {
               </TabsContent>
 
               <TabsContent value="stocks" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
-                <Alert className="border-rose-200 dark:border-rose-500/30 bg-rose-50/80 dark:bg-rose-500/5 rounded-2xl shadow-sm">
-                  <Package2 className="h-5 w-5 text-rose-600 dark:text-rose-400" />
-                  <AlertTitle className="font-bold text-rose-800 dark:text-rose-300">{t('categoryDefinitions.stocksGuideTitle')}</AlertTitle>
-                  <AlertDescription className="text-rose-700/80 dark:text-rose-400/80 font-medium mt-1">{t('categoryDefinitions.stocksGuideDescription')}</AlertDescription>
+                <Alert className="border-primary/20 dark:border-primary/25 bg-accent/50 dark:bg-primary/10 rounded-2xl shadow-sm">
+                  <Package2 className="h-5 w-5 text-primary dark:text-primary" />
+                  <AlertTitle className="font-bold text-slate-800 dark:text-slate-200">{t('categoryDefinitions.stocksGuideTitle')}</AlertTitle>
+                  <AlertDescription className="text-slate-600 dark:text-slate-400 font-medium mt-1">{t('categoryDefinitions.stocksGuideDescription')}</AlertDescription>
                 </Alert>
 
                 <div className="flex items-center gap-2">
                   <Button
-                    className="bg-linear-to-r from-rose-600 to-rose-500 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] rounded-xl h-11 px-6 "
+                    className="bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] rounded-xl h-11 px-6 "
                     onClick={() => setIsProductSelectOpen(true)}
                     disabled={!selectedLeaf}
                   >
@@ -1025,12 +1022,12 @@ export function CategoryDefinitionsPage(): ReactElement {
                 </div>
 
                 <div className="relative group">
-                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-500 transition-colors" />
+                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
                   <Input
                     value={stockSearch}
                     onChange={(event) => setStockSearch(event.target.value)}
                     placeholder={t('categoryDefinitions.stockSearchPlaceholder')}
-                    className="pl-12 h-12 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-medium"
+                    className="pl-12 h-12 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all font-medium"
                     disabled={!selectedLeaf}
                   />
                 </div>
@@ -1041,7 +1038,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="rounded-2xl border border-dashed border-rose-200 dark:border-rose-500/30 bg-rose-50/50 dark:bg-rose-500/5 p-4 text-sm font-medium text-rose-600 dark:text-rose-400 flex items-center gap-2">
+                    <div className="rounded-2xl border border-dashed border-primary/20 dark:border-primary/25 bg-accent/50 dark:bg-primary/10 p-4 text-sm font-medium text-primary dark:text-primary flex items-center gap-2">
                       <Sparkles className="h-4 w-4" />
                       {t('categoryDefinitions.stocksHelperText')}
                     </div>
@@ -1052,7 +1049,7 @@ export function CategoryDefinitionsPage(): ReactElement {
 
                     <div className="space-y-3">
                       {(stocksQuery.data?.data ?? []).map((stock) => (
-                        <div key={stock.stockId} className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.04] shadow-sm hover:border-rose-500/30 transition-all">
+                        <div key={stock.stockId} className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.04] shadow-sm hover:border-primary/30 transition-all">
                           <div className="flex items-start justify-between gap-4">
                             <div>
                               <div className="font-bold text-base text-slate-800 dark:text-white">{getLocalizedStockName(stock, i18n.language)}</div>
@@ -1060,7 +1057,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                             </div>
                             <div className="flex flex-col items-end gap-2">
                               {stock.isPrimaryCategory ? (
-                                <span className="rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-600 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-400 shadow-sm">
+                                <span className="rounded-lg border border-primary/20 bg-accent px-2.5 py-1 text-[11px] font-bold text-primary dark:border-primary/30 dark:bg-primary/10 dark:text-primary shadow-sm">
                                   {t('categoryDefinitions.primaryBadge')}
                                 </span>
                               ) : null}
@@ -1069,8 +1066,8 @@ export function CategoryDefinitionsPage(): ReactElement {
                                   variant="ghost"
                                   size="sm"
                                   className={cn(
-                                    'rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10',
-                                    stock.isFavorite && 'text-rose-600 dark:text-rose-400'
+                                    'rounded-lg text-slate-400 hover:bg-accent hover:text-primary dark:hover:bg-primary/10',
+                                    stock.isFavorite && 'text-primary dark:text-primary'
                                   )}
                                   disabled={toggleCatalogFavorite.isPending}
                                   aria-label={stock.isFavorite ? t('categoryDefinitions.actions.removeFavorite') : t('categoryDefinitions.actions.addFavorite')}
@@ -1104,19 +1101,19 @@ export function CategoryDefinitionsPage(): ReactElement {
               </TabsContent>
 
               <TabsContent value="favorites" className="space-y-6 animate-in fade-in-50 slide-in-from-bottom-2 duration-300">
-                <Alert className="border-rose-200 dark:border-rose-500/30 bg-rose-50/80 dark:bg-rose-500/5 rounded-2xl shadow-sm">
-                  <Heart className="h-5 w-5 text-rose-600 dark:text-rose-400" />
-                  <AlertTitle className="font-bold text-rose-800 dark:text-rose-300">{t('categoryDefinitions.favoritesGuideTitle')}</AlertTitle>
-                  <AlertDescription className="text-rose-700/80 dark:text-rose-400/80 font-medium mt-1">{t('categoryDefinitions.favoritesGuideDescription')}</AlertDescription>
+                <Alert className="border-primary/20 dark:border-primary/25 bg-accent/50 dark:bg-primary/10 rounded-2xl shadow-sm">
+                  <Heart className="h-5 w-5 text-primary dark:text-primary" />
+                  <AlertTitle className="font-bold text-slate-800 dark:text-slate-200">{t('categoryDefinitions.favoritesGuideTitle')}</AlertTitle>
+                  <AlertDescription className="text-slate-600 dark:text-slate-400 font-medium mt-1">{t('categoryDefinitions.favoritesGuideDescription')}</AlertDescription>
                 </Alert>
 
                 <div className="relative group">
-                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-500 transition-colors" />
+                  <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
                   <Input
                     value={stockSearch}
                     onChange={(event) => setStockSearch(event.target.value)}
                     placeholder={t('categoryDefinitions.favoriteSearchPlaceholder')}
-                    className="pl-12 h-12 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50 transition-all font-medium"
+                    className="pl-12 h-12 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary transition-all font-medium"
                     disabled={!selectedCatalog}
                   />
                 </div>
@@ -1127,14 +1124,14 @@ export function CategoryDefinitionsPage(): ReactElement {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="rounded-2xl border border-dashed border-rose-200 dark:border-rose-500/30 bg-rose-50/50 dark:bg-rose-500/5 p-4 text-sm font-medium text-rose-600 dark:text-rose-400 flex items-center gap-2">
+                    <div className="rounded-2xl border border-dashed border-primary/20 dark:border-primary/25 bg-accent/50 dark:bg-primary/10 p-4 text-sm font-medium text-primary dark:text-primary flex items-center gap-2">
                       <Sparkles className="h-4 w-4" />
                       {t('categoryDefinitions.favoritesHelperText', { count: favoritesQuery.data?.totalCount ?? 0 })}
                     </div>
 
                     <div className="space-y-3">
                       {(favoritesQuery.data?.data ?? []).map((stock) => (
-                        <div key={stock.stockId} className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.04] shadow-sm hover:border-rose-500/30 transition-all">
+                        <div key={stock.stockId} className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-white/10 dark:bg-white/[0.04] shadow-sm hover:border-primary/30 transition-all">
                           <div className="flex items-start justify-between gap-4">
                             <div>
                               <div className="font-bold text-base text-slate-800 dark:text-white">{getLocalizedStockName(stock, i18n.language)}</div>
@@ -1143,7 +1140,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                             <Button
                               variant="ghost"
                               size="sm"
-                              className="rounded-lg text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-500/10"
+                              className="rounded-lg text-primary hover:bg-accent hover:text-primary dark:text-primary dark:hover:bg-primary/10"
                               disabled={toggleCatalogFavorite.isPending}
                               onClick={() => toggleCatalogFavorite.mutate({ stockId: stock.stockId, isFavorite: false })}
                             >
@@ -1180,7 +1177,7 @@ export function CategoryDefinitionsPage(): ReactElement {
                   <Button
                     onClick={() => setIsRuleDialogOpen(true)}
                     disabled={!selectedLeaf}
-                    className="rounded-xl bg-linear-to-r from-rose-600 to-rose-500 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] disabled:opacity-90 disabled:grayscale-[0] disabled:hover:scale-100 px-8 h-11"
+                    className="rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] disabled:opacity-90 disabled:grayscale-[0] disabled:hover:scale-100 px-8 h-11"
                   >
                     <CirclePlus className="mr-2 h-5 w-5" />
                     {t('categoryDefinitions.actions.addRule')}

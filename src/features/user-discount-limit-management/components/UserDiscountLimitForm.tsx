@@ -29,6 +29,8 @@ import { toast } from 'sonner';
 import { userDiscountLimitApi } from '../api/user-discount-limit-api';
 import { BadgePercent, X } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
+import { cn } from '@/lib/utils';
+import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 
 const INPUT_STYLE = `
   h-12 rounded-xl
@@ -36,9 +38,8 @@ const INPUT_STYLE = `
   border border-slate-200 dark:border-white/10
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-600
-  focus-visible:ring-0 focus-visible:ring-offset-0
-  focus:bg-white focus:border-pink-500 focus:shadow-[0_0_0_3px_rgba(236,72,153,0.15)]
-  dark:focus:bg-[#0c0516] dark:focus:border-pink-500/60 dark:focus:shadow-[0_0_0_3px_rgba(236,72,153,0.1)]
+  focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 focus-visible:border-primary
+  focus:bg-white dark:focus:bg-[#0c0516] dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25
   transition-all duration-200
 `;
 
@@ -154,8 +155,12 @@ export function UserDiscountLimitForm({
           </div>
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={() => onOpenChange(false)}
-              className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-500 dark:text-slate-400"
+              className={cn(
+                'h-10 w-10 rounded-full shadow-sm active:scale-90',
+                DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS
+              )}
             >
               <X size={20} />
             </button>

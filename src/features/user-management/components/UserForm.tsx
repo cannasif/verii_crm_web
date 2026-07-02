@@ -39,11 +39,12 @@ import type { RoleOption } from '../hooks/useUserAuthorityOptionsQuery';
 import { useUserManagerOptionsQuery } from '../hooks/useUserManagerOptionsQuery';
 import { useUserPermissionGroupsForForm } from '../hooks/useUserPermissionGroupsForForm';
 import { UserFormPermissionGroupSelect } from './UserFormPermissionGroupSelect';
-import { User, Mail, Lock, Phone, Shield, Activity, X, Users } from 'lucide-react';
+import { User, Mail, Lock, Phone, Shield, Activity, X, Users, type LucideIcon } from 'lucide-react';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { isZodFieldRequired } from '@/lib/zod-required';
 import { getZodValidationMessages } from '@/lib/zod-validation-hint';
 import { cn } from '@/lib/utils';
+import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 
 interface UserFormProps {
   open: boolean;
@@ -67,6 +68,17 @@ const INPUT_FIELD_CLASSNAME = cn(
 );
 
 const LABEL_STYLE = 'text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2';
+
+const LABEL_ICON_WRAP_CLASS =
+  'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10';
+
+function FormLabelIcon({ icon: Icon }: { icon: LucideIcon }): ReactElement {
+  return (
+    <span className={LABEL_ICON_WRAP_CLASS}>
+      <Icon size={14} aria-hidden />
+    </span>
+  );
+}
 
 const FORM_MESSAGE_SLOT_CLASSNAME = 'min-h-5';
 
@@ -263,8 +275,12 @@ export function UserForm({
             </div>
           </div>
           <button
+            type="button"
             onClick={() => onOpenChange(false)}
-            className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400 transition-colors"
+            className={cn(
+              'h-10 w-10 rounded-full shadow-sm active:scale-90',
+              DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS
+            )}
           >
             <X size={20} />
           </button>
@@ -283,7 +299,7 @@ export function UserForm({
                         className={LABEL_STYLE}
                         required={isZodFieldRequired(activeSchema, 'username')}
                       >
-                        <User size={16} className="text-rose-500" /> {t('form.username')}
+                        <FormLabelIcon icon={User} /> {t('form.username')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -308,7 +324,7 @@ export function UserForm({
                         className={LABEL_STYLE}
                         required={isZodFieldRequired(activeSchema, 'email')}
                       >
-                        <Mail size={16} className="text-rose-500" /> {t('form.email')}
+                        <FormLabelIcon icon={Mail} /> {t('form.email')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -331,7 +347,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Lock size={16} className="text-rose-500" /> {t('form.password')}
+                        <FormLabelIcon icon={Lock} /> {t('form.password')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -354,7 +370,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <User size={16} className="text-rose-500" /> {t('form.firstName')}
+                        <FormLabelIcon icon={User} /> {t('form.firstName')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -375,7 +391,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <User size={16} className="text-rose-500" /> {t('form.lastName')}
+                        <FormLabelIcon icon={User} /> {t('form.lastName')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -398,7 +414,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Phone size={16} className="text-rose-500" /> {t('form.phoneNumber')}
+                        <FormLabelIcon icon={Phone} /> {t('form.phoneNumber')}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -422,7 +438,7 @@ export function UserForm({
                         className={LABEL_STYLE}
                         required={isZodFieldRequired(activeSchema, 'roleId')}
                       >
-                        <Shield size={16} className="text-rose-500" /> {t('form.role')}
+                        <FormLabelIcon icon={Shield} /> {t('form.role')}
                       </FormLabel>
                       <Select
                         value={field.value ? String(field.value) : ''}
@@ -456,7 +472,7 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Users size={16} className="text-rose-500" /> {t('form.manager')}
+                      <FormLabelIcon icon={Users} /> {t('form.manager')}
                     </FormLabel>
                     <Select
                       value={field.value ? String(field.value) : 'none'}
@@ -489,7 +505,7 @@ export function UserForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Shield size={16} className="text-rose-500" /> {t('form.permissionGroups')}
+                        <FormLabelIcon icon={Shield} /> {t('form.permissionGroups')}
                       </FormLabel>
                       <FormControl>
                         <UserFormPermissionGroupSelect
@@ -510,7 +526,7 @@ export function UserForm({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-xl border border-slate-200 dark:border-white/10 p-4 bg-slate-50/50 dark:bg-white/5">
                     <FormLabel className="text-sm font-medium flex items-center gap-2 m-0">
-                      <Activity size={16} className="text-rose-500" /> {t('form.isActive')}
+                      <FormLabelIcon icon={Activity} /> {t('form.isActive')}
                     </FormLabel>
                     <FormControl>
                       <Switch

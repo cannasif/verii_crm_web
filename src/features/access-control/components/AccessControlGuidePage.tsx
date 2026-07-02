@@ -188,7 +188,7 @@ export function AccessControlGuidePage(): ReactElement {
       <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white/85 p-6 shadow-xl dark:border-white/10 dark:bg-[#180F22]">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-4xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1 text-xs font-black uppercase tracking-[0.22em] text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-accent px-3 py-1 text-xs font-black uppercase tracking-[0.22em] text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10 dark:text-primary">
               <BookOpen className="size-3.5" />
               {t('common:guide')}
             </div>

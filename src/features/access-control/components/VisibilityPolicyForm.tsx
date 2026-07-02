@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { Shield, Sparkles, X, Network, FileText, Info } from 'lucide-react';
+import { Shield, Sparkles, X, Network, FileText, Info, type LucideIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -36,6 +36,10 @@ import type { VisibilityPolicyDto } from '../types/access-control.types';
 import { createVisibilityPolicySchema, type CreateVisibilityPolicySchema } from '../schemas/visibility-policy-schema';
 import { getVisibilityEntityMeta, getVisibilityScopeMeta, VISIBILITY_ENTITY_OPTIONS, VISIBILITY_SCOPE_OPTIONS } from '../utils/visibility-options';
 import { cn } from '@/lib/utils';
+import {
+  DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS,
+  DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS,
+} from '@/lib/document-line-dialog-styles';
 
 interface VisibilityPolicyFormProps {
   open: boolean;
@@ -57,6 +61,17 @@ const INPUT_STYLE = `
 `;
 
 const LABEL_STYLE = 'text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5 flex items-center gap-2';
+
+const LABEL_ICON_WRAP_CLASS =
+  'flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-primary/15 bg-accent text-primary ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10';
+
+function FormLabelIcon({ icon: Icon }: { icon: LucideIcon }): ReactElement {
+  return (
+    <span className={LABEL_ICON_WRAP_CLASS}>
+      <Icon size={14} aria-hidden />
+    </span>
+  );
+}
 
 export function VisibilityPolicyForm({
   open,
@@ -116,14 +131,19 @@ export function VisibilityPolicyForm({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[92dvh] w-[95%] !max-w-4xl overflow-hidden flex flex-col border border-slate-100 dark:border-white/10 p-0 text-slate-900 shadow-2xl dark:bg-[#130822] dark:text-white sm:w-full rounded-2xl [&>button:last-of-type]:hidden">
-        <DialogPrimitive.Close className="absolute right-6 top-6 z-50 rounded-2xl bg-slate-100 p-2.5 text-slate-400 transition-all duration-200 hover:bg-red-600 hover:text-white active:scale-90 dark:bg-white/5 dark:text-white/40 dark:hover:bg-red-600 dark:hover:text-white">
+        <DialogPrimitive.Close
+          className={cn(
+            'absolute right-6 top-6 z-50 h-10 w-10 rounded-full p-0 shadow-sm active:scale-90',
+            DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS
+          )}
+        >
           <X size={20} strokeWidth={2.5} />
         </DialogPrimitive.Close>
 
         <DialogHeader className="p-2 pb-0 shrink-0">
           <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-[image:var(--crm-brand-gradient)] border-0 shadow-lg shadow-rose-500/20">
-              <Shield size={32} className="text-white" strokeWidth={2.5} />
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] border border-primary/15 bg-accent text-primary shadow-lg ring-1 ring-inset ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
+              <Shield size={32} strokeWidth={2.5} />
             </div>
             <div className="space-y-1">
               <DialogTitle className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
@@ -147,7 +167,7 @@ export function VisibilityPolicyForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <Network size={16} className="text-rose-500" />
+                          <FormLabelIcon icon={Network} />
                           {t('visibilityPolicies.form.code')}
                           <FieldHelpTooltip text={t('help.visibilityPolicy.code')} />
                         </FormLabel>
@@ -164,7 +184,7 @@ export function VisibilityPolicyForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <FileText size={16} className="text-rose-500" />
+                          <FormLabelIcon icon={FileText} />
                           {t('visibilityPolicies.form.name')}
                           <FieldHelpTooltip text={t('help.visibilityPolicy.name')} />
                         </FormLabel>
@@ -235,7 +255,7 @@ export function VisibilityPolicyForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Info size={16} className="text-rose-500" />
+                        <FormLabelIcon icon={Info} />
                         {t('visibilityPolicies.form.description')}
                       </FormLabel>
                       <FormControl>
@@ -260,7 +280,7 @@ export function VisibilityPolicyForm({
                       <FormItem className="flex flex-row items-center justify-between rounded-[0.65rem] border border-slate-200 bg-slate-50/50 p-2.5 px-4 dark:border-white/10 dark:bg-white/5 h-[45px]">
                         <div className="space-y-0.5">
                           <FormLabel className="text-sm font-bold flex items-center gap-2">
-                            <Sparkles size={16} className="text-rose-500" />
+                            <FormLabelIcon icon={Sparkles} />
                             {t('visibilityPolicies.form.includeSelf')}
                             <FieldHelpTooltip text={t('help.visibilityPolicy.includeSelf')} />
                           </FormLabel>
@@ -278,7 +298,7 @@ export function VisibilityPolicyForm({
                       <FormItem className="flex flex-row items-center justify-between rounded-[0.65rem] border border-slate-200 bg-slate-50/50 p-2.5 px-4 dark:border-white/10 dark:bg-white/5 h-[45px]">
                         <div className="space-y-0.5">
                           <FormLabel className="text-sm font-bold flex items-center gap-2">
-                            <Sparkles size={16} className="text-rose-500" />
+                            <FormLabelIcon icon={Sparkles} />
                             {t('visibilityPolicies.form.isActive')}
                             <FieldHelpTooltip text={t('help.visibilityPolicy.isActive')} />
                           </FormLabel>
@@ -318,7 +338,10 @@ export function VisibilityPolicyForm({
               type="submit"
               form="visibility-policy-form"
               disabled={isLoading || !form.formState.isValid}
-              className="h-11 px-6 sm:px-10 rounded-xl bg-[image:var(--crm-brand-gradient)] border-0 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-rose-500/25 text-xs sm:text-sm"
+              className={cn(
+                DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS,
+                'h-11 px-6 sm:px-10 text-xs sm:text-sm focus-visible:outline-none'
+              )}
             >
               {isLoading ? t('common.saving') : t('common.save')}
             </Button>

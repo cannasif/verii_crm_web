@@ -1669,16 +1669,16 @@ export function PdfReportDesignerCreatePage(): ReactElement {
 
       {!isEdit && !hasElements ? (
         <div className="relative shrink-0 border-b border-slate-300/80 bg-stone-50/95 px-4 py-2.5 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60">
-          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
+          <div className="absolute inset-0 pointer-events-none bg-[image:var(--crm-brand-gradient-soft)] opacity-25 dark:opacity-15" />
           <div className="relative z-10 flex flex-wrap items-center gap-x-6 gap-y-1.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
             <span className="inline-flex items-center gap-1.5 text-slate-700 dark:text-slate-200">
-              <Sparkles className="size-3.5 text-rose-500" />
+              <Sparkles className="size-3.5 text-primary" />
               <span className="font-bold uppercase tracking-widest text-[10px]">
                 {t('pdfReportDesigner.onboardingBadge')}
               </span>
             </span>
             <span className="inline-flex items-center gap-2">
-              <span className="inline-flex size-4.5 items-center justify-center rounded-full bg-rose-500/10 text-[10px] font-bold text-rose-600 ring-1 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400">
+              <span className="inline-flex size-4.5 items-center justify-center rounded-full border border-primary/20 bg-accent text-[10px] font-bold text-primary ring-1 ring-primary/15 dark:border-primary/25 dark:bg-primary/10">
                 1
               </span>
               <span className="font-medium">{t('pdfReportDesigner.stepper.identify', { defaultValue: 'Pick document type & title' })}</span>

@@ -44,10 +44,10 @@ export interface PdfDesignerOnboardingPanelProps {
   initialExpanded: boolean;
 }
 
-function getScoreTone(score: number): 'emerald' | 'amber' | 'rose' {
+function getScoreTone(score: number): 'emerald' | 'amber' | 'primary' {
   if (score >= 84) return 'emerald';
   if (score >= 60) return 'amber';
-  return 'rose';
+  return 'primary';
 }
 
 export function PdfDesignerOnboardingPanel({
@@ -91,7 +91,7 @@ export function PdfDesignerOnboardingPanel({
               "flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold shadow-sm ring-1 ring-inset transition-all duration-300",
               tone === 'emerald' && "bg-emerald-500/10 text-emerald-600 ring-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400",
               tone === 'amber' && "bg-amber-500/10 text-amber-600 ring-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400",
-              tone === 'rose' && "bg-rose-500/10 text-rose-600 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400"
+              tone === 'primary' && "border border-primary/15 bg-accent text-primary ring-primary/15 dark:border-primary/25 dark:bg-primary/10 dark:text-primary"
             )}
           >
             <Gauge className="size-3.5" />

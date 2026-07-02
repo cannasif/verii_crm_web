@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
+import { DROPDOWN_MAX_HEIGHT_PX } from '@/components/shared/dropdown/constants';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -29,8 +30,30 @@ import { DefinitionExcelActions } from '@/features/definition-excel/components/D
 import { windoDefinitionApi } from '../api/windo-definition-api';
 import { useWindoDefinitionOptions } from '../hooks/useWindoDefinitionOptions';
 import type { WindoDefinitionCreateDto, WindoDefinitionGetDto } from '../types/windo-definition-types';
+import { cn } from '@/lib/utils';
+import { DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS } from '@/lib/document-line-dialog-styles';
 
 const WINDO_I18N_NS = 'windo-profil-demir-vida-management' as const;
+
+const BRAND_BUTTON_CLASS =
+  'rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-semibold shadow-lg shadow-primary/20 border-0 hover:opacity-90 active:scale-[0.98] transition-all';
+
+const INACTIVE_TAB_CLASS =
+  'rounded-xl border-slate-300 bg-white hover:border-primary/40 hover:bg-accent/50 hover:text-primary dark:border-white/10 dark:bg-transparent dark:hover:border-primary/25 dark:hover:bg-primary/10';
+
+const INPUT_STYLE = `
+  h-11 rounded-xl
+  bg-slate-50 dark:bg-[#0f0a18]
+  border border-slate-200 dark:border-white/10
+  text-slate-900 dark:text-white text-sm
+  placeholder:text-slate-400 dark:placeholder:text-slate-600
+  focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 focus-visible:border-primary
+  focus:bg-white dark:focus:bg-[#0f0a18] dark:focus-visible:border-primary/40 dark:focus-visible:ring-primary/25
+  transition-all duration-200
+`;
+
+const WINDO_DEFINITION_COMBOBOX_POPOVER_CLASS = 'windo-definition-form-combobox-popover';
+const WINDO_DEFINITION_FORM_DIALOG_SELECTOR = '[data-windo-definition-form-dialog]';
 
 type DefinitionKind = 'profil' | 'demir' | 'vida' | 'baski' | 'koliBaski';
 type SortKey = 'id' | 'name' | 'profilName' | 'createdDate' | 'updatedDate';
@@ -293,6 +316,83 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
     setPageNumber(1);
   }, [pageSize, serverSearchTerm, sortBy, sortDirection]);
 
+  useEffect(() => {
+    if (!dialogOpen || !config.requiresProfilParent) {
+      return;
+    }
+
+    const dialog = document.querySelector(WINDO_DEFINITION_FORM_DIALOG_SELECTOR);
+    if (!(dialog instanceof HTMLElement)) {
+      return;
+    }
+
+    const previousOverflow = dialog.style.overflow;
+    dialog.style.overflow = 'visible';
+
+    return () => {
+      dialog.style.overflow = previousOverflow;
+    };
+  }, [config.requiresProfilParent, dialogOpen]);
+
+  useLayoutEffect(() => {
+    if (!dialogOpen || !config.requiresProfilParent) {
+      return;
+    }
+
+    const dialog = document.querySelector(WINDO_DEFINITION_FORM_DIALOG_SELECTOR);
+    if (!(dialog instanceof HTMLElement)) {
+      return;
+    }
+
+    const repositionPopovers = (): void => {
+      const popovers = dialog.querySelectorAll(`.${WINDO_DEFINITION_COMBOBOX_POPOVER_CLASS}`);
+      popovers.forEach((popover) => {
+        if (!(popover instanceof HTMLElement)) {
+          return;
+        }
+
+        const popoverId = popover.id;
+        if (!popoverId) {
+          return;
+        }
+
+        const trigger = dialog.querySelector(`button[aria-controls="${popoverId}"]`);
+        if (!(trigger instanceof HTMLElement)) {
+          return;
+        }
+
+        const rect = trigger.getBoundingClientRect();
+        const popoverHeight = popover.offsetHeight || DROPDOWN_MAX_HEIGHT_PX + 56;
+        const viewportHeight = window.innerHeight;
+        const spaceBelow = viewportHeight - rect.bottom - 8;
+        const spaceAbove = rect.top - 8;
+        const openUpward = spaceBelow < popoverHeight && spaceAbove > spaceBelow;
+
+        popover.style.position = 'fixed';
+        popover.style.top = openUpward
+          ? `${Math.max(8, rect.top - popoverHeight - 4)}px`
+          : `${rect.bottom + 4}px`;
+        popover.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - rect.width - 8))}px`;
+        popover.style.width = `${rect.width}px`;
+        popover.style.zIndex = '1000';
+      });
+    };
+
+    repositionPopovers();
+
+    const observer = new MutationObserver(repositionPopovers);
+    observer.observe(dialog, { childList: true, subtree: true });
+
+    window.addEventListener('resize', repositionPopovers);
+    window.addEventListener('scroll', repositionPopovers, true);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', repositionPopovers);
+      window.removeEventListener('scroll', repositionPopovers, true);
+    };
+  }, [config.requiresProfilParent, dialogOpen]);
+
   const paginationInfoText = t('table.pagination', { total: totalCount, from: startRow, to: endRow });
 
   return (
@@ -307,7 +407,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
             {canCreate ? (
               <Button
                 type="button"
-                className="h-11 rounded-xl bg-linear-to-r from-rose-600 to-amber-600 px-6 font-semibold text-white"
+                className={cn('h-11 px-6', BRAND_BUTTON_CLASS)}
                 onClick={() => {
                   setEditingItem(null);
                   setDraftName('');
@@ -481,7 +581,10 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       </Card>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent
+          data-windo-definition-form-dialog
+          className="sm:max-w-lg border border-slate-200/80 dark:border-white/10 bg-white dark:bg-[#1a1025] rounded-2xl shadow-2xl overflow-visible"
+        >
           <DialogHeader>
             <DialogTitle>
               {editingItem
@@ -492,17 +595,17 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>{t('dialog.nameLabel')}</Label>
-              <Input value={draftName} onChange={(e) => setDraftName(e.target.value)} maxLength={150} />
+              <Input value={draftName} onChange={(e) => setDraftName(e.target.value)} maxLength={150} className={INPUT_STYLE} />
             </div>
             {!editingItem && config.kind === 'profil' ? (
               <>
                 <div className="space-y-2">
                   <Label>{t('dialog.demirNameLabel', { defaultValue: 'Demir adı' })}</Label>
-                  <Input value={draftDemirName} onChange={(e) => setDraftDemirName(e.target.value)} maxLength={150} />
+                  <Input value={draftDemirName} onChange={(e) => setDraftDemirName(e.target.value)} maxLength={150} className={INPUT_STYLE} />
                 </div>
                 <div className="space-y-2">
                   <Label>{t('dialog.vidaNameLabel', { defaultValue: 'Vida adı' })}</Label>
-                  <Input value={draftVidaName} onChange={(e) => setDraftVidaName(e.target.value)} maxLength={150} />
+                  <Input value={draftVidaName} onChange={(e) => setDraftVidaName(e.target.value)} maxLength={150} className={INPUT_STYLE} />
                 </div>
               </>
             ) : null}
@@ -516,7 +619,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
                   placeholder={isProfilOptionsLoading ? t('table.loading') : t('dialog.profilPlaceholder')}
                   searchPlaceholder={t('dialog.profilSearchPlaceholder')}
                   disabled={isProfilOptionsLoading}
-                  className="h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-[#0f0a18] dark:text-white"
+                  className={INPUT_STYLE}
+                  popoverContentClassName={WINDO_DEFINITION_COMBOBOX_POPOVER_CLASS}
                 />
               </div>
             ) : null}
@@ -526,7 +630,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
               </Button>
               <Button
                 type="button"
-                className="bg-linear-to-r from-rose-600 to-amber-600 text-white"
+                className={cn('px-6', DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS)}
                 onClick={() => void handleSubmit()}
                 disabled={createMutation.isPending || updateMutation.isPending}
               >
@@ -625,11 +729,7 @@ export function WindoProfilDemirVidaTanimlamaPage(): ReactElement {
               key={section.kind}
               type="button"
               variant={isActive ? 'default' : 'outline'}
-              className={
-                isActive
-                  ? 'rounded-xl bg-linear-to-r from-rose-600 to-amber-600 text-white'
-                  : 'rounded-xl border-slate-300 bg-white dark:border-white/10 dark:bg-transparent'
-              }
+              className={isActive ? BRAND_BUTTON_CLASS : INACTIVE_TAB_CLASS}
               onClick={() => setActiveKind(section.kind)}
             >
               {section.title}

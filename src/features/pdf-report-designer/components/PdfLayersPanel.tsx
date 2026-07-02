@@ -152,12 +152,13 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
   if (collapsed) {
     return (
       <TooltipProvider delayDuration={300}>
-        <div className="flex min-h-0 w-8 shrink-0 flex-col items-center border-l border-slate-200 bg-slate-50/80 py-2 dark:border-slate-700 dark:bg-slate-900/30">
+        <div className="relative flex min-h-0 w-8 shrink-0 flex-col items-center border-l border-slate-300/80 bg-stone-50/95 py-2 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60">
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 type="button"
-                className="rounded p-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-800 dark:hover:bg-slate-700"
+                className="relative z-10 rounded p-1.5 text-slate-500 hover:bg-slate-200 hover:text-slate-800 dark:hover:bg-white/10"
                 onClick={() => setCollapsed(false)}
               >
                 <ChevronRight className="size-4" />
@@ -165,8 +166,8 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
             </TooltipTrigger>
             <TooltipContent side="left">{t('reportDesigner.layers.title')}</TooltipContent>
           </Tooltip>
-          <div className="mt-3 flex flex-col items-center">
-            <Layers className="size-3.5 text-slate-300" />
+          <div className="relative z-10 mt-3 flex flex-col items-center">
+            <Layers className="size-3.5 text-slate-300 dark:text-slate-600" />
           </div>
         </div>
       </TooltipProvider>
@@ -213,8 +214,8 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
                 isInvalid
                   ? "border-red-500/80 bg-red-50/80 shadow-sm dark:border-red-500/50 dark:bg-red-950/30"
                   : isSelected
-                  ? "border-rose-500/50 bg-white shadow-md dark:border-rose-500/30 dark:bg-white/10"
-                  : "border-transparent hover:border-slate-300/60 hover:bg-white/50 dark:hover:border-white/10 dark:hover:bg-white/5"
+                  ? "border-primary/35 bg-white shadow-md dark:border-primary/30 dark:bg-white/10"
+                  : "border-transparent hover:border-primary/25 hover:bg-white/50 dark:hover:border-primary/20 dark:hover:bg-white/5"
               )}
             >
               <div className="flex flex-col">

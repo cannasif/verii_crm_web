@@ -11,6 +11,8 @@ import { useUIStore } from '@/stores/ui-store';
 import { googleIntegrationApi } from '../api/google-integration.api';
 import type { UpdateTenantGoogleOAuthSettingsDto } from '../types/google-integration.types';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
+import { DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS } from '@/lib/document-line-dialog-styles';
+import { cn } from '@/lib/utils';
 
 const GOOGLE_TENANT_SETTINGS_QUERY_KEY = ['google-integration', 'tenant-oauth-settings'] as const;
 
@@ -189,9 +191,7 @@ export function GoogleAuthInformationPage(): ReactElement {
               <Button
                 onClick={onSave}
                 disabled={saveMutation.isPending || !canSave}
-                className="bg-linear-to-r from-pink-600 to-orange-600 text-white font-black hover:scale-[1.05] active:scale-[0.95] transition-all shadow-[0_10px_20px_-10px_rgba(219,39,119,0.5)] rounded-xl 
-                opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
-
+                className={cn(DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS, 'h-11 px-8 focus-visible:outline-none')}
               >
                 {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                 {t('authInformation.saveButton')}

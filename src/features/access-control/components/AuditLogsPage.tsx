@@ -22,7 +22,8 @@ import { useAuthStore } from '@/stores/auth-store';
 import { auditLogApi } from '../api/auditLogApi';
 import type { AuditLogDto, PagedRequest } from '../types/access-control.types';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
-import { arraysEqual } from '@/lib/utils';
+import { DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS } from '@/lib/document-line-dialog-styles';
+import { arraysEqual, cn } from '@/lib/utils';
 
 const PAGE_KEY = 'audit-logs';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
@@ -233,7 +234,7 @@ export function AuditLogsPage(): ReactElement {
         </div>
         {traceFilter ? (
           <Button
-            className="h-11 bg-[image:var(--crm-brand-gradient)] border-0 px-8 font-bold text-white shadow-lg shadow-rose-500/20 ring-1 ring-rose-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-rose-500 hover:to-amber-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0 border-0"
+            className={cn(DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS, 'h-11 px-8 focus-visible:outline-none')}
             onClick={() => {
               setTraceFilter(null);
               setPageNumber(1);

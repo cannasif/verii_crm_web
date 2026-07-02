@@ -114,7 +114,7 @@ function CollapsibleCard({
           : 'border-slate-300/80 bg-stone-50/95 ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:ring-0'
       )}
     >
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/2 dark:to-yellow-500/2 opacity-30 " />
+      <div className="absolute inset-0 pointer-events-none bg-[image:var(--crm-brand-gradient-soft)] opacity-25 dark:opacity-15" />
       <div className="relative z-10 p-4">
         <button
           type="button"
@@ -124,7 +124,7 @@ function CollapsibleCard({
         >
           <div className="flex min-w-0 items-start gap-3">
             {icon ? (
-              <span className="mt-0.5 shrink-0 flex size-8 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform">
+              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg border border-primary/15 bg-accent text-primary transition-transform group-hover:scale-105 dark:border-primary/25 dark:bg-primary/10">
                 {icon}
               </span>
             ) : null}
@@ -136,13 +136,13 @@ function CollapsibleCard({
                 <p className="text-slate-500 dark:text-slate-400 mt-1 text-[11px] font-medium leading-relaxed">{description}</p>
               ) : null}
               {summary && !open ? (
-                <p className="mt-2 text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-tight">{summary}</p>
+                <p className="mt-2 text-xs font-bold uppercase tracking-tight text-primary">{summary}</p>
               ) : null}
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-2">
             {action}
-            <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-400 transition-colors group-hover:bg-rose-50 dark:group-hover:bg-rose-500/10 group-hover:text-rose-500">
+            <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-colors group-hover:bg-accent group-hover:text-primary dark:bg-white/5 dark:group-hover:bg-primary/10">
               <ChevronDown
                 className={cn(
                   'size-4 transition-transform duration-300',
@@ -197,7 +197,7 @@ function ReportAssignmentPanel({
       <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
       <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-[260px] flex-1">
-          <div className="mb-2 inline-flex rounded-full border border-rose-200 bg-rose-100/50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
+          <div className="mb-2 inline-flex rounded-full border border-primary/20 bg-accent/60 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary dark:border-primary/25 dark:bg-primary/10 dark:text-primary">
             {title}
           </div>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">{description}</p>
@@ -225,12 +225,12 @@ function ReportAssignmentPanel({
               {selectedAssignedUsers.map((user) => (
                 <div
                   key={user.userId}
-                  className="group inline-flex max-w-full items-center gap-2.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:border-rose-300 hover:bg-rose-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-rose-500/30 dark:hover:bg-rose-500/10"
+                  className="group inline-flex max-w-full items-center gap-2.5 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-sm font-bold text-slate-700 shadow-sm transition-all hover:border-primary/25 hover:bg-accent/50 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-primary/30 dark:hover:bg-primary/10"
                 >
                   <span className="truncate">{user.label}</span>
                   <button
                     type="button"
-                    className="text-slate-400 transition-colors hover:text-rose-500"
+                    className="text-slate-400 transition-colors hover:text-primary"
                     onClick={() => onRequestRemoveAssignedUser(user.userId)}
                     aria-label={removeLabel}
                     title={removeLabel}
@@ -1905,9 +1905,9 @@ export function ReportBuilderPage(): ReactElement {
           removeLabel={t('common.reportBuilder.removeAssignedUser')}
         />
         {builderMode === 'advanced' && advancedWorkspaceMode === 'expert' ? (
-          <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-4 shadow-sm ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:ring-0 flex flex-wrap items-center gap-3 text-xs">
-            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/2 dark:to-amber-500/2 opacity-30" />
-            <div className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400">
+          <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-4 shadow-sm ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:ring-0 flex flex-wrap items-center gap-3 text-xs">
+            <div className="absolute inset-0 pointer-events-none bg-[image:var(--crm-brand-gradient-soft)] opacity-25 dark:opacity-15" />
+            <div className="relative z-10 flex size-8 shrink-0 items-center justify-center rounded-lg border border-primary/15 bg-accent text-primary dark:border-primary/25 dark:bg-primary/10">
               <CheckCircle2 className="size-4" />
             </div>
             <div className="relative z-10 min-w-0">
@@ -2435,9 +2435,9 @@ export function ReportBuilderPage(): ReactElement {
 
         {advancedWorkspaceMode === 'expert' || builderMode !== 'advanced' ? (
           <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-4 shadow-sm ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:ring-0">
-            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/2 dark:to-amber-500/2 opacity-30" />
+            <div className="absolute inset-0 pointer-events-none bg-[image:var(--crm-brand-gradient-soft)] opacity-25 dark:opacity-15" />
             <div className="relative z-10 flex flex-wrap items-center gap-3">
-              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-primary/15 bg-accent text-primary dark:border-primary/25 dark:bg-primary/10">
                 <ArrowRight className="size-4" />
               </div>
               <div className="min-w-[220px] flex-1">
@@ -2790,7 +2790,6 @@ export function ReportBuilderPage(): ReactElement {
                 </DeferOnView>
 
                 <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
                   <div className="relative z-10">
                     <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardLayoutTitle')}</h3>
                     <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardLayoutDescription')}</p>
