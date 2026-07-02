@@ -227,7 +227,7 @@ export function WindoQuickCreateDialog({
             </Button>
             <Button
               type="button"
-              className="bg-linear-to-r from-rose-600 to-amber-600 text-white"
+              className="bg-[image:var(--crm-brand-gradient)] hover:opacity-90 border-0 text-white font-semibold px-5 active:scale-[0.98] transition-all"
               onClick={() => void handleSubmit()}
               disabled={mutation.isPending}
             >

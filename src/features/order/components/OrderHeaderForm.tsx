@@ -576,7 +576,7 @@ export function OrderHeaderForm({
                     type="button"
                     variant="outline"
                     onClick={() => setCustomerSelectDialogOpen(true)}
-                    className="h-11 w-11 shrink-0 rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-primary hover:border-primary transition-all duration-300 shadow-sm"
+                    className="h-11 w-11 shrink-0 rounded-xl border-zinc-200 dark:border-zinc-800 hover:bg-primary hover:border-primary hover:text-primary-foreground transition-all duration-300 shadow-sm"
                     disabled={readOnly}
                   >
                     <BookUser className="h-5 w-5" />

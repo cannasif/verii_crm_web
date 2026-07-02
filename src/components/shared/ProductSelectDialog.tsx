@@ -135,22 +135,22 @@ function ProductSelectCatalogStockCard({
       onClick={onClick}
       className={cn(
         'group relative flex flex-col overflow-hidden rounded-xl border border-slate-300/90 bg-white crm-text-start shadow-md shadow-slate-200/45 backdrop-blur-md transition-all duration-300 ease-out will-change-transform dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none',
-        'hover:-translate-y-0.5 hover:border-rose-400/60 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-rose-500/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]',
+        'hover:-translate-y-0.5 hover:border-primary/60 hover:shadow-[0_10px_30px_-8px_rgba(0,0,0,0.12),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-primary/45 dark:hover:bg-white/[0.05]',
         selected &&
-          'border-pink-400/70 bg-gradient-to-b from-pink-50/90 to-white shadow-[0_6px_22px_-6px_rgba(236,72,153,0.28)] ring-1 ring-pink-400/40 dark:from-pink-500/[0.08] dark:to-transparent dark:border-pink-500/55 dark:shadow-[0_0_22px_rgba(236,72,153,0.2)] dark:ring-pink-500/30',
+          'border-primary/70 shadow-[0_0_0_2px_var(--primary)] ring-0 dark:border-primary/55',
       )}
     >
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-500/35 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         aria-hidden
       />
 
       {selected ? (
         <div
-          className="pointer-events-none absolute crm-end-1-5 top-1.5 z-20 flex h-6 w-6 items-center justify-center rounded-full border border-pink-400/80 bg-pink-500 shadow-[0_4px_14px_-2px_rgba(236,72,153,0.6)] ring-2 ring-white/90 backdrop-blur-md dark:ring-zinc-950/80"
+          className="pointer-events-none absolute crm-end-1-5 top-1.5 z-20 flex h-6 w-6 items-center justify-center rounded-full border border-primary/80 bg-primary shadow-[0_4px_14px_-2px_var(--primary)] ring-2 ring-white/90 backdrop-blur-md dark:ring-zinc-950/80"
           aria-hidden
         >
-          <Check className="h-3 w-3 text-white" strokeWidth={3.5} />
+          <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3.5} />
         </div>
       ) : null}
 
@@ -171,7 +171,7 @@ function ProductSelectCatalogStockCard({
         ) : (
           <>
             <div
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(236,72,153,0.14),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.09),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(236,72,153,0.18),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.12),transparent_50%)]"
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,color-mix(in_srgb,var(--primary)_14%,transparent),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.09),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,color-mix(in_srgb,var(--primary)_18%,transparent),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.12),transparent_50%)]"
               aria-hidden
             />
             <div
@@ -185,7 +185,7 @@ function ProductSelectCatalogStockCard({
               {watermark}
             </span>
             <Package
-              className="pointer-events-none absolute crm-end-2 top-2 h-4 w-4 text-slate-400/70 transition-all duration-300 group-hover:text-pink-500/70 dark:text-white/15 dark:group-hover:text-pink-300/60"
+              className="pointer-events-none absolute crm-end-2 top-2 h-4 w-4 text-slate-400/70 transition-all duration-300 group-hover:text-primary/70 dark:text-white/15 dark:group-hover:text-primary/60"
               aria-hidden
             />
             <div
@@ -238,7 +238,7 @@ function ProductSelectCatalogStockCard({
 
       <div className="flex min-w-0 flex-1 flex-col gap-1 p-2.5">
         <div className="flex items-center justify-between gap-2">
-          <span className="truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-pink-600 dark:text-pink-300/90">
+          <span className="truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-primary dark:text-primary/90">
             {stock.erpStockCode}
           </span>
           {stock.unit ? (
@@ -337,8 +337,8 @@ function ProductSelectCatalogStockList({
                   key={stock.id}
                   tabIndex={0}
                   className={cn(
-                    'cursor-pointer border-b border-slate-200/90 transition-colors duration-200 hover:bg-rose-50/80 dark:border-white/5 dark:hover:bg-rose-500/[0.07]',
-                    selected && 'bg-pink-50 dark:bg-pink-500/10 ring-1 ring-inset ring-pink-500/25',
+                    'cursor-pointer border-b border-slate-200/90 transition-colors duration-200 hover:bg-accent/60 dark:border-white/5 dark:hover:bg-primary/[0.07]',
+                    selected && 'bg-accent dark:bg-primary/10 ring-1 ring-inset ring-primary/25',
                   )}
                   onClick={() => onStockClick(stock)}
                   onKeyDown={(e) => {
@@ -350,7 +350,7 @@ function ProductSelectCatalogStockList({
                 >
                   <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle sm:px-3 sm:py-1.5 dark:border-white/10">
                     <div className="flex flex-wrap items-center justify-center gap-1">
-                      <span className="font-mono text-[11px] font-semibold tracking-wide text-pink-700 dark:text-pink-300 sm:text-xs">
+                      <span className="font-mono text-[11px] font-semibold tracking-wide text-primary dark:text-primary sm:text-xs">
                         {stock.erpStockCode}
                       </span>
                       {inOpeningDraft ? (
@@ -417,8 +417,8 @@ function ProductSelectCatalogStockList({
                   </td>
                   <td className="px-2 py-1 align-middle text-center sm:py-1.5">
                     {selected ? (
-                      <span className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-pink-600 dark:text-pink-300">
-                        <Check className="h-3.5 w-3.5 drop-shadow-[0_0_10px_rgba(244,114,182,0.55)]" />
+                      <span className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-primary dark:text-primary">
+                        <Check className="h-3.5 w-3.5" />
                         {t('catalogStockPicker.selectedBadge')}
                       </span>
                     ) : (
@@ -793,7 +793,7 @@ export function ProductSelectDialog({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 rounded-lg text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-500/15 dark:hover:text-red-400"
+            className="h-8 w-8 rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/[0.08] dark:hover:text-slate-100"
             onClick={() => onOpenChange(false)}
           >
             <X className="h-4 w-4" />
@@ -814,7 +814,7 @@ export function ProductSelectDialog({
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="absolute crm-start-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-rose-500 transition-colors"
+                  className="absolute crm-start-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"
                 >
                   <circle cx="11" cy="11" r="8" />
                   <path d="m21 21-4.3-4.3" />
@@ -824,7 +824,7 @@ export function ProductSelectDialog({
                   placeholder={t('productSelectDialog.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="crm-ps-10 crm-pe-20 h-10 sm:h-11 bg-white dark:bg-[#0c0516] border-slate-300 dark:border-white/15 focus-visible:border-rose-400 dark:focus-visible:border-rose-500 focus-visible:ring-2 focus-visible:ring-rose-300/60 dark:focus-visible:ring-rose-500/35 rounded-xl transition-all shadow-sm"
+                  className="crm-ps-10 crm-pe-20 h-10 sm:h-11 bg-white dark:bg-[#0c0516] border-slate-300 dark:border-white/15 focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 dark:focus-visible:ring-primary/35 rounded-xl transition-all shadow-sm"
                 />
               </div>
               {isThresholdInput ? (
@@ -851,7 +851,7 @@ export function ProductSelectDialog({
                     'shrink-0 h-10 w-10 sm:h-11 sm:w-11 rounded-xl transition-all',
                     isListening
                       ? 'animate-pulse bg-red-500 hover:bg-red-600 border-red-500 shadow-lg shadow-red-500/30'
-                      : 'bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-rose-500/50 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400'
+                      : 'bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-primary/50 hover:bg-accent dark:hover:bg-primary/10 text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary'
                   )}
                   title={t('productSelectDialog.voiceSearch')}
                 >
@@ -899,12 +899,12 @@ export function ProductSelectDialog({
                   <Button
                     type="button"
                     variant="outline"
-                    className="h-10 sm:h-11 rounded-xl bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-rose-500/50 hover:bg-rose-50 dark:hover:bg-rose-500/10 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400"
+                    className="h-10 sm:h-11 rounded-xl bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-primary/50 hover:bg-accent dark:hover:bg-primary/10 text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary"
                   >
                     <Filter className="h-4 w-4 crm-me-2" />
                     {t('filters', { defaultValue: 'Filtreler' })}
                     {hasAdvancedFilters ? (
-                      <span className="crm-ms-2 inline-flex min-w-5 justify-center rounded-full bg-rose-100 px-1.5 py-0.5 text-[10px] font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300">
+                      <span className="crm-ms-2 inline-flex min-w-5 justify-center rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary dark:bg-primary/20 dark:text-primary">
                         {rawAppliedAdvancedFilters.length}
                       </span>
                     ) : null}
@@ -965,7 +965,7 @@ export function ProductSelectDialog({
                   className={cn(
                     "p-2 rounded-lg transition-all",
                     viewMode === 'card' 
-                      ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 shadow-sm" 
+                      ? "bg-accent dark:bg-primary/20 text-primary dark:text-primary shadow-sm" 
                       : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
                   )}
                   title={t('productSelectDialog.cardView')}
@@ -979,7 +979,7 @@ export function ProductSelectDialog({
                   className={cn(
                     "p-2 rounded-lg transition-all",
                     viewMode === 'list' 
-                      ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 shadow-sm" 
+                      ? "bg-accent dark:bg-primary/20 text-primary dark:text-primary shadow-sm" 
                       : "text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5"
                   )}
                   title={t('productSelectDialog.listView')}
@@ -1000,14 +1000,14 @@ export function ProductSelectDialog({
                   type="button"
                   onClick={() => removeSelectionAtIndex(index)}
                   title={item.code}
-                  className="inline-flex max-w-[min(11rem,42vw)] items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2 py-1 crm-text-start text-[11px] font-medium text-rose-700 dark:border-rose-700/40 dark:bg-rose-900/20 dark:text-rose-300 sm:max-w-[13rem]"
+                  className="inline-flex max-w-[min(11rem,42vw)] items-center gap-1 rounded-full border border-primary/30 bg-accent px-2 py-1 crm-text-start text-[11px] font-medium text-primary dark:border-primary/30 dark:bg-primary/15 dark:text-primary sm:max-w-[13rem]"
                 >
                   <span className="flex min-w-0 flex-1 flex-col gap-0 overflow-hidden crm-text-start leading-tight">
                     <span className="truncate font-mono" title={item.code}>
                       {item.code}
                     </span>
                     {item.name ? (
-                      <span className="truncate text-[10px] font-normal text-rose-600/90 dark:text-rose-300/80" title={item.name}>
+                      <span className="truncate text-[10px] font-normal text-primary/80 dark:text-primary/70" title={item.name}>
                         {item.name}
                       </span>
                     ) : null}
@@ -1047,7 +1047,7 @@ export function ProductSelectDialog({
               type="button"
               onClick={() => void handleConfirmMultiSelect()}
               disabled={selectedResults.length === 0}
-              className="bg-linear-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white"
+              className="bg-[image:var(--crm-brand-gradient)] hover:opacity-90 border-0 text-white font-semibold active:scale-[0.98] transition-all"
             >
               {t('addSelected', { defaultValue: 'Secilenleri Ekle' })} ({selectedResults.length})
             </Button>

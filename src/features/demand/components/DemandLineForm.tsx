@@ -1206,21 +1206,21 @@ export function DemandLineForm({
   const bulkDraftGrandTotal = bulkDraftLines.reduce((sum, item) => sum + (item.lineGrandTotal || 0), 0);
   const percentageStep = '0.1';
   const isLineStockSelected = Boolean((formData.productCode ?? '').trim());
-  const pinkFocusClass = 'focus-visible:border-rose-500 focus-visible:ring-2 focus-visible:ring-rose-500/20';
+  const pinkFocusClass = 'focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20';
 
   return (
     <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
       <div className="space-y-4">
         <label className="text-sm font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-2">
-          <Package className="h-4 w-4 text-rose-500" />
+          <Package className="h-4 w-4 text-primary" />
           {t('lines.stock')}
-          <span className="text-rose-500">*</span>
+          <span className="text-primary">*</span>
         </label>
 
         <div className="flex flex-col gap-3">
           <div className="flex flex-row gap-3">
             <div className="group relative min-w-0 flex-1">
-              <div className="pointer-events-none absolute left-3 top-1/2 z-20 flex -translate-y-1/2 items-center justify-center text-slate-400 transition-colors group-focus-within:text-rose-500">
+              <div className="pointer-events-none absolute left-3 top-1/2 z-20 flex -translate-y-1/2 items-center justify-center text-slate-400 transition-colors group-focus-within:text-primary">
                 <Search className="h-4 w-4" />
               </div>
               <LineFormStockSearchField
@@ -1233,7 +1233,7 @@ export function DemandLineForm({
               type="button"
               variant="outline"
               onClick={() => setProductDialogOpen(true)}
-              className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-rose-50 dark:hover:bg-rose-500/10 text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 transition-all flex-none items-center justify-center"
+              className="h-11 w-11 p-0 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-accent text-primary transition-all flex-none items-center justify-center"
             >
               <Search className="h-5 w-5" />
             </Button>
@@ -1241,7 +1241,7 @@ export function DemandLineForm({
               type="button"
               variant="outline"
               onClick={() => setCatalogDialogOpen(true)}
-              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-rose-50 dark:hover:bg-rose-500/10 text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 transition-all flex-none items-center gap-2"
+              className="h-11 px-3 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.04] hover:bg-accent text-primary transition-all flex-none items-center gap-2"
             >
               <LayoutGrid className="h-4 w-4" />
               <span className="text-xs font-medium">{t('catalogStockPicker.openButton', { ns: 'common' })}</span>
@@ -1295,12 +1295,12 @@ export function DemandLineForm({
           </div>
 
           {bulkDraftLines.length > 0 && (
-            <div className="rounded-xl border border-rose-200/70 dark:border-rose-800/40 bg-rose-50/50 dark:bg-rose-950/10 p-3 space-y-2">
+            <div className="rounded-xl border border-primary/20 dark:border-primary/30 bg-accent/40 p-3 space-y-2">
               <div className="flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-300">
                 <span className="font-semibold">
                   {t('lines.stock')} ({bulkDraftLines.length})
                 </span>
-                <span className="inline-flex items-center rounded-full border border-rose-300/70 dark:border-rose-700/50 bg-white/90 dark:bg-rose-900/30 px-2.5 py-1 text-[11px] font-bold text-rose-700 dark:text-rose-300">
+                <span className="inline-flex items-center rounded-full border border-primary/30 bg-white/90 dark:bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary">
                   {t('quotation:lines.grandTotal')}: {formatCurrency(bulkDraftGrandTotal, currencyCode)}
                 </span>
               </div>
@@ -1309,8 +1309,8 @@ export function DemandLineForm({
                   <div
                     key={`${item.id}-${index}`}
                     className={`inline-flex items-stretch overflow-hidden rounded-full border transition-all ${index === activeBulkIndex
-                      ? 'border-rose-500 bg-rose-600 shadow-md shadow-rose-500/30 dark:border-rose-400 dark:bg-rose-500'
-                      : 'border-rose-200/80 bg-white/80 dark:border-rose-700/40 dark:bg-rose-900/20'
+                      ? 'border-primary bg-primary shadow-md shadow-primary/30 text-primary-foreground'
+                      : 'border-primary/20 bg-white/80 dark:border-primary/30 dark:bg-primary/10'
                       }`}
                   >
                     <button
@@ -1318,8 +1318,8 @@ export function DemandLineForm({
                       onClick={() => handleSelectBulkLine(index)}
                       title={item.productName || item.productCode || '-'}
                       className={`flex h-8 max-w-[180px] items-center gap-1.5 px-3 text-left text-sm transition-colors ${index === activeBulkIndex
-                        ? 'text-white hover:bg-rose-700/35 dark:hover:bg-white/10'
-                        : 'text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-900/35'
+                        ? 'text-primary-foreground hover:bg-primary-foreground/10'
+                        : 'text-primary hover:bg-accent'
                         }`}
                     >
                       {(item.relatedLines?.length ?? 0) > 0 ? <Layers className="h-3.5 w-3.5 shrink-0" /> : null}
@@ -1331,8 +1331,8 @@ export function DemandLineForm({
                       title={t('common.remove')}
                       onClick={handleRemoveBulkDraftLine(index)}
                       className={`flex h-8 w-7 shrink-0 items-center justify-center border-l text-xs transition-colors ${index === activeBulkIndex
-                        ? 'border-rose-400/50 text-white/90 hover:bg-white/15 hover:text-white'
-                        : 'border-rose-200/70 text-rose-600 hover:bg-rose-100 dark:border-rose-700/50 dark:text-rose-300 dark:hover:bg-rose-900/40'
+                        ? 'border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10'
+                        : 'border-primary/20 text-primary hover:bg-accent'
                         }`}
                     >
                       <X className="h-3.5 w-3.5" strokeWidth={2.5} />
@@ -1477,7 +1477,7 @@ export function DemandLineForm({
               >
                 <div className="flex items-center justify-between gap-2">
                   <label className="text-xs font-medium text-slate-500 dark:text-slate-400 ml-1">{item.label}</label>
-                  <span className="text-xs font-semibold text-red-500 dark:text-red-400">
+                  <span className="text-xs font-semibold text-primary">
                     {getDiscountAmount(item.field) > 0 ? '-' : ''}
                     {formatCurrency(getDiscountAmount(item.field), currencyCode)}
                   </span>
@@ -1590,7 +1590,7 @@ export function DemandLineForm({
               <div className="space-y-1.5">
                 <div className="flex items-center gap-1.5 ml-1">
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                    {t('lines.windoProfileLabel')} <span className="text-rose-500">*</span>
+                    {t('lines.windoProfileLabel')} <span className="text-primary">*</span>
                   </label>
                   <ErpFieldHint label={t('lines.profileErpTooltip')} />
                 </div>
@@ -1607,7 +1607,7 @@ export function DemandLineForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-0 text-xs text-rose-600 hover:text-rose-700"
+                  className="h-8 px-0 text-xs text-primary hover:text-primary/80"
                   onClick={() => setProfilCreateOpen(true)}
                 >
                   <CirclePlus className="mr-1 h-3.5 w-3.5" />
@@ -1634,7 +1634,7 @@ export function DemandLineForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-0 text-xs text-rose-600 hover:text-rose-700"
+                  className="h-8 px-0 text-xs text-primary hover:text-primary/80"
                   onClick={() => setDemirCreateOpen(true)}
                 >
                   <CirclePlus className="mr-1 h-3.5 w-3.5" />
@@ -1661,7 +1661,7 @@ export function DemandLineForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-0 text-xs text-rose-600 hover:text-rose-700"
+                  className="h-8 px-0 text-xs text-primary hover:text-primary/80"
                   onClick={() => setVidaCreateOpen(true)}
                 >
                   <CirclePlus className="mr-1 h-3.5 w-3.5" />
@@ -1696,7 +1696,7 @@ export function DemandLineForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-0 text-xs text-rose-600 hover:text-rose-700"
+                  className="h-8 px-0 text-xs text-primary hover:text-primary/80"
                   onClick={() => setBaskiCreateOpen(true)}
                 >
                   <CirclePlus className="mr-1 h-3.5 w-3.5" />
@@ -1773,7 +1773,7 @@ export function DemandLineForm({
             </div>
             <div className="flex justify-between items-center text-sm gap-4">
               <span className="text-slate-500 dark:text-slate-400 font-medium">{t('quotation:lines.totalDiscount')}</span>
-              <span className="font-semibold text-red-500 dark:text-red-400">
+              <span className="font-semibold text-primary">
                 {hasDiscount ? '-' : ''}
                 {formatCurrency(totalDiscount, currencyCode)}
               </span>
