@@ -164,9 +164,8 @@ export function ReportsListPage(): ReactElement {
       <div className="flex flex-col gap-6 pt-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 items-start">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-rose-200 dark:border-white/10 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-yellow-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <LayoutGrid className="size-8 text-rose-600 dark:text-rose-400 relative z-10" />
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-accent shadow-inner dark:border-primary/30 dark:bg-primary/10">
+              <LayoutGrid className="size-8 text-primary" />
             </div>
             <div>
               <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">

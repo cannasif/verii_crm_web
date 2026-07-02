@@ -140,12 +140,12 @@ export function ProductPricingStockSelectDialog({
                   key={stock.id}
                   onClick={() => handleSelect(stock)}
                   className={cn(
-                    'relative flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 border',
-                    'bg-white dark:bg-[#1a1025]/40 border-slate-200 dark:border-white/5',
-                    'hover:border-pink-300 dark:hover:border-pink-500/30 hover:shadow-md hover:shadow-pink-500/5'
+                    'group relative flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition-[color,background-color,border-color,box-shadow] duration-200',
+                    'border-slate-200 bg-white dark:border-white/5 dark:bg-[#1a1025]/40',
+                    'hover:border-primary/40 hover:bg-accent/60 hover:shadow-sm dark:hover:border-primary/45 dark:hover:bg-primary/[0.07]',
                   )}
                 >
-                  <div className="flex items-center justify-center w-10 h-10 rounded-lg shrink-0 bg-pink-100 text-pink-600 dark:bg-pink-500/20 dark:text-pink-300">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent text-primary transition-colors group-hover:bg-primary/15 dark:bg-primary/10 dark:group-hover:bg-primary/20">
                     <Package size={20} />
                   </div>
                   <div className="flex-1 min-w-0">

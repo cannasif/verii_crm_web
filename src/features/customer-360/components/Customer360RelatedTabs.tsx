@@ -12,6 +12,10 @@ import { useQuotationList } from '@/features/quotation/hooks/useQuotationList';
 import { useOrderList } from '@/features/order/hooks/useOrderList';
 import { useCustomerActivities } from '../hooks/useCustomerActivities';
 import { buildCustomerDocumentFilters } from '../utils/customer-document-filters';
+import {
+  CUSTOMER_360_ICON_CHIP_CLASS,
+  CUSTOMER_360_RELATED_CARD_CLASS,
+} from '../utils/customer-360-card-styles';
 
 const PAGE_SIZE = 20;
 
@@ -50,11 +54,11 @@ function RelatedCard({
   children: ReactNode;
 }): ReactElement {
   return (
-    <Card className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-linear-to-r before:from-transparent before:via-rose-500/40 before:to-transparent before:opacity-60 before:transition-opacity hover:border-rose-500/30 hover:shadow-[0_12px_34px_-16px_rgba(236,72,153,0.4)] hover:before:opacity-100">
+    <Card className={CUSTOMER_360_RELATED_CARD_CLASS}>
       <CardContent className="p-4 sm:p-5">
         <div className="mb-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 text-sm font-semibold">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-rose-500/15 to-amber-500/10 text-rose-500 ring-1 ring-inset ring-rose-500/15 transition-all group-hover:from-rose-500/25 group-hover:to-amber-500/15 group-hover:ring-rose-500/30">
+            <span className={CUSTOMER_360_ICON_CHIP_CLASS}>
               <Icon className="h-4 w-4" />
             </span>
             {title}

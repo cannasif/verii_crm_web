@@ -78,7 +78,7 @@ export function StockGridCard({
         </Button>
       </div>
 
-      <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-slate-100 via-white to-slate-200/70 dark:from-zinc-900 dark:via-slate-950 dark:to-zinc-900">
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-slate-100 via-accent/25 to-slate-200/70 dark:from-zinc-900 dark:via-primary/5 dark:to-zinc-900">
         {imageUrl ? (
           <>
             <img
@@ -95,7 +95,7 @@ export function StockGridCard({
         ) : (
           <>
             <div
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.14),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.09),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(244,63,94,0.18),transparent_55%),radial-gradient(circle_at_80%_90%,rgba(59,130,246,0.12),transparent_50%)]"
+              className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-70 dark:opacity-90"
               aria-hidden
             />
             <div
@@ -103,17 +103,17 @@ export function StockGridCard({
               aria-hidden
             />
             <span
-              className="pointer-events-none absolute -bottom-2 left-1 select-none font-mono text-[clamp(2.25rem,7vw,4rem)] font-black uppercase leading-none tracking-tighter text-slate-900/[0.07] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-pink-500/20 dark:text-white/[0.06] dark:group-hover:text-pink-300/[0.14]"
+              className="pointer-events-none absolute -bottom-2 left-1 select-none font-mono text-[clamp(2.25rem,7vw,4rem)] font-black uppercase leading-none tracking-tighter text-slate-900/[0.07] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-primary/20 dark:text-white/[0.06] dark:group-hover:text-primary/15"
               aria-hidden
             >
               {watermark}
             </span>
             <Package
-              className="pointer-events-none absolute right-2 top-2 h-4 w-4 text-slate-400/70 transition-all duration-300 group-hover:text-pink-500/70 dark:text-white/15 dark:group-hover:text-pink-300/60"
+              className="pointer-events-none absolute right-2 top-2 h-4 w-4 text-primary/35 transition-all duration-300 group-hover:text-primary/70 dark:text-primary/25 dark:group-hover:text-primary/55"
               aria-hidden
             />
             <div
-              className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(241,245,249,0.9),transparent_55%)] dark:bg-[linear-gradient(to_top,rgba(9,9,11,0.85),transparent_50%)]"
+              className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(241,245,249,0.88),transparent_55%)] dark:bg-[linear-gradient(to_top,rgba(9,9,11,0.85),transparent_50%)]"
               aria-hidden
             />
           </>
