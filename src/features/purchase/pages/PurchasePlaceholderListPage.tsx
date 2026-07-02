@@ -177,6 +177,13 @@ function formatMoney(value?: number | null): string {
   return new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
 }
 
+function getDetailPath(endpoint: PurchaseEndpoint, id: number): string | null {
+  if (endpoint === 'PurchaseRfq') return `/purchase/rfqs/${id}`;
+  if (endpoint === 'SupplierQuotation') return `/purchase/supplier-quotations/${id}`;
+  if (endpoint === 'PurchaseOrder') return `/purchase/orders/${id}`;
+  return null;
+}
+
 export function PurchasePlaceholderListPage({ title, description, endpoint, documentNoLabel, createPath, createLabel }: PurchasePlaceholderListPageProps) {
   const pageKey = `purchase-${endpoint.toLowerCase()}-list`;
   const [pageNumber, setPageNumber] = useState(1);
@@ -350,18 +357,19 @@ export function PurchasePlaceholderListPage({ title, description, endpoint, docu
                   paginationInfoText={`${rows.length ? (pageNumber - 1) * pageSize + 1 : 0}-${Math.min(pageNumber * pageSize, totalCount)} / ${totalCount} kayıt`}
                   disablePaginationButtons={query.isFetching}
                   centerColumnHeaders
-                  showActionsColumn={endpoint === 'PurchaseRfq'}
+                  showActionsColumn={endpoint !== 'PurchaseRequest'}
                   actionsHeaderLabel="İşlemler"
                   actionsCellClassName="text-center"
-                  renderActionsCell={(row) =>
-                    endpoint === 'PurchaseRfq' ? (
+                  renderActionsCell={(row) => {
+                    const detailPath = getDetailPath(endpoint, row.id);
+                    return detailPath ? (
                       <Button asChild variant="ghost" size="icon" className="h-9 w-9">
-                        <Link to={`/purchase/rfqs/${row.id}`} aria-label="RFQ detayını aç">
+                        <Link to={detailPath} aria-label="Satınalma detayını aç">
                           <Eye className="h-4 w-4" />
                         </Link>
                       </Button>
-                    ) : null
-                  }
+                    ) : null;
+                  }}
                   onColumnOrderChange={(next) => setColumnOrder(next as ColumnKey[])}
                   renderCell={(row, key) => {
                     if (key === 'grandTotal') return formatMoney(row.grandTotal);

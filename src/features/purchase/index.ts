@@ -5,7 +5,9 @@ export {
   PurchaseSimpleCreatePage,
   PurchaseRequestCreatePage,
   SupplierQuotationCreatePage,
+  SupplierQuotationDetailPage,
   PurchaseOrderCreatePage,
+  PurchaseOrderDetailPage,
 } from './pages/PurchaseSimpleCreatePage';
 export {
   PurchasePlaceholderListPage,

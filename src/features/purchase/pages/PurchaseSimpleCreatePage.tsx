@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft,
   ArrowRightLeft,
@@ -69,6 +69,15 @@ interface PurchaseSimpleCreatePageProps {
   kind: PurchaseCreateKind;
 }
 
+type PurchaseDocumentDetail = Record<string, unknown> & {
+  id?: number;
+  status?: string | number;
+  notes?: Record<string, string | null | undefined> | null;
+  exchangeRates?: Array<Record<string, unknown>>;
+  lines?: Array<Record<string, unknown>>;
+  purchaseRequestIds?: number[];
+};
+
 function parseIdList(value: string, label: string): number[] {
   const tokens = value
     .split(',')
@@ -117,10 +126,71 @@ function getLineDescriptionPlaceholder(
   return labels[fieldKey]?.placeholder || 'Satır bazlı kalem açıklaması';
 }
 
+function toDateInput(value: unknown): string {
+  if (typeof value !== 'string' || !value) return '';
+  return value.slice(0, 10);
+}
+
+function nullableText(value: unknown): string {
+  if (value == null) return '';
+  return String(value);
+}
+
+function notesToForm(notesValue: PurchaseDocumentDetail['notes']): string[] {
+  return Array.from({ length: NOTE_COUNT }, (_, index) => {
+    const key = `note${index + 1}`;
+    const pascalKey = `Note${index + 1}`;
+    return nullableText(notesValue?.[key] ?? notesValue?.[pascalKey]);
+  });
+}
+
+function exchangeRatesToForm(rates: PurchaseDocumentDetail['exchangeRates']): ExchangeRateForm[] {
+  const mapped = (rates ?? []).map((rate) => ({
+    clientKey: createEmptyExchangeRate().clientKey,
+    currency: nullableText(rate.currency ?? rate.Currency),
+    exchangeRate: nullableText(rate.exchangeRate ?? rate.ExchangeRate) || '1',
+    exchangeRateDate: toDateInput(rate.exchangeRateDate ?? rate.ExchangeRateDate),
+    isOfficial: Boolean(rate.isOfficial ?? rate.IsOfficial ?? true),
+  }));
+
+  return mapped.length > 0 ? mapped : [createEmptyExchangeRate()];
+}
+
+function linesToForm(linesValue: PurchaseDocumentDetail['lines']): PurchaseLineForm[] {
+  const mapped = (linesValue ?? []).map((line) => ({
+    clientKey: createEmptyLine().clientKey,
+    stockId: nullableText(line.stockId ?? line.StockId),
+    purchaseRequestLineId: nullableText(line.purchaseRequestLineId ?? line.PurchaseRequestLineId),
+    supplierQuotationLineId: nullableText(line.supplierQuotationLineId ?? line.SupplierQuotationLineId),
+    productCode: nullableText(line.productCode ?? line.ProductCode),
+    productName: nullableText(line.productName ?? line.ProductName),
+    quantity: nullableText(line.quantity ?? line.Quantity) || '1',
+    unit: nullableText(line.unit ?? line.Unit),
+    unitPrice: nullableText(line.unitPrice ?? line.UnitPrice) || '0',
+    vatRate: nullableText(line.vatRate ?? line.VatRate) || '20',
+    discount1: nullableText(line.discount1 ?? line.Discount1) || '0',
+    discount2: nullableText(line.discount2 ?? line.Discount2) || '0',
+    discount3: nullableText(line.discount3 ?? line.Discount3) || '0',
+    deliveryDate: toDateInput(line.deliveryDate ?? line.DeliveryDate),
+    description1: nullableText(line.description1 ?? line.Description1),
+    description2: nullableText(line.description2 ?? line.Description2),
+    description3: nullableText(line.description3 ?? line.Description3),
+    imagePath: nullableText(line.imagePath ?? line.ImagePath),
+    erpProjectCode: nullableText(line.erpProjectCode ?? line.ErpProjectCode),
+  }));
+
+  return mapped.length > 0 ? mapped : [createEmptyLine()];
+}
+
 export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps) {
   const navigate = useNavigate();
+  const { id: routeId } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
   const config = purchaseCreateConfigs[kind];
   const isRequest = kind === 'request';
+  const documentId = routeId ? Number(routeId) : null;
+  const isEditMode = Number.isFinite(documentId) && documentId != null && documentId > 0;
+  const loadedDocumentRef = useRef<number | null>(null);
   const [documentNo, setDocumentNo] = useState('');
   const [revisionNo, setRevisionNo] = useState('');
   const [documentDate, setDocumentDate] = useState('');
@@ -188,6 +258,65 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
       })),
     [documentSerialTypesPage?.data],
   );
+
+  const detailQuery = useQuery({
+    queryKey: ['purchase', kind, 'detail', documentId],
+    enabled: isEditMode,
+    queryFn: async () => {
+      const response = await api.get<ApiResponse<PurchaseDocumentDetail>>(`${config.endpoint}/${documentId}`);
+      if (!response.success || !response.data) {
+        throw new Error(response.message || 'Satınalma kaydı yüklenemedi.');
+      }
+      return response.data;
+    },
+    staleTime: 30_000,
+  });
+
+  useEffect(() => {
+    const document = detailQuery.data;
+    if (!document || !documentId || loadedDocumentRef.current === documentId) return;
+
+    setDocumentNo(nullableText(document[config.numberField]));
+    setRevisionNo(nullableText(document.revisionNo ?? document.RevisionNo));
+    setDocumentDate(toDateInput(document[config.dateField]));
+    setValidUntil(toDateInput(document.validUntil ?? document.ValidUntil));
+    setHeaderDeliveryDate(toDateInput(document.deliveryDate ?? document.DeliveryDate));
+    setSupplierId(nullableText(document.supplierId ?? document.SupplierId));
+    setSelectedSupplier(
+      document.supplierId || document.SupplierId
+        ? {
+            id: Number(document.supplierId ?? document.SupplierId),
+            customerCode: nullableText(document.supplierErpCode ?? document.SupplierErpCode),
+            name: nullableText(document.supplierNameSnapshot ?? document.SupplierNameSnapshot),
+          }
+        : null,
+    );
+    setPurchaseRequestIdsText((document.purchaseRequestIds ?? []).join(', '));
+    setSupplierQuotationId(nullableText(document.supplierQuotationId ?? document.SupplierQuotationId));
+    setCurrencyCode(nullableText(document.currencyCode ?? document.CurrencyCode) || 'TL');
+    setExchangeRate(nullableText(document.exchangeRate ?? document.ExchangeRate) || '1');
+    setPaymentTypeId(nullableText(document.paymentTypeId ?? document.PaymentTypeId));
+    setDocumentSerialTypeId(nullableText(document.documentSerialTypeId ?? document.DocumentSerialTypeId));
+    setPurchaseType(nullableText(document.purchaseType ?? document.PurchaseType));
+    setDeliveryTerms(nullableText(document.deliveryTerms ?? document.DeliveryTerms));
+    setPaymentTerms(nullableText(document.paymentTerms ?? document.PaymentTerms));
+    setDepartment(nullableText(document.department ?? document.Department));
+    setProjectCode(nullableText(document.projectCode ?? document.ProjectCode));
+    setErpProjectCode(nullableText(document.erpProjectCode ?? document.ErpProjectCode));
+    setOzelKod1(nullableText(document.ozelKod1 ?? document.OzelKod1));
+    setOzelKod2(nullableText(document.ozelKod2 ?? document.OzelKod2));
+    setGeneralDiscountRate(nullableText(document.generalDiscountRate ?? document.GeneralDiscountRate) || '0');
+    setGeneralDiscountAmount(nullableText(document.generalDiscountAmount ?? document.GeneralDiscountAmount) || '0');
+    setDescription(nullableText(document.description ?? document.Description));
+    setNotes(notesToForm(document.notes));
+    setExchangeRates(exchangeRatesToForm(document.exchangeRates));
+    setLines(linesToForm(document.lines));
+    specialCodeManualChangeRef.current = {
+      ozelKod1: Boolean(document.ozelKod1 ?? document.OzelKod1),
+      ozelKod2: Boolean(document.ozelKod2 ?? document.OzelKod2),
+    };
+    loadedDocumentRef.current = documentId;
+  }, [config.dateField, config.numberField, detailQuery.data, documentId]);
 
   useEffect(() => {
     if (isRequest) return;
@@ -257,21 +386,27 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
     };
   }, [generalDiscountAmount, generalDiscountRate, visibleLines]);
 
-  const createMutation = useMutation({
+  const saveMutation = useMutation({
     mutationFn: async () => {
       const payload = buildPayload();
-      const response = await api.post<ApiResponse<CreatedPurchaseDocument>>(config.endpoint, payload);
+      const response = isEditMode
+        ? await api.put<ApiResponse<CreatedPurchaseDocument>>(`${config.endpoint}/${documentId}`, payload)
+        : await api.post<ApiResponse<CreatedPurchaseDocument>>(config.endpoint, payload);
       if (!response.success || !response.data?.id) {
-        throw new Error(response.message || 'Satınalma kaydı oluşturulamadı.');
+        throw new Error(response.message || (isEditMode ? 'Satınalma kaydı güncellenemedi.' : 'Satınalma kaydı oluşturulamadı.'));
       }
       return response.data.id;
     },
     onSuccess: (id) => {
-      toast.success(config.successMessage);
-      navigate(`${config.listPath}?created=${id}`);
+      toast.success(isEditMode ? 'Satınalma kaydı güncellendi.' : config.successMessage);
+      void queryClient.invalidateQueries({ queryKey: ['purchase', kind] });
+      void queryClient.invalidateQueries({ queryKey: ['purchase', kind, 'detail', id] });
+      if (!isEditMode) {
+        navigate(`${config.listPath}?created=${id}`);
+      }
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : 'Satınalma kaydı oluşturulamadı.');
+      toast.error(error instanceof Error ? error.message : 'Satınalma kaydı kaydedilemedi.');
     },
   });
 
@@ -478,14 +613,26 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
           </div>
           <Button
             type="button"
-            disabled={createMutation.isPending}
-            onClick={() => createMutation.mutate()}
+            disabled={saveMutation.isPending || detailQuery.isLoading}
+            onClick={() => saveMutation.mutate()}
             className="h-12 min-w-[150px] rounded-[8px] bg-linear-to-r from-[var(--crm-brand-primary)] to-[var(--crm-brand-secondary)] font-black text-white shadow-lg"
           >
             <Save className="mr-2 h-4 w-4" />
-            {createMutation.isPending ? 'Kaydediliyor' : 'Kaydet'}
+            {saveMutation.isPending ? 'Kaydediliyor' : isEditMode ? 'Güncelle' : 'Kaydet'}
           </Button>
         </header>
+
+        {detailQuery.isError ? (
+          <div className="rounded-[8px] border border-red-300 bg-red-50 px-4 py-3 text-sm font-bold text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-200">
+            {detailQuery.error instanceof Error ? detailQuery.error.message : 'Satınalma kaydı yüklenemedi.'}
+          </div>
+        ) : null}
+
+        {detailQuery.isLoading ? (
+          <div className="rounded-[8px] border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-600 shadow-sm dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300">
+            Satınalma kaydı yükleniyor...
+          </div>
+        ) : null}
 
         <div className="grid grid-cols-1 gap-8 xl:grid-cols-[1fr_360px]">
           <main className="space-y-6">
@@ -1086,12 +1233,12 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                 )}
                 <Button
                   type="button"
-                  disabled={createMutation.isPending}
-                  onClick={() => createMutation.mutate()}
+                  disabled={saveMutation.isPending || detailQuery.isLoading}
+                  onClick={() => saveMutation.mutate()}
                   className="h-12 w-full rounded-[8px] bg-linear-to-r from-[var(--crm-brand-primary)] to-[var(--crm-brand-secondary)] font-black text-white shadow-lg"
                 >
                   <Save className="mr-2 h-4 w-4" />
-                  {createMutation.isPending ? 'Kaydediliyor' : 'Kaydet'}
+                  {saveMutation.isPending ? 'Kaydediliyor' : isEditMode ? 'Güncelle' : 'Kaydet'}
                 </Button>
               </div>
             </section>
@@ -1122,6 +1269,14 @@ export function SupplierQuotationCreatePage() {
   return <PurchaseSimpleCreatePage kind="supplierQuotation" />;
 }
 
+export function SupplierQuotationDetailPage() {
+  return <PurchaseSimpleCreatePage kind="supplierQuotation" />;
+}
+
 export function PurchaseOrderCreatePage() {
+  return <PurchaseSimpleCreatePage kind="order" />;
+}
+
+export function PurchaseOrderDetailPage() {
   return <PurchaseSimpleCreatePage kind="order" />;
 }

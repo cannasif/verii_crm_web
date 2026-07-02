@@ -71,7 +71,9 @@ const PurchaseRfqCreatePage = lazyImport(() => import('@/features/purchase'), 'P
 const PurchaseRfqDetailPage = lazyImport(() => import('@/features/purchase'), 'PurchaseRfqDetailPage');
 const PurchaseRequestCreatePage = lazyImport(() => import('@/features/purchase'), 'PurchaseRequestCreatePage');
 const SupplierQuotationCreatePage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationCreatePage');
+const SupplierQuotationDetailPage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationDetailPage');
 const PurchaseOrderCreatePage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderCreatePage');
+const PurchaseOrderDetailPage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderDetailPage');
 const SupplierQuotationListPage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationListPage');
 const PurchaseOrderListPage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderListPage');
 const PricingRuleManagementPage = lazyImport(() => import('@/features/pricing-rule'), 'PricingRuleManagementPage');
@@ -214,9 +216,11 @@ export function createAppRouter() {
         { path: 'purchase/supplier-quotations', element: <SupplierQuotationListPage /> },
         { path: 'purchase/supplier-quotations/create', element: <SupplierQuotationCreatePage /> },
         { path: 'purchase/supplier-quotations/compare', element: <SupplierQuotationListPage /> },
+        { path: 'purchase/supplier-quotations/:id', element: <SupplierQuotationDetailPage /> },
         { path: 'purchase/orders', element: <PurchaseOrderListPage /> },
         { path: 'purchase/orders/create', element: <PurchaseOrderCreatePage /> },
         { path: 'purchase/orders/waiting-approvals', element: <PurchaseOrderListPage /> },
+        { path: 'purchase/orders/:id', element: <PurchaseOrderDetailPage /> },
         { path: 'pricing-rules', element: <PricingRuleManagementPage /> },
         { path: 'stocks', element: <StockListPage /> },
         { path: 'stocks/:id', element: <StockDetailPage /> },
