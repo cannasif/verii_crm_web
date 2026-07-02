@@ -16,6 +16,9 @@ export interface PurchaseCreateConfig {
 
 export interface PurchaseLineForm {
   clientKey: string;
+  stockId: string;
+  purchaseRequestLineId: string;
+  supplierQuotationLineId: string;
   productCode: string;
   productName: string;
   quantity: string;
@@ -29,6 +32,7 @@ export interface PurchaseLineForm {
   description1: string;
   description2: string;
   description3: string;
+  imagePath: string;
   erpProjectCode: string;
 }
 
@@ -53,6 +57,9 @@ export const createClientKey = (): string =>
 
 export const createEmptyLine = (): PurchaseLineForm => ({
   clientKey: createClientKey(),
+  stockId: '',
+  purchaseRequestLineId: '',
+  supplierQuotationLineId: '',
   productCode: '',
   productName: '',
   quantity: '1',
@@ -66,6 +73,7 @@ export const createEmptyLine = (): PurchaseLineForm => ({
   description1: '',
   description2: '',
   description3: '',
+  imagePath: '',
   erpProjectCode: '',
 });
 
@@ -127,6 +135,7 @@ export function formatMoney(value: number, currencyCode: string): string {
 
 export function productToLineMarker(line: PurchaseLineForm): ProductSelectionResult {
   return {
+    id: line.stockId ? toNumber(line.stockId) : undefined,
     code: line.productCode.trim(),
     name: line.productName.trim(),
     unit: line.unit.trim() || undefined,

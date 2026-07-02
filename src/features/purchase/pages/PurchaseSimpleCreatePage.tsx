@@ -10,7 +10,9 @@ import {
   CreditCard,
   FileText,
   Hash,
+  Image,
   Layers,
+  Link2,
   Package,
   Percent,
   Plus,
@@ -54,19 +56,40 @@ interface PurchaseSimpleCreatePageProps {
   kind: PurchaseCreateKind;
 }
 
+function parseIdList(value: string, label: string): number[] {
+  const tokens = value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const ids = tokens.map(Number);
+  if (ids.some((item) => !Number.isFinite(item) || item <= 0)) {
+    throw new Error(`${label} virgülle ayrılmış pozitif sayılar olmalıdır.`);
+  }
+
+  return Array.from(new Set(ids));
+}
+
 export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps) {
   const navigate = useNavigate();
   const config = purchaseCreateConfigs[kind];
   const isRequest = kind === 'request';
   const [documentNo, setDocumentNo] = useState('');
+  const [revisionNo, setRevisionNo] = useState('');
   const [documentDate, setDocumentDate] = useState('');
+  const [validUntil, setValidUntil] = useState('');
+  const [headerDeliveryDate, setHeaderDeliveryDate] = useState('');
   const [supplierId, setSupplierId] = useState('');
   const [selectedSupplier, setSelectedSupplier] = useState<IntegratedSupplierOption | null>(null);
+  const [purchaseRequestIdsText, setPurchaseRequestIdsText] = useState('');
+  const [supplierQuotationId, setSupplierQuotationId] = useState('');
   const [currencyCode, setCurrencyCode] = useState('TL');
   const [exchangeRate, setExchangeRate] = useState('1');
   const [paymentTypeId, setPaymentTypeId] = useState('');
   const [documentSerialTypeId, setDocumentSerialTypeId] = useState('');
   const [purchaseType, setPurchaseType] = useState('');
+  const [deliveryTerms, setDeliveryTerms] = useState('');
+  const [paymentTerms, setPaymentTerms] = useState('');
   const [department, setDepartment] = useState('');
   const [projectCode, setProjectCode] = useState('');
   const [erpProjectCode, setErpProjectCode] = useState('');
@@ -156,9 +179,42 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
     if (!isRequest && currencyCode.trim().toUpperCase() !== 'TL' && toNumber(exchangeRate, 0) <= 0) {
       throw new Error('TL dışındaki satınalma belgelerinde kur 0 olamaz.');
     }
+    if (validUntil && documentDate && validUntil < documentDate) {
+      throw new Error('Geçerlilik tarihi belge tarihinden önce olamaz.');
+    }
+    if (headerDeliveryDate && documentDate && headerDeliveryDate < documentDate) {
+      throw new Error('Teslim tarihi belge tarihinden önce olamaz.');
+    }
+    if (paymentTypeId && !Number.isFinite(Number(paymentTypeId))) {
+      throw new Error('Ödeme tipi ID sayısal olmalıdır.');
+    }
+    if (documentSerialTypeId && !Number.isFinite(Number(documentSerialTypeId))) {
+      throw new Error('Belge seri ID sayısal olmalıdır.');
+    }
+    if (supplierQuotationId && !Number.isFinite(Number(supplierQuotationId))) {
+      throw new Error('Bağlı tedarikçi teklif ID sayısal olmalıdır.');
+    }
+    const purchaseRequestIds = parseIdList(purchaseRequestIdsText, 'Bağlı satınalma talep ID bilgisi');
 
     const mappedLines = visibleLines.map((line) => {
+      if (toNumber(line.quantity, 0) <= 0) {
+        throw new Error(`${line.productName || line.productCode || 'Satır'} için miktar 0'dan büyük olmalıdır.`);
+      }
+      if (line.stockId && !Number.isFinite(Number(line.stockId))) {
+        throw new Error(`${line.productName || line.productCode || 'Satır'} stok ID bilgisi sayısal olmalıdır.`);
+      }
+      if (line.purchaseRequestLineId && !Number.isFinite(Number(line.purchaseRequestLineId))) {
+        throw new Error(`${line.productName || line.productCode || 'Satır'} bağlı talep satır ID bilgisi sayısal olmalıdır.`);
+      }
+      if (line.supplierQuotationLineId && !Number.isFinite(Number(line.supplierQuotationLineId))) {
+        throw new Error(`${line.productName || line.productCode || 'Satır'} bağlı tedarikçi teklif satır ID bilgisi sayısal olmalıdır.`);
+      }
+      if (line.deliveryDate && documentDate && line.deliveryDate < documentDate) {
+        throw new Error(`${line.productName || line.productCode || 'Satır'} teslim tarihi belge tarihinden önce olamaz.`);
+      }
       const baseLine = {
+        purchaseRequestLineId: line.purchaseRequestLineId ? Number(line.purchaseRequestLineId) : undefined,
+        stockId: line.stockId ? Number(line.stockId) : undefined,
         productCode: line.productCode.trim() || null,
         productName: line.productName.trim(),
         quantity: toNumber(line.quantity, 1),
@@ -167,6 +223,7 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
         description1: line.description1.trim() || null,
         description2: line.description2.trim() || null,
         description3: line.description3.trim() || null,
+        imagePath: line.imagePath.trim() || null,
         erpProjectCode: line.erpProjectCode.trim() || null,
       };
 
@@ -176,6 +233,9 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
 
       return {
         ...baseLine,
+        ...(kind === 'order' && line.supplierQuotationLineId
+          ? { supplierQuotationLineId: Number(line.supplierQuotationLineId) }
+          : {}),
         unitPrice: toNumber(line.unitPrice),
         discount1: toNumber(line.discount1),
         discount2: toNumber(line.discount2),
@@ -191,13 +251,20 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
 
     return {
       [config.numberField]: documentNo.trim() || null,
+      revisionNo: revisionNo.trim() || null,
       [config.dateField]: documentDate || null,
+      validUntil: kind === 'supplierQuotation' ? validUntil || null : undefined,
+      deliveryDate: kind === 'order' ? headerDeliveryDate || null : undefined,
+      purchaseRequestIds: isRequest ? undefined : purchaseRequestIds,
+      supplierQuotationId: kind === 'order' && supplierQuotationId ? Number(supplierQuotationId) : undefined,
       supplierId: isRequest ? undefined : selectedSupplier?.id,
       supplierNameSnapshot: isRequest ? undefined : selectedSupplier?.name ?? null,
       supplierErpCode: isRequest ? undefined : selectedSupplier?.customerCode ?? null,
       paymentTypeId: isRequest || !paymentTypeId ? undefined : Number(paymentTypeId),
       documentSerialTypeId: isRequest || !documentSerialTypeId ? undefined : Number(documentSerialTypeId),
       purchaseType: isRequest ? undefined : purchaseType.trim() || null,
+      deliveryTerms: isRequest ? undefined : deliveryTerms.trim() || null,
+      paymentTerms: isRequest ? undefined : paymentTerms.trim() || null,
       currencyCode: isRequest ? undefined : currencyCode.trim() || 'TL',
       exchangeRate: isRequest ? undefined : toNumber(exchangeRate, 1),
       generalDiscountRate: isRequest ? undefined : toNumber(generalDiscountRate),
@@ -231,6 +298,7 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
     setLines((current) => {
       const nextLine: PurchaseLineForm = {
         ...createEmptyLine(),
+        stockId: product.id != null ? String(product.id) : '',
         productCode: product.code,
         productName: product.name,
         unit: product.unit || '',
@@ -249,6 +317,7 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                 ...line,
                 productCode: product.code,
                 productName: product.name,
+                stockId: product.id != null ? String(product.id) : line.stockId,
                 unit: product.unit || line.unit,
                 vatRate: product.vatRate != null ? String(product.vatRate) : line.vatRate,
               }
@@ -359,12 +428,37 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                     <Input className={INPUT_CLASSNAME} value={documentNo} onChange={(event) => setDocumentNo(event.target.value)} placeholder="Boş bırakılabilir" />
                   </label>
                   <label className="space-y-2">
+                    <FieldLabel help="Satış teklif/sipariş ekranındaki revizyon alanı ile aynı amaçla kullanılır. Tedarikçi teklif veya satınalma sipariş revizyonu takip edilir.">
+                      <Hash className="h-4 w-4" />
+                      Revizyon No
+                    </FieldLabel>
+                    <Input className={INPUT_CLASSNAME} value={revisionNo} onChange={(event) => setRevisionNo(event.target.value)} placeholder="Opsiyonel" />
+                  </label>
+                  <label className="space-y-2">
                     <FieldLabel>
                       <Calendar className="h-4 w-4" />
                       {config.dateLabel}
                     </FieldLabel>
                     <Input className={INPUT_CLASSNAME} type="date" value={documentDate} onChange={(event) => setDocumentDate(event.target.value)} />
                   </label>
+                  {kind === 'supplierQuotation' ? (
+                    <label className="space-y-2">
+                      <FieldLabel help="Tedarikçiden gelen fiyatın hangi tarihe kadar geçerli olduğunu gösterir.">
+                        <Calendar className="h-4 w-4" />
+                        Geçerlilik Tarihi
+                      </FieldLabel>
+                      <Input className={INPUT_CLASSNAME} type="date" value={validUntil} onChange={(event) => setValidUntil(event.target.value)} />
+                    </label>
+                  ) : null}
+                  {kind === 'order' ? (
+                    <label className="space-y-2">
+                      <FieldLabel help="Satınalma siparişinin genel teslim tarihidir. Satır teslim tarihi ayrıca ezebilir.">
+                        <Calendar className="h-4 w-4" />
+                        Genel Teslim Tarihi
+                      </FieldLabel>
+                      <Input className={INPUT_CLASSNAME} type="date" value={headerDeliveryDate} onChange={(event) => setHeaderDeliveryDate(event.target.value)} />
+                    </label>
+                  ) : null}
                   <label className="space-y-2">
                     <FieldLabel>
                       <Layers className="h-4 w-4" />
@@ -382,6 +476,22 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                   {!isRequest ? (
                     <>
                       <label className="space-y-2">
+                        <FieldLabel help="Bir teklif veya sipariş birden fazla satınalma talebinden oluşabilir. ID değerlerini virgülle ayırarak yazabilirsiniz.">
+                          <Link2 className="h-4 w-4" />
+                          Bağlı Talep ID'leri
+                        </FieldLabel>
+                        <Input className={INPUT_CLASSNAME} value={purchaseRequestIdsText} onChange={(event) => setPurchaseRequestIdsText(event.target.value)} placeholder="Örn: 12, 18" />
+                      </label>
+                      {kind === 'order' ? (
+                        <label className="space-y-2">
+                          <FieldLabel help="Bu sipariş bir tedarikçi teklifinden dönüştüyse ilgili teklif ID bilgisidir.">
+                            <Link2 className="h-4 w-4" />
+                            Bağlı Tedarikçi Teklif ID
+                          </FieldLabel>
+                          <Input className={INPUT_CLASSNAME} value={supplierQuotationId} onChange={(event) => setSupplierQuotationId(event.target.value)} inputMode="numeric" placeholder="Opsiyonel" />
+                        </label>
+                      ) : null}
+                      <label className="space-y-2">
                         <FieldLabel>Satınalma Tipi</FieldLabel>
                         <Input className={INPUT_CLASSNAME} value={purchaseType} onChange={(event) => setPurchaseType(event.target.value)} placeholder="Yurtiçi / Yurtdışı / RFQ" />
                       </label>
@@ -396,6 +506,14 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                       <label className="space-y-2">
                         <FieldLabel>Özel Kod 2</FieldLabel>
                         <Input className={INPUT_CLASSNAME} value={ozelKod2} onChange={(event) => setOzelKod2(event.target.value)} maxLength={10} />
+                      </label>
+                      <label className="space-y-2 xl:col-span-1">
+                        <FieldLabel help="Tedarikçi ile anlaşılan teslim şartı. PDF/rapor ve satınalma takibinde kullanılabilir.">Teslim Şartı</FieldLabel>
+                        <Input className={INPUT_CLASSNAME} value={deliveryTerms} onChange={(event) => setDeliveryTerms(event.target.value)} placeholder="Örn: Depo teslim, Ex-works" />
+                      </label>
+                      <label className="space-y-2 xl:col-span-1">
+                        <FieldLabel help="Tedarikçi ile anlaşılan ödeme şartı. Ödeme tipi ID'den farklı olarak serbest metin açıklamasıdır.">Ödeme Şartı</FieldLabel>
+                        <Input className={INPUT_CLASSNAME} value={paymentTerms} onChange={(event) => setPaymentTerms(event.target.value)} placeholder="Örn: 30 gün vadeli" />
                       </label>
                     </>
                   ) : null}
@@ -618,6 +736,38 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                         <span className="text-[11px] font-bold text-slate-400">{line.productCode || '-'}</span>
                       </div>
                       <div className="space-y-3">
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <label className="space-y-2">
+                            <FieldLabel help="Katalogdan seçim yapıldığında otomatik dolar. RII_STOK bağlantısı için API'ye gönderilir.">
+                              <Package className="h-4 w-4" />
+                              Stok ID
+                            </FieldLabel>
+                            <Input className={INPUT_CLASSNAME} value={line.stockId} onChange={(event) => updateLine(index, { stockId: event.target.value })} inputMode="numeric" placeholder="Opsiyonel" />
+                          </label>
+                          <label className="space-y-2">
+                            <FieldLabel help="Bu kalem bir satınalma talep satırından geldiyse kaynak satır ID bilgisidir.">
+                              <Link2 className="h-4 w-4" />
+                              Talep Satır ID
+                            </FieldLabel>
+                            <Input className={INPUT_CLASSNAME} value={line.purchaseRequestLineId} onChange={(event) => updateLine(index, { purchaseRequestLineId: event.target.value })} inputMode="numeric" placeholder="Opsiyonel" />
+                          </label>
+                          {kind === 'order' ? (
+                            <label className="space-y-2">
+                              <FieldLabel help="Bu sipariş kalemi tedarikçi teklif satırından dönüştüyse kaynak satır ID bilgisidir.">
+                                <Link2 className="h-4 w-4" />
+                                Teklif Satır ID
+                              </FieldLabel>
+                              <Input className={INPUT_CLASSNAME} value={line.supplierQuotationLineId} onChange={(event) => updateLine(index, { supplierQuotationLineId: event.target.value })} inputMode="numeric" placeholder="Opsiyonel" />
+                            </label>
+                          ) : null}
+                          <label className="space-y-2">
+                            <FieldLabel help="Kalem görseli varsa relatif dosya yolu API'ye gönderilir. Profil/demir/vida/baskı alanları bu satınalma formunda özellikle gösterilmez.">
+                              <Image className="h-4 w-4" />
+                              Görsel Yolu
+                            </FieldLabel>
+                            <Input className={INPUT_CLASSNAME} value={line.imagePath} onChange={(event) => updateLine(index, { imagePath: event.target.value })} placeholder="/uploads/..." />
+                          </label>
+                        </div>
                         <Input className={INPUT_CLASSNAME} value={line.erpProjectCode} onChange={(event) => updateLine(index, { erpProjectCode: event.target.value })} placeholder="Satır ERP proje kodu" />
                         <Input className={INPUT_CLASSNAME} value={line.description1} onChange={(event) => updateLine(index, { description1: event.target.value })} placeholder="Açıklama 1" />
                         <Input className={INPUT_CLASSNAME} value={line.description2} onChange={(event) => updateLine(index, { description2: event.target.value })} placeholder="Açıklama 2" />
