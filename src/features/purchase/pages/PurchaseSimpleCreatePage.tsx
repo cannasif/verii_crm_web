@@ -17,6 +17,7 @@ import {
   Percent,
   Plus,
   Save,
+  Send,
   StickyNote,
   Trash2,
   Wallet,
@@ -134,6 +135,32 @@ function toDateInput(value: unknown): string {
 function nullableText(value: unknown): string {
   if (value == null) return '';
   return String(value);
+}
+
+function getStatusNumber(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function canStartPurchaseApproval(kind: PurchaseCreateKind, status: unknown): boolean {
+  const statusNumber = getStatusNumber(status);
+  if (kind === 'supplierQuotation') {
+    return statusNumber == null || statusNumber === 0 || statusNumber === 2;
+  }
+  if (kind === 'order') {
+    return statusNumber == null || statusNumber === 0;
+  }
+  return false;
+}
+
+function getPurchaseDocumentType(kind: PurchaseCreateKind): number | null {
+  if (kind === 'supplierQuotation') return 12;
+  if (kind === 'order') return 13;
+  return null;
 }
 
 function notesToForm(notesValue: PurchaseDocumentDetail['notes']): string[] {
@@ -272,6 +299,36 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
     staleTime: 30_000,
   });
 
+  const startApprovalMutation = useMutation({
+    mutationFn: async () => {
+      const documentType = getPurchaseDocumentType(kind);
+      if (!documentId || !documentType) {
+        throw new Error('Onaya gönderilecek satınalma kaydı bulunamadı.');
+      }
+
+      const response = await api.post<ApiResponse<boolean>>(`${config.endpoint}/start-approval-flow`, {
+        entityId: documentId,
+        documentType,
+        totalAmount: totals.grandTotal,
+      });
+
+      if (!response.success) {
+        throw new Error(response.message || 'Satınalma kaydı onaya gönderilemedi.');
+      }
+
+      return response;
+    },
+    onSuccess: () => {
+      toast.success('Satınalma kaydı onaya gönderildi.');
+      void queryClient.invalidateQueries({ queryKey: ['purchase', kind] });
+      void queryClient.invalidateQueries({ queryKey: ['purchase', kind, 'detail', documentId] });
+      void detailQuery.refetch();
+    },
+    onError: (error) => {
+      toast.error(error instanceof Error ? error.message : 'Satınalma kaydı onaya gönderilemedi.');
+    },
+  });
+
   useEffect(() => {
     const document = detailQuery.data;
     if (!document || !documentId || loadedDocumentRef.current === documentId) return;
@@ -385,6 +442,7 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
       grandTotal: discountedNetTotal + vatAfterDiscount,
     };
   }, [generalDiscountAmount, generalDiscountRate, visibleLines]);
+  const canStartApproval = isEditMode && !isRequest && canStartPurchaseApproval(kind, detailQuery.data?.status ?? detailQuery.data?.Status);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -620,6 +678,17 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
             <Save className="mr-2 h-4 w-4" />
             {saveMutation.isPending ? 'Kaydediliyor' : isEditMode ? 'Güncelle' : 'Kaydet'}
           </Button>
+          {canStartApproval ? (
+            <Button
+              type="button"
+              disabled={startApprovalMutation.isPending || saveMutation.isPending || detailQuery.isFetching}
+              onClick={() => startApprovalMutation.mutate()}
+              className="h-12 min-w-[160px] rounded-[8px] bg-blue-600 font-black text-white shadow-lg hover:bg-blue-700"
+            >
+              <Send className="mr-2 h-4 w-4" />
+              {startApprovalMutation.isPending ? 'Gönderiliyor' : 'Onaya Gönder'}
+            </Button>
+          ) : null}
         </header>
 
         {detailQuery.isError ? (
@@ -1240,6 +1309,17 @@ export function PurchaseSimpleCreatePage({ kind }: PurchaseSimpleCreatePageProps
                   <Save className="mr-2 h-4 w-4" />
                   {saveMutation.isPending ? 'Kaydediliyor' : isEditMode ? 'Güncelle' : 'Kaydet'}
                 </Button>
+                {canStartApproval ? (
+                  <Button
+                    type="button"
+                    disabled={startApprovalMutation.isPending || saveMutation.isPending || detailQuery.isFetching}
+                    onClick={() => startApprovalMutation.mutate()}
+                    className="h-12 w-full rounded-[8px] bg-blue-600 font-black text-white shadow-lg hover:bg-blue-700"
+                  >
+                    <Send className="mr-2 h-4 w-4" />
+                    {startApprovalMutation.isPending ? 'Gönderiliyor' : 'Onaya Gönder'}
+                  </Button>
+                ) : null}
               </div>
             </section>
           </aside>

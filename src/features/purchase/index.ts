@@ -16,3 +16,8 @@ export {
   SupplierQuotationListPage,
   PurchaseOrderListPage,
 } from './pages/PurchasePlaceholderListPage';
+export {
+  PurchaseWaitingApprovalsPage,
+  SupplierQuotationWaitingApprovalsPage,
+  PurchaseOrderWaitingApprovalsPage,
+} from './pages/PurchaseWaitingApprovalsPage';

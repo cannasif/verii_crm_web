@@ -76,6 +76,8 @@ const PurchaseOrderCreatePage = lazyImport(() => import('@/features/purchase'), 
 const PurchaseOrderDetailPage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderDetailPage');
 const SupplierQuotationListPage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationListPage');
 const PurchaseOrderListPage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderListPage');
+const SupplierQuotationWaitingApprovalsPage = lazyImport(() => import('@/features/purchase'), 'SupplierQuotationWaitingApprovalsPage');
+const PurchaseOrderWaitingApprovalsPage = lazyImport(() => import('@/features/purchase'), 'PurchaseOrderWaitingApprovalsPage');
 const PricingRuleManagementPage = lazyImport(() => import('@/features/pricing-rule'), 'PricingRuleManagementPage');
 const StockListPage = lazyImport(() => import('@/features/stock'), 'StockListPage');
 const StockDetailPage = lazyImport(() => import('@/features/stock'), 'StockDetailPage');
@@ -216,10 +218,11 @@ export function createAppRouter() {
         { path: 'purchase/supplier-quotations', element: <SupplierQuotationListPage /> },
         { path: 'purchase/supplier-quotations/create', element: <SupplierQuotationCreatePage /> },
         { path: 'purchase/supplier-quotations/compare', element: <SupplierQuotationListPage /> },
+        { path: 'purchase/supplier-quotations/waiting-approvals', element: <SupplierQuotationWaitingApprovalsPage /> },
         { path: 'purchase/supplier-quotations/:id', element: <SupplierQuotationDetailPage /> },
         { path: 'purchase/orders', element: <PurchaseOrderListPage /> },
         { path: 'purchase/orders/create', element: <PurchaseOrderCreatePage /> },
-        { path: 'purchase/orders/waiting-approvals', element: <PurchaseOrderListPage /> },
+        { path: 'purchase/orders/waiting-approvals', element: <PurchaseOrderWaitingApprovalsPage /> },
         { path: 'purchase/orders/:id', element: <PurchaseOrderDetailPage /> },
         { path: 'pricing-rules', element: <PricingRuleManagementPage /> },
         { path: 'stocks', element: <StockListPage /> },
