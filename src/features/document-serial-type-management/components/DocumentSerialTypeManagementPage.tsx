@@ -44,6 +44,7 @@ import { useCreateDocumentSerialType } from '../hooks/useCreateDocumentSerialTyp
 import { useUpdateDocumentSerialType } from '../hooks/useUpdateDocumentSerialType';
 import { useDeleteDocumentSerialType } from '../hooks/useDeleteDocumentSerialType';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import { getPricingRuleTypeLabelKey, normalizePricingRuleTypeValue } from '@/features/pricing-rule/utils/pricing-rule-type-options';
 import {
   documentSerialTypeRowsToBackendFilters,
   DOCUMENT_SERIAL_TYPE_FILTER_COLUMNS,
@@ -77,31 +78,6 @@ function resolveLabel(
 ): string {
   const translated = t(key, options);
   return translated && translated !== key && translated !== MISSING_TRANSLATION ? translated : fallback;
-}
-
-function normalizePricingRuleType(ruleType: PricingRuleType | string | number | null | undefined): PricingRuleType | null {
-  if (typeof ruleType === 'number') {
-    return ruleType === PricingRuleType.Demand || ruleType === PricingRuleType.Quotation || ruleType === PricingRuleType.Order
-      ? ruleType
-      : null;
-  }
-
-  if (typeof ruleType !== 'string') {
-    return null;
-  }
-
-  const trimmed = ruleType.trim();
-  const numericValue = Number(trimmed);
-  if (Number.isFinite(numericValue)) {
-    return normalizePricingRuleType(numericValue);
-  }
-
-  const normalized = trimmed.toLowerCase();
-  if (normalized === 'demand') return PricingRuleType.Demand;
-  if (normalized === 'quotation') return PricingRuleType.Quotation;
-  if (normalized === 'order') return PricingRuleType.Order;
-
-  return null;
 }
 
 export function DocumentSerialTypeManagementPage(): ReactElement {
@@ -202,14 +178,9 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
   );
 
   const getRuleTypeLabel = useCallback((ruleType: PricingRuleType | string | number | null | undefined): string => {
-    const normalizedRuleType = normalizePricingRuleType(ruleType);
-    const labels: Partial<Record<PricingRuleType, string>> = {
-      [PricingRuleType.Demand]: resolveLabel(t, 'pricingRule.ruleType.demand', 'Talep', { ns: 'pricing-rule' }),
-      [PricingRuleType.Quotation]: resolveLabel(t, 'pricingRule.ruleType.quotation', 'Teklif', { ns: 'pricing-rule' }),
-      [PricingRuleType.Order]: resolveLabel(t, 'pricingRule.ruleType.order', 'Sipariş', { ns: 'pricing-rule' }),
-    };
-    return normalizedRuleType && labels[normalizedRuleType]
-      ? labels[normalizedRuleType]
+    const normalizedRuleType = normalizePricingRuleTypeValue(ruleType);
+    return normalizedRuleType
+      ? resolveLabel(t, getPricingRuleTypeLabelKey(normalizedRuleType), String(normalizedRuleType), { ns: 'pricing-rule' })
       : resolveLabel(t, 'pricingRule.ruleType.unknown', 'Bilinmiyor', { ns: 'pricing-rule' });
   }, [t]);
 

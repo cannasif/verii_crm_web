@@ -5,6 +5,8 @@ import {
   Eye,
   FileText,
   Package,
+  ShoppingBag,
+  ShoppingCart,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -13,6 +15,10 @@ export const VISIBILITY_ENTITY_ICON_MAP: Record<string, LucideIcon> = {
   Quotation: FileText,
   Demand: ClipboardList,
   Order: Package,
+  PurchaseRequest: ClipboardList,
+  PurchaseRfq: ShoppingBag,
+  SupplierQuotation: FileText,
+  PurchaseOrder: ShoppingCart,
   Salesman360: BarChart3,
 };
 
@@ -21,6 +27,10 @@ const VISIBILITY_ENTITY_ACCENT_MAP: Record<string, string> = {
   Quotation: 'pink',
   Demand: 'sky',
   Order: 'emerald',
+  PurchaseRequest: 'indigo',
+  PurchaseRfq: 'amber',
+  SupplierQuotation: 'rose',
+  PurchaseOrder: 'teal',
   Salesman360: 'orange',
 };
 
@@ -51,6 +61,22 @@ export function getVisibilityEntityAccentClasses(entityType: string): EntityAcce
     orange: {
       iconWrap: 'bg-orange-100 border-orange-100 dark:bg-orange-500/10 dark:border-orange-500/20',
       icon: 'text-orange-600 dark:text-orange-400',
+    },
+    indigo: {
+      iconWrap: 'bg-indigo-100 border-indigo-100 dark:bg-indigo-500/10 dark:border-indigo-500/20',
+      icon: 'text-indigo-600 dark:text-indigo-400',
+    },
+    amber: {
+      iconWrap: 'bg-amber-100 border-amber-100 dark:bg-amber-500/10 dark:border-amber-500/20',
+      icon: 'text-amber-700 dark:text-amber-300',
+    },
+    rose: {
+      iconWrap: 'bg-rose-100 border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/20',
+      icon: 'text-rose-600 dark:text-rose-400',
+    },
+    teal: {
+      iconWrap: 'bg-teal-100 border-teal-100 dark:bg-teal-500/10 dark:border-teal-500/20',
+      icon: 'text-teal-600 dark:text-teal-400',
     },
   };
   return map[accent];

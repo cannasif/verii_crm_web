@@ -30,6 +30,10 @@
       "demand": "Demand",
       "quotation": "Quotation",
       "order": "Order",
+      "purchaseRequest": "Purchase Request",
+      "purchaseRfq": "Purchase RFQ",
+      "supplierQuotation": "Supplier Quotation",
+      "purchaseOrder": "Purchase Order",
       "unknown": "Unknown"
     },
     "form": {
@@ -196,6 +200,10 @@
     "demand": "Demand",
     "quotation": "Quotation",
     "order": "Order",
+    "purchaseRequest": "Purchase Request",
+    "purchaseRfq": "Purchase RFQ",
+    "supplierQuotation": "Supplier Quotation",
+    "purchaseOrder": "Purchase Order",
     "unknown": "Unknown"
   },
   "lines": {

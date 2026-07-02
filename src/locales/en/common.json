@@ -4629,6 +4629,10 @@
       "demand": "Request",
       "quotation": "Offer",
       "order": "Order",
+      "purchaseRequest": "Purchase Request",
+      "purchaseRfq": "Purchase RFQ",
+      "supplierQuotation": "Supplier Quotation",
+      "purchaseOrder": "Purchase Order",
       "unknown": "unknown"
     },
     "form": {

@@ -1,9 +1,20 @@
 import { z } from 'zod';
 import { areDiscountRatesValid } from '@/lib/discount-rate-validation';
+import { PricingRuleType } from '../types/pricing-rule-types';
+
+const SUPPORTED_PRICING_RULE_TYPES = [
+  PricingRuleType.Demand,
+  PricingRuleType.Quotation,
+  PricingRuleType.Order,
+  PricingRuleType.PurchaseRequest,
+  PricingRuleType.PurchaseRfq,
+  PricingRuleType.SupplierQuotation,
+  PricingRuleType.PurchaseOrder,
+] as const;
 
 export const pricingRuleHeaderSchema = z
   .object({
-    ruleType: z.number().refine((val) => [1, 2, 3].includes(val), {
+    ruleType: z.number().refine((val) => SUPPORTED_PRICING_RULE_TYPES.some((type) => type === val), {
       message: 'validation.required',
     }),
     ruleCode: z

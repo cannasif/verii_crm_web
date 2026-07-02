@@ -12,7 +12,8 @@ import {
 import { useCustomersForPricingRule } from '../hooks/useCustomersForPricingRule';
 import { CustomerSelectDialog, type CustomerSelectionResult } from '@/components/shared';
 import { formatCustomerSelectLabel } from '@/features/customer-management/utils/customer-integration';
-import { PricingRuleType, type PricingRuleFormSchema } from '../types/pricing-rule-types';
+import type { PricingRuleFormSchema } from '../types/pricing-rule-types';
+import { PRICING_RULE_TYPE_OPTIONS } from '../utils/pricing-rule-type-options';
 import { Button } from '@/components/ui/button';
 import { type ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
 import {
@@ -66,11 +67,10 @@ export function PricingRuleHeaderForm(): ReactElement {
       ? `ERP: ${erpCustomerCode}`
       : '';
 
-  const ruleTypeOptions: ComboboxOption[] = [
-    { value: PricingRuleType.Demand.toString(), label: t('pricingRule.ruleType.demand') },
-    { value: PricingRuleType.Quotation.toString(), label: t('pricingRule.ruleType.quotation') },
-    { value: PricingRuleType.Order.toString(), label: t('pricingRule.ruleType.order') },
-  ];
+  const ruleTypeOptions: ComboboxOption[] = PRICING_RULE_TYPE_OPTIONS.map((option) => ({
+    value: option.value.toString(),
+    label: t(option.labelKey),
+  }));
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">

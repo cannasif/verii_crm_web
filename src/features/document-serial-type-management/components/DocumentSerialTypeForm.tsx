@@ -30,6 +30,7 @@ import {
 import { documentSerialTypeFormSchema, type DocumentSerialTypeFormSchema } from '../types/document-serial-type-types';
 import type { DocumentSerialTypeDto } from '../types/document-serial-type-types';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
+import { PRICING_RULE_TYPE_OPTIONS } from '@/features/pricing-rule/utils/pricing-rule-type-options';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
 import {
   useCustomerTypeOptionsInfinite,
@@ -186,15 +187,11 @@ export function DocumentSerialTypeForm({
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value={PricingRuleType.Demand.toString()}>
-                            {t('pricingRule.ruleType.demand', { ns: 'pricing-rule' })}
-                          </SelectItem>
-                          <SelectItem value={PricingRuleType.Quotation.toString()}>
-                            {t('pricingRule.ruleType.quotation', { ns: 'pricing-rule' })}
-                          </SelectItem>
-                          <SelectItem value={PricingRuleType.Order.toString()}>
-                            {t('pricingRule.ruleType.order', { ns: 'pricing-rule' })}
-                          </SelectItem>
+                          {PRICING_RULE_TYPE_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value.toString()}>
+                              {t(option.labelKey, { ns: 'pricing-rule' })}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage className="text-red-500 text-[10px] mt-1" />

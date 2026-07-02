@@ -30,6 +30,10 @@
       "demand": "Talep",
       "quotation": "Teklif",
       "order": "Sipariş",
+      "purchaseRequest": "Satınalma Talebi",
+      "purchaseRfq": "Satınalma RFQ",
+      "supplierQuotation": "Tedarikçi Teklifi",
+      "purchaseOrder": "Satınalma Siparişi",
       "unknown": "Bilinmiyor"
     },
     "form": {
@@ -196,6 +200,10 @@
     "demand": "Talep",
     "quotation": "Teklif",
     "order": "Sipariş",
+    "purchaseRequest": "Satınalma Talebi",
+    "purchaseRfq": "Satınalma RFQ",
+    "supplierQuotation": "Tedarikçi Teklifi",
+    "purchaseOrder": "Satınalma Siparişi",
     "unknown": "Bilinmiyor"
   },
   "lines": {

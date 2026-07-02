@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { ArrowDown, ArrowUp, ArrowUpDown, Plus, List, FileText, ShoppingCart, TrendingUp, CheckCircle2, XCircle, Calendar, Building2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Plus, CheckCircle2, XCircle, Calendar, Building2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,8 +23,8 @@ import { pricingRuleQueryKeys } from '../utils/query-keys';
 import { PricingRuleTable, getColumnsConfig } from './PricingRuleTable';
 import { PricingRuleForm } from './PricingRuleForm';
 import type { PricingRuleHeaderGetDto } from '../types/pricing-rule-types';
-import { PricingRuleType } from '../types/pricing-rule-types';
 import { usePricingRuleHeaders } from '../hooks/usePricingRuleHeaders';
+import { getPricingRuleTypeIcon, getPricingRuleTypeLabelKey } from '../utils/pricing-rule-type-options';
 
 const EMPTY_HEADERS: PricingRuleHeaderGetDto[] = [];
 const PAGE_KEY = 'pricing-rule-management';
@@ -38,16 +38,11 @@ function resolveLabel(t: (key: string) => string, key: string, fallback: string)
 }
 
 function getRuleTypeConfig(t: (key: string) => string, type: number) {
-  switch (type) {
-    case PricingRuleType.Demand:
-      return { label: t('ruleType.demand'), className: 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20', icon: List };
-    case PricingRuleType.Quotation:
-      return { label: t('ruleType.quotation'), className: 'bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400 border-green-200 dark:border-green-500/20', icon: FileText };
-    case PricingRuleType.Order:
-      return { label: t('ruleType.order'), className: 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-500/20', icon: ShoppingCart };
-    default:
-      return { label: t('ruleType.unknown'), className: 'bg-slate-50 dark:bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-500/20', icon: TrendingUp };
-  }
+  return {
+    label: t(getPricingRuleTypeLabelKey(type).replace('pricingRule.', '')),
+    className: 'bg-slate-50 dark:bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-500/20',
+    icon: getPricingRuleTypeIcon(type),
+  };
 }
 
 export function PricingRuleManagementPage(): ReactElement {
