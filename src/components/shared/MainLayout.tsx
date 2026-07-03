@@ -84,6 +84,13 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         ],
       },
       {
+        title: t('sidebar.ndi'),
+        icon: <File01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        children: [
+          { title: t('sidebar.ndiOrderLineSelection'), href: '/ndi/order-line-selection' },
+        ],
+      },
+      {
         title: t('sidebar.customers'),
         icon: <UserGroupIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [

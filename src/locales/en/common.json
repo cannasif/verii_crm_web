@@ -1462,6 +1462,8 @@
     "orderList": "Order List",
     "erpOrderList": "ERP Order List",
     "erpDocumentCleanupLogs": "ERP Record Cleanup Logs",
+    "ndi": "NDI",
+    "ndiOrderLineSelection": "Order Line Selection",
     "purchaseManagement": "Purchase Management",
     "purchaseDashboard": "Purchase Home",
     "purchaseRequests": "Purchase Requests",
