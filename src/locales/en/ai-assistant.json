@@ -17,6 +17,19 @@
     "4": "What does this error mean?"
   },
   "chatHint": "I can answer performance, count, rate, ERP integration, and error explanation questions.",
+  "contextTitle": "Context",
+  "contextHome": "General CRM",
+  "promptGuideTitle": "Where should we start?",
+  "promptGuideDescription": "Choose a suggestion or write naturally in your own words.",
+  "enterToSend": "Enter sends, Shift+Enter adds a new line.",
+  "reportMode": "Create report",
+  "errorMode": "Explain error",
+  "salesMode": "Sales summary",
+  "erpMode": "ERP check",
+  "dragPanel": "Drag panel",
+  "expandPanel": "Expand panel",
+  "collapsePanel": "Collapse panel",
+  "dockedChat": "AI Assistant",
   "attachImage": "Attach image",
   "removeImage": "Remove image",
   "imageTooLarge": "Image can be up to {{size}} MB.",
@@ -46,8 +59,24 @@
   "lastErrorTitle": "Latest captured error",
   "askLastError": "Ask AI about this error",
   "askLastErrorQuestion": "What does this error mean?",
+  "analytics": {
+    "sessions": "Sessions",
+    "completed": "completed",
+    "problemSessions": "Problem sessions",
+    "abandoned": "abandoned",
+    "averageLatency": "Average answer",
+    "answers": "AI answers",
+    "toolRate": "Tool approval rate",
+    "executed": "actions",
+    "topIntents": "Top intents",
+    "failedIntents": "Failed / abandoned intents",
+    "noFailedIntent": "No failed intent appears in this period."
+  },
   "apiErrors": {
     "greeting": "AI assistant greeting could not be loaded.",
-    "answer": "AI assistant answer could not be loaded."
+    "answer": "AI assistant answer could not be loaded.",
+    "history": "AI conversation history could not be loaded.",
+    "analytics": "AI assistant analytics could not be loaded.",
+    "action": "AI action could not be confirmed."
   }
 }

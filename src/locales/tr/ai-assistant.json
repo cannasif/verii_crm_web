@@ -17,6 +17,19 @@
     "4": "Bu hata ne anlama geliyor?"
   },
   "chatHint": "Performans, adet, oran, ERP aktarımı ve hata açıklama sorularını cevaplayabiliyorum.",
+  "contextTitle": "Bağlam",
+  "contextHome": "Genel CRM",
+  "promptGuideTitle": "Nereden başlayalım?",
+  "promptGuideDescription": "Bir öneri seçebilir ya da doğrudan kendi cümlenizle yazabilirsiniz.",
+  "enterToSend": "Enter gönderir, Shift+Enter yeni satır açar.",
+  "reportMode": "Rapor oluştur",
+  "errorMode": "Hata açıkla",
+  "salesMode": "Satış özeti",
+  "erpMode": "ERP kontrolü",
+  "dragPanel": "Paneli sürükle",
+  "expandPanel": "Paneli genişlet",
+  "collapsePanel": "Paneli küçült",
+  "dockedChat": "AI Asistan",
   "attachImage": "Görsel ekle",
   "removeImage": "Görseli kaldır",
   "imageTooLarge": "Görsel en fazla {{size}} MB olabilir.",
@@ -46,8 +59,24 @@
   "lastErrorTitle": "Son yakalanan hata",
   "askLastError": "Bu hatayı AI'a sor",
   "askLastErrorQuestion": "Bu hata ne anlama geliyor?",
+  "analytics": {
+    "sessions": "Oturumlar",
+    "completed": "tamamlandı",
+    "problemSessions": "Sorunlu oturum",
+    "abandoned": "yarım kaldı",
+    "averageLatency": "Ortalama yanıt",
+    "answers": "AI yanıtı",
+    "toolRate": "Tool onay oranı",
+    "executed": "işlem",
+    "topIntents": "En çok sorulan intentler",
+    "failedIntents": "Başarısız / yarım kalan intentler",
+    "noFailedIntent": "Bu aralıkta başarısız intent görünmüyor."
+  },
   "apiErrors": {
     "greeting": "AI asistan karşılama bilgisi alınamadı.",
-    "answer": "AI asistan yanıtı alınamadı."
+    "answer": "AI asistan yanıtı alınamadı.",
+    "history": "AI sohbet geçmişi alınamadı.",
+    "analytics": "AI asistan metrikleri alınamadı.",
+    "action": "AI aksiyonu onaylanamadı."
   }
 }

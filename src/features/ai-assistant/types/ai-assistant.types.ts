@@ -38,10 +38,16 @@ export interface AiAssistantSummaryDto {
 }
 
 export interface AiAssistantAskRequestDto {
+  sessionKey?: string | null;
   question: string;
   startDate?: string | null;
   endDate?: string | null;
   currentPath?: string | null;
+  routeTitle?: string | null;
+  entityType?: string | null;
+  entityId?: number | null;
+  customerId?: number | null;
+  pageFiltersJson?: string | null;
   errorMessage?: string | null;
   errorCode?: string | null;
   httpStatusCode?: number | null;
@@ -56,11 +62,25 @@ export interface AiAssistantAttachmentDto {
 }
 
 export interface AiAssistantActionItemDto {
+  toolActionId?: number | null;
+  toolName?: string | null;
   title: string;
   description: string;
   severity: 'danger' | 'warning' | 'success' | 'info' | string;
   actionLabel?: string | null;
   actionUrl?: string | null;
+  confirmationRequired?: boolean;
+}
+
+export interface AiAssistantToolActionDto {
+  id: number;
+  toolName: string;
+  title: string;
+  description?: string | null;
+  status: string;
+  actionLabel?: string | null;
+  actionUrl?: string | null;
+  confirmationRequired: boolean;
 }
 
 export interface AiAssistantSourceDto {
@@ -71,11 +91,81 @@ export interface AiAssistantSourceDto {
 }
 
 export interface AiAssistantAnswerDto {
+  sessionId?: number | null;
+  sessionKey?: string | null;
   question: string;
   intent: string;
   answer: string;
   summary: AiAssistantSummaryDto | null;
   actionItems: AiAssistantActionItemDto[];
+  toolActions?: AiAssistantToolActionDto[];
   sources: AiAssistantSourceDto[];
   suggestedQuestions: string[];
+}
+
+export interface AiAssistantActionConfirmationDto {
+  actionId: number;
+  toolName: string;
+  status: string;
+  actionUrl?: string | null;
+  confirmedAt?: string | null;
+  executedAt?: string | null;
+}
+
+export interface AiAssistantConversationMessageDto {
+  id: number;
+  role: 'user' | 'assistant' | string;
+  content: string;
+  intent?: string | null;
+  createdDate: string;
+  latencyMs?: number | null;
+  toolActions: AiAssistantToolActionDto[];
+}
+
+export interface AiAssistantConversationHistoryDto {
+  sessionId: number;
+  sessionKey: string;
+  status: string;
+  currentPath?: string | null;
+  routeTitle?: string | null;
+  entityType?: string | null;
+  entityId?: number | null;
+  customerId?: number | null;
+  lastIntent?: string | null;
+  lastMessageAt: string;
+  messages: AiAssistantConversationMessageDto[];
+}
+
+export interface AiAssistantIntentMetricDto {
+  intent: string;
+  count: number;
+}
+
+export interface AiAssistantRecentFailureDto {
+  sessionId: number;
+  sessionKey: string;
+  currentPath?: string | null;
+  routeTitle?: string | null;
+  lastIntent?: string | null;
+  lastMessageAt: string;
+}
+
+export interface AiAssistantAnalyticsDto {
+  startDate: string;
+  endDate: string;
+  totalSessions: number;
+  completedSessions: number;
+  failedSessions: number;
+  abandonedSessions: number;
+  totalMessages: number;
+  userMessages: number;
+  assistantMessages: number;
+  averageLatencyMs: number;
+  proposedToolActions: number;
+  confirmedToolActions: number;
+  executedToolActions: number;
+  toolConfirmationRate: number;
+  topIntents: AiAssistantIntentMetricDto[];
+  failedIntents: AiAssistantIntentMetricDto[];
+  recentFailures: AiAssistantRecentFailureDto[];
 }

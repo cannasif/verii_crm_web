@@ -1,4 +1,4 @@
-import type { AiAssistantActionItemDto, AiAssistantSourceDto } from '../types/ai-assistant.types';
+import type { AiAssistantActionItemDto, AiAssistantSourceDto, AiAssistantToolActionDto } from '../types/ai-assistant.types';
 
 export type AiAssistantChatAttachment = {
   fileName: string;
@@ -13,6 +13,7 @@ export type AiAssistantChatMessage = {
   createdAt: string;
   attachments?: AiAssistantChatAttachment[];
   actionItems?: AiAssistantActionItemDto[];
+  toolActions?: AiAssistantToolActionDto[];
   sources?: AiAssistantSourceDto[];
   intent?: string;
 };
@@ -83,4 +84,45 @@ export function writeAiAssistantChatHistory(key: string, messages: AiAssistantCh
   } catch {
     // Chat history is a UX helper; storage failures should never break CRM usage.
   }
+}
+
+export function createAiAssistantActionItemsFromToolActions(
+  toolActions?: AiAssistantToolActionDto[] | null
+): AiAssistantActionItemDto[] {
+  if (!toolActions?.length) return [];
+
+  return toolActions.map((action) => ({
+    toolActionId: action.id,
+    toolName: action.toolName,
+    title: action.title,
+    description: action.description ?? '',
+    severity: action.status === 'Executed' ? 'success' : 'info',
+    actionLabel: action.actionLabel,
+    actionUrl: action.actionUrl,
+    confirmationRequired: action.confirmationRequired,
+  }));
+}
+
+export function createAiAssistantChatMessagesFromServer(
+  messages: Array<{
+    id: number;
+    role: string;
+    content: string;
+    createdDate: string;
+    intent?: string | null;
+    toolActions?: AiAssistantToolActionDto[] | null;
+  }>
+): AiAssistantChatMessage[] {
+  return messages
+    .filter((message) => message.role === 'user' || message.role === 'assistant')
+    .map((message) => ({
+      id: `server-${message.id}`,
+      role: message.role as 'user' | 'assistant',
+      content: message.content,
+      createdAt: message.createdDate,
+      intent: message.intent ?? undefined,
+      toolActions: message.toolActions ?? undefined,
+      actionItems: createAiAssistantActionItemsFromToolActions(message.toolActions),
+    }))
+    .slice(-chatHistoryLimit);
 }

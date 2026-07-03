@@ -7,8 +7,9 @@ import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { aiAssistantApi } from '../api/ai-assistant-api';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
-import { useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
+import { useAiAssistantAnalyticsQuery, useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
 import { AiAssistantAnswerCard } from './AiAssistantAnswerCard';
 import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
 import {
@@ -17,6 +18,7 @@ import {
   type AiAssistantErrorContext,
 } from '../lib/ai-assistant-error-context';
 import {
+  createAiAssistantActionItemsFromToolActions,
   createAiAssistantChatHistoryKey,
   readAiAssistantChatHistory,
   writeAiAssistantChatHistory,
@@ -33,6 +35,7 @@ import {
   type AiAssistantSelectedAttachment,
 } from '../lib/ai-assistant-attachments';
 import { copyTextToClipboard } from '../lib/ai-assistant-clipboard';
+import { showReportDraftReadyToast } from '../lib/ai-assistant-report-draft-toast';
 
 const actionItemClassNameBySeverity: Record<string, string> = {
   danger: 'border-red-400/30 bg-red-400/10 text-red-950 dark:text-red-100',
@@ -42,6 +45,7 @@ const actionItemClassNameBySeverity: Record<string, string> = {
 };
 
 const minimumThinkingDurationMs = 900;
+const pageSessionStorageKey = 'crm-ai-assistant-page-session-key';
 
 function waitForMinimumThinkingDuration(): Promise<void> {
   return new Promise((resolve) => {
@@ -57,12 +61,68 @@ function createMessageId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+function createSessionKey(): string {
+  return `page-${createMessageId()}`;
+}
+
+function readAssistantSessionKey(): string {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return createSessionKey();
+  }
+
+  const existingKey = window.localStorage.getItem(pageSessionStorageKey);
+  if (existingKey) return existingKey;
+
+  const nextKey = createSessionKey();
+  window.localStorage.setItem(pageSessionStorageKey, nextKey);
+  return nextKey;
+}
+
+function createRouteEntityContext(pathname: string): {
+  routeTitle: string;
+  entityType?: string;
+  entityId?: number;
+  customerId?: number;
+} {
+  const segments = pathname.split('/').filter(Boolean);
+  const numericSegment = [...segments].reverse().find((segment) => /^\d+$/.test(segment));
+  const entityId = numericSegment ? Number(numericSegment) : undefined;
+  const firstSegment = segments[0];
+  const entityTypeByRoute: Record<string, string> = {
+    customers: 'customer',
+    quotations: 'quotation',
+    demands: 'demand',
+    orders: 'order',
+    activities: 'activity',
+    stocks: 'stock',
+    reports: 'report',
+    'report-builder': 'report',
+    'customer-360': 'customer',
+    'salesmen-360': 'salesmen360',
+  };
+  const routeTitle = segments.length
+    ? segments
+        .slice(0, 3)
+        .map((segment) => segment.replace(/-/g, ' '))
+        .join(' / ')
+    : 'Genel CRM';
+  const entityType = firstSegment ? entityTypeByRoute[firstSegment] ?? firstSegment : undefined;
+
+  return {
+    routeTitle,
+    entityType,
+    entityId,
+    customerId: entityType === 'customer' ? entityId : undefined,
+  };
+}
+
 export function AiAssistantPage(): ReactElement {
   const { t } = useTranslation('ai-assistant');
   const navigate = useNavigate();
   const { setPageTitle } = useUIStore();
   const { user } = useAuthStore();
   const { data: greeting, isLoading } = useAiAssistantGreetingQuery();
+  const { data: analytics } = useAiAssistantAnalyticsQuery();
   const askMutation = useAskAiAssistantMutation();
   const chatHistoryKey = createAiAssistantChatHistoryKey(user);
   const [question, setQuestion] = useState('');
@@ -77,6 +137,7 @@ export function AiAssistantPage(): ReactElement {
   const [questionError, setQuestionError] = useState<string | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<AiAssistantSelectedAttachment | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [sessionKey, setSessionKey] = useState<string>(() => readAssistantSessionKey());
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sendButtonRef = useRef<HTMLButtonElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -180,10 +241,17 @@ export function AiAssistantPage(): ReactElement {
     setIsThinking(true);
 
     try {
+      const routeContext = createRouteEntityContext(window.location.pathname);
+      const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
       const [result] = await Promise.all([
         askMutation.mutateAsync({
+          sessionKey,
           question: finalQuestion,
-          currentPath: window.location.pathname,
+          currentPath,
+          routeTitle: routeContext.routeTitle,
+          entityType: routeContext.entityType,
+          entityId: routeContext.entityId,
+          customerId: routeContext.customerId,
           errorMessage: errorContext
             ? `${errorContext.message}${errorContext.requestMethod || errorContext.requestUrl ? ` | ${errorContext.requestMethod ?? ''} ${errorContext.requestUrl ?? ''}` : ''}`
             : undefined,
@@ -193,6 +261,10 @@ export function AiAssistantPage(): ReactElement {
         }),
         waitForMinimumThinkingDuration(),
       ]);
+      if (result.sessionKey && result.sessionKey !== sessionKey) {
+        setSessionKey(result.sessionKey);
+        window.localStorage.setItem(pageSessionStorageKey, result.sessionKey);
+      }
       setMessages((currentMessages) => [
         ...currentMessages,
         {
@@ -200,11 +272,15 @@ export function AiAssistantPage(): ReactElement {
           role: 'assistant',
           content: result.answer,
           createdAt: new Date().toISOString(),
-          actionItems: result.actionItems ?? [],
+          actionItems: result.actionItems?.length
+            ? result.actionItems
+            : createAiAssistantActionItemsFromToolActions(result.toolActions),
+          toolActions: result.toolActions ?? [],
           sources: result.sources ?? [],
           intent: result.intent,
         },
       ]);
+      showReportDraftReadyToast(result, openActionUrl);
       setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
       setQuestion('');
       clearSelectedAttachment();
@@ -233,13 +309,27 @@ export function AiAssistantPage(): ReactElement {
   };
 
   const clearChat = (): void => {
+    const nextSessionKey = createSessionKey();
+    setSessionKey(nextSessionKey);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem(pageSessionStorageKey, nextSessionKey);
+    }
     setMessages([]);
     setDynamicSuggestions([]);
     setQuestionError(null);
     clearSelectedAttachment();
   };
 
-  const openActionUrl = (actionUrl: string): void => {
+  const openActionUrl = async (actionUrl: string, toolActionId?: number | null, confirmationRequired = false): Promise<void> => {
+    if (confirmationRequired) {
+      const confirmed = window.confirm('AI önerisini onaylayıp ilgili ekrana geçmek istiyor musunuz?');
+      if (!confirmed) return;
+    }
+
+    if (toolActionId) {
+      await aiAssistantApi.confirmAction(toolActionId);
+    }
+
     if (actionUrl.startsWith('http')) {
       window.open(actionUrl, '_blank', 'noopener,noreferrer');
       return;
@@ -279,6 +369,94 @@ export function AiAssistantPage(): ReactElement {
             <Bot className="text-pink-500" size={48} />
           </div>
         </div>
+
+        <div className="grid gap-3 md:grid-cols-4">
+          <div className="rounded-3xl border border-white/15 bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5">
+            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {t('analytics.sessions')}
+            </div>
+            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
+              {analytics?.totalSessions ?? 0}
+            </div>
+            <p className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-300">
+              {analytics?.completedSessions ?? 0} {t('analytics.completed')}
+            </p>
+          </div>
+          <div className="rounded-3xl border border-white/15 bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5">
+            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {t('analytics.problemSessions')}
+            </div>
+            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
+              {(analytics?.failedSessions ?? 0) + (analytics?.abandonedSessions ?? 0)}
+            </div>
+            <p className="mt-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
+              {analytics?.abandonedSessions ?? 0} {t('analytics.abandoned')}
+            </p>
+          </div>
+          <div className="rounded-3xl border border-white/15 bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5">
+            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {t('analytics.averageLatency')}
+            </div>
+            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
+              {Math.round(analytics?.averageLatencyMs ?? 0)} ms
+            </div>
+            <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              {analytics?.assistantMessages ?? 0} {t('analytics.answers')}
+            </p>
+          </div>
+          <div className="rounded-3xl border border-white/15 bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5">
+            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {t('analytics.toolRate')}
+            </div>
+            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
+              %{analytics?.toolConfirmationRate ?? 0}
+            </div>
+            <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              {analytics?.executedToolActions ?? 0}/{analytics?.proposedToolActions ?? 0} {t('analytics.executed')}
+            </p>
+          </div>
+        </div>
+
+        {analytics && (analytics.topIntents.length > 0 || analytics.failedIntents.length > 0) && (
+          <div className="grid gap-3 md:grid-cols-2">
+            <div className="rounded-3xl border border-white/15 bg-white/65 p-4 dark:bg-white/5">
+              <div className="text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                {t('analytics.topIntents')}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {analytics.topIntents.map((intent) => (
+                  <span
+                    key={intent.intent}
+                    className="rounded-full border border-sky-400/25 bg-sky-400/10 px-3 py-1 text-xs font-black text-sky-700 dark:text-sky-200"
+                  >
+                    {intent.intent} · {intent.count}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-3xl border border-white/15 bg-white/65 p-4 dark:bg-white/5">
+              <div className="text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                {t('analytics.failedIntents')}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {analytics.failedIntents.length > 0 ? (
+                  analytics.failedIntents.map((intent) => (
+                    <span
+                      key={intent.intent}
+                      className="rounded-full border border-amber-400/25 bg-amber-400/10 px-3 py-1 text-xs font-black text-amber-700 dark:text-amber-200"
+                    >
+                      {intent.intent} · {intent.count}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                    {t('analytics.noFailedIntent')}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <Card className="overflow-hidden border-white/15 bg-[radial-gradient(circle_at_12%_0%,rgba(236,72,153,0.14),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.90),rgba(248,250,252,0.78))] shadow-2xl shadow-slate-950/5 backdrop-blur-xl dark:bg-[radial-gradient(circle_at_12%_0%,rgba(236,72,153,0.16),transparent_30%),linear-gradient(180deg,rgba(2,6,23,0.86),rgba(15,23,42,0.70))]">
           <CardContent className="space-y-5 p-5 md:p-7">
@@ -413,7 +591,13 @@ export function AiAssistantPage(): ReactElement {
                                     size="sm"
                                     variant="outline"
                                     className="mt-3 h-9 rounded-xl bg-white/70 px-3 text-xs font-black dark:bg-white/10"
-                                    onClick={() => openActionUrl(item.actionUrl!)}
+                                    onClick={() => {
+                                      void openActionUrl(
+                                        item.actionUrl!,
+                                        item.toolActionId,
+                                        item.confirmationRequired || Boolean(item.toolActionId)
+                                      );
+                                    }}
                                   >
                                     <ExternalLink size={13} className="me-1.5" />
                                     {item.actionLabel || t('openAction')}
