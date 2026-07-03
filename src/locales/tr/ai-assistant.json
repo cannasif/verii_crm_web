@@ -29,6 +29,8 @@
   "dragPanel": "Paneli sürükle",
   "expandPanel": "Paneli genişlet",
   "collapsePanel": "Paneli küçült",
+  "dockPanel": "Kenara al",
+  "openFromRail": "AI asistanı kenar çubuğundan aç",
   "dockedChat": "AI Asistan",
   "attachImage": "Görsel ekle",
   "removeImage": "Görseli kaldır",

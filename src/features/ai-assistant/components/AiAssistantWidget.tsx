@@ -1,7 +1,7 @@
 import { type ChangeEvent, type FormEvent, type KeyboardEvent, type PointerEvent, type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Bot, Check, Copy, ExternalLink, FileImage, GripVertical, ImagePlus, Maximize2, MessageCircle, Minimize2, Plus, SendHorizontal, Sparkles, Wand2, X } from 'lucide-react';
+import { Bot, Check, ChevronsRight, Copy, ExternalLink, FileImage, GripVertical, ImagePlus, Maximize2, MessageCircle, Minimize2, Plus, SendHorizontal, Sparkles, Wand2, X } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -82,6 +82,8 @@ const aiAssistantTextFallbacks: Record<string, string> = {
   send: 'Gönder',
   expandPanel: 'Paneli genişlet',
   collapsePanel: 'Paneli küçült',
+  dockPanel: 'Kenara al',
+  openFromRail: 'AI asistanı kenar çubuğundan aç',
   dragPanel: 'Paneli sürükle',
   dockedChat: 'AI Asistan',
   contextTitle: 'Bağlam',
@@ -620,6 +622,21 @@ export function AiAssistantWidget(): ReactElement {
     setIsOpen(false);
   };
 
+  const openWidgetFromRail = (): void => {
+    setWidgetPosition((currentPosition) => {
+      const nextPosition = clampWidgetPosition(currentPosition, widgetContainerRef.current);
+      writeWidgetPosition(nextPosition);
+      return nextPosition;
+    });
+    setIsOpen(true);
+  };
+
+  const dockWidgetToRail = (): void => {
+    const nextPosition = clampWidgetPosition(widgetPosition, widgetContainerRef.current);
+    writeWidgetPosition(nextPosition);
+    setIsOpen(false);
+  };
+
   const copyAssistantMessage = async (message: AiAssistantChatMessage): Promise<void> => {
     await copyTextToClipboard(message.content);
     setCopiedMessageId(message.id);
@@ -650,9 +667,13 @@ export function AiAssistantWidget(): ReactElement {
         .ai-widget-container.is-expanded .text-\\[0\\.62rem\\] {
           font-size: 0.75rem !important;
         }
+        .ai-widget-scroll-area {
+          scrollbar-gutter: stable;
+          -webkit-overflow-scrolling: touch;
+        }
       `}</style>
       {isOpen ? (
-        <section className={`ai-widget-container relative flex min-h-0 w-[calc(100vw-1.25rem)] transition-all duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-primary/15 bg-background/98 shadow-2xl shadow-[0_24px_60px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/20 dark:bg-slate-950/98 ${isExpanded
+        <section className={`ai-widget-container relative flex min-h-0 max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.25rem)] transition-all duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-primary/15 bg-background/98 shadow-2xl shadow-[0_24px_60px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/20 dark:bg-slate-950/98 ${isExpanded
           ? 'is-expanded sm:max-w-[850px] h-[min(92dvh,850px)]'
           : 'max-w-[500px] h-[min(80dvh,700px)]'
           }`}>
@@ -700,6 +721,17 @@ export function AiAssistantWidget(): ReactElement {
                 type="button"
                 variant="ghost"
                 size="icon"
+                title={readText('dockPanel')}
+                className="hidden h-10 w-10 rounded-2xl sm:inline-flex"
+                aria-label={readText('dockPanel')}
+                onClick={dockWidgetToRail}
+              >
+                <ChevronsRight size={18} />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
                 className="hidden h-10 w-10 rounded-2xl sm:inline-flex"
                 aria-label={isExpanded ? readText('collapsePanel') : readText('expandPanel')}
                 onClick={() => setIsExpanded(!isExpanded)}
@@ -720,7 +752,7 @@ export function AiAssistantWidget(): ReactElement {
           </header>
 
           <div
-            className="relative min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-5"
+            className="ai-widget-scroll-area relative min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-5 touch-pan-y"
             role="log"
             aria-live="polite"
             aria-relevant="additions text"
@@ -1039,9 +1071,10 @@ export function AiAssistantWidget(): ReactElement {
       ) : (
         <button
           type="button"
-          aria-label={readText('openChat')}
-          onClick={() => setIsOpen(true)}
-          className="group flex items-center gap-2 rounded-s-3xl border border-e-0 border-white/20 bg-[image:var(--crm-brand-gradient)] px-3 py-4 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:translate-x-[-2px] hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950"
+          aria-label={readText('openFromRail')}
+          title={readText('openFromRail')}
+          onClick={openWidgetFromRail}
+          className="group flex max-h-[70dvh] items-center gap-2 overflow-hidden rounded-s-3xl border border-e-0 border-white/20 bg-[image:var(--crm-brand-gradient)] px-2.5 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:translate-x-[-2px] hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950 sm:px-3 sm:py-4"
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white/20">
             <MessageCircle size={20} />

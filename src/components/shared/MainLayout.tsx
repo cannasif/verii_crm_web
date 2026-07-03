@@ -52,6 +52,11 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         icon: <DashboardCircleIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
       },
       {
+        title: t('sidebar.aiAssistant', { defaultValue: 'AI Asistan' }),
+        href: '/ai-assistant',
+        icon: <Analytics01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+      },
+      {
         title: t('sidebar.salesManagement'),
         icon: <ShoppingBag03Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [

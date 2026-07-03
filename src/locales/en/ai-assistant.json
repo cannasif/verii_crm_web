@@ -29,6 +29,8 @@
   "dragPanel": "Drag panel",
   "expandPanel": "Expand panel",
   "collapsePanel": "Collapse panel",
+  "dockPanel": "Dock to side",
+  "openFromRail": "Open AI assistant from side rail",
   "dockedChat": "AI Assistant",
   "attachImage": "Attach image",
   "removeImage": "Remove image",
