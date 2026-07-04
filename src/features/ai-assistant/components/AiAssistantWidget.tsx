@@ -34,7 +34,11 @@ import {
   type AiAssistantSelectedAttachment,
 } from '../lib/ai-assistant-attachments';
 import { copyTextToClipboard } from '../lib/ai-assistant-clipboard';
-import { showReportDraftReadyToast } from '../lib/ai-assistant-report-draft-toast';
+import {
+  findCreatedPdfTemplateDraftAction,
+  findCreatedReportDraftAction,
+  showReportDraftReadyToast,
+} from '../lib/ai-assistant-report-draft-toast';
 
 const actionItemClassNameBySeverity: Record<string, string> = {
   danger: 'border-red-400/30 bg-red-400/10 text-red-950 dark:text-red-100',
@@ -542,6 +546,10 @@ export function AiAssistantWidget(): ReactElement {
       ]);
       showReportDraftReadyToast(result, openActionUrl);
       setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
+      const createdBuilderAction = findCreatedPdfTemplateDraftAction(result) ?? findCreatedReportDraftAction(result);
+      if (createdBuilderAction?.actionUrl) {
+        await openActionUrl(createdBuilderAction.actionUrl, createdBuilderAction.toolActionId, false);
+      }
     } catch (error) {
       const fallbackErrorMessage =
         error instanceof Error
