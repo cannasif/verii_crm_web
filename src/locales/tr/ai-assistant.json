@@ -26,6 +26,8 @@
   "errorMode": "Hata açıkla",
   "salesMode": "Satış özeti",
   "erpMode": "ERP kontrolü",
+  "responseLanguage": "Yanıt dili",
+  "responseLanguageAuto": "Sorudaki dile göre otomatik yanıt ver",
   "dragPanel": "Paneli sürükle",
   "expandPanel": "Paneli genişlet",
   "collapsePanel": "Paneli küçült",

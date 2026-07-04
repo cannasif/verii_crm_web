@@ -26,6 +26,8 @@
   "errorMode": "Explain error",
   "salesMode": "Sales summary",
   "erpMode": "ERP check",
+  "responseLanguage": "Reply language",
+  "responseLanguageAuto": "Reply automatically based on the question language",
   "dragPanel": "Drag panel",
   "expandPanel": "Expand panel",
   "collapsePanel": "Collapse panel",

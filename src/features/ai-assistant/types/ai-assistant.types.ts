@@ -51,8 +51,11 @@ export interface AiAssistantAskRequestDto {
   errorMessage?: string | null;
   errorCode?: string | null;
   httpStatusCode?: number | null;
+  preferredLanguage?: AiAssistantLanguagePreference | null;
   attachments?: AiAssistantAttachmentDto[];
 }
+
+export type AiAssistantLanguagePreference = 'auto' | 'tr' | 'en';
 
 export interface AiAssistantAttachmentDto {
   fileName: string;
@@ -95,6 +98,7 @@ export interface AiAssistantAnswerDto {
   sessionKey?: string | null;
   question: string;
   intent: string;
+  responseLanguage?: 'tr' | 'en' | string;
   answer: string;
   summary: AiAssistantSummaryDto | null;
   actionItems: AiAssistantActionItemDto[];

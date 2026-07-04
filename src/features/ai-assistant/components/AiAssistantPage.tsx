@@ -40,6 +40,12 @@ import {
   findCreatedReportDraftAction,
   showReportDraftReadyToast,
 } from '../lib/ai-assistant-report-draft-toast';
+import {
+  aiAssistantLanguageOptions,
+  readAiAssistantLanguagePreference,
+  writeAiAssistantLanguagePreference,
+} from '../lib/ai-assistant-language';
+import type { AiAssistantLanguagePreference } from '../types/ai-assistant.types';
 
 const actionItemClassNameBySeverity: Record<string, string> = {
   danger: 'border-red-400/30 bg-red-400/10 text-red-950 dark:text-red-100',
@@ -138,6 +144,9 @@ export function AiAssistantPage(): ReactElement {
   const [latestErrorContext, setLatestErrorContext] = useState<AiAssistantErrorContext | null>(
     () => getLatestAiAssistantErrorContext()
   );
+  const [languagePreference, setLanguagePreference] = useState<AiAssistantLanguagePreference>(() =>
+    readAiAssistantLanguagePreference()
+  );
   const [questionError, setQuestionError] = useState<string | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<AiAssistantSelectedAttachment | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
@@ -179,6 +188,11 @@ export function AiAssistantPage(): ReactElement {
   const fallbackSuggestions = [1, 2, 3, 4].map((index) => t(`suggestions.${index}`));
   const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
   const isAssistantBusy = askMutation.isPending || isThinking;
+
+  const changeLanguagePreference = (nextLanguagePreference: AiAssistantLanguagePreference): void => {
+    setLanguagePreference(nextLanguagePreference);
+    writeAiAssistantLanguagePreference(nextLanguagePreference);
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({
@@ -261,6 +275,7 @@ export function AiAssistantPage(): ReactElement {
             : undefined,
           errorCode: errorContext?.errorCode ?? undefined,
           httpStatusCode: errorContext?.httpStatusCode ?? undefined,
+          preferredLanguage: languagePreference,
           attachments: activeAttachment ? [createAttachmentRequest(activeAttachment)] : [],
         }),
         waitForMinimumThinkingDuration(),
@@ -657,33 +672,57 @@ export function AiAssistantPage(): ReactElement {
                 className="hidden"
                 onChange={(event) => void handleAttachmentChange(event)}
               />
-              <div className="mb-4 flex flex-wrap items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={isAssistantBusy}
-                  className="h-9 rounded-2xl border-slate-200 bg-white/80 px-3 text-xs font-black dark:border-white/10 dark:bg-white/[0.06]"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <ImagePlus size={14} className="me-1.5" />
-                  {t('attachImage')}
-                </Button>
-                {selectedAttachment && (
-                  <div className="flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-pink-400/30 bg-pink-500/10 px-3 py-2 text-xs font-black text-pink-700 dark:text-pink-100">
-                    <FileImage size={14} className="shrink-0" />
-                    <span className="min-w-0 truncate">{selectedAttachment.fileName}</span>
-                    <span className="shrink-0 opacity-75">{formatAttachmentSize(selectedAttachment.size)}</span>
-                    <button
-                      type="button"
-                      className="ms-1 rounded-full p-0.5 hover:bg-pink-500/15"
-                      aria-label={t('removeImage')}
-                      onClick={clearSelectedAttachment}
-                    >
-                      <X size={13} />
-                    </button>
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex min-w-0 flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isAssistantBusy}
+                    className="h-9 rounded-2xl border-slate-200 bg-white/80 px-3 text-xs font-black dark:border-white/10 dark:bg-white/[0.06]"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <ImagePlus size={14} className="me-1.5" />
+                    {t('attachImage')}
+                  </Button>
+                  {selectedAttachment && (
+                    <div className="flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-pink-400/30 bg-pink-500/10 px-3 py-2 text-xs font-black text-pink-700 dark:text-pink-100">
+                      <FileImage size={14} className="shrink-0" />
+                      <span className="min-w-0 truncate">{selectedAttachment.fileName}</span>
+                      <span className="shrink-0 opacity-75">{formatAttachmentSize(selectedAttachment.size)}</span>
+                      <button
+                        type="button"
+                        className="ms-1 rounded-full p-0.5 hover:bg-pink-500/15"
+                        aria-label={t('removeImage')}
+                        onClick={clearSelectedAttachment}
+                      >
+                        <X size={13} />
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-slate-50/80 px-3 py-2 dark:border-white/10 dark:bg-white/[0.04]">
+                  <span className="text-[0.68rem] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    {t('responseLanguage')}
+                  </span>
+                  <div className="flex rounded-full border border-slate-200 bg-white p-0.5 dark:border-white/10 dark:bg-black/20">
+                    {aiAssistantLanguageOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        disabled={isAssistantBusy}
+                        title={option.value === 'auto' ? t('responseLanguageAuto') : option.label}
+                        onClick={() => changeLanguagePreference(option.value)}
+                        className={`h-7 rounded-full px-3 text-[0.68rem] font-black transition ${languagePreference === option.value
+                          ? 'bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 text-white shadow-sm'
+                          : 'text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10'
+                          } disabled:cursor-not-allowed disabled:opacity-60`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
               <Textarea
                 ref={textareaRef}

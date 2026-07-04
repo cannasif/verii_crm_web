@@ -39,6 +39,12 @@ import {
   findCreatedReportDraftAction,
   showReportDraftReadyToast,
 } from '../lib/ai-assistant-report-draft-toast';
+import {
+  aiAssistantLanguageOptions,
+  readAiAssistantLanguagePreference,
+  writeAiAssistantLanguagePreference,
+} from '../lib/ai-assistant-language';
+import type { AiAssistantLanguagePreference } from '../types/ai-assistant.types';
 
 const actionItemClassNameBySeverity: Record<string, string> = {
   danger: 'border-red-400/30 bg-red-400/10 text-red-950 dark:text-red-100',
@@ -99,6 +105,8 @@ const aiAssistantTextFallbacks: Record<string, string> = {
   errorMode: 'Hata açıkla',
   salesMode: 'Satış özeti',
   erpMode: 'ERP kontrolü',
+  responseLanguage: 'Yanıt dili',
+  responseLanguageAuto: 'Otomatik dil algılama',
 };
 
 const defaultSuggestions = [
@@ -298,6 +306,9 @@ export function AiAssistantWidget(): ReactElement {
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   const [widgetPosition, setWidgetPosition] = useState<WidgetPosition>(() => readWidgetPosition());
   const [sessionKey, setSessionKey] = useState<string>(() => readAssistantSessionKey());
+  const [languagePreference, setLanguagePreference] = useState<AiAssistantLanguagePreference>(() =>
+    readAiAssistantLanguagePreference()
+  );
   const conversationHistoryQuery = useAiAssistantConversationHistoryQuery(sessionKey, isOpen);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sendButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -314,6 +325,11 @@ export function AiAssistantWidget(): ReactElement {
     }
 
     return value;
+  };
+
+  const changeLanguagePreference = (nextLanguagePreference: AiAssistantLanguagePreference): void => {
+    setLanguagePreference(nextLanguagePreference);
+    writeAiAssistantLanguagePreference(nextLanguagePreference);
   };
 
   useEffect(() => {
@@ -521,6 +537,7 @@ export function AiAssistantWidget(): ReactElement {
             : undefined,
           errorCode: errorContext?.errorCode ?? undefined,
           httpStatusCode: errorContext?.httpStatusCode ?? undefined,
+          preferredLanguage: languagePreference,
           attachments: activeAttachment ? [createAttachmentRequest(activeAttachment)] : [],
         }),
         waitForMinimumThinkingDuration(),
@@ -998,6 +1015,28 @@ export function AiAssistantWidget(): ReactElement {
                 <span className="min-w-0 truncate">{questionError || askMutation.error?.message}</span>
               </div>
             )}
+            <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 px-3 py-2 dark:border-white/10 dark:bg-white/[0.04]">
+              <span className="text-[0.68rem] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                {readText('responseLanguage')}
+              </span>
+              <div className="flex shrink-0 rounded-full border border-slate-200 bg-white p-0.5 dark:border-white/10 dark:bg-black/20">
+                {aiAssistantLanguageOptions.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    disabled={isAssistantBusy}
+                    title={option.value === 'auto' ? readText('responseLanguageAuto') : option.label}
+                    onClick={() => changeLanguagePreference(option.value)}
+                    className={`h-7 rounded-full px-3 text-[0.68rem] font-black transition ${languagePreference === option.value
+                      ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm'
+                      : 'text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10'
+                      } disabled:cursor-not-allowed disabled:opacity-60`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="flex flex-col rounded-[1.6rem] border border-slate-200 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/[0.06] overflow-hidden focus-within:ring-2 focus-within:ring-primary/25 dark:focus-within:ring-primary/20 transition-all duration-200">
               <div className="px-4 pt-3 pb-1">
                 <Textarea
