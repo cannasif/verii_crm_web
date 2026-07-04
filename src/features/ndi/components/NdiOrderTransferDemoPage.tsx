@@ -1,8 +1,11 @@
-import { type ReactElement, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
+  AlertCircle,
   CheckCircle2,
   Circle,
   FileText,
+  Loader2,
   PackageCheck,
   RefreshCw,
   Search,
@@ -12,8 +15,14 @@ import {
   Warehouse,
 } from 'lucide-react';
 
+import { ndiApi, type NetsisCustomerDispatchDto, type NetsisCustomerDispatchLineDto } from '../api/ndi-api';
+
 interface NdiOrderLine {
-  id: number;
+  id: string;
+  orderNo: string;
+  customer: string;
+  route: string;
+  shipmentType: string;
   stockCode: string;
   stockName: string;
   quantity: number;
@@ -25,12 +34,11 @@ interface NdiOrderLine {
 }
 
 interface NdiOrder {
-  id: number;
+  id: string;
   orderNo: string;
   customer: string;
+  customerCode: string;
   date: string;
-  currency: string;
-  total: number;
   status: 'open' | 'planned' | 'partial';
   route: string;
   branch: string;
@@ -41,7 +49,6 @@ interface NdiOrder {
   documentType: 'irsaliye' | 'fatura';
   hasShipment: boolean;
   specialCode?: 'K' | 'N';
-  lines: NdiOrderLine[];
 }
 
 interface NdiTransferRule {
@@ -120,190 +127,6 @@ const transferRules: NdiTransferRule[] = [
   },
 ];
 
-const demoOrders: NdiOrder[] = [
-  {
-    id: 701,
-    orderNo: 'SIP2026-000701',
-    customer: 'Hendel Ltd. - Bulgaristan',
-    date: '03.07.2026',
-    currency: 'EUR',
-    total: 47902.1,
-    status: 'partial',
-    route: 'Yurt dışı / Bulgaristan',
-    branch: 'Merkez',
-    shipmentType: 'İhracat',
-    defaultWarehouse: 'NDI-01',
-    representative: 'Rümeysa Kara',
-    operationProfile: 'disTicaret',
-    documentType: 'irsaliye',
-    hasShipment: true,
-    lines: [
-      {
-        id: 70101,
-        stockCode: '31213391215042',
-        stockName: 'KAPI KOLU AL BELGRAD 85 E UZUN KARE 8019 MAT',
-        quantity: 240,
-        remainingQuantity: 180,
-        unit: 'AD',
-        warehouse: 'NDI-01',
-        deliveryNote: 'Paletli sevk',
-        status: 'partial',
-      },
-      {
-        id: 70102,
-        stockCode: '31213391415041',
-        stockName: 'KAPI KOLU AL BELGRAD WC UZUN KARE 8003 MAT',
-        quantity: 120,
-        remainingQuantity: 120,
-        unit: 'AD',
-        warehouse: 'NDI-01',
-        deliveryNote: 'Tek koli',
-        status: 'ready',
-      },
-      {
-        id: 70103,
-        stockCode: '31323382733J14',
-        stockName: 'PEN.KOLU ABS ATLAS AKUSTIK KARE 9016',
-        quantity: 300,
-        remainingQuantity: 90,
-        unit: 'AD',
-        warehouse: 'NDI-02',
-        deliveryNote: 'İhracat koli etiketi',
-        status: 'partial',
-      },
-    ],
-  },
-  {
-    id: 702,
-    orderNo: 'SIP2026-000702',
-    customer: 'Hendel Ltd. - Bulgaristan',
-    date: '03.07.2026',
-    currency: 'EUR',
-    total: 32140.25,
-    status: 'open',
-    route: 'Yurt dışı / Bulgaristan',
-    branch: 'Merkez',
-    shipmentType: 'İhracat',
-    defaultWarehouse: 'NDI-02',
-    representative: 'Rümeysa Kara',
-    operationProfile: 'disTicaret',
-    documentType: 'irsaliye',
-    hasShipment: true,
-    lines: [
-      {
-        id: 70201,
-        stockCode: '312133912B2011',
-        stockName: 'KAPI KOLU AL BELGRAD 85 E UZUN OVAL 9005 MAT',
-        quantity: 180,
-        remainingQuantity: 180,
-        unit: 'AD',
-        warehouse: 'NDI-02',
-        deliveryNote: 'Aynı konşimento',
-        status: 'ready',
-      },
-      {
-        id: 70202,
-        stockCode: '31323382733U03',
-        stockName: 'PEN.KOLU ABS ATLAS AKUSTIK KARE 7016',
-        quantity: 220,
-        remainingQuantity: 110,
-        unit: 'AD',
-        warehouse: 'NDI-01',
-        deliveryNote: 'Kısmi sevk',
-        status: 'partial',
-      },
-    ],
-  },
-  {
-    id: 704,
-    orderNo: 'SIP2026-000704',
-    customer: 'Vega Makina San. ve Tic. A.Ş.',
-    date: '03.07.2026',
-    currency: 'TL',
-    total: 128430,
-    status: 'planned',
-    route: 'İç sevkiyat / İstanbul',
-    branch: 'İstanbul',
-    shipmentType: 'Yurt içi sevk',
-    defaultWarehouse: 'MERKEZ',
-    representative: 'Can Nasif',
-    operationProfile: 'windoformKapi',
-    documentType: 'fatura',
-    hasShipment: false,
-    specialCode: 'N',
-    lines: [
-      {
-        id: 70401,
-        stockCode: 'CRM_PERF_0003400000',
-        stockName: 'KAPI KOLU BAĞLANTI 0003400000',
-        quantity: 80,
-        remainingQuantity: 80,
-        unit: 'TK',
-        warehouse: 'MERKEZ',
-        deliveryNote: 'Aynı gün sevk',
-        status: 'ready',
-      },
-      {
-        id: 70402,
-        stockCode: 'CRM_PERF_0003399998',
-        stockName: 'AKUSTIK OVAL PANEL 0003399998',
-        quantity: 48,
-        remainingQuantity: 48,
-        unit: 'MT',
-        warehouse: 'MERKEZ',
-        deliveryNote: 'Hasarsız paket',
-        status: 'ready',
-      },
-    ],
-  },
-  {
-    id: 709,
-    orderNo: 'NDI2026-000709',
-    customer: 'Baygün Hırdavat İnşaat A.Ş.',
-    date: '02.07.2026',
-    currency: 'TL',
-    total: 76250,
-    status: 'open',
-    route: 'Marmara Bölge',
-    branch: 'Bursa',
-    shipmentType: 'Bölge sevk',
-    defaultWarehouse: 'NDI-03',
-    representative: 'Ömer V3rii',
-    operationProfile: 'nuray',
-    documentType: 'irsaliye',
-    hasShipment: true,
-    lines: [
-      {
-        id: 70901,
-        stockCode: '150-02-101-009-4015',
-        stockName: 'IS AYAKKABISI',
-        quantity: 36,
-        remainingQuantity: 36,
-        unit: 'AD',
-        warehouse: 'NDI-03',
-        deliveryNote: 'Kontrol sonrası',
-        status: 'waiting',
-      },
-      {
-        id: 70902,
-        stockCode: '150-02-103-004-2581',
-        stockName: 'DIS SAHA MONTU',
-        quantity: 24,
-        remainingQuantity: 24,
-        unit: 'AD',
-        warehouse: 'NDI-03',
-        deliveryNote: 'Beden ayrımı yapılacak',
-        status: 'waiting',
-      },
-    ],
-  },
-];
-
-const moneyFormatter = new Intl.NumberFormat('tr-TR', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-
 const numberFormatter = new Intl.NumberFormat('tr-TR', {
   maximumFractionDigits: 2,
 });
@@ -316,53 +139,172 @@ function getRule(order: NdiOrder): NdiTransferRule {
   return transferRules.find((rule) => rule.id === order.operationProfile) ?? transferRules[0];
 }
 
+function normalizeText(value: unknown): string {
+  return String(value ?? '').trim().toLocaleLowerCase('tr-TR');
+}
+
+function formatDate(value?: string | null): string {
+  if (!value) {
+    return '-';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat('tr-TR').format(date);
+}
+
+function resolveOperationProfile(dispatch: NetsisCustomerDispatchDto): NdiOrder['operationProfile'] {
+  const type = normalizeText(dispatch.tipi);
+  const exportType = normalizeText(dispatch.exportTipi);
+
+  if (type.includes('dışı') || (exportType && exportType !== '-')) {
+    return 'disTicaret';
+  }
+
+  return 'windoformKapi';
+}
+
+function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
+  const operationProfile = resolveOperationProfile(dispatch);
+  const shipmentType = dispatch.exportTipi && dispatch.exportTipi !== '-' ? dispatch.exportTipi : dispatch.tipi || 'İrsaliye';
+
+  return {
+    id: dispatch.irsaliyeNo,
+    orderNo: dispatch.irsaliyeNo,
+    customer: dispatch.cariIsim || dispatch.cariKodu,
+    customerCode: dispatch.cariKodu,
+    date: formatDate(dispatch.tarih),
+    status: operationProfile === 'disTicaret' ? 'partial' : 'open',
+    route: [dispatch.tipi, dispatch.teslimCariIsim].filter(Boolean).join(' / ') || '-',
+    branch: dispatch.teslimCariKodu || dispatch.cariKodu || '-',
+    shipmentType,
+    defaultWarehouse: dispatch.teslimCariKodu || 'NDI',
+    representative: dispatch.plasiyerAciklama || dispatch.plasiyerKodu || '-',
+    operationProfile,
+    documentType: 'irsaliye',
+    hasShipment: true,
+    specialCode: operationProfile === 'disTicaret' ? 'K' : 'N',
+  };
+}
+
+function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, order?: NdiOrder): NdiOrderLine {
+  const remainingQuantity = Number(line.bakiye ?? 0);
+  const quantity = Number(line.miktar ?? 0);
+
+  return {
+    id: `${line.fisNo}::${line.stokKodu}::${index}`,
+    orderNo: line.fisNo,
+    customer: order?.customer || line.cariKodu || '-',
+    route: order?.route || '-',
+    shipmentType: order?.shipmentType || '-',
+    stockCode: line.stokKodu,
+    stockName: line.stokAdi || line.stokKodu,
+    quantity,
+    remainingQuantity,
+    unit: line.olcuBr || '-',
+    warehouse: order?.defaultWarehouse || 'NDI',
+    deliveryNote: line.cariKodu || order?.customerCode || '-',
+    status: remainingQuantity <= 0 ? 'waiting' : remainingQuantity < quantity ? 'partial' : 'ready',
+  };
+}
+
 export function NdiOrderTransferDemoPage(): ReactElement {
   const [search, setSearch] = useState('');
-  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<number>>(() => new Set([701, 702]));
-  const [selectedLineIds, setSelectedLineIds] = useState<Set<number>>(() => new Set([70101, 70102, 70201]));
+  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(() => new Set());
+  const [selectedLineIds, setSelectedLineIds] = useState<Set<string>>(() => new Set());
+  const initializedSelectionRef = useRef(false);
 
-  const filteredOrders = useMemo(() => {
-    const normalizedSearch = search.trim().toLocaleLowerCase('tr-TR');
+  const dispatchesQuery = useQuery({
+    queryKey: ['ndi', 'customer-dispatches'],
+    queryFn: ndiApi.getCustomerDispatches,
+    staleTime: 60_000,
+  });
 
-    if (!normalizedSearch) {
-      return demoOrders;
+  const orders = useMemo(() => (dispatchesQuery.data ?? []).map(mapDispatchToOrder), [dispatchesQuery.data]);
+  const ordersById = useMemo(() => new Map(orders.map((order) => [order.id, order])), [orders]);
+
+  useEffect(() => {
+    if (initializedSelectionRef.current || orders.length === 0) {
+      return;
     }
 
-    return demoOrders.filter((order) => {
-      const haystack = [
+    const firstPrefix = getOrderPrefix(orders[0]);
+    const initialGroup = orders.filter((order) => getOrderPrefix(order) === firstPrefix).slice(0, 2);
+    setSelectedOrderIds(new Set(initialGroup.map((order) => order.id)));
+    initializedSelectionRef.current = true;
+  }, [orders]);
+
+  const selectedOrders = useMemo(() => orders.filter((order) => selectedOrderIds.has(order.id)), [orders, selectedOrderIds]);
+  const selectedPrefix = selectedOrders[0] ? getOrderPrefix(selectedOrders[0]) : orders[0] ? getOrderPrefix(orders[0]) : '-';
+  const selectedIrsNoList = useMemo(() => selectedOrders.map((order) => order.orderNo).join(','), [selectedOrders]);
+
+  const linesQuery = useQuery({
+    queryKey: ['ndi', 'customer-dispatch-lines', selectedIrsNoList],
+    queryFn: () => ndiApi.getCustomerDispatchLines(selectedIrsNoList),
+    enabled: selectedIrsNoList.length > 0,
+    staleTime: 30_000,
+  });
+
+  const selectedOrderLines = useMemo(
+    () => (linesQuery.data ?? []).map((line, index) => mapDispatchLine(line, index, ordersById.get(line.fisNo))),
+    [linesQuery.data, ordersById]
+  );
+
+  const lineIdsKey = useMemo(() => selectedOrderLines.map((line) => line.id).join('|'), [selectedOrderLines]);
+
+  useEffect(() => {
+    if (!lineIdsKey) {
+      setSelectedLineIds((current) => (current.size === 0 ? current : new Set()));
+      return;
+    }
+
+    const currentLineIds = selectedOrderLines.map((line) => line.id);
+    setSelectedLineIds((current) => {
+      const retained = currentLineIds.filter((lineId) => current.has(lineId));
+      const nextIds = retained.length > 0 ? retained : currentLineIds;
+
+      if (nextIds.length === current.size && nextIds.every((lineId) => current.has(lineId))) {
+        return current;
+      }
+
+      return new Set(nextIds);
+    });
+  }, [lineIdsKey, selectedOrderLines]);
+
+  const lineCountByOrderNo = useMemo(() => {
+    const counts = new Map<string, number>();
+    selectedOrderLines.forEach((line) => counts.set(line.orderNo, (counts.get(line.orderNo) ?? 0) + 1));
+    return counts;
+  }, [selectedOrderLines]);
+
+  const filteredOrders = useMemo(() => {
+    const tokens = normalizeText(search).split(/\s+/).filter(Boolean);
+
+    if (tokens.length === 0) {
+      return orders;
+    }
+
+    return orders.filter((order) => {
+      const haystack = normalizeText([
         order.orderNo,
         order.customer,
+        order.customerCode,
         order.route,
         order.branch,
         order.shipmentType,
         order.defaultWarehouse,
         order.representative,
-        ...order.lines.flatMap((line) => [line.stockCode, line.stockName, line.warehouse, line.deliveryNote]),
-      ]
-        .join(' ')
-        .toLocaleLowerCase('tr-TR');
+      ].join(' '));
 
-      return normalizedSearch
-        .split(/\s+/)
-        .filter(Boolean)
-        .every((token) => haystack.includes(token));
+      return tokens.every((token) => haystack.includes(token));
     });
-  }, [search]);
+  }, [orders, search]);
 
-  const selectedOrders = demoOrders.filter((order) => selectedOrderIds.has(order.id));
-  const selectedPrefix = selectedOrders[0] ? getOrderPrefix(selectedOrders[0]) : getOrderPrefix(demoOrders[0]);
-  const selectedOrderLines = selectedOrders.flatMap((order) =>
-    order.lines.map((line) => ({
-      ...line,
-      orderNo: order.orderNo,
-      customer: order.customer,
-      route: order.route,
-      shipmentType: order.shipmentType,
-    }))
-  );
   const selectedLines = selectedOrderLines.filter((line) => selectedLineIds.has(line.id));
   const selectedQuantity = selectedLines.reduce((total, line) => total + line.remainingQuantity, 0);
-  const selectedTotal = selectedOrders.reduce((total, order) => total + order.total, 0);
   const selectedWarehouses = Array.from(new Set(selectedOrderLines.map((line) => line.warehouse)));
   const selectedShipmentTypes = Array.from(new Set(selectedOrders.map((order) => order.shipmentType)));
   const selectedRepresentatives = Array.from(new Set(selectedOrders.map((order) => order.representative)));
@@ -376,10 +318,10 @@ export function NdiOrderTransferDemoPage(): ReactElement {
 
   const toggleOrder = (order: NdiOrder) => {
     setSelectedOrderIds((current) => {
-      const currentOrders = demoOrders.filter((item) => current.has(item.id));
+      const currentOrders = orders.filter((item) => current.has(item.id));
       const currentPrefix = currentOrders[0] ? getOrderPrefix(currentOrders[0]) : getOrderPrefix(order);
       const orderPrefix = getOrderPrefix(order);
-      const next = orderPrefix === currentPrefix ? new Set(current) : new Set<number>();
+      const next = orderPrefix === currentPrefix ? new Set(current) : new Set<string>();
 
       if (next.has(order.id)) {
         next.delete(order.id);
@@ -387,17 +329,11 @@ export function NdiOrderTransferDemoPage(): ReactElement {
         next.add(order.id);
       }
 
-      const resolved = next.size > 0 ? next : new Set([order.id]);
-      const allowedLineIds = new Set(
-        demoOrders.filter((item) => resolved.has(item.id)).flatMap((item) => item.lines.map((line) => line.id))
-      );
-
-      setSelectedLineIds((currentLines) => new Set([...currentLines].filter((lineId) => allowedLineIds.has(lineId))));
-      return resolved;
+      return next.size > 0 ? next : new Set([order.id]);
     });
   };
 
-  const toggleLine = (lineId: number) => {
+  const toggleLine = (lineId: string) => {
     setSelectedLineIds((current) => {
       const next = new Set(current);
       if (next.has(lineId)) {
@@ -422,10 +358,12 @@ export function NdiOrderTransferDemoPage(): ReactElement {
     });
   };
 
-  const resetDemo = () => {
+  const resetSelection = () => {
     setSearch('');
-    setSelectedOrderIds(new Set([701, 702]));
-    setSelectedLineIds(new Set([70101, 70102, 70201]));
+    initializedSelectionRef.current = false;
+    setSelectedOrderIds(new Set());
+    setSelectedLineIds(new Set());
+    void dispatchesQuery.refetch();
   };
 
   return (
@@ -434,14 +372,14 @@ export function NdiOrderTransferDemoPage(): ReactElement {
         <div className="mx-auto flex max-w-[1540px] flex-wrap items-center justify-between gap-4 px-6 py-4">
           <div>
             <div className="text-xs font-black uppercase tracking-[0.28em] text-[#8fb4ff]">NDI</div>
-            <h1 className="mt-1 text-2xl font-black tracking-tight">Sipariş Kalem Seçim Konsolu</h1>
+            <h1 className="mt-1 text-2xl font-black tracking-tight">İrsaliye Kalem Seçim Konsolu</h1>
             <p className="mt-1 text-sm font-semibold text-[#b8c7dd]">
-              İlk 3 karakteri aynı siparişler birlikte seçilir; depo, sevkiyat ve satır bilgileri aktarım için hazırlanır.
+              Netsis irsaliyeleri listelenir; ilk 3 karakteri aynı belgeler birlikte seçilir ve satırları aktarım için hazırlanır.
             </p>
           </div>
 
           <div className="grid grid-cols-3 gap-2 text-sm">
-            <MetricPill label="Grup" value={`${selectedPrefix} / ${selectedOrders.length} sipariş`} />
+            <MetricPill label="Grup" value={`${selectedPrefix} / ${selectedOrders.length} belge`} />
             <MetricPill label="Seçili Kalem" value={String(selectedLines.length)} />
             <MetricPill label="Miktar" value={numberFormatter.format(selectedQuantity)} />
           </div>
@@ -456,8 +394,8 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                 <FileText size={20} />
               </div>
               <div>
-                <h2 className="text-base font-black">Siparişler</h2>
-                <p className="text-xs font-semibold text-[#6b7b91]">Aynı prefix grubundan birden fazla sipariş seçin.</p>
+                <h2 className="text-base font-black">İrsaliyeler</h2>
+                <p className="text-xs font-semibold text-[#6b7b91]">Aynı prefix grubundan birden fazla irsaliye seçin.</p>
               </div>
             </div>
 
@@ -468,79 +406,90 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   className="w-full bg-transparent text-sm font-bold outline-none placeholder:text-[#8fa1b8]"
-                  placeholder="Sipariş, müşteri, stok, depo ara..."
+                  placeholder="İrsaliye, müşteri, plasiyer, teslim cari ara..."
                 />
               </label>
               <button
                 type="button"
-                onClick={resetDemo}
+                onClick={resetSelection}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#cdd8e7] bg-white text-[#21304a] shadow-sm transition hover:border-[#1f5eff]"
-                aria-label="Demo veriyi yenile"
+                aria-label="İrsaliyeleri yenile"
               >
-                <RefreshCw size={17} />
+                {dispatchesQuery.isFetching ? <Loader2 size={17} className="animate-spin" /> : <RefreshCw size={17} />}
               </button>
             </div>
           </div>
 
           <div className="max-h-[650px] space-y-2 overflow-y-auto p-3">
-            {filteredOrders.map((order) => {
-              const isSelected = selectedOrderIds.has(order.id);
+            {dispatchesQuery.isLoading ? (
+              <StatePanel icon={<Loader2 className="animate-spin" size={18} />} title="İrsaliyeler yükleniyor" />
+            ) : dispatchesQuery.isError ? (
+              <StatePanel
+                icon={<AlertCircle size={18} />}
+                title="İrsaliyeler yüklenemedi"
+                description={dispatchesQuery.error instanceof Error ? dispatchesQuery.error.message : 'Netsis read servisi yanıt vermedi.'}
+              />
+            ) : filteredOrders.length === 0 ? (
+              <StatePanel icon={<Search size={18} />} title="Kayıt bulunamadı" description="Arama kriterine uyan irsaliye yok." />
+            ) : (
+              filteredOrders.map((order) => {
+                const isSelected = selectedOrderIds.has(order.id);
+                const lineCount = lineCountByOrderNo.get(order.orderNo);
 
-              return (
-                <button
-                  key={order.id}
-                  type="button"
-                  onClick={() => toggleOrder(order)}
-                  className={`grid w-full grid-cols-[30px_1fr_auto] gap-3 rounded-lg border p-3 text-left transition ${
-                    isSelected ? 'border-[#1f5eff] bg-[#eef5ff] shadow-sm' : 'border-[#dbe4f0] bg-white hover:border-[#8fb4ff]'
-                  }`}
-                >
-                  <div
-                    className={`mt-1 flex h-7 w-7 items-center justify-center rounded-md border ${
-                      isSelected ? 'border-[#1f5eff] bg-[#1f5eff] text-white' : 'border-[#cdd8e7] bg-white text-[#708198]'
+                return (
+                  <button
+                    key={order.id}
+                    type="button"
+                    onClick={() => toggleOrder(order)}
+                    className={`grid w-full grid-cols-[30px_1fr_auto] gap-3 rounded-lg border p-3 text-left transition ${
+                      isSelected ? 'border-[#1f5eff] bg-[#eef5ff] shadow-sm' : 'border-[#dbe4f0] bg-white hover:border-[#8fb4ff]'
                     }`}
                   >
-                    {isSelected ? <CheckCircle2 size={17} /> : <Circle size={17} />}
-                  </div>
+                    <div
+                      className={`mt-1 flex h-7 w-7 items-center justify-center rounded-md border ${
+                        isSelected ? 'border-[#1f5eff] bg-[#1f5eff] text-white' : 'border-[#cdd8e7] bg-white text-[#708198]'
+                      }`}
+                    >
+                      {isSelected ? <CheckCircle2 size={17} /> : <Circle size={17} />}
+                    </div>
 
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-black text-[#172033]">{order.orderNo}</span>
-                      <span className="rounded-full bg-[#f0f5fb] px-2 py-0.5 text-[10px] font-black text-[#49627e]">
-                        {getOrderPrefix(order)}
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-black text-[#172033]">{order.orderNo}</span>
+                        <span className="rounded-full bg-[#f0f5fb] px-2 py-0.5 text-[10px] font-black text-[#49627e]">
+                          {getOrderPrefix(order)}
+                        </span>
+                      </div>
+                      <div className="mt-1 line-clamp-2 text-sm font-bold text-[#42536b]">{order.customer}</div>
+
+                      <div className="mt-3 grid grid-cols-2 gap-2 text-xs font-bold text-[#6b7b91]">
+                        <span>{order.date}</span>
+                        <span className="text-right">{order.customerCode}</span>
+                        <span className="col-span-2 flex items-center gap-1">
+                          <Truck size={14} /> {order.route}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Warehouse size={14} /> {order.defaultWarehouse}
+                        </span>
+                        <span className="text-right">{order.shipmentType}</span>
+                      </div>
+                      <p className="mt-3 rounded-md bg-[#f8fbff] px-2 py-1 text-[11px] font-bold text-[#69809b]">
+                        İlk 3 karakteri aynı irsaliyeler birlikte seçilebilir.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-2">
+                      <span className="rounded-full bg-[#eaf2ff] px-2 py-1 text-xs font-black text-[#1f5eff]">
+                        {statusLabel[order.status]}
+                      </span>
+                      <span className="rounded-full bg-[#fff4d8] px-2 py-1 text-[10px] font-black text-[#9a6500]">
+                        {lineCount === undefined ? 'Satır' : `${lineCount} satır`}
                       </span>
                     </div>
-                    <div className="mt-1 line-clamp-2 text-sm font-bold text-[#42536b]">{order.customer}</div>
-
-                    <div className="mt-3 grid grid-cols-2 gap-2 text-xs font-bold text-[#6b7b91]">
-                      <span>{order.date}</span>
-                      <span className="text-right">
-                        {moneyFormatter.format(order.total)} {order.currency}
-                      </span>
-                      <span className="col-span-2 flex items-center gap-1">
-                        <Truck size={14} /> {order.route}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Warehouse size={14} /> {order.defaultWarehouse}
-                      </span>
-                      <span className="text-right">{order.shipmentType}</span>
-                    </div>
-                    <p className="mt-3 rounded-md bg-[#f8fbff] px-2 py-1 text-[11px] font-bold text-[#69809b]">
-                      İlk 3 karakteri aynı siparişler birlikte seçilebilir.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-2">
-                    <span className="rounded-full bg-[#eaf2ff] px-2 py-1 text-xs font-black text-[#1f5eff]">
-                      {statusLabel[order.status]}
-                    </span>
-                    <span className="rounded-full bg-[#fff4d8] px-2 py-1 text-[10px] font-black text-[#9a6500]">
-                      {order.lines.length} satır
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+                  </button>
+                );
+              })
+            )}
           </div>
         </section>
 
@@ -549,20 +498,20 @@ export function NdiOrderTransferDemoPage(): ReactElement {
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-[#1f5eff]">
-                  <PackageCheck size={16} /> Seçili Sipariş Grubu
+                  <PackageCheck size={16} /> Seçili İrsaliye Grubu
                 </div>
                 <h2 className="mt-1 text-xl font-black">
-                  {selectedPrefix} grubu · {selectedOrders.length} sipariş
+                  {selectedPrefix} grubu · {selectedOrders.length} irsaliye
                 </h2>
                 <p className="text-sm font-semibold text-[#6b7b91]">
-                  {selectedOrders.map((order) => order.orderNo).join(', ')}
+                  {selectedOrders.length > 0 ? selectedOrders.map((order) => order.orderNo).join(', ') : 'Henüz irsaliye seçilmedi'}
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <SummaryTile label="Satır" value={String(selectedOrderLines.length)} />
+                <SummaryTile label="Satır" value={linesQuery.isFetching ? '...' : String(selectedOrderLines.length)} />
                 <SummaryTile label="Seçili" value={String(selectedLines.length)} />
                 <SummaryTile label="Kalan" value={numberFormatter.format(selectedQuantity)} />
-                <SummaryTile label="Toplam" value={moneyFormatter.format(selectedTotal)} />
+                <SummaryTile label="İrsaliye" value={String(selectedOrders.length)} />
               </div>
             </div>
 
@@ -603,7 +552,8 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                     <button
                       type="button"
                       onClick={toggleAllLines}
-                      className="flex h-8 w-8 items-center justify-center rounded-md border border-[#cdd8e7] bg-white text-[#1f5eff]"
+                      disabled={selectedOrderLines.length === 0}
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-[#cdd8e7] bg-white text-[#1f5eff] disabled:opacity-50"
                       aria-label="Tüm satırları seç"
                     >
                       {selectedOrderLines.length > 0 && selectedOrderLines.every((line) => selectedLineIds.has(line.id)) ? (
@@ -613,70 +563,94 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                       )}
                     </button>
                   </th>
-                  <th className="px-4 py-3">Sipariş</th>
+                  <th className="px-4 py-3">İrsaliye</th>
                   <th className="px-4 py-3">Stok Kodu</th>
                   <th className="px-4 py-3">Stok Adı</th>
                   <th className="px-4 py-3 text-right">Miktar</th>
-                  <th className="px-4 py-3 text-right">Kalan</th>
-                  <th className="px-4 py-3">Depo</th>
+                  <th className="px-4 py-3 text-right">Bakiye</th>
+                  <th className="px-4 py-3">Depo/Teslim</th>
                   <th className="px-4 py-3">Durum</th>
-                  <th className="px-4 py-3">Not</th>
+                  <th className="px-4 py-3">Cari Kodu</th>
                 </tr>
               </thead>
               <tbody>
-                {selectedOrderLines.map((line) => {
-                  const isSelected = selectedLineIds.has(line.id);
+                {linesQuery.isFetching ? (
+                  <tr>
+                    <td colSpan={9} className="px-4 py-10">
+                      <StatePanel icon={<Loader2 className="animate-spin" size={18} />} title="Kalemler yükleniyor" />
+                    </td>
+                  </tr>
+                ) : linesQuery.isError ? (
+                  <tr>
+                    <td colSpan={9} className="px-4 py-10">
+                      <StatePanel
+                        icon={<AlertCircle size={18} />}
+                        title="Kalemler yüklenemedi"
+                        description={linesQuery.error instanceof Error ? linesQuery.error.message : 'Netsis read servisi yanıt vermedi.'}
+                      />
+                    </td>
+                  </tr>
+                ) : selectedOrderLines.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="px-4 py-10">
+                      <StatePanel icon={<FileText size={18} />} title="Kalem bulunamadı" description="Satırları görmek için irsaliye seçin." />
+                    </td>
+                  </tr>
+                ) : (
+                  selectedOrderLines.map((line) => {
+                    const isSelected = selectedLineIds.has(line.id);
 
-                  return (
-                    <tr
-                      key={line.id}
-                      className={`border-b border-[#e4ebf4] transition ${isSelected ? 'bg-[#f0f6ff]' : 'bg-white hover:bg-[#fafcff]'}`}
-                    >
-                      <td className="px-4 py-3">
-                        <button
-                          type="button"
-                          onClick={() => toggleLine(line.id)}
-                          className={`flex h-8 w-8 items-center justify-center rounded-md border ${
-                            isSelected ? 'border-[#1f5eff] bg-[#1f5eff] text-white' : 'border-[#cdd8e7] bg-white text-[#5e718b]'
-                          }`}
-                          aria-label="Satırı seç"
-                        >
-                          {isSelected ? <CheckCircle2 size={18} /> : <Circle size={18} />}
-                        </button>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="font-black text-[#172033]">{line.orderNo}</div>
-                        <div className="text-xs font-bold text-[#708198]">{line.shipmentType}</div>
-                      </td>
-                      <td className="px-4 py-3 font-black text-[#e11d73]">{line.stockCode}</td>
-                      <td className="px-4 py-3 font-bold text-[#26344c]">{line.stockName}</td>
-                      <td className="px-4 py-3 text-right font-black">
-                        {numberFormatter.format(line.quantity)} {line.unit}
-                      </td>
-                      <td className="px-4 py-3 text-right font-black text-[#0f9f6e]">
-                        {numberFormatter.format(line.remainingQuantity)} {line.unit}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-[#eef3f8] px-2 py-1 text-xs font-black text-[#344765]">
-                          <Warehouse size={13} /> {line.warehouse}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className="rounded-full bg-[#fff4d8] px-2 py-1 text-xs font-black text-[#9a6500]">
-                          {lineStatusLabel[line.status]}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 font-semibold text-[#6b7b91]">{line.deliveryNote}</td>
-                    </tr>
-                  );
-                })}
+                    return (
+                      <tr
+                        key={line.id}
+                        className={`border-b border-[#e4ebf4] transition ${isSelected ? 'bg-[#f0f6ff]' : 'bg-white hover:bg-[#fafcff]'}`}
+                      >
+                        <td className="px-4 py-3">
+                          <button
+                            type="button"
+                            onClick={() => toggleLine(line.id)}
+                            className={`flex h-8 w-8 items-center justify-center rounded-md border ${
+                              isSelected ? 'border-[#1f5eff] bg-[#1f5eff] text-white' : 'border-[#cdd8e7] bg-white text-[#5e718b]'
+                            }`}
+                            aria-label="Satırı seç"
+                          >
+                            {isSelected ? <CheckCircle2 size={18} /> : <Circle size={18} />}
+                          </button>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="font-black text-[#172033]">{line.orderNo}</div>
+                          <div className="text-xs font-bold text-[#708198]">{line.shipmentType}</div>
+                        </td>
+                        <td className="px-4 py-3 font-black text-[#e11d73]">{line.stockCode}</td>
+                        <td className="px-4 py-3 font-bold text-[#26344c]">{line.stockName}</td>
+                        <td className="px-4 py-3 text-right font-black">
+                          {numberFormatter.format(line.quantity)} {line.unit}
+                        </td>
+                        <td className="px-4 py-3 text-right font-black text-[#0f9f6e]">
+                          {numberFormatter.format(line.remainingQuantity)} {line.unit}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[#eef3f8] px-2 py-1 text-xs font-black text-[#344765]">
+                            <Warehouse size={13} /> {line.warehouse}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="rounded-full bg-[#fff4d8] px-2 py-1 text-xs font-black text-[#9a6500]">
+                            {lineStatusLabel[line.status]}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-[#6b7b91]">{line.deliveryNote}</td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d7e1ef] bg-[#f8fbff] p-4">
             <div className="text-sm font-bold text-[#52647d]">
-              Aynı ilk 3 karakterli siparişlerden seçilen satırlar kural listesine göre seri, KDV, depo ve ek alan bilgileriyle aktarım önizlemesine hazırlanır.
+              Seçilen irsaliye satırları kural listesine göre seri, KDV, depo ve ek alan bilgileriyle aktarım önizlemesine hazırlanır.
             </div>
             <button
               type="button"
@@ -688,6 +662,16 @@ export function NdiOrderTransferDemoPage(): ReactElement {
           </div>
         </section>
       </main>
+    </div>
+  );
+}
+
+function StatePanel({ icon, title, description }: { icon: ReactElement; title: string; description?: string }): ReactElement {
+  return (
+    <div className="flex min-h-24 flex-col items-center justify-center rounded-lg border border-dashed border-[#cdd8e7] bg-[#f8fbff] p-4 text-center">
+      <span className="mb-2 text-[#1f5eff]">{icon}</span>
+      <div className="text-sm font-black text-[#172033]">{title}</div>
+      {description ? <div className="mt-1 text-xs font-semibold text-[#6b7b91]">{description}</div> : null}
     </div>
   );
 }
