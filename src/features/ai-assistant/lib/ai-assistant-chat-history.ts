@@ -1,4 +1,9 @@
-import type { AiAssistantActionItemDto, AiAssistantSourceDto, AiAssistantToolActionDto } from '../types/ai-assistant.types';
+import type {
+  AiAssistantActionItemDto,
+  AiAssistantResponseContextDto,
+  AiAssistantSourceDto,
+  AiAssistantToolActionDto,
+} from '../types/ai-assistant.types';
 
 export type AiAssistantChatAttachment = {
   fileName: string;
@@ -15,6 +20,7 @@ export type AiAssistantChatMessage = {
   actionItems?: AiAssistantActionItemDto[];
   toolActions?: AiAssistantToolActionDto[];
   sources?: AiAssistantSourceDto[];
+  context?: AiAssistantResponseContextDto | null;
   intent?: string;
 };
 
@@ -53,6 +59,7 @@ export function readAiAssistantChatHistory(key: string): AiAssistantChatMessage[
       .map((message) => ({
         ...message,
         intent: typeof message.intent === 'string' ? message.intent : undefined,
+        context: isAiAssistantResponseContext(message.context) ? message.context : undefined,
         attachments: Array.isArray(message.attachments)
           ? message.attachments
               .filter((attachment): attachment is AiAssistantChatAttachment =>
@@ -74,6 +81,17 @@ export function readAiAssistantChatHistory(key: string): AiAssistantChatMessage[
   } catch {
     return [];
   }
+}
+
+function isAiAssistantResponseContext(value: unknown): value is AiAssistantResponseContextDto {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+
+  const context = value as Partial<AiAssistantResponseContextDto>;
+  return typeof context.hasPageFilters === 'boolean'
+    && typeof context.hasErrorContext === 'boolean'
+    && typeof context.attachmentCount === 'number';
 }
 
 export function writeAiAssistantChatHistory(key: string, messages: AiAssistantChatMessage[]): void {
@@ -110,6 +128,7 @@ export function createAiAssistantChatMessagesFromServer(
     content: string;
     createdDate: string;
     intent?: string | null;
+    context?: AiAssistantResponseContextDto | null;
     toolActions?: AiAssistantToolActionDto[] | null;
   }>
 ): AiAssistantChatMessage[] {
@@ -121,6 +140,7 @@ export function createAiAssistantChatMessagesFromServer(
       content: message.content,
       createdAt: message.createdDate,
       intent: message.intent ?? undefined,
+      context: isAiAssistantResponseContext(message.context) ? message.context : undefined,
       toolActions: message.toolActions ?? undefined,
       actionItems: createAiAssistantActionItemsFromToolActions(message.toolActions),
     }))

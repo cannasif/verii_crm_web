@@ -9,6 +9,7 @@ import { aiAssistantApi } from '../api/ai-assistant-api';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
 import { useAiAssistantConversationHistoryQuery, useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
 import { AiAssistantAnswerCard } from './AiAssistantAnswerCard';
+import { AiAssistantContextPill } from './AiAssistantContextPill';
 import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
 import {
   getLatestAiAssistantErrorContext,
@@ -558,6 +559,7 @@ export function AiAssistantWidget(): ReactElement {
             : createAiAssistantActionItemsFromToolActions(result.toolActions),
           toolActions: result.toolActions ?? [],
           sources: result.sources ?? [],
+          context: result.context ?? null,
           intent: result.intent,
         },
       ]);
@@ -845,6 +847,7 @@ export function AiAssistantWidget(): ReactElement {
                           title={readText('answerTitle')}
                           answer={message.content}
                         />
+                        <AiAssistantContextPill context={message.context} />
                         <div className="mt-2 flex justify-end">
                           <Button
                             type="button"

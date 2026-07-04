@@ -93,6 +93,18 @@ export interface AiAssistantSourceDto {
   period?: string | null;
 }
 
+export interface AiAssistantResponseContextDto {
+  currentPath?: string | null;
+  routeTitle?: string | null;
+  module?: string | null;
+  entityType?: string | null;
+  entityId?: number | null;
+  customerId?: number | null;
+  hasPageFilters: boolean;
+  hasErrorContext: boolean;
+  attachmentCount: number;
+}
+
 export interface AiAssistantAnswerDto {
   sessionId?: number | null;
   sessionKey?: string | null;
@@ -100,6 +112,7 @@ export interface AiAssistantAnswerDto {
   intent: string;
   responseLanguage?: 'tr' | 'en' | string;
   answer: string;
+  context?: AiAssistantResponseContextDto | null;
   summary: AiAssistantSummaryDto | null;
   actionItems: AiAssistantActionItemDto[];
   toolActions?: AiAssistantToolActionDto[];
@@ -121,6 +134,7 @@ export interface AiAssistantConversationMessageDto {
   role: 'user' | 'assistant' | string;
   content: string;
   intent?: string | null;
+  context?: AiAssistantResponseContextDto | null;
   createdDate: string;
   latencyMs?: number | null;
   toolActions: AiAssistantToolActionDto[];

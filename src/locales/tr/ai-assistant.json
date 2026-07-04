@@ -19,6 +19,11 @@
   "chatHint": "Performans, adet, oran, ERP aktarımı ve hata açıklama sorularını cevaplayabiliyorum.",
   "contextTitle": "Bağlam",
   "contextHome": "Genel CRM",
+  "context": {
+    "filtered": "Filtreli",
+    "error": "Hata bağlamı",
+    "attachments": "{{count}} görsel"
+  },
   "promptGuideTitle": "Nereden başlayalım?",
   "promptGuideDescription": "Bir öneri seçebilir ya da doğrudan kendi cümlenizle yazabilirsiniz.",
   "enterToSend": "Enter gönderir, Shift+Enter yeni satır açar.",

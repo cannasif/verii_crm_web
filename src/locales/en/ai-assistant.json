@@ -19,6 +19,11 @@
   "chatHint": "I can answer performance, count, rate, ERP integration, and error explanation questions.",
   "contextTitle": "Context",
   "contextHome": "General CRM",
+  "context": {
+    "filtered": "Filtered",
+    "error": "Error context",
+    "attachments": "{{count}} image"
+  },
   "promptGuideTitle": "Where should we start?",
   "promptGuideDescription": "Choose a suggestion or write naturally in your own words.",
   "enterToSend": "Enter sends, Shift+Enter adds a new line.",
