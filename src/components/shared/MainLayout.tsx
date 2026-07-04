@@ -17,7 +17,6 @@ import {
   Calendar03Icon, 
   PackageIcon, 
   ShoppingBag03Icon, 
-  CheckmarkCircle02Icon, 
   SlidersHorizontalIcon, 
   Settings02Icon,
   File01Icon,
@@ -162,19 +161,18 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         ],
       },
       {
-        title: t('sidebar.approvalDefinitions'),
-        icon: <CheckmarkCircle02Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
-        children: [
-          { title: t('sidebar.approvalFlowManagement'), href: '/approval-flow-management' },
-          { title: t('sidebar.approvalRoleGroupManagement'), href: '/approval-role-group-management' },
-          { title: t('sidebar.approvalRoleManagement'), href: '/approval-role-management' },
-          { title: t('sidebar.approvalUserRoleManagement'), href: '/approval-user-role-management' },
-        ],
-      },
-      {
         title: t('sidebar.definitions'),
         icon: <SlidersHorizontalIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
+          {
+            title: t('sidebar.approvalDefinitions'),
+            children: [
+              { title: t('sidebar.approvalFlowManagement'), href: '/approval-flow-management' },
+              { title: t('sidebar.approvalRoleGroupManagement'), href: '/approval-role-group-management' },
+              { title: t('sidebar.approvalRoleManagement'), href: '/approval-role-management' },
+              { title: t('sidebar.approvalUserRoleManagement'), href: '/approval-user-role-management' },
+            ],
+          },
           {
             title: t('sidebar.customerDefinitions'),
             children: [
