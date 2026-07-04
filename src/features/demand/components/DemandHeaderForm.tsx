@@ -485,19 +485,19 @@ export function DemandHeaderForm({
 
   const styles = {
     glassCard: "relative overflow-hidden rounded-2xl border border-slate-400/80 dark:border-white/14 bg-white/88 dark:bg-[#130822]/48 backdrop-blur-xl shadow-[0_1px_0_rgba(15,23,42,0.05),0_14px_30px_-24px_rgba(15,23,42,0.4)] ring-1 ring-slate-300/60 dark:ring-white/10 transition-all duration-300 hover:shadow-md",
-    inputBase: "h-11 bg-white dark:bg-[#0f0a18] border-slate-400/75 dark:border-white/16 rounded-xl shadow-sm transition-all duration-300 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500 outline-none w-full",
+    inputBase: "h-11 bg-white dark:bg-[#0f0a18] border-slate-400/75 dark:border-white/16 rounded-xl shadow-sm transition-all duration-300 focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none w-full",
     label: "text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-2",
     iconWrapper: "absolute left-3 top-1/2 -translate-y-1/2 transition-colors z-20 flex items-center justify-center pointer-events-none",
-    selectTrigger: "w-full h-11 bg-white dark:bg-[#0f0a18] border-slate-500/80 dark:border-white/22 hover:border-pink-400 dark:hover:border-white/30 transition-all shadow-[0_1px_0_rgba(15,23,42,0.05),0_6px_14px_-10px_rgba(15,23,42,0.35)] rounded-xl focus:ring-4 focus:ring-pink-500/12 focus:border-pink-500 outline-none text-slate-800 dark:text-slate-100",
+    selectTrigger: "w-full h-11 bg-white dark:bg-[#0f0a18] border-slate-500/80 dark:border-white/22 hover:border-primary/40 dark:hover:border-white/30 transition-all shadow-[0_1px_0_rgba(15,23,42,0.05),0_6px_14px_-10px_rgba(15,23,42,0.35)] rounded-xl focus:ring-4 focus:ring-primary/20 focus:border-primary outline-none text-slate-800 dark:text-slate-100",
     selectContent: "rounded-xl border border-slate-300 dark:border-white/16 bg-white dark:bg-[#0f0a18] shadow-2xl backdrop-blur-xl",
-    selectItem: "focus:bg-pink-50 dark:focus:bg-pink-900/10 focus:text-pink-600 cursor-pointer rounded-lg m-1"
+    selectItem: "focus:bg-accent dark:focus:bg-primary/10 focus:text-primary cursor-pointer rounded-lg m-1"
   };
   const getIconTone = (hasValue: boolean): string =>
-    hasValue ? 'text-pink-500' : 'text-slate-400 group-focus-within:text-pink-500';
+    hasValue ? 'text-primary' : 'text-slate-400 group-focus-within:text-primary';
 
   return (
     <div className="relative space-y-6 pt-2 pb-8 animate-in fade-in slide-in-from-bottom-3 duration-700">
-      <div className="absolute -top-10 -left-10 w-96 h-96 bg-pink-500/10 blur-[100px] pointer-events-none rounded-full" />
+      <div className="absolute -top-10 -left-10 w-96 h-96 bg-primary/5 blur-[100px] pointer-events-none rounded-full" />
       <div className="absolute top-20 right-0 w-80 h-80 bg-orange-500/5 blur-[80px] pointer-events-none rounded-full" />
       
       <div className={styles.glassCard}>
@@ -506,19 +506,19 @@ export function DemandHeaderForm({
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 md:gap-8 items-start">
                 <div className="xl:col-span-2 space-y-2">
                   <div className={styles.label}>
-                    <div className="p-1 rounded-md bg-pink-50 dark:bg-pink-900/20 text-pink-600">
+                    <div className="p-1 rounded-md bg-accent dark:bg-primary/15 text-primary">
                       <User className="w-3.5 h-3.5" />
                     </div>
                     {t('demand:header.customer')}
                   </div>
                   <div className="flex gap-2">
                     <div className="relative flex-1 group min-w-0">
-                      <div className={cn("absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-colors", customerSearchQuery?.trim() ? "text-pink-500" : "text-slate-400 group-focus-within:text-pink-500")}>
+                      <div className={cn("absolute left-3 top-1/2 -translate-y-1/2 z-10 pointer-events-none transition-colors", customerSearchQuery?.trim() ? "text-primary" : "text-slate-400 group-focus-within:text-primary")}>
                         <Search className="h-4 w-4" />
                       </div>
                       <FormControl>
                         <Input
-                          className={cn(styles.inputBase, "pl-10 font-medium truncate caret-pink-500")}
+                          className={cn(styles.inputBase, "pl-10 font-medium truncate caret-primary")}
                           value={customerSearchQuery}
                           onChange={(e) => {
                             const v = e.target.value;
@@ -559,15 +559,15 @@ export function DemandHeaderForm({
                                     data-kb-customer-active={customerKeyboard.isOptionKeyboardActive(index) ? 'true' : undefined}
                                     onSelect={() => handleComboboxSelect(option)}
                                     className={cn(
-                                      'cursor-pointer mb-1 rounded-xl px-3 py-2 data-[selected=true]:bg-rose-50 dark:data-[selected=true]:bg-rose-950/20 transition-colors',
+                                      'cursor-pointer mb-1 rounded-xl px-3 py-2 data-[selected=true]:bg-accent dark:data-[selected=true]:bg-primary/10 transition-colors',
                                       customerKeyboard.isOptionKeyboardActive(index) &&
-                                        'ring-2 ring-rose-500 ring-offset-2 ring-offset-white dark:ring-offset-[#0f0a18]',
+                                        'ring-2 ring-primary ring-offset-2 ring-offset-white dark:ring-offset-[#0f0a18]',
                                     )}
                                   >
                                     <div className="flex items-center gap-3 w-full min-w-0">
                                       <div className={cn(
                                         "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
-                                        option.type === 'erp' ? "bg-purple-100 dark:bg-purple-900/40 text-purple-600" : "bg-pink-100 dark:bg-pink-900/40 text-pink-600"
+                                        option.type === 'erp' ? "bg-purple-100 dark:bg-purple-900/40 text-purple-600" : "bg-accent dark:bg-primary/15 text-primary"
                                       )}>
                                         {option.type === 'erp' ? <Building2 size={14} /> : <User size={14} />}
                                       </div>
@@ -575,7 +575,7 @@ export function DemandHeaderForm({
                                         <div className="flex items-center gap-2">
                                           <span className="font-medium text-sm truncate">{option.name || option.label}</span>
                                           {((option.type === 'crm' && watchedCustomerId === option.id) || (option.type === 'erp' && watchedErpCustomerCode === option.code)) && (
-                                            <Check className="w-3.5 h-3.5 text-pink-500" />
+                                            <Check className="w-3.5 h-3.5 text-primary" />
                                           )}
                                         </div>
                                         {option.code && <span className="text-[11px] text-slate-500 font-mono">{option.code}</span>}
@@ -635,7 +635,7 @@ export function DemandHeaderForm({
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
                             placeholder={t('select')}
-                            className={cn(styles.selectTrigger, "min-w-0 px-4 font-medium text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 px-4 font-medium text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             disabled={readOnly}
                           />
@@ -670,7 +670,7 @@ export function DemandHeaderForm({
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
                             placeholder={t('demand:header.selectShippingAddress')}
-                            className={cn(styles.selectTrigger, "min-w-0 px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                           />
                         </FormControl>
@@ -736,7 +736,7 @@ export function DemandHeaderForm({
                    variant="ghost"
                    size="sm"
                    onClick={() => setExchangeRateDialogOpen(true)}
-                   className="h-7 px-2 text-xs font-medium text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:hover:bg-pink-900/20 transition-colors"
+                   className="h-7 px-2 text-xs font-medium text-primary hover:text-primary hover:bg-accent dark:hover:bg-primary/10 transition-colors"
                  >
                    <ArrowRightLeft className="w-3.5 h-3.5 mr-1" />
                    {t('demand:header.exchangeRatesLink')}
@@ -765,7 +765,7 @@ export function DemandHeaderForm({
                           placeholder={t('select')}
                           className={cn(
                             styles.selectTrigger,
-                            "min-w-0 pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500",
+                            "min-w-0 pl-10 font-bold tracking-wide transition-all focus:ring-4 focus:ring-primary/20 focus:border-primary",
                             "hover:brightness-95 dark:hover:brightness-110"
                           )}
                           popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
@@ -800,7 +800,7 @@ export function DemandHeaderForm({
                           isLoading={paymentTypeDropdown.isLoading}
                           isFetchingNextPage={paymentTypeDropdown.isFetchingNextPage}
                           placeholder={t('select')}
-                          className={cn(styles.selectTrigger, "min-w-0 pl-10 hover:border-pink-400 dark:hover:border-white/20 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                          className={cn(styles.selectTrigger, "min-w-0 pl-10 hover:border-primary/40 dark:hover:border-white/20 focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                           popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                         />
                       </FormControl>
@@ -843,7 +843,7 @@ export function DemandHeaderForm({
                             value={field.value || ''}
                             onSelect={(v) => field.onChange(v ?? '')}
                             placeholder={t('common.offerType.selectPlaceholder')}
-                            className={cn(styles.selectTrigger, "min-w-0 pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             disabled={readOnly}
                           />
@@ -873,7 +873,7 @@ export function DemandHeaderForm({
                               isLoading={deliveryMethodDropdown.isLoading}
                               isFetchingNextPage={deliveryMethodDropdown.isFetchingNextPage}
                               placeholder={t('select')}
-                              className={cn(styles.selectTrigger, "min-w-0 pl-10 focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                              className={cn(styles.selectTrigger, "min-w-0 pl-10 focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                               popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                               disabled={readOnly}
                             />
@@ -898,7 +898,7 @@ export function DemandHeaderForm({
                         <FormControl>
                           <Input 
                             type="date" 
-                            className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500")} 
+                            className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 shadow-sm focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary")} 
                             {...field}
                             value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
                             onChange={(e) => field.onChange(e.target.value)}
@@ -920,7 +920,7 @@ export function DemandHeaderForm({
                         <FormControl>
                           <Input 
                             type="date" 
-                            className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 shadow-sm focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500")}
+                            className={cn(styles.inputBase, "pl-10 text-xs sm:text-sm font-medium bg-white dark:bg-[#0f0a18] border-slate-200 dark:border-white/10 shadow-sm focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary")}
                             {...field}
                             value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
                             onChange={(e) => field.onChange(e.target.value)}
@@ -965,7 +965,7 @@ export function DemandHeaderForm({
                                 handleDocumentSerialTypeSelect(value ? Number(value) : null);
                               }}
                               placeholder={t('select')}
-                              className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                              className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                               popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                               disabled={readOnly || customerTypeId === undefined || !watchedRepresentativeId}
                             />
@@ -989,7 +989,7 @@ export function DemandHeaderForm({
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Folder className="h-4 w-4" /></div>
                         <FormControl>
                           <VoiceSearchCombobox
-                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             value={field.value || ''}
                             onSelect={(value) => field.onChange(value)}
@@ -1022,7 +1022,7 @@ export function DemandHeaderForm({
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
                         <FormControl>
                           <VoiceSearchCombobox
-                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             value={field.value || ''}
                             onSelect={(value) => {
@@ -1058,7 +1058,7 @@ export function DemandHeaderForm({
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
                         <FormControl>
                           <VoiceSearchCombobox
-                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             value={field.value || ''}
                             onSelect={(value) => {
@@ -1094,7 +1094,7 @@ export function DemandHeaderForm({
                         <div className={cn(styles.iconWrapper, getIconTone(Boolean(field.value)))}><Layers className="h-4 w-4" /></div>
                         <FormControl>
                           <VoiceSearchCombobox
-                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-pink-500/10 focus:border-pink-500")}
+                            className={cn(styles.selectTrigger, "min-w-0 pl-10 shadow-sm focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
                             value={field.value ? String(field.value) : ''}
                             onSelect={(value) => field.onChange(value ? Number(value) : null)}
@@ -1130,7 +1130,7 @@ export function DemandHeaderForm({
                             value={field.value || ''}
                             maxLength={400}
                             placeholder={t('demand:header.descriptionPlaceholder')}
-                            className="min-h-[100px] max-h-[160px] overflow-y-auto w-full break-all whitespace-pre-wrap rounded-xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-[#0f0a18]/30 resize-none focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 transition-all text-sm py-2.5 pr-10 shadow-sm"
+                            className="min-h-[100px] max-h-[160px] overflow-y-auto w-full break-all whitespace-pre-wrap rounded-xl border-slate-200 dark:border-white/10 bg-white/50 dark:bg-[#0f0a18]/30 resize-none focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/20 transition-all text-sm py-2.5 pr-10 shadow-sm"
                             disabled={readOnly}
                           />
                           {onQuotationNotesChange && (
@@ -1210,7 +1210,7 @@ export function DemandHeaderForm({
       <Dialog open={currencyChangeDialogOpen} onOpenChange={setCurrencyChangeDialogOpen}>
         <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] rounded-2xl border-slate-200 dark:border-white/10 shadow-2xl backdrop-blur-xl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-pink-600">
+            <DialogTitle className="flex items-center gap-2 text-primary">
               <ArrowRightLeft className="h-5 w-5" />
               {t('demand:header.currencyChange.title')}
             </DialogTitle>
@@ -1222,7 +1222,7 @@ export function DemandHeaderForm({
             <Button variant="outline" onClick={handleCurrencyChangeCancel} className="rounded-xl border-slate-200 dark:border-white/10">
               {t('cancel')}
             </Button>
-            <Button onClick={handleCurrencyChangeConfirm} className="rounded-xl bg-pink-600 hover:bg-pink-700 text-white shadow-lg shadow-pink-500/20 transition-all">
+            <Button onClick={handleCurrencyChangeConfirm} className="rounded-xl bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white shadow-lg shadow-primary/20 transition-all">
               {t('confirm')}
             </Button>
           </DialogFooter>

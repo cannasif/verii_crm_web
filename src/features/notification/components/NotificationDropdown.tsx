@@ -154,7 +154,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
               {t('title')}
             </span>
             {unreadCount > 0 && (
-              <span className="text-[10px] font-bold bg-pink-500 text-white px-1.5 py-0.5 rounded-md leading-none">
+              <span className="text-[10px] font-bold bg-primary text-white px-1.5 py-0.5 rounded-md leading-none">
                 {unreadCount}
               </span>
             )}
@@ -175,7 +175,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
         >
           {isLoadingInitial ? (
             <div className="p-10 text-center">
-              <div className="w-5 h-5 border-2 border-pink-500/20 border-t-pink-500 rounded-full animate-spin mx-auto" />
+              <div className="w-5 h-5 border-2 border-primary/20 border-t-primary rounded-full animate-spin mx-auto" />
             </div>
           ) : notifications.length === 0 ? (
             <div className="px-6 py-10 text-center">
@@ -206,7 +206,7 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
             onClick={handleMarkAllAsRead} 
             className={cn(
               "w-full py-2 text-[11px] font-bold uppercase tracking-widest transition-all rounded-lg",
-              "text-slate-500 hover:text-pink-500 dark:text-slate-400 dark:hover:text-pink-400",
+              "text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary",
               "disabled:opacity-30 disabled:cursor-not-allowed"
             )}
             disabled={unreadCount === 0 || markAllAsReadMutation.isPending}

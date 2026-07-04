@@ -5602,7 +5602,8 @@
     "pendingActionsDesc": "Recommended action count"
   },
   "profile": {
-    "title": "Profile Information"
+    "title": "Profile Information",
+    "editDescription": "Update user information"
   },
   "salesDraft": {
     "title": "You have unfinished work",
@@ -5618,6 +5619,7 @@
   },
   "language_choice": "Language Option",
   "appearance": "View Mode",
+  "appearanceLockedByBrandTheme": "Light/dark mode cannot be used while a custom theme is active",
   "logout": "LOG OUT",
   "userDiscountLimitManagement": {
     "alreadyExists": "A discount limit already exists for this sales representative and product group combination",

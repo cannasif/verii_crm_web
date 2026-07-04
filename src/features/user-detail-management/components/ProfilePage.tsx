@@ -110,7 +110,7 @@ function StatCard({ title, value, icon: Icon, description, colorClass, progress 
             className={cn("h-full transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(var(--progress-color),0.4)]",
               colorClass?.replace('text-emerald-600', 'bg-emerald-500')
                 .replace('text-blue-200', 'bg-blue-600')
-                .replace('text-pink-200', 'bg-rose-600')
+                .replace('text-primary', 'bg-primary')
                 .replace('text-indigo-200 ', 'bg-indigo-600')
             )}
             style={{
@@ -282,16 +282,16 @@ export function ProfilePage(): ReactElement {
       </div>
 
       <section className="relative overflow-hidden rounded-3xl border border-slate-300 dark:border-white/10 bg-linear-to-br from-white/80 to-white/40 dark:from-white/10 dark:to-white/5 backdrop-blur-2xl p-8 shadow-xl shadow-slate-200/50 dark:shadow-none">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 blur-3xl -mr-20 -mt-20 rounded-full" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-3xl -mr-20 -mt-20 rounded-full" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/10 blur-3xl -ml-20 -mb-20 rounded-full" />
 
         <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8">
           <div className="relative shrink-0 group">
-            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl border-4 border-slate-300/50 dark:border-white/20 bg-muted overflow-hidden shadow-2xl ring-4 ring-pink-500/20 group-hover:ring-pink-500/40 transition-all duration-500">
+            <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl border-4 border-slate-300/50 dark:border-white/20 bg-muted overflow-hidden shadow-2xl ring-4 ring-primary/20 group-hover:ring-primary/40 transition-all duration-500">
               {previewUrl ? (
                 <img src={previewUrl} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-5xl font-black text-white bg-linear-to-br from-pink-600 via-pink-500 to-orange-500">
+                <div className="w-full h-full flex items-center justify-center text-5xl font-black text-white bg-linear-to-br from-primary via-primary to-orange-500">
                   {displayName[0]?.toUpperCase() || 'U'}
                 </div>
               )}
@@ -314,7 +314,7 @@ export function ProfilePage(): ReactElement {
                     {displayName}
                   </h1>
                   {erpMatch && (
-                    <Badge variant="outline" className="w-fit mx-auto md:mx-0 border-pink-500/30 bg-pink-500/5 text-pink-600 dark:text-pink-400 font-bold px-3 py-1 rounded-lg">
+                    <Badge variant="outline" className="w-fit mx-auto md:mx-0 border-primary/30 bg-primary/5 text-primary font-bold px-3 py-1 rounded-lg">
                       #{erpMatch.salesRepCode}
                     </Badge>
                   )}
@@ -331,7 +331,7 @@ export function ProfilePage(): ReactElement {
               <Sheet>
                 <SheetTrigger asChild>
                   <Button variant="outline" className="rounded-2xl border-slate-300 dark:border-white/20 bg-white/40 dark:bg-white/5 backdrop-blur-sm hover:bg-white/60 dark:hover:bg-white/10 transition-all gap-2 font-bold shadow-sm px-6">
-                    <Settings size={18} className="text-pink-500" />
+                    <Settings size={18} className="text-primary" />
                     {t('userDetailManagement.profileEditTitle')}
                   </Button>
                 </SheetTrigger>
@@ -339,7 +339,7 @@ export function ProfilePage(): ReactElement {
                   <div className="p-8 space-y-8 relative">
                     <div className="absolute right-8 top-8 z-50">
                       <SheetClose asChild>
-                        <Button variant="outline" size="icon" className="rounded-2xl border-2 border-slate-300 dark:border-white/30 bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 transition-all text-muted-foreground hover:text-pink-500 shadow-md">
+                        <Button variant="outline" size="icon" className="rounded-2xl border-2 border-slate-300 dark:border-white/30 bg-white/50 dark:bg-white/10 hover:bg-white/80 dark:hover:bg-white/20 transition-all text-muted-foreground hover:text-primary shadow-md">
                           <X size={24} />
                         </Button>
                       </SheetClose>
@@ -376,13 +376,13 @@ export function ProfilePage(): ReactElement {
                                       </FormLabel>
                                       <FormControl>
                                         <div className="relative group">
-                                          <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                          <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-5" />
                                           <Input
                                             type="number"
                                             {...field}
                                             value={field.value ?? ''}
                                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all"
                                             placeholder={t('userDetailManagement.heightPlaceholderExample')}
                                           />
                                         </div>
@@ -401,13 +401,13 @@ export function ProfilePage(): ReactElement {
                                       </FormLabel>
                                       <FormControl>
                                         <div className="relative group">
-                                          <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                          <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-5" />
                                           <Input
                                             type="number"
                                             {...field}
                                             value={field.value ?? ''}
                                             onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
-                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all"
                                             placeholder={t('userDetailManagement.weightPlaceholderExample')}
                                           />
                                         </div>
@@ -426,13 +426,13 @@ export function ProfilePage(): ReactElement {
                                       {t('userDetailManagement.gender')}
                                     </FormLabel>
                                     <div className="relative group w-full">
-                                      <User className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                      <User className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-muted-foreground group-focus-within:text-primary transition-colors size-5" />
                                       <Select
                                         onValueChange={(value) => field.onChange(value && value !== 'none' ? (parseInt(value, 10) as Gender) : undefined)}
                                         value={field.value !== undefined ? String(field.value) : undefined}
                                       >
                                         <FormControl>
-                                          <SelectTrigger className="w-full pl-12 h-14 min-h-[56px] py-0 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus:ring-0 focus:ring-offset-0 focus:border-pink-500 transition-all flex items-center">
+                                          <SelectTrigger className="w-full pl-12 h-14 min-h-[56px] py-0 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus:ring-0 focus:ring-offset-0 focus:border-primary transition-all flex items-center">
                                             <SelectValue placeholder={t('userDetailManagement.selectGender')} />
                                           </SelectTrigger>
                                         </FormControl>
@@ -460,12 +460,12 @@ export function ProfilePage(): ReactElement {
                                       </FormLabel>
                                       <FormControl>
                                         <div className="relative group">
-                                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-5" />
                                           <Input
                                             type="text"
                                             {...field}
                                             value={field.value ?? ''}
-                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all"
                                             placeholder={t('userDetailManagement.enterPhoneNumber')}
                                           />
                                         </div>
@@ -484,12 +484,12 @@ export function ProfilePage(): ReactElement {
                                       </FormLabel>
                                       <FormControl>
                                         <div className="relative group">
-                                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-5" />
                                           <Input
                                             type="email"
                                             {...field}
                                             value={field.value ?? ''}
-                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                            className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all"
                                             placeholder={t('userDetailManagement.enterEmail')}
                                           />
                                         </div>
@@ -510,12 +510,12 @@ export function ProfilePage(): ReactElement {
                                     </FormLabel>
                                     <FormControl>
                                       <div className="relative group">
-                                        <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                        <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-5" />
                                         <Input
                                           type="url"
                                           {...field}
                                           value={field.value ?? ''}
-                                          className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 transition-all"
+                                          className="pl-12 h-14 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary transition-all"
                                           placeholder={t('userDetailManagement.enterLinkedinUrl')}
                                         />
                                       </div>
@@ -535,12 +535,12 @@ export function ProfilePage(): ReactElement {
                                     </FormLabel>
                                     <FormControl>
                                       <div className="relative group">
-                                        <FileText className="absolute left-4 top-5 text-muted-foreground group-focus-within:text-pink-500 transition-colors size-5" />
+                                        <FileText className="absolute left-4 top-5 text-muted-foreground group-focus-within:text-primary transition-colors size-5" />
                                         <Textarea
                                           {...field}
                                           value={field.value ?? ''}
                                           rows={4}
-                                          className="pl-14 pt-5 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 resize-none transition-all"
+                                          className="pl-14 pt-5 text-base rounded-xl bg-white/50 dark:bg-[#14091C] border-slate-200 dark:border-white/10 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary resize-none transition-all"
                                           placeholder={t('userDetailManagement.enterDescription')}
                                         />
                                       </div>
@@ -549,7 +549,7 @@ export function ProfilePage(): ReactElement {
                                   </FormItem>
                                 )}
                               />
-                              <Button type="submit" disabled={isSaving} className="w-full px-10 rounded-2xl font-black bg-linear-to-r from-pink-600 to-orange-600 hover:opacity-90 transition-all h-14 shadow-lg shadow-pink-500/20 border-none text-white text-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0">
+                              <Button type="submit" disabled={isSaving} className="w-full px-10 rounded-2xl font-black bg-[image:var(--crm-brand-gradient)] hover:opacity-90 transition-all h-14 shadow-lg shadow-primary/20 border-none text-white text-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0">
                                 {isSaving ? <Loader2 className="animate-spin" /> : t('userDetailManagement.save')}
                               </Button>
                             </form>
@@ -621,7 +621,7 @@ export function ProfilePage(): ReactElement {
                                   </FormItem>
                                 )}
                               />
-                              <Button type="submit" disabled={isChangingPassword} className="w-full rounded-2xl font-black bg-linear-to-r from-pink-600 to-orange-600 hover:opacity-90 transition-all h-14 shadow-lg shadow-pink-500/20 border-none text-white text-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0">
+                              <Button type="submit" disabled={isChangingPassword} className="w-full rounded-2xl font-black bg-[image:var(--crm-brand-gradient)] hover:opacity-90 transition-all h-14 shadow-lg shadow-primary/20 border-none text-white text-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0">
                                 {isChangingPassword ? <Loader2 className="animate-spin" /> : t('userDetailManagement.changePasswordButton')}
                               </Button>
                             </form>
@@ -668,7 +668,7 @@ export function ProfilePage(): ReactElement {
           value={`${revenueQuality?.churnRiskScore || 0}%`}
           icon={UserMinus}
           progress={revenueQuality?.churnRiskScore || 0}
-          colorClass="text-rose-200 dark:text-rose-100 bg-rose-600 dark:bg-rose-900"
+          colorClass="text-primary dark:text-red-100 bg-primary dark:bg-primary/20"
           description={t('userDetailManagement.churnRiskDesc')}
         />
       </div>
@@ -679,7 +679,7 @@ export function ProfilePage(): ReactElement {
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <div className="space-y-1">
               <CardTitle className="text-lg font-black flex items-center gap-2">
-                <BarChart3 size={20} className="text-pink-600" />
+                <BarChart3 size={20} className="text-primary" />
                 {t('userDetailManagement.financeAndSales')}
               </CardTitle>
               <CardDescription>{t('userDetailManagement.financeAndSalesDesc')}</CardDescription>
@@ -689,7 +689,7 @@ export function ProfilePage(): ReactElement {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="flex items-center justify-between p-5 rounded-2xl bg-white/80 dark:bg-white/5 border border-slate-300 dark:border-white/15 shadow-md">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-xl bg-pink-100 dark:bg-pink-500/10 text-pink-600">
+                  <div className="p-2.5 rounded-xl bg-accent dark:bg-primary/10 text-primary">
                     <MessageSquare size={20} />
                   </div>
                   <div className="text-sm font-black text-muted-foreground uppercase tracking-tight">{t('userDetailManagement.demands')}</div>
@@ -720,7 +720,7 @@ export function ProfilePage(): ReactElement {
 
             <div className="space-y-4">
               <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                <DollarSign size={12} className="text-pink-600" />
+                <DollarSign size={12} className="text-primary" />
                 {t('userDetailManagement.currencyRevenues')}
               </h4>
               <div className="space-y-3">
@@ -732,7 +732,7 @@ export function ProfilePage(): ReactElement {
                     </div>
                     <div className="h-2.5 w-full rounded-full bg-slate-200 dark:bg-white/5 overflow-hidden flex border border-slate-300/20 dark:border-transparent">
                       <div
-                        className="h-full bg-linear-to-r from-rose-600 to-pink-500 rounded-full shadow-[0_0_10px_rgba(225,29,72,0.4)]"
+                        className="h-full bg-linear-to-r from-primary to-primary rounded-full shadow-[0_0_10px_rgba(225,29,72,0.4)]"
                         style={{ width: `${Math.min(100, (cur.orderAmount / (cur.quotationAmount || 1)) * 100)}%` }}
                       />
                     </div>

@@ -133,7 +133,7 @@ export function VisibilitySimulatorPage(): ReactElement {
       <Breadcrumb items={[{ label: t('sidebar.accessControl') }, { label: t('sidebar.visibilitySimulator'), isActive: true }]} />
 
       <div className={ACCESS_CONTROL_HEADER_CARD_CLASSNAME}>
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/5 blur-[80px] dark:bg-rose-500/10" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px] dark:bg-primary/10" />
         <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px] dark:bg-amber-500/10" />
 
         <div className="relative z-10">
@@ -151,7 +151,7 @@ export function VisibilitySimulatorPage(): ReactElement {
           <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <SummaryStatCard
               icon={<UserRound className="size-4" />}
-              iconWrapClassName="border-rose-100 bg-rose-100 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400"
+              iconWrapClassName="border-primary/15 bg-accent text-primary dark:border-primary/20 dark:bg-primary/10 dark:text-primary"
               label={t('visibilitySimulator.selectedUser')}
               value={selectedUserLabel}
               compact
@@ -426,7 +426,7 @@ export function VisibilitySimulatorPage(): ReactElement {
                         'rounded-lg border p-2',
                         action.allowed
                           ? 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300'
-                          : 'border-rose-200 bg-rose-50 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300'
+                          : 'border-red-200 bg-red-50 text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300'
                       )}
                     >
                       {action.allowed ? <CircleCheckBig className="size-4" /> : <CircleOff className="size-4" />}

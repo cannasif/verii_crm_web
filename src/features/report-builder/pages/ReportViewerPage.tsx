@@ -82,7 +82,7 @@ const RIBBON_ACCENT_MAP: Record<StatRibbonItem['accent'], { bg: string; ring: st
   violet: { bg: 'bg-violet-50 dark:bg-violet-500/10', ring: 'border-violet-100 dark:border-violet-500/20', icon: 'text-violet-600 dark:text-violet-400' },
   emerald: { bg: 'bg-emerald-50 dark:bg-emerald-500/10', ring: 'border-emerald-100 dark:border-emerald-500/20', icon: 'text-emerald-600 dark:text-emerald-400' },
   amber: { bg: 'bg-amber-50 dark:bg-amber-500/10', ring: 'border-amber-100 dark:border-amber-500/20', icon: 'text-amber-600 dark:text-amber-400' },
-  rose: { bg: 'bg-rose-50 dark:bg-rose-500/10', ring: 'border-rose-100 dark:border-rose-500/20', icon: 'text-rose-600 dark:text-rose-400' },
+  rose: { bg: 'bg-accent dark:bg-primary/10', ring: 'border-primary/15 dark:border-primary/20', icon: 'text-red-600 dark:text-red-400' },
   sky: { bg: 'bg-sky-50 dark:bg-sky-500/10', ring: 'border-sky-100 dark:border-sky-500/20', icon: 'text-sky-600 dark:text-sky-400' },
 };
 
@@ -1135,7 +1135,7 @@ export function ReportViewerPage(): ReactElement {
                               className={cn(
                                 'flex h-7 min-w-[28px] items-center justify-center rounded-lg px-2 text-[11px] font-black transition-colors',
                                 isActive
-                                  ? 'bg-rose-600 text-white shadow-md shadow-rose-500/30'
+                                  ? 'bg-primary text-white shadow-md shadow-primary/30'
                                   : enabled
                                     ? 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
                                     : 'cursor-not-allowed text-slate-300 dark:text-slate-600',
@@ -1523,9 +1523,9 @@ function WidgetSizePopover({ layout, maxCols, maxRows, isSizeAvailable, onChange
                     className={cn(
                       'h-9 min-w-0 rounded-lg border text-xs font-black transition-all',
                       isActive
-                        ? 'border-rose-500 bg-rose-600 text-white shadow-md shadow-rose-500/30'
+                        ? 'border-primary bg-primary text-white shadow-md shadow-primary/30'
                         : enabled
-                          ? 'border-slate-200 bg-white text-slate-600 hover:border-rose-300 hover:bg-rose-50/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
+                          ? 'border-slate-200 bg-white text-slate-600 hover:border-primary/30 hover:bg-accent/60 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10'
                           : 'cursor-not-allowed border-dashed border-slate-200 bg-slate-50 text-slate-300 dark:border-white/5 dark:bg-white/[0.02] dark:text-slate-600',
                     )}
                     aria-pressed={isActive}

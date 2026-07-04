@@ -67,7 +67,7 @@ export function LineTableImageThumbnail({
         <button
           type="button"
           className={cn(
-            'shrink-0 overflow-hidden rounded-md border border-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-500/40 dark:border-zinc-700',
+            'shrink-0 overflow-hidden rounded-md border border-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-zinc-700',
             className,
           )}
           onMouseEnter={handleMouseEnter}

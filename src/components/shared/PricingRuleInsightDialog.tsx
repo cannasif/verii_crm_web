@@ -53,7 +53,7 @@ export function PricingRuleInsightDialog({
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden p-0 gap-0">
         <DialogHeader className="px-5 py-4 border-b bg-slate-50/60 dark:bg-slate-900/40">
           <DialogTitle className="flex items-center gap-2">
-            <Tag className="h-4 w-4 text-pink-500" />
+            <Tag className="h-4 w-4 text-primary" />
             {t('common.pricingInsights.title')}
           </DialogTitle>
           <DialogDescription>

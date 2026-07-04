@@ -83,7 +83,7 @@ const INPUT_STYLE = `
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-500
   focus-visible:bg-white dark:focus-visible:bg-white/5
-  focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
+  focus-visible:border-primary/70 focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:ring-offset-0
   transition-all duration-200 w-full
 `;
 
@@ -467,7 +467,7 @@ export function ActivityForm({
       <DialogContent showCloseButton={false} className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-2xl">
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-white/95 dark:bg-[#130822]/95 shrink-0">
           <div className="flex items-center gap-4 min-w-0">
-            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg shadow-pink-500/20 shrink-0">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary to-[var(--crm-brand-accent)] flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
               <Calendar size={24} className="text-white" />
             </div>
             <div className="min-w-0 space-y-1">
@@ -483,7 +483,7 @@ export function ActivityForm({
             variant="ghost"
             size="icon"
             onClick={() => onOpenChange(false)}
-            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
+            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-primary hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
             aria-label={t('close', { ns: 'common' })}
           >
             <X size={20} className="relative z-10" />
@@ -509,7 +509,7 @@ export function ActivityForm({
                   <FormSection title={t('basicInfo')}>
                     <FormField control={form.control} name="subject" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'subject')}><FileText size={16} className="text-pink-500 shrink-0" /> {t('subject')}</FormLabel>
+                        <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'subject')}><FileText size={16} className="text-primary shrink-0" /> {t('subject')}</FormLabel>
                         <FormControl><Input {...field} className={INPUT_STYLE} placeholder={t('enterSubject')} /></FormControl>
                         <FormMessage className="text-xs text-red-500" />
                       </FormItem>
@@ -517,7 +517,7 @@ export function ActivityForm({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField control={form.control} name="activityType" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'activityType')}><List size={16} className="text-pink-500 shrink-0" /> {t('activityType')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'activityType')}><List size={16} className="text-primary shrink-0" /> {t('activityType')}</FormLabel>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={activityTypeDropdown.options}
@@ -540,7 +540,7 @@ export function ActivityForm({
                       )} />
                       <FormField control={form.control} name="status" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'status')}><CheckSquare size={16} className="text-pink-500 shrink-0" /> {t('status')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'status')}><CheckSquare size={16} className="text-primary shrink-0" /> {t('status')}</FormLabel>
                           <FormControl>
                             <Combobox
                               options={ACTIVITY_STATUSES.map((statusOption) => ({ value: String(statusOption.value), label: t(statusOption.labelKey, statusOption.label) }))}
@@ -557,7 +557,7 @@ export function ActivityForm({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField control={form.control} name="isAllDay" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('allDay')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE}><Calendar size={16} className="text-primary shrink-0" /> {t('allDay')}</FormLabel>
                           <FormControl>
                             <div className="h-11 px-3 rounded-lg border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 flex items-center gap-3">
                               <Checkbox checked={!!field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
@@ -569,7 +569,7 @@ export function ActivityForm({
                       )} />
                       <FormField control={form.control} name="priority" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE}><AlertCircle size={16} className="text-pink-500 shrink-0" /> {t('priority')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE}><AlertCircle size={16} className="text-primary shrink-0" /> {t('priority')}</FormLabel>
                           <FormControl>
                             <Combobox
                               options={ACTIVITY_PRIORITIES.map((priorityOption) => ({ value: String(priorityOption.value), label: t(priorityOption.labelKey, priorityOption.label) }))}
@@ -587,7 +587,7 @@ export function ActivityForm({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField control={form.control} name="startDateTime" render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityDate')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-primary shrink-0" /> {t('activityDate')}</FormLabel>
                             <FormControl>
                               <Input
                                 type="date"
@@ -609,7 +609,7 @@ export function ActivityForm({
                         )} />
                         <FormField control={form.control} name="endDateTime" render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('endDate')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-primary shrink-0" /> {t('endDate')}</FormLabel>
                             <FormControl>
                               <Input
                                 type="date"
@@ -629,14 +629,14 @@ export function ActivityForm({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <FormField control={form.control} name="startDateTime" render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('activityDate')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'startDateTime')}><Calendar size={16} className="text-primary shrink-0" /> {t('activityDate')}</FormLabel>
                             <FormControl><Input {...field} type="datetime-local" className={INPUT_STYLE} value={field.value || ''} /></FormControl>
                             <FormMessage className="text-xs text-red-500" />
                           </FormItem>
                         )} />
                         <FormField control={form.control} name="endDateTime" render={({ field }) => (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-pink-500 shrink-0" /> {t('endDate')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'endDateTime')}><Calendar size={16} className="text-primary shrink-0" /> {t('endDate')}</FormLabel>
                             <FormControl><Input type="datetime-local" className={INPUT_STYLE} value={field.value || ''} onChange={(event) => field.onChange(event.target.value || '')} /></FormControl>
                             <FormMessage className="text-xs text-red-500" />
                           </FormItem>
@@ -666,7 +666,7 @@ export function ActivityForm({
 
                         return (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500 shrink-0" /> {t('customer')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-primary shrink-0" /> {t('customer')}</FormLabel>
                             <div className="flex w-full items-center gap-2">
                               <FormControl>
                                 <Input
@@ -694,7 +694,7 @@ export function ActivityForm({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <FormField control={form.control} name="contactId" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE}><User size={16} className="text-pink-500 shrink-0" /> {t('contactId')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE}><User size={16} className="text-primary shrink-0" /> {t('contactId')}</FormLabel>
                           <FormControl>
                             <Combobox
                               options={[{ value: 'none', label: t('noContactSelected') }, ...contactOptions.map((contact) => ({ value: contact.id.toString(), label: contact.fullName }))]}
@@ -710,7 +710,7 @@ export function ActivityForm({
                       )} />
                       <FormField control={form.control} name="assignedUserId" render={({ field }) => (
                         <FormItem>
-                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'assignedUserId')}><User size={16} className="text-pink-500 shrink-0" /> {t('assignedUser')}</FormLabel>
+                          <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityFormSchema, 'assignedUserId')}><User size={16} className="text-primary shrink-0" /> {t('assignedUser')}</FormLabel>
                           <FormControl>
                             <VoiceSearchCombobox
                               options={assignedUserDropdown.options}
@@ -818,7 +818,7 @@ export function ActivityForm({
                   <FormSection title={t('details')}>
                     <FormField control={form.control} name="description" render={({ field }) => (
                       <FormItem>
-                        <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-pink-500 shrink-0" /> {t('descriptionLabel')}</FormLabel>
+                        <FormLabel className={LABEL_STYLE}><FileText size={16} className="text-primary shrink-0" /> {t('descriptionLabel')}</FormLabel>
                         <FormControl><Textarea {...field} maxLength={2000} className={`${INPUT_STYLE} min-h-[88px] py-3 resize-none`} placeholder={t('enterDescription')} /></FormControl>
                         <FormMessage className="text-xs text-red-500" />
                       </FormItem>
@@ -826,7 +826,7 @@ export function ActivityForm({
 
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
-                        <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-pink-500 shrink-0" /> {t('reminders')}</FormLabel>
+                        <FormLabel className={LABEL_STYLE}><Bell size={16} className="text-primary shrink-0" /> {t('reminders')}</FormLabel>
                         <Button type="button" variant="outline" size="sm" onClick={() => appendReminder({ offsetMinutes: 15, channel: ReminderChannel.InApp })}>
                           <Plus size={14} className="mr-1" /> {t('add', { ns: 'common' })}
                         </Button>
@@ -919,7 +919,7 @@ export function ActivityForm({
                       <Button
                         type="submit"
                         disabled={isSubmitting}
-                        className="h-11 w-full px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-black shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 sm:w-auto"
+                        className="h-11 w-full px-6 rounded-xl bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-black shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 sm:w-auto"
                       >
                         {isSubmitting ? t('saving', { ns: 'common' }) : activity ? t('update', { ns: 'common' }) : t('save', { ns: 'common' })}
                       </Button>

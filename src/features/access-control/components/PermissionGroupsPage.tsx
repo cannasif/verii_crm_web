@@ -309,7 +309,7 @@ export function PermissionGroupsPage(): ReactElement {
         <div className="mt-8 grid gap-4 sm:grid-cols-3 relative z-10">
           <div className={statCardStyle}>
             <div className="flex items-center gap-4">
-              <div className="rounded-xl bg-rose-100 p-3 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20">
+              <div className="rounded-xl bg-accent p-3 text-primary dark:bg-primary/10 dark:text-primary border border-primary/15 dark:border-primary/20">
                 <Users2 className="size-5" />
               </div>
               <div>

@@ -43,11 +43,11 @@ const INPUT_STYLE = `
   focus-visible:ring-0 focus-visible:ring-offset-0 
   
   focus:bg-white 
-  focus:border-pink-500 
+  focus:border-primary 
   focus:shadow-[0_0_0_3px_rgba(236,72,153,0.15)] 
 
   dark:focus:bg-[#0c0516] 
-  dark:focus:border-pink-500/60 
+  dark:focus:border-primary/60 
   dark:focus:shadow-[0_0_0_3px_rgba(236,72,153,0.1)]
 
   transition-all duration-200
@@ -102,9 +102,9 @@ export function PaymentTypeForm({
       <DialogContent showCloseButton={false} className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[96vw] xl:max-w-[1000px] max-h-[92vh] flex flex-col p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 shadow-2xl transition-colors duration-300">
         <DialogHeader className="px-4 sm:px-6 py-3 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 backdrop-blur-sm shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-4">
-             <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+             <div className="h-10 w-10 rounded-xl bg-linear-to-br from-primary to-[var(--crm-brand-accent)] p-0.5 shadow-lg shadow-primary/20">
                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
-                 <CreditCard size={20} className="text-pink-600 dark:text-pink-500" />
+                 <CreditCard size={20} className="text-primary dark:text-primary" />
                </div>
              </div>
              <div className="space-y-1">
@@ -184,7 +184,7 @@ export function PaymentTypeForm({
             <Button 
                 onClick={form.handleSubmit(handleSubmit)}
                 disabled={isLoading || !isFormValid}
-                className="h-11 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-medium shadow-lg shadow-pink-500/20 border-0"
+                className="h-11 rounded-xl bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-medium shadow-lg shadow-primary/20 border-0"
             >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading

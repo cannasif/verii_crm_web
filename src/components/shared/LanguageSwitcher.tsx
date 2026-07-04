@@ -51,7 +51,7 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
       <SelectTrigger 
         className={
           variant === 'default'
-            ? "w-[130px] h-9 bg-secondary/50 border-input text-foreground rounded-full focus:ring-1 focus:ring-pink-500/20 focus:border-pink-500/50 hover:bg-accent transition-colors border shadow-none"
+            ? "w-[130px] h-9 bg-secondary/50 border-input text-foreground rounded-full focus:ring-1 focus:ring-primary/20 focus:border-primary/50 hover:bg-accent transition-colors border shadow-none"
             : `
               w-12 h-12 rounded-full border border-white/20 bg-zinc-900/80 backdrop-blur-xl shadow-lg shadow-black/40 
               flex items-center justify-center p-0 ring-0 focus:ring-0 transition-all duration-300 
@@ -90,7 +90,7 @@ export function LanguageSwitcher({ variant = 'default' }: LanguageSwitcherProps)
           <SelectItem 
             key={language.code} 
             value={language.code}
-            className="focus:bg-pink-500/20 focus:text-white cursor-pointer pl-8 py-2.5 data-[state=checked]:text-pink-400"
+            className="focus:bg-primary/20 focus:text-white cursor-pointer pl-8 py-2.5 data-[state=checked]:text-primary"
           >
             <div className="flex items-center gap-3">
               <span className="text-lg leading-none">{language.flag}</span>

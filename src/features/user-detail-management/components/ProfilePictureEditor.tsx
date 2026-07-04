@@ -83,10 +83,10 @@ export function ProfilePictureEditor({
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <ZoomIn size={14} className="text-pink-500" />
+                  <ZoomIn size={14} className="text-primary" />
                   {t('profilePictureEditor.zoom', { defaultValue: 'YAKINLAŞTIR' })}
                 </span>
-                <span className="text-xs font-bold text-pink-500 bg-pink-500/10 px-2 py-0.5 rounded-lg">
+                <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-lg">
                   {Math.round(zoom * 100)}%
                 </span>
               </div>
@@ -102,9 +102,9 @@ export function ProfilePictureEditor({
                   className="flex-1 h-2.5 rounded-full bg-slate-200 dark:bg-white/20 appearance-none cursor-pointer 
                     [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 
                     [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:shadow-lg 
-                    [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-pink-500 
+                    [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-primary 
                     [&::-moz-range-thumb]:w-6 [&::-moz-range-thumb]:h-6 [&::-moz-range-thumb]:rounded-full 
-                    [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-pink-500"
+                    [&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-primary"
                 />
               </div>
             </div>
@@ -151,7 +151,7 @@ export function ProfilePictureEditor({
             <Button
               onClick={handleSave}
               disabled={isSaving}
-              className="flex-1 rounded-2xl font-black bg-linear-to-r from-pink-600 to-orange-600 hover:opacity-90 transition-all shadow-lg shadow-pink-500/20 text-white border-none"
+              className="flex-1 rounded-2xl font-black bg-[image:var(--crm-brand-gradient)] hover:opacity-90 transition-all shadow-lg shadow-primary/20 text-white border-none"
             >
               {isSaving ? (
                 <>

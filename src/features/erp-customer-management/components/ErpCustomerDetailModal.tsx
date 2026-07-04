@@ -39,10 +39,10 @@ const INPUT_STYLE = `
   placeholder:text-slate-400 dark:placeholder:text-slate-600 
   
   focus-visible:bg-white dark:focus-visible:bg-[#1a1025]
-  focus-visible:border-pink-500 dark:focus-visible:border-pink-500/70
-  focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
+  focus-visible:border-primary dark:focus-visible:border-primary/70
+  focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:ring-offset-0
   
-  focus:ring-2 focus:ring-pink-500/10 focus:ring-offset-0 focus:border-pink-500
+  focus:ring-2 focus:ring-primary/20 focus:ring-offset-0 focus:border-primary
   
   transition-all duration-200
   read-only:opacity-100 read-only:cursor-default
@@ -65,9 +65,9 @@ export function ErpCustomerDetailModal({
         
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
           <div className="flex items-center gap-4">
-             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+             <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-primary to-[var(--crm-brand-accent)] p-0.5 shadow-lg shadow-primary/20">
                <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                 <Building03Icon size={24} className="text-pink-600 dark:text-pink-500" />
+                 <Building03Icon size={24} className="text-primary dark:text-primary" />
                </div>
              </div>
              <div className="space-y-1">
@@ -93,7 +93,7 @@ export function ErpCustomerDetailModal({
                 <div className="col-span-1 md:col-span-2">
                     <div className="space-y-2">
                         <label className={LABEL_STYLE}>
-                            <UserCircleIcon size={16} className="text-pink-500" />
+                            <UserCircleIcon size={16} className="text-primary" />
                             {t('table.customerName')}
                         </label>
                         <Input readOnly value={customer.customerName || '-'} className={INPUT_STYLE} />
@@ -102,7 +102,7 @@ export function ErpCustomerDetailModal({
 
                 <div className="space-y-2">
                     <label className={LABEL_STYLE}>
-                        <Building03Icon size={16} className="text-pink-500" />
+                        <Building03Icon size={16} className="text-primary" />
                         {t('table.customerCode')}
                     </label>
                     <Input readOnly value={customer.customerCode || '-'} className={INPUT_STYLE} />
@@ -110,7 +110,7 @@ export function ErpCustomerDetailModal({
 
                 <div className="space-y-2">
                     <label className={LABEL_STYLE}>
-                        <Building03Icon size={16} className="text-pink-500" />
+                        <Building03Icon size={16} className="text-primary" />
                         {t('table.branchCode')} / {t('table.businessUnitCode')}
                     </label>
                     <Input readOnly value={`${customer.branchCode || '-'} / ${customer.businessUnit || '-'}`} className={INPUT_STYLE} />
@@ -118,7 +118,7 @@ export function ErpCustomerDetailModal({
 
                 <div className="space-y-2">
                     <label className={LABEL_STYLE}>
-                        <Call02Icon size={16} className="text-pink-500" />
+                        <Call02Icon size={16} className="text-primary" />
                         {t('table.phone')}
                     </label>
                     <Input readOnly value={customer.phone || '-'} className={INPUT_STYLE} />
@@ -126,7 +126,7 @@ export function ErpCustomerDetailModal({
 
                 <div className="space-y-2">
                     <label className={LABEL_STYLE}>
-                        <Mail01Icon size={16} className="text-pink-500" />
+                        <Mail01Icon size={16} className="text-primary" />
                         {t('table.email')}
                     </label>
                     <Input readOnly value={customer.email || '-'} className={INPUT_STYLE} />
@@ -134,7 +134,7 @@ export function ErpCustomerDetailModal({
 
                  <div className="space-y-2">
                     <label className={LABEL_STYLE}>
-                        <Globe02Icon size={16} className="text-pink-500" />
+                        <Globe02Icon size={16} className="text-primary" />
                         {t('table.website')}
                     </label>
                     <Input readOnly value={customer.website || '-'} className={INPUT_STYLE} />
@@ -142,7 +142,7 @@ export function ErpCustomerDetailModal({
                 
                  <div className="space-y-2">
                     <label className={LABEL_STYLE}>
-                        <Invoice01Icon size={16} className="text-pink-500" />
+                        <Invoice01Icon size={16} className="text-primary" />
                         {t('table.taxNumber')} / {t('table.tcknNumber')}
                     </label>
                     <Input readOnly value={`${customer.taxNumber || '-'} / ${customer.tckn || '-'}`} className={INPUT_STYLE} />
@@ -150,7 +150,7 @@ export function ErpCustomerDetailModal({
 
                  <div className="space-y-2">
                     <label className={LABEL_STYLE}>
-                        <Invoice01Icon size={16} className="text-pink-500" />
+                        <Invoice01Icon size={16} className="text-primary" />
                         {t('table.taxOffice')}
                     </label>
                     <Input readOnly value={customer.taxOffice || '-'} className={INPUT_STYLE} />
@@ -166,21 +166,21 @@ export function ErpCustomerDetailModal({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
                     <div className="space-y-2">
                         <label className={LABEL_STYLE}>
-                            <City01Icon size={16} className="text-pink-500" />
+                            <City01Icon size={16} className="text-primary" />
                             {t('table.city')} / {t('table.district')}
                         </label>
                         <Input readOnly value={`${customer.city || '-'} / ${customer.district || '-'}`} className={INPUT_STYLE} />
                     </div>
                      <div className="space-y-2">
                         <label className={LABEL_STYLE}>
-                            <MapsLocation01Icon size={16} className="text-pink-500" />
+                            <MapsLocation01Icon size={16} className="text-primary" />
                             {t('table.countryCode')}
                         </label>
                         <Input readOnly value={customer.countryCode || '-'} className={INPUT_STYLE} />
                     </div>
                     <div className="col-span-1 md:col-span-2 space-y-2">
                         <label className={LABEL_STYLE}>
-                            <Location01Icon size={16} className="text-pink-500" />
+                            <Location01Icon size={16} className="text-primary" />
                             {t('table.address')}
                         </label>
                         <Textarea 

@@ -26,7 +26,7 @@ const INPUT_STYLE = `
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-500
   focus-visible:bg-white dark:focus-visible:bg-white/5
-  focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
+  focus-visible:border-primary/70 focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:ring-offset-0
   transition-all duration-200 w-full
 `;
 
@@ -105,7 +105,7 @@ export function ActivityImageUploadDialog({
       <DialogContent showCloseButton={false} className="bg-white dark:bg-[#0f0a18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white max-w-3xl w-[95vw] sm:w-full max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-xl">
         <DialogHeader className="px-6 py-4 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shrink-0">
+            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-primary to-[var(--crm-brand-accent)] flex items-center justify-center shrink-0">
               <Upload size={20} className="text-white" />
             </div>
             <div className="min-w-0">
@@ -141,7 +141,7 @@ export function ActivityImageUploadDialog({
                 id="file-upload"
               />
               <label htmlFor="file-upload">
-                <div className="border-2 border-dashed border-slate-200 dark:border-white/10 rounded-xl p-8 text-center cursor-pointer hover:border-pink-500/50 hover:bg-pink-50/50 dark:hover:bg-pink-500/5 transition-all">
+                <div className="border-2 border-dashed border-slate-200 dark:border-white/10 rounded-xl p-8 text-center cursor-pointer hover:border-primary/50 hover:bg-accent/50 dark:hover:bg-primary/5 transition-all">
                   <div className="flex flex-col items-center gap-3">
                     <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                       <Image className="h-6 w-6 text-slate-400" />
@@ -221,7 +221,7 @@ export function ActivityImageUploadDialog({
             type="button" 
             onClick={handleUpload}
             disabled={isLoading || selectedFiles.length === 0} 
-            className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none"
+            className="h-11 px-6 rounded-lg bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none"
           >
             {isLoading 
               ? t('common.uploading') 

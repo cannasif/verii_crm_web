@@ -246,18 +246,18 @@ export function TitleManagementPage(): ReactElement {
     shadow-sm hover:shadow-md 
     backdrop-blur-md 
     transition-all duration-300 
-    hover:border-rose-500/30 
+    hover:border-primary/30 
     group relative overflow-hidden
   `;
 
-  const glowStyle = "absolute inset-0 bg-linear-to-r from-rose-50/0 to-amber-50/0 dark:from-rose-500/0 dark:to-amber-500/0 group-hover:from-rose-50/50 group-hover:to-amber-50/50 dark:group-hover:from-rose-500/5 dark:group-hover:to-amber-500/5 transition-all duration-500 pointer-events-none";
+  const glowStyle = "absolute inset-0 bg-linear-to-r from-accent/0 to-amber-50/0 dark:from-primary/0 dark:to-amber-500/0 group-hover:from-accent/50 group-hover:to-amber-50/50 dark:group-hover:from-primary/5 dark:group-hover:to-amber-500/5 transition-all duration-500 pointer-events-none";
 
   const stats = [
     {
       title: t('stats.totalTitles'),
       value: statsData?.totalTitles || 0,
       icon: Users,
-      iconContainerClass: 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border-rose-100 dark:border-rose-500/20',
+      iconContainerClass: 'bg-accent text-primary dark:bg-primary/10 dark:text-primary border-primary/15 dark:border-primary/20',
     },
     {
       title: t('stats.activeTitles'),

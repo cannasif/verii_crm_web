@@ -110,7 +110,7 @@ export function OutlookConnectionPage(): ReactElement {
 
               <div className="flex flex-col gap-3 pt-2">
                 {!isOAuthConfigured && (
-                  <div className="inline-flex self-start rounded-lg border border-rose-200 bg-rose-50 dark:border-[#4C3D68] dark:bg-[#2D1B4E] px-3 py-2 text-sm text-rose-600 dark:text-[#FB64B6]">
+                  <div className="inline-flex self-start rounded-lg border border-primary/20 bg-accent dark:border-[#4C3D68] dark:bg-[#2D1B4E] px-3 py-2 text-sm text-primary dark:text-[#FB64B6]">
                     {t('connection.oauthNotConfiguredWarning')}
                   </div>
                 )}

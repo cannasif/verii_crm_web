@@ -46,7 +46,7 @@ const INPUT_STYLE = `
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-500
   focus-visible:bg-white dark:focus-visible:bg-white/5
-  focus-visible:border-pink-500/70 focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
+  focus-visible:border-primary/70 focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:ring-offset-0
   transition-all duration-200 w-full
 `;
 
@@ -97,7 +97,7 @@ export function ActivityImageEditDialog({
       <DialogContent showCloseButton={false} className="bg-white dark:bg-[#0f0a18] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white max-w-2xl w-[95vw] sm:w-full max-h-[90vh] flex flex-col p-0 overflow-hidden rounded-2xl shadow-xl">
         <DialogHeader className="px-6 py-4 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shrink-0">
+            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-primary to-[var(--crm-brand-accent)] flex items-center justify-center shrink-0">
               <Image size={20} className="text-white" />
             </div>
             <div className="min-w-0">
@@ -145,7 +145,7 @@ export function ActivityImageEditDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Image size={16} className="text-pink-500 shrink-0" />
+                      <Image size={16} className="text-primary shrink-0" />
                       {t('activity-image:description')}
                     </FormLabel>
                     <FormControl>
@@ -178,7 +178,7 @@ export function ActivityImageEditDialog({
                 <Button 
                   type="submit" 
                   disabled={isSubmitting || !isFormValid} 
-                  className="h-11 px-6 rounded-lg bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none"
+                  className="h-11 px-6 rounded-lg bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-semibold shadow-md disabled:opacity-50 disabled:pointer-events-none"
                 >
                   {isSubmitting 
                     ? t('common.saving') 

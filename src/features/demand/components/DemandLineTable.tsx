@@ -919,7 +919,7 @@ export function DemandLineTable({
                     handleAddLine();
                   }}
                   size="sm"
-                  className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                  className="h-10 px-6 rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   {t('lines.add')}
@@ -937,7 +937,7 @@ export function DemandLineTable({
                           }}
                           disabled
                           size="sm"
-                          className="h-10 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:hover:scale-100"
+                          className="h-10 px-6 rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold shadow-lg shadow-primary/20 transition-all duration-300 border-0 hover:text-white disabled:opacity-50 disabled:hover:scale-100"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           {t('lines.add')}
@@ -968,7 +968,7 @@ export function DemandLineTable({
                 aria-haspopup="menu"
                 aria-expanded={actionMenuOpen}
                 onClick={() => setActionMenuOpen((current) => !current)}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 bg-white/50 p-0 text-sm font-medium shadow-xs transition-all hover:border-pink-500/30 hover:bg-pink-50 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-slate-200 bg-white/50 p-0 text-sm font-medium shadow-xs transition-all hover:border-primary/30 hover:bg-accent/35 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10"
               >
                 <Menu size={18} className="text-slate-500 dark:text-slate-400" />
               </button>
@@ -1228,7 +1228,7 @@ export function DemandLineTable({
                               <LineTableQuickEditMonetaryInput
                                 value={quickEdit.draft}
                                 onChange={(draft) => setQuickEdit((q) => (q ? { ...q, draft } : q))}
-                                className="h-8 min-w-[120px] w-[120px] rounded-lg border-pink-500/50 text-sm font-mono px-2"
+                                className="h-8 min-w-[120px] w-[120px] rounded-lg border-primary/50 text-sm font-mono px-2"
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') void commitQuickEdit();
                                   if (e.key === 'Escape') cancelQuickEdit();
@@ -1259,7 +1259,7 @@ export function DemandLineTable({
                             <span
                               className={cn(
                                 'inline-flex bg-zinc-100/60 dark:bg-zinc-800/60 px-2 py-1 rounded-lg text-sm',
-                                lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:ring-2 hover:ring-pink-500/25 rounded-lg'
+                                lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:ring-2 hover:ring-primary/20 rounded-lg'
                               )}
                               title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                               onDoubleClick={(e) => {
@@ -1293,7 +1293,7 @@ export function DemandLineTable({
                                 min={0}
                                 value={quickEdit.draft}
                                 onChange={(draft) => setQuickEdit((q) => (q ? { ...q, draft } : q))}
-                                className="h-8 w-16 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
+                                className="h-8 w-16 rounded-lg border-primary/50 text-sm font-bold text-center px-1"
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') void commitQuickEdit();
                                   if (e.key === 'Escape') cancelQuickEdit();
@@ -1324,7 +1324,7 @@ export function DemandLineTable({
                             <span
                               className={cn(
                                 'inline-flex items-center justify-center min-w-10 h-7 px-2 rounded-lg bg-white border border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 text-sm font-bold text-zinc-900 dark:text-zinc-100 tabular-nums',
-                                lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:border-pink-400/60'
+                                lineAllowsQuickEdit(line) && 'cursor-pointer select-none hover:border-primary/40'
                               )}
                               title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                               onDoubleClick={(e) => {
@@ -1369,7 +1369,7 @@ export function DemandLineTable({
                                       max={100}
                                       value={quickEdit.draft}
                                       onChange={(draft) => setQuickEdit((q) => (q ? { ...q, draft } : q))}
-                                      className="h-8 w-14 rounded-lg border-pink-500/50 text-sm font-bold text-center px-1"
+                                      className="h-8 w-14 rounded-lg border-primary/50 text-sm font-bold text-center px-1"
                                       onKeyDown={(e) => {
                                         if (e.key === 'Enter') void commitQuickEdit();
                                         if (e.key === 'Escape') cancelQuickEdit();
@@ -1403,7 +1403,7 @@ export function DemandLineTable({
                                   className={cn(
                                     'inline-flex min-w-[96px] flex-col items-center gap-1 rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-2 py-1.5 shadow-sm dark:border-emerald-900/40 dark:bg-emerald-950/20',
                                     lineAllowsQuickEdit(line) &&
-                                    'cursor-pointer hover:ring-2 hover:ring-pink-500/20'
+                                    'cursor-pointer hover:ring-2 hover:ring-primary/20'
                                   )}
                                   title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                                   onDoubleClick={(e) => {
@@ -1414,7 +1414,7 @@ export function DemandLineTable({
                                   <span className="text-[11px] font-black leading-none text-emerald-700 dark:text-emerald-300">
                                     %{discount.rate}
                                   </span>
-                                  <span className="text-[10px] font-semibold leading-none text-rose-600 dark:text-rose-400">
+                                  <span className="text-[10px] font-semibold leading-none text-red-600 dark:text-red-400">
                                     -{formatCurrency(unitDiscountAmount, currencyCode)}
                                   </span>
                                 </div>
@@ -1423,7 +1423,7 @@ export function DemandLineTable({
                                   className={cn(
                                     'inline-flex min-w-[96px] justify-center rounded-xl border border-zinc-200 bg-zinc-50 px-2 py-2 text-[11px] font-semibold text-zinc-400 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-600',
                                     lineAllowsQuickEdit(line) &&
-                                    'cursor-pointer hover:border-pink-400/50 hover:text-zinc-600 dark:hover:text-zinc-400'
+                                    'cursor-pointer hover:border-primary/40 hover:text-zinc-600 dark:hover:text-zinc-400'
                                   )}
                                   title={t('lines.doubleClickToEdit', 'Çift tıklayarak düzenleyin')}
                                   onDoubleClick={(e) => {
@@ -1446,7 +1446,7 @@ export function DemandLineTable({
                               <span className="tabular-nums">{formatCurrency(line.lineTotal, currencyCode)}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm font-bold text-zinc-900 dark:text-white">
-                              <span className="text-[11px] font-semibold text-pink-600 dark:text-pink-300">{t('lines.vatIncludedShort', 'KDV Dahil')}</span>
+                              <span className="text-[11px] font-semibold text-primary">{t('lines.vatIncludedShort', 'KDV Dahil')}</span>
                               <span className="tabular-nums">{formatCurrency(line.lineGrandTotal, currencyCode)}</span>
                             </div>
                           </div>
@@ -1473,7 +1473,7 @@ export function DemandLineTable({
                                 type="button"
                                 variant="ghost"
                                 size="icon"
-                                className={cn(styles.actionButton, "text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30")}
+                                className={cn(styles.actionButton, "text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30")}
                                 onClick={() => handleDeleteClick(line.id)}
                                 title={t('common.delete.action')}
                               >
@@ -1586,7 +1586,7 @@ export function DemandLineTable({
         <DialogContent className="bg-white/80 dark:bg-[#0c0516]/80 backdrop-blur-xl border-slate-200 dark:border-white/10 w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[425px] p-0 overflow-hidden shadow-2xl">
           <DialogHeader className="px-6 py-5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5">
             <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
-              <div className="bg-linear-to-br from-red-500 to-rose-600 p-2.5 rounded-xl shadow-lg shadow-red-500/20 text-white">
+              <div className="bg-linear-to-br from-red-500 to-red-600 p-2.5 rounded-xl shadow-lg shadow-red-500/20 text-white">
                 <Trash2 className="h-5 w-5" />
               </div>
               {relatedLinesCount > 1
@@ -1619,7 +1619,7 @@ export function DemandLineTable({
                 void handleDeleteConfirm();
               }}
               disabled={isDeleting}
-              className="h-11 px-6 rounded-xl bg-linear-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40 border-0 font-medium transition-all"
+              className="h-11 px-6 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40 border-0 font-medium transition-all"
             >
               {isDeleting ? (
                 <>

@@ -90,7 +90,7 @@ export function SalesmenAmountComparisonByCurrencyTable({
             </TableHeader>
             <TableBody>
               {rows.map((row, idx) => (
-                <TableRow key={row.currency ?? `amount-${idx}`} className="hover:bg-rose-50/30 dark:hover:bg-rose-500/5 transition-colors border-b border-slate-50 dark:border-white/5 last:border-0">
+                <TableRow key={row.currency ?? `amount-${idx}`} className="hover:bg-accent/30 dark:hover:bg-accent/5 transition-colors border-b border-slate-50 dark:border-white/5 last:border-0">
                   <TableCell className="font-bold text-slate-700 dark:text-white border-r border-slate-100 dark:border-white/5 pl-5">{row.currency ?? '-'}</TableCell>
                   <TableCell className="text-right tabular-nums font-medium border-r border-slate-100 dark:border-white/5">
                     {formatter.format(row.last12MonthsOrderAmount ?? 0)}

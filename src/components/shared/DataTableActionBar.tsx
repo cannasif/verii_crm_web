@@ -244,14 +244,14 @@ export function DataTableActionBar({
   const filterButtonClassName = cn(
     'h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm',
     showFilters || appliedFilterCount > 0
-      ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
+      ? 'bg-primary/20 text-primary border-primary/30 hover:bg-primary/30'
       : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
   );
 
   const columnsButtonClassName = cn(
     'h-9 border-dashed border-slate-300 dark:border-white/20 text-xs sm:text-sm',
     columnsOpen
-      ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border-pink-500/30 hover:bg-pink-500/30'
+      ? 'bg-primary/20 text-primary border-primary/30 hover:bg-primary/30'
       : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
   );
 
@@ -282,7 +282,7 @@ export function DataTableActionBar({
             )}
           >
             <Search
-              className="pointer-events-none absolute crm-start-2-5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within/search:text-pink-500 dark:text-slate-500 dark:group-focus-within/search:text-pink-400"
+              className="pointer-events-none absolute crm-start-2-5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 transition-colors group-focus-within/search:text-primary dark:text-slate-500 dark:group-focus-within/search:text-primary"
               aria-hidden
             />
             <Input
@@ -293,10 +293,10 @@ export function DataTableActionBar({
                 resolvedSearchClassName,
                 'w-full border-slate-300 bg-white crm-ps-9 shadow-sm transition-all dark:border-white/15 dark:bg-transparent dark:shadow-none',
                 compactSearchOnMobile && isMobileSearchActive && 'crm-pe-8',
-                'focus:border-pink-500 focus:ring-[3px] focus:ring-pink-500/15',
-                'focus-visible:border-pink-500 focus-visible:ring-[3px] focus-visible:ring-pink-500/15',
-                'dark:focus:border-pink-500/60 dark:focus:ring-pink-500/10',
-                'dark:focus-visible:border-pink-500/60 dark:focus-visible:ring-pink-500/10'
+                'focus:border-primary focus:ring-[3px] focus:ring-primary/20',
+                'focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/20',
+                'dark:focus:border-primary/60 dark:focus:ring-primary/10',
+                'dark:focus-visible:border-primary/60 dark:focus-visible:ring-primary/10'
               )}
             />
             {compactSearchOnMobile && isMobileSearchActive && (
@@ -446,7 +446,7 @@ export function DataTableActionBar({
                 <Filter className="crm-me-2 h-4 w-4" />
                 {t('filters', { ns: 'common' })}
                 {appliedFilterCount > 0 ? (
-                  <span className="crm-ms-auto inline-flex min-w-5 items-center justify-center rounded-full bg-pink-500/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-pink-700 dark:text-pink-300">
+                  <span className="crm-ms-auto inline-flex min-w-5 items-center justify-center rounded-full bg-primary/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-primary">
                     {appliedFilterCount}
                   </span>
                 ) : null}

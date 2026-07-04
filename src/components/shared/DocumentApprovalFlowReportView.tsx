@@ -90,7 +90,7 @@ function StepStatusIcon({ stepStatus }: { stepStatus: DocumentApprovalFlowStep['
       );
     case 'Rejected':
       return (
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-rose-500 to-red-600 shadow-lg shadow-rose-500/30 border border-rose-300 dark:border-rose-500/50">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-red-500 to-red-600 shadow-lg shadow-red-500/30 border border-red-300 dark:border-red-500/50">
           <XCircle className="h-6 w-6 text-white" />
         </div>
       );
@@ -117,7 +117,7 @@ function ActionStatusBadge({ status, statusName }: { status: number; statusName:
       Icon = BadgeCheck;
       break;
     case 3:
-      styles = 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30';
+      styles = 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30';
       Icon = XCircle;
       break;
     case 4:
@@ -158,7 +158,7 @@ function StepCard({
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-600/90 bg-white/70 dark:bg-zinc-950/40 backdrop-blur-xl shadow-sm transition-all duration-300 group ml-6 sm:ml-12">
-      <div className="absolute -left-[29px] sm:-left-[53px] top-6 h-4 w-4 rounded-full border-4 border-white dark:border-zinc-950 bg-zinc-300 dark:bg-zinc-600 z-10 shadow-sm group-hover:bg-pink-400 transition-colors" />
+      <div className="absolute -left-[29px] sm:-left-[53px] top-6 h-4 w-4 rounded-full border-4 border-white dark:border-zinc-950 bg-zinc-300 dark:bg-zinc-600 z-10 shadow-sm group-hover:bg-primary transition-colors" />
 
       <div className="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-4 border-b border-zinc-100 dark:border-zinc-700/80 bg-zinc-50/50 dark:bg-zinc-900/40">
         <StepStatusIcon stepStatus={step.stepStatus} />
@@ -174,7 +174,7 @@ function StepCard({
                 : step.stepStatus === 'InProgress'
                   ? 'text-amber-600 dark:text-amber-500'
                   : step.stepStatus === 'Rejected'
-                    ? 'text-rose-600 dark:text-rose-400'
+                    ? 'text-red-600 dark:text-red-400'
                     : 'text-zinc-500 dark:text-zinc-400',
             )}
           >
@@ -189,10 +189,10 @@ function StepCard({
             {step.actions.map((action, index) => (
               <div
                 key={`${action.userId}-${action.actionDate ?? index}`}
-                className="relative flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-zinc-100 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/50 p-4 transition-all duration-200 hover:border-pink-200 dark:hover:border-pink-500/30 hover:shadow-md"
+                className="relative flex flex-col sm:flex-row sm:items-center gap-4 rounded-xl border border-zinc-100 dark:border-zinc-700/80 bg-white dark:bg-zinc-900/50 p-4 transition-all duration-200 hover:border-primary/20 dark:hover:border-primary/30 hover:shadow-md"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-pink-100 to-purple-100 dark:from-pink-500/20 dark:to-purple-500/20 text-pink-700 dark:text-pink-300 font-bold text-sm border border-pink-200/50 dark:border-pink-500/30 shadow-inner">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-primary/15 bg-accent text-primary font-bold text-sm shadow-inner dark:border-primary/30 dark:bg-primary/15">
                     {getInitials(action.userFullName || `U${action.userId}`)}
                   </div>
                   <div className="flex flex-col min-w-0">
@@ -218,14 +218,14 @@ function StepCard({
                 </div>
 
                 {action.rejectedReason && (
-                  <div className="w-full sm:col-span-2 mt-2 rounded-xl bg-rose-50 dark:bg-rose-500/10 p-3 sm:p-4 border border-rose-100 dark:border-rose-500/20">
+                  <div className="w-full sm:col-span-2 mt-2 rounded-xl bg-red-50 dark:bg-red-500/10 p-3 sm:p-4 border border-red-100 dark:border-red-500/20">
                     <div className="flex items-start gap-2.5">
-                      <AlertTriangle className="h-4 w-4 text-rose-600 dark:text-rose-400 mt-0.5 shrink-0" />
+                      <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
                       <div>
-                        <span className="block text-[11px] font-black text-rose-800 dark:text-rose-300 uppercase tracking-wider mb-1">
+                        <span className="block text-[11px] font-black text-red-800 dark:text-red-300 uppercase tracking-wider mb-1">
                           {t('approvalFlow.rejectedReasonLabel', { defaultValue: 'Ret Gerekçesi' })}
                         </span>
-                        <p className="text-sm font-medium text-rose-700 dark:text-rose-200 leading-relaxed">
+                        <p className="text-sm font-medium text-red-700 dark:text-red-200 leading-relaxed">
                           {action.rejectedReason}
                         </p>
                       </div>
@@ -276,7 +276,7 @@ export function DocumentApprovalFlowReportView({
   if (error) {
     return (
       <div className="max-w-4xl mx-auto">
-        <Alert variant="destructive" className="rounded-2xl border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-500/20 dark:bg-rose-950/30 dark:text-rose-300 shadow-sm p-5">
+        <Alert variant="destructive" className="rounded-2xl border-red-200 bg-red-50 text-red-800 dark:border-red-500/20 dark:bg-red-950/30 dark:text-red-300 shadow-sm p-5">
           <AlertTriangle className="h-6 w-6 mb-1" />
           <div className="ml-2">
             <h5 className="font-bold text-base mb-1">
@@ -334,7 +334,7 @@ export function DocumentApprovalFlowReportView({
               report.overallStatus === 2
                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30'
                 : report.overallStatus === 3
-                  ? 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30'
+                  ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/30'
                   : 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30',
             )}
           >
@@ -344,13 +344,13 @@ export function DocumentApprovalFlowReportView({
       </div>
 
       {report.rejectedReason && (
-        <Alert variant="destructive" className="rounded-2xl border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/5 shadow-sm p-5">
-          <AlertTriangle className="h-6 w-6 text-rose-600 dark:text-rose-500 mt-1" />
+        <Alert variant="destructive" className="rounded-2xl border-red-200 bg-red-50 dark:border-red-500/20 dark:bg-red-500/5 shadow-sm p-5">
+          <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-500 mt-1" />
           <div className="ml-3">
-            <h5 className="text-xs font-black text-rose-800 dark:text-rose-300 uppercase tracking-wider mb-1.5">
+            <h5 className="text-xs font-black text-red-800 dark:text-red-300 uppercase tracking-wider mb-1.5">
               {t('approvalFlow.processRejectedReasonLabel', { defaultValue: 'Süreç İptal Nedeni' })}
             </h5>
-            <AlertDescription className="text-rose-700 dark:text-rose-200 font-medium text-sm leading-relaxed">
+            <AlertDescription className="text-red-700 dark:text-red-200 font-medium text-sm leading-relaxed">
               {report.rejectedReason}
             </AlertDescription>
           </div>

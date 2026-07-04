@@ -47,14 +47,14 @@ export function CustomerStats({ stats, isLoading = false }: CustomerStatsProps):
     bg-stone-50/95 dark:bg-[#1a1025]/40
     border border-slate-300/80 dark:border-white/5
     shadow-sm ring-1 ring-slate-200/60 dark:ring-0
-    hover:border-slate-400/70 hover:shadow-md dark:hover:border-rose-500/30
+    hover:border-slate-400/70 hover:shadow-md dark:hover:border-primary/30
     hover:bg-stone-100/90 dark:hover:bg-[#1a1025]/80
     backdrop-blur-md
     transition-all duration-300
     group relative overflow-hidden
   `;
   
-  const glowStyle = "absolute inset-0 bg-linear-to-r from-rose-50/0 to-amber-50/0 dark:from-rose-500/0 dark:to-amber-500/0 group-hover:from-rose-50/50 group-hover:to-amber-50/50 dark:group-hover:from-rose-500/5 dark:group-hover:to-amber-500/5 transition-all duration-500 pointer-events-none";
+  const glowStyle = "absolute inset-0 bg-linear-to-r from-accent/0 to-amber-50/0 dark:from-primary/0 dark:to-amber-500/0 group-hover:from-accent/50 group-hover:to-amber-50/50 dark:group-hover:from-primary/5 dark:group-hover:to-amber-500/5 transition-all duration-500 pointer-events-none";
 
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">

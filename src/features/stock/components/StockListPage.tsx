@@ -447,7 +447,7 @@ export function StockListPage(): ReactElement {
       return (
         <Badge
           variant="secondary"
-          className="h-7 px-3 rounded-lg bg-zinc-100/80 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 font-bold text-[10px] uppercase tracking-wider border-zinc-200/50 dark:border-white/5 transition-all group-hover:bg-pink-500 group-hover:text-white group-hover:border-pink-400/50 shadow-xs"
+          className="h-7 px-3 rounded-lg bg-zinc-100/80 dark:bg-white/5 text-zinc-500 dark:text-zinc-400 font-bold text-[10px] uppercase tracking-wider border-zinc-200/50 dark:border-white/5 transition-all group-hover:bg-primary group-hover:text-white group-hover:border-primary/40 shadow-xs"
         >
           {stock.unit || '-'}
         </Badge>
@@ -588,7 +588,7 @@ export function StockListPage(): ReactElement {
                   className={cn(
                     'h-8 rounded-md px-2 text-slate-600 dark:text-slate-300 sm:h-8 sm:rounded-lg sm:px-2.5',
                     listLayout === 'table' &&
-                    'border border-pink-500/30 bg-pink-500/15 text-pink-700 shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-pink-100'
+                    'border border-primary/30 bg-primary/15 text-primary shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-primary'
                   )}
                   onClick={() => persistListLayout('table')}
                   aria-pressed={listLayout === 'table'}
@@ -604,7 +604,7 @@ export function StockListPage(): ReactElement {
                   className={cn(
                     'h-8 rounded-md px-2 text-slate-600 dark:text-slate-300 sm:h-8 sm:rounded-lg sm:px-2.5',
                     listLayout === 'grid' &&
-                    'border border-pink-500/30 bg-pink-500/15 text-pink-700 shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-pink-100'
+                    'border border-primary/30 bg-primary/15 text-primary shadow-[0_0_14px_rgba(236,72,153,0.2)] dark:text-primary'
                   )}
                   onClick={() => persistListLayout('grid')}
                   aria-pressed={listLayout === 'grid'}
@@ -661,8 +661,8 @@ export function StockListPage(): ReactElement {
                         variant="ghost"
                         size="icon"
                         className={cn(
-                          'h-8 w-8 text-slate-400 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-500/10',
-                          stock.isFavorite && 'text-pink-600 dark:text-pink-400'
+                          'h-8 w-8 text-slate-400 hover:text-primary hover:bg-accent dark:hover:bg-primary/10',
+                          stock.isFavorite && 'text-primary'
                         )}
                         disabled={toggleStockFavorite.isPending}
                         aria-label={stock.isFavorite ? t('list.removeFavorite') : t('list.addFavorite')}

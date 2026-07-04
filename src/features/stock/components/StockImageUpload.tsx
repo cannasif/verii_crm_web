@@ -194,7 +194,7 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
                             h-8 pl-8 text-xs 
                             bg-transparent 
                             border-zinc-200 dark:border-zinc-700
-                            focus-visible:ring-1 focus-visible:ring-rose-500
+                            focus-visible:ring-1 focus-visible:ring-primary
                         "
                       />
                   </div>
@@ -218,11 +218,11 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
                 disabled={uploadImages.isPending || uploading}
                 className="
                     w-full h-11 relative overflow-hidden
-                    bg-linear-to-r from-pink-600 to-orange-600 
-                    hover:from-pink-500 hover:to-orange-500
+                    bg-[image:var(--crm-brand-gradient)] 
+                    hover:opacity-90
                     text-white font-bold tracking-wide rounded-xl
-                    shadow-lg shadow-pink-500/25 
-                    hover:shadow-pink-500/40 hover:scale-[1.01] active:scale-[0.99]
+                    shadow-lg shadow-primary/25 
+                    hover:shadow-primary/40 hover:scale-[1.01] active:scale-[0.99]
                     transition-all duration-300
                     border-0
                 "

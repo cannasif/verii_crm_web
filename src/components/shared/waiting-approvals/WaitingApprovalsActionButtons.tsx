@@ -37,7 +37,7 @@ export function WaitingApprovalsActionButtons({
         size="sm"
         onClick={onReject}
         disabled={isPending}
-        className="h-8 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 dark:bg-rose-500/10 dark:text-rose-400 dark:hover:bg-rose-500/20"
+        className="h-8 bg-red-50 text-red-700 hover:bg-red-100 hover:text-red-800 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
         title={rejectLabel}
       >
         <X className="h-4 w-4 sm:mr-1.5" />

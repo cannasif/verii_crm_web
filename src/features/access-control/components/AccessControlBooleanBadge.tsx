@@ -32,7 +32,7 @@ export function AccessControlBooleanBadge({
         </span>
       ) : (
         <span
-          className="inline-flex min-w-[3.25rem] items-center justify-center rounded-full border border-rose-200/80 bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/15 dark:text-rose-300"
+          className="inline-flex min-w-[3.25rem] items-center justify-center rounded-full border border-red-200/80 bg-red-50 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-red-700 dark:border-red-500/30 dark:bg-red-500/15 dark:text-red-300"
         >
           {noLabel}
         </span>

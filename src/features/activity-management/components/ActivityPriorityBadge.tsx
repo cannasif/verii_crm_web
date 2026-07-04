@@ -54,7 +54,7 @@ export function ActivityPriorityBadge({
     high: {
       label: t('priorityHigh'),
       icon: ArrowUp,
-      className: 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/20 hover:bg-rose-100 dark:hover:bg-rose-500/20',
+      className: 'bg-accent dark:bg-primary/10 text-primary dark:text-primary border-primary/20 dark:border-primary/20 hover:bg-accent dark:hover:bg-accent/20',
     },
     unknown: {
       label: String(priority),

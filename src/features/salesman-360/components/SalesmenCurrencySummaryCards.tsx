@@ -81,7 +81,7 @@ export function SalesmenCurrencySummaryCards({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-slate-500">{t('salesman360.currencyTotals.orderAmount')}</span>
-                  <span className="text-sm font-bold text-pink-600 dark:text-pink-400 tabular-nums">{formatter.format(row.orderAmount ?? 0)}</span>
+                  <span className="text-sm font-bold text-primary tabular-nums">{formatter.format(row.orderAmount ?? 0)}</span>
                 </div>
               </div>
             </CardContent>
@@ -102,10 +102,10 @@ export function SalesmenCurrencySummaryCards({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
-        <CardContent className="pt-4 pb-3 px-5 border-l-4 border-l-pink-500">
+        <CardContent className="pt-4 pb-3 px-5 border-l-4 border-l-primary">
           <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-pink-100 dark:bg-pink-500/10 border border-pink-200 dark:border-pink-500/20 shadow-sm transition-transform group-hover:scale-105">
-              <TrendingUp className="size-3.5 text-pink-600 dark:text-pink-400" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent dark:bg-primary/10 border border-primary/20 dark:border-primary/20 shadow-sm transition-transform group-hover:scale-105">
+              <TrendingUp className="size-3.5 text-primary" />
             </div>
             <p className="text-[10px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-widest leading-tight">
               {t('salesman360.analytics.last12MonthsOrderAmount')}

@@ -232,7 +232,7 @@ export function ExchangeRateDialog({
   const styles = {
     tableHead: "h-10 px-4 text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800",
     tableRow: "hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors border-b border-zinc-100 dark:border-zinc-800 last:border-0",
-    input: "h-8 bg-white dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 font-mono font-medium text-right pr-2 rounded-lg transition-all duration-200",
+    input: "h-8 bg-white dark:bg-zinc-950/50 border-zinc-200 dark:border-zinc-800 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/20 font-mono font-medium text-right pr-2 rounded-lg transition-all duration-200",
     actionButton: "h-7 w-7 p-0 rounded-md hover:scale-105 transition-transform",
   };
 
@@ -381,7 +381,7 @@ export function ExchangeRateDialog({
                                     setEditingDraft('');
                                     setEditMountKey(0);
                                   }}
-                                  className={cn(styles.actionButton, "hover:bg-rose-50 text-rose-600 dark:hover:bg-rose-900/20 dark:text-rose-400")}
+                                  className={cn(styles.actionButton, "hover:bg-red-50 text-red-600 dark:hover:bg-red-900/20 dark:text-red-400")}
                                 >
                                   <X className="h-4 w-4" />
                                 </Button>

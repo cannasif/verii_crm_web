@@ -575,7 +575,7 @@ export function DemandListPage(): ReactElement {
 
   return (
     <div className="relative space-y-6 overflow-hidden">
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
       <div className="relative z-10 space-y-8">
@@ -590,14 +590,14 @@ export function DemandListPage(): ReactElement {
                 {t('list.title')}
               </h1>
               <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
-                <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
                 {t('list.description')}
               </p>
             </div>
           </div>
           <Button
             onClick={() => navigate('/demands/create')}
-            className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="h-12 px-8 bg-[image:var(--crm-brand-gradient)] rounded-2xl text-white text-sm font-black shadow-xl shadow-primary/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-primary/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus size={20} className="mr-2 stroke-[3px]" />
             {t('list.createNew')}
@@ -825,7 +825,7 @@ export function DemandListPage(): ReactElement {
                 void handleConfirmErpCleanup();
               }}
               disabled={cleanupErpMutation.isPending || erpCleanupReason.trim().length === 0}
-              className="bg-linear-to-r from-pink-600 to-orange-600 text-white hover:text-white"
+              className="bg-[image:var(--crm-brand-gradient)] text-white hover:text-white"
             >
               {cleanupErpMutation.isPending
                 ? t('common.processing', { ns: 'common', defaultValue: 'İşleniyor...' })

@@ -86,8 +86,8 @@ export function ConflictInboxPage(): ReactElement {
         <Card className="overflow-hidden rounded-[2rem] border-none bg-white dark:bg-[#180F22] shadow-xl">
           <CardHeader className="space-y-4 pb-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10">
-                <GitMerge className="h-6 w-6 text-pink-600 dark:text-pink-400" />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent dark:bg-white/5 shadow-inner border border-primary/20 dark:border-white/10">
+                <GitMerge className="h-6 w-6 text-primary" />
               </div>
               <div>
                 <Skeleton className="h-6 w-48 rounded-xl" />
@@ -121,7 +121,7 @@ export function ConflictInboxPage(): ReactElement {
           <CardContent>
             <Button
               onClick={() => void refetch()}
-              className="rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] h-11 px-6"
+              className="rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_rgba(219,39,119,0.5)] h-11 px-6"
             >
               {t('customerDedupe:retry')}
             </Button>
@@ -147,9 +147,9 @@ export function ConflictInboxPage(): ReactElement {
         <Card className="overflow-hidden rounded-[2rem] border-none bg-white dark:bg-[#180F22] shadow-xl">
           <CardHeader className="space-y-4 pb-6">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pink-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
-                <div className="absolute inset-0 bg-linear-to-br from-pink-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-                <GitMerge className="h-6 w-6 text-pink-600 dark:text-pink-400 relative z-10" />
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent dark:bg-white/5 shadow-inner border border-primary/20 dark:border-white/10 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <GitMerge className="h-6 w-6 text-primary relative z-10" />
               </div>
               <div>
                 <CardTitle className="text-xl font-bold">
@@ -160,7 +160,7 @@ export function ConflictInboxPage(): ReactElement {
                 </p>
               </div>
               {candidates.length > 0 && (
-                <Badge className="ml-auto rounded-xl border border-pink-200 bg-pink-50 text-pink-600 dark:border-pink-500/30 dark:bg-pink-500/10 dark:text-pink-400 font-bold px-3 py-1 shadow-sm">
+                <Badge className="ml-auto rounded-xl border border-primary/20 bg-accent text-primary dark:border-primary/30 dark:bg-primary/10 dark:text-primary font-bold px-3 py-1 shadow-sm">
                   {candidates.length}
                 </Badge>
               )}
@@ -171,7 +171,7 @@ export function ConflictInboxPage(): ReactElement {
                 placeholder={t('customerDedupe:searchPlaceholder')}
                 value={filters.search}
                 onChange={(e) => setFilters((prev) => ({ ...prev, search: e.target.value }))}
-                className="h-10 w-[220px] rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                className="h-10 w-[220px] rounded-xl bg-slate-50 dark:bg-[#1E1627] border-slate-200 dark:border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-medium"
               />
               <Popover>
                 <PopoverTrigger asChild>
@@ -179,7 +179,7 @@ export function ConflictInboxPage(): ReactElement {
                     variant={hasFiltersActive ? 'default' : 'outline'}
                     size="sm"
                     className={`h-10 rounded-xl font-semibold gap-2 transition-all ${hasFiltersActive
-                      ? 'bg-pink-500/20 text-pink-700 dark:text-pink-300 border border-pink-500/30 hover:bg-pink-500/30'
+                      ? 'bg-primary/15 text-primary dark:text-primary/80 border border-primary/30 hover:bg-primary/20'
                       : 'border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#1E1627] hover:bg-slate-100 dark:hover:bg-white/5'
                       }`}
                   >
@@ -202,15 +202,15 @@ export function ConflictInboxPage(): ReactElement {
                           }))
                         }
                       >
-                        <SelectTrigger className="h-11 rounded-xl bg-slate-50 dark:bg-[#180F22] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 transition-all font-medium">
+                        <SelectTrigger className="h-11 rounded-xl bg-slate-50 dark:bg-[#180F22] border-slate-200 dark:border-white/10 focus:ring-primary/20 transition-all font-medium">
                           <SelectValue placeholder={t('customerDedupe:matchType')} />
                         </SelectTrigger>
                         <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1627] shadow-xl">
-                          <SelectItem value={MATCH_TYPE_ALL_SELECT_VALUE} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400">
+                          <SelectItem value={MATCH_TYPE_ALL_SELECT_VALUE} className="font-medium focus:bg-accent dark:focus:bg-primary/10 focus:text-primary dark:focus:text-primary">
                             {t('customerDedupe:all')}
                           </SelectItem>
                           {MATCH_TYPES.map((type) => (
-                            <SelectItem key={type} value={type} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400">
+                            <SelectItem key={type} value={type} className="font-medium focus:bg-accent dark:focus:bg-primary/10 focus:text-primary dark:focus:text-primary">
                               {t(`customerDedupe:${type}`)}
                             </SelectItem>
                           ))}
@@ -227,12 +227,12 @@ export function ConflictInboxPage(): ReactElement {
                           setFilters((prev) => ({ ...prev, minScore: Number(v) }))
                         }
                       >
-                        <SelectTrigger className="h-11 rounded-xl bg-slate-50 dark:bg-[#180F22] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 transition-all font-medium">
+                        <SelectTrigger className="h-11 rounded-xl bg-slate-50 dark:bg-[#180F22] border-slate-200 dark:border-white/10 focus:ring-primary/20 transition-all font-medium">
                           <SelectValue placeholder={t('customerDedupe:minScore')} />
                         </SelectTrigger>
                         <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1E1627] shadow-xl">
                           {MIN_SCORE_OPTIONS.map((score) => (
-                            <SelectItem key={score} value={String(score)} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-pink-600 dark:focus:text-pink-400">
+                            <SelectItem key={score} value={String(score)} className="font-medium focus:bg-accent dark:focus:bg-primary/10 focus:text-primary dark:focus:text-primary">
                               {(score * 100).toFixed(0)}%
                             </SelectItem>
                           ))}

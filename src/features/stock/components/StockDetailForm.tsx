@@ -100,7 +100,7 @@ export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement
             <FormItem>
               <div className="mb-3 space-y-1">
                   <FormLabel className="text-base font-semibold text-slate-900 dark:text-white flex items-center gap-2" required={isZodFieldRequired(stockDetailSchema, 'htmlDescription')}>
-                    <FileText className="w-4 h-4 text-pink-600 dark:text-pink-500" />
+                    <FileText className="w-4 h-4 text-primary dark:text-primary" />
                     {t('detail.htmlDescription')}
                   </FormLabel>
                   <FormDescription className="text-slate-500 dark:text-slate-400 text-xs">
@@ -114,10 +114,10 @@ export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement
                     rounded-xl 
                     border border-zinc-200 dark:border-white/10 
                     bg-white/50 dark:bg-zinc-900/50 
-                    focus-within:ring-2 focus-within:ring-pink-500/20 focus-within:border-pink-500
+                    focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary
                     transition-all duration-300
                     overflow-hidden
-                    shadow-sm hover:shadow-md hover:border-pink-200 dark:hover:border-pink-900/30
+                    shadow-sm hover:shadow-md hover:border-primary/20 dark:hover:border-primary/30
                 ">
                     <RichTextEditor
                       value={field.value || ''}
@@ -139,12 +139,12 @@ export function StockDetailForm({ stockId }: StockDetailFormProps): ReactElement
             className="
                 relative overflow-hidden
                 px-8 py-2 h-11
-                bg-linear-to-r from-pink-600 to-orange-600 
-                hover:from-pink-500 hover:to-orange-500
+                bg-[image:var(--crm-brand-gradient)] 
+                hover:opacity-90
                 text-white text-sm font-bold tracking-wide
                 rounded-xl
-                shadow-lg shadow-pink-500/25 
-                hover:shadow-pink-500/40 hover:scale-[1.02] active:scale-[0.98]
+                shadow-lg shadow-primary/25 
+                hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98]
                 transition-all duration-300
                 border-0 ring-0 outline-none
             "

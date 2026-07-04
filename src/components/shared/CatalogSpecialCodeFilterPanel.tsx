@@ -112,7 +112,7 @@ export function CatalogSpecialCodeFilterPanel({
             type="button"
             variant="ghost"
             size="sm"
-            className="h-7 shrink-0 rounded-lg px-2 text-[10px] text-slate-600 hover:text-pink-600 dark:text-slate-300 dark:hover:text-pink-200"
+            className="h-7 shrink-0 rounded-lg px-2 text-[10px] text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-primary"
             onClick={onClear}
           >
             <RotateCcw className="mr-1 h-3 w-3" aria-hidden />
@@ -123,14 +123,14 @@ export function CatalogSpecialCodeFilterPanel({
 
       <div className="relative shrink-0">
         <Search
-          className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-pink-500/75 dark:text-pink-400/75"
+          className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-primary/75 dark:text-primary/75"
           aria-hidden
         />
         <Input
           value={filterSearch}
           onChange={(e) => handleFilterSearchChange(e.target.value)}
           placeholder={t('catalogStockPicker.specialCodesFilterSearchPlaceholder')}
-          className="h-10 rounded-2xl border border-slate-200/95 bg-white pl-9 text-xs text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.04)] placeholder:text-slate-500 focus-visible:border-pink-400/50 focus-visible:ring-pink-500/15 dark:border-white/12 dark:bg-zinc-900/50 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus-visible:border-pink-500/40 sm:pl-10 sm:text-[13px]"
+          className="h-10 rounded-2xl border border-slate-200/95 bg-white pl-9 text-xs text-slate-900 shadow-[0_1px_2px_rgba(15,23,42,0.04)] placeholder:text-slate-500 focus-visible:border-primary/50 focus-visible:ring-primary/20 dark:border-white/12 dark:bg-zinc-900/50 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus-visible:border-primary/40 sm:pl-10 sm:text-[13px]"
         />
       </div>
 
@@ -162,12 +162,12 @@ export function CatalogSpecialCodeFilterPanel({
                 aria-controls={sectionId}
                 className="flex w-full items-center justify-between gap-2 px-2.5 py-2 text-left transition-colors hover:bg-slate-50/90 dark:hover:bg-white/[0.04]"
               >
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-pink-700 dark:text-pink-300">
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-primary dark:text-primary">
                   {levelLabel}
                 </span>
                 <span className="flex shrink-0 items-center gap-1.5">
                   {selectedSet.size > 0 ? (
-                    <span className="rounded-full bg-pink-500/15 px-1.5 py-0.5 text-[9px] font-semibold text-pink-700 dark:text-pink-200">
+                    <span className="rounded-full bg-primary/15 px-1.5 py-0.5 text-[9px] font-semibold text-primary dark:text-primary">
                       {t('catalogStockPicker.specialCodesSelectedCount', { count: selectedSet.size })}
                     </span>
                   ) : null}
@@ -185,7 +185,7 @@ export function CatalogSpecialCodeFilterPanel({
                 <div id={sectionId} className="border-t border-slate-200/90 px-2.5 pb-2.5 pt-1 dark:border-white/[0.06]">
                   {isLoadingOptions && index === 0 ? (
                     <div className="flex items-center gap-2 py-3 text-[11px] text-slate-500 dark:text-slate-400">
-                      <Loader2 className="h-3.5 w-3.5 animate-spin text-pink-500" aria-hidden />
+                      <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" aria-hidden />
                       {t('catalogStockPicker.specialCodesLoadingOptions')}
                     </div>
                   ) : totalInDimension === 0 ? (
@@ -208,7 +208,7 @@ export function CatalogSpecialCodeFilterPanel({
                               className={cn(
                                 'flex cursor-pointer items-start gap-2 rounded-lg px-2 py-1.5 transition-colors',
                                 checked
-                                  ? 'bg-pink-50 dark:bg-pink-500/10'
+                                  ? 'bg-accent dark:bg-primary/10'
                                   : 'hover:bg-slate-50 dark:hover:bg-white/[0.05]',
                               )}
                             >

@@ -320,7 +320,7 @@ export function CustomerOrdersTab({ customerId, customerCode, customerName }: Cu
 function activityStatusMeta(status: unknown): { key: string; className: string } {
   const value = Number(status);
   if (value === 1) return { key: 'related.activityStatus.completed', className: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' };
-  if (value === 2) return { key: 'related.activityStatus.cancelled', className: 'bg-rose-500/15 text-rose-600 dark:text-rose-400' };
+  if (value === 2) return { key: 'related.activityStatus.cancelled', className: 'bg-accent/15 text-red-600 dark:text-red-400' };
   return { key: 'related.activityStatus.scheduled', className: 'bg-sky-500/15 text-sky-600 dark:text-sky-400' };
 }
 

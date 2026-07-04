@@ -48,8 +48,8 @@ export function WaitingApprovalsRejectDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-white dark:bg-[#130822] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white w-[90%] sm:w-full max-w-md rounded-2xl shadow-2xl overflow-hidden p-0 gap-0">
         <DialogHeader className="flex flex-col items-center gap-4 text-center pb-6 pt-10 px-6">
-          <div className="h-20 w-20 rounded-full bg-rose-50 dark:bg-rose-500/10 flex items-center justify-center mb-2 animate-in zoom-in duration-300 ring-1 ring-rose-100 dark:ring-rose-500/20">
-            <ShieldAlert size={36} className="text-rose-600 dark:text-rose-500" />
+          <div className="h-20 w-20 rounded-full bg-red-50 dark:bg-red-500/10 flex items-center justify-center mb-2 animate-in zoom-in duration-300 ring-1 ring-red-100 dark:ring-red-500/20">
+            <ShieldAlert size={36} className="text-red-600 dark:text-red-500" />
           </div>
           <div className="space-y-2">
             <DialogTitle className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -72,7 +72,7 @@ export function WaitingApprovalsRejectDialog({
               onChange={(event) => onRejectReasonChange(event.target.value)}
               maxLength={500}
               rows={4}
-              className="resize-none rounded-xl border-slate-200 dark:border-white/10 bg-stone-50 dark:bg-[#0f0a18] text-sm shadow-sm focus-visible:ring-rose-500/50 focus-visible:border-rose-500/50"
+              className="resize-none rounded-xl border-slate-200 dark:border-white/10 bg-stone-50 dark:bg-[#0f0a18] text-sm shadow-sm focus-visible:ring-red-500/50 focus-visible:border-red-500/50"
             />
             <div className="flex justify-end">
               <span className="text-xs text-slate-400">{rejectReason.length}/500</span>
@@ -95,7 +95,7 @@ export function WaitingApprovalsRejectDialog({
             variant="destructive"
             onClick={onConfirm}
             disabled={isPending}
-            className="flex-1 h-12 rounded-xl bg-linear-to-r from-rose-600 to-red-700 hover:from-rose-700 hover:to-red-800 text-white border-0 shadow-lg shadow-rose-500/20 transition-all hover:scale-[1.02] font-bold"
+            className="flex-1 h-12 rounded-xl bg-linear-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white border-0 shadow-lg shadow-red-500/20 transition-all hover:scale-[1.02] font-bold"
           >
             {isPending ? (
               <span className="flex items-center gap-2">

@@ -44,10 +44,10 @@ export function QuotationStructuredNotesList({
           className={cn(
             'flex gap-2 rounded-xl border border-slate-200/90 bg-white/80 px-2.5 py-2 shadow-sm backdrop-blur-sm transition-colors duration-200',
             'dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none',
-            'hover:border-pink-300/70 dark:hover:border-pink-500/35',
+            'hover:border-primary/30 dark:hover:border-primary/30',
           )}
         >
-          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-pink-50 text-[10px] font-bold text-pink-600 dark:bg-pink-500/10 dark:text-pink-400">
+          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-accent text-[10px] font-bold text-primary dark:bg-primary/10 dark:text-primary">
             {index + 1}
           </div>
           <div className="min-w-0 flex-1">

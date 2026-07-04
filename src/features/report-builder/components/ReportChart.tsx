@@ -822,7 +822,7 @@ export function ReportChart({
               primaryCardGradient,
             )}
           >
-            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-indigo-500 to-rose-500 opacity-60" />
+            <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-indigo-500 to-primary opacity-60" />
             <div className="text-slate-400 dark:text-slate-500 text-xs font-black uppercase tracking-[0.3em] mb-4">{columnLabels.find(Boolean) ?? t('common.reportBuilder.value')}</div>
             <div
               className={cn(
@@ -848,7 +848,7 @@ export function ReportChart({
       return (
         <div className={cn('grid h-full min-h-[200px] gap-4', className)}>
           <div className={cn('rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.03] bg-linear-to-br p-6 shadow-sm relative overflow-hidden', primaryCardGradient)}>
-            <div className="absolute top-0 left-0 w-1 h-full bg-linear-to-b from-indigo-500 to-rose-500 opacity-60" />
+            <div className="absolute top-0 left-0 w-1 h-full bg-linear-to-b from-indigo-500 to-primary opacity-60" />
             <div className="text-slate-400 dark:text-slate-500 text-[10px] font-black uppercase tracking-widest mb-2">{t('common.reportBuilder.primaryKpi')}</div>
             <div className={cn('text-4xl font-black tracking-tight tabular-nums', valueColor)}>{formatKpiValue(primaryValue, kpiFormat)}</div>
           </div>

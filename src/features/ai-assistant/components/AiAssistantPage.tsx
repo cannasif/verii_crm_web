@@ -376,7 +376,7 @@ export function AiAssistantPage(): ReactElement {
       <div className="mx-auto flex max-w-5xl flex-col gap-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-4 py-2 text-sm font-semibold text-pink-600 dark:text-pink-200">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary dark:text-primary">
               <Sparkles size={16} />
               {t('eyebrow')}
             </div>
@@ -390,8 +390,8 @@ export function AiAssistantPage(): ReactElement {
             </div>
           </div>
 
-          <div className="hidden h-28 w-28 items-center justify-center rounded-[2rem] border border-white/15 bg-white/20 shadow-2xl shadow-pink-500/20 backdrop-blur-xl dark:bg-white/5 md:flex">
-            <Bot className="text-pink-500" size={48} />
+          <div className="hidden h-28 w-28 items-center justify-center rounded-[2rem] border border-white/15 bg-white/20 shadow-2xl shadow-primary/20 backdrop-blur-xl dark:bg-white/5 md:flex">
+            <Bot className="text-primary" size={48} />
           </div>
         </div>
 
@@ -486,7 +486,7 @@ export function AiAssistantPage(): ReactElement {
         <Card className="overflow-hidden border-white/15 bg-[radial-gradient(circle_at_12%_0%,rgba(236,72,153,0.14),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.90),rgba(248,250,252,0.78))] shadow-2xl shadow-slate-950/5 backdrop-blur-xl dark:bg-[radial-gradient(circle_at_12%_0%,rgba(236,72,153,0.16),transparent_30%),linear-gradient(180deg,rgba(2,6,23,0.86),rgba(15,23,42,0.70))]">
           <CardContent className="space-y-5 p-5 md:p-7">
             <div className="flex items-center gap-3">
-              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-pink-500 via-rose-500 to-orange-500 text-white shadow-lg shadow-pink-500/25">
+              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-primary via-primary to-orange-500 text-white shadow-lg shadow-primary/25">
                 <MessageCircle size={22} />
                 <span className="absolute -bottom-0.5 -end-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-400 dark:border-slate-950" />
               </div>
@@ -517,8 +517,8 @@ export function AiAssistantPage(): ReactElement {
                   <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-500 text-white shadow-lg shadow-emerald-950/20">
                     <Sparkles size={18} />
                   </div>
-                  <div className="max-w-2xl rounded-[1.6rem] rounded-ss-md border border-pink-500/15 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:bg-white/[0.06]">
-                    <div className="mb-2 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-pink-600 dark:text-pink-300">
+                  <div className="max-w-2xl rounded-[1.6rem] rounded-ss-md border border-primary/15 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:bg-white/[0.06]">
+                    <div className="mb-2 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-primary">
                       {t('eyebrow')}
                     </div>
                     <p className="text-sm font-semibold leading-6 text-slate-600 dark:text-slate-200">
@@ -534,7 +534,7 @@ export function AiAssistantPage(): ReactElement {
                   className={message.role === 'user' ? 'flex justify-end' : 'space-y-3'}
                 >
                   {message.role === 'user' ? (
-                    <div className="max-w-[78%] rounded-[1.45rem] rounded-ee-md bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 py-3 text-sm font-black leading-6 text-white shadow-lg shadow-pink-950/20">
+                    <div className="max-w-[78%] rounded-[1.45rem] rounded-ee-md bg-linear-to-r from-primary via-primary to-orange-500 px-5 py-3 text-sm font-black leading-6 text-white shadow-lg shadow-primary/20">
                       <p>{message.content}</p>
                       {message.attachments?.map((attachment) => (
                         <div
@@ -564,7 +564,7 @@ export function AiAssistantPage(): ReactElement {
                               type="button"
                               variant="ghost"
                               size="sm"
-                              className="h-8 rounded-xl px-3 text-xs font-black text-slate-500 hover:text-pink-600 dark:text-slate-300"
+                              className="h-8 rounded-xl px-3 text-xs font-black text-slate-500 hover:text-primary dark:text-slate-300"
                               onClick={() => void copyAssistantMessage(message)}
                             >
                               {copiedMessageId === message.id ? (
@@ -689,13 +689,13 @@ export function AiAssistantPage(): ReactElement {
                     {t('attachImage')}
                   </Button>
                   {selectedAttachment && (
-                    <div className="flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-pink-400/30 bg-pink-500/10 px-3 py-2 text-xs font-black text-pink-700 dark:text-pink-100">
+                    <div className="flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-primary/50 bg-primary/10 px-3 py-2 text-xs font-black text-primary dark:text-primary">
                       <FileImage size={14} className="shrink-0" />
                       <span className="min-w-0 truncate">{selectedAttachment.fileName}</span>
                       <span className="shrink-0 opacity-75">{formatAttachmentSize(selectedAttachment.size)}</span>
                       <button
                         type="button"
-                        className="ms-1 rounded-full p-0.5 hover:bg-pink-500/15"
+                        className="ms-1 rounded-full p-0.5 hover:bg-primary/15"
                         aria-label={t('removeImage')}
                         onClick={clearSelectedAttachment}
                       >
@@ -717,7 +717,7 @@ export function AiAssistantPage(): ReactElement {
                         title={option.value === 'auto' ? t('responseLanguageAuto') : option.label}
                         onClick={() => changeLanguagePreference(option.value)}
                         className={`h-7 rounded-full px-3 text-[0.68rem] font-black transition ${languagePreference === option.value
-                          ? 'bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 text-white shadow-sm'
+                          ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm'
                           : 'text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10'
                           } disabled:cursor-not-allowed disabled:opacity-60`}
                       >
@@ -749,7 +749,7 @@ export function AiAssistantPage(): ReactElement {
                   ref={sendButtonRef}
                   type="submit"
                   disabled={isAssistantBusy || (!question.trim() && !selectedAttachment)}
-                  className="rounded-full bg-linear-to-r from-pink-600 via-rose-500 to-orange-500 px-5 text-white shadow-lg shadow-pink-950/20"
+                  className="rounded-full bg-linear-to-r from-primary via-primary to-orange-500 px-5 text-white shadow-lg shadow-primary/20"
                 >
                   <SendHorizontal size={16} className="me-2" />
                   {isAssistantBusy ? t('sending') : t('send')}
@@ -764,7 +764,7 @@ export function AiAssistantPage(): ReactElement {
                   type="button"
                   disabled={isAssistantBusy}
                   onClick={() => void askQuestion(suggestion)}
-                  className="rounded-full border border-slate-200 bg-white/70 px-4 py-2.5 text-start text-sm font-black text-slate-700 shadow-sm transition hover:border-pink-300 hover:bg-pink-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-pink-400/60 dark:hover:bg-pink-500/10"
+                  className="rounded-full border border-slate-200 bg-white/70 px-4 py-2.5 text-start text-sm font-black text-slate-700 shadow-sm transition hover:border-primary/30 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-primary/40 dark:hover:bg-primary/10"
                 >
                   {suggestion}
                 </button>

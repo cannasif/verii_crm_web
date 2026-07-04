@@ -278,7 +278,7 @@ export function PaymentTypeManagementPage(): ReactElement {
                 <PopoverTrigger asChild>
                   <button
                     onClick={(e) => e.stopPropagation()}
-                    className="p-1 h-6 w-6 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 hover:text-pink-500 transition-colors shrink-0"
+                    className="p-1 h-6 w-6 flex items-center justify-center rounded-md hover:bg-slate-100 dark:hover:bg-white/10 text-slate-400 hover:text-primary transition-colors shrink-0"
                   >
                     <MoreHorizontal size={14} />
                   </button>
@@ -289,7 +289,7 @@ export function PaymentTypeManagementPage(): ReactElement {
                 >
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 pb-2 border-b border-slate-100 dark:border-white/5">
-                      <FileText size={14} className="text-pink-500" />
+                      <FileText size={14} className="text-primary" />
                       <span className="font-bold text-xs uppercase tracking-wider text-slate-900 dark:text-white">
                         Açıklama Detayı
                       </span>

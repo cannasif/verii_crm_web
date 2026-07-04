@@ -28,7 +28,7 @@ const STATUS_FILTER_OPTIONS: readonly StatusFilterOption[] = [
     value: 'all',
     Icon: LayoutGrid,
     activeClassName:
-      'border-pink-500/50 bg-pink-500/15 text-pink-700 shadow-sm shadow-pink-500/10 dark:text-pink-300',
+      'border-primary/50 bg-primary/15 text-primary shadow-sm shadow-primary/10 dark:text-primary',
     inactiveClassName:
       'border-slate-200/70 bg-white/60 text-slate-600 hover:border-slate-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-white/20 dark:hover:bg-white/10',
   },
@@ -83,7 +83,7 @@ const STATUS_FILTER_OPTIONS: readonly StatusFilterOption[] = [
     defaultLabel: 'Müşteri tarafından iptal edildi',
     Icon: Ban,
     activeClassName:
-      'border-rose-400/50 bg-rose-500/15 text-rose-700 shadow-sm shadow-rose-500/10 dark:text-rose-300',
+      'border-red-400/50 bg-red-500/15 text-red-700 shadow-sm shadow-red-500/10 dark:text-red-300',
     inactiveClassName:
       'border-slate-200/70 bg-white/60 text-slate-600 hover:border-slate-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-white/20 dark:hover:bg-white/10',
   },

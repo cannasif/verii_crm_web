@@ -67,7 +67,7 @@ function DialogContent({
         {showCloseButton && (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full border border-slate-200/60 bg-white/50 text-slate-400 transition-all duration-300 hover:bg-white hover:text-pink-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-pink-400 focus:outline-hidden disabled:pointer-events-none"
+            className="absolute right-4 top-4 z-20 flex size-8 items-center justify-center rounded-full border border-slate-200/60 bg-white/50 text-slate-400 transition-all duration-300 hover:bg-white hover:text-primary dark:border-white/10 dark:bg-white/5 dark:text-slate-500 dark:hover:bg-white/10 dark:hover:text-primary focus:outline-hidden disabled:pointer-events-none"
           >
             <XIcon className="size-4" />
             <span className="sr-only">Kapat</span>

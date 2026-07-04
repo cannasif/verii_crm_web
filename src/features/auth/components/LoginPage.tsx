@@ -129,7 +129,7 @@ export function LoginPage(): React.JSX.Element {
       <div 
         className={`absolute inset-0 z-0 transition-opacity duration-1000 ease-in-out ${showAnimation ? 'opacity-0' : 'opacity-100'}`}
       >
-        <div className="absolute top-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-pink-900/15 blur-[120px] rounded-full mix-blend-screen" />
+        <div className="absolute top-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-primary/10 blur-[120px] rounded-full mix-blend-screen" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-orange-900/10 blur-[120px] rounded-full mix-blend-screen" />
         <div className="absolute inset-0 bg-linear-to-b from-transparent via-[#0f0518]/60 to-[#0f0518]" />
       </div>
@@ -149,8 +149,8 @@ export function LoginPage(): React.JSX.Element {
             border transition-all duration-300 backdrop-blur-xl shadow-lg shadow-black/40
             hover:scale-110 active:scale-95
             ${showAnimation 
-              ? 'bg-pink-500/20 border-pink-500/50 text-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:bg-pink-500/30' 
-              : 'bg-zinc-900/80 border-white/20 text-slate-200 hover:text-pink-400 hover:bg-zinc-800 hover:border-pink-500/30 hover:shadow-[0_0_15px_rgba(236,72,153,0.3)]'}
+              ? 'bg-primary/15 border-primary/50 text-primary shadow-[0_0_20px_rgba(236,72,153,0.4)] hover:bg-primary/20' 
+              : 'bg-zinc-900/80 border-white/20 text-slate-200 hover:text-primary hover:bg-zinc-800 hover:border-primary/30 hover:shadow-[0_0_15px_rgba(236,72,153,0.3)]'}
           `}
           title={showAnimation ? t('auth.login.animationOff') : t('auth.login.animationOn')}
         >
@@ -193,7 +193,7 @@ export function LoginPage(): React.JSX.Element {
                       />
                       <Select onValueChange={field.onChange} value={field.value}>
                         <SelectTrigger 
-                          className={`w-full flex items-center justify-between min-w-0 overflow-hidden h-auto bg-black/10 rounded-xl py-6 pl-12 pr-4 text-base md:text-sm text-white focus:ring-0 focus:ring-offset-0 transition-all duration-300 [&>span]:truncate [&>span]:flex-1 [&>span]:min-w-0 [&>span]:text-left ${fieldState.invalid ? 'border-red-500/80 focus:border-red-500 hover:border-red-500 bg-red-950/10' : 'border border-white/10 focus:border-pink-500 focus:bg-black/30'}`}
+                          className={`w-full flex items-center justify-between min-w-0 overflow-hidden h-auto bg-black/10 rounded-xl py-6 pl-12 pr-4 text-base md:text-sm text-white focus:ring-0 focus:ring-offset-0 transition-all duration-300 [&>span]:truncate [&>span]:flex-1 [&>span]:min-w-0 [&>span]:text-left ${fieldState.invalid ? 'border-red-500/80 focus:border-red-500 hover:border-red-500 bg-red-950/10' : 'border border-white/10 focus:border-primary focus:bg-black/30'}`}
                         >
                           <SelectValue placeholder={t('auth.login.branchPlaceholder')} />
                         </SelectTrigger>
@@ -203,7 +203,7 @@ export function LoginPage(): React.JSX.Element {
     <SelectItem 
       key={branch.id} 
       value={branch.id} 
-      className="focus:bg-pink-500/20 focus:text-white cursor-pointer py-3 items-start"
+      className="focus:bg-primary/15 focus:text-white cursor-pointer py-3 items-start"
     >
       {/* Satır atlamasını sağlayan sihirli classlar: whitespace-normal ve break-words */}
       <span className="whitespace-normal break-words text-left block w-full pr-2 leading-relaxed">
@@ -236,7 +236,7 @@ export function LoginPage(): React.JSX.Element {
                               type="email"
                               autoComplete="username" 
                               placeholder={t('auth.login.emailPlaceholder')}
-                              className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-base md:text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ${fieldState.invalid ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' : 'border border-white/10 focus-visible:border-pink-500 focus:bg-black/50'}`}
+                              className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-base md:text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ${fieldState.invalid ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' : 'border border-white/10 focus-visible:border-primary focus:bg-black/50'}`}
                             />
                       </div>
                     </FormControl>
@@ -261,7 +261,7 @@ export function LoginPage(): React.JSX.Element {
                               type={isPasswordVisible ? 'text' : 'password'}
                               autoComplete="current-password" 
                               placeholder={t('auth.login.passwordPlaceholder')}
-                              className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-base md:text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ${fieldState.invalid ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' : 'border border-white/10 focus-visible:border-pink-500 focus:bg-black/50'}`}
+                              className={`w-full bg-black/30 rounded-xl px-4 py-6 pl-12 pr-10 text-base md:text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300 ${fieldState.invalid ? 'border-red-500/80 focus-visible:border-red-500 bg-red-950/10 text-red-100 placeholder-red-300/50' : 'border border-white/10 focus-visible:border-primary focus:bg-black/50'}`}
                               onKeyDown={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
                               onKeyUp={(e) => setCapsLockActive(e.getModifierState('CapsLock'))}
                         />
@@ -298,12 +298,12 @@ export function LoginPage(): React.JSX.Element {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <label className="flex items-center gap-2 cursor-pointer hover:text-pink-400 transition">
+                        <label className="flex items-center gap-2 cursor-pointer hover:text-primary transition">
                           <input
                             type="checkbox"
                             checked={field.value}
                             onChange={field.onChange}
-                            className="accent-pink-500 rounded bg-slate-800 border-none w-3.5 h-3.5"
+                            className="accent-[var(--crm-brand-primary)] rounded bg-slate-800 border-none w-3.5 h-3.5"
                           />
                           {t('auth.login.rememberMe')}
                         </label>
@@ -317,7 +317,7 @@ export function LoginPage(): React.JSX.Element {
               <button
                 type="submit"
                 disabled={isPending}
-                className="w-full py-4 rounded-xl bg-linear-to-r from-pink-600 via-orange-500 to-yellow-500 hover:from-pink-500 hover:via-orange-400 hover:to-yellow-400 text-white font-bold text-sm mt-6 shadow-lg shadow-orange-900/20 tracking-wide uppercase transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full py-4 rounded-xl bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-bold text-sm mt-6 shadow-lg shadow-primary/20 tracking-wide uppercase transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {isPending ? t('auth.login.processing') : t('auth.login.submitButton')}
               </button>
@@ -329,7 +329,7 @@ export function LoginPage(): React.JSX.Element {
           <p className="text-slate-400 text-sm font-light tracking-[0.2em] uppercase opacity-80 text-center">
             <Trans
               i18nKey="auth.login.slogan"
-              components={{ 1: <span className="text-transparent bg-clip-text bg-linear-to-r from-pink-400 to-yellow-400 font-bold border-b border-pink-500/20 pb-0.5" /> }}
+              components={{ 1: <span className="text-transparent bg-clip-text bg-[image:var(--crm-brand-gradient)] font-bold border-b border-primary/20 pb-0.5" /> }}
             />
           </p>
           
@@ -338,7 +338,7 @@ export function LoginPage(): React.JSX.Element {
               <Call02Icon size={20} />
             </a>
 
-            <a href="https://v3rii.com" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-pink-400 hover:bg-zinc-800 hover:border-pink-500/30 hover:shadow-[0_0_15px_rgba(244,114,182,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
+            <a href="https://v3rii.com" target="_blank" rel="noreferrer" className="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-900/60 border border-white/10 text-slate-200 hover:text-primary hover:bg-zinc-800 hover:border-primary/30 hover:shadow-[0_0_15px_rgba(244,114,182,0.3)] hover:scale-110 transition-all duration-300 group shadow-lg">
               <Globe02Icon size={20} />
             </a>
 

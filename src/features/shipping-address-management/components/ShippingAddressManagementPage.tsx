@@ -298,7 +298,7 @@ export function ShippingAddressManagementPage(): ReactElement {
         return [row.countryName, row.cityName, row.districtName].filter(Boolean).join(' / ') || '-';
       case 'isDefault':
         return row.isDefault ? (
-          <span className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-300">
+          <span className="inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium bg-accent text-primary dark:bg-primary/15 dark:text-primary/80">
             {t('defaultBadge')}
           </span>
         ) : '-';
@@ -337,7 +337,7 @@ export function ShippingAddressManagementPage(): ReactElement {
         </div>
         <Button
           onClick={handleCreateClick}
-          className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-8 font-bold text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          className="h-11 bg-[image:var(--crm-brand-gradient)] px-8 font-bold text-white shadow-lg shadow-primary/20 ring-1 ring-primary/30 transition-all duration-300 hover:scale-[1.05] hover:opacity-90 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
           {t('create')}

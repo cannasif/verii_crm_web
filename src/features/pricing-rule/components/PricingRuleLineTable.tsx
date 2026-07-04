@@ -304,7 +304,7 @@ export function PricingRuleLineTable({
     <div className="space-y-4">
       <div className="flex justify-between items-center px-1">
         <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-          <div className="bg-pink-50 dark:bg-pink-500/20 p-1.5 rounded-lg text-pink-600 dark:text-pink-400">
+          <div className="bg-accent dark:bg-primary/15 p-1.5 rounded-lg text-primary">
             <Package size={18} />
           </div>
           {t('pricingRule.lines.title')}
@@ -313,7 +313,7 @@ export function PricingRuleLineTable({
           type="button"
           onClick={() => setProductDialogOpen(true)}
           size="sm"
-          className="bg-linear-to-r from-pink-600 to-orange-600 text-white border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          className="bg-[image:var(--crm-brand-gradient)] text-white border-0 hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           disabled={isLoadingAction}
         >
           <Plus className="h-4 w-4 mr-2 stroke-[3px]" />
@@ -341,7 +341,7 @@ export function PricingRuleLineTable({
                 variant="outline"
                 size="sm"
                 onClick={() => setProductDialogOpen(true)}
-                className="mt-2 border-dashed border-slate-300 dark:border-white/20 hover:border-pink-500 hover:text-pink-500"
+                className="mt-2 border-dashed border-slate-300 dark:border-white/20 hover:border-primary hover:text-primary"
               >
                 <Plus size={14} className="mr-2" />
                 {t('pricingRule.lines.addFirst')}
@@ -355,7 +355,7 @@ export function PricingRuleLineTable({
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center text-pink-600 dark:text-pink-400">
+                    <div className="h-8 w-8 rounded-xl bg-accent dark:bg-primary/10 flex items-center justify-center text-primary">
                       <Box size={16} />
                     </div>
                     <div className="flex flex-col">

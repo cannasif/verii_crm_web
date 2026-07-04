@@ -112,7 +112,7 @@ export function QuotationNotesDialog({
 
         <DialogHeader className="relative z-10 flex shrink-0 flex-row items-center justify-between space-y-0 border-b border-slate-300/90 bg-white/90 px-4 py-4 backdrop-blur-xl dark:border-white/10 dark:bg-zinc-950/80 sm:px-6">
           <DialogTitle className="flex min-w-0 items-center gap-3 text-slate-900 dark:text-white">
-            <div className="rounded-xl bg-gradient-to-br from-pink-500 to-orange-600 p-2.5 text-white shadow-lg shadow-pink-500/20">
+            <div className="rounded-xl bg-gradient-to-br from-primary to-orange-500 p-2.5 text-white shadow-lg shadow-primary/20">
               <FileText className="h-5 w-5" />
             </div>
             <div className="flex min-w-0 flex-col gap-0.5">
@@ -162,8 +162,8 @@ export function QuotationNotesDialog({
                     isOverLimit || fieldError
                       ? 'border-red-300 dark:border-red-500/40'
                       : hasContent
-                        ? 'border-pink-200/80 dark:border-pink-500/30'
-                        : 'border-slate-200/90 hover:border-pink-300/60 dark:border-white/10 dark:hover:border-pink-500/35',
+                        ? 'border-primary/20 dark:border-primary/30'
+                        : 'border-slate-200/90 hover:border-primary/30 dark:border-white/10 dark:hover:border-primary/30',
                   )}
                 >
                   <div className="mb-1.5 flex items-center justify-between gap-2">
@@ -172,7 +172,7 @@ export function QuotationNotesDialog({
                         className={cn(
                           'flex h-5 min-w-5 items-center justify-center rounded-md px-1 text-[9px] font-bold',
                           hasContent
-                            ? 'bg-pink-100 text-pink-700 dark:bg-pink-500/15 dark:text-pink-300'
+                            ? 'bg-accent text-primary dark:bg-primary/15 dark:text-primary/80'
                             : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-slate-400',
                         )}
                       >
@@ -201,7 +201,7 @@ export function QuotationNotesDialog({
                     rows={2}
                     placeholder={fieldPlaceholder}
                     className={cn(
-                      'min-h-[3rem] w-full flex-1 resize-none overflow-y-auto rounded-lg border-slate-200/90 bg-slate-50/60 text-[11px] leading-snug focus-visible:border-pink-400 focus-visible:ring-2 focus-visible:ring-pink-300/50 dark:border-white/10 dark:bg-black/25 dark:focus-visible:border-pink-500 dark:focus-visible:ring-pink-500/25',
+                      'min-h-[3rem] w-full flex-1 resize-none overflow-y-auto rounded-lg border-slate-200/90 bg-slate-50/60 text-[11px] leading-snug focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-white/10 dark:bg-black/25 dark:focus-visible:border-primary dark:focus-visible:ring-primary/25',
                       isOverLimit || fieldError ? 'border-red-400 dark:border-red-500' : '',
                     )}
                   />
@@ -258,7 +258,7 @@ export function QuotationNotesDialog({
           <Button
             onClick={handleSave}
             disabled={!canSubmit || isSaving}
-            className="h-10 rounded-xl bg-gradient-to-r from-pink-600 to-orange-500 px-5 text-sm text-white shadow-lg shadow-pink-500/25 transition-all hover:opacity-95 disabled:pointer-events-none disabled:opacity-50"
+            className="h-10 rounded-xl bg-gradient-to-r from-primary to-orange-500 px-5 text-sm text-white shadow-lg shadow-primary/25 transition-all hover:opacity-95 disabled:pointer-events-none disabled:opacity-50"
           >
             {isSaving ? (
               <>

@@ -153,7 +153,7 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
     return (
       <TooltipProvider delayDuration={300}>
         <div className="relative flex min-h-0 w-8 shrink-0 flex-col items-center border-l border-slate-300/80 bg-stone-50/95 py-2 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60">
-          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-amber-500/0 dark:from-primary/5 dark:to-amber-500/5 opacity-30" />
           <Tooltip>
             <TooltipTrigger asChild>
               <button
@@ -177,7 +177,7 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
   return (
     <>
     <div className="relative flex min-h-0 w-52 shrink-0 flex-col border-l border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-amber-500/0 dark:from-primary/5 dark:to-amber-500/5 opacity-30" />
       <div className="relative z-10 flex flex-col h-full">
       <div className="flex items-center justify-between border-b border-slate-300/80 px-3 py-2.5 dark:border-white/5">
         <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -248,7 +248,7 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
                   className={cn(
                     "flex size-4 shrink-0 items-center justify-center rounded transition-colors",
                     isSelected
-                      ? "bg-linear-to-br from-rose-500 to-amber-500 text-white shadow-lg shadow-rose-500/20"
+                      ? "bg-linear-to-br from-primary to-amber-500 text-white shadow-lg shadow-primary/20"
                       : "bg-slate-200/50 text-slate-500 dark:bg-white/10 dark:text-slate-400"
                   )}
                 >

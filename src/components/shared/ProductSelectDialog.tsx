@@ -179,7 +179,7 @@ function ProductSelectCatalogStockCard({
               aria-hidden
             />
             <span
-              className="pointer-events-none absolute -bottom-2 crm-start-1 select-none font-mono text-[clamp(2.25rem,7vw,4rem)] font-black uppercase leading-none tracking-tighter text-slate-900/[0.07] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-pink-500/20 dark:text-white/[0.06] dark:group-hover:text-pink-300/[0.14]"
+              className="pointer-events-none absolute -bottom-2 crm-start-1 select-none font-mono text-[clamp(2.25rem,7vw,4rem)] font-black uppercase leading-none tracking-tighter text-slate-900/[0.07] transition-all duration-500 group-hover:-translate-y-0.5 group-hover:text-primary/20 dark:text-white/[0.06] dark:group-hover:text-primary/[0.14]"
               aria-hidden
             >
               {watermark}
@@ -259,7 +259,7 @@ function ProductSelectCatalogStockCard({
         {(stock.grupKodu || stock.kod1) ? (
           <div className="mt-auto flex items-center gap-1 pt-0.5">
             {stock.grupKodu ? (
-              <span className="truncate rounded bg-pink-50 px-1.5 py-0.5 font-mono text-[9px] text-pink-700/90 dark:bg-pink-500/[0.08] dark:text-pink-200/90">
+              <span className="truncate rounded bg-accent px-1.5 py-0.5 font-mono text-[9px] text-primary/90 dark:bg-primary/[0.08] dark:text-primary/90">
                 {stock.grupKodu}
               </span>
             ) : null}

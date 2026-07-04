@@ -278,7 +278,7 @@ export function PaymentTypeManagementPage(): ReactElement {
         </div>
         <Button
           onClick={handleAddClick}
-          className="px-6 py-2 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white text-sm font-bold shadow-lg shadow-pink-500/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
+          className="px-6 py-2 bg-[image:var(--crm-brand-gradient)] rounded-xl text-white text-sm font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform border-0 hover:text-white h-11"
         >
           <Plus size={18} className="mr-2" />
           {t('create', { defaultValue: t('common.create') })}

@@ -78,10 +78,10 @@ const INPUT_STYLE = `
   placeholder:text-slate-500 dark:placeholder:text-slate-600
 
   focus-visible:bg-white dark:focus-visible:bg-[#1a1025]
-  focus-visible:border-pink-300 dark:focus-visible:border-pink-400/50
-  focus-visible:ring-2 focus-visible:ring-pink-200/60 dark:focus-visible:ring-pink-400/15 focus-visible:ring-offset-0
+  focus-visible:border-primary dark:focus-visible:border-primary/50
+  focus-visible:ring-2 focus-visible:ring-primary/20 dark:focus-visible:ring-primary/15 focus-visible:ring-offset-0
 
-  focus:ring-2 focus:ring-pink-200/50 dark:focus:ring-pink-400/15 focus:ring-offset-0 focus:border-pink-300
+  focus:ring-2 focus:ring-primary/20 dark:focus:ring-primary/15 focus:ring-offset-0 focus:border-primary
 
   transition-all duration-200
 `;
@@ -222,7 +222,7 @@ function CustomerCard({
         </div>
       </div>
 
-      <ChevronRight className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover:text-pink-400/90 dark:text-zinc-600 dark:group-hover:text-pink-300 sm:h-4 sm:w-4" />
+      <ChevronRight className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover:text-primary dark:text-zinc-600 dark:group-hover:text-primary sm:h-4 sm:w-4" />
     </div>
   );
 }
@@ -466,9 +466,9 @@ export function CustomerSelectDialog({
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'potential' | 'all')} className="flex h-full flex-col">
           <DialogHeader className="sticky top-0 z-10 flex shrink-0 flex-row items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-4 py-4 backdrop-blur-sm sm:items-center sm:px-6 sm:py-5 dark:border-white/10 dark:bg-[#1a1025]/80">
             <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
-              <div className="h-11 w-11 shrink-0 rounded-2xl bg-linear-to-br from-pink-300 to-orange-300 p-0.5 shadow-md shadow-pink-200/40 dark:from-pink-500/40 dark:to-orange-500/30 dark:shadow-pink-900/20 sm:h-12 sm:w-12">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-accent text-primary shadow-md sm:h-12 sm:w-12">
                 <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-white dark:bg-[#130822]">
-                  <Users size={22} className="text-pink-400 dark:text-pink-300 sm:h-6 sm:w-6" />
+                  <Users size={22} className="text-primary sm:h-6 sm:w-6" />
                 </div>
               </div>
               <div className="min-w-0 space-y-1 crm-text-start">
@@ -495,7 +495,7 @@ export function CustomerSelectDialog({
           <div className="shrink-0 space-y-3 bg-white px-4 pb-0 pt-4 dark:bg-[#130822] sm:px-6 sm:pt-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="group relative min-w-0 flex-1">
-                <Search className="absolute crm-start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 transition-colors group-focus-within:text-pink-400" />
+                <Search className="absolute crm-start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 transition-colors group-focus-within:text-primary" />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -524,7 +524,7 @@ export function CustomerSelectDialog({
                     onClick={handleVoiceSearch}
                     className={cn(
                       "absolute crm-end-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg",
-                      isListening ? 'text-pink-400' : 'text-zinc-500'
+                      isListening ? 'text-primary' : 'text-zinc-500'
                     )}
                   >
                     <Mic size={16} />

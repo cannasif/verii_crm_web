@@ -163,7 +163,7 @@ export function RecipientTokenField({
                 className={cn(
                   'inline-flex max-w-full items-center gap-1 rounded-full border px-2 py-1 text-xs font-medium',
                   isInvalid
-                    ? 'border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-700/60 dark:bg-rose-950/30 dark:text-rose-300'
+                    ? 'border-red-300 bg-red-50 text-red-700 dark:border-red-700/60 dark:bg-red-950/30 dark:text-red-300'
                     : 'border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-800/50 dark:bg-sky-950/30 dark:text-sky-300'
                 )}
               >
@@ -230,7 +230,7 @@ export function RecipientTokenField({
       </div>
 
       {invalidValues.length > 0 && (
-        <p className="text-xs text-rose-600 dark:text-rose-400">
+        <p className="text-xs text-red-600 dark:text-red-400">
           {invalidValues.join(', ')}
         </p>
       )}

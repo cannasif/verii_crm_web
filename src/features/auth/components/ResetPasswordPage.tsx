@@ -106,7 +106,7 @@ export function ResetPasswordPage(): React.JSX.Element {
                           {...field}
                           type={isPasswordVisible ? 'text' : 'password'}
                           placeholder={t('auth.resetPassword.newPasswordPlaceholder')}
-                          className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 focus:bg-black/50"
+                          className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus:bg-black/50"
                         />
                         <button
                           type="button"
@@ -141,7 +141,7 @@ export function ResetPasswordPage(): React.JSX.Element {
                           {...field}
                           type={isConfirmPasswordVisible ? 'text' : 'password'}
                           placeholder={t('auth.resetPassword.confirmPasswordPlaceholder')}
-                          className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-pink-500 focus:bg-black/50"
+                          className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-6 pl-12 pr-10 text-sm text-white placeholder-slate-500 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus:bg-black/50"
                         />
                         <button
                           type="button"
@@ -164,7 +164,7 @@ export function ResetPasswordPage(): React.JSX.Element {
               <button
                 type="submit"
                 disabled={isPending || !token}
-                className="w-full py-4 rounded-xl bg-linear-to-r from-pink-600 via-orange-500 to-yellow-500 hover:from-pink-500 hover:via-orange-400 hover:to-yellow-400 text-white font-bold text-sm mt-6 shadow-lg shadow-orange-900/20 tracking-wide uppercase transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full py-4 rounded-xl bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-bold text-sm mt-6 shadow-lg shadow-orange-900/20 tracking-wide uppercase transition-all transform hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {isPending ? t('auth.resetPassword.processing') : t('auth.resetPassword.submitButton')}
               </button>

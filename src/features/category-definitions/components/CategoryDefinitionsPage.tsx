@@ -1383,7 +1383,7 @@ export function CategoryDefinitionsPage(): ReactElement {
         <AlertDialogContent className="max-w-3xl">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <WandSparkles className="h-5 w-5 text-rose-600" />
+              <WandSparkles className="h-5 w-5 text-primary" />
               {t('categoryDefinitions.stockHierarchyImport.title')}
             </AlertDialogTitle>
             <AlertDialogDescription>

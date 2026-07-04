@@ -109,7 +109,7 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
     const entityName = notification.relatedEntityName || '';
 
     if (notificationType === 'QuotationDetail' || notificationType === 'QuotationApproval' || entityName.includes('Quotation') || entityName.includes('Teklif')) {
-      return <FileText size={16} className="text-pink-400" />;
+      return <FileText size={16} className="text-primary" />;
     }
     if (notificationType === 'OrderDetail' || notificationType === 'OrderApproval' || entityName.includes('Order') || entityName.includes('Sipariş')) {
       return <Package size={16} className="text-orange-400" />;
@@ -136,7 +136,7 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
       role="button"
       tabIndex={0}
       className={`px-4 py-3 flex items-start gap-3 hover:bg-white/5 transition-colors cursor-pointer group border-l-2 ${
-        !notification.isRead ? 'bg-white/5 border-pink-500/50' : 'border-transparent hover:border-pink-500/50'
+        !notification.isRead ? 'bg-white/5 border-primary/50' : 'border-transparent hover:border-primary/50'
       }`}
     >
       <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 border border-white/5">
@@ -157,7 +157,7 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
 
       {!notification.isRead && (
         <div 
-          className="w-2 h-2 rounded-full bg-pink-500 shrink-0 mt-1.5 shadow-[0_0_8px_rgba(236,72,153,0.5)]" 
+          className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1.5 shadow-[0_0_8px_rgba(236,72,153,0.5)]" 
           title={t('unread')}
           onClick={handleMarkAsRead}
           onKeyDown={(e) => {

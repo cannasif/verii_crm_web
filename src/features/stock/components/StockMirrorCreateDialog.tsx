@@ -138,7 +138,7 @@ export function StockMirrorCreateDialog(): ReactElement {
     <div key={field.key} className="space-y-2">
       <Label htmlFor={`mirror-stock-${field.key}`} className="text-xs font-bold text-slate-600 dark:text-slate-300">
         {t(field.labelKey)}
-        {field.required ? <span className="ml-1 text-pink-500">*</span> : null}
+        {field.required ? <span className="ml-1 text-primary">*</span> : null}
       </Label>
       <Input
         id={`mirror-stock-${field.key}`}
@@ -153,7 +153,7 @@ export function StockMirrorCreateDialog(): ReactElement {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="h-11 rounded-xl bg-gradient-to-r from-pink-600 to-orange-500 px-4 text-white shadow-lg shadow-pink-500/20 hover:from-pink-500 hover:to-orange-400">
+        <Button className="h-11 rounded-xl bg-gradient-to-r from-primary to-orange-500 px-4 text-white shadow-lg shadow-primary/20 hover:opacity-90">
           <Plus className="mr-2 h-4 w-4" />
           {t('list.createMirrorStock')}
         </Button>

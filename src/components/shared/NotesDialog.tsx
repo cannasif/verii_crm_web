@@ -68,10 +68,8 @@ export function NotesDialog({
       <DialogContent className="w-[calc(100vw-1rem)] sm:w-[calc(100vw-2rem)] max-w-[800px] p-0 overflow-hidden bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl">
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-[#1a1025]/50 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
           <DialogTitle className="text-slate-900 dark:text-white flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
-              <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[10px] flex items-center justify-center">
-                <FileText className="h-5 w-5 text-pink-600 dark:text-pink-500" />
-              </div>
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-accent text-primary shadow-lg shadow-primary/20">
+              <FileText className="h-5 w-5 text-primary" />
             </div>
             <div className="flex flex-col gap-0.5">
               <span>{dialogTitle}</span>

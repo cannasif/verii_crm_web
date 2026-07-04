@@ -547,7 +547,7 @@ function TableElementBlock({ table }: { table: PdfTableElement }): ReactElement 
             ))}
           </div>
           {table.tableOptions?.detailColumnPath || table.tableOptions?.showGroupFooter ? (
-            <div className="border-b border-slate-200/60 bg-rose-500/5 px-2 py-1 text-[11px] font-bold text-rose-600/80">
+            <div className="border-b border-slate-200/60 bg-accent/5 px-2 py-1 text-[11px] font-bold text-primary/80">
               {groupHeaderLabel}: PRJ-01
             </div>
           ) : null}
@@ -1696,11 +1696,11 @@ export function PdfA4Canvas({
         }}
       >
         <AlertDialogContent className="max-w-[400px] border-slate-300/80 bg-stone-50/95 p-0 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/90 dark:ring-0">
-          <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-50" />
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-primary/0 to-amber-500/0 dark:from-primary/5 dark:to-amber-500/5 opacity-50" />
           
           <div className="relative z-10 p-6">
             <AlertDialogHeader>
-              <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-600 ring-1 ring-rose-500/20 dark:bg-rose-500/20 dark:text-rose-400">
+              <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-accent/10 text-primary ring-1 ring-primary/20 dark:bg-accent/20 dark:text-primary">
                 <AlertTriangle className="size-6" />
               </div>
               <AlertDialogTitle className="text-center text-lg font-bold tracking-tight text-slate-900 dark:text-white">
@@ -1717,7 +1717,7 @@ export function PdfA4Canvas({
                   if (deleteDialogElementId) removeElement(deleteDialogElementId);
                   setDeleteDialogElementId(null);
                 }}
-                className="h-10 w-full bg-linear-to-r from-rose-600 to-rose-700 font-bold text-white shadow-lg shadow-rose-500/20 ring-1 ring-rose-500/30 transition-all duration-300 hover:scale-[1.02] hover:from-rose-500 hover:to-rose-600 active:scale-[0.98]"
+                className="h-10 w-full bg-linear-to-r from-primary to-red-700 font-bold text-white shadow-lg shadow-primary/20 ring-1 ring-primary/30 transition-all duration-300 hover:scale-[1.02] hover:from-primary hover:to-red-600 active:scale-[0.98]"
               >
                 {t('common.delete.action', { ns: 'common' })}
               </AlertDialogAction>

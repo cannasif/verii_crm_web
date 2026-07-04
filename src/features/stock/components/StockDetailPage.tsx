@@ -90,9 +90,9 @@ export function StockDetailPage(): ReactElement {
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-6">
         <div className="relative">
-            <div className="absolute inset-0 bg-pink-500 blur-2xl opacity-20 rounded-full" />
+            <div className="absolute inset-0 bg-primary blur-2xl opacity-20 rounded-full" />
             <div className="relative bg-white dark:bg-zinc-900 p-6 rounded-full border border-zinc-200 dark:border-white/10 shadow-xl">
-                <PackageOpen className="h-12 w-12 text-pink-600" />
+                <PackageOpen className="h-12 w-12 text-primary" />
             </div>
         </div>
         <div className="space-y-2">
@@ -120,9 +120,9 @@ export function StockDetailPage(): ReactElement {
                 variant="outline"
                 size="icon"
                 onClick={() => navigate('/stocks')}
-                className="group h-12 w-12 rounded-2xl bg-white/80 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/10 shadow-sm hover:border-pink-500/50 hover:shadow-pink-500/20 transition-all duration-300"
+                className="group h-12 w-12 rounded-2xl bg-white/80 dark:bg-zinc-900/50 border-zinc-200 dark:border-white/10 shadow-sm hover:border-primary/50 hover:shadow-primary/20 transition-all duration-300"
             >
-                <ArrowLeft className="h-5 w-5 text-zinc-500 group-hover:text-pink-600 transition-colors" />
+                <ArrowLeft className="h-5 w-5 text-zinc-500 group-hover:text-primary transition-colors" />
             </Button>
             
             <div className="space-y-1">
@@ -134,7 +134,7 @@ export function StockDetailPage(): ReactElement {
                     </span>
                 </h1>
                 <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400 font-medium">
-                    <Box className="w-4 h-4 text-pink-500" />
+                    <Box className="w-4 h-4 text-primary" />
                     <span>{stock.erpStockCode || t('detail.noCode', { defaultValue: 'Kod Yok' })}</span>
                     <span className="w-1 h-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
                     <span>{t('detail.subtitle')}</span>
@@ -147,7 +147,7 @@ export function StockDetailPage(): ReactElement {
       </div>
 
       <div className="relative group">
-        <div className="absolute -inset-0.5 bg-linear-to-r from-pink-500 via-purple-500 to-orange-500 rounded-[20px] opacity-20 group-hover:opacity-40 blur transition duration-500"></div>
+        <div className="absolute -inset-0.5 bg-linear-to-r from-primary via-purple-500 to-orange-500 rounded-[20px] opacity-20 group-hover:opacity-40 blur transition duration-500"></div>
         
         <div className="relative bg-white/80 dark:bg-[#1a1025]/80 backdrop-blur-xl border border-white/60 dark:border-white/5 rounded-2xl shadow-xl overflow-hidden">
             
@@ -167,7 +167,7 @@ export function StockDetailPage(): ReactElement {
                             <div className="lg:col-span-4 space-y-6">
                                 <div className="bg-zinc-50/80 dark:bg-white/5 rounded-xl p-6 border border-zinc-100 dark:border-white/5">
                                     <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                                        <Info className="w-5 h-5 text-pink-600" />
+                                        <Info className="w-5 h-5 text-primary" />
                                         {t('detail.summary')}
                                     </h3>
                                     <StockBasicInfo stock={stock} />
@@ -197,7 +197,7 @@ export function StockDetailPage(): ReactElement {
                         <Suspense fallback={<StockTabSkeleton />}>
                             {activeTab === 'images' ? (
                                 <div className="space-y-8">
-                                    <div className="rounded-xl border-2 border-dashed border-zinc-200 bg-zinc-50/50 p-8 transition-colors hover:border-primary/30 hover:bg-accent/30 dark:border-white/10 dark:bg-white/5 dark:hover:border-primary/35 dark:hover:bg-primary/5">
+                                    <div className="rounded-xl border-2 border-dashed border-zinc-200 bg-zinc-50/50 p-8 transition-colors hover:border-primary/30 hover:bg-accent/30 dark:border-white/10 dark:bg-white/5 dark:hover:border-primary/30 dark:hover:bg-primary/5">
                                         {canModify ? <StockImageUpload stockId={stockId} /> : null}
                                     </div>
                                     <div className="relative">

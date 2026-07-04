@@ -89,17 +89,17 @@ export function ProductPricingStockSelectDialog({
       >
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md flex-shrink-0 flex-row items-center justify-between space-y-0">
           <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
-            <div className="bg-gradient-to-br from-pink-500 to-orange-600 p-2.5 rounded-xl shadow-lg shadow-pink-500/20 text-white">
+            <div className="bg-gradient-to-br from-primary to-orange-500 p-2.5 rounded-xl shadow-lg shadow-primary/20 text-white">
               <Package size={20} />
             </div>
             {t('productPricingManagement.selectStok')}
           </DialogTitle>
           <button
             onClick={() => onOpenChange(false)}
-            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
+            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-primary hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
           >
             <X className="relative z-10" size={20} />
-            <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </DialogHeader>
         <div className="px-6 py-4 border-b border-slate-100 dark:border-white/5 bg-white/50 dark:bg-white/[0.02]">
@@ -113,7 +113,7 @@ export function ProductPricingStockSelectDialog({
                 placeholder={t('productPricingManagement.searchStockPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-11 rounded-xl bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/20 focus-visible:border-pink-500 transition-all"
+                className="pl-10 h-11 rounded-xl bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 focus-visible:ring-primary/20 focus-visible:border-primary transition-all"
               />
             </div>
           </div>
@@ -121,7 +121,7 @@ export function ProductPricingStockSelectDialog({
         <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/30 dark:bg-black/20">
           {isLoading ? (
             <div className="flex items-center justify-center py-10 text-slate-500">
-              <div className="animate-spin mr-2 h-4 w-4 border-2 border-pink-500 border-t-transparent rounded-full" />
+              <div className="animate-spin mr-2 h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
               {t('productSelectDialog.loading')}
             </div>
           ) : filteredStocks.length === 0 ? (

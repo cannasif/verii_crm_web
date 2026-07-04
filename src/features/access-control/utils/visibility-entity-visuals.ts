@@ -37,8 +37,8 @@ export function getVisibilityEntityAccentClasses(entityType: string): EntityAcce
       icon: 'text-violet-600 dark:text-violet-400',
     },
     pink: {
-      iconWrap: 'bg-pink-100 border-pink-100 dark:bg-pink-500/10 dark:border-pink-500/20',
-      icon: 'text-pink-600 dark:text-pink-400',
+      iconWrap: 'bg-accent border-primary/15 dark:bg-primary/10 dark:border-primary/20',
+      icon: 'text-primary',
     },
     sky: {
       iconWrap: 'bg-sky-100 border-sky-100 dark:bg-sky-500/10 dark:border-sky-500/20',
@@ -61,8 +61,8 @@ export function getVisibilityEntityAccentClasses(entityType: string): EntityAcce
       icon: 'text-amber-700 dark:text-amber-300',
     },
     rose: {
-      iconWrap: 'bg-rose-100 border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/20',
-      icon: 'text-rose-600 dark:text-rose-400',
+      iconWrap: 'bg-accent border-primary/15 dark:bg-primary/10 dark:border-primary/20',
+      icon: 'text-red-600 dark:text-red-400',
     },
     teal: {
       iconWrap: 'bg-teal-100 border-teal-100 dark:bg-teal-500/10 dark:border-teal-500/20',

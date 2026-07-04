@@ -1746,7 +1746,7 @@ export function CatalogStockSelectDialog({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-8 shrink-0 gap-1 rounded-lg border border-slate-300/90 bg-white px-2 text-[11px] font-medium text-slate-800 shadow-sm backdrop-blur-sm hover:border-primary/50 hover:bg-accent hover:text-primary dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:shadow-none dark:hover:border-primary/35 dark:hover:bg-primary/10 dark:hover:text-primary sm:px-2.5 sm:text-xs"
+                className="h-8 shrink-0 gap-1 rounded-lg border border-slate-300/90 bg-white px-2 text-[11px] font-medium text-slate-800 shadow-sm backdrop-blur-sm hover:border-primary/50 hover:bg-accent hover:text-primary dark:border-white/15 dark:bg-white/[0.04] dark:text-slate-200 dark:shadow-none dark:hover:border-primary/30 dark:hover:bg-primary/10 dark:hover:text-primary sm:px-2.5 sm:text-xs"
                 onClick={() => setHierarchyInfoOpen(true)}
               >
                 <CircleHelp className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden />
@@ -2273,8 +2273,8 @@ export function CatalogStockSelectDialog({
                         className={cn(
                           'group relative isolate flex shrink-0 items-center gap-2 overflow-visible rounded-xl border px-3 py-2 text-[11px] font-bold tracking-wide transition-all duration-300 sm:gap-2 sm:px-5 sm:py-2.5 sm:text-sm',
                           stockBrowseMode === 'campaign'
-                            ? 'scale-105 border-transparent bg-gradient-to-r from-rose-500 via-rose-500 to-rose-500 text-white shadow-[0_8px_20px_rgba(244,63,94,0.4)] ring-4 ring-rose-100 dark:ring-rose-950/55'
-                            : 'border-rose-200 bg-gradient-to-r from-rose-50 to-rose-100/50 text-rose-600 hover:from-rose-100 hover:to-rose-100 dark:border-rose-800/50 dark:from-rose-950/45 dark:to-rose-950/20 dark:text-rose-200 dark:hover:from-rose-900/55 dark:hover:to-rose-900/25',
+                            ? 'scale-105 border-transparent bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_8px_20px_var(--crm-brand-shadow)] ring-4 ring-primary/20 dark:ring-primary/30'
+                            : 'border-primary/20 bg-accent text-primary hover:bg-accent/80 dark:border-primary/30 dark:bg-primary/10 dark:text-primary dark:hover:bg-primary/15',
                         )}
                       >
                         <span className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-xl" aria-hidden>
@@ -2439,7 +2439,7 @@ export function CatalogStockSelectDialog({
                               <button
                                 type="button"
                                 onClick={() => removeSessionPickById(pick.pickId)}
-                                className="shrink-0 rounded-full p-1 text-slate-500 transition-colors hover:bg-rose-100 hover:text-rose-600 dark:text-slate-500 dark:hover:bg-rose-500/15 dark:hover:text-rose-300"
+                                className="shrink-0 rounded-full p-1 text-slate-500 transition-colors hover:bg-accent hover:text-primary dark:text-slate-500 dark:hover:bg-primary/15 dark:hover:text-primary"
                                 aria-label={t('catalogStockPicker.removeSelection')}
                                 title={t('catalogStockPicker.removeSelection')}
                               >

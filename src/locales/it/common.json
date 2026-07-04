@@ -5648,7 +5648,8 @@
     "pendingActionsDesc": "Numero di azioni consigliate"
   },
   "profile": {
-    "title": "Informazioni sul profilo"
+    "title": "Informazioni sul profilo",
+    "editDescription": "Aggiorna le informazioni utente"
   },
   "salesDraft": {
     "title": "Hai un lavoro incompiuto",
@@ -5664,6 +5665,7 @@
   },
   "language_choice": "Opzione lingua",
   "appearance": "Modalità di visualizzazione",
+  "appearanceLockedByBrandTheme": "La modalità chiara/scura non è disponibile con un tema personalizzato attivo",
   "logout": "DISCONNETTERSI",
   "userDiscountLimitManagement": {
     "alreadyExists": "Esiste già un limite di sconto per questo venditore e gruppo",

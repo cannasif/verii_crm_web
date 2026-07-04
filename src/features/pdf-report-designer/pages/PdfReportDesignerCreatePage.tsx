@@ -1614,7 +1614,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-slate-300/80 bg-stone-50/95 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-none dark:ring-0">
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-br from-rose-500/5 to-amber-500/5 dark:from-rose-500/10 dark:to-amber-500/10" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-br from-primary/5 to-amber-500/5 dark:from-primary/10 dark:to-amber-500/10" />
       {(saveValidationIssues.length > 0 || invalidElementIds.length > 0) && (
         <div className="relative z-20 border-b border-red-200/80 bg-red-50/90 px-4 py-3 backdrop-blur-md dark:border-red-900/50 dark:bg-red-950/40">
           <div className="flex flex-wrap items-start gap-3">
@@ -1706,7 +1706,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       ) : null}
 
       <div className="relative shrink-0 overflow-hidden border-b border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-50" />
+        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-amber-500/0 dark:from-primary/5 dark:to-amber-500/5 opacity-50" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit, onInvalidSubmit)} className="relative z-10">
             <div className="flex items-center gap-2 px-4 py-2">
@@ -2065,7 +2065,7 @@ export function PdfReportDesignerCreatePage(): ReactElement {
       </div>
 
       <div className="relative z-30 shrink-0 overflow-hidden border-t border-slate-300/80 bg-stone-50/95 px-4 py-2 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/80 dark:shadow-none dark:ring-0">
-        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-30" />
+        <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-amber-500/0 dark:from-primary/5 dark:to-amber-500/5 opacity-30" />
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 rounded-lg bg-white/40 px-2 py-1 dark:bg-white/5">

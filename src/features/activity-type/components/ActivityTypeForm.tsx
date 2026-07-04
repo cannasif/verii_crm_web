@@ -43,10 +43,10 @@ const INPUT_STYLE = `
   placeholder:text-slate-400 dark:placeholder:text-slate-600 
   
   focus-visible:bg-white dark:focus-visible:bg-[#1a1025]
-  focus-visible:border-pink-500 dark:focus-visible:border-pink-500/70
-  focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
+  focus-visible:border-primary dark:focus-visible:border-primary/70
+  focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:ring-offset-0
   
-  focus:ring-2 focus:ring-pink-500/10 focus:ring-offset-0 focus:border-pink-500
+  focus:ring-2 focus:ring-primary/20 focus:ring-offset-0 focus:border-primary
   
   transition-all duration-200
 `;
@@ -107,7 +107,7 @@ export function ActivityTypeForm({
 
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-white/95 dark:bg-[#130822]/95">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg shadow-pink-500/20 shrink-0">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary to-[var(--crm-brand-accent)] flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
               <ListTodo size={24} className="text-white" />
             </div>
             <div className="space-y-1">
@@ -127,7 +127,7 @@ export function ActivityTypeForm({
             variant="ghost"
             size="icon"
             onClick={() => onOpenChange(false)}
-            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm shrink-0"
+            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-primary hover:text-white transition-all duration-300 hover:scale-110 shadow-sm shrink-0"
           >
             <X size={20} className="relative z-10" />
           </Button>
@@ -146,7 +146,7 @@ export function ActivityTypeForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(activityTypeFormSchema, 'name')}>
-                        <Type size={16} className="text-pink-500" />
+                        <Type size={16} className="text-primary" />
                         {t('activityType.form.name')}
                       </FormLabel>
                       <FormControl>
@@ -168,7 +168,7 @@ export function ActivityTypeForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <FileText size={16} className="text-pink-500" />
+                        <FileText size={16} className="text-primary" />
                         {t('activityType.form.description')}
                       </FormLabel>
                       <FormControl>
@@ -206,7 +206,7 @@ export function ActivityTypeForm({
             type="submit"
             form="activity-type-form"
             disabled={isLoading}
-            className="w-full sm:w-auto h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-black rounded-xl shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="w-full sm:w-auto h-12 px-8 bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-black rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading
               ? t('activityType.saving')

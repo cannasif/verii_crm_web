@@ -246,13 +246,13 @@ export function PricingRuleManagementPage(): ReactElement {
             {t('list.title')}
           </h1>
           <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
-            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
             {t('list.description')}
           </p>
         </div>
         <Button
           onClick={handleAddClick}
-          className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+          className="h-12 px-8 bg-[image:var(--crm-brand-gradient)] rounded-2xl text-white text-sm font-black shadow-xl shadow-primary/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-primary/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={20} className="mr-2 stroke-[3px]" />
           {t('list.add')}
@@ -304,7 +304,7 @@ export function PricingRuleManagementPage(): ReactElement {
                       size="sm"
                       onClick={() => setActiveFilter(filter)}
                       className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${activeFilter === filter
-                        ? 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20'
+                        ? 'bg-primary/10 text-primary border border-primary/20'
                         : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
                         }`}
                     >

@@ -5583,7 +5583,8 @@
     "pendingActionsDesc": "Anzahl empfohlener Aktionen"
   },
   "profile": {
-    "title": "Profilinformationen"
+    "title": "Profilinformationen",
+    "editDescription": "Benutzerinformationen aktualisieren"
   },
   "salesDraft": {
     "title": "Sie haben unfertige Arbeit",
@@ -5599,6 +5600,7 @@
   },
   "language_choice": "Sprachoption",
   "appearance": "Ansichtsmodus",
+  "appearanceLockedByBrandTheme": "Hell-/Dunkelmodus ist bei aktivem Spezialthema nicht verfügbar",
   "logout": "Abmelden",
   "userDiscountLimitManagement": {
     "alreadyExists": "Für diese Kombination aus Vertriebsmitarbeiter und Produktgruppe besteht bereits ein Rabattlimit",

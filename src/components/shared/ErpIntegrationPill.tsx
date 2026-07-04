@@ -20,7 +20,7 @@ export function ErpIntegrationPill({ integrated, label, tone, className }: ErpIn
         resolvedTone === 'warning' &&
           'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:border-amber-400/30 dark:bg-amber-500/15 dark:text-amber-300',
         resolvedTone === 'danger' &&
-          'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:border-rose-400/30 dark:bg-rose-500/15 dark:text-rose-300',
+          'border-primary/30 bg-primary/10 text-primary dark:border-primary/30 dark:bg-primary/15 dark:text-primary',
         resolvedTone === 'default' &&
           'border-slate-300/80 bg-slate-100/80 text-slate-600 dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-400',
         className

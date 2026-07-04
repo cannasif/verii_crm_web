@@ -250,8 +250,8 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
         <DialogContent className="max-w-6xl max-h-[90vh] flex items-center justify-center bg-white/95 dark:bg-[#130822]/95 border border-slate-200/60 dark:border-white/10 rounded-[2.5rem] backdrop-blur-xl shadow-2xl">
           <div className="flex flex-col items-center gap-4 p-20">
             <div className="relative">
-              <div className="h-16 w-16 animate-spin rounded-full border-b-4 border-pink-500" />
-              <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full border-pink-500 opacity-20" />
+              <div className="h-16 w-16 animate-spin rounded-full border-b-4 border-primary" />
+              <div className="absolute inset-0 h-16 w-16 animate-ping rounded-full border-primary opacity-20" />
             </div>
             <div className="text-sm font-bold text-slate-500 dark:text-slate-400 animate-pulse uppercase tracking-widest">
               {t('pricingRule.loadingDescription')}
@@ -268,7 +268,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
 
         <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md flex-shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-600 p-3 shadow-lg shadow-pink-500/20 text-white flex items-center justify-center">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary to-orange-500 p-3 shadow-lg shadow-primary/20 text-white flex items-center justify-center">
               <Tag size={24} />
             </div>
             <div className="space-y-0.5">
@@ -288,7 +288,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
             variant="ghost"
             size="icon"
             onClick={() => onOpenChange(false)}
-            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
+            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-primary hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
           >
             <Cancel01Icon size={20} className="relative z-10" />
           </Button>
@@ -301,19 +301,19 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
 
                 <div className="px-8 pt-6 pb-2 bg-slate-50/30 dark:bg-white/[0.02] border-b border-slate-100 dark:border-white/5">
                   <TabsList className="bg-slate-200/50 dark:bg-white/10 p-1 rounded-2xl h-auto grid grid-cols-3 w-full max-w-2xl mx-auto">
-                    <TabsTrigger value="header" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-lg py-2.5 text-xs font-bold transition-all">
+                    <TabsTrigger value="header" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-primary dark:data-[state=active]:text-primary data-[state=active]:shadow-lg py-2.5 text-xs font-bold transition-all">
                       <FileText size={16} className="mr-2" />
                       {t('pricingRule.form.tabs.header')}
                     </TabsTrigger>
-                    <TabsTrigger value="lines" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-lg py-2.5 text-xs font-bold transition-all">
+                    <TabsTrigger value="lines" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-primary dark:data-[state=active]:text-primary data-[state=active]:shadow-lg py-2.5 text-xs font-bold transition-all">
                       <List size={16} className="mr-2" />
                       {t('pricingRule.form.tabs.lines')}
-                      <span className="ml-1.5 px-2 py-0.5 rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-400 text-[10px] font-black">{watchedLines?.length || 0}</span>
+                      <span className="ml-1.5 px-2 py-0.5 rounded-lg bg-primary/10 text-primary text-[10px] font-black">{watchedLines?.length || 0}</span>
                     </TabsTrigger>
-                    <TabsTrigger value="salesmen" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:shadow-lg py-2.5 text-xs font-bold transition-all">
+                    <TabsTrigger value="salesmen" className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-[#1a1025] data-[state=active]:text-primary dark:data-[state=active]:text-primary data-[state=active]:shadow-lg py-2.5 text-xs font-bold transition-all">
                       <Users size={16} className="mr-2" />
                       {t('pricingRule.form.tabs.salesmen')}
-                      <span className="ml-1.5 px-2 py-0.5 rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-400 text-[10px] font-black">{watchedSalesmen?.length || 0}</span>
+                      <span className="ml-1.5 px-2 py-0.5 rounded-lg bg-primary/10 text-primary text-[10px] font-black">{watchedSalesmen?.length || 0}</span>
                     </TabsTrigger>
                   </TabsList>
                 </div>
@@ -351,7 +351,7 @@ export function PricingRuleForm({ open, onOpenChange, header }: PricingRuleFormP
               </Button>
               <Button
                 type="submit"
-                className="h-12 px-10 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white font-black shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="h-12 px-10 bg-[image:var(--crm-brand-gradient)] rounded-2xl text-white font-black shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.05] hover:opacity-90 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 disabled={isSubmitting || !isFormValid}
               >
                 {isSubmitting ? (

@@ -151,7 +151,7 @@ function renderCellContent(
     case 'date':
       return (
         <div className="flex items-center gap-2 text-xs">
-          <Calendar size={14} className="text-pink-500/50" />
+          <Calendar size={14} className="text-primary/50" />
           {new Date(String(value)).toLocaleDateString(i18n.language)}
         </div>
       );
@@ -276,7 +276,7 @@ export function ContactTable({
         variant="ghost"
         size="icon"
         onClick={() => onQuickActivity(contact)}
-        className="h-8 w-8 text-pink-600 hover:text-pink-700 hover:bg-pink-50 dark:text-pink-400 dark:hover:bg-pink-500/10"
+        className="h-8 w-8 text-primary hover:text-primary hover:bg-accent dark:text-primary dark:hover:bg-primary/10"
         title={t('quickActivity')}
       >
         <Activity size={16} />

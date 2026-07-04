@@ -244,7 +244,7 @@ export function HangfireMonitoringPage(): ReactElement {
   if (isInitialLoading) {
     return (
       <div className="flex min-h-[400px] flex-col items-center justify-center gap-4">
-        <Loader2 className="h-10 w-10 animate-spin text-pink-500" />
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
         <p className="text-sm font-bold text-slate-500 animate-pulse">{t('common:loading')}</p>
       </div>
     );
@@ -260,7 +260,7 @@ export function HangfireMonitoringPage(): ReactElement {
       />
 
       <div className={headerCardStyle}>
-        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/5 dark:bg-pink-500/10 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 dark:bg-primary/5 blur-[80px] rounded-full -mr-20 -mt-20 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/5 dark:bg-orange-500/10 blur-[80px] rounded-full -ml-20 -mb-20 pointer-events-none" />
 
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between relative z-10">
@@ -277,7 +277,7 @@ export function HangfireMonitoringPage(): ReactElement {
           <Button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-pink-500/25
+            className="h-12 px-8 bg-[image:var(--crm-brand-gradient)] rounded-xl text-white font-black hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/25
             opacity-90 grayscale-[0] 
             dark:opacity-100 dark:grayscale-0"
           >
@@ -476,7 +476,7 @@ export function HangfireMonitoringPage(): ReactElement {
       <Card className="border border-slate-300 dark:border-white/20 bg-white dark:bg-[#180F22] shadow-xl rounded-2xl overflow-hidden mt-6">
         <CardHeader className="px-8 py-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-pink-500/10 text-pink-600 dark:text-pink-400">
+            <div className="p-2 rounded-xl bg-accent text-primary">
               <Zap size={20} />
             </div>
             <div>
@@ -514,7 +514,7 @@ export function HangfireMonitoringPage(): ReactElement {
               previousLabel={t('common:previous')}
               nextLabel={t('common:next')}
               paginationInfoText={t('common:total') + `: ${recurringJobsQuery.data?.total ?? 0}`}
-              rowClassName={(row: HangfireRecurringJobItemDto) => (selectedRecurringJobId === row.id ? 'bg-pink-50 dark:bg-pink-500/10' : undefined)}
+              rowClassName={(row: HangfireRecurringJobItemDto) => (selectedRecurringJobId === row.id ? 'bg-accent dark:bg-primary/10' : undefined)}
               onRowClick={(row: HangfireRecurringJobItemDto) => setSelectedRecurringJobId(row.id)}
               enableColumnDragAndDrop={false}
               centerColumnHeaders

@@ -5574,7 +5574,8 @@
     "pendingActionsDesc": "Nombre d'actions recommandées"
   },
   "profile": {
-    "title": "Informations sur le profil"
+    "title": "Informations sur le profil",
+    "editDescription": "Mettre à jour les informations utilisateur"
   },
   "salesDraft": {
     "title": "Vous avez un travail inachevé",
@@ -5590,6 +5591,7 @@
   },
   "language_choice": "Option de langue",
   "appearance": "Mode d'affichage",
+  "appearanceLockedByBrandTheme": "Le mode clair/sombre n'est pas disponible lorsqu'un thème personnalisé est actif",
   "logout": "DÉCONNEXION",
   "userDiscountLimitManagement": {
     "alreadyExists": "Une limite de remise existe déjà pour cette combinaison de représentant et groupe de produits",
