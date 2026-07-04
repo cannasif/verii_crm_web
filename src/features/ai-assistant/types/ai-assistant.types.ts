@@ -125,6 +125,9 @@ export interface AiAssistantActionConfirmationDto {
   toolName: string;
   status: string;
   actionUrl?: string | null;
+  referenceNo?: string | null;
+  resultMessage?: string | null;
+  payloadJson?: string | null;
   confirmedAt?: string | null;
   executedAt?: string | null;
 }

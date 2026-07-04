@@ -345,14 +345,22 @@ export function AiAssistantPage(): ReactElement {
     clearSelectedAttachment();
   };
 
-  const openActionUrl = async (actionUrl: string, toolActionId?: number | null, confirmationRequired = false): Promise<void> => {
+  const openActionUrl = async (actionUrl?: string | null, toolActionId?: number | null, confirmationRequired = false): Promise<void> => {
     if (confirmationRequired) {
       const confirmed = window.confirm('AI önerisini onaylayıp ilgili ekrana geçmek istiyor musunuz?');
       if (!confirmed) return;
     }
 
+    let confirmationResult: Awaited<ReturnType<typeof aiAssistantApi.confirmAction>> | null = null;
     if (toolActionId) {
-      await aiAssistantApi.confirmAction(toolActionId);
+      confirmationResult = await aiAssistantApi.confirmAction(toolActionId);
+    }
+
+    if (!actionUrl) {
+      if (confirmationResult?.resultMessage) {
+        window.alert(confirmationResult.resultMessage);
+      }
+      return;
     }
 
     if (actionUrl.startsWith('http')) {
@@ -611,7 +619,7 @@ export function AiAssistantPage(): ReactElement {
                               >
                                 <div className="text-sm font-black">{item.title}</div>
                                 <p className="mt-2 text-sm font-semibold leading-6 opacity-85">{item.description}</p>
-                                {item.actionUrl && (
+                                {(item.actionUrl || item.toolActionId) && (
                                   <Button
                                     type="button"
                                     size="sm"
@@ -619,13 +627,13 @@ export function AiAssistantPage(): ReactElement {
                                     className="mt-3 h-9 rounded-xl bg-white/70 px-3 text-xs font-black dark:bg-white/10"
                                     onClick={() => {
                                       void openActionUrl(
-                                        item.actionUrl!,
+                                        item.actionUrl,
                                         item.toolActionId,
                                         item.confirmationRequired || Boolean(item.toolActionId)
                                       );
                                     }}
                                   >
-                                    <ExternalLink size={13} className="me-1.5" />
+                                    {item.actionUrl ? <ExternalLink size={13} className="me-1.5" /> : <Check size={13} className="me-1.5" />}
                                     {item.actionLabel || t('openAction')}
                                   </Button>
                                 )}
