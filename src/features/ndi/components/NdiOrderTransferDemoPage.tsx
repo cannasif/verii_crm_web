@@ -49,6 +49,9 @@ interface NdiOrder {
   documentType: 'irsaliye' | 'fatura';
   hasShipment: boolean;
   specialCode?: 'K' | 'N';
+  description: string;
+  tip: string;
+  exportType: string;
 }
 
 interface NdiTransferRule {
@@ -62,6 +65,52 @@ interface NdiTransferRule {
   taxRule: string;
   warehouseRule: string;
   transferNote: string;
+}
+
+type NdiBusinessSeries = 'NUR' | 'VIN' | 'DIS' | 'SIP';
+type NdiBatchAction = 'IRSALIYELISTIR' | 'FATURALASTIR';
+
+interface NdiSeriesConfig {
+  label: string;
+  eFatura?: string;
+  eArsiv?: string;
+  fatura?: string;
+}
+
+interface NdiWarehouseOption {
+  code: string;
+  label: string;
+  tipLabel: string;
+}
+
+interface NdiWarehouseConfig {
+  label: string;
+  default: string;
+  editable: boolean;
+  warehouses: NdiWarehouseOption[];
+}
+
+interface NdiRuleOutcome {
+  orderId: string;
+  orderNo: string;
+  series: NdiBusinessSeries;
+  sourcePrefix: string;
+  action: NdiBatchAction;
+  actionLabel: string;
+  companyLabel: string;
+  targetSeries: string;
+  seriesNote: string;
+  targetWarehouse: string;
+  targetWarehouseLabel: string;
+  targetWarehouseLocked: boolean;
+  sourceVat: number | null;
+  targetVat: number | null;
+  vatNote: string;
+  systemNotes: string[];
+  userNotes: string[];
+  warnings: string[];
+  blocks: string[];
+  canProceed: boolean;
 }
 
 const statusLabel: Record<NdiOrder['status'], string> = {
@@ -127,12 +176,62 @@ const transferRules: NdiTransferRule[] = [
   },
 ];
 
+const SERIES_CONFIG: Record<NdiBusinessSeries, NdiSeriesConfig> = {
+  NUR: { label: 'NURAY', eFatura: 'NRY', eArsiv: 'NEA' },
+  VIN: { label: 'WINDOFORM KAPI', eFatura: 'VDF', eArsiv: 'EAR' },
+  DIS: { label: 'DIŞ TİCARET', eFatura: 'EIR', eArsiv: 'EIR' },
+  SIP: { label: 'ŞİRKET24', fatura: 'SIP2026' },
+};
+
+const COMPANY_WAREHOUSE_CONFIG: Record<NdiTransferRule['id'], NdiWarehouseConfig> = {
+  nuray: {
+    label: 'NURAY',
+    default: '100',
+    editable: true,
+    warehouses: [
+      { code: '100', label: 'Ana Depo', tipLabel: 'Varsayılan' },
+      { code: '101', label: 'Proje Deposu', tipLabel: 'NURAY' },
+      { code: '102', label: 'Sevk Deposu', tipLabel: 'NURAY' },
+    ],
+  },
+  windoformKapi: {
+    label: 'WINDOFORM',
+    default: '100',
+    editable: true,
+    warehouses: [
+      { code: '100', label: 'Ana Depo', tipLabel: 'Varsayılan' },
+      { code: '110', label: 'Üretim Deposu', tipLabel: 'VIN' },
+      { code: '111', label: 'Sevk Deposu', tipLabel: 'VIN' },
+    ],
+  },
+  disTicaret: {
+    label: 'DIŞ TİCARET',
+    default: '100',
+    editable: false,
+    warehouses: [{ code: '100', label: 'Dış Ticaret Deposu', tipLabel: 'Sabit kural' }],
+  },
+  sirket24: {
+    label: 'ŞİRKET24',
+    default: '100',
+    editable: true,
+    warehouses: [
+      { code: '100', label: 'Ana Depo', tipLabel: 'Varsayılan' },
+      { code: '200', label: 'Merkez Depo', tipLabel: 'SIP' },
+    ],
+  },
+};
+
 const numberFormatter = new Intl.NumberFormat('tr-TR', {
   maximumFractionDigits: 2,
 });
 
 function getOrderPrefix(order: NdiOrder): string {
   return order.orderNo.slice(0, 3).toLocaleUpperCase('tr-TR');
+}
+
+function getKnownSeries(value: string): NdiBusinessSeries | null {
+  const prefix = value.slice(0, 3).toLocaleUpperCase('tr-TR');
+  return prefix === 'NUR' || prefix === 'VIN' || prefix === 'DIS' || prefix === 'SIP' ? prefix : null;
 }
 
 function getRule(order: NdiOrder): NdiTransferRule {
@@ -157,6 +256,20 @@ function formatDate(value?: string | null): string {
 }
 
 function resolveOperationProfile(dispatch: NetsisCustomerDispatchDto): NdiOrder['operationProfile'] {
+  const series = getKnownSeries(dispatch.irsaliyeNo);
+  if (series === 'NUR') {
+    return 'nuray';
+  }
+  if (series === 'VIN') {
+    return 'windoformKapi';
+  }
+  if (series === 'DIS') {
+    return 'disTicaret';
+  }
+  if (series === 'SIP') {
+    return 'sirket24';
+  }
+
   const type = normalizeText(dispatch.tipi);
   const exportType = normalizeText(dispatch.exportTipi);
 
@@ -167,9 +280,187 @@ function resolveOperationProfile(dispatch: NetsisCustomerDispatchDto): NdiOrder[
   return 'windoformKapi';
 }
 
+function getBusinessSeries(order: NdiOrder): NdiBusinessSeries {
+  const knownSeries = getKnownSeries(order.orderNo);
+  if (knownSeries) {
+    return knownSeries;
+  }
+
+  if (order.operationProfile === 'nuray') {
+    return 'NUR';
+  }
+  if (order.operationProfile === 'disTicaret') {
+    return 'DIS';
+  }
+  if (order.operationProfile === 'sirket24') {
+    return 'SIP';
+  }
+
+  return 'VIN';
+}
+
+function getActionLabel(action: NdiBatchAction): string {
+  return action === 'IRSALIYELISTIR' ? 'İrsaliyeleştir' : 'Faturalaştır';
+}
+
+function resolvePrimaryAction(order: NdiOrder): NdiBatchAction {
+  const series = getBusinessSeries(order);
+  if (series === 'SIP' || order.documentType === 'fatura') {
+    return 'FATURALASTIR';
+  }
+
+  return 'IRSALIYELISTIR';
+}
+
+function resolveBatchAction(orders: NdiOrder[]): { action: NdiBatchAction | null; mixed: boolean; hint: string } {
+  if (orders.length === 0) {
+    return { action: null, mixed: false, hint: 'Belge seçin' };
+  }
+
+  const actions = orders.map(resolvePrimaryAction);
+  const allDispatch = actions.every((action) => action === 'IRSALIYELISTIR');
+  const allInvoice = actions.every((action) => action === 'FATURALASTIR');
+
+  if (allDispatch) {
+    return { action: 'IRSALIYELISTIR', mixed: false, hint: 'İrsaliye senaryosu' };
+  }
+  if (allInvoice) {
+    return { action: 'FATURALASTIR', mixed: false, hint: 'Fatura senaryosu' };
+  }
+
+  return { action: null, mixed: true, hint: 'Karışık irsaliye/fatura seçimi' };
+}
+
+function resolveTargetSeries(order: NdiOrder): { value: string; note: string; warning?: string } {
+  const series = getBusinessSeries(order);
+  const config = SERIES_CONFIG[series];
+
+  if (series === 'DIS') {
+    return { value: 'EIR', note: 'Dış ticaret kayıtları sabit EIR serisiyle hazırlanır.' };
+  }
+  if (series === 'SIP') {
+    return { value: config.fatura ?? 'SIP2026', note: 'Şirket24 fatura akışı sabit SIP2026 serisiyle hazırlanır.' };
+  }
+
+  const defaultSeries = config.eFatura ?? '-';
+  return {
+    value: defaultSeries,
+    note: `${config.label}: cari e-Belge tipine göre e-Fatura ${config.eFatura}, e-Arşiv ${config.eArsiv} serisi kullanılır.`,
+    warning: 'Bu read fonksiyonu cari e-Belge tipini dönmediği için hedef seri entegrasyon sırasında cari kartından kesinleştirilmelidir.',
+  };
+}
+
+function resolveWarehouse(order: NdiOrder): { value: string; label: string; locked: boolean; note: string } {
+  const warehouseConfig = COMPANY_WAREHOUSE_CONFIG[order.operationProfile];
+  const option = warehouseConfig.warehouses.find((item) => item.code === warehouseConfig.default) ?? warehouseConfig.warehouses[0];
+  const locked = !warehouseConfig.editable || getBusinessSeries(order) === 'DIS';
+
+  return {
+    value: option?.code ?? '100',
+    label: option ? `${option.code} - ${option.label}` : '100',
+    locked,
+    note: locked
+      ? `${warehouseConfig.label} için hedef depo ${warehouseConfig.default} sabit kuraldır.`
+      : `${warehouseConfig.label} için varsayılan depo ${warehouseConfig.default}; aktarımda değiştirilebilir.`,
+  };
+}
+
+function resolveVat(order: NdiOrder): { sourceVat: number | null; targetVat: number | null; note: string; block?: string } {
+  const series = getBusinessSeries(order);
+  const description = normalizeText(order.description);
+
+  if (series === 'DIS' || series === 'SIP') {
+    return { sourceVat: 0, targetVat: 0, note: 'Dış ticaret/Şirket24 kuralında hedef KDV %0.' };
+  }
+
+  if (series === 'NUR') {
+    if (description.includes('1/4')) {
+      return { sourceVat: 20, targetVat: 5, note: 'Açıklamada 1/4 geçtiği için ŞİRKET24 KDV %5 uygulanır.' };
+    }
+    return { sourceVat: 20, targetVat: 20, note: 'Tam satış kabulüyle kaynak ve hedef KDV %20.' };
+  }
+
+  if (series === 'VIN') {
+    if (order.specialCode === 'K') {
+      return { sourceVat: 20, targetVat: 0, note: 'Özel Kod K ihraç kayıtlı kabul edilir; hedef KDV %0.' };
+    }
+    if (order.specialCode === 'N') {
+      return { sourceVat: 20, targetVat: 20, note: 'Özel Kod N normal satış kabul edilir; hedef KDV %20.' };
+    }
+    return { sourceVat: 20, targetVat: null, note: 'KDV için Özel Kod 1 gerekli.', block: 'WINDOFORM için Özel Kod 1 K veya N olmalı.' };
+  }
+
+  return { sourceVat: null, targetVat: null, note: 'KDV kuralı belirlenemedi.', block: 'Seri tanımsız olduğu için KDV kuralı uygulanamadı.' };
+}
+
+function buildRuleOutcome(order: NdiOrder, lines: NdiOrderLine[]): NdiRuleOutcome {
+  const series = getBusinessSeries(order);
+  const sourcePrefix = getOrderPrefix(order);
+  const action = resolvePrimaryAction(order);
+  const targetSeries = resolveTargetSeries(order);
+  const warehouse = resolveWarehouse(order);
+  const vat = resolveVat(order);
+  const zeroBalanceCount = lines.filter((line) => line.quantity > 0 && line.remainingQuantity <= 0).length;
+  const warnings: string[] = [];
+  const blocks: string[] = [];
+  const systemNotes: string[] = [
+    targetSeries.note,
+    warehouse.note,
+    vat.note,
+    'Ek alan 1 ve satır bilgileri aktarım payloadında korunmalıdır.',
+  ];
+  const userNotes: string[] = [];
+
+  if (targetSeries.warning) {
+    warnings.push(targetSeries.warning);
+  }
+  if (zeroBalanceCount > 0) {
+    warnings.push(`${zeroBalanceCount} satırda bakiye 0 görünüyor; aktarım öncesi satır seçimi kontrol edilmeli.`);
+  }
+  if (vat.block) {
+    blocks.push(vat.block);
+  }
+  if (series === 'NUR' && !order.description.trim()) {
+    blocks.push('NURAY akışında 1/4 veya tam satış ayrımı için irsaliye açıklaması boş olmamalı.');
+  }
+  if (series === 'VIN' && order.specialCode === 'K') {
+    userNotes.push('İhraç kayıtlı işlem: irsaliye zorunlu ve hedef KDV %0 olmalı.');
+  }
+  if (series === 'NUR' && order.description.trim()) {
+    userNotes.push(order.description.includes('1/4') ? '1/4 açıklaması algılandı.' : 'Tam satış açıklaması algılandı.');
+  }
+  if (sourcePrefix !== series) {
+    warnings.push(`Belge prefix ${sourcePrefix}; iş kuralı ${series} olarak yorumlandı.`);
+  }
+
+  return {
+    orderId: order.id,
+    orderNo: order.orderNo,
+    series,
+    sourcePrefix,
+    action,
+    actionLabel: getActionLabel(action),
+    companyLabel: SERIES_CONFIG[series].label,
+    targetSeries: targetSeries.value,
+    seriesNote: targetSeries.note,
+    targetWarehouse: warehouse.value,
+    targetWarehouseLabel: warehouse.label,
+    targetWarehouseLocked: warehouse.locked,
+    sourceVat: vat.sourceVat,
+    targetVat: vat.targetVat,
+    vatNote: vat.note,
+    systemNotes,
+    userNotes,
+    warnings,
+    blocks,
+    canProceed: blocks.length === 0,
+  };
+}
+
 function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
   const operationProfile = resolveOperationProfile(dispatch);
   const shipmentType = dispatch.exportTipi && dispatch.exportTipi !== '-' ? dispatch.exportTipi : dispatch.tipi || 'İrsaliye';
+  const exportType = dispatch.exportTipi || '-';
 
   return {
     id: dispatch.irsaliyeNo,
@@ -186,7 +477,10 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
     operationProfile,
     documentType: 'irsaliye',
     hasShipment: true,
-    specialCode: operationProfile === 'disTicaret' ? 'K' : 'N',
+    specialCode: operationProfile === 'disTicaret' || (exportType && exportType !== '-') ? 'K' : 'N',
+    description: dispatch.aciklama || '',
+    tip: dispatch.tipi || '-',
+    exportType,
   };
 }
 
@@ -310,11 +604,23 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const selectedRepresentatives = Array.from(new Set(selectedOrders.map((order) => order.representative)));
   const selectedRules = Array.from(new Map(selectedOrders.map((order) => [order.operationProfile, getRule(order)])).values());
   const selectedRuleTitles = selectedRules.map((rule) => rule.title).join(', ');
-  const hasMandatoryShipment = selectedOrders.some((order) => {
-    const rule = getRule(order);
-    return rule.id === 'windoformKapi' ? order.hasShipment || order.specialCode === 'K' : rule.id === 'nuray' && order.hasShipment;
-  });
-  const hasFixedWarehouse = selectedOrders.some((order) => getRule(order).warehouseRule.includes('100'));
+  const selectedLinesByOrderNo = useMemo(() => {
+    const grouped = new Map<string, NdiOrderLine[]>();
+    selectedOrderLines.forEach((line) => {
+      const current = grouped.get(line.orderNo) ?? [];
+      current.push(line);
+      grouped.set(line.orderNo, current);
+    });
+    return grouped;
+  }, [selectedOrderLines]);
+  const ruleOutcomes = useMemo(
+    () => selectedOrders.map((order) => buildRuleOutcome(order, selectedLinesByOrderNo.get(order.orderNo) ?? [])),
+    [selectedOrders, selectedLinesByOrderNo]
+  );
+  const batchAction = useMemo(() => resolveBatchAction(selectedOrders), [selectedOrders]);
+  const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
+  const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
+  const canPrepareSelectedLines = selectedLines.length > 0 && !batchAction.mixed && blockedRuleCount === 0;
 
   const toggleOrder = (order: NdiOrder) => {
     setSelectedOrderIds((current) => {
@@ -528,13 +834,30 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                   <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#536780]">
                     <SlidersHorizontal size={15} /> Uygulanan İşlem Kuralları
                   </div>
-                  <p className="mt-1 text-sm font-bold text-[#172033]">{selectedRuleTitles || 'Kural seçili değil'}</p>
+                  <p className="mt-1 text-sm font-bold text-[#172033]">
+                    {selectedRuleTitles || 'Kural seçili değil'} · {batchAction.hint}
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {hasMandatoryShipment ? <RuleBadge tone="warn" label="İrsaliye zorunlu" /> : <RuleBadge tone="info" label="Sevk opsiyonel" />}
-                  {hasFixedWarehouse ? <RuleBadge tone="info" label="Depo 100" /> : <RuleBadge tone="success" label="Depo korunur" />}
+                  {batchAction.mixed ? (
+                    <RuleBadge tone="danger" label="Karışık seçim" />
+                  ) : batchAction.action ? (
+                    <RuleBadge tone="info" label={getActionLabel(batchAction.action)} />
+                  ) : (
+                    <RuleBadge tone="info" label="Belge seçin" />
+                  )}
+                  {blockedRuleCount > 0 ? <RuleBadge tone="danger" label={`${blockedRuleCount} blok`} /> : <RuleBadge tone="success" label="Blok yok" />}
+                  {warningCount > 0 ? <RuleBadge tone="warn" label={`${warningCount} uyarı`} /> : <RuleBadge tone="success" label="Uyarı yok" />}
                   <RuleBadge tone="success" label="Ek alan aktarılır" />
                 </div>
+              </div>
+              <SeriesGuide />
+              <div className="mt-3 grid gap-2 xl:grid-cols-2">
+                {ruleOutcomes.length === 0 ? (
+                  <StatePanel icon={<SlidersHorizontal size={18} />} title="Kural çıktısı yok" description="Kural çıktısı için en az bir irsaliye seçin." />
+                ) : (
+                  ruleOutcomes.map((outcome) => <RuleOutcomeCard key={outcome.orderId} outcome={outcome} />)
+                )}
               </div>
               <div className="mt-3 grid gap-2 lg:grid-cols-2">
                 {selectedRules.map((rule) => (
@@ -654,10 +977,10 @@ export function NdiOrderTransferDemoPage(): ReactElement {
             </div>
             <button
               type="button"
-              disabled={selectedLines.length === 0}
+              disabled={!canPrepareSelectedLines}
               className="rounded-lg bg-[#12325f] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#1f5eff] disabled:cursor-not-allowed disabled:bg-[#a9b6c8]"
             >
-              Seçili Kalemleri Hazırla
+              {canPrepareSelectedLines ? 'Seçili Kalemleri Hazırla' : 'Kuralları Kontrol Et'}
             </button>
           </div>
         </section>
@@ -684,6 +1007,113 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
         <span className="block text-[10px] font-black uppercase tracking-[0.14em] text-[#708198]">{label}</span>
         <span className="block truncate text-sm font-black text-[#172033]">{value}</span>
       </span>
+    </div>
+  );
+}
+
+function SeriesGuide(): ReactElement {
+  const rows = [
+    { title: 'NURAY (NUR)', items: ['e-Fatura -> NRY', 'e-Arşiv -> NEA'] },
+    { title: 'WINDOFORM (VIN)', items: ['e-Fatura -> VDF', 'e-Arşiv -> EAR'] },
+    { title: 'DIŞ TİCARET (DIS)', items: ['Sabit -> EIR', 'Depo -> 100 sabit'] },
+    { title: 'ŞİRKET24 (SIP)', items: ['Fatura -> SIP2026', 'Depo -> 100 / 200'] },
+  ];
+
+  return (
+    <div className="mt-3 rounded-lg border border-[#dbe7f5] bg-[#f8fbff] p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-[#536780]">Seri ve Depo Rehberi</div>
+          <p className="mt-1 text-xs font-semibold text-[#6b7b91]">
+            Kaynak seri, cari e-Belge tipi ve şirket kuralına göre ŞİRKET24 aktarım değeri belirlenir.
+          </p>
+        </div>
+        <RuleBadge tone="info" label="HTML işlem kurallarından" />
+      </div>
+
+      <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+        {rows.map((row) => (
+          <div key={row.title} className="rounded-md border border-[#d7e1ef] bg-white px-3 py-2">
+            <div className="text-xs font-black text-[#172033]">{row.title}</div>
+            <div className="mt-2 space-y-1">
+              {row.items.map((item) => (
+                <div key={item} className="rounded bg-[#eef5ff] px-2 py-1 text-[11px] font-black text-[#31577e]">
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement {
+  return (
+    <div className={`rounded-lg border p-3 ${outcome.canProceed ? 'border-[#bbf7d0] bg-[#f7fffb]' : 'border-[#fecaca] bg-[#fff8f8]'}`}>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <div className="font-black text-[#172033]">{outcome.orderNo}</div>
+          <div className="text-xs font-bold text-[#6b7b91]">
+            {outcome.companyLabel} · {outcome.actionLabel} · kaynak prefix {outcome.sourcePrefix}
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-1">
+          <RuleBadge tone={outcome.canProceed ? 'success' : 'danger'} label={outcome.canProceed ? 'Hazır' : 'Bloklu'} />
+          <RuleBadge tone={outcome.targetWarehouseLocked ? 'warn' : 'info'} label={outcome.targetWarehouseLocked ? 'Depo sabit' : 'Depo seçilebilir'} />
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+        <RuleMini label="Hedef Seri" value={outcome.targetSeries} />
+        <RuleMini label="Hedef Depo" value={outcome.targetWarehouseLabel} />
+        <RuleMini
+          label="KDV"
+          value={`Kaynak ${outcome.sourceVat ?? '-'} / Hedef ${outcome.targetVat ?? '-'}`}
+        />
+      </div>
+
+      <RuleTextList title="Sistem Kuralları" values={outcome.systemNotes} tone="info" />
+      <RuleTextList title="Kullanıcı Kontrolü" values={outcome.userNotes} tone="success" />
+      <RuleTextList title="Uyarılar" values={outcome.warnings} tone="warn" />
+      <RuleTextList title="Bloklayan Kurallar" values={outcome.blocks} tone="danger" />
+    </div>
+  );
+}
+
+function RuleMini({ label, value }: { label: string; value: string }): ReactElement {
+  return (
+    <div className="rounded-md border border-[#d7e1ef] bg-white px-2 py-2">
+      <div className="text-[10px] font-black uppercase tracking-[0.12em] text-[#8797ad]">{label}</div>
+      <div className="mt-1 truncate text-xs font-black text-[#26344c]">{value}</div>
+    </div>
+  );
+}
+
+function RuleTextList({ title, values, tone }: { title: string; values: string[]; tone: 'info' | 'success' | 'warn' | 'danger' }): ReactElement | null {
+  if (values.length === 0) {
+    return null;
+  }
+
+  const dotClass = {
+    info: 'bg-[#1d4ed8]',
+    success: 'bg-[#047857]',
+    warn: 'bg-[#b45309]',
+    danger: 'bg-[#dc2626]',
+  }[tone];
+
+  return (
+    <div className="mt-3">
+      <div className="text-[10px] font-black uppercase tracking-[0.14em] text-[#708198]">{title}</div>
+      <div className="mt-1 space-y-1">
+        {values.map((value) => (
+          <div key={value} className="flex gap-2 rounded-md bg-white px-2 py-1 text-xs font-bold leading-snug text-[#42536b]">
+            <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${dotClass}`} />
+            <span>{value}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -718,11 +1148,12 @@ function RuleLine({ label, value }: { label: string; value: string }): ReactElem
   );
 }
 
-function RuleBadge({ label, tone }: { label: string; tone: 'info' | 'success' | 'warn' }): ReactElement {
+function RuleBadge({ label, tone }: { label: string; tone: 'info' | 'success' | 'warn' | 'danger' }): ReactElement {
   const toneClass = {
     info: 'border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]',
     success: 'border-[#bbf7d0] bg-[#ecfdf5] text-[#047857]',
     warn: 'border-[#fde68a] bg-[#fffbeb] text-[#b45309]',
+    danger: 'border-[#fecaca] bg-[#fef2f2] text-[#dc2626]',
   }[tone];
 
   return <span className={`rounded-full border px-3 py-1 text-xs font-black ${toneClass}`}>{label}</span>;
