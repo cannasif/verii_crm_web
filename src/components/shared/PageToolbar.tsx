@@ -37,12 +37,12 @@ export function PageToolbar({
   return (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
       <div className="relative group flex-1 min-w-0 max-w-md">
-        <Search className="absolute crm-start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-pink-500 transition-colors" />
+        <Search className="absolute crm-start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
         <Input
           placeholder={searchPlaceholder}
           value={searchValue}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="crm-ps-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus:border-pink-500/50 focus:ring-pink-500/20 rounded-xl transition-all"
+          className="crm-ps-10 h-10 bg-white/50 dark:bg-card/50 border-slate-200 dark:border-white/10 focus:border-primary/50 focus:ring-primary/20 rounded-xl transition-all"
         />
         {searchValue && (
           <button
@@ -57,7 +57,7 @@ export function PageToolbar({
         className={`h-10 w-10 flex items-center justify-center rounded-xl shrink-0 transition-all ${
           isRefreshDisabled
             ? 'cursor-not-allowed opacity-50 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10'
-            : 'cursor-pointer bg-white/50 dark:bg-card/50 border border-slate-200 dark:border-white/10 hover:border-pink-500/30 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 group'
+            : 'cursor-pointer bg-white/50 dark:bg-card/50 border border-slate-200 dark:border-white/10 hover:border-primary/30 hover:bg-accent/50 dark:hover:bg-primary/10 group'
         }`}
         onClick={handleRefresh}
         role="button"
@@ -66,7 +66,7 @@ export function PageToolbar({
       >
         <RefreshCw
           size={18}
-          className={`text-slate-500 dark:text-slate-400 transition-colors ${isRefreshing ? 'animate-spin' : ''} ${!isRefreshDisabled ? 'group-hover:text-pink-600 dark:group-hover:text-pink-400' : ''}`}
+          className={`text-slate-500 dark:text-slate-400 transition-colors ${isRefreshing ? 'animate-spin' : ''} ${!isRefreshDisabled ? 'group-hover:text-primary dark:group-hover:text-primary' : ''}`}
         />
       </div>
       {rightSlot}

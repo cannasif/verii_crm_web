@@ -33,7 +33,7 @@ export function AiAssistantAnswerCard({ title, answer }: AiAssistantAnswerCardPr
       <div className="mb-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-primary">
         {title}
       </div>
-      <span className="whitespace-pre-line">{visibleAnswer}</span>
+      <span>{visibleAnswer}</span>
       {isStreaming && (
         <span
           aria-hidden="true"

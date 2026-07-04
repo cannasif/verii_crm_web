@@ -74,7 +74,7 @@ interface ProductPricingFormProps {
 }
 
 // STİL: Standart yükseklik ve kenarlıklar
-const BASE_INPUT = "h-11 rounded-xl bg-white/50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/10 text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-slate-600 focus-visible:ring-2 focus-visible:ring-rose-500/20 focus:border-rose-500/50 transition-all duration-300";
+const BASE_INPUT = "h-11 rounded-xl bg-white/50 dark:bg-white/[0.03] border border-slate-200/60 dark:border-white/10 text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-slate-600 focus-visible:ring-2 focus-visible:ring-primary/20 focus:border-primary/50 transition-all duration-300";
 const INPUT_STYLE = `${BASE_INPUT} w-full`;
 const LABEL_STYLE = "text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider ml-1 mb-2 flex items-center gap-2";
 type ProductPricingDiscountField = 'discount1' | 'discount2' | 'discount3';
@@ -189,9 +189,9 @@ export function ProductPricingForm({
       >
         <DialogHeader className="px-6 sm:px-8 py-2 border-b border-slate-100 dark:border-white/5 shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary to-[var(--crm-brand-accent)] p-0.5 shadow-lg shadow-primary/20">
               <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                <Tag size={24} className="text-pink-600 dark:text-pink-400" />
+                <Tag size={24} className="text-primary" />
               </div>
             </div>
             <div>
@@ -205,10 +205,10 @@ export function ProductPricingForm({
           </div>
           <button
             onClick={() => onOpenChange(false)}
-            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-rose-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
+            className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-accent hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
           >
             <X className="relative z-10" size={20} />
-            <div className="absolute inset-0 rounded-full bg-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 rounded-full bg-accent opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </DialogHeader>
 
@@ -224,7 +224,7 @@ export function ProductPricingForm({
                     <FormField control={form.control} name="erpProductCode" render={({ field }) => (
                       <FormItem className="space-y-2">
                         <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'erpProductCode')}>
-                          <Package size={14} className="text-pink-500" /> {t('selectStok')}
+                          <Package size={14} className="text-primary" /> {t('selectStok')}
                         </FormLabel>
                         <div className="flex gap-2">
                           <FormControl>
@@ -233,7 +233,7 @@ export function ProductPricingForm({
                           <Button
                             type="button"
                             onClick={() => setProductDialogOpen(true)}
-                            className="h-11 shrink-0 bg-linear-to-r from-pink-600 to-orange-600 px-6 font-bold text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                            className="h-11 shrink-0 bg-[image:var(--crm-brand-gradient)] px-6 font-bold text-white shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.05] hover:opacity-90 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                           >
                             <Package size={18} className="mr-2" /> {t('common.select', { ns: 'common', defaultValue: 'Seç' })}
                           </Button>
@@ -246,7 +246,7 @@ export function ProductPricingForm({
                       <FormField control={form.control} name="erpGroupCode" render={({ field }) => (
                         <FormItem className="space-y-2">
                           <FormLabel className={LABEL_STYLE}>
-                            <Layers size={14} className="text-pink-500" /> {t('erpGroupCode')}
+                            <Layers size={14} className="text-primary" /> {t('erpGroupCode')}
                           </FormLabel>
                           <FormControl>
                             <Input {...field} readOnly placeholder={t('erpGroupCodePlaceholder')} className={`${INPUT_STYLE} bg-slate-100/50 dark:bg-white/[0.01] font-mono text-xs`} />
@@ -257,7 +257,7 @@ export function ProductPricingForm({
                       <FormField control={form.control} name="currency" render={({ field }) => (
                         <FormItem className="space-y-2 flex flex-col">
                           <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(productPricingFormSchema, 'currency')}>
-                            <Banknote size={14} className="text-pink-500" /> {t('currency')}
+                            <Banknote size={14} className="text-primary" /> {t('currency')}
                           </FormLabel>
                           <Popover open={currencySelectDialogOpen} onOpenChange={setCurrencySelectDialogOpen}>
                             <PopoverTrigger asChild>
@@ -302,7 +302,7 @@ export function ProductPricingForm({
                                       >
                                         <Check
                                           className={cn(
-                                            "mr-2 h-4 w-4 text-rose-500",
+                                            "mr-2 h-4 w-4 text-red-500",
                                             String(curr.dovizTipi) === field.value ? "opacity-100" : "opacity-0"
                                           )}
                                         />
@@ -454,7 +454,7 @@ export function ProductPricingForm({
             <Button
               onClick={form.handleSubmit(handleValidSubmit)}
               disabled={isLoading || !isFormValid}
-              className="h-12 bg-linear-to-r from-pink-600 to-orange-600 px-10 font-black text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-2xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              className="h-12 bg-[image:var(--crm-brand-gradient)] px-10 font-black text-white shadow-lg shadow-primary/20 ring-1 ring-primary/30 transition-all duration-300 hover:scale-[1.05] hover:opacity-90 active:scale-[0.98] rounded-2xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
             >
               {isLoading ? (
                 <>

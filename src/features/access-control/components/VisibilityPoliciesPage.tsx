@@ -162,7 +162,7 @@ export function VisibilityPoliciesPage(): ReactElement {
   return (
     <div className="w-full space-y-6">
       <div className={ACCESS_CONTROL_HEADER_CARD_CLASSNAME}>
-        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-rose-500/5 blur-[80px] dark:bg-rose-500/10" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-primary/5 blur-[80px] dark:bg-primary/10" />
         <div className="pointer-events-none absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-amber-500/5 blur-[80px] dark:bg-amber-500/10" />
 
         <div className="relative z-10 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -191,7 +191,7 @@ export function VisibilityPoliciesPage(): ReactElement {
         <div className="relative z-10 mt-8 grid gap-4 sm:grid-cols-3">
           <div className={ACCESS_CONTROL_STAT_CARD_CLASSNAME}>
             <div className="flex items-center gap-4">
-              <div className="rounded-xl border border-rose-100 bg-rose-100 p-3 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
+              <div className="rounded-xl border border-primary/15 bg-accent p-3 text-primary dark:border-primary/20 dark:bg-primary/10 dark:text-primary">
                 <Eye className="size-5" />
               </div>
               <div>

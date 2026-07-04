@@ -111,7 +111,7 @@ export function StockListCodeFilterPopover({
           size="sm"
           className={`h-9 border-dashed border-slate-300 text-xs sm:text-sm dark:border-white/20 ${
             appliedCount > 0
-              ? 'border-pink-500/30 bg-pink-500/20 text-pink-700 hover:bg-pink-500/30 dark:text-pink-300'
+              ? 'border-primary/30 bg-primary/15 text-primary hover:bg-primary/20 dark:text-primary/80'
               : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
           }`}
         >
@@ -161,7 +161,7 @@ export function StockListCodeFilterPopover({
           <Button
             type="button"
             size="sm"
-            className="bg-pink-600 text-white hover:bg-pink-700 dark:bg-pink-600 dark:hover:bg-pink-500"
+            className="bg-primary text-white hover:opacity-90 dark:bg-primary dark:hover:bg-primary"
             onClick={handleApply}
             disabled={!draftDirty}
           >

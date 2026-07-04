@@ -5626,7 +5626,8 @@
     "pendingActionsDesc": "عدد الإجراءات الموصى بها"
   },
   "profile": {
-    "title": "معلومات الملف الشخصي"
+    "title": "معلومات الملف الشخصي",
+    "editDescription": "تحديث معلومات المستخدم"
   },
   "salesDraft": {
     "title": "لديك عمل غير مكتمل",
@@ -5642,6 +5643,7 @@
   },
   "language_choice": "خيار اللغة",
   "appearance": "وضع العرض",
+  "appearanceLockedByBrandTheme": "لا يمكن استخدام الوضع الفاتح/الداكن أثناء تفعيل سمة مخصصة",
   "logout": "تسجيل الخروج",
   "userDiscountLimitManagement": {
     "alreadyExists": "يوجد حد خصم بالفعل لهذا المندوب والمجموعة",

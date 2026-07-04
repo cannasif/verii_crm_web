@@ -16,7 +16,7 @@ export function ErpFieldHint({ label, className }: ErpFieldHintProps) {
         className={cn(
           'inline-flex shrink-0 items-center text-slate-400 transition-colors',
           'hover:text-slate-600 focus-visible:outline-none focus-visible:ring-2',
-          'focus-visible:ring-pink-500/40 dark:hover:text-slate-300',
+          'focus-visible:ring-primary/40 dark:hover:text-slate-300',
           className
         )}
       >

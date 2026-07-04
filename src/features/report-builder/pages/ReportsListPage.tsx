@@ -184,9 +184,9 @@ export function ReportsListPage(): ReactElement {
               <Button
                 variant="outline"
                 onClick={() => navigate('/')}
-                className="rounded-xl border-slate-200 dark:border-white/10 h-11 px-6 font-bold from-rose-500 to-yellow-500   transition-all shadow-sm"
+                className="rounded-xl border-slate-200 dark:border-white/10 h-11 px-6 font-bold from-primary to-yellow-500   transition-all shadow-sm"
               >
-                <LayoutGrid className="mr-2 size-4 text-rose-500" />
+                <LayoutGrid className="mr-2 size-4 text-red-500" />
                 {t('common.reportBuilder.openDashboardHome')}
               </Button>
             )}
@@ -334,7 +334,7 @@ export function ReportsListPage(): ReactElement {
                           type="button"
                           variant="ghost"
                           size="icon"
-                          className="size-8 rounded-md hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
+                          className="size-8 rounded-md hover:bg-accent hover:text-primary dark:hover:bg-accent/10 dark:hover:text-primary"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleAddToDashboard(r.id);
@@ -466,7 +466,7 @@ export function ReportsListPage(): ReactElement {
                         {r.connectionKey} <span className="mx-1 text-slate-300">/</span> {r.dataSourceType} <span className="mx-1 text-slate-300">/</span> {r.dataSourceName}
                       </p>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        <Badge variant="secondary" className="rounded-md bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-500/20 font-bold px-2 py-0.5 text-[10px] uppercase">
+                        <Badge variant="secondary" className="rounded-md bg-accent dark:bg-primary/10 text-red-600 dark:text-red-400 border-primary/15 dark:border-primary/20 font-bold px-2 py-0.5 text-[10px] uppercase">
                           {getStatusLabel(summary.status)}
                         </Badge>
                         <Badge variant="outline" className="rounded-md border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 font-bold px-2 py-0.5 text-[10px] uppercase tracking-wider">
@@ -509,7 +509,7 @@ export function ReportsListPage(): ReactElement {
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="size-9 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-500/10 hover:text-rose-600 dark:hover:text-rose-400"
+                            className="size-9 rounded-xl hover:bg-accent dark:hover:bg-accent/10 hover:text-primary dark:hover:text-primary"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleAddToDashboard(r.id);

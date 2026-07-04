@@ -1,4 +1,4 @@
-﻿import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { WandSparkles, X } from 'lucide-react';
@@ -178,9 +178,9 @@ export function CategoryRuleDialog({
         </DialogPrimitive.Close>
         <DialogHeader className="p-8 pb-4 border-b border-slate-100 dark:border-white/5 text-left shrink-0">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-rose-100 dark:bg-white/5 shadow-inner border border-pink-200 dark:border-white/10 relative overflow-hidden group">
-              <div className="absolute inset-0 bg-linear-to-br from-rose-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <WandSparkles className="h-6 w-6 text-rose-600 dark:text-rose-400 relative z-10" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent dark:bg-white/5 shadow-inner border border-primary/20 dark:border-white/10 relative overflow-hidden group">
+              <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <WandSparkles className="h-6 w-6 text-red-600 dark:text-red-400 relative z-10" />
             </div>
             <div>
               <DialogTitle className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -205,7 +205,7 @@ export function CategoryRuleDialog({
                   aria-required="true"
                   value={form.ruleName}
                   onChange={(e) => setForm((p) => ({ ...p, ruleName: e.target.value }))}
-                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-medium"
                 />
               </div>
               <div className="space-y-2">
@@ -213,7 +213,7 @@ export function CategoryRuleDialog({
                 <Input
                   value={form.ruleCode ?? ''}
                   onChange={(e) => setForm((p) => ({ ...p, ruleCode: e.target.value.toUpperCase() }))}
-                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-mono uppercase tracking-wider font-semibold"
+                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-mono uppercase tracking-wider font-semibold"
                 />
               </div>
             </div>
@@ -222,10 +222,10 @@ export function CategoryRuleDialog({
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.stockAttribute')}{requiredMark}</label>
                 <Select value={String(form.stockAttributeType)} onValueChange={(value) => setForm((p) => ({ ...p, stockAttributeType: Number(value) }))}>
-                  <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all font-medium"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus:ring-primary/20 focus:border-primary/50 transition-all font-medium"><SelectValue /></SelectTrigger>
                   <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1025] shadow-xl">
                     {STOCK_ATTRIBUTE_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={String(option.value)} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-rose-600 dark:focus:text-rose-400">
+                      <SelectItem key={option.value} value={String(option.value)} className="font-medium focus:bg-accent dark:focus:bg-primary/10 focus:text-primary dark:focus:text-primary">
                         {t(`categoryDefinitions.ruleAttributes.${option.labelKey}`)}
                       </SelectItem>
                     ))}
@@ -235,10 +235,10 @@ export function CategoryRuleDialog({
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{t('categoryDefinitions.form.operator')}{requiredMark}</label>
                 <Select value={String(form.operatorType)} onValueChange={(value) => setForm((p) => ({ ...p, operatorType: Number(value) }))}>
-                  <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus:ring-pink-500/50 focus:border-pink-500/50 transition-all font-medium"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus:ring-primary/20 focus:border-primary/50 transition-all font-medium"><SelectValue /></SelectTrigger>
                   <SelectContent className="rounded-xl border-slate-200 dark:border-white/10 bg-white dark:bg-[#1a1025] shadow-xl">
                     {OPERATOR_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={String(option.value)} className="font-medium focus:bg-pink-50 dark:focus:bg-pink-500/10 focus:text-rose-600 dark:focus:text-rose-400">
+                      <SelectItem key={option.value} value={String(option.value)} className="font-medium focus:bg-accent dark:focus:bg-primary/10 focus:text-primary dark:focus:text-primary">
                         {t(`categoryDefinitions.ruleOperators.${option.labelKey}`)}
                       </SelectItem>
                     ))}
@@ -291,7 +291,7 @@ export function CategoryRuleDialog({
                           <Badge
                             key={`${form.stockAttributeType}-${option.value}`}
                             variant="outline"
-                            className="cursor-pointer rounded-full px-3 py-1 text-xs border-pink-200 dark:border-pink-500/30 text-rose-600 dark:text-rose-400 hover:bg-pink-50 dark:hover:bg-pink-500/10 transition-colors font-semibold"
+                            className="cursor-pointer rounded-full px-3 py-1 text-xs border-primary/20 dark:border-primary/30 text-red-600 dark:text-red-400 hover:bg-accent dark:hover:bg-primary/10 transition-colors font-semibold"
                             onClick={() => {
                               if (isListOperator) {
                                 addListValue(option.value);
@@ -311,7 +311,7 @@ export function CategoryRuleDialog({
                     </div>
 
                     {isListOperator ? (
-                      <div className="flex flex-wrap gap-2 rounded-2xl border border-dashed border-pink-200 dark:border-pink-500/30 bg-pink-50/50 dark:bg-pink-500/5 p-4">
+                      <div className="flex flex-wrap gap-2 rounded-2xl border border-dashed border-primary/20 dark:border-primary/30 bg-accent/50 dark:bg-primary/5 p-4">
                         {selectedListValues.length > 0 ? selectedListValues.map((value) => (
                           <Badge
                             key={value}
@@ -319,10 +319,10 @@ export function CategoryRuleDialog({
                             className="cursor-pointer rounded-full font-semibold hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-500/20 dark:hover:text-red-400 transition-colors"
                             onClick={() => removeListValue(value)}
                           >
-                            {value} Ã—
+                            {value} ×
                           </Badge>
                         )) : (
-                          <span className="text-xs font-medium text-pink-500 dark:text-rose-400">
+                          <span className="text-xs font-medium text-primary dark:text-primary">
                             {t('categoryDefinitions.form.ruleValueInListEmpty')}
                           </span>
                         )}
@@ -332,7 +332,7 @@ export function CategoryRuleDialog({
                         value={form.value}
                         onChange={(e) => setForm((p) => ({ ...p, value: e.target.value }))}
                         placeholder={t('categoryDefinitions.form.ruleValueDropdownPlaceholder')}
-                        className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                        className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-medium"
                       />
                     )}
                   </div>
@@ -343,7 +343,7 @@ export function CategoryRuleDialog({
                       value={form.value}
                       onChange={(e) => setForm((p) => ({ ...p, value: e.target.value }))}
                       placeholder={t('categoryDefinitions.form.ruleValuePlaceholder')}
-                      className="rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium resize-none"
+                      className="rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-medium resize-none"
                     />
                     <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
                       {t('categoryDefinitions.form.ruleValueManualHelp')}
@@ -357,7 +357,7 @@ export function CategoryRuleDialog({
                   type="number"
                   value={form.priority}
                   onChange={(e) => setForm((p) => ({ ...p, priority: Number(e.target.value) }))}
-                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/50 focus-visible:border-pink-500/50 transition-all font-medium"
+                  className="h-12 rounded-xl bg-slate-50 dark:bg-[#1a1025] border-slate-200 dark:border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/50 transition-all font-medium"
                 />
               </div>
             </div>
@@ -366,7 +366,7 @@ export function CategoryRuleDialog({
 
         <DialogFooter className="border-t border-slate-100 dark:border-white/5 px-8 py-4 flex-col sm:flex-row gap-3 shrink-0">
           <div className="flex-1 flex items-center text-xs font-semibold text-slate-400">
-            <span className="text-pink-500 mr-1">*</span> {t('required', { ns: 'common' })}
+            <span className="text-primary mr-1">*</span> {t('required', { ns: 'common' })}
           </div>
           <Button
             variant="outline"
@@ -379,7 +379,7 @@ export function CategoryRuleDialog({
           <Button
             onClick={() => void handleSubmit()}
             disabled={isDisabled}
-            className="rounded-xl bg-linear-to-r from-rose-600 to-rose-500 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11 "
+            className="rounded-xl bg-linear-to-r from-primary to-primary text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_5px_15px_-5px_var(--crm-brand-shadow)] disabled:opacity-30 disabled:hover:scale-100 px-8 h-11 "
           >
             {isLoading ? t('saving', { ns: 'common' }) : initialData ? t('update', { ns: 'common' }) : t('categoryDefinitions.actions.createRule')}
           </Button>

@@ -58,7 +58,7 @@ interface PricingRuleLineFormProps {
 }
 
 // --- TASARIM SABİTLERİ ---
-const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/20 focus-visible:border-pink-500 transition-all duration-200 text-sm font-medium";
+const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 text-sm font-medium";
 const READONLY_INPUT_STYLE = "h-11 rounded-xl bg-slate-50 dark:bg-white/5 border-slate-200 dark:border-white/5 text-slate-500 dark:text-slate-400 text-sm cursor-not-allowed font-medium";
 const LABEL_STYLE = "text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-2";
 const DISCOUNT_RATE_ERROR_MESSAGE = 'Kademeli iskonto efektif %100 değerine ulaşamaz.';
@@ -203,7 +203,7 @@ export function PricingRuleLineForm({
             render={({ field }) => (
               <FormItem className="col-span-1 md:col-span-2 lg:col-span-1">
                 <FormLabel className={LABEL_STYLE}>
-                  <Box size={12} className="text-pink-500" />
+                  <Box size={12} className="text-primary" />
                   {t('pricingRule.lines.stokCode')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <div className="flex gap-2">
@@ -251,7 +251,7 @@ export function PricingRuleLineForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
-                  <Hash size={12} className="text-pink-500" />
+                  <Hash size={12} className="text-primary" />
                   {t('pricingRule.lines.minQuantity')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <FormControl>
@@ -276,7 +276,7 @@ export function PricingRuleLineForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
-                  <Hash size={12} className="text-pink-500" />
+                  <Hash size={12} className="text-primary" />
                   {t('pricingRule.lines.maxQuantity')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <FormControl>
@@ -301,7 +301,7 @@ export function PricingRuleLineForm({
             render={({ field }) => (
               <FormItem className="flex flex-col">
                 <FormLabel className={LABEL_STYLE}>
-                  <Coins size={12} className="text-pink-500" />
+                  <Coins size={12} className="text-primary" />
                   {t('pricingRule.lines.currencyCode')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <Popover open={currencyPopoverOpen} onOpenChange={setCurrencyPopoverOpen}>
@@ -349,7 +349,7 @@ export function PricingRuleLineForm({
                             >
                               <Check
                                 className={cn(
-                                  "mr-2 h-4 w-4 text-pink-500",
+                                  "mr-2 h-4 w-4 text-primary",
                                   String(curr.dovizTipi) === String(field.value) ? "opacity-100" : "opacity-0"
                                 )}
                               />
@@ -381,7 +381,7 @@ export function PricingRuleLineForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
-                  <DollarSign size={12} className="text-pink-500" />
+                  <DollarSign size={12} className="text-primary" />
                   {t('pricingRule.lines.fixedUnitPrice')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <FormControl>
@@ -517,7 +517,7 @@ export function PricingRuleLineForm({
           <Button
             type="submit"
             disabled={!isFormValid}
-            className="w-full sm:w-auto bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold border-0 hover:shadow-lg hover:shadow-pink-500/20 transition-all active:scale-95 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="w-full sm:w-auto bg-[image:var(--crm-brand-gradient)] text-white font-bold border-0 hover:shadow-lg hover:shadow-primary/20 transition-all active:scale-95 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {t('pricingRule.form.save')}
           </Button>

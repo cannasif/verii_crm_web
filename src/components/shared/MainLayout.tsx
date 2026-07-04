@@ -49,16 +49,11 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       {
         title: t('sidebar.home'),
         href: '/',
-        icon: <DashboardCircleIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
-      },
-      {
-        title: t('sidebar.aiAssistant', { defaultValue: 'AI Asistan' }),
-        href: '/ai-assistant',
-        icon: <Analytics01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        icon: <DashboardCircleIcon size={iconSize} className="text-blue-500" />,
       },
       {
         title: t('sidebar.salesManagement'),
-        icon: <ShoppingBag03Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        icon: <ShoppingBag03Icon size={iconSize} className="text-orange-500" />,
         children: [
           {
             title: t('sidebar.demands'),
@@ -89,15 +84,8 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         ],
       },
       {
-        title: t('sidebar.ndi'),
-        icon: <File01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
-        children: [
-          { title: t('sidebar.ndiOrderLineSelection'), href: '/ndi/order-line-selection' },
-        ],
-      },
-      {
         title: t('sidebar.customers'),
-        icon: <UserGroupIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        icon: <UserGroupIcon size={iconSize} className="text-purple-500" />,
         children: [
           { title: t('sidebar.customerManagement'), href: '/customer-management' },
           { title: t('sidebar.customersConflictInbox'), href: '/customers/conflict-inbox' },
@@ -108,7 +96,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.activities'),
-        icon: <Calendar03Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        icon: <Calendar03Icon size={iconSize} className="text-emerald-500" />,
         children: [
           { title: t('sidebar.dailyTasks'), href: '/daily-tasks' },
           { title: t('sidebar.activityManagement'), href: '/activity-management' },
@@ -117,7 +105,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.productAndStock'),
-        icon: <PackageIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        icon: <PackageIcon size={iconSize} className="text-pink-500" />,
         children: [
           { title: t('sidebar.stockManagement'), href: '/stocks' },
           { title: t('sidebar.productPricingManagement'), href: '/product-pricing-management' },
@@ -127,7 +115,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.reports'),
-        icon: <File01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        icon: <File01Icon size={iconSize} className="text-cyan-500" />,
         children: [
           { title: t('sidebar.salesKpi'), href: '/salesmen-360/me' },
           {
@@ -147,7 +135,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
           },
           {
             title: t('sidebar.powerbi'),
-            icon: <Analytics01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+            icon: <Analytics01Icon size={iconSize} className="text-amber-500" />,
             children: [
               { title: t('sidebar.powerbiConfiguration'), href: '/powerbi/configuration' },
               { title: t('sidebar.powerbiReportsView'), href: '/powerbi/reports' },
@@ -163,7 +151,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.approvalDefinitions'),
-        icon: <CheckmarkCircle02Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        icon: <CheckmarkCircle02Icon size={iconSize} className="text-teal-500" />,
         children: [
           { title: t('sidebar.approvalFlowManagement'), href: '/approval-flow-management' },
           { title: t('sidebar.approvalRoleGroupManagement'), href: '/approval-role-group-management' },
@@ -173,7 +161,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.definitions'),
-        icon: <SlidersHorizontalIcon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        icon: <SlidersHorizontalIcon size={iconSize} className="text-slate-500" />,
         children: [
           {
             title: t('sidebar.customerDefinitions'),
@@ -218,7 +206,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.accessControl'),
-        icon: <Shield01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        icon: <Shield01Icon size={iconSize} className="text-violet-500" />,
         children: [
           {
             title: t('sidebar.accessControlManagementGroup', { defaultValue: 'Yetki ve Kullanıcı Yönetimi' }),
@@ -247,7 +235,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
       },
       {
         title: t('sidebar.settings'),
-        icon: <Settings02Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+        icon: <Settings02Icon size={iconSize} className="text-gray-500" />,
         children: [
           { title: t('sidebar.systemSettings'), href: '/settings/system-settings' },
           {

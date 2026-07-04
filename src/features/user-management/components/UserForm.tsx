@@ -62,7 +62,7 @@ const INPUT_FIELD_CLASSNAME = cn(
   'text-slate-900 dark:text-white',
   'placeholder:text-slate-400 dark:placeholder:text-slate-500',
   'focus-visible:bg-white dark:focus-visible:bg-white/5',
-  'focus-visible:border-rose-500/70 focus-visible:ring-2 focus-visible:ring-rose-500/10 focus-visible:ring-offset-0',
+  'focus-visible:border-primary/70 focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:ring-offset-0',
   'aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20',
   'dark:aria-invalid:border-destructive dark:aria-invalid:ring-destructive/30'
 );
@@ -454,7 +454,7 @@ export function UserForm({
                         </FormControl>
                         <SelectContent className="bg-white dark:bg-[#130822] border-slate-200 dark:border-white/10">
                           {roleOptions.map((opt) => (
-                            <SelectItem key={opt.value} value={String(opt.value)} className="focus:bg-rose-500 focus:text-white">
+                            <SelectItem key={opt.value} value={String(opt.value)} className="focus:bg-accent focus:text-white">
                               {opt.label}
                             </SelectItem>
                           ))}
@@ -487,7 +487,7 @@ export function UserForm({
                       <SelectContent className="bg-white dark:bg-[#130822] border-slate-200 dark:border-white/10">
                         <SelectItem value="none">{t('form.noManager')}</SelectItem>
                         {managerOptions.map((option) => (
-                          <SelectItem key={option.value} value={String(option.value)} className="focus:bg-rose-500 focus:text-white">
+                          <SelectItem key={option.value} value={String(option.value)} className="focus:bg-accent focus:text-white">
                             {option.label}
                           </SelectItem>
                         ))}
@@ -532,7 +532,7 @@ export function UserForm({
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
-                        className="data-[state=checked]:bg-rose-500"
+                        className="data-[state=checked]:bg-accent"
                       />
                     </FormControl>
                     <FormMessage />

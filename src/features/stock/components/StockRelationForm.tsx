@@ -96,7 +96,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel className="text-zinc-800 dark:text-zinc-200 font-semibold flex items-center gap-2 text-sm" required={isZodFieldRequired(stockRelationSchema, 'relatedStockId')}>
-                 <Box className="w-4 h-4 text-pink-600" />
+                 <Box className="w-4 h-4 text-primary" />
                  {t('relations.relatedStock')}
               </FormLabel>
               
@@ -110,7 +110,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                       className={cn(
                         "w-full justify-between h-12 rounded-xl border-zinc-200 dark:border-white/10",
                         "bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm", 
-                        "hover:bg-white dark:hover:bg-zinc-800 hover:border-pink-500/50 hover:shadow-[0_0_15px_rgba(236,72,153,0.1)]", 
+                        "hover:bg-white dark:hover:bg-zinc-800 hover:border-primary/50 hover:shadow-[0_0_15px_rgba(236,72,153,0.1)]", 
                         "transition-all duration-300",
                         !field.value && "text-muted-foreground font-normal"
                       )}
@@ -145,7 +145,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                                     form.setValue("relatedStockId", stock.id);
                                     setOpenCombobox(false);
                                 }}
-                                className="flex items-center justify-between py-2.5 px-3 rounded-lg cursor-pointer aria-selected:bg-pink-50 dark:aria-selected:bg-pink-900/20 aria-selected:text-pink-900 dark:aria-selected:text-pink-100 mb-1"
+                                className="flex items-center justify-between py-2.5 px-3 rounded-lg cursor-pointer aria-selected:bg-accent dark:aria-selected:bg-primary/10 aria-selected:text-primary dark:aria-selected:text-primary mb-1"
                             >
                                 <div className="flex flex-col gap-0.5">
                                     <span className="font-medium text-sm">{displayStockName}</span>
@@ -155,7 +155,7 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                                 </div>
                                 <Check
                                     className={cn(
-                                    "ml-2 h-4 w-4 text-pink-600",
+                                    "ml-2 h-4 w-4 text-primary",
                                     stock.id === field.value ? "opacity-100" : "opacity-0"
                                     )}
                                 />
@@ -191,8 +191,8 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                             h-12 rounded-xl pl-4
                             bg-white/50 dark:bg-zinc-900/50 
                             border-zinc-200 dark:border-white/10
-                            focus-visible:ring-2 focus-visible:ring-pink-500/20 focus-visible:border-pink-500
-                            group-hover:border-pink-300 dark:group-hover:border-pink-700/50
+                            focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary
+                            group-hover:border-primary/30 dark:group-hover:border-primary/50
                             transition-all duration-300
                         "
                         {...field}
@@ -224,8 +224,8 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                     min-h-[100px] rounded-xl resize-none
                     bg-white/50 dark:bg-zinc-900/50 
                     border-zinc-200 dark:border-white/10
-                    focus-visible:ring-2 focus-visible:ring-pink-500/20 focus-visible:border-pink-500
-                    hover:border-pink-300 dark:hover:border-pink-700/50
+                    focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:border-primary
+                    hover:border-primary/30 dark:hover:border-primary/50
                     transition-all duration-300
                   "
                 />
@@ -243,21 +243,21 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
                 className={cn(
                     "group flex flex-row items-start space-x-3 space-y-0 rounded-xl border p-4 transition-all duration-300 cursor-pointer",
                     field.value 
-                        ? "bg-pink-50/50 border-pink-200 dark:bg-pink-900/10 dark:border-pink-800" 
-                        : "bg-white/40 dark:bg-white/5 border-zinc-200 dark:border-white/10 hover:border-pink-300 dark:hover:border-pink-700 hover:shadow-md"
+                        ? "bg-accent/50 border-primary/20 dark:bg-primary/10 dark:border-primary/30" 
+                        : "bg-white/40 dark:bg-white/5 border-zinc-200 dark:border-white/10 hover:border-primary/30 dark:hover:border-primary hover:shadow-md"
                 )}
             >
               <FormControl>
                 <Checkbox
                   checked={field.value}
                   onCheckedChange={field.onChange}
-                  className="data-[state=checked]:bg-pink-600 data-[state=checked]:border-pink-600 border-zinc-400 dark:border-zinc-500 mt-1"
+                  className="data-[state=checked]:bg-primary data-[state=checked]:border-primary border-zinc-400 dark:border-zinc-500 mt-1"
                 />
               </FormControl>
               <div className="space-y-1 leading-none select-none">
                 <FormLabel className="text-sm font-bold text-zinc-900 dark:text-white cursor-pointer flex items-center gap-2">
                   {t('relations.isMandatory')}
-                  {field.value && <AlertCircle className="w-3 h-3 text-pink-600 animate-pulse" />}
+                  {field.value && <AlertCircle className="w-3 h-3 text-primary animate-pulse" />}
                 </FormLabel>
                 <FormDescription className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
                   {t('relations.isMandatoryDesc')}
@@ -272,11 +272,11 @@ export function StockRelationForm({ stockId }: StockRelationFormProps): ReactEle
           disabled={createRelation.isPending || !isFormValid}
           className="
             w-full h-12 relative overflow-hidden
-            bg-linear-to-r from-pink-600 to-orange-600 
-            hover:from-pink-500 hover:to-orange-500
+            bg-[image:var(--crm-brand-gradient)] 
+            hover:opacity-90
             text-white font-bold tracking-wide rounded-xl
-            shadow-lg shadow-pink-500/25 
-            hover:shadow-pink-500/40 hover:scale-[1.02] active:scale-[0.98]
+            shadow-lg shadow-primary/25 
+            hover:shadow-primary/40 hover:scale-[1.02] active:scale-[0.98]
             transition-all duration-300
             border-0 mt-2
           "

@@ -43,7 +43,7 @@ interface ErpCustomerTableProps {
 export const getColumnsConfig = (t: TFunction) => [
   { key: 'branchCode', label: t('table.branchCode'), className: 'font-medium whitespace-nowrap' },
   { key: 'businessUnit', label: t('table.businessUnitCode'), className: 'whitespace-nowrap' },
-  { key: 'customerCode', label: t('table.customerCode'), className: 'font-semibold text-slate-900 dark:text-white group-hover:text-pink-600 dark:group-hover:text-pink-400 transition-colors whitespace-nowrap' },
+  { key: 'customerCode', label: t('table.customerCode'), className: 'font-semibold text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-primary transition-colors whitespace-nowrap' },
   { key: 'customerName', label: t('table.customerName'), className: 'text-slate-800 dark:text-slate-200 font-medium min-w-[160px] md:min-w-[200px]' },
   { key: 'phone', label: t('table.phone'), className: 'whitespace-nowrap' },
   { key: 'email', label: t('table.email'), className: 'min-w-[160px] md:min-w-[200px] break-all' },

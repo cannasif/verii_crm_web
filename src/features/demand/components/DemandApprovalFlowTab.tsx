@@ -61,7 +61,7 @@ function StepStatusIcon({ stepStatus }: { stepStatus: ApprovalFlowStepReportDto[
       );
     case 'Rejected':
       return (
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-rose-500 to-red-600 shadow-lg shadow-rose-500/30 border border-rose-300 dark:border-rose-500/50">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-red-600 shadow-lg shadow-primary/30 border border-primary/30 dark:border-primary/50">
           <CancelCircleIcon size={24} className="text-white" />
         </div>
       );
@@ -88,7 +88,7 @@ function ActionStatusBadge({ status, statusName }: { status: number; statusName:
       Icon = CheckmarkBadge01Icon;
       break;
     case 3: // Reddedildi
-      styles = "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30";
+      styles = "bg-accent text-primary border-primary/20 dark:bg-primary/10 dark:text-primary dark:border-primary/30";
       Icon = CancelCircleIcon;
       break;
     case 4: // İptal
@@ -135,7 +135,7 @@ function StepCard({ step, locale }: { step: ApprovalFlowStepReportDto; locale: s
               "text-sm font-semibold",
               step.stepStatus === 'Completed' ? "text-emerald-600 dark:text-emerald-400" :
               step.stepStatus === 'InProgress' ? "text-amber-600 dark:text-amber-500" :
-              step.stepStatus === 'Rejected' ? "text-rose-600 dark:text-rose-400" :
+              step.stepStatus === 'Rejected' ? "text-red-600 dark:text-red-400" :
               "text-slate-500 dark:text-slate-400"
             )}>
               {stepStatusLabel}
@@ -181,14 +181,14 @@ function StepCard({ step, locale }: { step: ApprovalFlowStepReportDto; locale: s
 
                 {/* Ret Nedeni Kutusu */}
                 {action.rejectedReason && (
-                  <div className="w-full sm:col-span-2 mt-2 rounded-xl bg-rose-50 dark:bg-rose-500/10 p-3 sm:p-4 border border-rose-100 dark:border-rose-500/20">
+                  <div className="w-full sm:col-span-2 mt-2 rounded-xl bg-accent dark:bg-primary/10 p-3 sm:p-4 border border-primary/15 dark:border-primary/20">
                     <div className="flex items-start gap-2.5">
-                      <Alert02Icon size={18} className="text-rose-600 dark:text-rose-400 mt-0.5 shrink-0" />
+                      <Alert02Icon size={18} className="text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
                       <div>
-                        <span className="block text-[11px] font-black text-rose-800 dark:text-rose-300 uppercase tracking-wider mb-1">
+                        <span className="block text-[11px] font-black text-primary dark:text-primary uppercase tracking-wider mb-1">
                           Ret Gerekçesi
                         </span>
-                        <p className="text-sm font-medium text-rose-700 dark:text-rose-200 leading-relaxed">
+                        <p className="text-sm font-medium text-red-700 dark:text-red-200 leading-relaxed">
                           {action.rejectedReason}
                         </p>
                       </div>
@@ -236,7 +236,7 @@ export function DemandApprovalFlowTab({ demandId }: DemandApprovalFlowTabProps):
   if (error) {
     return (
       <div className="max-w-4xl mx-auto">
-        <Alert variant="destructive" className="rounded-2xl border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-500/20 dark:bg-[#1a0a10] dark:text-rose-300 shadow-sm p-5">
+        <Alert variant="destructive" className="rounded-2xl border-primary/20 bg-accent text-primary dark:border-primary/20 dark:bg-[#1a0a10] dark:text-primary shadow-sm p-5">
           <Alert02Icon size={24} className="mb-1"  />
           <div className="ml-2">
             <h5 className="font-bold text-base mb-1">{t('demand.approvalFlow.errorTitle', { defaultValue: 'Hata Oluştu' })}</h5>
@@ -296,7 +296,7 @@ export function DemandApprovalFlowTab({ demandId }: DemandApprovalFlowTabProps):
           <div className={cn(
             "px-4 py-2 rounded-xl text-sm font-bold border shadow-sm inline-flex items-center justify-center text-center",
             dto.overallStatus === 2 ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/30" :
-            dto.overallStatus === 3 ? "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/30" :
+            dto.overallStatus === 3 ? "bg-accent text-primary border-primary/20 dark:bg-primary/10 dark:text-primary dark:border-primary/30" :
             "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/30"
           )}>
             {dto.overallStatusName}
@@ -306,13 +306,13 @@ export function DemandApprovalFlowTab({ demandId }: DemandApprovalFlowTabProps):
 
       {/* Genel Ret Nedeni Varsa */}
       {dto.rejectedReason && (
-        <Alert variant="destructive" className="rounded-2xl border-rose-200 bg-rose-50 dark:border-rose-500/20 dark:bg-rose-500/5 shadow-sm p-5">
-          <Alert02Icon size={24} className="text-rose-600 dark:text-rose-500 mt-1" />
+        <Alert variant="destructive" className="rounded-2xl border-primary/20 bg-accent dark:border-primary/20 dark:bg-accent/5 shadow-sm p-5">
+          <Alert02Icon size={24} className="text-primary dark:text-red-500 mt-1" />
           <div className="ml-3">
-            <h5 className="text-xs font-black text-rose-800 dark:text-rose-300 uppercase tracking-wider mb-1.5">
+            <h5 className="text-xs font-black text-primary dark:text-primary uppercase tracking-wider mb-1.5">
               Süreç İptal Nedeni
             </h5>
-            <AlertDescription className="text-rose-700 dark:text-rose-200 font-medium text-sm leading-relaxed">
+            <AlertDescription className="text-red-700 dark:text-red-200 font-medium text-sm leading-relaxed">
               {dto.rejectedReason}
             </AlertDescription>
           </div>

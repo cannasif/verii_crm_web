@@ -84,7 +84,7 @@ export function PowerbiReportSyncCard(): ReactElement {
 
         {lastResult && (
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-2">
-            <div className="rounded-2xl border border-slate-300/80 dark:border-white/15 bg-slate-50 dark:bg-[#1E1627] p-4 text-center space-y-1 transition-all hover:border-rose-500/30 hover:shadow-sm">
+            <div className="rounded-2xl border border-slate-300/80 dark:border-white/15 bg-slate-50 dark:bg-[#1E1627] p-4 text-center space-y-1 transition-all hover:border-primary/30 hover:shadow-sm">
               <p className="text-2xl font-black text-slate-700 dark:text-white">{lastResult.totalRemote}</p>
               <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{t('powerbiSync.totalRemote')}</p>
             </div>

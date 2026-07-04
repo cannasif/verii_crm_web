@@ -520,7 +520,7 @@ export function ActivityManagementPage(): ReactElement {
               <span title={t('hasImages', { defaultValue: 'Resimli Aktivite' })}>
                 <ImageIcon
                   size={18}
-                  className="text-pink-500 shrink-0"
+                  className="text-primary shrink-0"
                 />
               </span>
             )}
@@ -555,7 +555,7 @@ export function ActivityManagementPage(): ReactElement {
         typeof value === 'string' || typeof value === 'number' || value instanceof Date ? value : null;
       return (
         <div className="flex items-center gap-2 text-xs">
-          <Calendar size={14} className="text-pink-500/50" />
+          <Calendar size={14} className="text-primary/50" />
           {formatActivityDateTime(dateValue)}
         </div>
       );
@@ -597,7 +597,7 @@ export function ActivityManagementPage(): ReactElement {
           : String(value ?? '');
       return (
         <div className="flex items-center gap-2">
-          <List size={14} className="text-pink-500" />
+          <List size={14} className="text-primary" />
           {display}
         </div>
       );
@@ -719,14 +719,14 @@ export function ActivityManagementPage(): ReactElement {
             {t('title')}
           </h1>
           <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
-            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
             {t('description')}
           </p>
         </div>
         {canCreate ? (
           <Button
             onClick={handleAddClick}
-            className="h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white text-sm font-black shadow-xl shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-pink-500/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="h-12 px-8 bg-[image:var(--crm-brand-gradient)] rounded-2xl text-white text-sm font-black shadow-xl shadow-primary/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-primary/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus size={20} className="mr-2 stroke-[3px]" />
             {t('create')}

@@ -90,7 +90,7 @@ function renderCellContent(
     case 'date':
       return (
         <div className="flex items-center gap-2 text-xs min-w-0 overflow-hidden">
-          <Calendar size={14} className="text-pink-500/50 shrink-0" />
+          <Calendar size={14} className="text-primary/50 shrink-0" />
           <span className="truncate">{new Date(String(value)).toLocaleDateString(i18n.language)}</span>
         </div>
       );

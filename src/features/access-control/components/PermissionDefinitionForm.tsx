@@ -52,7 +52,7 @@ const INPUT_STYLE = `
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-500
   focus-visible:bg-white dark:focus-visible:bg-white/5
-  focus-visible:border-rose-500/70 focus-visible:ring-2 focus-visible:ring-rose-500/10 focus-visible:ring-offset-0
+  focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0
   transition-all duration-200 w-full
 `;
 
@@ -136,7 +136,7 @@ export function PermissionDefinitionForm({
 
         <DialogHeader className="p-4 pb-4 shrink-0">
           <div className="flex items-center gap-5">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-[image:var(--crm-brand-gradient)] border-0 shadow-lg shadow-rose-500/20">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-[image:var(--crm-brand-gradient)] border-0 shadow-lg shadow-primary/20">
               <KeyRound size={32} className="text-white" strokeWidth={2.5} />
             </div>
             <div className="space-y-1">
@@ -164,7 +164,7 @@ export function PermissionDefinitionForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <KeyRound size={16} className="text-rose-500" />
+                        <KeyRound size={16} className="text-red-500" />
                         {t('permissionDefinitions.form.code')}
                         <FieldHelpTooltip text={t('help.permissionDefinition.code')} />
                         {isZodFieldRequired(createPermissionDefinitionSchema, 'code') && <span className="text-destructive ml-0.5">*</span>}
@@ -196,7 +196,7 @@ export function PermissionDefinitionForm({
                       {field.value ? (
                         <div className="mt-3 rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-white/5 p-4">
                           <div className="flex items-center gap-2 mb-2 text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                            <Info size={14} className="text-rose-500" />
+                            <Info size={14} className="text-red-500" />
                             {t('permissionDefinitions.form.affectedRoutes')}
                           </div>
                           <div className="flex flex-wrap gap-2">
@@ -225,7 +225,7 @@ export function PermissionDefinitionForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <FileText size={16} className="text-rose-500" />
+                          <FileText size={16} className="text-red-500" />
                           {t('permissionDefinitions.form.name')}
                           <FieldHelpTooltip text={t('help.permissionDefinition.name')} />
                           {isZodFieldRequired(createPermissionDefinitionSchema, 'name') && <span className="text-destructive ml-0.5">*</span>}
@@ -290,7 +290,7 @@ export function PermissionDefinitionForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <Info size={16} className="text-rose-500" />
+                          <Info size={16} className="text-red-500" />
                           {t('permissionDefinitions.form.description')}
                           <FieldHelpTooltip text={t('help.permissionDefinition.description')} />
                         </FormLabel>
@@ -318,7 +318,7 @@ export function PermissionDefinitionForm({
                 type="submit"
                 form="permission-definition-form"
                 disabled={isLoading || !isFormValid}
-                className="h-11 px-6 sm:px-10 rounded-xl bg-[image:var(--crm-brand-gradient)] border-0 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-rose-500/25 text-xs sm:text-sm opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                className="h-11 px-6 sm:px-10 rounded-xl bg-[image:var(--crm-brand-gradient)] border-0 text-white font-black hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-primary/25 text-xs sm:text-sm opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
               >
                 {isLoading ? (
                   <>

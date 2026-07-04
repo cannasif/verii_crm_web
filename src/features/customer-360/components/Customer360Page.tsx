@@ -255,7 +255,7 @@ function SimpleItemRow({
       <button
         type="button"
         onClick={onClick}
-        className="group flex w-full items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/20 px-2.5 py-2 text-left transition-all hover:border-rose-500/40 hover:bg-muted/50 hover:shadow-xs"
+        className="group flex w-full items-center justify-between gap-3 rounded-lg border border-border/60 bg-muted/20 px-2.5 py-2 text-left transition-all hover:border-primary/40 hover:bg-muted/50 hover:shadow-xs"
       >
         {content}
       </button>
@@ -330,7 +330,7 @@ function ScoreRow({
 }): ReactElement {
   const { t } = useTranslation('customer360');
   const safeValue = value ?? 0;
-  const toneClass = safeValue >= 70 ? 'text-emerald-600' : safeValue >= 40 ? 'text-amber-600' : 'text-rose-600';
+  const toneClass = safeValue >= 70 ? 'text-emerald-600' : safeValue >= 40 ? 'text-amber-600' : 'text-red-600';
   const labelEl = explainKey ? (
     <span className="flex items-center gap-1 text-muted-foreground">
       {label}
@@ -489,8 +489,8 @@ function RecommendedActionsPanel({
               const title = tc(`actions.recommendedActions.${actionKey}.title`, { defaultValue: action.title });
               const reason = tc(`actions.recommendedActions.${actionKey}.reason`, { defaultValue: action.reason ?? '-' });
               return (
-              <div key={`${action.actionCode}-${action.title}`} className="group/action relative overflow-hidden rounded-xl border border-border/70 bg-muted/20 p-3 transition-all hover:border-rose-500/30 hover:bg-muted/40 hover:shadow-sm">
-                <span className="pointer-events-none absolute inset-y-0 left-0 w-0.5 bg-linear-to-b from-rose-500 to-amber-500 opacity-0 transition-opacity group-hover/action:opacity-100" />
+              <div key={`${action.actionCode}-${action.title}`} className="group/action relative overflow-hidden rounded-xl border border-border/70 bg-muted/20 p-3 transition-all hover:border-primary/30 hover:bg-muted/40 hover:shadow-sm">
+                <span className="pointer-events-none absolute inset-y-0 left-0 w-0.5 bg-linear-to-b from-primary to-amber-500 opacity-0 transition-opacity group-hover/action:opacity-100" />
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-medium text-sm">{title}</p>
@@ -720,7 +720,7 @@ function QuickQuotationRow({
               variant="ghost"
               size="sm"
               onClick={() => onOpenQuotation?.(item.quotationId as number)}
-              className="h-8 gap-1.5 text-rose-600 hover:text-rose-700 dark:text-rose-400"
+              className="h-8 gap-1.5 text-red-600 hover:text-red-700 dark:text-red-400"
             >
               {tc('quickQuotations.openQuotation')}
               <ExternalLink className="h-3.5 w-3.5" />
@@ -755,7 +755,7 @@ const ERP_AMOUNT_EPS = 1e-6;
 
 function erpDebitAmountClass(value: number): string {
   return Math.abs(value) > ERP_AMOUNT_EPS
-    ? 'font-medium tabular-nums tracking-tight text-rose-600 dark:text-rose-400'
+    ? 'font-medium tabular-nums tracking-tight text-red-600 dark:text-red-400'
     : 'tabular-nums tracking-tight text-muted-foreground/60';
 }
 
@@ -771,7 +771,7 @@ function erpSignedBalanceClass(value: number): string {
     return 'font-medium tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400';
   }
   if (value < -ERP_AMOUNT_EPS) {
-    return 'font-medium tabular-nums tracking-tight text-rose-600 dark:text-rose-400';
+    return 'font-medium tabular-nums tracking-tight text-red-600 dark:text-red-400';
   }
   return 'tabular-nums tracking-tight text-muted-foreground/60';
 }
@@ -872,7 +872,7 @@ function ErpMovementsTabContent({
                     <TableHead className="h-9 px-3 py-2 text-xs font-medium text-muted-foreground">
                       {tc('erpMovements.columns.currency')}
                     </TableHead>
-                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-semibold tracking-tight text-rose-600/90 dark:text-rose-400/95">
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-semibold tracking-tight text-red-600/90 dark:text-red-400/95">
                       {tc('erpMovements.columns.debit')}
                     </TableHead>
                     <TableHead className="h-9 px-3 py-2 text-right text-xs font-semibold tracking-tight text-emerald-600/90 dark:text-emerald-400/95">
@@ -884,7 +884,7 @@ function ErpMovementsTabContent({
                     <TableHead className="h-9 px-3 py-2 text-right text-xs font-medium text-muted-foreground">
                       {tc('erpMovements.columns.tlBalanceByDueDate')}
                     </TableHead>
-                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-semibold tracking-tight text-rose-600/90 dark:text-rose-400/95">
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-semibold tracking-tight text-red-600/90 dark:text-red-400/95">
                       {tc('erpMovements.columns.fxDebit')}
                     </TableHead>
                     <TableHead className="h-9 px-3 py-2 text-right text-xs font-semibold tracking-tight text-emerald-600/90 dark:text-emerald-400/95">
@@ -1617,13 +1617,13 @@ export function Customer360Page(): ReactElement {
               { key: 'totalQuotations', value: kpi.totalQuotations ?? 0, icon: FileText, tone: 'text-violet-500', chip: 'from-violet-500/20 to-violet-500/5 ring-violet-500/20' },
               { key: 'totalOrders', value: kpi.totalOrders ?? 0, icon: ShoppingCart, tone: 'text-emerald-500', chip: 'from-emerald-500/20 to-emerald-500/5 ring-emerald-500/20' },
               { key: 'openQuotations', value: kpi.openQuotations ?? 0, icon: FileText, tone: 'text-amber-500', chip: 'from-amber-500/20 to-amber-500/5 ring-amber-500/20' },
-              { key: 'openOrders', value: kpi.openOrders ?? 0, icon: ShoppingCart, tone: 'text-rose-500', chip: 'from-rose-500/20 to-rose-500/5 ring-rose-500/20' },
+              { key: 'openOrders', value: kpi.openOrders ?? 0, icon: ShoppingCart, tone: 'text-red-500', chip: 'from-primary/20 to-primary/5 ring-primary/20' },
             ] as const).map((item) => (
               <Card
                 key={item.key}
-                className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-rose-500/30 hover:shadow-[0_12px_34px_-16px_rgba(236,72,153,0.4)]"
+                className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[0_12px_34px_-16px_color-mix(in_srgb,var(--primary)_40%,transparent)]"
               >
-                <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-rose-500/40 to-transparent opacity-60 transition-opacity group-hover:opacity-100" />
+                <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/40 to-transparent opacity-60 transition-opacity group-hover:opacity-100" />
                 <CardContent className="flex items-center justify-between gap-3 pt-6">
                   <div className="min-w-0">
                     <p className="truncate text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -1954,7 +1954,7 @@ export function Customer360Page(): ReactElement {
                 <button
                   type="button"
                   onClick={() => imageInputRef.current?.click()}
-                  className="flex w-full flex-col items-center gap-3 rounded-xl border border-dashed border-border py-12 text-center transition-colors hover:border-rose-500/50 hover:bg-muted/40"
+                  className="flex w-full flex-col items-center gap-3 rounded-xl border border-dashed border-border py-12 text-center transition-colors hover:border-primary/50 hover:bg-muted/40"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
                     <Upload className="h-6 w-6" />
@@ -1982,7 +1982,7 @@ export function Customer360Page(): ReactElement {
                       <button
                         type="button"
                         onClick={() => setPendingDeleteImageId(img.id)}
-                        className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/55 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-rose-600 group-hover:opacity-100"
+                        className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-lg bg-black/55 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-red-600 group-hover:opacity-100"
                         title={tc('images.delete')}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -2053,7 +2053,7 @@ export function Customer360Page(): ReactElement {
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="gap-2 text-rose-600 hover:text-rose-700"
+                    className="gap-2 text-red-600 hover:text-red-700"
                     onClick={() => {
                       const target = imageItems[lightboxIndex!];
                       setLightboxIndex(null);

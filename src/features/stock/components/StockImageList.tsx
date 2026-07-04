@@ -105,12 +105,12 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
         {sortedImages.map((image) => (
           <div
             key={image.id}
-            className="group relative bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-xl shadow-sm hover:shadow-xl hover:border-pink-200 dark:hover:border-pink-900/30 transition-all duration-300 overflow-hidden flex flex-col"
+            className="group relative bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-xl shadow-sm hover:shadow-xl hover:border-primary/20 dark:hover:border-primary/30 transition-all duration-300 overflow-hidden flex flex-col"
           >
             <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                 {image.isPrimary && (
                   <Badge
-                    className="absolute top-3 left-3 z-10 bg-linear-to-r from-pink-600 to-orange-600 border-0 shadow-lg shadow-pink-500/30 text-white px-2 py-1"
+                    className="absolute top-3 left-3 z-10 bg-[image:var(--crm-brand-gradient)] border-0 shadow-lg shadow-primary/30 text-white px-2 py-1"
                   >
                     <Star className="h-3 w-3 mr-1 fill-white" />
                     {t('images.primary')}
@@ -152,7 +152,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 h-8 text-xs border-zinc-200 hover:border-pink-500 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950/20 transition-all"
+                    className="flex-1 h-8 text-xs border-zinc-200 hover:border-primary hover:text-primary hover:bg-accent dark:hover:bg-primary/20 transition-all"
                     onClick={() => handleSetPrimary(image)}
                     disabled={setPrimary.isPending}
                   >

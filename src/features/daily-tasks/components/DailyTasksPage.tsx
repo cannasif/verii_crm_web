@@ -151,10 +151,10 @@ function MonthlyDropCell({
         'min-h-[80px] md:min-h-[120px] rounded-xl md:rounded-2xl p-2 md:p-3 cursor-pointer transition-all duration-200 border group',
         !isCurrentMonth
           ? 'opacity-30 bg-transparent border-transparent pointer-events-none'
-          : 'bg-white/40 dark:bg-white/5 border-slate-100 dark:border-white/10 hover:border-pink-500/50 hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-lg hover:-translate-y-1',
-        isToday ? 'ring-2 ring-pink-500 ring-offset-2 dark:ring-offset-[#1a1025] bg-pink-50/50 dark:bg-pink-500/10' : '',
-        isSelectedDay ? 'border-pink-500/60 bg-pink-50/70 dark:bg-pink-500/15 shadow-lg' : '',
-        isOver ? 'ring-2 ring-pink-400 ring-offset-1 dark:ring-offset-[#1a1025] bg-pink-100/60 dark:bg-pink-500/25 scale-[1.02]' : '',
+          : 'bg-white/40 dark:bg-white/5 border-slate-100 dark:border-white/10 hover:border-primary/50 hover:bg-white/80 dark:hover:bg-white/10 hover:shadow-lg hover:-translate-y-1',
+        isToday ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-[#1a1025] bg-accent/50 dark:bg-primary/10' : '',
+        isSelectedDay ? 'border-primary/60 bg-accent/70 dark:bg-primary/15 shadow-lg' : '',
+        isOver ? 'ring-2 ring-primary/60 ring-offset-1 dark:ring-offset-[#1a1025] bg-accent/60 dark:bg-primary/20 scale-[1.02]' : '',
       ].join(' ')}
     >
       {children}
@@ -213,10 +213,10 @@ function WeeklyDropSlot({
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       className={[
-        'min-h-[44px] md:min-h-[52px] p-1 cursor-pointer border hover:border-pink-500/50 hover:bg-pink-50/50 dark:hover:bg-pink-500/10 transition-all',
-        isSelected ? 'border-pink-500/70 bg-pink-50/70 dark:bg-pink-500/15 shadow-inner' : 'border-transparent',
-        isToday ? 'bg-pink-50/30 dark:bg-pink-500/5' : 'bg-white/60 dark:bg-white/5',
-        isOver ? 'border-pink-400 bg-pink-100/60 dark:bg-pink-500/25' : '',
+        'min-h-[44px] md:min-h-[52px] p-1 cursor-pointer border hover:border-primary/50 hover:bg-accent/50 dark:hover:bg-primary/10 transition-all',
+        isSelected ? 'border-primary/70 bg-accent/70 dark:bg-primary/15 shadow-inner' : 'border-transparent',
+        isToday ? 'bg-accent/30 dark:bg-primary/5' : 'bg-white/60 dark:bg-white/5',
+        isOver ? 'border-primary/50 bg-accent/60 dark:bg-primary/20' : '',
       ].join(' ')}
     >
       {children}
@@ -265,7 +265,7 @@ function SortableActivityItem({
       <button
         type="button"
         onClick={() => onEdit(activity)}
-        className="flex-1 min-w-0 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left transition hover:border-pink-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-pink-500/50 dark:hover:bg-white/10"
+        className="flex-1 min-w-0 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left transition hover:border-primary/30 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-primary/50 dark:hover:bg-white/10"
       >
         <div className="flex items-start justify-between gap-3 w-full min-w-0">
           <div className="min-w-0 space-y-2 flex-1">
@@ -1182,7 +1182,7 @@ export function DailyTasksPage(): ReactElement {
   const filterButtonStyle = (isActive: boolean) => `
     h-8 text-xs font-medium transition-all rounded-lg shrink-0
     ${isActive
-      ? 'bg-linear-to-r from-pink-600 to-orange-600 text-white shadow-lg shadow-pink-500/20 border-transparent'
+      ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-lg shadow-primary/20 border-transparent'
       : 'bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300'}
   `;
 
@@ -1217,7 +1217,7 @@ export function DailyTasksPage(): ReactElement {
   const backgroundBlobs = (
     <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
       <div className="absolute top-0 left-1/4 w-[200px] md:w-[500px] h-[200px] md:h-[500px] bg-purple-500/10 dark:bg-purple-900/20 rounded-full blur-[60px] md:blur-[100px] animate-pulse" />
-      <div className="absolute bottom-0 right-1/4 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-pink-500/10 dark:bg-pink-900/20 rounded-full blur-[50px] md:blur-[80px] animate-pulse" style={{ animationDelay: '2s' }} />
+      <div className="absolute bottom-0 right-1/4 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-primary/10 dark:bg-primary/10 rounded-full blur-[50px] md:blur-[80px] animate-pulse" style={{ animationDelay: '2s' }} />
     </div>
   );
 
@@ -1229,8 +1229,8 @@ export function DailyTasksPage(): ReactElement {
       <div className="flex items-center justify-center h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="h-12 w-12 md:h-16 md:w-16 animate-spin rounded-full border-b-4 border-pink-500" />
-            <div className="absolute inset-0 h-12 w-12 md:h-16 md:w-16 animate-ping rounded-full border-pink-500 opacity-20" />
+            <div className="h-12 w-12 md:h-16 md:w-16 animate-spin rounded-full border-b-4 border-primary" />
+            <div className="absolute inset-0 h-12 w-12 md:h-16 md:w-16 animate-ping rounded-full border-primary opacity-20" />
           </div>
           <div className="text-xs md:text-sm font-medium text-slate-500 animate-pulse">
             {t('dailyTasks.loading')}
@@ -1247,17 +1247,17 @@ export function DailyTasksPage(): ReactElement {
 
       <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-linear-to-br from-indigo-900 via-violet-900 to-slate-900 p-6 md:p-8 shadow-2xl ring-1 ring-white/10">
         <div className="absolute inset-0 opacity-20 brightness-100 contrast-150 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.14)_1px,transparent_0)] bg-size-[8px_8px]"></div>
-        <div className="absolute -right-20 -top-20 h-40 w-40 md:h-64 md:w-64 rounded-full bg-pink-500/30 blur-3xl"></div>
+        <div className="absolute -right-20 -top-20 h-40 w-40 md:h-64 md:w-64 rounded-full bg-primary/20 blur-3xl"></div>
 
         <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           <div className="space-y-2 w-full lg:w-auto">
-            <div className="flex items-center gap-2 text-pink-300 font-medium text-xs md:text-sm uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-primary/80 font-medium text-xs md:text-sm uppercase tracking-wider">
               <Sparkles size={14} className="md:w-4 md:h-4" />
               <span>{t('dailyTasks.dashboard')}</span>
             </div>
             <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight">
               {greeting}, <br className="md:hidden" />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-rose-400 to-amber-400">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-amber-400">
                 {getUserDisplayName()}
               </span>
             </h1>
@@ -1273,7 +1273,7 @@ export function DailyTasksPage(): ReactElement {
             </div>
             <Button
               onClick={handleNewTask}
-              className="w-full sm:w-auto h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 text-white font-black rounded-2xl  hover:scale-[1.05] active:scale-[0.98] transition-all duration-300 border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              className="w-full sm:w-auto h-12 px-8 bg-[image:var(--crm-brand-gradient)] text-white font-black rounded-2xl  hover:scale-[1.05] active:scale-[0.98] transition-all duration-300 border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
             >
               <Plus size={20} className="mr-2 stroke-[3px]" />
               {t('dailyTasks.newTask')}
@@ -1297,7 +1297,7 @@ export function DailyTasksPage(): ReactElement {
           {
             label: t('dailyTasks.overdue', { defaultValue: 'Geciken işler' }),
             value: enterpriseMetrics.overdueItems.length,
-            tone: 'from-rose-500/20 to-red-500/10 border-rose-400/20',
+            tone: 'from-red-500/20 to-red-500/10 border-red-400/20',
           },
           {
             label: t('dailyTasks.dueToday', { defaultValue: 'Bugün aksiyon bekleyen' }),
@@ -1307,7 +1307,7 @@ export function DailyTasksPage(): ReactElement {
           {
             label: t('dailyTasks.completionRate', { defaultValue: 'Tamamlanma oranı' }),
             value: `%${enterpriseMetrics.completionRate}`,
-            tone: 'from-violet-500/20 to-rose-500/10 border-violet-400/20',
+            tone: 'from-violet-500/20 to-primary/10 border-violet-400/20',
           },
         ].map((card) => (
           <div
@@ -1433,17 +1433,17 @@ export function DailyTasksPage(): ReactElement {
       </div>
 
       {enterpriseMetrics.overdueItems.length > 0 ? (
-        <div className="rounded-2xl border border-rose-300/30 bg-rose-50/80 px-4 py-3 text-sm text-rose-900 shadow-sm backdrop-blur-xl dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-100">
+        <div className="rounded-2xl border border-red-300/30 bg-red-50/80 px-4 py-3 text-sm text-red-900 shadow-sm backdrop-blur-xl dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-100">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-rose-500" />
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-500" />
               <div>
                 <div className="font-semibold">
                   {t('dailyTasks.overdueWarningTitle', {
                     defaultValue: 'Takip gerektiren gecikmiş aktiviteler var',
                   })}
                 </div>
-                <div className="text-rose-700 dark:text-rose-200">
+                <div className="text-red-700 dark:text-red-200">
                   {t('dailyTasks.overdueWarningDescription', {
                     defaultValue: '{{count}} aktivite plan tarihini geçti. Önceliklendirme önerilir.',
                     count: enterpriseMetrics.overdueItems.length,
@@ -1453,7 +1453,7 @@ export function DailyTasksPage(): ReactElement {
             </div>
             <Button
               variant="outline"
-              className="border-rose-300 bg-white/70 text-rose-700 hover:bg-rose-100 dark:border-rose-400/20 dark:bg-transparent dark:text-rose-100 dark:hover:bg-rose-500/10"
+              className="border-red-300 bg-white/70 text-red-700 hover:bg-red-100 dark:border-red-400/20 dark:bg-transparent dark:text-red-100 dark:hover:bg-red-500/10"
               onClick={handleReviewOpenTasks}
             >
               {t('dailyTasks.reviewOpenTasks', { defaultValue: 'Açık işleri incele' })}
@@ -1491,7 +1491,7 @@ export function DailyTasksPage(): ReactElement {
                 key={`${activity.id}-${activity.startDateTime}`}
                 type="button"
                 onClick={() => handleEdit(activity)}
-                className="flex w-full items-start justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/80 p-4 text-left transition hover:-translate-y-0.5 hover:border-pink-300 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:hover:border-pink-500/40"
+                className="flex w-full items-start justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white/80 p-4 text-left transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:hover:border-primary/40"
               >
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
@@ -1548,7 +1548,7 @@ export function DailyTasksPage(): ReactElement {
                   </div>
                   <div className="h-2 rounded-full bg-slate-200 dark:bg-white/10">
                     <div
-                      className="h-2 rounded-full bg-linear-to-r from-pink-500 to-orange-500"
+                      className="h-2 rounded-full bg-linear-to-r from-primary to-[var(--crm-brand-accent)]"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -1583,10 +1583,10 @@ export function DailyTasksPage(): ReactElement {
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
                 placeholder={t('dailyTasks.searchPlaceholder')}
-                className="h-10 rounded-xl border-slate-300 bg-white pl-9 pr-10 shadow-sm focus-visible:ring-pink-500 dark:border-white/10 dark:bg-white/5"
+                className="h-10 rounded-xl border-slate-300 bg-white pl-9 pr-10 shadow-sm focus-visible:ring-primary dark:border-white/10 dark:bg-white/5"
               />
               {isFetching ? (
-                <RefreshCw className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-pink-500" />
+                <RefreshCw className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-primary" />
               ) : null}
             </div>
 
@@ -1663,15 +1663,15 @@ export function DailyTasksPage(): ReactElement {
 
           <div className="mt-3">
             <TabsList className="grid h-auto w-full grid-cols-3 gap-1 rounded-xl border border-slate-300/80 bg-white p-1 shadow-sm dark:border-white/10 dark:bg-white/5">
-              <TabsTrigger value="tasks" className="rounded-lg px-2 py-2 text-[10px] font-medium transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-md dark:data-[state=active]:bg-[#2d1b4e] dark:data-[state=active]:text-pink-400 md:px-4 md:text-xs">
+              <TabsTrigger value="tasks" className="rounded-lg px-2 py-2 text-[10px] font-medium transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md dark:data-[state=active]:bg-[#2d1b4e] dark:data-[state=active]:text-primary md:px-4 md:text-xs">
                 <LayoutGrid size={14} className="mr-1 md:mr-2 md:h-4 md:w-4" />
                 <span className="truncate">{t('dailyTasks.weeklyTasks')}</span>
               </TabsTrigger>
-              <TabsTrigger value="list" className="rounded-lg px-2 py-2 text-[10px] font-medium transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-md dark:data-[state=active]:bg-[#2d1b4e] dark:data-[state=active]:text-pink-400 md:px-4 md:text-xs">
+              <TabsTrigger value="list" className="rounded-lg px-2 py-2 text-[10px] font-medium transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md dark:data-[state=active]:bg-[#2d1b4e] dark:data-[state=active]:text-primary md:px-4 md:text-xs">
                 <ListTodo size={14} className="mr-1 md:mr-2 md:h-4 md:w-4" />
                 <span className="truncate">{t('dailyTasks.dailyList')}</span>
               </TabsTrigger>
-              <TabsTrigger value="calendar" className="rounded-lg px-2 py-2 text-[10px] font-medium transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-pink-600 data-[state=active]:shadow-md dark:data-[state=active]:bg-[#2d1b4e] dark:data-[state=active]:text-pink-400 md:px-4 md:text-xs">
+              <TabsTrigger value="calendar" className="rounded-lg px-2 py-2 text-[10px] font-medium transition-all duration-300 data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-md dark:data-[state=active]:bg-[#2d1b4e] dark:data-[state=active]:text-primary md:px-4 md:text-xs">
                 <CalendarIcon size={14} className="mr-1 md:mr-2 md:h-4 md:w-4" />
                 <span className="truncate">{t('dailyTasks.calendar')}</span>
               </TabsTrigger>
@@ -1703,7 +1703,7 @@ export function DailyTasksPage(): ReactElement {
           {isFetching && (
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 dark:bg-[#0c0516]/60 backdrop-blur-sm rounded-2xl min-h-[200px]">
               <div className="flex flex-col items-center gap-3">
-                <div className="h-10 w-10 animate-spin rounded-full border-2 border-pink-500 border-t-transparent" />
+                <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                 <span className="text-sm font-medium text-slate-600 dark:text-slate-400">{t('dailyTasks.loading')}</span>
               </div>
             </div>
@@ -1739,7 +1739,7 @@ export function DailyTasksPage(): ReactElement {
                           {activity.activityType && <span className={`w-1.5 h-1.5 rounded-full ${activity.priority === 'High' ? 'bg-red-500' : 'bg-blue-500'}`}></span>}
                           {getActivityTypeDisplay(activity.activityType)}
                         </span>
-                        <h3 className={`font-bold text-base md:text-lg leading-tight truncate transition-colors ${activity.isCompleted ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-100 group-hover:text-pink-600 dark:group-hover:text-pink-400'}`}>
+                        <h3 className={`font-bold text-base md:text-lg leading-tight truncate transition-colors ${activity.isCompleted ? 'text-slate-400 line-through' : 'text-slate-800 dark:text-slate-100 group-hover:text-primary dark:group-hover:text-primary'}`}>
                           {activity.subject}
                         </h3>
                       </div>
@@ -1853,7 +1853,7 @@ export function DailyTasksPage(): ReactElement {
                           <ActivityStatusBadge status={activity.status} />
                         </div>
                         <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-1 text-xs text-slate-500 dark:text-slate-400">
-                          <span className="flex items-center gap-1"><CalendarDays size={12} className="text-pink-500" /> {activity.activityDate ? new Date(activity.activityDate).toLocaleDateString(i18n.language) : '-'}</span>
+                          <span className="flex items-center gap-1"><CalendarDays size={12} className="text-primary" /> {activity.activityDate ? new Date(activity.activityDate).toLocaleDateString(i18n.language) : '-'}</span>
                           <span className="flex items-center gap-1"><User size={12} className="text-blue-500" /> {getAssignedUserName(activity.assignedUserId)}</span>
                           <div className="md:hidden flex gap-2">
                             <ActivityStatusBadge status={activity.status} />
@@ -1964,7 +1964,7 @@ export function DailyTasksPage(): ReactElement {
                       {t('dailyTasks.calendarLegendCompleted', { defaultValue: 'Tamamlanan' })}
                     </span>
                     <span className="inline-flex items-center gap-2 font-semibold text-slate-700 dark:text-slate-200">
-                      <span className="h-2 w-2 rounded-full bg-pink-500" />
+                      <span className="h-2 w-2 rounded-full bg-primary" />
                       {t('dailyTasks.calendarLegendSelected', { defaultValue: 'Seçili odak alanı' })}
                     </span>
                   </div>
@@ -2017,7 +2017,7 @@ export function DailyTasksPage(): ReactElement {
                                         {slotActivities.length > 2 && (
                                           <button
                                             type="button"
-                                            className="pl-1 text-[8px] font-semibold text-pink-500 hover:text-pink-400"
+                                            className="pl-1 text-[8px] font-semibold text-primary hover:text-primary"
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               openCalendarInspect(
@@ -2064,7 +2064,7 @@ export function DailyTasksPage(): ReactElement {
                                   onDoubleClick={() => handleCreateFromCalendar(dayData.date)}
                                 >
                                   <div className="flex justify-between items-start mb-2">
-                                    <div className={`text-xs md:text-sm font-bold w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full ${isToday ? 'bg-pink-600 text-white shadow-lg shadow-pink-500/30' : 'text-slate-600 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-white/20'}`}>
+                                    <div className={`text-xs md:text-sm font-bold w-6 h-6 md:w-7 md:h-7 flex items-center justify-center rounded-full ${isToday ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-slate-600 dark:text-slate-400 group-hover:bg-slate-200 dark:group-hover:bg-white/20'}`}>
                                       {dayData.date.getDate()}
                                     </div>
                                     <Plus size={14} className="opacity-0 group-hover:opacity-100 text-slate-400 transition-opacity hidden md:block" />
@@ -2080,7 +2080,7 @@ export function DailyTasksPage(): ReactElement {
                                     {dayData.activities.length > 3 && (
                                       <button
                                         type="button"
-                                        className="pl-1 text-[9px] font-semibold text-pink-500 hover:text-pink-400 md:text-[10px]"
+                                        className="pl-1 text-[9px] font-semibold text-primary hover:text-primary md:text-[10px]"
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           openCalendarInspect(
@@ -2108,8 +2108,8 @@ export function DailyTasksPage(): ReactElement {
                     )}
                     <DragOverlay dropAnimation={null}>
                       {activeDragActivity ? (
-                        <div className="flex items-center gap-1.5 rounded-lg border border-pink-400 bg-white px-2 py-1 text-[10px] font-semibold text-pink-700 shadow-lg shadow-pink-500/30 dark:border-pink-500/60 dark:bg-[#1a1025] dark:text-pink-300">
-                          <div className="h-1.5 w-1.5 rounded-full bg-pink-500" />
+                        <div className="flex items-center gap-1.5 rounded-lg border border-primary/50 bg-white px-2 py-1 text-[10px] font-semibold text-primary shadow-lg shadow-primary/30 dark:border-primary/60 dark:bg-[#1a1025] dark:text-primary/80">
+                          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
                           <span className="max-w-[140px] truncate">{activeDragActivity.subject}</span>
                         </div>
                       ) : null}
@@ -2245,10 +2245,10 @@ export function DailyTasksPage(): ReactElement {
                     <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
                       {t('dailyTasks.rescheduleTo', { defaultValue: 'Yeni' })}
                     </div>
-                    <div className="mt-0.5 font-semibold text-pink-600 dark:text-pink-400">
+                    <div className="mt-0.5 font-semibold text-primary">
                       {calendarDragConfirm ? formatDateKeyLabel(calendarDragConfirm.newDateKey) : '—'}
                       {calendarDragConfirm?.newHour !== undefined && (
-                        <span className="ml-1 text-xs font-normal text-pink-500">
+                        <span className="ml-1 text-xs font-normal text-primary">
                           {String(calendarDragConfirm.newHour).padStart(2, '0')}:00
                         </span>
                       )}
@@ -2264,7 +2264,7 @@ export function DailyTasksPage(): ReactElement {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmCalendarDrag}
-              className="bg-pink-600 text-white hover:bg-pink-700 dark:bg-pink-500"
+              className="bg-[image:var(--crm-brand-gradient)] text-white hover:opacity-90 dark:hover:opacity-90"
             >
               {t('dailyTasks.rescheduleConfirm', { defaultValue: 'Güncelle' })}
             </AlertDialogAction>
@@ -2305,7 +2305,7 @@ export function DailyTasksPage(): ReactElement {
                     <div className="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
                       {t('dailyTasks.rescheduleTo', { defaultValue: 'Yeni zaman' })}
                     </div>
-                    <div className="mt-0.5 font-semibold text-pink-600 dark:text-pink-400">
+                    <div className="mt-0.5 font-semibold text-primary">
                       {dragConfirm?.newStart
                         ? new Date(dragConfirm.newStart).toLocaleTimeString(i18n.language, {
                           hour: '2-digit',
@@ -2324,7 +2324,7 @@ export function DailyTasksPage(): ReactElement {
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmReschedule}
-              className="bg-pink-600 text-white hover:bg-pink-700 dark:bg-pink-500"
+              className="bg-[image:var(--crm-brand-gradient)] text-white hover:opacity-90 dark:hover:opacity-90"
             >
               {t('dailyTasks.rescheduleConfirm', { defaultValue: 'Güncelle' })}
             </AlertDialogAction>
@@ -2402,7 +2402,7 @@ export function DailyTasksPage(): ReactElement {
                   setCalendarInspectState(null);
                   handleEdit(activity);
                 }}
-                className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left transition hover:border-pink-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-pink-500/50 dark:hover:bg-white/10"
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50/80 p-4 text-left transition hover:border-primary/30 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:border-primary/50 dark:hover:bg-white/10"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 space-y-2">
@@ -2470,7 +2470,7 @@ export function DailyTasksPage(): ReactElement {
                 </div>
               </div>
             </div>
-            <div className="mt-3 inline-flex w-fit rounded-full border border-pink-200 bg-pink-50 px-3 py-1 text-xs font-semibold text-pink-700 dark:border-pink-500/30 dark:bg-pink-500/10 dark:text-pink-200">
+            <div className="mt-3 inline-flex w-fit rounded-full border border-primary/20 bg-accent px-3 py-1 text-xs font-semibold text-primary dark:border-primary/30 dark:bg-primary/10 dark:text-primary">
               {t('dailyTasks.openTasksCount', {
                 defaultValue: '{{count}} açık iş',
                 count: openTasksModalItems.length,
@@ -2539,7 +2539,7 @@ export function DailyTasksPage(): ReactElement {
                           size="icon"
                           title={t('dailyTasks.openTasksMarkCancel', { defaultValue: 'İptal et' })}
                           aria-label={t('dailyTasks.openTasksMarkCancel', { defaultValue: 'İptal et' })}
-                          className="h-8 w-8 rounded-lg border-rose-300 text-rose-700 hover:bg-rose-50 dark:border-rose-500/30 dark:text-rose-300 dark:hover:bg-rose-500/10"
+                          className="h-8 w-8 rounded-lg border-red-300 text-red-700 hover:bg-red-50 dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10"
                           onClick={(event) => {
                             event.stopPropagation();
                             handleOpenTaskActionConfirm(activity, 'cancel');
@@ -2605,7 +2605,7 @@ export function DailyTasksPage(): ReactElement {
                         size="icon"
                         title={t('dailyTasks.openTasksMarkCancel', { defaultValue: 'İptal et' })}
                         aria-label={t('dailyTasks.openTasksMarkCancel', { defaultValue: 'İptal et' })}
-                        className="h-8 w-8 rounded-lg border-rose-300 text-rose-700 hover:bg-rose-50 dark:border-rose-500/30 dark:text-rose-300 dark:hover:bg-rose-500/10"
+                        className="h-8 w-8 rounded-lg border-red-300 text-red-700 hover:bg-red-50 dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10"
                         onClick={(event) => {
                           event.stopPropagation();
                           handleOpenTaskActionConfirm(activity, 'cancel');
@@ -2635,7 +2635,7 @@ export function DailyTasksPage(): ReactElement {
                 <span
                   className={`inline-flex h-7 w-7 items-center justify-center rounded-lg ${openTaskActionConfirm?.action === 'complete'
                     ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300'
-                    : 'bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300'
+                    : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300'
                     }`}
                 >
                   {openTaskActionConfirm?.action === 'complete' ? (
@@ -2666,7 +2666,7 @@ export function DailyTasksPage(): ReactElement {
               onClick={() => void handleConfirmOpenTaskAction()}
               className={`rounded-lg text-white ${openTaskActionConfirm?.action === 'complete'
                 ? 'bg-linear-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 dark:from-emerald-500 dark:to-green-500 dark:hover:from-emerald-400 dark:hover:to-green-400'
-                : 'bg-linear-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 dark:from-rose-500 dark:to-red-500 dark:hover:from-rose-400 dark:hover:to-red-400'
+                : 'bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 dark:from-red-500 dark:to-red-500 dark:hover:from-red-400 dark:hover:to-red-400'
                 }`}
             >
               {openTaskActionConfirm?.action === 'complete'

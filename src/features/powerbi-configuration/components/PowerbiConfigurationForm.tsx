@@ -205,7 +205,7 @@ export function PowerbiConfigurationForm({
                 />
               </div>
 
-              <div className="inline-flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 dark:border-[#4C3D68] dark:bg-[#2D1B4E] px-4 py-3 text-sm text-rose-600 dark:text-[#FB64B6]">
+              <div className="inline-flex items-start gap-3 rounded-2xl border border-primary/20 bg-accent dark:border-[#4C3D68] dark:bg-[#2D1B4E] px-4 py-3 text-sm text-primary dark:text-[#FB64B6]">
                 <InfoIcon className="h-4 w-4 mt-0.5 shrink-0" />
                 <span className="font-medium">{t('powerbiConfiguration.clientSecretInfo')}</span>
               </div>

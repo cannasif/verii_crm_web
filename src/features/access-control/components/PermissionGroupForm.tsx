@@ -50,7 +50,7 @@ const INPUT_STYLE = `
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-500
   focus-visible:bg-white dark:focus-visible:bg-white/5
-  focus-visible:border-rose-500/70 focus-visible:ring-2 focus-visible:ring-rose-500/10 focus-visible:ring-offset-0
+  focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0
   transition-all duration-200 w-full
 `;
 

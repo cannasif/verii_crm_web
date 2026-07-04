@@ -48,7 +48,7 @@ function SidebarHeader({ title, count }: { title: string; count?: number }): Rea
       {count !== undefined && count > 0 && (
         <Badge
           variant="outline"
-          className="bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-500/20 dark:text-pink-400 dark:border-pink-500/30 font-bold px-2 py-0.5"
+          className="bg-accent text-primary border-primary/20 dark:bg-primary/20 dark:text-primary dark:border-primary/30 font-bold px-2 py-0.5"
         >
           {count}
         </Badge>
@@ -117,7 +117,7 @@ export function WaitingApprovalsSidebar({
           >
             <div className="flex items-start justify-between w-full mb-3 gap-2">
               <div className="flex flex-col min-w-0">
-                <div className="flex items-center gap-1 text-[10px] font-mono font-bold tracking-wider text-pink-600 dark:text-pink-400 uppercase mb-1">
+                <div className="flex items-center gap-1 text-[10px] font-mono font-bold tracking-wider text-primary uppercase mb-1">
                   <Hash size={10} className="opacity-70" />
                   {item.approvalRequestId}
                 </div>
@@ -142,7 +142,7 @@ export function WaitingApprovalsSidebar({
 
             <div className="flex flex-col gap-2 pt-3 border-t border-slate-100 dark:border-white/5 w-full">
               <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-                <ListOrdered className="h-3.5 w-3.5 text-pink-500/60" />
+                <ListOrdered className="h-3.5 w-3.5 text-primary/60" />
                 <span className="truncate">
                   <span className="font-medium text-slate-500">{stepOrderLabel}:</span> {item.stepOrder}
                 </span>
@@ -150,7 +150,7 @@ export function WaitingApprovalsSidebar({
 
               {item.approvedByUserFullName && (
                 <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-                  <User className="h-3.5 w-3.5 text-pink-500/60" />
+                  <User className="h-3.5 w-3.5 text-primary/60" />
                   <span className="truncate">
                     <span className="font-medium text-slate-500">{approvedByLabel}:</span>{' '}
                     {item.approvedByUserFullName}
@@ -159,7 +159,7 @@ export function WaitingApprovalsSidebar({
               )}
 
               <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-                <CalendarDays className="h-3.5 w-3.5 text-pink-500/60" />
+                <CalendarDays className="h-3.5 w-3.5 text-primary/60" />
                 <span className="truncate">
                   <span className="font-medium text-slate-500">{actionDateLabel}:</span>{' '}
                   {formatDate(item.actionDate)}

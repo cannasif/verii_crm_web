@@ -5620,7 +5620,8 @@
     "pendingActionsDesc": "Número de acciones recomendadas"
   },
   "profile": {
-    "title": "Información de perfil"
+    "title": "Información de perfil",
+    "editDescription": "Actualice la información del usuario"
   },
   "salesDraft": {
     "title": "Tienes trabajo sin terminar",
@@ -5636,6 +5637,7 @@
   },
   "language_choice": "Opción de idioma",
   "appearance": "Modo de visualización",
+  "appearanceLockedByBrandTheme": "El modo claro/oscuro no está disponible mientras un tema personalizado está activo",
   "logout": "FINALIZAR LA SESIÓN",
   "userDiscountLimitManagement": {
     "alreadyExists": "Ya existe un límite de descuento para este vendedor y grupo",

@@ -24,8 +24,9 @@ import { Check, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useTheme } from '@/components/theme-provider';
-import { brandThemes, type BrandTheme } from '@/lib/brand-themes';
+import { brandThemes } from '@/lib/brand-themes';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUserDetailByUserId } from '@/features/user-detail-management/hooks/useUserDetailByUserId';
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
@@ -55,7 +56,7 @@ export function UserProfileModal({
   onOpenProfileDetails
 }: UserProfileModalProps): ReactElement {
   const { t, i18n } = useTranslation();
-  const { theme, brandTheme, setTheme, setBrandTheme } = useTheme();
+  const { theme, brandTheme, isBrandThemeListEnabled, setTheme, setBrandTheme, setBrandThemeListEnabled } = useTheme();
   const { user, logout, branch } = useAuthStore();
   const navigate = useNavigate();
   const { data: userDetail } = useUserDetailByUserId(user?.id || 0, open);
@@ -98,8 +99,9 @@ export function UserProfileModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      <TooltipProvider delayDuration={200}>
       <DialogContent className={cn(
-        "p-0 gap-0 border-none shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col w-[95vw] md:max-w-4xl lg:max-w-[1100px] max-h-[92dvh] md:max-h-[620px] rounded-[2rem] md:rounded-[2.5rem] transition-all duration-500 [&>button:last-of-type]:hidden",
+        "p-0 gap-0 border-none shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col w-[95vw] md:max-w-4xl lg:max-w-[1100px] h-[min(94dvh,760px)] md:h-[760px] md:max-h-[760px] rounded-[2rem] md:rounded-[2.5rem] [&>button:last-of-type]:hidden",
         "bg-[var(--crm-app-panel)] text-slate-900 dark:text-white"
       )}>
         <DialogPrimitive.Close className={cn(
@@ -164,14 +166,14 @@ export function UserProfileModal({
           </div>
 
           <div className="flex-1 p-5 md:p-10 lg:p-6 flex flex-col min-h-0 relative">
-            <div className="flex items-center gap-3 mb-2 md:mb-6 shrink-0 pb-3 md:pb- border-b border-dashed border-slate-200 dark:border-white/10">
+            <div className="flex items-center gap-3 mb-1 md:mb-2 shrink-0 pb-2 md:pb-2.5 border-b border-dashed border-slate-200 dark:border-white/10">
               <div className="h-5 w-1.5 rounded-full bg-[image:var(--crm-brand-gradient)] md:h-8" />
               <h3 className="text-lg md:text-4xl lg:text-3x1 font-black tracking-tight uppercase">{t('sidebar.settings')}</h3>
             </div>
 
             <div className={cn(
-              "flex flex-col gap-3 md:gap-4 flex-none md:flex-1 pr-1",
-              "md:overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+              "flex flex-col gap-2 md:gap-2.5 flex-1 min-h-0 pr-1",
+              "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
             )}>
               <button
                 className={cn(
@@ -181,12 +183,12 @@ export function UserProfileModal({
                 onClick={onOpenProfileDetails}
               >
                 <div className="flex items-center gap-3 md:gap-4">
-                  <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-rose-100 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400")}>
+                  <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-accent text-primary dark:bg-accent/20 dark:text-primary")}>
                     <UserIcon size={18} className="md:w-6 md:h-6" />
                   </div>
                   <div className="text-left">
                     <p className="font-bold text-sm md:text-base lg:text-lg">{t('profile.title')}</p>
-                    <p className="text-[10px] md:text-xs opacity-50 hidden sm:block">{t('customerManagement.form.editDescription')}</p>
+                    <p className="text-[10px] md:text-xs opacity-50 hidden sm:block">{t('profile.editDescription')}</p>
                   </div>
                 </div>
                 <ArrowRight01Icon size={16} className="opacity-30 group-hover:translate-x-1 transition-transform md:w-[18px]" />
@@ -236,7 +238,7 @@ export function UserProfileModal({
                 </Select>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 md:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 md:gap-2.5">
                 <div className={cn(
                   "sm:col-span-2 group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
                   "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
@@ -249,11 +251,28 @@ export function UserProfileModal({
                       <p className="font-bold text-sm md:text-base lg:text-lg">{t('appearance')}</p>
                     </div>
                   </div>
-                  <Switch
-                    checked={isDark}
-                    onCheckedChange={() => setTheme(isDark ? 'light' : 'dark')}
-                    className="scale-75 data-[state=checked]:bg-[var(--crm-brand-primary)] md:scale-100"
-                  />
+                  {isBrandThemeListEnabled ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex shrink-0 cursor-not-allowed">
+                          <Switch
+                            checked={isDark}
+                            disabled
+                            className="scale-75 data-[state=checked]:bg-[var(--crm-brand-primary)] md:scale-100"
+                          />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-[300px] px-4 py-2.5 text-sm font-medium leading-relaxed">
+                        {t('appearanceLockedByBrandTheme')}
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <Switch
+                      checked={isDark}
+                      onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                      className="scale-75 data-[state=checked]:bg-[var(--crm-brand-primary)] md:scale-100"
+                    />
+                  )}
                 </div>
 
                 <div className={cn(
@@ -266,53 +285,60 @@ export function UserProfileModal({
                     </div>
                     <div className="text-left min-w-0">
                       <p className="font-bold text-sm md:text-base lg:text-lg">Tema</p>
+                      <p className="mt-0.5 line-clamp-1 text-[10px] font-semibold text-[var(--crm-app-text-muted)] md:text-xs">
+                        {isBrandThemeListEnabled
+                          ? brandThemes.find((item) => item.id === brandTheme)?.label || 'Tema'
+                          : 'V3RII Neon + görünüm modu'}
+                      </p>
                     </div>
                   </div>
-                  <Select value={brandTheme} onValueChange={(val) => setBrandTheme(val as BrandTheme)}>
-                    <SelectTrigger className={cn(
-                      "w-32 md:w-40 lg:w-48 h-9 md:h-10 shadow-none focus:ring-0 font-black text-xs md:text-sm transition-all",
-                      "bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 dark:bg-white/10 dark:border-none dark:hover:bg-white/20 dark:text-white"
-                    )}>
-                      <span className="truncate">{brandThemes.find(t => t.id === brandTheme)?.label || 'Tema'}</span>
-                    </SelectTrigger>
-                    <SelectContent align="end" className={cn(
-                      "rounded-2xl border shadow-2xl p-2 w-[300px] sm:w-[500px]",
-                      "bg-white border-slate-200 text-slate-900 dark:bg-[#1a1025] dark:border-white/10 dark:text-white"
-                    )}>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {brandThemes.map((item) => (
-                          <SelectItem
-                            key={item.id}
-                            value={item.id}
-                            className={cn(
-                              "flex min-h-16 items-center gap-3 cursor-pointer rounded-xl border p-3 px-3 transition-colors",
-                              "hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5",
-                              "border-slate-100 dark:border-white/5 data-[state=checked]:border-[var(--crm-brand-primary)] data-[state=checked]:bg-[var(--crm-brand-soft)]",
-                              "focus:text-inherit [&>span.absolute]:hidden"
-                            )}
-                          >
-                            <div className="flex items-center gap-3 w-full">
-                              <span className="flex h-9 w-12 shrink-0 overflow-hidden rounded-xl border border-white/40 shadow-sm">
-                                {item.swatches.map((color) => (
-                                  <span key={color} className="h-full flex-1" style={{ backgroundColor: color }} />
-                                ))}
-                              </span>
-                              <span className="min-w-0 flex-1 flex flex-col items-start text-left">
-                                <span className="block truncate text-xs font-black md:text-sm">{item.label}</span>
-                                <span className="mt-0.5 line-clamp-1 text-[10px] font-medium text-[var(--crm-app-text-muted)] md:text-[11px] whitespace-normal">
-                                  {item.description}
-                                </span>
-                              </span>
-                              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--crm-brand-primary)] bg-[var(--crm-brand-primary)] text-white opacity-0 transition-opacity [[data-state=checked]_&]:opacity-100">
-                                <Check size={14} strokeWidth={3} />
-                              </span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </div>
-                    </SelectContent>
-                  </Select>
+                  <Switch
+                    checked={isBrandThemeListEnabled}
+                    onCheckedChange={setBrandThemeListEnabled}
+                    className="scale-75 data-[state=checked]:bg-[var(--crm-brand-primary)] md:scale-100"
+                  />
                 </div>
+
+                {isBrandThemeListEnabled && (
+                  <div className={cn(
+                    "sm:col-span-5 grid grid-cols-1 gap-2 rounded-[1.5rem] border p-2 transition-all sm:grid-cols-2",
+                    "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
+                  )}>
+                    {brandThemes.map((item) => {
+                      const isSelected = item.id === brandTheme;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setBrandTheme(item.id)}
+                          className={cn(
+                            "flex min-h-16 items-center gap-3 rounded-xl border p-3 text-left transition-colors",
+                            "border-slate-100 hover:bg-slate-100 dark:border-white/5 dark:hover:bg-white/5",
+                            isSelected && "border-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)]"
+                          )}
+                        >
+                          <span className="flex h-9 w-12 shrink-0 overflow-hidden rounded-xl border border-white/40 shadow-sm">
+                            {item.swatches.map((color) => (
+                              <span key={color} className="h-full flex-1" style={{ backgroundColor: color }} />
+                            ))}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-xs font-black md:text-sm">{item.label}</span>
+                            <span className="mt-0.5 line-clamp-1 text-[10px] font-medium text-[var(--crm-app-text-muted)] md:text-[11px]">
+                              {item.description}
+                            </span>
+                          </span>
+                          <span className={cn(
+                            "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--crm-brand-primary)] bg-[var(--crm-brand-primary)] text-white transition-opacity",
+                            isSelected ? "opacity-100" : "opacity-0"
+                          )}>
+                            <Check size={14} strokeWidth={3} />
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -331,6 +357,7 @@ export function UserProfileModal({
           </div>
         </div>
       </DialogContent>
+      </TooltipProvider>
     </Dialog>
   );
 }

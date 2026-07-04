@@ -86,7 +86,7 @@ export function RelatedStocksSelectionDialog({
     <Dialog open={open} onOpenChange={(isOpen) => !isLoading && onOpenChange(isOpen)}>
       <DialogContent className="w-[calc(100vw-1rem)] sm:w-full max-w-2xl max-h-[80vh] flex flex-col p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-white/60 dark:border-white/5 shadow-2xl rounded-2xl overflow-hidden">
         <DialogHeader className="px-6 pt-6 pb-4 shrink-0  border-b border-slate-200/50 dark:border-white/5">
-          <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-linear-to-r from-pink-600 to-orange-600">
+          <DialogTitle className="text-xl font-bold text-primary">
             {t('relatedStocksSelectionDialog.title')}
           </DialogTitle>
           <DialogDescription className="text-slate-500 dark:text-slate-400">
@@ -146,7 +146,7 @@ export function RelatedStocksSelectionDialog({
           {optionalStocks.length > 0 && (
             <div className="space-y-3">
               <Label className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                <span className="w-1 h-4 bg-pink-500 rounded-full inline-block"></span>
+                <span className="w-1 h-4 bg-primary rounded-full inline-block"></span>
                 {t('relatedStocksSelectionDialog.optionalStocks')}
               </Label>
               <div className="space-y-2">
@@ -159,8 +159,8 @@ export function RelatedStocksSelectionDialog({
                         isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
                       } ${
                         isSelected 
-                          ? 'bg-pink-50/80 dark:bg-pink-500/10 border-pink-500/50 shadow-sm shadow-pink-500/10' 
-                          : 'bg-white/50 dark:bg-white/5 border-slate-200 dark:border-white/5 hover:border-pink-500/30 hover:bg-pink-50/30 dark:hover:bg-pink-500/5'
+                          ? 'bg-accent/80 dark:bg-primary/10 border-primary/50 shadow-sm shadow-primary/10' 
+                          : 'bg-white/50 dark:bg-white/5 border-slate-200 dark:border-white/5 hover:border-primary/30 hover:bg-accent/30 dark:hover:bg-primary/5'
                       }`}
                       onClick={() => !isLoading && handleToggleStock(stock.relatedStockId, stock.isMandatory)}
                     >
@@ -170,11 +170,11 @@ export function RelatedStocksSelectionDialog({
                           onCheckedChange={() => handleToggleStock(stock.relatedStockId, stock.isMandatory)}
                           onClick={(e) => e.stopPropagation()}
                           disabled={isLoading}
-                          className="data-[state=checked]:bg-pink-500 data-[state=checked]:border-pink-500 border-slate-300 dark:border-slate-600"
+                          className="data-[state=checked]:bg-primary data-[state=checked]:border-primary border-slate-300 dark:border-slate-600"
                         />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <div className={`font-medium text-sm truncate transition-colors ${isSelected ? 'text-pink-700 dark:text-pink-300' : 'text-slate-900 dark:text-white'}`}>
+                            <div className={`font-medium text-sm truncate transition-colors ${isSelected ? 'text-primary dark:text-primary' : 'text-slate-900 dark:text-white'}`}>
                               {stock.relatedStockName || t('relatedStocksSelectionDialog.unknownStock')}
                             </div>
                             {stock.relatedStockCode && (
@@ -219,7 +219,7 @@ export function RelatedStocksSelectionDialog({
           <Button 
             onClick={handleConfirm} 
             disabled={isLoading}
-            className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-md shadow-pink-500/20 border-0"
+            className="bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white shadow-md shadow-primary/20 border-0"
           >
             {isLoading ? (
               <>

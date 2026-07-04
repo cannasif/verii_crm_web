@@ -37,8 +37,8 @@ export function WaitingApprovalsPageShell({
             className={cn(
               'h-9 w-9 shrink-0 rounded-lg border-slate-200 bg-white/90 shadow-sm',
               'dark:border-white/12 dark:bg-[#1a1025]/80',
-              'hover:border-pink-400/60 hover:bg-pink-50/80 hover:text-pink-700',
-              'dark:hover:border-pink-500/35 dark:hover:bg-pink-950/30 dark:hover:text-pink-200',
+              'hover:border-primary/40 hover:bg-accent/80 hover:text-primary',
+              'dark:hover:border-primary/30 dark:hover:bg-primary/10 dark:hover:text-primary',
               'transition-colors duration-200',
             )}
           >
@@ -47,7 +47,7 @@ export function WaitingApprovalsPageShell({
 
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <div
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-pink-500/10 text-pink-600 ring-1 ring-pink-500/20 dark:bg-pink-500/15 dark:text-pink-400 dark:ring-pink-500/25"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-primary ring-1 ring-primary/20 dark:bg-primary/10 dark:text-primary dark:ring-primary/25"
             >
               <Icon className="h-4 w-4" />
             </div>

@@ -195,7 +195,7 @@ function SortableTableHead<TKey extends string>({
         <div
           className={cn(
             'absolute crm-end-0 top-0 h-full w-1.5 cursor-col-resize z-10 group/resize flex items-center justify-center',
-            isResizing && 'bg-pink-500/10'
+            isResizing && 'bg-primary/10'
           )}
           onMouseDown={(e) => {
             e.preventDefault();
@@ -209,8 +209,8 @@ function SortableTableHead<TKey extends string>({
         >
           <div className={cn(
             'h-4/5 w-0.5 rounded-full transition-colors',
-            'bg-transparent group-hover/resize:bg-pink-500/70 dark:group-hover/resize:bg-pink-400/70',
-            isResizing && 'bg-pink-500 dark:bg-pink-400'
+            'bg-transparent group-hover/resize:bg-primary/70 dark:group-hover/resize:bg-primary/70',
+            isResizing && 'bg-primary dark:bg-primary'
           )} />
         </div>
       )}

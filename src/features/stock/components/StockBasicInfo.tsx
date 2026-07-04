@@ -116,14 +116,14 @@ export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
                         group relative flex flex-col justify-center min-h-[60px] p-2.5
                         bg-white dark:bg-zinc-900/40 
                         border border-zinc-200 dark:border-white/10 rounded-lg shadow-sm
-                        hover:border-pink-400 dark:hover:border-pink-500 
+                        hover:border-primary/40 dark:hover:border-primary 
                         hover:shadow-[0_4px_12px_rgba(236,72,153,0.15)] 
                         hover:-translate-y-0.5
                         transition-all duration-300 ease-out cursor-default
                     "
                     title={`${item.code || ''} ${item.name ? '- ' + item.name : ''}`}
                 >
-                    <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold mb-1 flex items-center gap-1 group-hover:text-pink-600 transition-colors">
+                    <span className="text-[9px] uppercase tracking-wider text-zinc-400 font-bold mb-1 flex items-center gap-1 group-hover:text-primary transition-colors">
                         <Tag className="w-2.5 h-2.5 opacity-50" />
                         {t(`stock.detail.kod${item.id}`, { defaultValue: `KOD ${item.id}` })}
                     </span>
@@ -203,12 +203,12 @@ function InfoItem({
         <div className={cn(
             "group relative flex flex-col gap-1.5 p-4 rounded-xl transition-all duration-300 border",
             "bg-white dark:bg-zinc-900/40 border-zinc-300 dark:border-white/10 shadow-sm",
-            "hover:shadow-md hover:border-pink-300 dark:hover:border-pink-500/50 hover:-translate-y-0.5",
+            "hover:shadow-md hover:border-primary/30 dark:hover:border-primary/50 hover:-translate-y-0.5",
             featured && "bg-zinc-50/50 dark:bg-white/5",
             className
         )}>
             <div className="flex items-center gap-2 text-zinc-500 dark:text-zinc-400">
-                {Icon && <Icon className={cn("w-4 h-4 opacity-70 group-hover:text-pink-600 transition-colors", featured && "text-pink-600 opacity-100")} />}
+                {Icon && <Icon className={cn("w-4 h-4 opacity-70 group-hover:text-primary transition-colors", featured && "text-primary opacity-100")} />}
                 <span className="text-xs font-bold uppercase tracking-wide opacity-90">{label}</span>
             </div>
             

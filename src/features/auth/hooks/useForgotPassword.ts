@@ -15,7 +15,7 @@ export const useForgotPassword = () => {
             color: '#fff',
             backdropFilter: 'blur(10px)'
           },
-          className: 'text-white border-pink-500/20 shadow-xl shadow-pink-500/10'
+          className: 'text-white border-primary/20 shadow-xl shadow-primary/10'
         });
       } else {
         const errorMessage = response.message || 'Bu e-posta adresi sistemde kayıtlı değil.';

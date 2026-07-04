@@ -180,7 +180,7 @@ export function ActivityImageTab({
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">
-        <Loader2 className="h-8 w-8 animate-spin text-pink-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <span className="text-muted-foreground text-sm font-medium">
           {t('activity-image:loading')}
         </span>
@@ -202,7 +202,7 @@ export function ActivityImageTab({
         <Button
           onClick={handleUploadClick}
           disabled={uploadMutation.isPending}
-          className="bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white "
+          className="bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white "
         >
           <Upload className="h-4 w-4 mr-2" />
           {t('activity-image:uploadImages')}
@@ -278,7 +278,7 @@ export function ActivityImageTab({
                         href={getFullImageUrl(image.resimUrl)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-pink-600 dark:text-pink-400 hover:underline flex items-center gap-1"
+                        className="text-xs text-primary hover:underline flex items-center gap-1"
                       >
                         <span className="truncate max-w-[200px]">{image.resimUrl}</span>
                         <ExternalLink className="h-3 w-3 shrink-0" />
@@ -291,7 +291,7 @@ export function ActivityImageTab({
                         variant="ghost"
                         size="icon"
                         onClick={() => handleEdit(image)}
-                        className="h-8 w-8 text-slate-600 hover:text-pink-600 dark:text-slate-400 dark:hover:text-pink-400"
+                        className="h-8 w-8 text-slate-600 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>

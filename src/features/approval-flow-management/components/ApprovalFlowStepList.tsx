@@ -62,12 +62,12 @@ const INPUT_STYLE = `
   
   /* LIGHT MODE FOCUS */
   focus:bg-white 
-  focus:border-rose-500 
+  focus:border-primary 
   focus:shadow-[0_0_0_3px_rgba(244,63,94,0.15)] 
 
   /* DARK MODE FOCUS */
   dark:focus:bg-[#0c0516] 
-  dark:focus:border-rose-500/60 
+  dark:focus:border-primary/60 
   dark:focus:shadow-[0_0_0_3px_rgba(244,63,94,0.1)]
 
   transition-all duration-200
@@ -238,7 +238,7 @@ export function ApprovalFlowStepList({
       <div className="bg-slate-50/50 dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-xl p-6 transition-all duration-300">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-500">
+            <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center text-red-500">
               <Layers size={18} />
             </div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
@@ -288,16 +288,16 @@ export function ApprovalFlowStepList({
                   className={`
                     flex items-center gap-4 p-4 rounded-xl border cursor-move transition-all duration-200 group
                     ${draggedIndex === index 
-                      ? 'opacity-50 border-rose-500/50 bg-rose-50 dark:bg-rose-900/20' 
+                      ? 'opacity-50 border-primary/50 bg-accent dark:bg-primary/20' 
                       : dragOverIndex === index && draggedIndex !== index 
-                        ? 'border-rose-500 bg-rose-50 dark:bg-rose-900/20 scale-[1.02]' 
-                        : 'border-slate-200 dark:border-white/5 bg-white dark:bg-[#0c0516] hover:border-rose-500/30 hover:shadow-md hover:shadow-rose-500/5'}
+                        ? 'border-primary bg-accent dark:bg-primary/20 scale-[1.02]' 
+                        : 'border-slate-200 dark:border-white/5 bg-white dark:bg-[#0c0516] hover:border-primary/30 hover:shadow-md hover:shadow-primary-500/5'}
                   `}
                 >
-                  <GripVertical className="h-5 w-5 text-slate-400 group-hover:text-rose-500 transition-colors flex-shrink-0" />
+                  <GripVertical className="h-5 w-5 text-slate-400 group-hover:text-red-500 transition-colors flex-shrink-0" />
                   
                   <div className="flex-1 flex items-center gap-4">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold text-sm border border-rose-500/20">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/10 text-red-600 dark:text-red-400 font-bold text-sm border border-primary/20">
                       {step.stepOrder}
                     </div>
                     <div className="flex-1">
@@ -317,7 +317,7 @@ export function ApprovalFlowStepList({
                         variant="ghost"
                         size="icon"
                         onClick={() => handleEditClick(step)}
-                        className="h-8 w-8 text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg"
+                        className="h-8 w-8 text-slate-500 hover:text-primary hover:bg-accent dark:hover:bg-accent/10 rounded-lg"
                       >
                         <Edit2 className="h-4 w-4" />
                       </Button>
@@ -345,7 +345,7 @@ export function ApprovalFlowStepList({
         <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-lg shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl p-0 overflow-hidden">
           <DialogHeader className="border-b border-slate-100 dark:border-white/5 px-6 py-5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md shrink-0 flex-row items-center justify-between space-y-0">
             <div className="flex items-center gap-3">
-               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-rose-500/20 to-amber-500/20 border border-rose-500/10 flex items-center justify-center text-rose-500 shrink-0">
+               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-amber-500/20 border border-primary/10 flex items-center justify-center text-red-500 shrink-0">
                  <Layers size={20} />
                </div>
                <div>
@@ -411,7 +411,7 @@ export function ApprovalFlowStepList({
                   <Button
                     type="submit"
                     disabled={createStep.isPending || updateStep.isPending || !isFormValid}
-                    className="h-10 px-6 rounded-lg bg-[image:var(--crm-brand-gradient)] hover:from-rose-700 hover:to-amber-700 text-white font-medium shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] border-0"
+                    className="h-10 px-6 rounded-lg bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-medium shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] border-0"
                   >
                     {createStep.isPending || updateStep.isPending
                       ? t('approvalFlowStep.form.saving')

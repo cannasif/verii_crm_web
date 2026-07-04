@@ -10,7 +10,7 @@ interface ThemeToggleProps {
 }
 
 export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
-  const { theme, setTheme } = useTheme()
+  const { theme, isBrandThemeListEnabled, setTheme } = useTheme()
   const { t } = useTranslation()
   const [isDark, setIsDark] = useState(false)
 
@@ -36,6 +36,7 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
   }, [theme])
 
   const handleToggle = (checked: boolean) => {
+    if (isBrandThemeListEnabled) return
     setTheme(checked ? "dark" : "light")
   }
 
@@ -43,12 +44,14 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
     return (
       <button
         onClick={() => setTheme(isDark ? "light" : "dark")}
+        disabled={isBrandThemeListEnabled}
         className={cn(
           "w-12 h-12 rounded-full border border-white/20 bg-zinc-900/80 backdrop-blur-xl shadow-lg shadow-black/40",
           "flex items-center justify-center transition-all duration-300",
           "hover:scale-110 active:scale-95 group",
           "hover:border-orange-500/30 hover:bg-zinc-800",
-          "hover:shadow-[0_0_15px_rgba(249,115,22,0.3)]"
+          "hover:shadow-[0_0_15px_rgba(249,115,22,0.3)]",
+          isBrandThemeListEnabled && "cursor-not-allowed opacity-50 hover:scale-100"
         )}
         aria-label={t('theme.toggle')}
       >
@@ -67,6 +70,7 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
       <Switch
         checked={isDark}
         onCheckedChange={handleToggle}
+        disabled={isBrandThemeListEnabled}
         aria-label={t('theme.toggle')}
       />
       <Moon className="h-4 w-4 text-muted-foreground" />

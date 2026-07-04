@@ -66,7 +66,7 @@ export function StockBulkImageImportDialog(): ReactElement {
       <Button
         type="button"
         onClick={() => setOpen(true)}
-        className="h-11 bg-linear-to-r from-pink-600 to-orange-600 px-6 font-bold text-white shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+        className="h-11 bg-[image:var(--crm-brand-gradient)] px-6 font-bold text-white shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.05] hover:opacity-90 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
       >
         <ImagePlus className="mr-2 h-4 w-4" />
         {t('bulkImport.button', { defaultValue: 'Toplu görsel yükle' })}
@@ -79,9 +79,9 @@ export function StockBulkImageImportDialog(): ReactElement {
         >
           <DialogHeader className="px-6 sm:px-8 py-3 border-b border-slate-100 dark:border-white/5 shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10 backdrop-blur-sm">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 p-0.5 shadow-lg shadow-pink-500/20">
+              <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary to-[var(--crm-brand-accent)] p-0.5 shadow-lg shadow-primary/20">
                 <div className="h-full w-full bg-white dark:bg-[#130822] rounded-[14px] flex items-center justify-center">
-                  <ImagePlus size={24} className="text-pink-600 dark:text-pink-400" />
+                  <ImagePlus size={24} className="text-primary" />
                 </div>
               </div>
               <div>
@@ -95,10 +95,10 @@ export function StockBulkImageImportDialog(): ReactElement {
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 shadow-sm"
+              className="group relative h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-primary hover:text-white transition-all duration-300 shadow-sm"
             >
               <X className="relative z-10" size={20} />
-              <div className="absolute inset-0 rounded-full bg-pink-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute inset-0 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
           </DialogHeader>
 
@@ -108,8 +108,8 @@ export function StockBulkImageImportDialog(): ReactElement {
 
 
               <div className="flex items-start gap-4 relative z-50">
-                <div className="top-0 p-0 h-10 w-10 rounded-xl bg-pink-50 dark:bg-pink-500/10 flex items-center justify-center shrink-0">
-                  <Archive size={20} className="text-pink-600 dark:text-pink-400" />
+                <div className="top-0 p-0 h-10 w-10 rounded-xl bg-accent dark:bg-primary/10 flex items-center justify-center shrink-0">
+                  <Archive size={20} className="text-primary" />
                 </div>
                 <div className="space-y-4 flex-1">
                   <p className="text-base font-bold text-slate-900 dark:text-white">
@@ -138,7 +138,7 @@ export function StockBulkImageImportDialog(): ReactElement {
 
               <label
                 htmlFor="stock-bulk-image-zip"
-                className="relative group flex flex-col items-center justify-center w-full h-40 rounded-[2rem] border-2 border-dashed border-pink-500 dark:border-white/10 bg-slate-50/30 dark:bg-white/[0.01] hover:bg-white dark:hover:bg-white/[0.03] hover:border-pink-500 transition-all cursor-pointer overflow-hidden"
+                className="relative group flex flex-col items-center justify-center w-full h-40 rounded-[2rem] border-2 border-dashed border-primary dark:border-white/10 bg-slate-50/30 dark:bg-white/[0.01] hover:bg-white dark:hover:bg-white/[0.03] hover:border-primary transition-all cursor-pointer overflow-hidden"
               >
                 <Input
                   id="stock-bulk-image-zip"
@@ -149,11 +149,11 @@ export function StockBulkImageImportDialog(): ReactElement {
                 />
 
                 <div className="flex flex-col items-center gap-3 text-center p-6">
-                  <div className="h-14 w-14 rounded-2xl bg-white dark:bg-white/5 shadow-sm group-hover:shadow-pink-500/10 group-hover:scale-110 transition-all flex items-center justify-center">
+                  <div className="h-14 w-14 rounded-2xl bg-white dark:bg-white/5 shadow-sm group-hover:shadow-primary/10 group-hover:scale-110 transition-all flex items-center justify-center">
                     {submitting ? (
-                      <Loader2 className="h-6 w-6 text-pink-600 animate-spin" />
+                      <Loader2 className="h-6 w-6 text-primary animate-spin" />
                     ) : (
-                      <Upload className="h-6 w-6 text-pink-600" />
+                      <Upload className="h-6 w-6 text-primary" />
                     )}
                   </div>
                   <div>
@@ -168,7 +168,7 @@ export function StockBulkImageImportDialog(): ReactElement {
 
                 {file && (
                   <div className="absolute inset-x-0 bottom-0 h-1 bg-slate-100 dark:bg-white/5">
-                    <div className="h-full bg-pink-500 w-full animate-in slide-in-from-left duration-500" />
+                    <div className="h-full bg-primary w-full animate-in slide-in-from-left duration-500" />
                   </div>
                 )}
               </label>
@@ -177,7 +177,7 @@ export function StockBulkImageImportDialog(): ReactElement {
 
             <div className="rounded-[2rem] border border-slate-100 dark:border-white/5 bg-white/50 dark:bg-white/[0.02] p-8">
               <p className="mb-6 text-sm font-bold text-slate-900 dark:text-white uppercase tracking-tight flex items-center gap-2">
-                <span className="h-1.5 w-4 bg-pink-500 rounded-full" />
+                <span className="h-1.5 w-4 bg-primary rounded-full" />
                 {t('bulkImport.notesTitle', { defaultValue: 'Dikkat Edilmesi Gerekenler' })}
               </p>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm text-slate-600 dark:text-slate-400">
@@ -207,7 +207,7 @@ export function StockBulkImageImportDialog(): ReactElement {
               type="button"
               onClick={() => void handleSubmit()}
               disabled={submitting || !file}
-              className="h-12 bg-linear-to-r from-pink-600 to-orange-600 px-10 font-black text-white shadow-lg shadow-pink-500/20 ring-1 ring-pink-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] rounded-2xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+              className="h-12 bg-[image:var(--crm-brand-gradient)] px-10 font-black text-white shadow-lg shadow-primary/20 ring-1 ring-primary/30 transition-all duration-300 hover:scale-[1.05] hover:opacity-90 active:scale-[0.98] rounded-2xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
             >
               {submitting ? (
                 <>

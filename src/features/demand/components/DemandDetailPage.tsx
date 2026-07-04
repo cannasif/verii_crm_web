@@ -690,7 +690,7 @@ export function DemandDetailPage(): ReactElement {
   if (isLoading || isLoadingCanEdit || isLoadingExchangeRates || isPendingLines || isLoadingNotes) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 border border-zinc-300 dark:border-zinc-700/80 rounded-xl bg-white/50 dark:bg-card/50">
-        <div className="w-10 h-10 border-4 border-muted border-t-pink-500 rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-muted border-t-primary rounded-full animate-spin" />
         <span className="text-muted-foreground animate-pulse text-sm font-medium">
           {t('loading')}
         </span>
@@ -739,7 +739,7 @@ export function DemandDetailPage(): ReactElement {
               'text-zinc-600 dark:text-zinc-500',
               'data-[state=active]:bg-white data-[state=active]:shadow-none data-[state=active]:border-zinc-300',
               'dark:data-[state=active]:border-zinc-600 dark:data-[state=active]:bg-zinc-950 dark:data-[state=active]:shadow-[0_0_0_1px_rgba(236,72,153,0.2),0_0_28px_-8px_rgba(236,72,153,0.28)]',
-              activeTab === 'detail' && 'data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:font-medium'
+              activeTab === 'detail' && 'data-[state=active]:text-primary dark:data-[state=active]:text-primary data-[state=active]:font-medium'
             )}
           >
             <Layers className="h-4 w-4 mr-2" />
@@ -752,7 +752,7 @@ export function DemandDetailPage(): ReactElement {
               'text-zinc-600 dark:text-zinc-500',
               'data-[state=active]:bg-white data-[state=active]:shadow-none data-[state=active]:border-zinc-300',
               'dark:data-[state=active]:border-zinc-600 dark:data-[state=active]:bg-zinc-950 dark:data-[state=active]:shadow-[0_0_0_1px_rgba(236,72,153,0.2),0_0_28px_-8px_rgba(236,72,153,0.28)]',
-              activeTab === 'approval-flow' && 'data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:font-medium'
+              activeTab === 'approval-flow' && 'data-[state=active]:text-primary dark:data-[state=active]:text-primary data-[state=active]:font-medium'
             )}
           >
             <FileCheck className="h-4 w-4 mr-2" />
@@ -765,7 +765,7 @@ export function DemandDetailPage(): ReactElement {
               'text-zinc-600 dark:text-zinc-500',
               'data-[state=active]:bg-white data-[state=active]:shadow-none data-[state=active]:border-zinc-300',
               'dark:data-[state=active]:border-zinc-600 dark:data-[state=active]:bg-zinc-950 dark:data-[state=active]:shadow-[0_0_0_1px_rgba(236,72,153,0.2),0_0_28px_-8px_rgba(236,72,153,0.28)]',
-              activeTab === 'report' && 'data-[state=active]:text-pink-600 dark:data-[state=active]:text-pink-400 data-[state=active]:font-medium'
+              activeTab === 'report' && 'data-[state=active]:text-primary dark:data-[state=active]:text-primary data-[state=active]:font-medium'
             )}
           >
             <FileText className="h-4 w-4 mr-2" />

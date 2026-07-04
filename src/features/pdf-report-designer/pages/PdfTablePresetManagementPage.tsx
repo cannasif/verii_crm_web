@@ -239,7 +239,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
           </Button>
           <div>
             <div className="flex items-center gap-2">
-              <TableProperties className="size-5 text-rose-500" />
+              <TableProperties className="size-5 text-red-500" />
               <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {t('pdfReportDesigner.tablePresetManagement.title')}
               </h1>
@@ -388,7 +388,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent showCloseButton={false} className="max-w-3xl border-slate-300/80 bg-stone-50/95 p-0 shadow-2xl ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/95 dark:ring-0">
-          <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-rose-500/0 to-amber-500/0 dark:from-rose-500/5 dark:to-amber-500/5 opacity-50" />
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-b from-primary/0 to-amber-500/0 dark:from-primary/5 dark:to-amber-500/5 opacity-50" />
 
           <div className="relative z-10">
             <DialogClose
@@ -422,7 +422,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                   <Input
                     value={formState.name}
                     onChange={(e) => setFormState((s) => ({ ...s, name: e.target.value }))}
-                    className="h-10 border-slate-200/60 bg-white transition-all focus:ring-rose-500/20 dark:border-white/10 dark:bg-white/5"
+                    className="h-10 border-slate-200/60 bg-white transition-all focus:ring-primary/20 dark:border-white/10 dark:bg-white/5"
                   />
                 </div>
                 <div className="grid gap-1.5">
@@ -430,7 +430,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                   <Input
                     value={formState.key}
                     onChange={(e) => setFormState((s) => ({ ...s, key: e.target.value }))}
-                    className="h-10 border-slate-200/60 bg-white font-mono transition-all focus:ring-rose-500/20 dark:border-white/10 dark:bg-white/5"
+                    className="h-10 border-slate-200/60 bg-white font-mono transition-all focus:ring-primary/20 dark:border-white/10 dark:bg-white/5"
                   />
                 </div>
               </div>
@@ -477,7 +477,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                   value={formState.columnsJson}
                   onChange={(e) => setFormState((s) => ({ ...s, columnsJson: e.target.value }))}
                   rows={10}
-                  className="font-mono text-[11px] border-slate-200/60 bg-white transition-all focus:ring-rose-500/20 dark:border-white/10 dark:bg-white/5"
+                  className="font-mono text-[11px] border-slate-200/60 bg-white transition-all focus:ring-primary/20 dark:border-white/10 dark:bg-white/5"
                 />
               </div>
               <div className="grid gap-1.5">
@@ -486,7 +486,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                   value={formState.optionsJson}
                   onChange={(e) => setFormState((s) => ({ ...s, optionsJson: e.target.value }))}
                   rows={5}
-                  className="font-mono text-[11px] border-slate-200/60 bg-white transition-all focus:ring-rose-500/20 dark:border-white/10 dark:bg-white/5"
+                  className="font-mono text-[11px] border-slate-200/60 bg-white transition-all focus:ring-primary/20 dark:border-white/10 dark:bg-white/5"
                 />
               </div>
             </div>

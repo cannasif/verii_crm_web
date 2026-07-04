@@ -1,13 +1,12 @@
-import { type ChangeEvent, type FormEvent, type KeyboardEvent, type PointerEvent, type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Bot, Check, ChevronsRight, Copy, ExternalLink, FileImage, GripVertical, ImagePlus, Maximize2, MessageCircle, Minimize2, Plus, SendHorizontal, Sparkles, Wand2, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Bot, Check, Copy, ExternalLink, FileImage, ImagePlus, Maximize2, MessageCircle, Minimize2, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { aiAssistantApi } from '../api/ai-assistant-api';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
-import { useAiAssistantConversationHistoryQuery, useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
+import { useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
 import { AiAssistantAnswerCard } from './AiAssistantAnswerCard';
 import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
 import {
@@ -16,8 +15,6 @@ import {
   type AiAssistantErrorContext,
 } from '../lib/ai-assistant-error-context';
 import {
-  createAiAssistantActionItemsFromToolActions,
-  createAiAssistantChatMessagesFromServer,
   createAiAssistantChatHistoryKey,
   readAiAssistantChatHistory,
   writeAiAssistantChatHistory,
@@ -34,7 +31,6 @@ import {
   type AiAssistantSelectedAttachment,
 } from '../lib/ai-assistant-attachments';
 import { copyTextToClipboard } from '../lib/ai-assistant-clipboard';
-import { showReportDraftReadyToast } from '../lib/ai-assistant-report-draft-toast';
 
 const actionItemClassNameBySeverity: Record<string, string> = {
   danger: 'border-red-400/30 bg-red-400/10 text-red-950 dark:text-red-100',
@@ -45,11 +41,6 @@ const actionItemClassNameBySeverity: Record<string, string> = {
 
 const minimumThinkingDurationMs = 900;
 const missingTranslationText = 'Çeviri eksik';
-const widgetPositionStorageKey = 'crm-ai-assistant-widget-position';
-const widgetSessionStorageKey = 'crm-ai-assistant-session-key';
-const widgetViewportPadding = 16;
-const widgetDefaultWidth = 500;
-const widgetDefaultHeight = 700;
 
 const aiAssistantTextFallbacks: Record<string, string> = {
   pageTitle: 'AI Asistan',
@@ -82,19 +73,6 @@ const aiAssistantTextFallbacks: Record<string, string> = {
   send: 'Gönder',
   expandPanel: 'Paneli genişlet',
   collapsePanel: 'Paneli küçült',
-  dockPanel: 'Kenara al',
-  openFromRail: 'AI asistanı kenar çubuğundan aç',
-  dragPanel: 'Paneli sürükle',
-  dockedChat: 'AI Asistan',
-  contextTitle: 'Bağlam',
-  contextHome: 'Genel CRM',
-  promptGuideTitle: 'Nereden başlayalım?',
-  promptGuideDescription: 'Bir öneri seçebilir ya da doğrudan kendi cümlenizle yazabilirsiniz.',
-  enterToSend: 'Enter gönderir, Shift+Enter yeni satır açar.',
-  reportMode: 'Rapor oluştur',
-  errorMode: 'Hata açıkla',
-  salesMode: 'Satış özeti',
-  erpMode: 'ERP kontrolü',
 };
 
 const defaultSuggestions = [
@@ -102,29 +80,6 @@ const defaultSuggestions = [
   'Onaylanan siparişlerimin oranı nedir?',
   "ERP'ye aktarılan satış kayıtlarım kaç adet?",
   'Bugünkü aktivitelerimi özetle.',
-];
-
-const assistantCapabilityPrompts = [
-  {
-    key: 'reportMode',
-    fallback: 'Rapor oluştur',
-    prompt: 'Satış temsilcisi bazında KPI ve grafik içeren rapor oluştur.',
-  },
-  {
-    key: 'salesMode',
-    fallback: 'Satış özeti',
-    prompt: 'Bu ay talep, teklif ve sipariş performansımı özetle.',
-  },
-  {
-    key: 'erpMode',
-    fallback: 'ERP kontrolü',
-    prompt: "ERP'ye aktarılmamış satış kayıtlarımı kontrol eder misin?",
-  },
-  {
-    key: 'errorMode',
-    fallback: 'Hata açıkla',
-    prompt: 'Son hatayı anlaşılır şekilde açıkla ve kontrol adımlarını yaz.',
-  },
 ];
 
 function waitForMinimumThinkingDuration(): Promise<void> {
@@ -141,138 +96,9 @@ function createMessageId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-function createSessionKey(): string {
-  return `web-${createMessageId()}`;
-}
-
-function readAssistantSessionKey(): string {
-  if (typeof window === 'undefined' || !window.localStorage) {
-    return createSessionKey();
-  }
-
-  const existingKey = window.localStorage.getItem(widgetSessionStorageKey);
-  if (existingKey) return existingKey;
-
-  const nextKey = createSessionKey();
-  window.localStorage.setItem(widgetSessionStorageKey, nextKey);
-  return nextKey;
-}
-
-type WidgetPosition = {
-  x: number;
-  y: number;
-};
-
-type DragState = {
-  pointerId: number;
-  offsetX: number;
-  offsetY: number;
-};
-
-function clampWidgetPosition(position: WidgetPosition, element?: HTMLElement | null): WidgetPosition {
-  if (typeof window === 'undefined') {
-    return position;
-  }
-
-  const width = element?.offsetWidth || widgetDefaultWidth;
-  const height = element?.offsetHeight || widgetDefaultHeight;
-  const maxX = Math.max(widgetViewportPadding, window.innerWidth - width - widgetViewportPadding);
-  const maxY = Math.max(widgetViewportPadding, window.innerHeight - height - widgetViewportPadding);
-
-  return {
-    x: Math.min(Math.max(position.x, widgetViewportPadding), maxX),
-    y: Math.min(Math.max(position.y, widgetViewportPadding), maxY),
-  };
-}
-
-function createDefaultWidgetPosition(): WidgetPosition {
-  if (typeof window === 'undefined') {
-    return { x: widgetViewportPadding, y: widgetViewportPadding };
-  }
-
-  return clampWidgetPosition({
-    x: window.innerWidth - widgetDefaultWidth - 24,
-    y: window.innerHeight - widgetDefaultHeight - 24,
-  });
-}
-
-function readWidgetPosition(): WidgetPosition {
-  if (typeof window === 'undefined' || !window.localStorage) {
-    return createDefaultWidgetPosition();
-  }
-
-  const rawPosition = window.localStorage.getItem(widgetPositionStorageKey);
-  if (!rawPosition) {
-    return createDefaultWidgetPosition();
-  }
-
-  try {
-    const parsed = JSON.parse(rawPosition) as Partial<WidgetPosition>;
-    if (typeof parsed.x !== 'number' || typeof parsed.y !== 'number') {
-      return createDefaultWidgetPosition();
-    }
-
-    return clampWidgetPosition({ x: parsed.x, y: parsed.y });
-  } catch {
-    return createDefaultWidgetPosition();
-  }
-}
-
-function writeWidgetPosition(position: WidgetPosition): void {
-  if (typeof window === 'undefined' || !window.localStorage) return;
-  window.localStorage.setItem(widgetPositionStorageKey, JSON.stringify(position));
-}
-
-function createReadableRouteContext(pathname: string): string {
-  if (!pathname || pathname === '/') return aiAssistantTextFallbacks.contextHome;
-
-  const cleanPath = pathname
-    .split('/')
-    .filter(Boolean)
-    .slice(0, 3)
-    .map((segment) => segment.replace(/-/g, ' '))
-    .join(' / ');
-
-  return cleanPath || aiAssistantTextFallbacks.contextHome;
-}
-
-function createRouteEntityContext(pathname: string): {
-  routeTitle: string;
-  entityType?: string;
-  entityId?: number;
-  customerId?: number;
-} {
-  const routeTitle = createReadableRouteContext(pathname);
-  const segments = pathname.split('/').filter(Boolean);
-  const numericSegment = [...segments].reverse().find((segment) => /^\d+$/.test(segment));
-  const entityId = numericSegment ? Number(numericSegment) : undefined;
-  const firstSegment = segments[0];
-  const entityTypeByRoute: Record<string, string> = {
-    customers: 'customer',
-    quotations: 'quotation',
-    demands: 'demand',
-    orders: 'order',
-    activities: 'activity',
-    stocks: 'stock',
-    reports: 'report',
-    'report-builder': 'report',
-    'customer-360': 'customer',
-    'salesmen-360': 'salesmen360',
-  };
-  const entityType = firstSegment ? entityTypeByRoute[firstSegment] ?? firstSegment : undefined;
-
-  return {
-    routeTitle,
-    entityType,
-    entityId,
-    customerId: entityType === 'customer' ? entityId : undefined,
-  };
-}
-
 export function AiAssistantWidget(): ReactElement {
   const { t } = useTranslation('ai-assistant');
   const navigate = useNavigate();
-  const location = useLocation();
   const { user } = useAuthStore();
   const { data: greeting, isLoading } = useAiAssistantGreetingQuery();
   const askMutation = useAskAiAssistantMutation();
@@ -292,15 +118,10 @@ export function AiAssistantWidget(): ReactElement {
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
-  const [widgetPosition, setWidgetPosition] = useState<WidgetPosition>(() => readWidgetPosition());
-  const [sessionKey, setSessionKey] = useState<string>(() => readAssistantSessionKey());
-  const conversationHistoryQuery = useAiAssistantConversationHistoryQuery(sessionKey, isOpen);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sendButtonRef = useRef<HTMLButtonElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
-  const widgetContainerRef = useRef<HTMLDivElement | null>(null);
-  const dragStateRef = useRef<DragState | null>(null);
   const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
   const skipNextHistoryWriteRef = useRef(false);
   const readText = (key: string, fallback?: string, options?: Record<string, unknown>): string => {
@@ -320,21 +141,6 @@ export function AiAssistantWidget(): ReactElement {
 
     setMessages(readAiAssistantChatHistory(chatHistoryKey));
   }, [chatHistoryKey]);
-
-  useEffect(() => {
-    if (!isOpen || !conversationHistoryQuery.data) {
-      return;
-    }
-
-    const serverMessages = createAiAssistantChatMessagesFromServer(conversationHistoryQuery.data.messages);
-    if (serverMessages.length === 0) {
-      return;
-    }
-
-    skipNextHistoryWriteRef.current = true;
-    setMessages(serverMessages);
-    writeAiAssistantChatHistory(chatHistoryKey, serverMessages);
-  }, [chatHistoryKey, conversationHistoryQuery.data, isOpen]);
 
   useEffect(() => {
     if (skipNextHistoryWriteRef.current) {
@@ -398,7 +204,6 @@ export function AiAssistantWidget(): ReactElement {
 
   const fallbackName = user?.name || user?.email || readText('fallbackName');
   const displayName = greeting?.fullName?.trim() || fallbackName;
-  const currentRouteContext = createReadableRouteContext(location.pathname);
   const fallbackSuggestions = defaultSuggestions.map((suggestion, index) =>
     readText(`suggestions.${index + 1}`, suggestion)
   );
@@ -408,73 +213,14 @@ export function AiAssistantWidget(): ReactElement {
   useEffect(() => {
     if (!isOpen) return;
 
-    messagesEndRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end',
-    });
-  }, [isOpen, messages, isAssistantBusy]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleResize = (): void => {
-      setWidgetPosition((currentPosition) => {
-        const nextPosition = clampWidgetPosition(currentPosition, widgetContainerRef.current);
-        writeWidgetPosition(nextPosition);
-        return nextPosition;
+    const lastMessage = messages[messages.length - 1];
+    if (messages.length === 0 || lastMessage?.role === 'user' || isAssistantBusy) {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
       });
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isOpen, isExpanded]);
-
-  const handleDragStart = useCallback((event: PointerEvent<HTMLElement>): void => {
-    if (event.button !== 0) return;
-
-    const target = event.target as HTMLElement;
-    if (target.closest('[data-ai-drag-ignore="true"]')) {
-      return;
     }
-
-    const widgetElement = widgetContainerRef.current;
-    if (!widgetElement) return;
-
-    const rect = widgetElement.getBoundingClientRect();
-    dragStateRef.current = {
-      pointerId: event.pointerId,
-      offsetX: event.clientX - rect.left,
-      offsetY: event.clientY - rect.top,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }, []);
-
-  const handleDragMove = useCallback((event: PointerEvent<HTMLElement>): void => {
-    const dragState = dragStateRef.current;
-    if (!dragState || dragState.pointerId !== event.pointerId) return;
-
-    const nextPosition = clampWidgetPosition(
-      {
-        x: event.clientX - dragState.offsetX,
-        y: event.clientY - dragState.offsetY,
-      },
-      widgetContainerRef.current
-    );
-
-    setWidgetPosition(nextPosition);
-  }, []);
-
-  const handleDragEnd = useCallback((event: PointerEvent<HTMLElement>): void => {
-    const dragState = dragStateRef.current;
-    if (!dragState || dragState.pointerId !== event.pointerId) return;
-
-    dragStateRef.current = null;
-    const nextPosition = clampWidgetPosition(widgetPosition, widgetContainerRef.current);
-    setWidgetPosition(nextPosition);
-    writeWidgetPosition(nextPosition);
-    event.currentTarget.releasePointerCapture(event.pointerId);
-  }, [widgetPosition]);
+  }, [isOpen, messages, isAssistantBusy]);
 
   const askQuestion = async (value: string, errorContext?: AiAssistantErrorContext | null): Promise<void> => {
     const trimmedQuestion = value.trim();
@@ -486,8 +232,6 @@ export function AiAssistantWidget(): ReactElement {
 
     const finalQuestion = trimmedQuestion || readText('imageDefaultQuestion');
     setQuestionError(null);
-    setQuestion('');
-    clearSelectedAttachment();
     setMessages((currentMessages) => [
       ...currentMessages,
       {
@@ -501,17 +245,10 @@ export function AiAssistantWidget(): ReactElement {
     setIsThinking(true);
 
     try {
-      const routeContext = createRouteEntityContext(window.location.pathname);
-      const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
       const [result] = await Promise.all([
         askMutation.mutateAsync({
-          sessionKey,
           question: finalQuestion,
-          currentPath,
-          routeTitle: routeContext.routeTitle,
-          entityType: routeContext.entityType,
-          entityId: routeContext.entityId,
-          customerId: routeContext.customerId,
+          currentPath: window.location.pathname,
           errorMessage: errorContext
             ? `${errorContext.message}${errorContext.requestMethod || errorContext.requestUrl ? ` | ${errorContext.requestMethod ?? ''} ${errorContext.requestUrl ?? ''}` : ''}`
             : undefined,
@@ -521,10 +258,6 @@ export function AiAssistantWidget(): ReactElement {
         }),
         waitForMinimumThinkingDuration(),
       ]);
-      if (result.sessionKey && result.sessionKey !== sessionKey) {
-        setSessionKey(result.sessionKey);
-        window.localStorage.setItem(widgetSessionStorageKey, result.sessionKey);
-      }
       setMessages((currentMessages) => [
         ...currentMessages,
         {
@@ -532,41 +265,14 @@ export function AiAssistantWidget(): ReactElement {
           role: 'assistant',
           content: result.answer,
           createdAt: new Date().toISOString(),
-          actionItems: result.actionItems?.length
-            ? result.actionItems
-            : createAiAssistantActionItemsFromToolActions(result.toolActions),
-          toolActions: result.toolActions ?? [],
+          actionItems: result.actionItems ?? [],
           sources: result.sources ?? [],
           intent: result.intent,
         },
       ]);
-      showReportDraftReadyToast(result, openActionUrl);
       setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
-    } catch (error) {
-      const fallbackErrorMessage =
-        error instanceof Error
-          ? error.message
-          : readText('apiErrors.answer', 'AI asistan yanıtı alınamadı.');
-
-      setMessages((currentMessages) => [
-        ...currentMessages,
-        {
-          id: createMessageId(),
-          role: 'assistant',
-          content: `Yanıtı hazırlarken bir sorun yaşadım.\n\n${fallbackErrorMessage}\n\nSoruyu biraz daha kısa yazıp tekrar deneyebilir ya da ekrandaki son hatayı açıklamamı isteyebilirsiniz.`,
-          createdAt: new Date().toISOString(),
-          actionItems: [
-            {
-              title: 'Tekrar deneyin',
-              description: 'Soru gönderildi ancak AI yanıtı tamamlanamadı. Ağ bağlantısı veya API servisi geçici olarak yanıt vermemiş olabilir.',
-              severity: 'warning',
-            },
-          ],
-          sources: [],
-          intent: 'assistant-error',
-        },
-      ]);
-      setQuestionError(fallbackErrorMessage);
+      setQuestion('');
+      clearSelectedAttachment();
     } finally {
       setIsThinking(false);
     }
@@ -592,48 +298,19 @@ export function AiAssistantWidget(): ReactElement {
   };
 
   const clearChat = (): void => {
-    const nextSessionKey = createSessionKey();
-    setSessionKey(nextSessionKey);
-    if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem(widgetSessionStorageKey, nextSessionKey);
-    }
     setMessages([]);
     setDynamicSuggestions([]);
     setQuestionError(null);
     clearSelectedAttachment();
   };
 
-  const openActionUrl = async (actionUrl: string, toolActionId?: number | null, confirmationRequired = false): Promise<void> => {
-    if (confirmationRequired) {
-      const confirmed = window.confirm('AI önerisini onaylayıp ilgili ekrana geçmek istiyor musunuz?');
-      if (!confirmed) return;
-    }
-
-    if (toolActionId) {
-      await aiAssistantApi.confirmAction(toolActionId);
-    }
-
+  const openActionUrl = (actionUrl: string): void => {
     if (actionUrl.startsWith('http')) {
       window.open(actionUrl, '_blank', 'noopener,noreferrer');
       return;
     }
 
     navigate(actionUrl);
-    setIsOpen(false);
-  };
-
-  const openWidgetFromRail = (): void => {
-    setWidgetPosition((currentPosition) => {
-      const nextPosition = clampWidgetPosition(currentPosition, widgetContainerRef.current);
-      writeWidgetPosition(nextPosition);
-      return nextPosition;
-    });
-    setIsOpen(true);
-  };
-
-  const dockWidgetToRail = (): void => {
-    const nextPosition = clampWidgetPosition(widgetPosition, widgetContainerRef.current);
-    writeWidgetPosition(nextPosition);
     setIsOpen(false);
   };
 
@@ -647,9 +324,8 @@ export function AiAssistantWidget(): ReactElement {
 
   return (
     <div
-      ref={widgetContainerRef}
-      className={isOpen ? 'fixed z-50 print:hidden' : 'fixed end-0 top-1/2 z-50 -translate-y-1/2 print:hidden'}
-      style={isOpen ? { left: `${widgetPosition.x}px`, top: `${widgetPosition.y}px` } : undefined}
+      className="fixed bottom-4 z-50 print:hidden md:bottom-6"
+      style={{ insetInlineEnd: '1rem' }}
     >
       <style>{`
         .ai-widget-container.is-expanded .text-sm {
@@ -667,46 +343,27 @@ export function AiAssistantWidget(): ReactElement {
         .ai-widget-container.is-expanded .text-\\[0\\.62rem\\] {
           font-size: 0.75rem !important;
         }
-        .ai-widget-scroll-area {
-          scrollbar-gutter: stable;
-          -webkit-overflow-scrolling: touch;
-        }
       `}</style>
       {isOpen ? (
-        <section className={`ai-widget-container relative flex min-h-0 max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.25rem)] transition-all duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-primary/15 bg-background/98 shadow-2xl shadow-[0_24px_60px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/20 dark:bg-slate-950/98 ${isExpanded
+        <section className={`ai-widget-container relative flex w-[calc(100vw-1.25rem)] transition-all duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-primary/15 bg-background/98 shadow-2xl shadow-[0_24px_60px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/20 dark:bg-slate-950/98 ${isExpanded
           ? 'is-expanded sm:max-w-[850px] h-[min(92dvh,850px)]'
           : 'max-w-[500px] h-[min(80dvh,700px)]'
           }`}>
           <div className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-35 dark:opacity-20" />
-          <header
-            className="relative flex cursor-move touch-none select-none items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03]"
-            aria-label={readText('dragPanel')}
-            onPointerDown={handleDragStart}
-            onPointerMove={handleDragMove}
-            onPointerUp={handleDragEnd}
-            onPointerCancel={handleDragEnd}
-          >
+          <header className="relative flex items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03]">
             <div className="flex min-w-0 items-center gap-3">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)]">
                 <Bot size={22} />
                 <span className="absolute -bottom-0.5 -end-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-400 dark:border-slate-950" />
               </div>
               <div className="min-w-0">
-                <div className="flex min-w-0 items-center gap-2">
-                  <p className="truncate text-sm font-black text-slate-950 dark:text-white">
-                    {readText('pageTitle')}
-                  </p>
-                  <GripVertical size={14} className="hidden text-slate-400 sm:block" aria-hidden="true" />
-                </div>
-                <div className="mt-1 flex min-w-0 items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.14em] text-slate-500 dark:text-slate-300">
-                  <span>{readText('contextTitle')}</span>
-                  <span className="min-w-0 truncate rounded-full border border-primary/15 bg-primary/10 px-2 py-0.5 text-primary">
-                    {currentRouteContext}
-                  </span>
-                </div>
+                <p className="truncate text-sm font-black text-slate-950 dark:text-white">
+                  {readText('pageTitle')}
+                </p>
+
               </div>
             </div>
-            <div className="flex items-center gap-1 sm:gap-2" data-ai-drag-ignore="true">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Button
                 type="button"
                 variant="ghost"
@@ -716,17 +373,6 @@ export function AiAssistantWidget(): ReactElement {
               >
                 <Plus size={15} className="me-1.5" />
                 {readText('newChat')}
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                title={readText('dockPanel')}
-                className="hidden h-10 w-10 rounded-2xl sm:inline-flex"
-                aria-label={readText('dockPanel')}
-                onClick={dockWidgetToRail}
-              >
-                <ChevronsRight size={18} />
               </Button>
               <Button
                 type="button"
@@ -752,7 +398,7 @@ export function AiAssistantWidget(): ReactElement {
           </header>
 
           <div
-            className="ai-widget-scroll-area relative min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-5 touch-pan-y"
+            className="relative flex-1 space-y-4 overflow-y-auto px-4 py-5"
             role="log"
             aria-live="polite"
             aria-relevant="additions text"
@@ -772,25 +418,11 @@ export function AiAssistantWidget(): ReactElement {
                       : readText('greeting', `Merhaba ${displayName}, size nasıl yardımcı olabilirim?`, { name: displayName })}{' '}
                     {readText('chatDescription')}
                   </p>
-                  <div className="mt-4 rounded-2xl border border-primary/10 bg-slate-50/80 p-3 dark:border-primary/15 dark:bg-white/[0.04]">
-                    <div className="mb-1 flex items-center gap-2 text-xs font-black text-slate-900 dark:text-white">
-                      <Wand2 size={15} className="text-primary" />
-                      {readText('promptGuideTitle')}
-                    </div>
-                    <p className="text-xs font-semibold leading-5 text-slate-500 dark:text-slate-300">
-                      {readText('promptGuideDescription')}
-                    </p>
-                  </div>
                 </div>
               </div>
             )}
 
-            {messages.map((message) => {
-              const messageActionItems = message.actionItems?.length
-                ? message.actionItems
-                : createAiAssistantActionItemsFromToolActions(message.toolActions);
-
-              return (
+            {messages.map((message) => (
               <div
                 key={message.id}
                 className={message.role === 'user' ? 'flex justify-end' : 'space-y-3'}
@@ -859,13 +491,13 @@ export function AiAssistantWidget(): ReactElement {
                       </div>
                     </div>
 
-                    {messageActionItems.length > 0 && (
+                    {message.actionItems && message.actionItems.length > 0 && (
                       <div className="ms-12 rounded-3xl border border-slate-200 bg-white/70 p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
                         <div className="mb-3 text-[0.68rem] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-slate-300">
                           {readText('actionItemsTitle')}
                         </div>
                         <div className="grid gap-2">
-                          {messageActionItems.map((item) => (
+                          {message.actionItems.map((item) => (
                             <div
                               key={`${message.id}-${item.title}-${item.description}`}
                               className={`rounded-2xl border p-3 ${actionItemClassNameBySeverity[item.severity] ?? actionItemClassNameBySeverity.info}`}
@@ -878,13 +510,7 @@ export function AiAssistantWidget(): ReactElement {
                                   size="sm"
                                   variant="outline"
                                   className="mt-3 h-8 rounded-xl bg-white/70 px-3 text-xs font-black dark:bg-white/10"
-                                  onClick={() => {
-                                    void openActionUrl(
-                                      item.actionUrl!,
-                                      item.toolActionId,
-                                      item.confirmationRequired || Boolean(item.toolActionId)
-                                    );
-                                  }}
+                                  onClick={() => openActionUrl(item.actionUrl!)}
                                 >
                                   <ExternalLink size={13} className="me-1.5" />
                                   {item.actionLabel || readText('openAction')}
@@ -898,8 +524,7 @@ export function AiAssistantWidget(): ReactElement {
                   </>
                 )}
               </div>
-              );
-            })}
+            ))}
 
             {isAssistantBusy && <AiAssistantThinkingIndicator />}
 
@@ -925,26 +550,6 @@ export function AiAssistantWidget(): ReactElement {
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {assistantCapabilityPrompts.map((capability) => (
-                <button
-                  key={capability.key}
-                  type="button"
-                  disabled={isAssistantBusy}
-                  onClick={() => void askQuestion(capability.prompt)}
-                  className="group rounded-2xl border border-primary/10 bg-white/70 px-3.5 py-3 text-start shadow-sm transition hover:border-primary/30 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:hover:border-primary/30 dark:hover:bg-primary/10"
-                >
-                  <span className="mb-1 flex items-center gap-2 text-xs font-black text-slate-950 dark:text-white">
-                    <Sparkles size={14} className="text-primary" />
-                    {readText(capability.key, capability.fallback)}
-                  </span>
-                  <span className="line-clamp-2 text-xs font-semibold leading-5 text-slate-500 dark:text-slate-300">
-                    {capability.prompt}
-                  </span>
-                </button>
-              ))}
-            </div>
-
             <div className="flex flex-wrap gap-2">
               {suggestionItems.map((suggestion) => (
                 <button
@@ -962,7 +567,7 @@ export function AiAssistantWidget(): ReactElement {
             <div ref={messagesEndRef} />
           </div>
 
-          <form className="relative shrink-0 border-t border-slate-200/80 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-black/30" onSubmit={handleSubmit}>
+          <form className="relative border-t border-slate-200/80 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-black/30" onSubmit={handleSubmit}>
             <input
               ref={fileInputRef}
               type="file"
@@ -1004,15 +609,7 @@ export function AiAssistantWidget(): ReactElement {
                       setQuestionError(null);
                     }
                   }}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' && !event.shiftKey && !isAssistantBusy) {
-                      event.preventDefault();
-                      void askQuestion(question);
-                      return;
-                    }
-
-                    handleQuestionKeyDown(event);
-                  }}
+                  onKeyDown={handleQuestionKeyDown}
                 />
               </div>
               <div className="border-t border-slate-100 dark:border-white/5" />
@@ -1052,9 +649,6 @@ export function AiAssistantWidget(): ReactElement {
                     </div>
                   )}
                 </div>
-                <span className="hidden min-w-0 text-[0.68rem] font-bold text-slate-400 sm:block">
-                  {readText('enterToSend')}
-                </span>
                 <Button
                   ref={sendButtonRef}
                   type="submit"
@@ -1071,15 +665,14 @@ export function AiAssistantWidget(): ReactElement {
       ) : (
         <button
           type="button"
-          aria-label={readText('openFromRail')}
-          title={readText('openFromRail')}
-          onClick={openWidgetFromRail}
-          className="group flex max-h-[70dvh] items-center gap-2 overflow-hidden rounded-s-3xl border border-e-0 border-white/20 bg-[image:var(--crm-brand-gradient)] px-2.5 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:translate-x-[-2px] hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950 sm:px-3 sm:py-4"
+          aria-label={readText('openChat')}
+          onClick={() => setIsOpen(true)}
+          className="group flex items-center gap-3 rounded-full border border-white/20 bg-[image:var(--crm-brand-gradient)] px-4 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:scale-[1.02] hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white/20">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
             <MessageCircle size={20} />
           </span>
-          <span className="hidden max-w-20 text-start leading-4 sm:inline">{readText('dockedChat')}</span>
+          <span className="hidden sm:inline">{readText('pageTitle')}</span>
         </button>
       )}
     </div>

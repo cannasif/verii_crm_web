@@ -230,7 +230,7 @@ export function ErpCustomerManagementPage(): ReactElement {
             {t('menu')}
           </h1>
           <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
-            <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
             {t('description')}
           </p>
         </div>

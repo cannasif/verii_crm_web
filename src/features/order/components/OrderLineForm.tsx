@@ -1253,7 +1253,7 @@ export function OrderLineForm({
               <Info className="h-4 w-4" />
               <span className="text-xs font-medium">{t('common.pricingInsights.button')}</span>
               {ruleInsightCount > 0 && (
-                <span className="inline-flex min-w-5 h-5 px-1 items-center justify-center rounded-full bg-rose-500 text-white text-[10px] font-bold">
+                <span className="inline-flex min-w-5 h-5 px-1 items-center justify-center rounded-full bg-accent text-white text-[10px] font-bold">
                   {ruleInsightCount}
                 </span>
               )}

@@ -24,7 +24,7 @@ const STATUS_PILL_CLASS: Record<ApprovalStatus, string> = {
   [ApprovalStatusEnum.Closed]:
     'border-slate-400/30 bg-slate-500/10 text-slate-700 dark:border-slate-400/25 dark:bg-slate-500/15 dark:text-slate-300',
   [ApprovalStatusEnum.CustomerCancelled]:
-    'border-rose-500/30 bg-rose-500/10 text-rose-800 dark:border-rose-400/35 dark:bg-rose-500/15 dark:text-rose-200',
+    'border-primary/30 bg-accent/10 text-primary dark:border-primary/40 dark:bg-accent/15 dark:text-primary',
   [ApprovalStatusEnum.SalespersonClosedForRevision]:
     'border-amber-500/30 bg-amber-500/10 text-amber-800 dark:border-amber-400/35 dark:bg-amber-500/15 dark:text-amber-200',
   [ApprovalStatusEnum.SupersededByApprovedRevision]:

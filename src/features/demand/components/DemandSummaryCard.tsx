@@ -95,7 +95,7 @@ export function DemandSummaryCard({
   // Input oklarını gizleyen ve odaklanınca pembe border yapan sınıflar
   const customInputClasses = cn(
     "h-10 font-mono tabular-nums text-right bg-zinc-50/50 dark:bg-zinc-950/50 rounded-xl transition-all duration-300",
-    "focus-visible:ring-4 focus-visible:ring-pink-500/10 focus-visible:border-pink-500",
+    "focus-visible:ring-4 focus-visible:ring-primary/20 focus-visible:border-primary",
     "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
   );
 
@@ -159,9 +159,9 @@ export function DemandSummaryCard({
         </div>
 
         {/* Geliştirilmiş Bilgi Kutusu */}
-        <div className="flex gap-3 p-3 bg-pink-50/50 dark:bg-pink-900/10 rounded-xl border-l-4 border-l-pink-500 border-y border-r border-pink-100 dark:border-pink-900/20 shadow-sm animate-in fade-in slide-in-from-top-1">
-          <Info className="h-4 w-4 text-pink-600 dark:text-pink-400 shrink-0 mt-0.5" />
-          <p className="text-[10px] text-pink-800 dark:text-pink-300 leading-tight font-medium">
+        <div className="flex gap-3 p-3 bg-accent/50 dark:bg-primary/10 rounded-xl border-l-4 border-l-primary border-y border-r border-primary/15 dark:border-primary/20 shadow-sm animate-in fade-in slide-in-from-top-1">
+          <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+          <p className="text-[10px] text-primary leading-tight font-medium">
             {t('summary.generalDiscountHelp')}
           </p>
         </div>
@@ -199,10 +199,10 @@ export function DemandSummaryCard({
             <div className="mt-4 pt-5 border-t-2 border-zinc-200 dark:border-zinc-800">
               <div className="flex items-center justify-between gap-3">
                 <span className="text-zinc-900 dark:text-white font-black text-xs uppercase tracking-widest flex items-center gap-2">
-                  <Wallet className="h-4 w-4 text-pink-500" />
+                  <Wallet className="h-4 w-4 text-primary" />
                   {t('summary.grandTotal')}
                 </span>
-                <span className="font-black text-zinc-900 dark:text-white font-mono tabular-nums text-right text-lg whitespace-nowrap shrink-0 text-transparent bg-clip-text bg-linear-to-r from-pink-600 to-purple-600">
+                <span className="font-black text-zinc-900 dark:text-white font-mono tabular-nums text-right text-lg whitespace-nowrap shrink-0 text-transparent bg-clip-text bg-[image:var(--crm-brand-gradient)]">
                   {formatCurrency(totals.grandTotalAfterDiscount, currencyCode)}
                 </span>
               </div>

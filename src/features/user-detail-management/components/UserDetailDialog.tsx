@@ -262,7 +262,7 @@ export function UserDetailDialog({
                     {previewUrl ? (
                       <img src={previewUrl} alt="Profile" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-white bg-gradient-to-br from-pink-500 to-orange-500">
+                      <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-white bg-gradient-to-br from-primary to-[var(--crm-brand-accent)]">
                          {user?.name?.[0]?.toUpperCase() || 'U'}
                       </div>
                     )}
@@ -326,7 +326,7 @@ export function UserDetailDialog({
                             <FormControl>
                               <div className="relative group">
                                 {/* İkon Titreme Animasyonu (Mikro-Etkileşim) */}
-                                <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 group-focus-within:text-pink-600 dark:group-focus-within:text-pink-500 group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
+                                <Ruler className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 group-focus-within:text-primary dark:group-focus-within:text-primary group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
                                 {/* Pembe Border Geri Döndü */}
                                 <Input
                                   type="number"
@@ -334,7 +334,7 @@ export function UserDetailDialog({
                                   {...field}
                                   onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                                   value={field.value || ''}
-                                  className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl h-12 shadow-sm transition-all"
+                                  className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-primary dark:focus:border-primary focus:ring-4 focus:ring-primary/20 rounded-xl h-12 shadow-sm transition-all"
                                   placeholder={t('userDetailManagement.heightPlaceholderExample', { defaultValue: 'Örn: 175' })}
                                 />
                               </div>
@@ -354,14 +354,14 @@ export function UserDetailDialog({
                             </FormLabel>
                             <FormControl>
                                 <div className="relative group">
-                                    <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 group-focus-within:text-pink-600 dark:group-focus-within:text-pink-500 group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
+                                    <Weight className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 group-focus-within:text-primary dark:group-focus-within:text-primary group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
                                     <Input
                                         type="number"
                                         step="0.000001"
                                         {...field}
                                         onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
                                         value={field.value || ''}
-                                        className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl h-12 shadow-sm transition-all"
+                                        className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-primary dark:focus:border-primary focus:ring-4 focus:ring-primary/20 rounded-xl h-12 shadow-sm transition-all"
                                         placeholder={t('userDetailManagement.weightPlaceholderExampleDecimal', { defaultValue: 'Örn: 70.5' })}
                                     />
                                 </div>
@@ -381,13 +381,13 @@ export function UserDetailDialog({
                               {t('userDetailManagement.gender')}
                           </FormLabel>
                           <div className="relative group">
-                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 z-10 group-focus-within:text-pink-600 dark:group-focus-within:text-pink-500 group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
+                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 z-10 group-focus-within:text-primary dark:group-focus-within:text-primary group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
                             <Select
                                 onValueChange={(value) => field.onChange(value && value !== 'none' ? parseInt(value) as Gender : undefined)}
                                 value={field.value !== undefined && field.value !== null ? field.value.toString() : undefined}
                             >
                                 <FormControl>
-                                <SelectTrigger className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl h-12 w-full shadow-sm transition-all">
+                                <SelectTrigger className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-primary dark:focus:border-primary focus:ring-4 focus:ring-primary/20 rounded-xl h-12 w-full shadow-sm transition-all">
                                     <SelectValue placeholder={t('userDetailManagement.selectGender')} />
                                 </SelectTrigger>
                                 </FormControl>
@@ -418,13 +418,13 @@ export function UserDetailDialog({
                           </FormLabel>
                           <FormControl>
                             <div className="relative group">
-                                <FileText className="absolute left-4 top-4 text-zinc-400 dark:text-slate-600 group-focus-within:text-pink-600 dark:group-focus-within:text-pink-500 group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
+                                <FileText className="absolute left-4 top-4 text-zinc-400 dark:text-slate-600 group-focus-within:text-primary dark:group-focus-within:text-primary group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
                                 <Textarea
                                 {...field}
                                 value={field.value || ''}
                                 placeholder={t('userDetailManagement.enterDescription')}
                                 rows={4}
-                                className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl py-3.5 min-h-[120px] resize-none shadow-sm transition-all"
+                                className="pl-12 bg-zinc-50/50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-primary dark:focus:border-primary focus:ring-4 focus:ring-primary/20 rounded-xl py-3.5 min-h-[120px] resize-none shadow-sm transition-all"
                                 />
                             </div>
                           </FormControl>
@@ -437,7 +437,7 @@ export function UserDetailDialog({
                       <Button 
                         type="submit" 
                         disabled={isSaving || !isFormValid}
-                        className="w-full md:w-auto bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-medium px-8 py-3 h-12 rounded-xl shadow-lg shadow-pink-600/20 active:scale-95 transition-all duration-200"
+                        className="w-full md:w-auto bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-medium px-8 py-3 h-12 rounded-xl shadow-lg shadow-primary/20 active:scale-95 transition-all duration-200"
                       >
                         {isSaving ? (
                              <div className="flex items-center gap-2">
@@ -461,8 +461,8 @@ export function UserDetailDialog({
                     <AccordionItem value="change-password" className="border-none">
                         <AccordionTrigger className="px-6 py-4 hover:no-underline hover:bg-white dark:hover:bg-white/5 text-zinc-700 dark:text-slate-300 font-medium transition-all group">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 bg-white dark:bg-white/5 rounded-lg border border-zinc-100 dark:border-white/5 group-hover:border-pink-200 dark:group-hover:border-pink-900 transition-colors">
-                                <Shield size={18} className="text-zinc-400 dark:text-slate-500 group-hover:text-pink-600 dark:group-hover:text-pink-500 group-hover:animate-[wiggle_0.3s_ease-in-out] transition-colors" />
+                            <div className="p-2 bg-white dark:bg-white/5 rounded-lg border border-zinc-100 dark:border-white/5 group-hover:border-primary/20 dark:group-hover:border-primary/30 transition-colors">
+                                <Shield size={18} className="text-zinc-400 dark:text-slate-500 group-hover:text-primary dark:group-hover:text-primary group-hover:animate-[wiggle_0.3s_ease-in-out] transition-colors" />
                             </div>
                             <span className="group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">{t('userDetailManagement.changePassword')}</span>
                         </div>
@@ -484,12 +484,12 @@ export function UserDetailDialog({
                                                 <FormItem>
                                                 <FormLabel className="text-xs font-semibold text-zinc-500 dark:text-slate-400 ml-1">{t('userDetailManagement.currentPassword')}</FormLabel>
                                                 <FormControl>
-                                                    <div className="relative group focus-within:text-pink-600 dark:focus-within:text-pink-500">
+                                                    <div className="relative group focus-within:text-primary dark:focus-within:text-primary">
                                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
                                                     <Input
                                                         {...field}
                                                         type={isCurrentPasswordVisible ? 'text' : 'password'}
-                                                        className="pl-12 pr-12 bg-zinc-50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl h-11 transition-all"
+                                                        className="pl-12 pr-12 bg-zinc-50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-primary dark:focus:border-primary focus:ring-4 focus:ring-primary/20 rounded-xl h-11 transition-all"
                                                         placeholder="••••••••"
                                                     />
                                                     <button
@@ -512,12 +512,12 @@ export function UserDetailDialog({
                                                 <FormItem>
                                                 <FormLabel className="text-xs font-semibold text-zinc-500 dark:text-slate-400 ml-1">{t('userDetailManagement.newPassword')}</FormLabel>
                                                 <FormControl>
-                                                    <div className="relative group focus-within:text-pink-600 dark:focus-within:text-pink-500">
+                                                    <div className="relative group focus-within:text-primary dark:focus-within:text-primary">
                                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-slate-600 group-focus-within:animate-[wiggle_0.3s_ease-in-out] transition-colors" size={18} />
                                                     <Input
                                                         {...field}
                                                         type={isNewPasswordVisible ? 'text' : 'password'}
-                                                        className="pl-12 pr-12 bg-zinc-50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-pink-500 dark:focus:border-pink-500 focus:ring-4 focus:ring-pink-500/10 rounded-xl h-11 transition-all"
+                                                        className="pl-12 pr-12 bg-zinc-50 dark:bg-[#150a1f] border-zinc-200 dark:border-white/10 text-zinc-900 dark:text-slate-200 focus:border-primary dark:focus:border-primary focus:ring-4 focus:ring-primary/20 rounded-xl h-11 transition-all"
                                                         placeholder={t('userDetailManagement.newPasswordPlaceholderShort', { defaultValue: 'Yeni şifreniz' })}
                                                     />
                                                     <button

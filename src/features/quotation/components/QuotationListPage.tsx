@@ -585,7 +585,7 @@ export function QuotationListPage(): ReactElement {
 
   return (
     <div className="relative space-y-6 overflow-hidden">
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
       <div className="relative z-10 space-y-8">
@@ -600,14 +600,14 @@ export function QuotationListPage(): ReactElement {
                 {t('list.title')}
               </h1>
               <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
                 {t('list.description')}
               </p>
             </div>
           </div>
           <Button
             onClick={() => navigate('/quotations/create')}
-            className="h-11 px-6 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 text-white font-bold shadow-lg shadow-pink-500/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="h-11 px-6 rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
             {t('list.createNew')}
@@ -835,7 +835,7 @@ export function QuotationListPage(): ReactElement {
                   void handleConfirmErpCleanup();
                 }}
                 disabled={cleanupErpMutation.isPending || erpCleanupReason.trim().length === 0}
-                className="bg-linear-to-r from-pink-600 to-orange-600 text-white hover:text-white"
+                className="bg-[image:var(--crm-brand-gradient)] text-white hover:text-white"
               >
                 {cleanupErpMutation.isPending
                   ? t('common.processing', { ns: 'common', defaultValue: 'İşleniyor...' })

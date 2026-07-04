@@ -93,7 +93,7 @@ export function DocumentDetailStatusAlerts({
       )}
 
       {status === 5 && (
-        <Alert className="border-rose-400/80 bg-rose-50 text-rose-950 dark:border-rose-800/80 dark:bg-rose-950/40 dark:text-rose-100">
+        <Alert className="border-red-400/80 bg-red-50 text-red-950 dark:border-red-800/80 dark:bg-red-950/40 dark:text-red-100">
           <AlertDescription>
             {customerCancelPrefix}
             {trimmedReason ? (

@@ -42,8 +42,8 @@ export function PowerbiConfigurationPage(): ReactElement {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="flex flex-col items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-rose-100 dark:bg-white/5 border border-slate-300 dark:border-white/20">
-            <Loader2 className="h-8 w-8 animate-spin text-rose-600 dark:text-rose-400" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-accent dark:bg-white/5 border border-slate-300 dark:border-white/20">
+            <Loader2 className="h-8 w-8 animate-spin text-red-600 dark:text-red-400" />
           </div>
           <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{t('common.loading')}</p>
         </div>

@@ -129,7 +129,7 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
                 </TableCell>
                 <TableCell className="text-center">
                   {relation.isMandatory ? (
-                    <Badge variant="default" className="bg-pink-100 text-pink-700 hover:bg-pink-200 dark:bg-pink-900/30 dark:text-pink-300 border-pink-200 dark:border-pink-800 gap-1.5 shadow-none font-medium">
+                    <Badge variant="default" className="bg-accent text-primary hover:bg-accent dark:bg-primary/30 dark:text-primary/80 border-primary/20 dark:border-primary/30 gap-1.5 shadow-none font-medium">
                       <CheckCircle2 className="h-3 w-3" />
                       {t('relations.mandatory')}
                     </Badge>

@@ -23,7 +23,7 @@ export function UserStats(): ReactElement {
     group relative overflow-hidden
   `;
 
-  const glowStyle = "absolute inset-0 bg-linear-to-r from-rose-50/0 to-amber-50/0 dark:from-rose-500/0 dark:to-amber-500/0  transition-all duration-500 pointer-events-none";
+  const glowStyle = "absolute inset-0 bg-linear-to-r from-accent/0 to-amber-50/0 dark:from-primary/0 dark:to-amber-500/0  transition-all duration-500 pointer-events-none";
 
   if (isLoading) {
     return (

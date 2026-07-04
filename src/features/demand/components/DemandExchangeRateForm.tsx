@@ -46,7 +46,7 @@ export function DemandExchangeRateForm({
 
   const styles = {
     glassCard: "relative overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/50 backdrop-blur-xl shadow-lg shadow-zinc-200/50 dark:shadow-none",
-    inputBase: "h-10 bg-zinc-50/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 focus-visible:border-pink-500 focus-visible:ring-4 focus-visible:ring-pink-500/20 rounded-xl transition-all duration-200 font-medium",
+    inputBase: "h-10 bg-zinc-50/50 dark:bg-zinc-900/50 border-zinc-200 dark:border-zinc-800 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/20 rounded-xl transition-all duration-200 font-medium",
     tableHead: "h-10 px-4 text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider bg-zinc-50/80 dark:bg-zinc-900/50 border-b border-zinc-200 dark:border-zinc-800",
     tableRow: "hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors border-b border-zinc-100 dark:border-zinc-800 last:border-0",
     label: "text-xs font-bold text-zinc-600 dark:text-zinc-400 mb-1.5 block uppercase tracking-wide",
@@ -180,7 +180,7 @@ export function DemandExchangeRateForm({
               type="button" 
               onClick={handleAdd} 
               size="sm"
-              className="h-10 px-4 rounded-xl bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-700 hover:to-orange-700 text-white shadow-md hover:shadow-lg transition-all border-0 flex-1 font-bold"
+              className="h-10 px-4 rounded-xl bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white shadow-md hover:shadow-lg transition-all border-0 flex-1 font-bold"
             >
               <Plus className="h-4 w-4 mr-1.5" />
               {t('add')}
@@ -233,7 +233,7 @@ export function DemandExchangeRateForm({
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDelete(rate.id)}
-                        className="h-8 w-8 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors"
+                        className="h-8 w-8 text-zinc-400 hover:text-primary hover:bg-accent dark:hover:bg-primary/30 rounded-lg transition-colors"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

@@ -174,7 +174,7 @@ export function DocumentListRowActions({
           label={erpCleanupLabel}
           onClick={onErpCleanup}
           disabled={isErpCleanupPending}
-          className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-500/10"
+          className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-500/10"
         >
           <RotateCcw className={cn('h-4 w-4', isErpCleanupPending && 'animate-spin')} />
         </ActionIconButton>

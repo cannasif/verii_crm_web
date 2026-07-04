@@ -389,7 +389,7 @@ export function WaitingApprovalsPage(): ReactElement {
   return (
     <>
       <div className="relative space-y-6 overflow-hidden">
-        <div className="absolute top-0 left-1/4 h-96 w-96 bg-pink-500/10 blur-[120px] pointer-events-none dark:block hidden" />
+        <div className="absolute top-0 left-1/4 h-96 w-96 bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
         <div className="absolute bottom-0 right-1/4 h-96 w-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
         <div className="relative z-10 space-y-8">
@@ -404,7 +404,7 @@ export function WaitingApprovalsPage(): ReactElement {
                   {t('waitingApprovals.title')}
                 </h1>
                 <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
-                  <span className="w-2 h-2 rounded-full bg-pink-500 animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
+                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(236,72,153,0.6)]" />
                   {t('waitingApprovals.description')}
                 </p>
               </div>

@@ -42,7 +42,7 @@ import {
   Building2,
 } from 'lucide-react';
 
-const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-pink-500/20 focus-visible:border-pink-500 transition-all duration-200 text-sm font-medium";
+const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 text-sm font-medium";
 const LABEL_STYLE = "text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-2";
 
 export function PricingRuleHeaderForm(): ReactElement {
@@ -83,7 +83,7 @@ export function PricingRuleHeaderForm(): ReactElement {
           render={({ field }) => (
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
-                <List size={12} className="text-pink-500" />
+                <List size={12} className="text-primary" />
                 {t('pricingRule.header.ruleType')} <span className="text-red-500 ml-1">*</span>
               </FormLabel>
               <Popover open={ruleTypePopoverOpen} onOpenChange={setRuleTypePopoverOpen}>
@@ -128,7 +128,7 @@ export function PricingRuleHeaderForm(): ReactElement {
                           >
                             <Check
                               className={cn(
-                                "mr-2 h-4 w-4 text-pink-500",
+                                "mr-2 h-4 w-4 text-primary",
                                 option.value === field.value?.toString() ? "opacity-100" : "opacity-0"
                               )}
                             />
@@ -151,7 +151,7 @@ export function PricingRuleHeaderForm(): ReactElement {
           render={({ field }) => (
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
-                <Hash size={12} className="text-pink-500" />
+                <Hash size={12} className="text-primary" />
                 {t('pricingRule.header.ruleCode')} <span className="text-red-500 ml-1">*</span>
               </FormLabel>
               <FormControl>
@@ -174,7 +174,7 @@ export function PricingRuleHeaderForm(): ReactElement {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className={LABEL_STYLE}>
-                  <Type size={12} className="text-pink-500" />
+                  <Type size={12} className="text-primary" />
                   {t('pricingRule.header.ruleName')} <span className="text-red-500 ml-1">*</span>
                 </FormLabel>
                 <FormControl>
@@ -200,7 +200,7 @@ export function PricingRuleHeaderForm(): ReactElement {
           render={({ field }) => (
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
-                <Calendar size={12} className="text-pink-500" />
+                <Calendar size={12} className="text-primary" />
                 {t('pricingRule.header.validFrom')} <span className="text-red-500 ml-1">*</span>
               </FormLabel>
               <FormControl>
@@ -221,7 +221,7 @@ export function PricingRuleHeaderForm(): ReactElement {
           render={({ field }) => (
             <FormItem>
               <FormLabel className={LABEL_STYLE}>
-                <Calendar size={12} className="text-pink-500" />
+                <Calendar size={12} className="text-primary" />
                 {t('pricingRule.header.validTo')} <span className="text-red-500 ml-1">*</span>
               </FormLabel>
               <FormControl>
@@ -239,7 +239,7 @@ export function PricingRuleHeaderForm(): ReactElement {
         <div className="md:col-span-2">
           <FormItem>
             <FormLabel className={LABEL_STYLE}>
-              <Building2 size={12} className="text-pink-500" />
+              <Building2 size={12} className="text-primary" />
               {t('pricingRule.header.customer')}
             </FormLabel>
             <div className="flex gap-2">

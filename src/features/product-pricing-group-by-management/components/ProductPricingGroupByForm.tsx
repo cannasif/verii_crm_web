@@ -57,7 +57,7 @@ interface ProductPricingGroupByFormProps {
   excludeGroupCodes?: string[];
 }
 
-const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-rose-500/20 focus-visible:border-rose-500 transition-all duration-200 text-sm font-medium";
+const INPUT_STYLE = "h-11 rounded-xl bg-white dark:bg-zinc-900/40 border-slate-200 dark:border-white/10 focus-visible:ring-primary/20 focus-visible:border-primary transition-all duration-200 text-sm font-medium";
 const LABEL_STYLE = "text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5 flex items-center gap-2";
 type ProductPricingGroupDiscountField = 'discount1' | 'discount2' | 'discount3';
 
@@ -191,7 +191,7 @@ export function ProductPricingGroupByForm({
       >
         <DialogHeader className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md flex-shrink-0 flex-row items-center justify-between space-y-0 sticky top-0 z-10">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-600 p-3 shadow-lg shadow-pink-500/20 text-white flex items-center justify-center">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary to-orange-500 p-3 shadow-lg shadow-primary/20 text-white flex items-center justify-center">
               <Package size={24} />
             </div>
             <div className="space-y-0.5">
@@ -211,7 +211,7 @@ export function ProductPricingGroupByForm({
             variant="ghost"
             size="icon"
             onClick={() => onOpenChange(false)}
-            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-rose-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
+            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-accent hover:text-white transition-all duration-300 hover:scale-110 shadow-sm"
           >
             <Cancel01Icon size={20} className="relative z-10" />
           </Button>
@@ -228,7 +228,7 @@ export function ProductPricingGroupByForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0">
                         <FormLabel className={LABEL_STYLE}>
-                          <Package size={14} className="text-pink-500" />
+                          <Package size={14} className="text-primary" />
                           {t('productPricingGroupByManagement.erpGroupCode')} <span className="text-red-500 ml-1">*</span>
                         </FormLabel>
                         <FormControl>
@@ -282,7 +282,7 @@ export function ProductPricingGroupByForm({
                     render={({ field }) => (
                       <FormItem className="space-y-0 flex flex-col">
                         <FormLabel className={LABEL_STYLE}>
-                          <Banknote size={14} className="text-pink-500" />
+                          <Banknote size={14} className="text-primary" />
                           {t('productPricingGroupByManagement.currency')} <span className="text-red-500 ml-1">*</span>
                         </FormLabel>
                         <Popover open={currencySelectDialogOpen} onOpenChange={setCurrencySelectDialogOpen}>
@@ -330,7 +330,7 @@ export function ProductPricingGroupByForm({
                                     >
                                       <Check
                                         className={cn(
-                                          "mr-2 h-4 w-4 text-rose-500",
+                                          "mr-2 h-4 w-4 text-red-500",
                                           String(curr.dovizTipi) === field.value ? "opacity-100" : "opacity-0"
                                         )}
                                       />
@@ -515,7 +515,7 @@ export function ProductPricingGroupByForm({
                   type="submit"
                   form="product-pricing-group-form"
                   disabled={isLoading || !isFormValid}
-                  className="h-12 px-10 bg-linear-to-r from-pink-600 to-orange-600 rounded-2xl text-white font-black shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-[1.05] hover:from-pink-500 hover:to-orange-500 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+                  className="h-12 px-10 bg-[image:var(--crm-brand-gradient)] rounded-2xl text-white font-black shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.05] hover:opacity-90 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
                 >
                   {isLoading ? (
                     <>

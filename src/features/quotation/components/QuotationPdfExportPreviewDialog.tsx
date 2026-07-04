@@ -177,7 +177,7 @@ export function QuotationPdfExportPreviewDialog({
             aria-hidden
           />
           <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-rose-500/80 via-indigo-400/50 to-transparent"
+            className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-primary/80 via-indigo-400/50 to-transparent"
             aria-hidden
           />
           <div
@@ -319,9 +319,9 @@ export function QuotationPdfExportPreviewDialog({
               className={cn(
                 actionBtnClass,
                 'border-slate-200 bg-white text-slate-800',
-                'hover:border-pink-200/90 hover:bg-pink-50/85 hover:text-pink-900',
+                'hover:border-primary/20 hover:bg-accent/85 hover:text-primary',
                 'dark:border-white/12 dark:bg-zinc-900 dark:text-zinc-100',
-                'dark:hover:border-pink-400/35 dark:hover:bg-pink-950/45 dark:hover:text-pink-50',
+                'dark:hover:border-primary/40 dark:hover:bg-primary/20 dark:hover:text-primary',
               )}
             >
               <FileDown className="h-4 w-4 shrink-0 text-slate-600 dark:text-slate-300" aria-hidden />

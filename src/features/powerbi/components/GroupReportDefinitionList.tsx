@@ -194,7 +194,7 @@ export function GroupReportDefinitionList(): ReactElement {
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={3} className="text-center py-20 bg-white/50 dark:bg-transparent">
-                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-rose-500" />
+                    <Loader2 className="h-8 w-8 animate-spin mx-auto text-red-500" />
                   </TableCell>
                 </TableRow>
               ) : filteredItems.length === 0 ? (
@@ -220,7 +220,7 @@ export function GroupReportDefinitionList(): ReactElement {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleEdit(row)}
-                            className="h-8 w-8 rounded-lg hover:bg-rose-50 dark:hover:bg-rose-500/10 text-slate-400 hover:text-rose-600"
+                            className="h-8 w-8 rounded-lg hover:bg-accent dark:hover:bg-accent/10 text-slate-400 hover:text-primary"
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>

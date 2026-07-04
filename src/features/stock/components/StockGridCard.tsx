@@ -37,11 +37,11 @@ export function StockGridCard({
     <div
       className={cn(
         'group relative flex flex-col overflow-hidden rounded-xl border border-slate-300/90 bg-white text-left shadow-md shadow-slate-200/45 backdrop-blur-md transition-all duration-300 ease-out will-change-transform dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none',
-        'hover:-translate-y-0.5 hover:border-pink-400/60 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-pink-500/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]'
+        'hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_10px_30px_-8px_rgba(236,72,153,0.28),0_2px_6px_rgba(15,23,42,0.06)] dark:hover:border-primary/45 dark:hover:bg-white/[0.05] dark:hover:shadow-[0_6px_24px_rgba(236,72,153,0.22)]'
       )}
     >
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-pink-500/35 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         aria-hidden
       />
 
@@ -52,7 +52,7 @@ export function StockGridCard({
           size="icon"
           className={cn(
             'h-7 w-7 border border-slate-200/90 bg-white/95 text-slate-400 shadow-sm backdrop-blur-sm hover:bg-white dark:border-white/10 dark:bg-zinc-900/90 dark:hover:bg-zinc-900',
-            stock.isFavorite && 'text-pink-600 dark:text-pink-400'
+            stock.isFavorite && 'text-primary'
           )}
           disabled={isFavoritePending}
           aria-label={stock.isFavorite ? favoriteLabelOn : favoriteLabelOff}
@@ -124,7 +124,7 @@ export function StockGridCard({
         <div className="flex items-center justify-between gap-2">
           <span
             data-no-drag-scroll="true"
-            className="min-w-0 flex-1 cursor-pointer truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-pink-600 dark:text-pink-300/90"
+            className="min-w-0 flex-1 cursor-pointer truncate font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-primary/90"
             onDoubleClick={(e) => {
               e.stopPropagation();
               onNavigateDetail(stock.id);
@@ -162,7 +162,7 @@ export function StockGridCard({
         {stock.grupKodu || stock.kod1 ? (
           <div className="mt-auto flex flex-wrap items-center gap-1 pt-0.5">
             {stock.grupKodu ? (
-              <span className="truncate rounded bg-pink-50 px-1.5 py-0.5 font-mono text-[9px] text-pink-700/90 dark:bg-pink-500/[0.08] dark:text-pink-200/90">
+              <span className="truncate rounded bg-accent px-1.5 py-0.5 font-mono text-[9px] text-primary/90 dark:bg-primary/[0.08] dark:text-primary/90">
                 {stock.grupKodu}
               </span>
             ) : null}

@@ -72,10 +72,10 @@ export function SendForApprovalHintWrap({
             className={cn(
               'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-slate-200/80',
               'bg-white/90 text-slate-500 shadow-sm outline-none transition-colors',
-              'hover:border-pink-300 hover:bg-pink-50 hover:text-pink-600',
-              'focus-visible:border-pink-400 focus-visible:ring-2 focus-visible:ring-pink-500/25 focus-visible:ring-offset-2',
+              'hover:border-primary/40 hover:bg-accent hover:text-primary',
+              'focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-2',
               'dark:border-white/12 dark:bg-zinc-900/80 dark:text-slate-300',
-              'dark:hover:border-pink-500/35 dark:hover:bg-pink-950/40 dark:hover:text-pink-200',
+              'dark:hover:border-primary/30 dark:hover:bg-primary/10 dark:hover:text-primary',
             )}
           >
             <CircleHelp className="h-4 w-4" strokeWidth={2} aria-hidden />

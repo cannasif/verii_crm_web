@@ -84,9 +84,9 @@ function entityAccentClasses(entityType: string): {
       dirtyRing: 'ring-violet-500/25 border-violet-300 dark:border-violet-500/40',
     },
     rose: {
-      iconWrap: 'bg-rose-100 border-rose-100 dark:bg-rose-500/10 dark:border-rose-500/20',
-      icon: 'text-rose-600 dark:text-rose-400',
-      dirtyRing: 'ring-rose-500/25 border-rose-300 dark:border-rose-500/40',
+      iconWrap: 'bg-accent border-primary/15 dark:bg-primary/10 dark:border-primary/20',
+      icon: 'text-red-600 dark:text-red-400',
+      dirtyRing: 'ring-primary/25 border-primary/30 dark:border-primary/40',
     },
     sky: {
       iconWrap: 'bg-sky-100 border-sky-100 dark:bg-sky-500/10 dark:border-sky-500/20',
@@ -419,7 +419,7 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
             <div className={STAT_CARD_CLASSNAME}>
               <div className="flex items-center gap-4">
-                <div className="rounded-xl border border-rose-100 bg-rose-100 p-3 text-rose-600 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-400">
+                <div className="rounded-xl border border-primary/15 bg-accent p-3 text-primary dark:border-primary/20 dark:bg-primary/10 dark:text-primary">
                   <UserRound className="size-4" />
                 </div>
                 <div className="min-w-0">

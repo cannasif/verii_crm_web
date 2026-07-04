@@ -23,7 +23,7 @@ export function DistrictStats(): ReactElement {
     hover:-translate-y-1
   `;
 
-  const glowStyle = "absolute inset-0 bg-linear-to-r from-rose-50/0 to-amber-50/0 dark:from-rose-500/0 dark:to-amber-500/0 group-hover:from-rose-50/50 group-hover:to-amber-50/50 dark:group-hover:from-rose-500/5 dark:group-hover:to-amber-500/5 transition-all duration-500 pointer-events-none";
+  const glowStyle = "absolute inset-0 bg-linear-to-r from-accent/0 to-amber-50/0 dark:from-primary/0 dark:to-amber-500/0 group-hover:from-accent/50 group-hover:to-amber-50/50 dark:group-hover:from-primary/5 dark:group-hover:to-amber-500/5 transition-all duration-500 pointer-events-none";
 
   if (isLoading) {
     return (
@@ -48,8 +48,8 @@ export function DistrictStats(): ReactElement {
       title: t('districtManagement.stats.totalDistricts'),
       value: statsData?.totalDistricts ?? '-',
       icon: MapPin,
-      iconContainerClass: 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border-rose-100 dark:border-rose-500/20',
-      borderColor: 'border-rose-400/50 dark:border-rose-500/30',
+      iconContainerClass: 'bg-accent text-primary dark:bg-primary/10 dark:text-primary border-primary/15 dark:border-primary/20',
+      borderColor: 'border-primary/40 dark:border-primary/30',
     },
     {
       title: t('districtManagement.stats.activeDistricts'),

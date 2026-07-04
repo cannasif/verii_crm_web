@@ -50,8 +50,8 @@ const STATUS_ICON_CONFIG: Record<ApprovalStatus, StatusIconConfig> = {
   },
   [ApprovalStatusEnum.CustomerCancelled]: {
     Icon: Ban,
-    buttonClass: 'hover:bg-rose-50 dark:hover:bg-rose-500/10 text-rose-600 hover:text-rose-700 dark:text-rose-400 dark:hover:text-rose-300',
-    iconClass: 'text-rose-600 dark:text-rose-400',
+    buttonClass: 'hover:bg-red-50 dark:hover:bg-red-500/10 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300',
+    iconClass: 'text-red-600 dark:text-red-400',
   },
   [ApprovalStatusEnum.SalespersonClosedForRevision]: {
     Icon: Archive,

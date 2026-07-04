@@ -265,7 +265,7 @@ export function SystemSettingsForm({
             <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
               <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                 <div className="flex min-w-0 items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-400">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent text-primary dark:bg-accent/20 dark:text-primary">
                     <PlugZap className="h-5 w-5" />
                   </div>
                   <div className="min-w-0 space-y-1">

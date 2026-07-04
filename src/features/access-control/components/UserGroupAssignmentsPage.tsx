@@ -101,7 +101,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
         <div className="mt-8 grid gap-4 sm:grid-cols-3 relative z-10">
           <div className={statCardStyle}>
             <div className="flex items-center gap-4">
-              <div className="rounded-xl bg-rose-100 p-3 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400 border border-rose-100 dark:border-rose-500/20">
+              <div className="rounded-xl bg-accent p-3 text-primary dark:bg-primary/10 dark:text-primary border border-primary/15 dark:border-primary/20">
                 <UserRound className="size-4" />
               </div>
               <div>
@@ -196,7 +196,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
                       variant="outline"
                       onClick={handleRevert}
                       disabled={setUserGroups.isPending}
-                      className="rounded-xl border-rose-200/80 text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:border-rose-500/30 dark:text-rose-300 dark:hover:bg-rose-500/10"
+                      className="rounded-xl border-red-200/80 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10"
                     >
                       {t('userVisibilityAssignments.revert', { defaultValue: 'İptal' })}
                     </Button>

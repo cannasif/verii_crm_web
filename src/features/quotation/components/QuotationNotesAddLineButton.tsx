@@ -26,8 +26,8 @@ export function QuotationNotesAddLineButton({
       aria-label={tooltipLabel}
       className={cn(
         'absolute right-1 top-1 flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-slate-400 transition-all',
-        'hover:border-pink-300/60 hover:bg-pink-50 hover:text-pink-600',
-        'dark:hover:border-pink-500/40 dark:hover:bg-pink-500/10 dark:hover:text-pink-400',
+        'hover:border-primary/30 hover:bg-accent hover:text-primary',
+        'dark:hover:border-primary/40 dark:hover:bg-primary/10 dark:hover:text-primary',
         'disabled:pointer-events-none disabled:opacity-40',
         className,
       )}

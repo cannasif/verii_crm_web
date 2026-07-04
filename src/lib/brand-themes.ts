@@ -1,5 +1,11 @@
 export const BRAND_THEME_STORAGE_KEY = 'vite-ui-brand-theme';
 
+export const BRAND_THEME_LIST_ENABLED_STORAGE_KEY = 'vite-ui-brand-theme-list-enabled';
+
+export const BRAND_THEME_LIST_SELECTION_STORAGE_KEY = 'vite-ui-brand-theme-list-selection';
+
+export const APPEARANCE_BEFORE_BRAND_LIST_STORAGE_KEY = 'vite-ui-appearance-before-brand-list';
+
 export const BRAND_THEME_CLASS_PREFIX = 'theme-';
 
 export const brandThemeIds = [

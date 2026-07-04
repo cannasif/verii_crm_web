@@ -140,7 +140,7 @@ function SummaryBlock({
     <Card className="rounded-[2rem] border border-slate-200 bg-white/85 dark:border-white/10 dark:bg-[#180F22]">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-3 text-lg font-black text-slate-900 dark:text-white">
-          <span className="rounded-2xl bg-rose-500/10 p-3 text-rose-600 dark:text-rose-300">{icon}</span>
+          <span className="rounded-2xl bg-primary/10 p-3 text-primary">{icon}</span>
           {title}
         </CardTitle>
       </CardHeader>

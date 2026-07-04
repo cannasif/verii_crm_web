@@ -65,10 +65,10 @@ const INPUT_STYLE = `
   placeholder:text-slate-400 dark:placeholder:text-slate-600 
   
   focus-visible:bg-white dark:focus-visible:bg-[#1a1025]
-  focus-visible:border-pink-500 dark:focus-visible:border-pink-500/70
-  focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
+  focus-visible:border-primary dark:focus-visible:border-primary/70
+  focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:ring-offset-0
   
-  focus:ring-2 focus:ring-pink-500/10 focus:ring-offset-0 focus:border-pink-500
+  focus:ring-2 focus:ring-primary/20 focus:ring-offset-0 focus:border-primary
   
   transition-all duration-200
 `;
@@ -83,8 +83,8 @@ const DROPDOWN_CONTENT_STYLE = `
 
 const DROPDOWN_ITEM_STYLE = `
   cursor-pointer 
-  focus:bg-pink-50 dark:focus:bg-pink-500/10 
-  focus:text-pink-600 dark:focus:text-pink-400 
+  focus:bg-accent dark:focus:bg-primary/10 
+  focus:text-primary dark:focus:text-primary 
   py-2.5 px-3 my-1 rounded-lg text-sm
 `;
 
@@ -215,7 +215,7 @@ export function ContactForm({
 
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 flex flex-row items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-white/95 dark:bg-[#130822]/95">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg shadow-pink-500/20 shrink-0">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary to-[var(--crm-brand-accent)] flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
               <AddTeamIcon size={24} className="text-white" />
             </div>
             <div className="space-y-1">
@@ -231,7 +231,7 @@ export function ContactForm({
             variant="ghost"
             size="icon"
             onClick={() => onOpenChange(false)}
-            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm shrink-0"
+            className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-primary hover:text-white transition-all duration-300 hover:scale-110 shadow-sm shrink-0"
           >
             <X size={20} className="relative z-10" />
           </Button>
@@ -249,7 +249,7 @@ export function ContactForm({
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'firstName')}>
-                        <UserCircleIcon size={16} className="text-pink-500" />
+                        <UserCircleIcon size={16} className="text-primary" />
                         {tf('firstName')}
                       </FormLabel>
                       <FormControl>
@@ -277,7 +277,7 @@ export function ContactForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <UserCircleIcon size={16} className="text-pink-500" />
+                        <UserCircleIcon size={16} className="text-primary" />
                         {tf('salutation')}
                       </FormLabel>
                       <Select
@@ -308,7 +308,7 @@ export function ContactForm({
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'lastName')}>
-                        <UserCircleIcon size={16} className="text-pink-500" />
+                        <UserCircleIcon size={16} className="text-primary" />
                         {tf('lastName')}
                       </FormLabel>
                       <FormControl>
@@ -336,7 +336,7 @@ export function ContactForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <UserCircleIcon size={16} className="text-pink-500" />
+                        <UserCircleIcon size={16} className="text-primary" />
                         {t('contactManagement.form.middleName')}
                       </FormLabel>
                       <FormControl>
@@ -353,7 +353,7 @@ export function ContactForm({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Briefcase01Icon size={16} className="text-pink-500" />
+                        <Briefcase01Icon size={16} className="text-primary" />
                         {t('contactManagement.form.title')}
                       </FormLabel>
                       <VoiceSearchCombobox
@@ -380,7 +380,7 @@ export function ContactForm({
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(contactFormSchema, 'customerId')}>
-                        <Building03Icon size={16} className="text-pink-500" />
+                        <Building03Icon size={16} className="text-primary" />
                         {tf('customer')}
                       </FormLabel>
                       <VoiceSearchCombobox
@@ -413,7 +413,7 @@ export function ContactForm({
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <SmartPhone01Icon size={16} className="text-pink-500" />
+                        <SmartPhone01Icon size={16} className="text-primary" />
                         {tf('mobile')}
                       </FormLabel>
                       <FormControl>
@@ -446,7 +446,7 @@ export function ContactForm({
                   render={({ field, fieldState }) => (
                     <FormItem>
                       <FormLabel className={LABEL_STYLE}>
-                        <Call02Icon size={16} className="text-pink-500" />
+                        <Call02Icon size={16} className="text-primary" />
                         {tf('phone')}
                       </FormLabel>
                       <FormControl>
@@ -480,7 +480,7 @@ export function ContactForm({
                     render={({ field, fieldState }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <Mail01Icon size={16} className="text-pink-500" />
+                          <Mail01Icon size={16} className="text-primary" />
                           {tf('email')}
                         </FormLabel>
                         <FormControl>
@@ -512,7 +512,7 @@ export function ContactForm({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className={LABEL_STYLE}>
-                          <Note01Icon size={16} className="text-pink-500" />
+                          <Note01Icon size={16} className="text-primary" />
                           {t('contactManagement.form.notes')}
                         </FormLabel>
                         <FormControl>
@@ -548,7 +548,7 @@ export function ContactForm({
             type="submit"
             form="contact-form"
             disabled={isLoading}
-            className="w-full sm:w-auto h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-black rounded-xl shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="w-full sm:w-auto h-12 px-8 bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-black rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading ? t('saving', { ns: CONTACT_NS }) : t('save', { ns: CONTACT_NS })}
           </Button>

@@ -194,7 +194,7 @@ function ReportAssignmentPanel({
       'relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0',
       className
     )}>
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
       <div className="relative z-10 flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-[260px] flex-1">
           <div className="mb-2 inline-flex rounded-full border border-primary/20 bg-accent/60 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-primary dark:border-primary/25 dark:bg-primary/10 dark:text-primary">
@@ -1579,7 +1579,7 @@ export function ReportBuilderPage(): ReactElement {
         "h-auto"
       )}>
         <header className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+          <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
           <div className="relative z-10 flex flex-wrap items-center gap-3 px-4 py-2.5">
             <Button
               type="button"
@@ -1824,11 +1824,11 @@ export function ReportBuilderPage(): ReactElement {
                   </div>
                 ) : null}
                 {showRepair && chartRepairPlan ? (
-                  <div className="flex flex-wrap items-start gap-3 border-l-4 border-rose-500 bg-rose-50/60 p-3 dark:bg-rose-950/20">
-                    <TriangleAlert className="mt-0.5 size-4 shrink-0 text-rose-600 dark:text-rose-300" />
+                  <div className="flex flex-wrap items-start gap-3 border-l-4 border-red-500 bg-red-50/60 p-3 dark:bg-red-950/20">
+                    <TriangleAlert className="mt-0.5 size-4 shrink-0 text-red-600 dark:text-red-300" />
                     <div className="min-w-[240px] flex-1">
-                      <div className="text-sm font-semibold text-rose-700 dark:text-rose-200">{chartRepairPlan.title}</div>
-                      <div className="text-xs text-rose-900/80 mt-0.5 dark:text-rose-100/80">{chartRepairPlan.description}</div>
+                      <div className="text-sm font-semibold text-red-700 dark:text-red-200">{chartRepairPlan.title}</div>
+                      <div className="text-xs text-red-900/80 mt-0.5 dark:text-red-100/80">{chartRepairPlan.description}</div>
                     </div>
                     <div className="flex shrink-0 gap-2">
                       <Button type="button" variant="outline" size="sm" onClick={handleAutoRepairVisualization}>
@@ -2067,7 +2067,7 @@ export function ReportBuilderPage(): ReactElement {
 
         {saveBlocked && builderMode === 'advanced' && advancedWorkspaceMode === 'guided' ? (
           <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-4 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
             <div className="relative z-10">
               <div className="mb-4 flex items-start gap-3">
                 <div className="mt-0.5 shrink-0 text-primary">
@@ -2581,7 +2581,7 @@ export function ReportBuilderPage(): ReactElement {
 
         {datasetReady && builderMode === 'basic' ? (
           <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+            <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
             <div className="relative z-10">
               <div className="mb-4 flex flex-wrap items-start justify-between gap-4">
                 <div className="min-w-[280px] flex-1">
@@ -2713,7 +2713,7 @@ export function ReportBuilderPage(): ReactElement {
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-[320px_1fr]">
               <div className="flex flex-col gap-4 pr-1">
                 <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
                   <div className="relative z-10">
                     <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardFieldsTitle')}</h3>
                     <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardFieldsDescription')}</p>
@@ -2736,7 +2736,7 @@ export function ReportBuilderPage(): ReactElement {
                 </div>
 
                 <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
                   <div className="relative z-10">
                     <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardStructureTitle')}</h3>
                     <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardStructureDescription')}</p>
@@ -2767,7 +2767,7 @@ export function ReportBuilderPage(): ReactElement {
               <div className="flex flex-col gap-4 pr-1">
                 <DeferOnView fallback={<PreviewPanelSkeleton className="border-slate-300/80 bg-stone-50/95 p-5 ring-1 ring-slate-200/70 dark:border-white/10 dark:bg-[#1a1025]/60" />}>
                   <div className="relative min-h-[min(21rem,55vh)] overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
                     <div className="relative z-10">
                       <Suspense fallback={<PreviewPanelSkeleton />}>
                         <PreviewPanel
@@ -2805,7 +2805,7 @@ export function ReportBuilderPage(): ReactElement {
                 </div>
 
                 <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
                   <div className="relative z-10">
                     <h3 className="text-sm font-semibold">{t('common.reportBuilder.expertCardSettingsTitle')}</h3>
                     <p className="text-muted-foreground mt-1 text-xs">{t('common.reportBuilder.expertCardSettingsDescription')}</p>
@@ -2821,7 +2821,7 @@ export function ReportBuilderPage(): ReactElement {
               <div className="flex flex-col pr-1">
                 <DeferOnView fallback={<PreviewPanelSkeleton className="shrink-0" />}>
                   <div className="relative min-h-[min(21rem,55vh)] overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
                     <div className="relative z-10">
                       <Suspense fallback={<PreviewPanelSkeleton />}>
                         <PreviewPanel
@@ -2844,7 +2844,7 @@ export function ReportBuilderPage(): ReactElement {
                 </DeferOnView>
                 {(config.widgets?.length ?? 0) > 1 ? (
                   <div className="mt-4 relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+                    <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
                     <div className="relative z-10">
                       <div className="mb-3 flex items-center gap-2">
                         <LayoutGrid className="size-4 text-primary" />
@@ -2863,7 +2863,7 @@ export function ReportBuilderPage(): ReactElement {
 
               <aside className="space-y-3">
                 <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+                  <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
                   <div className="relative z-10">
                     <div className="mb-3 flex items-center gap-2">
                       <Sparkles className="size-4 text-primary" />
@@ -2948,7 +2948,7 @@ export function ReportBuilderPage(): ReactElement {
         ) : (
           <div className="space-y-4">
             <div className="relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-              <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+              <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
               <div className="relative z-10">
                 <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   {t('common.reportBuilder.simpleStepSaveBadge')}
@@ -2991,7 +2991,7 @@ export function ReportBuilderPage(): ReactElement {
             </div>
 
             <div className="relative min-h-[min(21rem,55vh)] overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0">
-              <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+              <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
               <div className="relative z-10">
                 <div className="mb-2 inline-flex rounded-full border bg-muted/30 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                   {t('common.reportBuilder.simplePreviewBadge')}

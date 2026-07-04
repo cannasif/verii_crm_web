@@ -101,7 +101,7 @@ export function TopBarSelector({
       'relative overflow-hidden rounded-2xl border border-slate-300/80 bg-stone-50/95 p-5 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0',
       className
     )}>
-      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-rose-500/0 to-yellow-500/0 dark:from-rose-500/5 dark:to-yellow-500/5 opacity-50" />
+      <div className="absolute inset-0 pointer-events-none bg-linear-to-r from-primary/0 to-yellow-500/0 dark:from-primary/5 dark:to-yellow-500/5 opacity-50" />
 
       <div className="relative z-10 mb-5 flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-3">

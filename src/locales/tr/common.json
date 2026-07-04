@@ -5601,7 +5601,8 @@
     "newPasswordPlaceholderShort": "Yeni şifreniz"
   },
   "profile": {
-    "title": "Profil Bilgileri"
+    "title": "Profil Bilgileri",
+    "editDescription": "Kullanıcı bilgilerini güncelleyin"
   },
   "salesDraft": {
     "title": "Yarım kalan işiniz var",
@@ -5617,6 +5618,7 @@
   },
   "language_choice": "Dil Seçeneği",
   "appearance": "Görünüm Modu",
+  "appearanceLockedByBrandTheme": "Özel tema aktifken aydınlık/koyu modu kullanılamaz",
   "logout": "ÇIKIŞ YAP",
   "userDiscountLimitManagement": {
     "alreadyExists": "Bu satış temsilcisi ve ürün grubu kombinasyonu için zaten bir iskonto limiti mevcut",

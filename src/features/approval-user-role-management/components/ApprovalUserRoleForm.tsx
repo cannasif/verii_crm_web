@@ -210,7 +210,7 @@ export function ApprovalUserRoleForm({
             type="submit"
             form="approval-user-role-form"
             disabled={isLoading}
-            className="h-12 px-10 rounded-2xl bg-[image:var(--crm-brand-gradient)] text-white font-black shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] ring-1 ring-rose-400/30 transition-all duration-300 hover:scale-[1.05] hover:from-rose-500 hover:to-amber-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="h-12 px-10 rounded-2xl bg-[image:var(--crm-brand-gradient)] text-white font-black shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] ring-1 ring-primary/30 transition-all duration-300 hover:scale-[1.05] hover:from-primary hover:to-amber-500 active:scale-[0.98] opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading ? (
               <>

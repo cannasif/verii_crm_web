@@ -86,9 +86,9 @@ const INPUT_STYLE = `
   text-slate-900 dark:text-white text-sm
   placeholder:text-slate-400 dark:placeholder:text-slate-600
   focus-visible:bg-white dark:focus-visible:bg-[#1a1025]
-  focus-visible:border-pink-500 dark:focus-visible:border-pink-500/70
-  focus-visible:ring-2 focus-visible:ring-pink-500/10 focus-visible:ring-offset-0
-  focus:ring-2 focus:ring-pink-500/10 focus:ring-offset-0 focus:border-pink-500
+  focus-visible:border-primary dark:focus-visible:border-primary/70
+  focus-visible:ring-2 focus-visible:ring-primary/10 focus-visible:ring-offset-0
+  focus:ring-2 focus:ring-primary/20 focus:ring-offset-0 focus:border-primary
   transition-all duration-200
 `;
 
@@ -323,7 +323,7 @@ export function CustomerForm({
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 flex flex-col gap-5 sticky top-0 z-10 backdrop-blur-md bg-white/95 dark:bg-[#130822]/95">
           <div className="flex flex-row items-center justify-between w-full">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-pink-500 to-orange-500 flex items-center justify-center shadow-lg shadow-pink-500/20 shrink-0">
+              <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-primary to-[var(--crm-brand-accent)] flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
                 <Building2 size={24} className="text-white" />
               </div>
               <div className="space-y-1">
@@ -343,7 +343,7 @@ export function CustomerForm({
               variant="ghost"
               size="icon"
               onClick={() => onOpenChange(false)}
-              className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-pink-500 hover:text-white transition-all duration-300 hover:scale-110 shadow-sm shrink-0"
+              className="group h-10 w-10 flex items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 hover:bg-primary hover:text-white transition-all duration-300 hover:scale-110 shadow-sm shrink-0"
             >
               <X size={20} className="relative z-10" />
             </Button>
@@ -370,7 +370,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="name" render={({ field, fieldState }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
                     <FormLabel className={LABEL_STYLE} required={isZodFieldRequired(customerFormSchema, 'name')}>
-                      <Building2 size={16} className="text-pink-500" />
+                      <Building2 size={16} className="text-primary" />
                       {tf('name')}
                       <ErpFieldHelp required text={erpHint('name', 'ERP cari açmada Netsis CARI_ISIM alanına gönderilir ve zorunludur.')} />
                     </FormLabel>
@@ -398,7 +398,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="customerCode" render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Hash size={16} className="text-pink-500" />
+                      <Hash size={16} className="text-primary" />
                       {tf('code')}
                       <ErpFieldHelp required text={erpHint('customerCode', 'ERP cari açmada Netsis CARI_KOD alanına gönderilir ve zorunludur.')} />
                     </FormLabel>
@@ -414,7 +414,7 @@ export function CustomerForm({
                     <FormDescription className="text-xs text-slate-500 dark:text-slate-400">
                       {tf('customerCodeHint')}
                       {customerCodeRuleDescription ? (
-                        <span className="mt-1 block text-pink-600 dark:text-pink-300">
+                        <span className="mt-1 block text-primary">
                           {customerCodeRuleDescription}
                         </span>
                       ) : null}
@@ -425,7 +425,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="customerTypeId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-pink-500" />{tf('customerType')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-primary" />{tf('customerType')}</FormLabel>
                     <VoiceSearchCombobox
                       options={customerTypeDropdown.options}
                       value={field.value ? String(field.value) : ''}
@@ -446,7 +446,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="taxNumber" render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <FileText size={16} className="text-pink-500" />
+                      <FileText size={16} className="text-primary" />
                       {tf('taxNumber')}
                       <ErpFieldHelp required text={erpHint('taxNumber', 'ERP cari açmada Netsis VERGI_NUMARASI ve açıklama alanına gönderilir. TCKN yoksa Vergi No + Vergi Dairesi birlikte zorunludur.')} />
                     </FormLabel>
@@ -477,7 +477,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="taxOffice" render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <FileText size={16} className="text-pink-500" />
+                      <FileText size={16} className="text-primary" />
                       {tf('taxOffice')}
                       <ErpFieldHelp required text={erpHint('taxOffice', 'ERP cari açmada Netsis VERGI_DAIRESI ve açıklama alanına gönderilir. TCKN yoksa Vergi No + Vergi Dairesi birlikte zorunludur.')} />
                     </FormLabel>
@@ -497,7 +497,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="tcknNumber" render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <FileText size={16} className="text-pink-500" />
+                      <FileText size={16} className="text-primary" />
                       {tf('tcknNumber')}
                       <ErpFieldHelp required text={erpHint('tcknNumber', 'ERP cari açmada Netsis TC_KIMLIK_NO alanına gönderilir. Vergi No + Vergi Dairesi yoksa TCKN zorunlu alternatiftir.')} />
                     </FormLabel>
@@ -528,7 +528,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="email" render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Mail size={16} className="text-pink-500" />
+                      <Mail size={16} className="text-primary" />
                       {tf('email')}
                       <ErpFieldHelp required text={erpHint('email', 'ERP cari açmada Netsis EMAIL alanına gönderilir ve zorunludur.')} />
                     </FormLabel>
@@ -556,7 +556,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="website" render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Globe size={16} className="text-pink-500" />
+                      <Globe size={16} className="text-primary" />
                       {tf('website')}
                       <ErpFieldHelp text={erpHint('website', 'Doluysa ERP cari açmada Netsis WEB alanına gönderilir.')} />
                     </FormLabel>
@@ -576,7 +576,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="phone" render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Phone size={16} className="text-pink-500" />
+                      <Phone size={16} className="text-primary" />
                       {tf('phone')}
                       <ErpFieldHelp required text={erpHint('phone', 'ERP cari açmada Netsis CARI_TEL alanına gönderilir. Telefon veya Telefon 2 alanlarından en az biri zorunludur.')} />
                     </FormLabel>
@@ -607,7 +607,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="phone2" render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Phone size={16} className="text-pink-500" />
+                      <Phone size={16} className="text-primary" />
                       {tf('phone2')}
                       <ErpFieldHelp required text={erpHint('phone2', 'Telefon alanı boşsa ERP cari açmada Netsis CARI_TEL alanına Telefon 2 gönderilir. Telefon veya Telefon 2 alanlarından en az biri zorunludur.')} />
                     </FormLabel>
@@ -637,7 +637,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="countryId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('country')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-primary" />{tf('country')}</FormLabel>
                     <VoiceSearchCombobox
                       options={countryDropdown.options}
                       value={field.value ? String(field.value) : ''}
@@ -662,7 +662,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="cityId" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <MapPin size={16} className="text-pink-500" />
+                      <MapPin size={16} className="text-primary" />
                       {tf('city')}
                       <ErpFieldHelp required text={erpHint('city', 'ERP cari açmada Netsis CARI_IL alanına gönderilir ve zorunludur.')} />
                     </FormLabel>
@@ -690,7 +690,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="districtId" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <MapPin size={16} className="text-pink-500" />
+                      <MapPin size={16} className="text-primary" />
                       {tf('district')}
                       <ErpFieldHelp required text={erpHint('district', 'ERP cari açmada Netsis CARI_ILCE alanına gönderilir ve zorunludur.')} />
                     </FormLabel>
@@ -721,7 +721,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="postalCode" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <MapPin size={16} className="text-pink-500" />
+                      <MapPin size={16} className="text-primary" />
                       {tf('postalCode')}
                       <ErpFieldHelp text={erpHint('postalCode', 'Doluysa ERP cari açmada Netsis POSTA_KODU alanına gönderilir. İlçe tanımında posta kodu varsa boş alana otomatik yazılır.')} />
                     </FormLabel>
@@ -732,7 +732,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="creditLimit" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><CreditCard size={16} className="text-pink-500" />{tf('creditLimit')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><CreditCard size={16} className="text-primary" />{tf('creditLimit')}</FormLabel>
                     <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(e.target.valueAsNumber || 0)} className={INPUT_STYLE} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -741,7 +741,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="groupCode" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Hash size={16} className="text-pink-500" />
+                      <Hash size={16} className="text-primary" />
                       {tf('groupCode')}
                       <ErpFieldHelp text={erpHint('groupCode', 'Doluysa ERP cari açmada Netsis GRUP_KODU alanına gönderilir.')} />
                     </FormLabel>
@@ -753,7 +753,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="accountingCode" render={({ field }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
-                      <Hash size={16} className="text-pink-500" />
+                      <Hash size={16} className="text-primary" />
                       {tf('accountingCode')}
                       <ErpFieldHelp text={erpHint('accountingCode', 'Doluysa ERP cari açmada Netsis MUHASEBE_KODU alanına gönderilir.')} />
                     </FormLabel>
@@ -764,7 +764,7 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="defaultShippingAddressId" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-pink-500" />{tf('defaultShippingAddress')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}><MapPin size={16} className="text-primary" />{tf('defaultShippingAddress')}</FormLabel>
                     <Select onValueChange={(value) => { const numericValue = Number(value); field.onChange(numericValue > 0 ? numericValue : null); }} value={field.value ? String(field.value) : ''} disabled={!customer?.id}>
                       <FormControl><SelectTrigger className={`${INPUT_STYLE} justify-between px-4`}><SelectValue placeholder={tf('selectDefaultShippingAddress')} /></SelectTrigger></FormControl>
                       <SelectContent>
@@ -779,7 +779,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="address" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
                     <FormLabel className={LABEL_STYLE}>
-                      <MapPin size={16} className="text-pink-500" />
+                      <MapPin size={16} className="text-primary" />
                       {tf('address')}
                       <ErpFieldHelp required text={erpHint('address', 'ERP cari açmada Netsis CARI_ADRES alanına gönderilir ve zorunludur.')} />
                     </FormLabel>
@@ -791,7 +791,7 @@ export function CustomerForm({
                 <FormField control={form.control} name="notes" render={({ field }) => (
                   <FormItem className="col-span-1 sm:col-span-2">
                     <FormLabel className={LABEL_STYLE}>
-                      <FileText size={16} className="text-pink-500" />
+                      <FileText size={16} className="text-primary" />
                       {tf('notes')}
                       <ErpFieldHelp text={erpHint('notes', 'Doluysa ERP cari açmada Netsis ACIK1 alanına gönderilir.')} />
                     </FormLabel>
@@ -818,7 +818,7 @@ export function CustomerForm({
             type="submit"
             form="customer-form"
             disabled={isLoading}
-            className="w-full sm:w-auto h-12 px-8 bg-linear-to-r from-pink-600 to-orange-600 hover:from-pink-500 hover:to-orange-500 text-white font-black rounded-xl shadow-lg shadow-pink-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="w-full sm:w-auto h-12 px-8 bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white font-black rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
           >
             {isLoading ? tf('saving') : tf('save')}
           </Button>
