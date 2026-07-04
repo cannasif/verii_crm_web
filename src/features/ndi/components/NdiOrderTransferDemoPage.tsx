@@ -65,6 +65,8 @@ interface NdiTransferRule {
   taxRule: string;
   warehouseRule: string;
   transferNote: string;
+  officialNote: string;
+  bulkNote: string;
 }
 
 type NdiBusinessSeries = 'NUR' | 'VIN' | 'DIS' | 'SIP';
@@ -106,6 +108,10 @@ interface NdiRuleOutcome {
   sourceVat: number | null;
   targetVat: number | null;
   vatNote: string;
+  quantityRuleLabel: string;
+  requestedQuantity: number;
+  transferQuantity: number;
+  quantityNote: string;
   systemNotes: string[];
   userNotes: string[];
   warnings: string[];
@@ -134,9 +140,11 @@ const transferRules: NdiTransferRule[] = [
     targetCompany: 'ŞİRKET24',
     targetSerial: 'Kaynak irsaliye/fatura serisi',
     shipmentRule: 'Cari sevk var ise irsaliye aktarımı zorunlu, yok ise zorunlu değil.',
-    taxRule: '1/4 siparişlerde ŞİRKET24 KDV %5, tam satışta %20; NURAY KDV %20.',
+    taxRule: '1/4 siparişlerde kalem miktarının 1/4 adedi aktarılır ve ŞİRKET24 KDV %5 olur; TAM siparişlerde miktarın tamamı aktarılır ve ŞİRKET24 KDV %20 olur. NURAY KDV %20.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'İrsaliye oluşursa otomatik ŞİRKET24 faturası tetiklenir.',
+    transferNote: 'İrsaliye oluşursa otomatik ŞİRKET24 faturası tetiklenir; fatura akışında e-Fatura NRY, e-Arşiv NEA kullanılır.',
+    officialNote: 'ŞİRKET24 tarafında resmi evrak oluşur.',
+    bulkNote: 'Aynı ilk 3 karakter grubundaki NUR belgeleri toplu seçilebilir.',
   },
   {
     id: 'windoformKapi',
@@ -148,7 +156,9 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Cari sevk var ise irsaliye zorunlu; özel kod K ise irsaliye zorunlu.',
     taxRule: 'Özel Kod K ihraç kayıtlı KDV 0, Özel Kod N normal satış KDV %20.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'İrsaliye oluşursa otomatik ŞİRKET24 faturası tetiklenir.',
+    transferNote: 'İrsaliye oluşursa otomatik ŞİRKET24 faturası tetiklenir; fatura akışında e-Fatura VDF, e-Arşiv EAR kullanılır.',
+    officialNote: 'ŞİRKET24 tarafında resmi evrak oluşur.',
+    bulkNote: 'Aynı ilk 3 karakter grubundaki VIN belgeleri toplu seçilebilir.',
   },
   {
     id: 'disTicaret',
@@ -160,7 +170,9 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Sevk durumuna bakılmadan aktarım yapılabilir.',
     taxRule: 'KDV 0; gün döviz kuru alınır.',
     warehouseRule: 'Varsayılan depo kodu 100 olmalı.',
-    transferNote: 'İrsaliye birleştirme ve toplu aktarım desteklenebilir.',
+    transferNote: 'Fatura serisi de irsaliye serisi de EIR olmalıdır.',
+    officialNote: 'Dış ticaret aktarımında resmi belge EIR seri kuralıyla hazırlanır.',
+    bulkNote: 'İrsaliye birleştirme ve toplu aktarım desteklenebilir.',
   },
   {
     id: 'sirket24',
@@ -172,7 +184,9 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Sevk var/yok fark etmez.',
     taxRule: 'KDV 0; resmi evrak oluşmayacak.',
     warehouseRule: 'Depo kuralı yok.',
-    transferNote: 'Sadece fatura oluşur.',
+    transferNote: 'Sadece ŞİRKET24 faturası oluşur; fatura seri numarası SIP2026 olmalıdır.',
+    officialNote: 'Resmi evrak oluşmayacak.',
+    bulkNote: 'Aynı ilk 3 karakter grubundaki SIP belgeleri toplu seçilebilir.',
   },
 ];
 
@@ -333,13 +347,24 @@ function resolveBatchAction(orders: NdiOrder[]): { action: NdiBatchAction | null
 
 function resolveTargetSeries(order: NdiOrder): { value: string; note: string; warning?: string } {
   const series = getBusinessSeries(order);
+  const action = resolvePrimaryAction(order);
   const config = SERIES_CONFIG[series];
 
   if (series === 'DIS') {
-    return { value: 'EIR', note: 'Dış ticaret kayıtları sabit EIR serisiyle hazırlanır.' };
+    return { value: 'EIR', note: 'Dış ticaret kayıtlarında fatura ve irsaliye sabit EIR serisiyle hazırlanır.' };
   }
   if (series === 'SIP') {
-    return { value: config.fatura ?? 'SIP2026', note: 'Şirket24 fatura akışı sabit SIP2026 serisiyle hazırlanır.' };
+    return {
+      value: config.fatura ?? 'SIP2026',
+      note: 'Şirket24 fatura akışı sabit SIP2026 serisiyle hazırlanır; resmi evrak oluşturulmaz.',
+    };
+  }
+
+  if (action === 'IRSALIYELISTIR') {
+    return {
+      value: series,
+      note: `${config.label}: irsaliye aktarımında kaynakta kullanılan irsaliye/fatura serisi ŞİRKET24 tarafına taşınır.`,
+    };
   }
 
   const defaultSeries = config.eFatura ?? '-';
@@ -377,7 +402,7 @@ function resolveVat(order: NdiOrder): { sourceVat: number | null; targetVat: num
     if (description.includes('1/4')) {
       return { sourceVat: 20, targetVat: 5, note: 'Açıklamada 1/4 geçtiği için ŞİRKET24 KDV %5 uygulanır.' };
     }
-    return { sourceVat: 20, targetVat: 20, note: 'Tam satış kabulüyle kaynak ve hedef KDV %20.' };
+    return { sourceVat: 20, targetVat: 20, note: 'TAM satış kabulüyle kaynak ve hedef KDV %20.' };
   }
 
   if (series === 'VIN') {
@@ -393,20 +418,68 @@ function resolveVat(order: NdiOrder): { sourceVat: number | null; targetVat: num
   return { sourceVat: null, targetVat: null, note: 'KDV kuralı belirlenemedi.', block: 'Seri tanımsız olduğu için KDV kuralı uygulanamadı.' };
 }
 
+function resolveQuantityRule(order: NdiOrder, lines: NdiOrderLine[]): { label: string; requestedQuantity: number; transferQuantity: number; note: string; block?: string } {
+  const series = getBusinessSeries(order);
+  const description = normalizeText(order.description);
+  const requestedQuantity = lines.reduce((total, line) => total + Math.max(line.remainingQuantity, 0), 0);
+
+  if (series !== 'NUR') {
+    return {
+      label: 'Tam',
+      requestedQuantity,
+      transferQuantity: requestedQuantity,
+      note: 'Bu akışta seçilen satırların kalan miktarının tamamı aktarılır.',
+    };
+  }
+
+  if (description.includes('1/4')) {
+    const transferQuantity = requestedQuantity / 4;
+
+    return {
+      label: '1/4',
+      requestedQuantity,
+      transferQuantity,
+      note: `1/4 kuralı: seçilen ${numberFormatter.format(requestedQuantity)} adet kalan miktarın ${numberFormatter.format(transferQuantity)} adedi aktarılır.`,
+    };
+  }
+
+  if (description.includes('tam')) {
+    return {
+      label: 'TAM',
+      requestedQuantity,
+      transferQuantity: requestedQuantity,
+      note: `TAM kuralı: seçilen ${numberFormatter.format(requestedQuantity)} adet kalan miktarın tamamı aktarılır.`,
+    };
+  }
+
+  return {
+    label: 'Belirsiz',
+    requestedQuantity,
+    transferQuantity: requestedQuantity,
+    note: 'NURAY akışında miktar kuralı için açıklamada 1/4 veya TAM bilgisi bulunmalıdır.',
+    block: 'NURAY akışında aktarılacak miktar için açıklamada 1/4 veya TAM bilgisi zorunludur.',
+  };
+}
+
 function buildRuleOutcome(order: NdiOrder, lines: NdiOrderLine[]): NdiRuleOutcome {
   const series = getBusinessSeries(order);
   const sourcePrefix = getOrderPrefix(order);
   const action = resolvePrimaryAction(order);
+  const rule = getRule(order);
   const targetSeries = resolveTargetSeries(order);
   const warehouse = resolveWarehouse(order);
   const vat = resolveVat(order);
+  const quantityRule = resolveQuantityRule(order, lines);
   const zeroBalanceCount = lines.filter((line) => line.quantity > 0 && line.remainingQuantity <= 0).length;
   const warnings: string[] = [];
   const blocks: string[] = [];
   const systemNotes: string[] = [
     targetSeries.note,
     warehouse.note,
+    quantityRule.note,
     vat.note,
+    rule.officialNote,
+    rule.bulkNote,
     'Ek alan 1 ve satır bilgileri aktarım payloadında korunmalıdır.',
   ];
   const userNotes: string[] = [];
@@ -420,14 +493,20 @@ function buildRuleOutcome(order: NdiOrder, lines: NdiOrderLine[]): NdiRuleOutcom
   if (vat.block) {
     blocks.push(vat.block);
   }
+  if (quantityRule.block) {
+    blocks.push(quantityRule.block);
+  }
   if (series === 'NUR' && !order.description.trim()) {
-    blocks.push('NURAY akışında 1/4 veya tam satış ayrımı için irsaliye açıklaması boş olmamalı.');
+    blocks.push('NURAY akışında 1/4 veya TAM ayrımı için irsaliye açıklaması boş olmamalı.');
+  }
+  if (series === 'VIN' && order.specialCode === 'K' && action !== 'IRSALIYELISTIR') {
+    blocks.push('WINDOFORM Özel Kod K ihraç kayıtlı işlemde irsaliye zorunludur; fatura akışı tek başına hazırlanmamalıdır.');
   }
   if (series === 'VIN' && order.specialCode === 'K') {
     userNotes.push('İhraç kayıtlı işlem: irsaliye zorunlu ve hedef KDV %0 olmalı.');
   }
   if (series === 'NUR' && order.description.trim()) {
-    userNotes.push(order.description.includes('1/4') ? '1/4 açıklaması algılandı.' : 'Tam satış açıklaması algılandı.');
+    userNotes.push(quantityRule.label === '1/4' ? '1/4 açıklaması algılandı: miktar 1/4, hedef KDV %5.' : 'TAM satış açıklaması algılandı: miktar tam, hedef KDV %20.');
   }
   if (sourcePrefix !== series) {
     warnings.push(`Belge prefix ${sourcePrefix}; iş kuralı ${series} olarak yorumlandı.`);
@@ -449,6 +528,10 @@ function buildRuleOutcome(order: NdiOrder, lines: NdiOrderLine[]): NdiRuleOutcom
     sourceVat: vat.sourceVat,
     targetVat: vat.targetVat,
     vatNote: vat.note,
+    quantityRuleLabel: quantityRule.label,
+    requestedQuantity: quantityRule.requestedQuantity,
+    transferQuantity: quantityRule.transferQuantity,
+    quantityNote: quantityRule.note,
     systemNotes,
     userNotes,
     warnings,
@@ -1013,10 +1096,10 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
 
 function SeriesGuide(): ReactElement {
   const rows = [
-    { title: 'NURAY (NUR)', items: ['e-Fatura -> NRY', 'e-Arşiv -> NEA'] },
-    { title: 'WINDOFORM (VIN)', items: ['e-Fatura -> VDF', 'e-Arşiv -> EAR'] },
-    { title: 'DIŞ TİCARET (DIS)', items: ['Sabit -> EIR', 'Depo -> 100 sabit'] },
-    { title: 'ŞİRKET24 (SIP)', items: ['Fatura -> SIP2026', 'Depo -> 100 / 200'] },
+    { title: 'NURAY (NUR)', items: ['İrsaliye -> kaynak seri', 'e-Fatura -> NRY', 'e-Arşiv -> NEA', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
+    { title: 'WINDOFORM (VIN)', items: ['İrsaliye -> kaynak seri', 'e-Fatura -> VDF', 'e-Arşiv -> EAR', 'K -> KDV 0'] },
+    { title: 'DIŞ TİCARET (DIS)', items: ['Fatura/İrsaliye -> EIR', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
+    { title: 'ŞİRKET24 (SIP)', items: ['Fatura -> SIP2026', 'KDV -> 0', 'Resmi evrak yok'] },
   ];
 
   return (
@@ -1065,9 +1148,13 @@ function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement
         </div>
       </div>
 
-      <div className="mt-3 grid gap-2 sm:grid-cols-3">
+      <div className="mt-3 grid gap-2 sm:grid-cols-4">
         <RuleMini label="Hedef Seri" value={outcome.targetSeries} />
         <RuleMini label="Hedef Depo" value={outcome.targetWarehouseLabel} />
+        <RuleMini
+          label="Aktarılacak Miktar"
+          value={`${outcome.quantityRuleLabel}: ${numberFormatter.format(outcome.transferQuantity)} / ${numberFormatter.format(outcome.requestedQuantity)}`}
+        />
         <RuleMini
           label="KDV"
           value={`Kaynak ${outcome.sourceVat ?? '-'} / Hedef ${outcome.targetVat ?? '-'}`}
@@ -1134,6 +1221,8 @@ function RuleCard({ rule }: { rule: NdiTransferRule }): ReactElement {
         <RuleLine label="KDV" value={rule.taxRule} />
         <RuleLine label="Depo" value={rule.warehouseRule} />
         <RuleLine label="Not" value={rule.transferNote} />
+        <RuleLine label="Evrak" value={rule.officialNote} />
+        <RuleLine label="Toplu" value={rule.bulkNote} />
       </div>
     </div>
   );
