@@ -1,7 +1,7 @@
-import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactElement, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, type KeyboardEvent, type PointerEvent, type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { Bot, Check, Copy, ExternalLink, FileImage, ImagePlus, Maximize2, MessageCircle, Minimize2, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Bot, Check, ChevronsRight, Copy, ExternalLink, FileImage, GripVertical, ImagePlus, Maximize2, MessageCircle, Minimize2, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -55,7 +55,11 @@ const actionItemClassNameBySeverity: Record<string, string> = {
 
 const minimumThinkingDurationMs = 900;
 const missingTranslationText = 'Çeviri eksik';
+const widgetPositionStorageKey = 'crm-ai-assistant-widget-position';
 const widgetSessionStorageKey = 'crm-ai-assistant-widget-session-key';
+const widgetViewportPadding = 16;
+const widgetDefaultWidth = 500;
+const widgetDefaultHeight = 700;
 
 const aiAssistantTextFallbacks: Record<string, string> = {
   pageTitle: 'AI Asistan',
@@ -143,12 +147,91 @@ function readAssistantSessionKey(): string {
   return nextKey;
 }
 
+type WidgetPosition = {
+  x: number;
+  y: number;
+};
+
+type DragState = {
+  pointerId: number;
+  offsetX: number;
+  offsetY: number;
+};
+
+function clampWidgetPosition(position: WidgetPosition, element?: HTMLElement | null): WidgetPosition {
+  if (typeof window === 'undefined') {
+    return position;
+  }
+
+  const width = element?.offsetWidth || widgetDefaultWidth;
+  const height = element?.offsetHeight || widgetDefaultHeight;
+  const maxX = Math.max(widgetViewportPadding, window.innerWidth - width - widgetViewportPadding);
+  const maxY = Math.max(widgetViewportPadding, window.innerHeight - height - widgetViewportPadding);
+
+  return {
+    x: Math.min(Math.max(position.x, widgetViewportPadding), maxX),
+    y: Math.min(Math.max(position.y, widgetViewportPadding), maxY),
+  };
+}
+
+function createDefaultWidgetPosition(): WidgetPosition {
+  if (typeof window === 'undefined') {
+    return { x: widgetViewportPadding, y: widgetViewportPadding };
+  }
+
+  return clampWidgetPosition({
+    x: window.innerWidth - widgetDefaultWidth - 24,
+    y: window.innerHeight - widgetDefaultHeight - 24,
+  });
+}
+
+function readWidgetPosition(): WidgetPosition {
+  if (typeof window === 'undefined' || !window.localStorage) {
+    return createDefaultWidgetPosition();
+  }
+
+  const rawPosition = window.localStorage.getItem(widgetPositionStorageKey);
+  if (!rawPosition) {
+    return createDefaultWidgetPosition();
+  }
+
+  try {
+    const parsed = JSON.parse(rawPosition) as Partial<WidgetPosition>;
+    if (typeof parsed.x !== 'number' || typeof parsed.y !== 'number') {
+      return createDefaultWidgetPosition();
+    }
+
+    return clampWidgetPosition({ x: parsed.x, y: parsed.y });
+  } catch {
+    return createDefaultWidgetPosition();
+  }
+}
+
+function writeWidgetPosition(position: WidgetPosition): void {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+  window.localStorage.setItem(widgetPositionStorageKey, JSON.stringify(position));
+}
+
+function createReadableRouteContext(pathname: string): string {
+  if (!pathname || pathname === '/') return aiAssistantTextFallbacks.contextHome;
+
+  const cleanPath = pathname
+    .split('/')
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((segment) => segment.replace(/-/g, ' '))
+    .join(' / ');
+
+  return cleanPath || aiAssistantTextFallbacks.contextHome;
+}
+
 function createRouteEntityContext(pathname: string): {
   routeTitle: string;
   entityType?: string;
   entityId?: number;
   customerId?: number;
 } {
+  const routeTitle = createReadableRouteContext(pathname);
   const segments = pathname.split('/').filter(Boolean);
   const numericSegment = [...segments].reverse().find((segment) => /^\d+$/.test(segment));
   const entityId = numericSegment ? Number(numericSegment) : undefined;
@@ -165,12 +248,6 @@ function createRouteEntityContext(pathname: string): {
     'customer-360': 'customer',
     'salesmen-360': 'salesmen360',
   };
-  const routeTitle = segments.length
-    ? segments
-        .slice(0, 3)
-        .map((segment) => segment.replace(/-/g, ' '))
-        .join(' / ')
-    : 'Genel CRM';
   const entityType = firstSegment ? entityTypeByRoute[firstSegment] ?? firstSegment : undefined;
 
   return {
@@ -184,6 +261,7 @@ function createRouteEntityContext(pathname: string): {
 export function AiAssistantWidget(): ReactElement {
   const { t } = useTranslation('ai-assistant');
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuthStore();
   const { data: greeting, isLoading } = useAiAssistantGreetingQuery();
   const askMutation = useAskAiAssistantMutation();
@@ -203,6 +281,7 @@ export function AiAssistantWidget(): ReactElement {
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [widgetPosition, setWidgetPosition] = useState<WidgetPosition>(() => readWidgetPosition());
   const [sessionKey, setSessionKey] = useState<string>(() => readAssistantSessionKey());
   const [languagePreference, setLanguagePreference] = useState<AiAssistantLanguagePreference>(() =>
     readAiAssistantLanguagePreference()
@@ -211,6 +290,8 @@ export function AiAssistantWidget(): ReactElement {
   const sendButtonRef = useRef<HTMLButtonElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const widgetContainerRef = useRef<HTMLDivElement | null>(null);
+  const dragStateRef = useRef<DragState | null>(null);
   const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
   const skipNextHistoryWriteRef = useRef(false);
   const readText = (key: string, fallback?: string, options?: Record<string, unknown>): string => {
@@ -298,6 +379,7 @@ export function AiAssistantWidget(): ReactElement {
 
   const fallbackName = user?.name || user?.email || readText('fallbackName');
   const displayName = greeting?.fullName?.trim() || fallbackName;
+  const currentRouteContext = createReadableRouteContext(location.pathname);
   const fallbackSuggestions = defaultSuggestions.map((suggestion, index) =>
     readText(`suggestions.${index + 1}`, suggestion)
   );
@@ -315,6 +397,70 @@ export function AiAssistantWidget(): ReactElement {
       });
     }
   }, [isOpen, messages, isAssistantBusy]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleResize = (): void => {
+      setWidgetPosition((currentPosition) => {
+        const nextPosition = clampWidgetPosition(currentPosition, widgetContainerRef.current);
+        writeWidgetPosition(nextPosition);
+        return nextPosition;
+      });
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isOpen, isExpanded]);
+
+  const handleDragStart = useCallback((event: PointerEvent<HTMLElement>): void => {
+    if (event.button !== 0) return;
+
+    const target = event.target as HTMLElement;
+    if (target.closest('[data-ai-drag-ignore="true"]')) {
+      return;
+    }
+
+    const widgetElement = widgetContainerRef.current;
+    if (!widgetElement) return;
+
+    const rect = widgetElement.getBoundingClientRect();
+    dragStateRef.current = {
+      pointerId: event.pointerId,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+    };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }, []);
+
+  const handleDragMove = useCallback((event: PointerEvent<HTMLElement>): void => {
+    const dragState = dragStateRef.current;
+    if (!dragState || dragState.pointerId !== event.pointerId) return;
+
+    const nextPosition = clampWidgetPosition(
+      {
+        x: event.clientX - dragState.offsetX,
+        y: event.clientY - dragState.offsetY,
+      },
+      widgetContainerRef.current
+    );
+
+    setWidgetPosition(nextPosition);
+  }, []);
+
+  const handleDragEnd = useCallback((event: PointerEvent<HTMLElement>): void => {
+    const dragState = dragStateRef.current;
+    if (!dragState || dragState.pointerId !== event.pointerId) return;
+
+    dragStateRef.current = null;
+    const nextPosition = clampWidgetPosition(widgetPosition, widgetContainerRef.current);
+    setWidgetPosition(nextPosition);
+    writeWidgetPosition(nextPosition);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  }, [widgetPosition]);
 
   const askQuestion = async (value: string, errorContext?: AiAssistantErrorContext | null): Promise<void> => {
     const trimmedQuestion = value.trim();
@@ -468,6 +614,21 @@ export function AiAssistantWidget(): ReactElement {
     setIsOpen(false);
   };
 
+  const openWidgetFromRail = (): void => {
+    setWidgetPosition((currentPosition) => {
+      const nextPosition = clampWidgetPosition(currentPosition, widgetContainerRef.current);
+      writeWidgetPosition(nextPosition);
+      return nextPosition;
+    });
+    setIsOpen(true);
+  };
+
+  const dockWidgetToRail = (): void => {
+    const nextPosition = clampWidgetPosition(widgetPosition, widgetContainerRef.current);
+    writeWidgetPosition(nextPosition);
+    setIsOpen(false);
+  };
+
   const copyAssistantMessage = async (message: AiAssistantChatMessage): Promise<void> => {
     await copyTextToClipboard(message.content);
     setCopiedMessageId(message.id);
@@ -478,8 +639,9 @@ export function AiAssistantWidget(): ReactElement {
 
   return (
     <div
-      className="fixed bottom-4 z-50 print:hidden md:bottom-6"
-      style={{ insetInlineEnd: '1rem' }}
+      ref={widgetContainerRef}
+      className={isOpen ? 'fixed z-50 print:hidden' : 'fixed end-0 top-1/2 z-50 -translate-y-1/2 print:hidden'}
+      style={isOpen ? { left: `${widgetPosition.x}px`, top: `${widgetPosition.y}px` } : undefined}
     >
       <style>{`
         .ai-widget-container.is-expanded .text-sm {
@@ -497,27 +659,46 @@ export function AiAssistantWidget(): ReactElement {
         .ai-widget-container.is-expanded .text-\\[0\\.62rem\\] {
           font-size: 0.75rem !important;
         }
+        .ai-widget-scroll-area {
+          scrollbar-gutter: stable;
+          -webkit-overflow-scrolling: touch;
+        }
       `}</style>
       {isOpen ? (
-        <section className={`ai-widget-container relative flex w-[calc(100vw-1.25rem)] transition-all duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-primary/15 bg-background/98 shadow-2xl shadow-[0_24px_60px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/20 dark:bg-slate-950/98 ${isExpanded
+        <section className={`ai-widget-container relative flex min-h-0 max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.25rem)] transition-all duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-primary/15 bg-background/98 shadow-2xl shadow-[0_24px_60px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/20 dark:bg-slate-950/98 ${isExpanded
           ? 'is-expanded sm:max-w-[850px] h-[min(92dvh,850px)]'
           : 'max-w-[500px] h-[min(80dvh,700px)]'
           }`}>
           <div className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-35 dark:opacity-20" />
-          <header className="relative flex items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03]">
+          <header
+            className="relative flex cursor-move touch-none select-none items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03]"
+            aria-label={readText('dragPanel')}
+            onPointerDown={handleDragStart}
+            onPointerMove={handleDragMove}
+            onPointerUp={handleDragEnd}
+            onPointerCancel={handleDragEnd}
+          >
             <div className="flex min-w-0 items-center gap-3">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)]">
                 <Bot size={22} />
                 <span className="absolute -bottom-0.5 -end-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-400 dark:border-slate-950" />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-sm font-black text-slate-950 dark:text-white">
-                  {readText('pageTitle')}
-                </p>
-
+                <div className="flex min-w-0 items-center gap-2">
+                  <p className="truncate text-sm font-black text-slate-950 dark:text-white">
+                    {readText('pageTitle')}
+                  </p>
+                  <GripVertical size={14} className="hidden text-slate-400 sm:block" aria-hidden="true" />
+                </div>
+                <div className="mt-1 flex min-w-0 items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.14em] text-slate-500 dark:text-slate-300">
+                  <span>{readText('contextTitle')}</span>
+                  <span className="min-w-0 truncate rounded-full border border-primary/15 bg-primary/10 px-2 py-0.5 text-primary">
+                    {currentRouteContext}
+                  </span>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-1 sm:gap-2" data-ai-drag-ignore="true">
               <Button
                 type="button"
                 variant="ghost"
@@ -527,6 +708,17 @@ export function AiAssistantWidget(): ReactElement {
               >
                 <Plus size={15} className="me-1.5" />
                 {readText('newChat')}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                title={readText('dockPanel')}
+                className="hidden h-10 w-10 rounded-2xl sm:inline-flex"
+                aria-label={readText('dockPanel')}
+                onClick={dockWidgetToRail}
+              >
+                <ChevronsRight size={18} />
               </Button>
               <Button
                 type="button"
@@ -552,7 +744,7 @@ export function AiAssistantWidget(): ReactElement {
           </header>
 
           <div
-            className="relative flex-1 space-y-4 overflow-y-auto px-4 py-5"
+            className="ai-widget-scroll-area relative min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-5 touch-pan-y"
             role="log"
             aria-live="polite"
             aria-relevant="additions text"
@@ -846,14 +1038,15 @@ export function AiAssistantWidget(): ReactElement {
       ) : (
         <button
           type="button"
-          aria-label={readText('openChat')}
-          onClick={() => setIsOpen(true)}
-          className="group flex items-center gap-3 rounded-full border border-white/20 bg-[image:var(--crm-brand-gradient)] px-4 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:scale-[1.02] hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950"
+          aria-label={readText('openFromRail')}
+          title={readText('openFromRail')}
+          onClick={openWidgetFromRail}
+          className="group flex max-h-[70dvh] items-center gap-2 overflow-hidden rounded-s-3xl border border-e-0 border-white/20 bg-[image:var(--crm-brand-gradient)] px-2.5 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:translate-x-[-2px] hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950 sm:px-3 sm:py-4"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
+          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white/20">
             <MessageCircle size={20} />
           </span>
-          <span className="hidden sm:inline">{readText('pageTitle')}</span>
+          <span className="hidden max-w-20 text-start leading-4 sm:inline">{readText('dockedChat')}</span>
         </button>
       )}
     </div>
