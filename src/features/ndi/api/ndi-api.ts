@@ -37,6 +37,17 @@ export interface NetsisCustomerDispatchOrderCheckDto {
   fatirsNo: string;
 }
 
+export interface NetsisNdiTransferRuleDto {
+  code: string;
+  title: string;
+  sourceSerial: string;
+  sourceNetsisCompany: string;
+  targetNetsisCompany: string;
+  targetSerialRule: string;
+  carriesSourceSerialToTarget: boolean;
+  description: string;
+}
+
 function ensureSuccess<T>(response: ApiResponse<T>, fallbackMessage: string): T {
   if (response.success) {
     return response.data;
@@ -66,5 +77,10 @@ export const ndiApi = {
       }
     );
     return ensureSuccess(response, 'Netsis irsaliye siparis kontrolleri yuklenemedi.');
+  },
+
+  getNdiTransferRules: async (): Promise<NetsisNdiTransferRuleDto[]> => {
+    const response = await api.get<ApiResponse<NetsisNdiTransferRuleDto[]>>('/api/NetsisRead/getNdiTransferRules');
+    return ensureSuccess(response, 'NDI aktarim kurallari yuklenemedi.');
   },
 };

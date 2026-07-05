@@ -33,6 +33,42 @@ interface NdiOrderLine {
   status: 'ready' | 'partial' | 'waiting';
 }
 
+interface NdiPreparedLine {
+  id: string;
+  orderNo: string;
+  stockCode: string;
+  stockName: string;
+  sourceQuantity: number;
+  transferQuantity: number;
+  unit: string;
+  sourceWarehouse: string;
+  targetWarehouse: string;
+  targetVat: number | null;
+}
+
+interface NdiPreparedDocument {
+  sourceDocumentNo: string;
+  targetDocumentNo: string;
+  sourceNetsisCompany: string;
+  targetNetsisCompany: string;
+  targetSeries: string;
+  documentType: 'İrsaliye' | 'Fatura';
+  lineCount: number;
+}
+
+interface NdiPreparedTransfer {
+  actionLabel: string;
+  sourceNetsisCompanies: string[];
+  targetNetsisCompanies: string[];
+  documentNos: string[];
+  createdDocuments: NdiPreparedDocument[];
+  lineCount: number;
+  totalSourceQuantity: number;
+  totalTransferQuantity: number;
+  lines: NdiPreparedLine[];
+  warnings: string[];
+}
+
 interface NdiOrder {
   id: string;
   orderNo: string;
@@ -59,7 +95,9 @@ interface NdiTransferRule {
   title: string;
   documentType: NdiOrder['documentType'];
   sourceSerial: string;
+  sourceNetsisCompany: string;
   targetCompany: string;
+  targetNetsisCompany: string;
   targetSerial: string;
   shipmentRule: string;
   taxRule: string;
@@ -74,6 +112,7 @@ type NdiBatchAction = 'IRSALIYELISTIR' | 'FATURALASTIR';
 
 interface NdiSeriesConfig {
   label: string;
+  netsisCompany: string;
   eFatura?: string;
   eArsiv?: string;
   fatura?: string;
@@ -100,6 +139,8 @@ interface NdiRuleOutcome {
   action: NdiBatchAction;
   actionLabel: string;
   companyLabel: string;
+  sourceNetsisCompany: string;
+  targetNetsisCompany: string;
   targetSeries: string;
   seriesNote: string;
   targetWarehouse: string;
@@ -137,7 +178,9 @@ const transferRules: NdiTransferRule[] = [
     title: 'NURAY - İrsaliye/Fatura',
     documentType: 'irsaliye',
     sourceSerial: 'NUR',
+    sourceNetsisCompany: 'NURAY24',
     targetCompany: 'ŞİRKET24',
+    targetNetsisCompany: 'SIRKET24',
     targetSerial: 'Kaynak irsaliye/fatura serisi',
     shipmentRule: 'Cari sevk var ise irsaliye aktarımı zorunlu, yok ise zorunlu değil.',
     taxRule: '1/4 siparişlerde kalem miktarının 1/4 adedi aktarılır ve ŞİRKET24 KDV %5 olur; TAM siparişlerde miktarın tamamı aktarılır ve ŞİRKET24 KDV %20 olur. NURAY KDV %20.',
@@ -151,7 +194,9 @@ const transferRules: NdiTransferRule[] = [
     title: 'WINDOFORM KAPI',
     documentType: 'irsaliye',
     sourceSerial: 'VIN',
+    sourceNetsisCompany: 'WIN24',
     targetCompany: 'ŞİRKET24',
+    targetNetsisCompany: 'SIRKET24',
     targetSerial: 'Kaynak irsaliye/fatura serisi',
     shipmentRule: 'Cari sevk var ise irsaliye zorunlu; özel kod K ise irsaliye zorunlu.',
     taxRule: 'Özel Kod K ihraç kayıtlı KDV 0, Özel Kod N normal satış KDV %20.',
@@ -165,7 +210,9 @@ const transferRules: NdiTransferRule[] = [
     title: 'DIŞ TİCARET',
     documentType: 'irsaliye',
     sourceSerial: 'DIS',
+    sourceNetsisCompany: 'DISTIC24',
     targetCompany: 'ŞİRKET24',
+    targetNetsisCompany: 'SIRKET24',
     targetSerial: 'EIR',
     shipmentRule: 'Sevk durumuna bakılmadan aktarım yapılabilir.',
     taxRule: 'KDV 0; gün döviz kuru alınır.',
@@ -179,7 +226,9 @@ const transferRules: NdiTransferRule[] = [
     title: 'ŞİRKET24 Fatura',
     documentType: 'fatura',
     sourceSerial: 'SIP',
+    sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'ŞİRKET24',
+    targetNetsisCompany: 'SIRKET24',
     targetSerial: 'SIP2026',
     shipmentRule: 'Sevk var/yok fark etmez.',
     taxRule: 'KDV 0; resmi evrak oluşmayacak.',
@@ -191,10 +240,10 @@ const transferRules: NdiTransferRule[] = [
 ];
 
 const SERIES_CONFIG: Record<NdiBusinessSeries, NdiSeriesConfig> = {
-  NUR: { label: 'NURAY', eFatura: 'NRY', eArsiv: 'NEA' },
-  VIN: { label: 'WINDOFORM KAPI', eFatura: 'VDF', eArsiv: 'EAR' },
-  DIS: { label: 'DIŞ TİCARET', eFatura: 'EIR', eArsiv: 'EIR' },
-  SIP: { label: 'ŞİRKET24', fatura: 'SIP2026' },
+  NUR: { label: 'NURAY', netsisCompany: 'NURAY24', eFatura: 'NRY', eArsiv: 'NEA' },
+  VIN: { label: 'WINDOFORM KAPI', netsisCompany: 'WIN24', eFatura: 'VDF', eArsiv: 'EAR' },
+  DIS: { label: 'DIŞ TİCARET', netsisCompany: 'DISTIC24', eFatura: 'EIR', eArsiv: 'EIR' },
+  SIP: { label: 'ŞİRKET24', netsisCompany: 'SIRKET24', fatura: 'SIP2026' },
 };
 
 const COMPANY_WAREHOUSE_CONFIG: Record<NdiTransferRule['id'], NdiWarehouseConfig> = {
@@ -522,6 +571,8 @@ function buildRuleOutcome(order: NdiOrder, lines: NdiOrderLine[]): NdiRuleOutcom
     action,
     actionLabel: getActionLabel(action),
     companyLabel: SERIES_CONFIG[series].label,
+    sourceNetsisCompany: rule.sourceNetsisCompany,
+    targetNetsisCompany: rule.targetNetsisCompany,
     targetSeries: targetSeries.value,
     seriesNote: targetSeries.note,
     targetWarehouse: warehouse.value,
@@ -594,6 +645,9 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const [search, setSearch] = useState('');
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(() => new Set());
   const [selectedLineIds, setSelectedLineIds] = useState<Set<string>>(() => new Set());
+  const [prepareAttempted, setPrepareAttempted] = useState(false);
+  const [preparedTransfer, setPreparedTransfer] = useState<NdiPreparedTransfer | null>(null);
+  const [successDialogTransfer, setSuccessDialogTransfer] = useState<NdiPreparedTransfer | null>(null);
   const initializedSelectionRef = useRef(false);
 
   const dispatchesQuery = useQuery({
@@ -706,8 +760,12 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
   const canPrepareSelectedLines = selectedLines.length > 0 && !batchAction.mixed && blockedRuleCount === 0;
+  const prepareDisabled = selectedLines.length === 0 || linesQuery.isFetching;
 
   const toggleOrder = (order: NdiOrder) => {
+    setPreparedTransfer(null);
+    setSuccessDialogTransfer(null);
+    setPrepareAttempted(false);
     setSelectedOrderIds((current) => {
       const currentOrders = orders.filter((item) => current.has(item.id));
       const currentPrefix = currentOrders[0] ? getOrderPrefix(currentOrders[0]) : getOrderPrefix(order);
@@ -725,6 +783,9 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   };
 
   const toggleLine = (lineId: string) => {
+    setPreparedTransfer(null);
+    setSuccessDialogTransfer(null);
+    setPrepareAttempted(false);
     setSelectedLineIds((current) => {
       const next = new Set(current);
       if (next.has(lineId)) {
@@ -737,6 +798,9 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   };
 
   const toggleAllLines = () => {
+    setPreparedTransfer(null);
+    setSuccessDialogTransfer(null);
+    setPrepareAttempted(false);
     setSelectedLineIds((current) => {
       const allLineIds = selectedOrderLines.map((line) => line.id);
       const selectedInGroupCount = allLineIds.filter((lineId) => current.has(lineId)).length;
@@ -754,7 +818,73 @@ export function NdiOrderTransferDemoPage(): ReactElement {
     initializedSelectionRef.current = false;
     setSelectedOrderIds(new Set());
     setSelectedLineIds(new Set());
+    setPrepareAttempted(false);
+    setPreparedTransfer(null);
+    setSuccessDialogTransfer(null);
     void dispatchesQuery.refetch();
+  };
+
+  const prepareSelectedLines = () => {
+    setPrepareAttempted(true);
+    setPreparedTransfer(null);
+
+    if (!canPrepareSelectedLines) {
+      return;
+    }
+
+    const outcomeByOrderNo = new Map(ruleOutcomes.map((outcome) => [outcome.orderNo, outcome]));
+
+    const preparedLines = selectedLines.map((line) => {
+      const outcome = outcomeByOrderNo.get(line.orderNo);
+      const lineRatio = outcome && outcome.requestedQuantity > 0
+        ? outcome.transferQuantity / outcome.requestedQuantity
+        : 1;
+
+      return {
+        id: line.id,
+        orderNo: line.orderNo,
+        stockCode: line.stockCode,
+        stockName: line.stockName,
+        sourceQuantity: line.remainingQuantity,
+        transferQuantity: Math.max(0, line.remainingQuantity * lineRatio),
+        unit: line.unit,
+        sourceWarehouse: line.warehouse,
+        targetWarehouse: outcome?.targetWarehouse ?? line.warehouse,
+        targetVat: outcome?.targetVat ?? null,
+      };
+    });
+
+    const createdDocuments: NdiPreparedDocument[] = selectedOrders.map((order) => {
+      const outcome = outcomeByOrderNo.get(order.orderNo);
+      const targetSeries = outcome?.targetSeries ?? getBusinessSeries(order);
+      const documentType: NdiPreparedDocument['documentType'] = outcome?.action === 'FATURALASTIR' ? 'Fatura' : 'İrsaliye';
+
+      return {
+        sourceDocumentNo: order.orderNo,
+        targetDocumentNo: `${targetSeries}-${order.orderNo}`,
+        sourceNetsisCompany: outcome?.sourceNetsisCompany ?? SERIES_CONFIG[getBusinessSeries(order)].netsisCompany,
+        targetNetsisCompany: outcome?.targetNetsisCompany ?? 'SIRKET24',
+        targetSeries,
+        documentType,
+        lineCount: preparedLines.filter((line) => line.orderNo === order.orderNo).length,
+      };
+    });
+
+    const transfer = {
+      actionLabel: batchAction.action ? getActionLabel(batchAction.action) : 'Hazırla',
+      sourceNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.sourceNetsisCompany))),
+      targetNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))),
+      documentNos: selectedOrders.map((order) => order.orderNo),
+      createdDocuments,
+      lineCount: preparedLines.length,
+      totalSourceQuantity: preparedLines.reduce((total, line) => total + line.sourceQuantity, 0),
+      totalTransferQuantity: preparedLines.reduce((total, line) => total + line.transferQuantity, 0),
+      lines: preparedLines,
+      warnings: ruleOutcomes.flatMap((outcome) => outcome.warnings),
+    };
+
+    setPreparedTransfer(transfer);
+    setSuccessDialogTransfer(transfer);
   };
 
   return (
@@ -926,6 +1056,15 @@ export function NdiOrderTransferDemoPage(): ReactElement {
               <InfoChip icon={<Warehouse size={15} />} label="Depolar" value={selectedWarehouses.join(', ') || '-'} />
               <InfoChip icon={<Truck size={15} />} label="Sevkiyat" value={selectedShipmentTypes.join(', ') || '-'} />
               <InfoChip icon={<FileText size={15} />} label="Sorumlu" value={selectedRepresentatives.join(', ') || '-'} />
+              <InfoChip
+                icon={<PackageCheck size={15} />}
+                label="Netsis Şirketi"
+                value={
+                  ruleOutcomes.length > 0
+                    ? `${Array.from(new Set(ruleOutcomes.map((outcome) => outcome.sourceNetsisCompany))).join(', ')} -> ${Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))).join(', ')}`
+                    : '-'
+                }
+              />
             </div>
 
             <div className="mt-3 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] p-3">
@@ -951,6 +1090,9 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                   <RuleBadge tone="success" label="Ek alan aktarılır" />
                 </div>
               </div>
+              <p className="mt-2 rounded-md border border-[#d7e1ef] bg-[#f8fbff] px-3 py-2 text-xs font-bold text-[#536780]">
+                NURAY24, WIN24, DISTIC24 ve SIRKET24 değerleri seri değildir; Netsis kayıt/read işlemlerinde kullanılacak şirket/database bilgisidir.
+              </p>
               <SeriesGuide />
               <div className="mt-3 grid gap-2 xl:grid-cols-2">
                 {ruleOutcomes.length === 0 ? (
@@ -964,6 +1106,27 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                   <RuleCard key={rule.id} rule={rule} />
                 ))}
               </div>
+              {prepareAttempted && !canPrepareSelectedLines ? (
+                <div className="mt-3 rounded-lg border border-[#fecaca] bg-[#fff8f8] p-3">
+                  <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
+                    <AlertCircle size={16} /> Seçili kalemler henüz hazırlanamaz
+                  </div>
+                  <div className="mt-2 space-y-1">
+                    {selectedLines.length === 0 ? (
+                      <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">En az bir satır seçilmelidir.</div>
+                    ) : null}
+                    {batchAction.mixed ? (
+                      <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">İrsaliye ve fatura senaryosu aynı hazırlıkta karıştırılamaz.</div>
+                    ) : null}
+                    {ruleOutcomes.flatMap((outcome) => outcome.blocks.map((block) => (
+                      <div key={`${outcome.orderNo}-${block}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
+                        {outcome.orderNo}: {block}
+                      </div>
+                    )))}
+                  </div>
+                </div>
+              ) : null}
+              {preparedTransfer ? <PreparedTransferPanel transfer={preparedTransfer} /> : null}
             </div>
           </div>
 
@@ -1079,14 +1242,18 @@ export function NdiOrderTransferDemoPage(): ReactElement {
             </div>
             <button
               type="button"
-              disabled={!canPrepareSelectedLines}
+              onClick={prepareSelectedLines}
+              disabled={prepareDisabled}
               className="rounded-lg bg-[image:var(--crm-brand-gradient)] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {canPrepareSelectedLines ? 'Seçili Kalemleri Hazırla' : 'Kuralları Kontrol Et'}
+              {selectedLines.length === 0 ? 'Kalem Seçin' : 'Seçili Kalemleri Hazırla'}
             </button>
           </div>
         </section>
       </main>
+      {successDialogTransfer ? (
+        <TransferSuccessDialog transfer={successDialogTransfer} onClose={() => setSuccessDialogTransfer(null)} />
+      ) : null}
     </div>
   );
 }
@@ -1097,6 +1264,147 @@ function StatePanel({ icon, title, description }: { icon: ReactElement; title: s
       <span className="mb-2 text-primary">{icon}</span>
       <div className="text-sm font-black text-foreground">{title}</div>
       {description ? <div className="mt-1 text-xs font-semibold text-[var(--crm-app-text-muted)]">{description}</div> : null}
+    </div>
+  );
+}
+
+function PreparedTransferPanel({ transfer }: { transfer: NdiPreparedTransfer }): ReactElement {
+  return (
+    <div className="mt-3 rounded-lg border border-[#bbf7d0] bg-[#f7fffb] p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 text-sm font-black text-[#047857]">
+            <CheckCircle2 size={16} /> Seçili kalemler hazırlandı
+          </div>
+          <p className="mt-1 text-xs font-bold text-[#49627e]">
+            {transfer.actionLabel} önizlemesi oluşturuldu; entegrasyon adımında bu özet payload olarak gönderilebilir.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <RuleBadge tone="success" label={`${transfer.lineCount} kalem`} />
+          <RuleBadge tone="info" label={`${transfer.sourceNetsisCompanies.join(', ')} -> ${transfer.targetNetsisCompanies.join(', ')}`} />
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-2 md:grid-cols-4">
+        <RuleMini label="Belgeler" value={transfer.documentNos.join(', ')} />
+        <RuleMini label="Kaynak Netsis" value={transfer.sourceNetsisCompanies.join(', ')} />
+        <RuleMini label="Hedef Netsis" value={transfer.targetNetsisCompanies.join(', ')} />
+        <RuleMini label="Aktarılacak Miktar" value={numberFormatter.format(transfer.totalTransferQuantity)} />
+      </div>
+
+      <div className="mt-3 grid gap-2 md:grid-cols-2">
+        {transfer.createdDocuments.map((document) => (
+          <div key={`${document.sourceDocumentNo}-${document.targetDocumentNo}`} className="rounded-md border border-[#bbf7d0] bg-white px-3 py-2">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="text-xs font-black text-[#047857]">{document.documentType}</div>
+              <div className="rounded-full bg-[#ecfdf5] px-2 py-0.5 text-[10px] font-black text-[#047857]">
+                {document.lineCount} kalem
+              </div>
+            </div>
+            <div className="mt-1 text-sm font-black text-[#172033]">{document.targetDocumentNo}</div>
+            <div className="mt-1 text-[11px] font-bold text-[#536780]">
+              {document.sourceNetsisCompany} / {document.sourceDocumentNo} {'->'} {document.targetNetsisCompany} / {document.targetSeries}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {transfer.warnings.length > 0 ? <RuleTextList title="Hazırlık Uyarıları" values={transfer.warnings} tone="warn" /> : null}
+
+      <div className="mt-3 max-h-56 overflow-auto rounded-md border border-[#d7e1ef] bg-white">
+        <table className="w-full min-w-[880px] text-xs">
+          <thead className="bg-[#edf3fb] text-left font-black uppercase tracking-[0.08em] text-[#536780]">
+            <tr>
+              <th className="px-3 py-2">İrsaliye</th>
+              <th className="px-3 py-2">Stok</th>
+              <th className="px-3 py-2 text-right">Kaynak</th>
+              <th className="px-3 py-2 text-right">Aktarım</th>
+              <th className="px-3 py-2">Kaynak Depo</th>
+              <th className="px-3 py-2">Hedef Depo</th>
+              <th className="px-3 py-2">KDV</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transfer.lines.map((line) => (
+              <tr key={line.id} className="border-t border-[#e4ebf4]">
+                <td className="px-3 py-2 font-black text-[#172033]">{line.orderNo}</td>
+                <td className="px-3 py-2">
+                  <div className="font-black text-[#e11d73]">{line.stockCode}</div>
+                  <div className="line-clamp-1 font-bold text-[#42536b]">{line.stockName}</div>
+                </td>
+                <td className="px-3 py-2 text-right font-black">
+                  {numberFormatter.format(line.sourceQuantity)} {line.unit}
+                </td>
+                <td className="px-3 py-2 text-right font-black text-[#047857]">
+                  {numberFormatter.format(line.transferQuantity)} {line.unit}
+                </td>
+                <td className="px-3 py-2 font-bold text-[#42536b]">{line.sourceWarehouse}</td>
+                <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetWarehouse}</td>
+                <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetVat ?? '-'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function TransferSuccessDialog({ transfer, onClose }: { transfer: NdiPreparedTransfer; onClose: () => void }): ReactElement {
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#0b1220]/60 px-4 py-6">
+      <div className="w-full max-w-3xl rounded-2xl border border-[#d7e1ef] bg-white shadow-2xl">
+        <div className="border-b border-[#d7e1ef] p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#dcfce7] text-[#047857]">
+              <CheckCircle2 size={22} />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-[#172033]">Başarılı atılan kayıtlar</h3>
+              <p className="mt-1 text-sm font-semibold text-[#5c6f87]">
+                Seçili kalemler Netsis aktarım kuralına göre hazırlandı. Kullanıcı bu kayıtları kontrol edip Tamam ile kapatır.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-h-[55vh] overflow-auto p-5">
+          <div className="grid gap-3 md:grid-cols-2">
+            {transfer.createdDocuments.map((document) => (
+              <div key={`${document.sourceDocumentNo}-${document.targetDocumentNo}`} className="rounded-xl border border-[#bbf7d0] bg-[#f7fffb] p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="rounded-full bg-[#dcfce7] px-2 py-1 text-xs font-black text-[#047857]">
+                    {document.documentType}
+                  </span>
+                  <span className="text-xs font-black text-[#536780]">{document.lineCount} kalem</span>
+                </div>
+                <div className="mt-3 text-sm font-black uppercase tracking-[0.08em] text-[#536780]">Netsis kayıt no</div>
+                <div className="mt-1 break-all text-lg font-black text-[#172033]">{document.targetDocumentNo}</div>
+                <div className="mt-3 grid gap-2 text-xs font-bold text-[#536780]">
+                  <div className="rounded-md bg-white px-3 py-2">
+                    Kaynak: {document.sourceNetsisCompany} / {document.sourceDocumentNo}
+                  </div>
+                  <div className="rounded-md bg-white px-3 py-2">
+                    Hedef: {document.targetNetsisCompany} / Seri {document.targetSeries}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          {transfer.warnings.length > 0 ? <RuleTextList title="Aktarım Uyarıları" values={transfer.warnings} tone="warn" /> : null}
+        </div>
+
+        <div className="flex justify-end border-t border-[#d7e1ef] bg-[#f8fbff] p-4">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg bg-[#12325f] px-6 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#1f5eff]"
+          >
+            Tamam
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -1115,10 +1423,10 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
 
 function SeriesGuide(): ReactElement {
   const rows = [
-    { title: 'NURAY (NUR)', items: ['İrsaliye -> kaynak seri', 'e-Fatura -> NRY', 'e-Arşiv -> NEA', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
-    { title: 'WINDOFORM (VIN)', items: ['İrsaliye -> kaynak seri', 'e-Fatura -> VDF', 'e-Arşiv -> EAR', 'K -> KDV 0'] },
-    { title: 'DIŞ TİCARET (DIS)', items: ['Fatura/İrsaliye -> EIR', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
-    { title: 'ŞİRKET24 (SIP)', items: ['Fatura -> SIP2026', 'KDV -> 0', 'Resmi evrak yok'] },
+    { title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> SIRKET24', 'İrsaliye -> kaynak seri', 'e-Fatura -> NRY', 'e-Arşiv -> NEA', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
+    { title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> SIRKET24', 'İrsaliye -> kaynak seri', 'e-Fatura -> VDF', 'e-Arşiv -> EAR', 'K -> KDV 0'] },
+    { title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura/İrsaliye -> EIR', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
+    { title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura -> SIP2026', 'KDV -> 0', 'Resmi evrak yok'] },
   ];
 
   return (
@@ -1158,7 +1466,7 @@ function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement
         <div>
           <div className="font-black text-foreground">{outcome.orderNo}</div>
           <div className="text-xs font-bold text-[var(--crm-app-text-muted)]">
-            {outcome.companyLabel} · {outcome.actionLabel} · kaynak prefix {outcome.sourcePrefix}
+            {outcome.companyLabel} · Netsis {outcome.sourceNetsisCompany} {'->'} {outcome.targetNetsisCompany} · {outcome.actionLabel} · kaynak prefix {outcome.sourcePrefix}
           </div>
         </div>
         <div className="flex flex-wrap gap-1">
@@ -1235,6 +1543,7 @@ function RuleCard({ rule }: { rule: NdiTransferRule }): ReactElement {
       </div>
       <div className="mt-3 grid gap-2 text-xs font-bold text-[var(--crm-app-text-muted)] sm:grid-cols-2">
         <RuleLine label="Kaynak Seri" value={rule.sourceSerial} />
+        <RuleLine label="Netsis Şirketi" value={`${rule.sourceNetsisCompany} -> ${rule.targetNetsisCompany}`} />
         <RuleLine label="Hedef" value={`${rule.targetCompany} / ${rule.targetSerial}`} />
         <RuleLine label="Sevk" value={rule.shipmentRule} />
         <RuleLine label="KDV" value={rule.taxRule} />
