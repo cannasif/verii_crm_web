@@ -646,9 +646,12 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(() => new Set());
   const [selectedLineIds, setSelectedLineIds] = useState<Set<string>>(() => new Set());
   const [prepareAttempted, setPrepareAttempted] = useState(false);
+  const [isPreparingTransfer, setIsPreparingTransfer] = useState(false);
+  const [prepareError, setPrepareError] = useState<string | null>(null);
   const [preparedTransfer, setPreparedTransfer] = useState<NdiPreparedTransfer | null>(null);
   const [successDialogTransfer, setSuccessDialogTransfer] = useState<NdiPreparedTransfer | null>(null);
   const initializedSelectionRef = useRef(false);
+  const preparedTransferRef = useRef<HTMLDivElement | null>(null);
 
   const dispatchesQuery = useQuery({
     queryKey: ['ndi', 'customer-dispatches'],
@@ -760,12 +763,13 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
   const canPrepareSelectedLines = selectedLines.length > 0 && !batchAction.mixed && blockedRuleCount === 0;
-  const prepareDisabled = selectedLines.length === 0 || linesQuery.isFetching;
+  const prepareDisabled = selectedLines.length === 0 || linesQuery.isFetching || isPreparingTransfer;
 
   const toggleOrder = (order: NdiOrder) => {
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
     setPrepareAttempted(false);
+    setPrepareError(null);
     setSelectedOrderIds((current) => {
       const currentOrders = orders.filter((item) => current.has(item.id));
       const currentPrefix = currentOrders[0] ? getOrderPrefix(currentOrders[0]) : getOrderPrefix(order);
@@ -786,6 +790,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
     setPrepareAttempted(false);
+    setPrepareError(null);
     setSelectedLineIds((current) => {
       const next = new Set(current);
       if (next.has(lineId)) {
@@ -801,6 +806,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
     setPrepareAttempted(false);
+    setPrepareError(null);
     setSelectedLineIds((current) => {
       const allLineIds = selectedOrderLines.map((line) => line.id);
       const selectedInGroupCount = allLineIds.filter((lineId) => current.has(lineId)).length;
@@ -819,72 +825,92 @@ export function NdiOrderTransferDemoPage(): ReactElement {
     setSelectedOrderIds(new Set());
     setSelectedLineIds(new Set());
     setPrepareAttempted(false);
+    setPrepareError(null);
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
     void dispatchesQuery.refetch();
   };
 
-  const prepareSelectedLines = () => {
+  const prepareSelectedLines = async () => {
     setPrepareAttempted(true);
+    setPrepareError(null);
     setPreparedTransfer(null);
 
     if (!canPrepareSelectedLines) {
       return;
     }
 
-    const outcomeByOrderNo = new Map(ruleOutcomes.map((outcome) => [outcome.orderNo, outcome]));
+    setIsPreparingTransfer(true);
 
-    const preparedLines = selectedLines.map((line) => {
-      const outcome = outcomeByOrderNo.get(line.orderNo);
-      const lineRatio = outcome && outcome.requestedQuantity > 0
-        ? outcome.transferQuantity / outcome.requestedQuantity
-        : 1;
+    try {
+      await ndiApi.getNdiTransferRules();
 
-      return {
-        id: line.id,
-        orderNo: line.orderNo,
-        stockCode: line.stockCode,
-        stockName: line.stockName,
-        sourceQuantity: line.remainingQuantity,
-        transferQuantity: Math.max(0, line.remainingQuantity * lineRatio),
-        unit: line.unit,
-        sourceWarehouse: line.warehouse,
-        targetWarehouse: outcome?.targetWarehouse ?? line.warehouse,
-        targetVat: outcome?.targetVat ?? null,
+      const outcomeByOrderNo = new Map(ruleOutcomes.map((outcome) => [outcome.orderNo, outcome]));
+
+      const preparedLines = selectedLines.map((line) => {
+        const outcome = outcomeByOrderNo.get(line.orderNo);
+        const lineRatio = outcome && outcome.requestedQuantity > 0
+          ? outcome.transferQuantity / outcome.requestedQuantity
+          : 1;
+
+        return {
+          id: line.id,
+          orderNo: line.orderNo,
+          stockCode: line.stockCode,
+          stockName: line.stockName,
+          sourceQuantity: line.remainingQuantity,
+          transferQuantity: Math.max(0, line.remainingQuantity * lineRatio),
+          unit: line.unit,
+          sourceWarehouse: line.warehouse,
+          targetWarehouse: outcome?.targetWarehouse ?? line.warehouse,
+          targetVat: outcome?.targetVat ?? null,
+        };
+      });
+
+      const createdDocuments: NdiPreparedDocument[] = selectedOrders.map((order) => {
+        const outcome = outcomeByOrderNo.get(order.orderNo);
+        const targetSeries = outcome?.targetSeries ?? getBusinessSeries(order);
+        const documentType: NdiPreparedDocument['documentType'] = outcome?.action === 'FATURALASTIR' ? 'Fatura' : 'İrsaliye';
+
+        return {
+          sourceDocumentNo: order.orderNo,
+          targetDocumentNo: `${targetSeries}-${order.orderNo}`,
+          sourceNetsisCompany: outcome?.sourceNetsisCompany ?? SERIES_CONFIG[getBusinessSeries(order)].netsisCompany,
+          targetNetsisCompany: outcome?.targetNetsisCompany ?? 'SIRKET24',
+          targetSeries,
+          documentType,
+          lineCount: preparedLines.filter((line) => line.orderNo === order.orderNo).length,
+        };
+      });
+
+      const transfer = {
+        actionLabel: batchAction.action ? getActionLabel(batchAction.action) : 'Hazırla',
+        sourceNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.sourceNetsisCompany))),
+        targetNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))),
+        documentNos: selectedOrders.map((order) => order.orderNo),
+        createdDocuments,
+        lineCount: preparedLines.length,
+        totalSourceQuantity: preparedLines.reduce((total, line) => total + line.sourceQuantity, 0),
+        totalTransferQuantity: preparedLines.reduce((total, line) => total + line.transferQuantity, 0),
+        lines: preparedLines,
+        warnings: ruleOutcomes.flatMap((outcome) => outcome.warnings),
       };
-    });
 
-    const createdDocuments: NdiPreparedDocument[] = selectedOrders.map((order) => {
-      const outcome = outcomeByOrderNo.get(order.orderNo);
-      const targetSeries = outcome?.targetSeries ?? getBusinessSeries(order);
-      const documentType: NdiPreparedDocument['documentType'] = outcome?.action === 'FATURALASTIR' ? 'Fatura' : 'İrsaliye';
+      setPreparedTransfer(transfer);
+      setSuccessDialogTransfer(transfer);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'NDI aktarım kuralları API yanıtı alınamadı.';
+      setPrepareError(message);
+    } finally {
+      setIsPreparingTransfer(false);
+    }
+  };
 
-      return {
-        sourceDocumentNo: order.orderNo,
-        targetDocumentNo: `${targetSeries}-${order.orderNo}`,
-        sourceNetsisCompany: outcome?.sourceNetsisCompany ?? SERIES_CONFIG[getBusinessSeries(order)].netsisCompany,
-        targetNetsisCompany: outcome?.targetNetsisCompany ?? 'SIRKET24',
-        targetSeries,
-        documentType,
-        lineCount: preparedLines.filter((line) => line.orderNo === order.orderNo).length,
-      };
-    });
-
-    const transfer = {
-      actionLabel: batchAction.action ? getActionLabel(batchAction.action) : 'Hazırla',
-      sourceNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.sourceNetsisCompany))),
-      targetNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))),
-      documentNos: selectedOrders.map((order) => order.orderNo),
-      createdDocuments,
-      lineCount: preparedLines.length,
-      totalSourceQuantity: preparedLines.reduce((total, line) => total + line.sourceQuantity, 0),
-      totalTransferQuantity: preparedLines.reduce((total, line) => total + line.transferQuantity, 0),
-      lines: preparedLines,
-      warnings: ruleOutcomes.flatMap((outcome) => outcome.warnings),
-    };
-
-    setPreparedTransfer(transfer);
-    setSuccessDialogTransfer(transfer);
+  const closePreparedTransferDialog = () => {
+    setSuccessDialogTransfer(null);
+    window.setTimeout(() => {
+      preparedTransferRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 80);
   };
 
   return (
@@ -1126,7 +1152,29 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                   </div>
                 </div>
               ) : null}
-              {preparedTransfer ? <PreparedTransferPanel transfer={preparedTransfer} /> : null}
+              {isPreparingTransfer ? (
+                <div className="mt-3 rounded-lg border border-[#bfdbfe] bg-[#eff6ff] p-3">
+                  <div className="flex items-center gap-2 text-sm font-black text-[#1d4ed8]">
+                    <Loader2 size={16} className="animate-spin" /> API cevabı bekleniyor
+                  </div>
+                  <p className="mt-1 text-xs font-bold text-[#1e3a8a]">
+                    NDI aktarım kuralları API'den kontrol ediliyor. Cevap gelmeden önizleme ve başarı penceresi açılmaz.
+                  </p>
+                </div>
+              ) : null}
+              {prepareError ? (
+                <div className="mt-3 rounded-lg border border-[#fecaca] bg-[#fff8f8] p-3">
+                  <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
+                    <AlertCircle size={16} /> API yanıtı alınamadı
+                  </div>
+                  <div className="mt-2 rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">{prepareError}</div>
+                </div>
+              ) : null}
+              {preparedTransfer ? (
+                <div ref={preparedTransferRef}>
+                  <PreparedTransferPanel transfer={preparedTransfer} />
+                </div>
+              ) : null}
             </div>
           </div>
 
@@ -1246,13 +1294,21 @@ export function NdiOrderTransferDemoPage(): ReactElement {
               disabled={prepareDisabled}
               className="rounded-lg bg-[image:var(--crm-brand-gradient)] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {selectedLines.length === 0 ? 'Kalem Seçin' : 'Seçili Kalemleri Hazırla'}
+              {isPreparingTransfer ? (
+                <span className="inline-flex items-center gap-2">
+                  <Loader2 size={16} className="animate-spin" /> API cevabı bekleniyor...
+                </span>
+              ) : selectedLines.length === 0 ? (
+                'Kalem Seçin'
+              ) : (
+                'Seçili Kalemleri Hazırla'
+              )}
             </button>
           </div>
         </section>
       </main>
       {successDialogTransfer ? (
-        <TransferSuccessDialog transfer={successDialogTransfer} onClose={() => setSuccessDialogTransfer(null)} />
+        <TransferSuccessDialog transfer={successDialogTransfer} onClose={closePreparedTransferDialog} />
       ) : null}
     </div>
   );
@@ -1274,10 +1330,10 @@ function PreparedTransferPanel({ transfer }: { transfer: NdiPreparedTransfer }):
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 text-sm font-black text-[#047857]">
-            <CheckCircle2 size={16} /> Seçili kalemler hazırlandı
+            <CheckCircle2 size={16} /> Aktarım önizlemesi hazırlandı
           </div>
           <p className="mt-1 text-xs font-bold text-[#49627e]">
-            {transfer.actionLabel} önizlemesi oluşturuldu; entegrasyon adımında bu özet payload olarak gönderilebilir.
+            {transfer.actionLabel} kural çıktısı oluşturuldu. Tamam dediğinizde popup kapanır; hazırlanan kayıtlar bu panelde kalır.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -1361,15 +1417,19 @@ function TransferSuccessDialog({ transfer, onClose }: { transfer: NdiPreparedTra
               <CheckCircle2 size={22} />
             </div>
             <div>
-              <h3 className="text-xl font-black text-[#172033]">Başarılı atılan kayıtlar</h3>
+              <h3 className="text-xl font-black text-[#172033]">Aktarım önizlemesi hazırlandı</h3>
               <p className="mt-1 text-sm font-semibold text-[#5c6f87]">
-                Seçili kalemler Netsis aktarım kuralına göre hazırlandı. Kullanıcı bu kayıtları kontrol edip Tamam ile kapatır.
+                Seçili kalemler Netsis kuralına göre hazırlandı. Tamam dediğinizde bu pencere kapanır ve aynı özet alttaki panelde kalır.
               </p>
             </div>
           </div>
         </div>
 
         <div className="max-h-[55vh] overflow-auto p-5">
+          <div className="mb-4 rounded-xl border border-[#bfdbfe] bg-[#eff6ff] px-4 py-3 text-sm font-bold text-[#1e3a8a]">
+            Bu adım kayıtları kontrol için hazırlar. Gerçek Netsis gönderimi bağlandığında dönen fatura/irsaliye numaraları burada
+            başarılı atılan kayıtlar olarak gösterilecektir.
+          </div>
           <div className="grid gap-3 md:grid-cols-2">
             {transfer.createdDocuments.map((document) => (
               <div key={`${document.sourceDocumentNo}-${document.targetDocumentNo}`} className="rounded-xl border border-[#bbf7d0] bg-[#f7fffb] p-4">
@@ -1379,7 +1439,7 @@ function TransferSuccessDialog({ transfer, onClose }: { transfer: NdiPreparedTra
                   </span>
                   <span className="text-xs font-black text-[#536780]">{document.lineCount} kalem</span>
                 </div>
-                <div className="mt-3 text-sm font-black uppercase tracking-[0.08em] text-[#536780]">Netsis kayıt no</div>
+                <div className="mt-3 text-sm font-black uppercase tracking-[0.08em] text-[#536780]">Oluşacak Netsis belge no</div>
                 <div className="mt-1 break-all text-lg font-black text-[#172033]">{document.targetDocumentNo}</div>
                 <div className="mt-3 grid gap-2 text-xs font-bold text-[#536780]">
                   <div className="rounded-md bg-white px-3 py-2">
@@ -1401,7 +1461,7 @@ function TransferSuccessDialog({ transfer, onClose }: { transfer: NdiPreparedTra
             onClick={onClose}
             className="rounded-lg bg-[#12325f] px-6 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#1f5eff]"
           >
-            Tamam
+            Tamam, özete dön
           </button>
         </div>
       </div>
