@@ -28,6 +28,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from '@/lib/utils';
+import {
+  CRM_DROPDOWN_MENU_ITEM_CLASS,
+  CRM_DROPDOWN_MENU_ITEM_ICON_CLASS,
+  CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS,
+} from '@/lib/menu-interactive-styles';
 
 export function DashboardPage(): ReactElement {
   const { t } = useTranslation('dashboard');
@@ -126,13 +132,13 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/customer-management')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
+                className={cn(CRM_DROPDOWN_MENU_ITEM_CLASS, 'mb-1')}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
+                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
                     <UserPlus size={16} />
                   </div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
                     {t('sidebar.customerManagement')}
                   </span>
                 </div>
@@ -146,13 +152,13 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/demands/create')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
+                className={cn(CRM_DROPDOWN_MENU_ITEM_CLASS, 'mb-1')}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
+                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
                     <PlusCircle size={16} />
                   </div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
                     {t('sidebar.demandCreateWizard')}
                   </span>
                 </div>
@@ -160,13 +166,13 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/quotations/create')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
+                className={cn(CRM_DROPDOWN_MENU_ITEM_CLASS, 'mb-1')}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
+                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
                     <FilePlus size={16} />
                   </div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
                     {t('sidebar.quotationCreateWizard')}
                   </span>
                 </div>
@@ -174,13 +180,13 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/orders/create')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 mb-1 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
+                className={cn(CRM_DROPDOWN_MENU_ITEM_CLASS, 'mb-1')}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
+                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
                     <ShoppingBag size={16} />
                   </div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
                     {t('sidebar.orderCreateWizard')}
                   </span>
                 </div>
@@ -188,13 +194,13 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/orders/erp')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
+                className={CRM_DROPDOWN_MENU_ITEM_CLASS}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
+                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
                     <Database size={16} />
                   </div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
                     {t('sidebar.erpOrderList')}
                   </span>
                 </div>
@@ -208,13 +214,13 @@ export function DashboardPage(): ReactElement {
 
               <DropdownMenuItem
                 onClick={() => navigate('/activity-management')}
-                className="group cursor-pointer rounded-lg py-2.5 px-2 transition-all duration-200 hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5 outline-none"
+                className={CRM_DROPDOWN_MENU_ITEM_CLASS}
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-1.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400 transition-colors">
+                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
                     <CalendarPlus size={16} />
                   </div>
-                  <span className="text-slate-700 dark:text-slate-200 font-medium text-sm">
+                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
                     {t('sidebar.activityManagement')}
                   </span>
                 </div>
