@@ -239,6 +239,8 @@ const numberFormatter = new Intl.NumberFormat('tr-TR', {
   maximumFractionDigits: 2,
 });
 
+const NDI_TABLE_CELL = 'border-r border-slate-300 px-4 py-3 dark:border-white/20 last:border-r-0';
+
 function getOrderPrefix(order: NdiOrder): string {
   return order.orderNo.slice(0, 3).toLocaleUpperCase('tr-TR');
 }
@@ -756,52 +758,63 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f7fb] text-[#172033]">
-      <div className="border-b border-[#d9e2ef] bg-[#0f1b2e] text-white shadow-sm">
-        <div className="mx-auto flex max-w-[1540px] flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <div>
-            <div className="text-xs font-black uppercase tracking-[0.28em] text-[#8fb4ff]">NDI</div>
-            <h1 className="mt-1 text-2xl font-black tracking-tight">İrsaliye Kalem Seçim Konsolu</h1>
-            <p className="mt-1 text-sm font-semibold text-[#b8c7dd]">
-              Netsis irsaliyeleri listelenir; ilk 3 karakteri aynı belgeler birlikte seçilir ve satırları aktarım için hazırlanır.
-            </p>
-          </div>
+    <div className="-mx-4 -mt-4 min-h-screen bg-[var(--crm-app-background)] text-foreground md:-mx-6 md:-mt-6">
+      <div className="px-4 pt-4 md:px-6">
+        <div className="relative overflow-hidden rounded-2xl border border-white/35 bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_14px_28px_-12px_var(--crm-brand-shadow)] dark:border-white/20 dark:bg-[#180F22] dark:[background-image:none] dark:shadow-[0_14px_28px_-12px_rgba(0,0,0,0.45)]">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-[image:var(--crm-brand-gradient)] opacity-0 dark:opacity-100" />
+          <div className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-0 dark:opacity-40" />
+          <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-primary/15 blur-[80px] opacity-0 dark:opacity-100" />
+          <div className="pointer-events-none absolute -bottom-16 -left-16 h-48 w-48 rounded-full bg-orange-500/10 blur-[80px] opacity-0 dark:opacity-100" />
 
-          <div className="grid grid-cols-3 gap-2 text-sm">
-            <MetricPill label="Grup" value={`${selectedPrefix} / ${selectedOrders.length} belge`} />
-            <MetricPill label="Seçili Kalem" value={String(selectedLines.length)} />
-            <MetricPill label="Miktar" value={numberFormatter.format(selectedQuantity)} />
+          <div className="relative z-10 flex w-full flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-6 md:py-5">
+            <div>
+              <div className="text-xs font-black uppercase tracking-[0.28em] text-white/75 dark:text-primary/80">NDI</div>
+              <h1 className="mt-1 text-2xl font-black tracking-tight dark:text-white">İrsaliye Kalem Seçim Konsolu</h1>
+              <p className="mt-1 text-sm font-semibold text-white/85 dark:text-slate-400">
+                Netsis irsaliyeleri listelenir; ilk 3 karakteri aynı belgeler birlikte seçilir ve satırları aktarım için hazırlanır.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 text-sm">
+              <MetricPill label="Grup" value={`${selectedPrefix} / ${selectedOrders.length} belge`} />
+              <MetricPill label="Seçili Kalem" value={String(selectedLines.length)} />
+              <MetricPill label="Miktar" value={numberFormatter.format(selectedQuantity)} />
+            </div>
           </div>
         </div>
       </div>
 
-      <main className="mx-auto grid max-w-[1540px] gap-4 px-6 py-5 xl:grid-cols-[430px_1fr]">
-        <section className="rounded-lg border border-[#d7e1ef] bg-white shadow-sm">
-          <div className="border-b border-[#d7e1ef] p-4">
+      <main className="grid w-full gap-4 px-4 pb-5 pt-4 md:px-6 xl:grid-cols-[430px_1fr]">
+        <section className="rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] shadow-sm">
+          <div className="px-4 pt-4 pb-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#eaf2ff] text-[#1f5eff]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <FileText size={20} />
               </div>
               <div>
                 <h2 className="text-base font-black">İrsaliyeler</h2>
-                <p className="text-xs font-semibold text-[#6b7b91]">Aynı prefix grubundan birden fazla irsaliye seçin.</p>
+                <p className="text-xs font-semibold text-[var(--crm-app-text-muted)]">Aynı prefix grubundan birden fazla irsaliye seçin.</p>
               </div>
             </div>
+          </div>
 
-            <div className="mt-4 flex gap-2">
-              <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-[#cdd8e7] bg-[#f8fbff] px-3 py-2 focus-within:border-[#1f5eff]">
-                <Search size={18} className="text-[#51709a]" />
+          <div className="border-b border-slate-300 dark:border-white/20" />
+
+          <div className="px-4 py-4">
+            <div className="flex gap-2">
+              <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] px-3 py-2 focus-within:border-primary">
+                <Search size={18} className="text-[var(--crm-app-text-muted)]" />
                 <input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  className="w-full bg-transparent text-sm font-bold outline-none placeholder:text-[#8fa1b8]"
+                  className="w-full bg-transparent text-sm font-bold outline-none placeholder:text-muted-foreground"
                   placeholder="İrsaliye, müşteri, plasiyer, teslim cari ara..."
                 />
               </label>
               <button
                 type="button"
                 onClick={resetSelection}
-                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-[#cdd8e7] bg-white text-[#21304a] shadow-sm transition hover:border-[#1f5eff]"
+                className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] text-foreground shadow-sm transition hover:border-primary"
                 aria-label="İrsaliyeleri yenile"
               >
                 {dispatchesQuery.isFetching ? <Loader2 size={17} className="animate-spin" /> : <RefreshCw size={17} />}
@@ -831,12 +844,12 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                     type="button"
                     onClick={() => toggleOrder(order)}
                     className={`grid w-full grid-cols-[30px_1fr_auto] gap-3 rounded-lg border p-3 text-left transition ${
-                      isSelected ? 'border-[#1f5eff] bg-[#eef5ff] shadow-sm' : 'border-[#dbe4f0] bg-white hover:border-[#8fb4ff]'
+                      isSelected ? 'border-primary bg-primary/10 shadow-sm' : 'border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] hover:border-primary/40'
                     }`}
                   >
                     <div
                       className={`mt-1 flex h-7 w-7 items-center justify-center rounded-md border ${
-                        isSelected ? 'border-[#1f5eff] bg-[#1f5eff] text-white' : 'border-[#cdd8e7] bg-white text-[#708198]'
+                        isSelected ? 'border-primary bg-primary text-white' : 'border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] text-[var(--crm-app-text-muted)]'
                       }`}
                     >
                       {isSelected ? <CheckCircle2 size={17} /> : <Circle size={17} />}
@@ -844,14 +857,14 @@ export function NdiOrderTransferDemoPage(): ReactElement {
 
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-black text-[#172033]">{order.orderNo}</span>
-                        <span className="rounded-full bg-[#f0f5fb] px-2 py-0.5 text-[10px] font-black text-[#49627e]">
+                        <span className="font-black text-foreground">{order.orderNo}</span>
+                        <span className="rounded-full bg-[var(--crm-app-panel-muted)] px-2 py-0.5 text-[10px] font-black text-muted-foreground">
                           {getOrderPrefix(order)}
                         </span>
                       </div>
-                      <div className="mt-1 line-clamp-2 text-sm font-bold text-[#42536b]">{order.customer}</div>
+                      <div className="mt-1 line-clamp-2 text-sm font-bold text-muted-foreground">{order.customer}</div>
 
-                      <div className="mt-3 grid grid-cols-2 gap-2 text-xs font-bold text-[#6b7b91]">
+                      <div className="mt-3 grid grid-cols-2 gap-2 text-xs font-bold text-[var(--crm-app-text-muted)]">
                         <span>{order.date}</span>
                         <span className="text-right">{order.customerCode}</span>
                         <span className="col-span-2 flex items-center gap-1">
@@ -862,16 +875,16 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                         </span>
                         <span className="text-right">{order.shipmentType}</span>
                       </div>
-                      <p className="mt-3 rounded-md bg-[#f8fbff] px-2 py-1 text-[11px] font-bold text-[#69809b]">
+                      <p className="mt-3 rounded-md bg-[var(--crm-app-panel-muted)] px-2 py-1 text-[11px] font-bold text-[var(--crm-app-text-muted)]">
                         İlk 3 karakteri aynı irsaliyeler birlikte seçilebilir.
                       </p>
                     </div>
 
                     <div className="flex flex-col items-end gap-2">
-                      <span className="rounded-full bg-[#eaf2ff] px-2 py-1 text-xs font-black text-[#1f5eff]">
+                      <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-black text-primary">
                         {statusLabel[order.status]}
                       </span>
-                      <span className="rounded-full bg-[#fff4d8] px-2 py-1 text-[10px] font-black text-[#9a6500]">
+                      <span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-black text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
                         {lineCount === undefined ? 'Satır' : `${lineCount} satır`}
                       </span>
                     </div>
@@ -882,17 +895,17 @@ export function NdiOrderTransferDemoPage(): ReactElement {
           </div>
         </section>
 
-        <section className="min-w-0 rounded-lg border border-[#d7e1ef] bg-white shadow-sm">
-          <div className="border-b border-[#d7e1ef] bg-[#f8fbff] p-4">
+        <section className="min-w-0 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] shadow-sm">
+          <div className="bg-[var(--crm-app-panel-muted)] px-4 pt-4 pb-3">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-[#1f5eff]">
+                <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-primary">
                   <PackageCheck size={16} /> Seçili İrsaliye Grubu
                 </div>
                 <h2 className="mt-1 text-xl font-black">
                   {selectedPrefix} grubu · {selectedOrders.length} irsaliye
                 </h2>
-                <p className="text-sm font-semibold text-[#6b7b91]">
+                <p className="text-sm font-semibold text-[var(--crm-app-text-muted)]">
                   {selectedOrders.length > 0 ? selectedOrders.map((order) => order.orderNo).join(', ') : 'Henüz irsaliye seçilmedi'}
                 </p>
               </div>
@@ -903,21 +916,25 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                 <SummaryTile label="İrsaliye" value={String(selectedOrders.length)} />
               </div>
             </div>
+          </div>
 
-            <div className="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+          <div className="border-b border-slate-300 dark:border-white/20" />
+
+          <div className="bg-[var(--crm-app-panel-muted)] p-4">
+            <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
               <InfoChip icon={<ShieldCheck size={15} />} label="Seçim Kuralı" value={`Prefix: ${selectedPrefix}`} />
               <InfoChip icon={<Warehouse size={15} />} label="Depolar" value={selectedWarehouses.join(', ') || '-'} />
               <InfoChip icon={<Truck size={15} />} label="Sevkiyat" value={selectedShipmentTypes.join(', ') || '-'} />
               <InfoChip icon={<FileText size={15} />} label="Sorumlu" value={selectedRepresentatives.join(', ') || '-'} />
             </div>
 
-            <div className="mt-3 rounded-lg border border-[#cdd8e7] bg-white p-3">
+            <div className="mt-3 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] p-3">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[#536780]">
+                  <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--crm-app-text-muted)]">
                     <SlidersHorizontal size={15} /> Uygulanan İşlem Kuralları
                   </div>
-                  <p className="mt-1 text-sm font-bold text-[#172033]">
+                  <p className="mt-1 text-sm font-bold text-foreground">
                     {selectedRuleTitles || 'Kural seçili değil'} · {batchAction.hint}
                   </p>
                 </div>
@@ -950,16 +967,18 @@ export function NdiOrderTransferDemoPage(): ReactElement {
             </div>
           </div>
 
+          <div className="border-b border-slate-300 dark:border-white/20" />
+
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1120px] border-collapse text-sm">
               <thead>
-                <tr className="border-b border-[#d7e1ef] bg-[#edf3fb] text-left text-xs font-black uppercase tracking-[0.08em] text-[#536780]">
-                  <th className="w-14 px-4 py-3">
+                <tr className="border-b border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-strong)] text-left text-xs font-black uppercase tracking-[0.08em] text-[var(--crm-app-text-muted)]">
+                  <th className={`w-14 ${NDI_TABLE_CELL}`}>
                     <button
                       type="button"
                       onClick={toggleAllLines}
                       disabled={selectedOrderLines.length === 0}
-                      className="flex h-8 w-8 items-center justify-center rounded-md border border-[#cdd8e7] bg-white text-[#1f5eff] disabled:opacity-50"
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] text-primary disabled:opacity-50"
                       aria-label="Tüm satırları seç"
                     >
                       {selectedOrderLines.length > 0 && selectedOrderLines.every((line) => selectedLineIds.has(line.id)) ? (
@@ -969,14 +988,14 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                       )}
                     </button>
                   </th>
-                  <th className="px-4 py-3">İrsaliye</th>
-                  <th className="px-4 py-3">Stok Kodu</th>
-                  <th className="px-4 py-3">Stok Adı</th>
-                  <th className="px-4 py-3 text-right">Miktar</th>
-                  <th className="px-4 py-3 text-right">Bakiye</th>
-                  <th className="px-4 py-3">Depo/Teslim</th>
-                  <th className="px-4 py-3">Durum</th>
-                  <th className="px-4 py-3">Cari Kodu</th>
+                  <th className={NDI_TABLE_CELL}>İrsaliye</th>
+                  <th className={NDI_TABLE_CELL}>Stok Kodu</th>
+                  <th className={NDI_TABLE_CELL}>Stok Adı</th>
+                  <th className={`${NDI_TABLE_CELL} text-right`}>Miktar</th>
+                  <th className={`${NDI_TABLE_CELL} text-right`}>Bakiye</th>
+                  <th className={NDI_TABLE_CELL}>Depo/Teslim</th>
+                  <th className={NDI_TABLE_CELL}>Durum</th>
+                  <th className={NDI_TABLE_CELL}>Cari Kodu</th>
                 </tr>
               </thead>
               <tbody>
@@ -1009,43 +1028,43 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                     return (
                       <tr
                         key={line.id}
-                        className={`border-b border-[#e4ebf4] transition ${isSelected ? 'bg-[#f0f6ff]' : 'bg-white hover:bg-[#fafcff]'}`}
+                        className={`border-b border-slate-300 dark:border-white/20 transition ${isSelected ? 'bg-primary/10' : 'bg-[var(--crm-app-panel)] hover:bg-[var(--crm-app-panel-muted)]'}`}
                       >
-                        <td className="px-4 py-3">
+                        <td className={NDI_TABLE_CELL}>
                           <button
                             type="button"
                             onClick={() => toggleLine(line.id)}
                             className={`flex h-8 w-8 items-center justify-center rounded-md border ${
-                              isSelected ? 'border-[#1f5eff] bg-[#1f5eff] text-white' : 'border-[#cdd8e7] bg-white text-[#5e718b]'
+                              isSelected ? 'border-primary bg-primary text-white' : 'border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] text-muted-foreground'
                             }`}
                             aria-label="Satırı seç"
                           >
                             {isSelected ? <CheckCircle2 size={18} /> : <Circle size={18} />}
                           </button>
                         </td>
-                        <td className="px-4 py-3">
-                          <div className="font-black text-[#172033]">{line.orderNo}</div>
-                          <div className="text-xs font-bold text-[#708198]">{line.shipmentType}</div>
+                        <td className={NDI_TABLE_CELL}>
+                          <div className="font-black text-foreground">{line.orderNo}</div>
+                          <div className="text-xs font-bold text-[var(--crm-app-text-muted)]">{line.shipmentType}</div>
                         </td>
-                        <td className="px-4 py-3 font-black text-[#e11d73]">{line.stockCode}</td>
-                        <td className="px-4 py-3 font-bold text-[#26344c]">{line.stockName}</td>
-                        <td className="px-4 py-3 text-right font-black">
+                        <td className={`${NDI_TABLE_CELL} font-black text-primary`}>{line.stockCode}</td>
+                        <td className={`${NDI_TABLE_CELL} font-bold text-foreground`}>{line.stockName}</td>
+                        <td className={`${NDI_TABLE_CELL} text-right font-black`}>
                           {numberFormatter.format(line.quantity)} {line.unit}
                         </td>
-                        <td className="px-4 py-3 text-right font-black text-[#0f9f6e]">
+                        <td className={`${NDI_TABLE_CELL} text-right font-black text-emerald-600 dark:text-emerald-400`}>
                           {numberFormatter.format(line.remainingQuantity)} {line.unit}
                         </td>
-                        <td className="px-4 py-3">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-[#eef3f8] px-2 py-1 text-xs font-black text-[#344765]">
+                        <td className={NDI_TABLE_CELL}>
+                          <span className="inline-flex items-center gap-1 rounded-full bg-[var(--crm-app-panel-strong)] px-2 py-1 text-xs font-black text-muted-foreground">
                             <Warehouse size={13} /> {line.warehouse}
                           </span>
                         </td>
-                        <td className="px-4 py-3">
-                          <span className="rounded-full bg-[#fff4d8] px-2 py-1 text-xs font-black text-[#9a6500]">
+                        <td className={NDI_TABLE_CELL}>
+                          <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-black text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
                             {lineStatusLabel[line.status]}
                           </span>
                         </td>
-                        <td className="px-4 py-3 font-semibold text-[#6b7b91]">{line.deliveryNote}</td>
+                        <td className={`${NDI_TABLE_CELL} font-semibold text-[var(--crm-app-text-muted)]`}>{line.deliveryNote}</td>
                       </tr>
                     );
                   })
@@ -1054,14 +1073,14 @@ export function NdiOrderTransferDemoPage(): ReactElement {
             </table>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#d7e1ef] bg-[#f8fbff] p-4">
-            <div className="text-sm font-bold text-[#52647d]">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] p-4">
+            <div className="text-sm font-bold text-[var(--crm-app-text-muted)]">
               Seçilen irsaliye satırları kural listesine göre seri, KDV, depo ve ek alan bilgileriyle aktarım önizlemesine hazırlanır.
             </div>
             <button
               type="button"
               disabled={!canPrepareSelectedLines}
-              className="rounded-lg bg-[#12325f] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#1f5eff] disabled:cursor-not-allowed disabled:bg-[#a9b6c8]"
+              className="rounded-lg bg-[image:var(--crm-brand-gradient)] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {canPrepareSelectedLines ? 'Seçili Kalemleri Hazırla' : 'Kuralları Kontrol Et'}
             </button>
@@ -1074,21 +1093,21 @@ export function NdiOrderTransferDemoPage(): ReactElement {
 
 function StatePanel({ icon, title, description }: { icon: ReactElement; title: string; description?: string }): ReactElement {
   return (
-    <div className="flex min-h-24 flex-col items-center justify-center rounded-lg border border-dashed border-[#cdd8e7] bg-[#f8fbff] p-4 text-center">
-      <span className="mb-2 text-[#1f5eff]">{icon}</span>
-      <div className="text-sm font-black text-[#172033]">{title}</div>
-      {description ? <div className="mt-1 text-xs font-semibold text-[#6b7b91]">{description}</div> : null}
+    <div className="flex min-h-24 flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] p-4 text-center">
+      <span className="mb-2 text-primary">{icon}</span>
+      <div className="text-sm font-black text-foreground">{title}</div>
+      {description ? <div className="mt-1 text-xs font-semibold text-[var(--crm-app-text-muted)]">{description}</div> : null}
     </div>
   );
 }
 
 function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; value: string }): ReactElement {
   return (
-    <div className="flex min-w-0 items-center gap-2 rounded-lg border border-[#d7e1ef] bg-white px-3 py-2">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#eaf2ff] text-[#1f5eff]">{icon}</span>
+    <div className="flex min-w-0 items-center gap-2 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] px-3 py-2">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">{icon}</span>
       <span className="min-w-0">
-        <span className="block text-[10px] font-black uppercase tracking-[0.14em] text-[#708198]">{label}</span>
-        <span className="block truncate text-sm font-black text-[#172033]">{value}</span>
+        <span className="block text-[10px] font-black uppercase tracking-[0.14em] text-[var(--crm-app-text-muted)]">{label}</span>
+        <span className="block truncate text-sm font-black text-foreground">{value}</span>
       </span>
     </div>
   );
@@ -1103,11 +1122,11 @@ function SeriesGuide(): ReactElement {
   ];
 
   return (
-    <div className="mt-3 rounded-lg border border-[#dbe7f5] bg-[#f8fbff] p-3">
+    <div className="mt-3 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <div className="text-xs font-black uppercase tracking-[0.16em] text-[#536780]">Seri ve Depo Rehberi</div>
-          <p className="mt-1 text-xs font-semibold text-[#6b7b91]">
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-[var(--crm-app-text-muted)]">Seri ve Depo Rehberi</div>
+          <p className="mt-1 text-xs font-semibold text-[var(--crm-app-text-muted)]">
             Kaynak seri, cari e-Belge tipi ve şirket kuralına göre ŞİRKET24 aktarım değeri belirlenir.
           </p>
         </div>
@@ -1116,11 +1135,11 @@ function SeriesGuide(): ReactElement {
 
       <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
         {rows.map((row) => (
-          <div key={row.title} className="rounded-md border border-[#d7e1ef] bg-white px-3 py-2">
-            <div className="text-xs font-black text-[#172033]">{row.title}</div>
+          <div key={row.title} className="rounded-md border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] px-3 py-2">
+            <div className="text-xs font-black text-foreground">{row.title}</div>
             <div className="mt-2 space-y-1">
               {row.items.map((item) => (
-                <div key={item} className="rounded bg-[#eef5ff] px-2 py-1 text-[11px] font-black text-[#31577e]">
+                <div key={item} className="rounded bg-primary/10 px-2 py-1 text-[11px] font-black text-muted-foreground">
                   {item}
                 </div>
               ))}
@@ -1134,11 +1153,11 @@ function SeriesGuide(): ReactElement {
 
 function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement {
   return (
-    <div className={`rounded-lg border p-3 ${outcome.canProceed ? 'border-[#bbf7d0] bg-[#f7fffb]' : 'border-[#fecaca] bg-[#fff8f8]'}`}>
+    <div className={`rounded-lg border p-3 ${outcome.canProceed ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-700/50 dark:bg-emerald-950/30' : 'border-red-300 bg-red-50 dark:border-red-700/50 dark:bg-red-950/30'}`}>
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div>
-          <div className="font-black text-[#172033]">{outcome.orderNo}</div>
-          <div className="text-xs font-bold text-[#6b7b91]">
+          <div className="font-black text-foreground">{outcome.orderNo}</div>
+          <div className="text-xs font-bold text-[var(--crm-app-text-muted)]">
             {outcome.companyLabel} · {outcome.actionLabel} · kaynak prefix {outcome.sourcePrefix}
           </div>
         </div>
@@ -1171,9 +1190,9 @@ function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement
 
 function RuleMini({ label, value }: { label: string; value: string }): ReactElement {
   return (
-    <div className="rounded-md border border-[#d7e1ef] bg-white px-2 py-2">
-      <div className="text-[10px] font-black uppercase tracking-[0.12em] text-[#8797ad]">{label}</div>
-      <div className="mt-1 truncate text-xs font-black text-[#26344c]">{value}</div>
+    <div className="rounded-md border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] px-2 py-2">
+      <div className="text-[10px] font-black uppercase tracking-[0.12em] text-[var(--crm-app-text-muted)]">{label}</div>
+      <div className="mt-1 truncate text-xs font-black text-foreground">{value}</div>
     </div>
   );
 }
@@ -1184,18 +1203,18 @@ function RuleTextList({ title, values, tone }: { title: string; values: string[]
   }
 
   const dotClass = {
-    info: 'bg-[#1d4ed8]',
-    success: 'bg-[#047857]',
-    warn: 'bg-[#b45309]',
-    danger: 'bg-[#dc2626]',
+    info: 'bg-blue-600 dark:bg-blue-400',
+    success: 'bg-emerald-600 dark:bg-emerald-400',
+    warn: 'bg-amber-600 dark:bg-amber-400',
+    danger: 'bg-red-600 dark:bg-red-400',
   }[tone];
 
   return (
     <div className="mt-3">
-      <div className="text-[10px] font-black uppercase tracking-[0.14em] text-[#708198]">{title}</div>
+      <div className="text-[10px] font-black uppercase tracking-[0.14em] text-[var(--crm-app-text-muted)]">{title}</div>
       <div className="mt-1 space-y-1">
         {values.map((value) => (
-          <div key={value} className="flex gap-2 rounded-md bg-white px-2 py-1 text-xs font-bold leading-snug text-[#42536b]">
+          <div key={value} className="flex gap-2 rounded-md bg-[var(--crm-app-panel)] px-2 py-1 text-xs font-bold leading-snug text-muted-foreground">
             <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${dotClass}`} />
             <span>{value}</span>
           </div>
@@ -1207,14 +1226,14 @@ function RuleTextList({ title, values, tone }: { title: string; values: string[]
 
 function RuleCard({ rule }: { rule: NdiTransferRule }): ReactElement {
   return (
-    <div className="rounded-lg border border-[#dce5f1] bg-[#f8fbff] p-3">
+    <div className="rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="font-black text-[#172033]">{rule.title}</div>
-        <span className="rounded-full bg-[#eaf2ff] px-2 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-[#1f5eff]">
+        <div className="font-black text-foreground">{rule.title}</div>
+        <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-primary">
           {rule.documentType}
         </span>
       </div>
-      <div className="mt-3 grid gap-2 text-xs font-bold text-[#536780] sm:grid-cols-2">
+      <div className="mt-3 grid gap-2 text-xs font-bold text-[var(--crm-app-text-muted)] sm:grid-cols-2">
         <RuleLine label="Kaynak Seri" value={rule.sourceSerial} />
         <RuleLine label="Hedef" value={`${rule.targetCompany} / ${rule.targetSerial}`} />
         <RuleLine label="Sevk" value={rule.shipmentRule} />
@@ -1230,19 +1249,19 @@ function RuleCard({ rule }: { rule: NdiTransferRule }): ReactElement {
 
 function RuleLine({ label, value }: { label: string; value: string }): ReactElement {
   return (
-    <div className="rounded-md bg-white px-2 py-2">
-      <div className="text-[10px] font-black uppercase tracking-[0.12em] text-[#8797ad]">{label}</div>
-      <div className="mt-1 leading-snug text-[#344765]">{value}</div>
+    <div className="rounded-md bg-[var(--crm-app-panel)] px-2 py-2">
+      <div className="text-[10px] font-black uppercase tracking-[0.12em] text-[var(--crm-app-text-muted)]">{label}</div>
+      <div className="mt-1 leading-snug text-muted-foreground">{value}</div>
     </div>
   );
 }
 
 function RuleBadge({ label, tone }: { label: string; tone: 'info' | 'success' | 'warn' | 'danger' }): ReactElement {
   const toneClass = {
-    info: 'border-[#bfdbfe] bg-[#eff6ff] text-[#1d4ed8]',
-    success: 'border-[#bbf7d0] bg-[#ecfdf5] text-[#047857]',
-    warn: 'border-[#fde68a] bg-[#fffbeb] text-[#b45309]',
-    danger: 'border-[#fecaca] bg-[#fef2f2] text-[#dc2626]',
+    info: 'border-blue-300 bg-blue-50 text-blue-700 dark:border-blue-700/50 dark:bg-blue-950/40 dark:text-blue-300',
+    success: 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700/50 dark:bg-emerald-950/40 dark:text-emerald-300',
+    warn: 'border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-300',
+    danger: 'border-red-300 bg-red-50 text-red-700 dark:border-red-700/50 dark:bg-red-950/40 dark:text-red-300',
   }[tone];
 
   return <span className={`rounded-full border px-3 py-1 text-xs font-black ${toneClass}`}>{label}</span>;
@@ -1250,8 +1269,8 @@ function RuleBadge({ label, tone }: { label: string; tone: 'info' | 'success' | 
 
 function MetricPill({ label, value }: { label: string; value: string }): ReactElement {
   return (
-    <div className="rounded-lg border border-white/10 bg-white/8 px-3 py-2">
-      <div className="text-[10px] font-black uppercase tracking-[0.16em] text-[#8fb4ff]">{label}</div>
+    <div className="rounded-lg border border-white/35 bg-black/20 px-3 py-2 backdrop-blur-sm dark:border-white/20 dark:bg-white/5">
+      <div className="text-[10px] font-black uppercase tracking-[0.16em] text-white/70 dark:text-slate-400">{label}</div>
       <div className="mt-1 truncate text-sm font-black text-white">{value}</div>
     </div>
   );
@@ -1259,9 +1278,9 @@ function MetricPill({ label, value }: { label: string; value: string }): ReactEl
 
 function SummaryTile({ label, value }: { label: string; value: string }): ReactElement {
   return (
-    <div className="min-w-24 rounded-lg border border-[#d7e1ef] bg-white px-3 py-2 text-right">
-      <div className="text-[10px] font-black uppercase tracking-[0.14em] text-[#708198]">{label}</div>
-      <div className="mt-1 text-sm font-black text-[#172033]">{value}</div>
+    <div className="min-w-24 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] px-3 py-2 text-right">
+      <div className="text-[10px] font-black uppercase tracking-[0.14em] text-[var(--crm-app-text-muted)]">{label}</div>
+      <div className="mt-1 text-sm font-black text-foreground">{value}</div>
     </div>
   );
 }

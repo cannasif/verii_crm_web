@@ -455,7 +455,7 @@ export function PdfReportDesignerListPage(): ReactElement {
             mobileMoreOptionsSlot={
               <div className="px-2 py-2 flex flex-col gap-2 sm:hidden" onPointerDown={(e) => e.stopPropagation()}>
                 <Select value={selectedRuleType} onValueChange={setSelectedRuleType}>
-                  <SelectTrigger className="h-9 w-full border-slate-200/60 bg-white/50 shadow-sm">
+                  <SelectTrigger className="h-9 w-full border border-slate-300 bg-white/50 shadow-sm dark:border-white/20">
                     <SelectValue placeholder={t('pdfReportDesigner.filterAllDocumentTypes')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -468,7 +468,7 @@ export function PdfReportDesignerListPage(): ReactElement {
                   </SelectContent>
                 </Select>
                 <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                  <SelectTrigger className="h-9 w-full border-slate-200/60 bg-white/50 shadow-sm">
+                  <SelectTrigger className="h-9 w-full border border-slate-300 bg-white/50 shadow-sm dark:border-white/20">
                     <SelectValue placeholder={t('pdfReportDesigner.filterAllStatuses')} />
                   </SelectTrigger>
                   <SelectContent>
@@ -480,36 +480,32 @@ export function PdfReportDesignerListPage(): ReactElement {
                 <DropdownMenuSeparator className="mt-2 -mx-2" />
               </div>
             }
-            leftSlot={
-              <>
-                <div className="max-sm:hidden">
-                  <Select value={selectedRuleType} onValueChange={setSelectedRuleType}>
-                    <SelectTrigger className="h-9 w-[220px] border-slate-200/60 bg-white/50 shadow-sm backdrop-blur-xs transition-all duration-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
+            additionalFilterActions={
+              <div className="flex max-sm:hidden items-center gap-2">
+                <Select value={selectedRuleType} onValueChange={setSelectedRuleType}>
+                  <SelectTrigger className="h-9 w-[220px] border border-slate-300 bg-white/50 shadow-sm backdrop-blur-xs transition-all duration-300 hover:bg-white dark:border-white/20 dark:bg-white/5 dark:hover:bg-white/10">
                     <SelectValue placeholder={t('pdfReportDesigner.filterAllDocumentTypes')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t('pdfReportDesigner.filterAllDocumentTypes')}</SelectItem>
-                      {Object.entries(RULE_TYPE_LABEL_KEYS).map(([value, labelKey]) => (
-                        <SelectItem key={value} value={value}>
-                          {t(labelKey)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="max-sm:hidden">
-                  <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                    <SelectTrigger className="h-9 w-[200px] border-slate-200/60 bg-white/50 shadow-sm backdrop-blur-xs transition-all duration-300 hover:bg-white dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10">
-                      <SelectValue placeholder={t('pdfReportDesigner.filterAllStatuses')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">{t('pdfReportDesigner.filterAllStatuses')}</SelectItem>
-                      <SelectItem value="active">{t('pdfReportDesigner.statusActive')}</SelectItem>
-                      <SelectItem value="inactive">{t('pdfReportDesigner.statusInactive')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('pdfReportDesigner.filterAllDocumentTypes')}</SelectItem>
+                    {Object.entries(RULE_TYPE_LABEL_KEYS).map(([value, labelKey]) => (
+                      <SelectItem key={value} value={value}>
+                        {t(labelKey)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <SelectTrigger className="h-9 w-[200px] border border-slate-300 bg-white/50 shadow-sm backdrop-blur-xs transition-all duration-300 hover:bg-white dark:border-white/20 dark:bg-white/5 dark:hover:bg-white/10">
+                    <SelectValue placeholder={t('pdfReportDesigner.filterAllStatuses')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t('pdfReportDesigner.filterAllStatuses')}</SelectItem>
+                    <SelectItem value="active">{t('pdfReportDesigner.statusActive')}</SelectItem>
+                    <SelectItem value="inactive">{t('pdfReportDesigner.statusInactive')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             }
           />
         </CardHeader>

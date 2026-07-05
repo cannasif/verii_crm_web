@@ -1,18 +1,20 @@
 import { type ChangeEvent, type FormEvent, type KeyboardEvent, type ReactElement, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { Bot, Check, Copy, ExternalLink, FileImage, ImagePlus, MessageCircle, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { Bot, Check, Copy, ExternalLink, FileImage, ImagePlus, Plus, SendHorizontal, X } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { aiAssistantApi } from '../api/ai-assistant-api';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
+import { useAiAssistantChatPageBoundary } from '../hooks/useAiAssistantChatPageBoundary';
+import { useAiAssistantMessagesViewportClip } from '../hooks/useAiAssistantMessagesViewportClip';
 import { useAiAssistantAnalyticsQuery, useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
 import { AiAssistantAnswerCard } from './AiAssistantAnswerCard';
-import { AiAssistantContextPill } from './AiAssistantContextPill';
 import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
+import { AiAssistantComposerToolbar } from './AiAssistantComposerToolbar';
+import { useAiAssistantComposerToolbarOverflow } from '../hooks/useAiAssistantComposerToolbarOverflow';
 import {
   getLatestAiAssistantErrorContext,
   subscribeAiAssistantErrorContext,
@@ -42,7 +44,6 @@ import {
   showReportDraftReadyToast,
 } from '../lib/ai-assistant-report-draft-toast';
 import {
-  aiAssistantLanguageOptions,
   readAiAssistantLanguagePreference,
   writeAiAssistantLanguagePreference,
 } from '../lib/ai-assistant-language';
@@ -57,6 +58,15 @@ const actionItemClassNameBySeverity: Record<string, string> = {
 
 const minimumThinkingDurationMs = 900;
 const pageSessionStorageKey = 'crm-ai-assistant-page-session-key';
+const aiAssistantSidePanelBorder = 'border-slate-300 dark:border-white/20';
+
+function isAiAssistantDialogTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) {
+    return false;
+  }
+
+  return Boolean(target.closest('[data-slot="dialog-overlay"], [data-slot="dialog-content"]'));
+}
 
 function waitForMinimumThinkingDuration(): Promise<void> {
   return new Promise((resolve) => {
@@ -130,7 +140,7 @@ function createRouteEntityContext(pathname: string): {
 export function AiAssistantPage(): ReactElement {
   const { t } = useTranslation('ai-assistant');
   const navigate = useNavigate();
-  const { setPageTitle } = useUIStore();
+  const { setPageTitle, setAiAssistantWidgetVisible, isAiAssistantWidgetVisible, isSidebarOpen } = useUIStore();
   const { user } = useAuthStore();
   const { data: greeting, isLoading } = useAiAssistantGreetingQuery();
   const { data: analytics } = useAiAssistantAnalyticsQuery();
@@ -151,18 +161,31 @@ export function AiAssistantPage(): ReactElement {
   const [questionError, setQuestionError] = useState<string | null>(null);
   const [selectedAttachment, setSelectedAttachment] = useState<AiAssistantSelectedAttachment | null>(null);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+  const [isComposerToolbarOpen, setIsComposerToolbarOpen] = useState(true);
+  const [isComposerToolbarMenuOpen, setIsComposerToolbarMenuOpen] = useState(false);
   const [sessionKey, setSessionKey] = useState<string>(() => readAssistantSessionKey());
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const sendButtonRef = useRef<HTMLButtonElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesClipRef = useRef<HTMLDivElement | null>(null);
+  const composerRef = useRef<HTMLDivElement | null>(null);
+  const inputBoxRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const composerToolbarAnchorRef = useRef<HTMLDivElement | null>(null);
   const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
   const skipNextHistoryWriteRef = useRef(false);
+  const { toolbarRowRef, toolbarMeasureRef, isCollapsedToMenu } = useAiAssistantComposerToolbarOverflow();
 
   useEffect(() => {
     setPageTitle(t('pageTitle'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
+
+  useEffect(() => {
+    if (isAiAssistantWidgetVisible) return;
+    setAiAssistantWidgetVisible(false);
+  }, [isAiAssistantWidgetVisible, setAiAssistantWidgetVisible]);
 
   useEffect(() => subscribeAiAssistantErrorContext(setLatestErrorContext), []);
 
@@ -190,16 +213,72 @@ export function AiAssistantPage(): ReactElement {
   const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
   const isAssistantBusy = askMutation.isPending || isThinking;
 
+  const chatBoundaryRecalculateToken = [
+    isSidebarOpen,
+    askMutation.error?.message,
+    isActionsMenuOpen,
+    isComposerToolbarOpen,
+    isComposerToolbarMenuOpen,
+    isCollapsedToMenu,
+    isAssistantBusy,
+    questionError,
+    selectedAttachment?.fileName,
+    suggestionItems.length,
+  ].join('|');
+
+  const chatPageScrollReserve = useAiAssistantChatPageBoundary(
+    composerRef,
+    inputBoxRef,
+    chatBoundaryRecalculateToken,
+  );
+
+  useAiAssistantMessagesViewportClip(
+    messagesClipRef,
+    composerRef,
+    chatBoundaryRecalculateToken,
+  );
+
   const changeLanguagePreference = (nextLanguagePreference: AiAssistantLanguagePreference): void => {
     setLanguagePreference(nextLanguagePreference);
     writeAiAssistantLanguagePreference(nextLanguagePreference);
   };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'end',
-    });
+    if (!isCollapsedToMenu) {
+      setIsComposerToolbarMenuOpen(false);
+    }
+  }, [isCollapsedToMenu]);
+
+  useEffect(() => {
+    if (!isComposerToolbarMenuOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: MouseEvent): void => {
+      if (isAiAssistantDialogTarget(event.target)) {
+        return;
+      }
+
+      if (composerToolbarAnchorRef.current?.contains(event.target as Node)) {
+        return;
+      }
+
+      setIsComposerToolbarMenuOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+    };
+  }, [isComposerToolbarMenuOpen]);
+
+  useEffect(() => {
+    const endMarker = messagesEndRef.current;
+    if (!endMarker) {
+      return;
+    }
+
+    endMarker.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages, isAssistantBusy]);
 
   const clearSelectedAttachment = (): void => {
@@ -320,6 +399,16 @@ export function AiAssistantPage(): ReactElement {
   };
 
   const handleQuestionKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>): void => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      if (isAssistantBusy) {
+        return;
+      }
+
+      event.currentTarget.form?.requestSubmit();
+      return;
+    }
+
     if (event.key !== 'Tab' || event.shiftKey) {
       return;
     }
@@ -343,6 +432,28 @@ export function AiAssistantPage(): ReactElement {
     setDynamicSuggestions([]);
     setQuestionError(null);
     clearSelectedAttachment();
+    setIsComposerToolbarMenuOpen(false);
+  };
+
+  const handleComposerToolbarIconClick = (): void => {
+    if (isCollapsedToMenu) {
+      setIsComposerToolbarMenuOpen((open) => !open);
+      return;
+    }
+
+    setIsComposerToolbarOpen((open) => !open);
+    setIsComposerToolbarMenuOpen(false);
+  };
+
+  const showInlineComposerToolbar = isComposerToolbarOpen && !isCollapsedToMenu;
+  const isComposerToolbarActive = isCollapsedToMenu ? isComposerToolbarMenuOpen : isComposerToolbarOpen;
+  const composerToolbarProps = {
+    latestErrorContext,
+    isAssistantBusy,
+    onAskLatestError: askLatestError,
+    languagePreference,
+    onChangeLanguagePreference: changeLanguagePreference,
+    onClearChat: clearChat,
   };
 
   const openActionUrl = async (actionUrl?: string | null, toolActionId?: number | null, confirmationRequired = false): Promise<void> => {
@@ -379,143 +490,17 @@ export function AiAssistantPage(): ReactElement {
     }, 1600);
   };
 
+  if (isAiAssistantWidgetVisible) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
-    <div className="min-h-[calc(100vh-7rem)] w-full overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(236,72,153,0.20),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(14,165,233,0.16),transparent_30%)] p-4 md:p-8">
-      <div className="mx-auto flex max-w-5xl flex-col gap-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary dark:text-primary">
-              <Sparkles size={16} />
-              {t('eyebrow')}
-            </div>
-            <div>
-              <h1 className="text-3xl font-black tracking-tight text-slate-950 dark:text-white md:text-5xl">
-                {isLoading ? t('loadingGreeting') : t('greeting', { name: displayName })}
-              </h1>
-              <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-600 dark:text-slate-300 md:text-base">
-                {t('subtitle')}
-              </p>
-            </div>
-          </div>
-
-          <div className="hidden h-28 w-28 items-center justify-center rounded-[2rem] border border-white/15 bg-white/20 shadow-2xl shadow-primary/20 backdrop-blur-xl dark:bg-white/5 md:flex">
-            <Bot className="text-primary" size={48} />
-          </div>
-        </div>
-
-        <div className="grid gap-3 md:grid-cols-4">
-          <div className="rounded-3xl border border-white/15 bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5">
-            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-              {t('analytics.sessions')}
-            </div>
-            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
-              {analytics?.totalSessions ?? 0}
-            </div>
-            <p className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-300">
-              {analytics?.completedSessions ?? 0} {t('analytics.completed')}
-            </p>
-          </div>
-          <div className="rounded-3xl border border-white/15 bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5">
-            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-              {t('analytics.problemSessions')}
-            </div>
-            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
-              {(analytics?.failedSessions ?? 0) + (analytics?.abandonedSessions ?? 0)}
-            </div>
-            <p className="mt-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
-              {analytics?.abandonedSessions ?? 0} {t('analytics.abandoned')}
-            </p>
-          </div>
-          <div className="rounded-3xl border border-white/15 bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5">
-            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-              {t('analytics.averageLatency')}
-            </div>
-            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
-              {Math.round(analytics?.averageLatencyMs ?? 0)} ms
-            </div>
-            <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
-              {analytics?.assistantMessages ?? 0} {t('analytics.answers')}
-            </p>
-          </div>
-          <div className="rounded-3xl border border-white/15 bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5">
-            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-              {t('analytics.toolRate')}
-            </div>
-            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
-              %{analytics?.toolConfirmationRate ?? 0}
-            </div>
-            <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
-              {analytics?.executedToolActions ?? 0}/{analytics?.proposedToolActions ?? 0} {t('analytics.executed')}
-            </p>
-          </div>
-        </div>
-
-        {analytics && (analytics.topIntents.length > 0 || analytics.failedIntents.length > 0) && (
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="rounded-3xl border border-white/15 bg-white/65 p-4 dark:bg-white/5">
-              <div className="text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                {t('analytics.topIntents')}
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {analytics.topIntents.map((intent) => (
-                  <span
-                    key={intent.intent}
-                    className="rounded-full border border-sky-400/25 bg-sky-400/10 px-3 py-1 text-xs font-black text-sky-700 dark:text-sky-200"
-                  >
-                    {intent.intent} · {intent.count}
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className="rounded-3xl border border-white/15 bg-white/65 p-4 dark:bg-white/5">
-              <div className="text-xs font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                {t('analytics.failedIntents')}
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {analytics.failedIntents.length > 0 ? (
-                  analytics.failedIntents.map((intent) => (
-                    <span
-                      key={intent.intent}
-                      className="rounded-full border border-amber-400/25 bg-amber-400/10 px-3 py-1 text-xs font-black text-amber-700 dark:text-amber-200"
-                    >
-                      {intent.intent} · {intent.count}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                    {t('analytics.noFailedIntent')}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        <Card className="overflow-hidden border-white/15 bg-[radial-gradient(circle_at_12%_0%,rgba(236,72,153,0.14),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.90),rgba(248,250,252,0.78))] shadow-2xl shadow-slate-950/5 backdrop-blur-xl dark:bg-[radial-gradient(circle_at_12%_0%,rgba(236,72,153,0.16),transparent_30%),linear-gradient(180deg,rgba(2,6,23,0.86),rgba(15,23,42,0.70))]">
-          <CardContent className="space-y-5 p-5 md:p-7">
-            <div className="flex items-center gap-3">
-              <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl bg-linear-to-br from-primary via-primary to-orange-500 text-white shadow-lg shadow-primary/25">
-                <MessageCircle size={22} />
-                <span className="absolute -bottom-0.5 -end-0.5 h-3.5 w-3.5 rounded-full border-2 border-white bg-emerald-400 dark:border-slate-950" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-slate-950 dark:text-white">{t('chatTitle')}</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{t('chatDescription')}</p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="ms-auto rounded-2xl text-xs font-black"
-                onClick={clearChat}
-              >
-                <Plus size={15} className="me-1.5" />
-                {t('newChat')}
-              </Button>
-            </div>
-
+    <>
+    <div className="mt-8 grid w-full gap-4 lg:grid-cols-[minmax(0,1fr)_14rem] lg:items-start lg:gap-6 xl:grid-cols-[minmax(0,1fr)_15rem]">
+        <div className="flex min-w-0 flex-col">
             <div
-              className="max-h-[min(58dvh,660px)] space-y-5 overflow-y-auto rounded-[2rem] border border-slate-200 bg-white/55 p-4 shadow-inner shadow-slate-950/5 backdrop-blur-xl dark:border-white/10 dark:bg-black/25"
+              ref={messagesClipRef}
+              className="space-y-5 py-1 pe-1"
               role="log"
               aria-live="polite"
               aria-relevant="additions text"
@@ -523,13 +508,14 @@ export function AiAssistantPage(): ReactElement {
               {messages.length === 0 && (
                 <div className="flex items-start gap-3">
                   <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-emerald-400 to-cyan-500 text-white shadow-lg shadow-emerald-950/20">
-                    <Sparkles size={18} />
+                    <Bot size={18} />
                   </div>
                   <div className="max-w-2xl rounded-[1.6rem] rounded-ss-md border border-primary/15 bg-white/80 p-5 shadow-sm backdrop-blur-xl dark:bg-white/[0.06]">
                     <div className="mb-2 inline-flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-primary">
                       {t('eyebrow')}
                     </div>
                     <p className="text-sm font-semibold leading-6 text-slate-600 dark:text-slate-200">
+                      {isLoading ? t('loadingGreeting') : t('greeting', { name: displayName })}{' '}
                       {t('chatDescription')}
                     </p>
                   </div>
@@ -563,46 +549,24 @@ export function AiAssistantPage(): ReactElement {
                         </div>
                         <div className="max-w-3xl flex-1">
                           <AiAssistantAnswerCard
-                            title={t('answerTitle')}
                             answer={message.content}
+                            headerAction={(
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 rounded-xl px-3 text-xs font-black text-slate-500 hover:text-primary dark:text-slate-300"
+                                onClick={() => void copyAssistantMessage(message)}
+                              >
+                                {copiedMessageId === message.id ? (
+                                  <Check size={13} className="me-1.5" />
+                                ) : (
+                                  <Copy size={13} className="me-1.5" />
+                                )}
+                                {copiedMessageId === message.id ? t('copied') : t('copyAnswer')}
+                              </Button>
+                            )}
                           />
-                          <AiAssistantContextPill context={message.context} />
-                          <div className="mt-2 flex justify-end">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="h-8 rounded-xl px-3 text-xs font-black text-slate-500 hover:text-primary dark:text-slate-300"
-                              onClick={() => void copyAssistantMessage(message)}
-                            >
-                              {copiedMessageId === message.id ? (
-                                <Check size={13} className="me-1.5" />
-                              ) : (
-                                <Copy size={13} className="me-1.5" />
-                              )}
-                              {copiedMessageId === message.id ? t('copied') : t('copyAnswer')}
-                            </Button>
-                          </div>
-                          {message.sources && message.sources.length > 0 && (
-                            <div className="mt-3 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.04]">
-                              <div className="mb-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
-                                {t('sourceTitle')}
-                              </div>
-                              <div className="grid gap-2 md:grid-cols-2">
-                                {message.sources.map((source) => (
-                                  <div
-                                    key={`${message.id}-${source.label}-${source.module ?? ''}-${source.period ?? ''}`}
-                                    className="rounded-xl bg-slate-950/[0.03] px-3 py-2 text-xs font-semibold leading-5 text-slate-600 dark:bg-white/[0.04] dark:text-slate-300"
-                                  >
-                                    <span className="font-black text-slate-900 dark:text-white">{source.label}</span>
-                                    {source.module ? <span> · {source.module}</span> : null}
-                                    {source.period ? <span> · {source.period}</span> : null}
-                                    <p className="mt-0.5 opacity-80">{source.description}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
                         </div>
                       </div>
 
@@ -648,34 +612,131 @@ export function AiAssistantPage(): ReactElement {
               ))}
 
               {isAssistantBusy && <AiAssistantThinkingIndicator />}
+
+              <div className="flex items-start gap-3">
+                <div className="h-10 w-10 shrink-0" aria-hidden />
+                <div className="flex min-w-0 flex-1 flex-wrap gap-2">
+                  {suggestionItems.map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      type="button"
+                      disabled={isAssistantBusy}
+                      onClick={() => void askQuestion(suggestion)}
+                      className="rounded-full border border-slate-200 bg-white px-4 py-2.5 text-start text-sm font-black text-slate-700 shadow-sm transition hover:border-primary/30 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-primary/40 dark:hover:bg-primary/10"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div ref={messagesEndRef} />
             </div>
+        </div>
 
-            {latestErrorContext && (
-              <div className="rounded-3xl border border-amber-400/30 bg-amber-400/10 p-4">
-                <div className="mb-1 text-xs font-black uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300">
-                  {t('lastErrorTitle')}
-                </div>
-                <p className="text-sm font-semibold leading-6 text-amber-950 dark:text-amber-100">
-                  {latestErrorContext.httpStatusCode ? `${latestErrorContext.httpStatusCode} · ` : ''}
-                  {latestErrorContext.message}
-                </p>
-                <Button
+        <div className="hidden flex-col gap-3 self-start lg:sticky lg:top-4 lg:flex">
+          <div className={`rounded-3xl border bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5 ${aiAssistantSidePanelBorder}`}>
+            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {t('analytics.sessions')}
+            </div>
+            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
+              {analytics?.totalSessions ?? 0}
+            </div>
+            <p className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-300">
+              {analytics?.completedSessions ?? 0} {t('analytics.completed')}
+            </p>
+          </div>
+          <div className={`rounded-3xl border bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5 ${aiAssistantSidePanelBorder}`}>
+            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {t('analytics.problemSessions')}
+            </div>
+            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
+              {(analytics?.failedSessions ?? 0) + (analytics?.abandonedSessions ?? 0)}
+            </div>
+            <p className="mt-1 text-xs font-semibold text-amber-600 dark:text-amber-300">
+              {analytics?.abandonedSessions ?? 0} {t('analytics.abandoned')}
+            </p>
+          </div>
+          <div className={`rounded-3xl border bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5 ${aiAssistantSidePanelBorder}`}>
+            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {t('analytics.averageLatency')}
+            </div>
+            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
+              {Math.round(analytics?.averageLatencyMs ?? 0)} ms
+            </div>
+            <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              {analytics?.assistantMessages ?? 0} {t('analytics.answers')}
+            </p>
+          </div>
+          <div className={`rounded-3xl border bg-white/75 p-4 shadow-lg shadow-slate-950/5 dark:bg-white/5 ${aiAssistantSidePanelBorder}`}>
+            <div className="text-[0.68rem] font-black uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {t('analytics.toolRate')}
+            </div>
+            <div className="mt-2 text-2xl font-black text-slate-950 dark:text-white">
+              %{analytics?.toolConfirmationRate ?? 0}
+            </div>
+            <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              {analytics?.executedToolActions ?? 0}/{analytics?.proposedToolActions ?? 0} {t('analytics.executed')}
+            </p>
+          </div>
+        </div>
+      </div>
+
+    <div
+      aria-hidden
+      data-ai-assistant-chat-page-boundary=""
+      className="pointer-events-none"
+      style={{ height: chatPageScrollReserve }}
+    />
+
+    <div
+      ref={composerRef}
+      className={`pointer-events-none fixed bottom-0 left-0 right-0 z-40 transition-[left] duration-300 ${isSidebarOpen ? 'lg:left-72' : 'lg:left-20'}`}
+    >
+      <div className="mx-auto max-w-[1920px] px-4 md:px-6">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-6 xl:grid-cols-[minmax(0,1fr)_15rem]">
+          <div className="pointer-events-auto space-y-3 pb-4 md:pb-6">
+            <div ref={toolbarRowRef} className="relative flex w-full max-w-full items-center gap-2">
+              <div ref={composerToolbarAnchorRef} className="relative shrink-0">
+                {isComposerToolbarMenuOpen && isCollapsedToMenu ? (
+                  <div
+                    className="absolute bottom-full start-0 z-20 mb-3 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-200 dark:border-white/10 dark:bg-slate-900"
+                    role="menu"
+                  >
+                    <AiAssistantComposerToolbar layout="menu" {...composerToolbarProps} />
+                  </div>
+                ) : null}
+                <button
                   type="button"
-                  variant="outline"
-                  disabled={isAssistantBusy}
-                  className="mt-3 rounded-2xl border-amber-300/60 bg-white/70 text-amber-800 hover:bg-amber-50 dark:bg-white/5 dark:text-amber-100"
-                  onClick={() => void askLatestError()}
+                  aria-label={t('pageTitle')}
+                  aria-expanded={isComposerToolbarActive}
+                  onClick={handleComposerToolbarIconClick}
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border bg-white/20 shadow-lg shadow-primary/15 backdrop-blur-xl transition dark:bg-white/5 ${isComposerToolbarActive
+                    ? 'border-primary/40 ring-2 ring-primary/20'
+                    : aiAssistantSidePanelBorder
+                    }`}
                 >
-                  {t('askLastError')}
-                </Button>
+                  <Bot className="text-primary" size={22} />
+                </button>
               </div>
-            )}
 
-            <form
-              className="rounded-[2rem] border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-black/25"
-              onSubmit={handleSubmit}
-            >
+              {showInlineComposerToolbar ? (
+                <div className="min-w-0 flex-1 animate-in fade-in slide-in-from-left-2 duration-200">
+                  <AiAssistantComposerToolbar layout="inline" {...composerToolbarProps} />
+                </div>
+              ) : null}
+
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-0 top-0 -z-10 h-0 w-full overflow-hidden opacity-0"
+              >
+                <div ref={toolbarMeasureRef} className="inline-block w-max max-w-none">
+                  <AiAssistantComposerToolbar layout="measure" {...composerToolbarProps} />
+                </div>
+              </div>
+            </div>
+
+            <form className="space-y-3" onSubmit={handleSubmit}>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -683,104 +744,102 @@ export function AiAssistantPage(): ReactElement {
                 className="hidden"
                 onChange={(event) => void handleAttachmentChange(event)}
               />
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex min-w-0 flex-wrap items-center gap-2">
-                  <Button
+              {selectedAttachment && (
+                <div className="flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-black text-primary dark:text-primary-foreground">
+                  <FileImage size={14} className="shrink-0" />
+                  <span className="min-w-0 truncate">{selectedAttachment.fileName}</span>
+                  <span className="shrink-0 opacity-75">{formatAttachmentSize(selectedAttachment.size)}</span>
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
-                    disabled={isAssistantBusy}
-                    className="h-9 rounded-2xl border-slate-200 bg-white/80 px-3 text-xs font-black dark:border-white/10 dark:bg-white/[0.06]"
-                    onClick={() => fileInputRef.current?.click()}
+                    className="ms-1 rounded-full p-0.5 hover:bg-primary/15"
+                    aria-label={t('removeImage')}
+                    onClick={clearSelectedAttachment}
                   >
-                    <ImagePlus size={14} className="me-1.5" />
-                    {t('attachImage')}
-                  </Button>
-                  {selectedAttachment && (
-                    <div className="flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-primary/50 bg-primary/10 px-3 py-2 text-xs font-black text-primary dark:text-primary">
-                      <FileImage size={14} className="shrink-0" />
-                      <span className="min-w-0 truncate">{selectedAttachment.fileName}</span>
-                      <span className="shrink-0 opacity-75">{formatAttachmentSize(selectedAttachment.size)}</span>
-                      <button
-                        type="button"
-                        className="ms-1 rounded-full p-0.5 hover:bg-primary/15"
-                        aria-label={t('removeImage')}
-                        onClick={clearSelectedAttachment}
-                      >
-                        <X size={13} />
-                      </button>
-                    </div>
-                  )}
+                    <X size={13} />
+                  </button>
                 </div>
-                <div className="flex items-center gap-2 rounded-2xl border border-slate-200/80 bg-slate-50/80 px-3 py-2 dark:border-white/10 dark:bg-white/[0.04]">
-                  <span className="text-[0.68rem] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                    {t('responseLanguage')}
-                  </span>
-                  <div className="flex rounded-full border border-slate-200 bg-white p-0.5 dark:border-white/10 dark:bg-black/20">
-                    {aiAssistantLanguageOptions.map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        disabled={isAssistantBusy}
-                        title={option.value === 'auto' ? t('responseLanguageAuto') : option.label}
-                        onClick={() => changeLanguagePreference(option.value)}
-                        className={`h-7 rounded-full px-3 text-[0.68rem] font-black transition ${languagePreference === option.value
-                          ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm'
-                          : 'text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10'
-                          } disabled:cursor-not-allowed disabled:opacity-60`}
+              )}
+              {(questionError || askMutation.error?.message) && (
+                <div className="flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-700 dark:text-red-100">
+                  <span className="min-w-0 truncate">{questionError || askMutation.error?.message}</span>
+                </div>
+              )}
+              <div
+                ref={inputBoxRef}
+                className="overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white shadow-sm transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/25 dark:border-white/10 dark:bg-slate-950 dark:focus-within:ring-primary/20"
+              >
+                <div className="bg-white px-4 pt-3 pb-1 dark:bg-slate-950">
+                  <Textarea
+                    ref={textareaRef}
+                    rows={2}
+                    placeholder={t('inputPlaceholder')}
+                    className="min-h-[44px] max-h-28 resize-none border-0 bg-white p-0 text-sm font-semibold shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-slate-400 dark:bg-slate-950 dark:placeholder:text-slate-500"
+                    value={question}
+                    onChange={(event) => {
+                      setQuestion(event.target.value);
+                      if (questionError) {
+                        setQuestionError(null);
+                      }
+                    }}
+                    onKeyDown={handleQuestionKeyDown}
+                  />
+                </div>
+                <div className="border-t border-slate-100 dark:border-white/5" />
+                <div className="flex items-center justify-between gap-3 bg-slate-50 px-4 py-2.5 dark:bg-slate-900">
+                  <div className="relative flex min-w-0 flex-1 items-center gap-2">
+                    {isActionsMenuOpen && (
+                      <div
+                        className="absolute bottom-full start-0 z-20 mb-2 flex min-w-48 flex-col gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-200 dark:border-white/10 dark:bg-slate-900"
+                        role="menu"
                       >
-                        {option.label}
-                      </button>
-                    ))}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          disabled={isAssistantBusy}
+                          className="h-9 w-full justify-start rounded-xl px-3 text-xs font-black transition-colors hover:bg-accent dark:hover:bg-primary/10"
+                          onClick={() => {
+                            fileInputRef.current?.click();
+                            setIsActionsMenuOpen(false);
+                          }}
+                        >
+                          <ImagePlus size={14} className="me-1.5" />
+                          {t('attachImage')}
+                        </Button>
+                      </div>
+                    )}
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      disabled={isAssistantBusy}
+                      className={`h-9 w-9 shrink-0 rounded-full border transition-all duration-200 ${isActionsMenuOpen
+                        ? 'rotate-45 border-primary/40 bg-accent text-primary dark:border-primary/30 dark:bg-primary/10 dark:text-primary'
+                        : 'border-slate-200 dark:border-white/10 hover:border-primary/30 dark:hover:border-primary/30'
+                        }`}
+                      aria-expanded={isActionsMenuOpen}
+                      onClick={() => setIsActionsMenuOpen(!isActionsMenuOpen)}
+                    >
+                      <Plus size={18} />
+                    </Button>
                   </div>
+                  <Button
+                    ref={sendButtonRef}
+                    type="submit"
+                    disabled={isAssistantBusy || (!question.trim() && !selectedAttachment)}
+                    className="shrink-0 rounded-full bg-linear-to-r from-primary via-primary to-orange-500 px-5 text-white shadow-lg shadow-primary/20"
+                  >
+                    <SendHorizontal size={16} className="me-2" />
+                    {isAssistantBusy ? t('sending') : t('send')}
+                  </Button>
                 </div>
-              </div>
-              <Textarea
-                ref={textareaRef}
-                rows={4}
-                placeholder={t('inputPlaceholder')}
-                className="resize-none border-0 bg-transparent p-0 text-base font-semibold shadow-none focus-visible:ring-0"
-                value={question}
-                onChange={(event) => {
-                  setQuestion(event.target.value);
-                  if (questionError) {
-                    setQuestionError(null);
-                  }
-                }}
-                onKeyDown={handleQuestionKeyDown}
-              />
-              <div className="mt-4 flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-white/10 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                  {questionError || askMutation.error?.message || (selectedAttachment ? t('imageContextHint') : t('chatHint'))}
-                </p>
-                <Button
-                  ref={sendButtonRef}
-                  type="submit"
-                  disabled={isAssistantBusy || (!question.trim() && !selectedAttachment)}
-                  className="rounded-full bg-linear-to-r from-primary via-primary to-orange-500 px-5 text-white shadow-lg shadow-primary/20"
-                >
-                  <SendHorizontal size={16} className="me-2" />
-                  {isAssistantBusy ? t('sending') : t('send')}
-                </Button>
               </div>
             </form>
-
-            <div className="flex flex-wrap gap-2">
-              {suggestionItems.map((suggestion) => (
-                <button
-                  key={suggestion}
-                  type="button"
-                  disabled={isAssistantBusy}
-                  onClick={() => void askQuestion(suggestion)}
-                  className="rounded-full border border-slate-200 bg-white/70 px-4 py-2.5 text-start text-sm font-black text-slate-700 shadow-sm transition hover:border-primary/30 hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-primary/40 dark:hover:bg-primary/10"
-                >
-                  {suggestion}
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+          </div>
+          <div className="hidden lg:block" />
+        </div>
       </div>
     </div>
+    </>
   );
 }

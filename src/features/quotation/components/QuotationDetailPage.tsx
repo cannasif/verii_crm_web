@@ -19,7 +19,6 @@ import { resolveQuotationCustomerLabelForPdf } from '@/lib/resolve-quotation-cus
 import { resolveWatchedDocumentCurrency } from '@/lib/line-unit-price-currency';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
@@ -154,8 +153,6 @@ export function QuotationDetailPage(): ReactElement {
   const createRevisionMutation = useCreateRevisionOfQuotation();
   const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
   const { data: paymentTypes = [] } = usePaymentTypes();
-  const effectiveSystemSettings = useSystemSettingsStore((state) => state.settings);
-
   const [lines, setLinesState] = useState<QuotationLineFormState[]>([]);
   usePrefetchLineImagesForPdf(lines);
   const [exchangeRates, setExchangeRates] = useState<QuotationExchangeRateFormState[]>([]);
@@ -484,7 +481,7 @@ export function QuotationDetailPage(): ReactElement {
 
   const defaultShowDiscountDetails = hasLineDiscounts || hasGeneralDiscount;
 
-  const buildPreviewPdfBlob = useCallback(async (options?: { draft?: boolean; showDiscount?: boolean }): Promise<Blob> => {
+  const buildPreviewPdfBlob = useCallback(async (options?: { draft?: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> => {
     const qc = quotationFormSlice;
     const customerLabel =
       (await resolveQuotationCustomerLabelForPdf({
@@ -570,7 +567,7 @@ export function QuotationDetailPage(): ReactElement {
       lineDiscountLabels,
       showDiscount: options?.showDiscount ?? defaultShowDiscountDetails,
       draft: options?.draft ?? false,
-      hideVat: effectiveSystemSettings.hideQuotationVatRate,
+      hideVat: options?.hideVat ?? false,
     });
   }, [
     quotationFormSlice,
@@ -591,7 +588,6 @@ export function QuotationDetailPage(): ReactElement {
     quotationNotes,
     shippingAddresses,
     defaultShowDiscountDetails,
-    effectiveSystemSettings.hideQuotationVatRate,
   ]);
 
   const reportBuiltInTemplates = useMemo(
@@ -609,8 +605,8 @@ export function QuotationDetailPage(): ReactElement {
   );
 
   const buildExportPdfBlob = useCallback(
-    async ({ draft, showDiscount }: { draft: boolean; showDiscount?: boolean }): Promise<Blob> =>
-      buildPreviewPdfBlob({ draft, showDiscount }),
+    async ({ draft, showDiscount, hideVat }: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> =>
+      buildPreviewPdfBlob({ draft, showDiscount, hideVat }),
     [buildPreviewPdfBlob],
   );
 
@@ -1398,6 +1394,7 @@ export function QuotationDetailPage(): ReactElement {
           shareWhatsapp: t('shareWhatsapp'),
           shareMail: t('shareMail'),
           showDiscount: t('exportPreview.showDiscount'),
+          hideVat: t('exportPreview.hideVat'),
         }}
         onShareWhatsapp={handleModalShareWhatsapp}
         onShareMail={handleModalShareMail}

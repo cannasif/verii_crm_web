@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/popover';
 import { Check } from 'lucide-react';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import { DropdownLoadingPanel } from '@/components/shared/DropdownLoadingPanel';
 import { ErpFieldHint } from '@/components/shared/ErpFieldHint';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -67,7 +68,7 @@ import type { QuotationNotesDto } from '../types/quotation-types';
 import { 
   User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
-  Layers, SearchX,  BookUser, Building2, Folder,
+  Layers, SearchX,  BookUser, Building2, Folder, Loader2,
   MapPin, Banknote, Search
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
@@ -248,12 +249,13 @@ export function QuotationHeaderForm({
     specialCode2DefaultExists.data,
   ]);
 
-  const { data: shippingAddresses } = useShippingAddresses(watchedCustomerId || undefined);
-  const { data: relatedUsers = [] } = useQuotationRelatedUsers(user?.id);
+  const { data: shippingAddresses, isLoading: isShippingAddressesLoading } = useShippingAddresses(watchedCustomerId || undefined);
+  const { data: relatedUsers = [], isLoading: isRelatedUsersLoading } = useQuotationRelatedUsers(user?.id);
   
   const {
     data: customerOptions = [],
     isFetched: hasCustomerOptionsLoaded,
+    isLoading: isCustomerOptionsLoading,
   } = useCustomerOptions(watchedRepresentativeId);
   
   const shouldFetchCustomer = Boolean(watchedCustomerId && watchedCustomerId > 0);
@@ -533,7 +535,7 @@ export function QuotationHeaderForm({
                           onChange={(e) => {
                             const v = e.target.value;
                             setCustomerSearchQuery(v);
-                            setCustomerComboboxOpen(v.trim().length > 0);
+                            setCustomerComboboxOpen(v.trim().length > 0 || isCustomerOptionsLoading);
                           }}
                           onKeyDown={customerKeyboard.onInputKeyDown}
                           placeholder={t('quotation:header.selectCustomer')}
@@ -541,6 +543,9 @@ export function QuotationHeaderForm({
                           autoComplete="off"
                         />
                       </FormControl>
+                      {isCustomerOptionsLoading ? (
+                        <Loader2 className="absolute right-3 top-1/2 z-20 h-4 w-4 -translate-y-1/2 animate-spin text-primary" />
+                      ) : null}
                       <Popover open={customerComboboxOpen} onOpenChange={setCustomerComboboxOpen}>
                         <PopoverAnchor className="absolute top-full left-0 h-0 w-full" />
                         <PopoverContent 
@@ -555,6 +560,10 @@ export function QuotationHeaderForm({
                               className="max-h-[350px] overflow-y-auto"
                             >
                               <CommandList className="p-2 space-y-1">
+                              {isCustomerOptionsLoading ? (
+                                <DropdownLoadingPanel className="text-zinc-500" minHeightClassName="min-h-28" />
+                              ) : (
+                                <>
                               {filteredCustomerOptions.length === 0 && (
                                 <CommandEmpty className="py-8 text-center flex flex-col items-center gap-2">
                                   <SearchX className="w-5 h-5 text-zinc-400" />
@@ -594,6 +603,8 @@ export function QuotationHeaderForm({
                                   </CommandItem>
                                 ))}
                               </CommandGroup>
+                                </>
+                              )}
                             </CommandList>
                             </div>
                           </Command>
@@ -644,6 +655,7 @@ export function QuotationHeaderForm({
                             }))}
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                            isLoading={isRelatedUsersLoading}
                             placeholder={t('select')}
                             className={cn(styles.selectTrigger, "min-w-0 px-4 font-medium text-zinc-700 dark:text-zinc-200 focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
@@ -679,6 +691,7 @@ export function QuotationHeaderForm({
                             }))}
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                            isLoading={isShippingAddressesLoading}
                             placeholder={t('quotation:header.selectShippingAddress')}
                             className={cn(styles.selectTrigger, "min-w-0 px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"

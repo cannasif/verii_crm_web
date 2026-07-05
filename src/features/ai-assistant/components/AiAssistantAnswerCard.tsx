@@ -1,11 +1,12 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, type ReactNode, useEffect, useState } from 'react';
 
 type AiAssistantAnswerCardProps = {
-  title: string;
+  title?: string;
   answer: string;
+  headerAction?: ReactNode;
 };
 
-export function AiAssistantAnswerCard({ title, answer }: AiAssistantAnswerCardProps): ReactElement {
+export function AiAssistantAnswerCard({ title, answer, headerAction }: AiAssistantAnswerCardProps): ReactElement {
   const [visibleAnswer, setVisibleAnswer] = useState('');
 
   useEffect(() => {
@@ -30,9 +31,18 @@ export function AiAssistantAnswerCard({ title, answer }: AiAssistantAnswerCardPr
 
   return (
     <div className="rounded-[1.6rem] rounded-ss-md border border-slate-200/80 bg-white/85 p-4 text-sm font-semibold leading-6 text-slate-800 shadow-sm shadow-slate-950/5 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.07] dark:text-slate-100">
-      <div className="mb-2 text-[0.68rem] font-black uppercase tracking-[0.22em] text-primary">
-        {title}
-      </div>
+      {(title || headerAction) && (
+        <div className="mb-2 flex items-center justify-between gap-3">
+          {title ? (
+            <div className="text-[0.68rem] font-black uppercase tracking-[0.22em] text-primary">
+              {title}
+            </div>
+          ) : (
+            <span />
+          )}
+          {headerAction}
+        </div>
+      )}
       <span>{visibleAnswer}</span>
       {isStreaming && (
         <span

@@ -354,7 +354,8 @@
     "download": "Download",
     "errorDismiss": "Close",
     "downloadFileName": "quotation.pdf",
-    "showDiscount": "Show discount"
+    "showDiscount": "Show discount",
+    "hideVat": "Hide VAT"
   },
   "pdfExportTemplate": {
     "builtInTemplateTitle": "V3RII Ready Template (Preview)",

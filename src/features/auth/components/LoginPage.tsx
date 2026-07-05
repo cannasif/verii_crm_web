@@ -21,6 +21,7 @@ import {
   Select,
   SelectContent,
   SelectItem,
+  SelectLoadingState,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -51,7 +52,7 @@ export function LoginPage(): React.JSX.Element {
   const { t } = useTranslation(['auth', 'common']);
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { data: branches } = useBranches();
+  const { data: branches, isLoading: isBranchesLoading } = useBranches();
   const { mutate: login, isPending } = useLogin(branches);
   const { logout } = useAuthStore();
   
@@ -191,27 +192,31 @@ export function LoginPage(): React.JSX.Element {
                         className={`absolute z-10 left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${fieldState.invalid ? 'text-red-500' : 'text-slate-400 group-focus-within:text-orange-400'}`} 
                         size={18} 
                       />
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value} disabled={isBranchesLoading}>
                         <SelectTrigger 
+                          isLoading={isBranchesLoading}
                           className={`w-full flex items-center justify-between min-w-0 overflow-hidden h-auto bg-black/10 rounded-xl py-6 pl-12 pr-4 text-base md:text-sm text-white focus:ring-0 focus:ring-offset-0 transition-all duration-300 [&>span]:truncate [&>span]:flex-1 [&>span]:min-w-0 [&>span]:text-left ${fieldState.invalid ? 'border-red-500/80 focus:border-red-500 hover:border-red-500 bg-red-950/10' : 'border border-white/10 focus:border-primary focus:bg-black/30'}`}
                         >
-                          <SelectValue placeholder={t('auth.login.branchPlaceholder')} />
+                          <SelectValue placeholder={isBranchesLoading ? t('common.loading') : t('auth.login.branchPlaceholder')} />
                         </SelectTrigger>
 
                         <SelectContent className="bg-black/90 backdrop-blur-xl border border-white/10 text-white w-[var(--radix-select-trigger-width)] max-h-60">
-  {branches?.map((branch) => (
-    <SelectItem 
-      key={branch.id} 
-      value={branch.id} 
-      className="focus:bg-primary/15 focus:text-white cursor-pointer py-3 items-start"
-    >
-      {/* Satır atlamasını sağlayan sihirli classlar: whitespace-normal ve break-words */}
-      <span className="whitespace-normal break-words text-left block w-full pr-2 leading-relaxed">
-        {branch.name}
-      </span>
-    </SelectItem>
-  ))}
-</SelectContent>
+                          {isBranchesLoading ? (
+                            <SelectLoadingState className="text-slate-300" text={t('common.loading')} />
+                          ) : (
+                            branches?.map((branch) => (
+                              <SelectItem 
+                                key={branch.id} 
+                                value={branch.id} 
+                                className="focus:bg-primary/15 focus:text-white cursor-pointer py-3 items-start"
+                              >
+                                <span className="whitespace-normal break-words text-left block w-full pr-2 leading-relaxed">
+                                  {branch.name}
+                                </span>
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
                       </Select>
                           </div>
                     </FormControl>

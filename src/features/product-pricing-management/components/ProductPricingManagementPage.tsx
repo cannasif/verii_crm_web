@@ -376,29 +376,29 @@ export function ProductPricingManagementPage(): ReactElement {
               label: resolveLabel(t, 'common.refresh', 'Yenile'),
             }}
             leftSlot={
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl">
-                  {(['all', 'active', 'archive'] as const).map((filter) => (
-                    <Button
-                      key={filter}
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setActiveFilter(filter)}
-                      className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 transition-all ${activeFilter === filter
-                        ? 'bg-primary/10 text-primary border border-primary/20'
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                        }`}
-                    >
-                      {t(`filter.${filter}`)}
-                    </Button>
-                  ))}
-                </div>
-                <DefinitionExcelActions
-                  definitionKey="product-pricing"
-                  fileNamePrefix="urun-fiyatlandirma"
-                  onImportCompleted={handleGridRefresh}
-                />
+              <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl">
+                {(['all', 'active', 'archive'] as const).map((filter) => (
+                  <Button
+                    key={filter}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setActiveFilter(filter)}
+                    className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 transition-all ${activeFilter === filter
+                      ? 'bg-primary/10 text-primary border border-primary/20'
+                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                      }`}
+                  >
+                    {t(`filter.${filter}`)}
+                  </Button>
+                ))}
               </div>
+            }
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="product-pricing"
+                fileNamePrefix="urun-fiyatlandirma"
+                onImportCompleted={handleGridRefresh}
+              />
             }
           />
         </CardHeader>

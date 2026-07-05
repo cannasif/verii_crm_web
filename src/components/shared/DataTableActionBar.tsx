@@ -14,6 +14,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { useToolbarActionOverflow, type ToolbarOverflowLayoutRefs } from '@/hooks/useToolbarActionOverflow';
+import {
+  getToolbarSearchMaxWidthClass,
+  isToolbarRefreshIconMode,
+  isToolbarSearchIconMode,
+  TOOLBAR_SEARCH_ICON_COMPACT_LEVEL,
+  TOOLBAR_TABS_COMPACT_LEVEL,
+  useToolbarCompactMode,
+  type ToolbarCompactLevel,
+} from '@/hooks/useToolbarCompactMode';
 import { AdvancedFilter } from './AdvancedFilter';
 import { ColumnPreferencesPanel, type ColumnDef } from './ColumnPreferencesPopover';
 import { GridExportMenu, GridExportMenuItems } from './GridExportMenu';
@@ -40,6 +50,11 @@ export interface DataTableRefreshConfig {
   disabled?: boolean;
   cooldownSeconds?: number;
   label?: string;
+}
+
+export interface DataTableLeftSlotContext {
+  compactLevel: ToolbarCompactLevel;
+  isMobile: boolean;
 }
 
 export interface DataTableActionBarProps {
@@ -71,11 +86,13 @@ export interface DataTableActionBarProps {
   search?: DataTableSearchConfig;
   refresh?: DataTableRefreshConfig;
   searchDebounceMs?: number;
-  leftSlot?: React.ReactNode;
+  leftSlot?: React.ReactNode | ((context: DataTableLeftSlotContext) => React.ReactNode);
   additionalFilterActions?: React.ReactNode;
   compactSearchOnMobile?: boolean;
   mobileMoreOptionsSlot?: React.ReactNode;
 }
+
+type ToolbarActionKey = 'filter' | 'columns' | 'additional' | 'export';
 
 export function DataTableActionBar({
   pageKey,
@@ -121,6 +138,8 @@ export function DataTableActionBar({
   const [showFilters, setShowFilters] = useState(false);
   const [columnsOpen, setColumnsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [desktopOverflowOpen, setDesktopOverflowOpen] = useState(false);
+  const [isDesktopCompactSearchOpen, setIsDesktopCompactSearchOpen] = useState(false);
   const [internalSearchValue, setInternalSearchValue] = useState(search?.defaultValue ?? '');
   const [legacyDisplayValue, setLegacyDisplayValue] = useState(searchValue ?? '');
   const [isMobileSearchActive, setIsMobileSearchActive] = useState(() => {
@@ -129,6 +148,16 @@ export function DataTableActionBar({
   const [refreshCooldownUntil, setRefreshCooldownUntil] = useState<number | null>(null);
   const [refreshNow, setRefreshNow] = useState(() => Date.now());
   const lastEmittedLegacyRef = useRef(searchValue ?? '');
+  const toolbarRowRef = useRef<HTMLDivElement>(null);
+  const leftSlotRef = useRef<HTMLDivElement>(null);
+  const leftSlotFullMeasureRef = useRef<HTMLDivElement>(null);
+  const leftSlotCompactMeasureRef = useRef<HTMLDivElement>(null);
+  const leftPinnedMiddleRef = useRef<HTMLDivElement>(null);
+  const rightPinnedRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const searchFullMeasureRef = useRef<HTMLDivElement>(null);
+  const refreshFullMeasureRef = useRef<HTMLDivElement>(null);
 
   const isSearchControlled = search?.value !== undefined;
   const useLegacySearch = Boolean(onSearchChange && !search);
@@ -255,10 +284,218 @@ export function DataTableActionBar({
       : 'bg-transparent hover:bg-slate-50 dark:hover:bg-white/5'
   );
 
+  const hasAdditionalActions = Boolean(additionalFilterActions);
+
+  const overflowStableWidthContext = useMemo(
+    () => ({
+      toolbarRef: toolbarRowRef,
+      searchFullMeasureRef,
+      refreshFullMeasureRef,
+      leftSlotRef,
+      leftSlotFullMeasureRef: typeof leftSlot === 'function' ? leftSlotFullMeasureRef : undefined,
+      hasSearch: shouldRenderSearch,
+      hasRefresh: Boolean(refresh),
+      useFullLeftSlotMeasure: typeof leftSlot === 'function',
+    }),
+    [refresh, shouldRenderSearch, leftSlot]
+  );
+
+  const overflowLayoutRefs = useMemo(
+    (): ToolbarOverflowLayoutRefs => ({
+      toolbarRef: toolbarRowRef,
+      leftPinnedMiddleRef,
+    }),
+    []
+  );
+
+  const { overflowMode, isMobile, hasDesktopOverflow } = useToolbarActionOverflow(
+    hasAdditionalActions,
+    `${appliedFilterCount}-${showFilters}-${columnsOpen}-${hasAdditionalActions}`,
+    overflowStableWidthContext,
+    overflowLayoutRefs,
+    containerRef,
+    measureRef
+  );
+
+  const isCoreInline = overflowMode === 'all-inline';
+
+  const isActionInline = (actionKey: ToolbarActionKey): boolean => {
+    if (isMobile) return false;
+    if (actionKey === 'additional') {
+      return overflowMode === 'all-inline' || overflowMode === 'core-in-menu';
+    }
+    return isCoreInline;
+  };
+
+  const isActionOverflowed = (actionKey: ToolbarActionKey): boolean => !isActionInline(actionKey);
+
+  const hasCompactibleTabs = typeof leftSlot === 'function';
+  const isRightSectionFullyCollapsed = overflowMode === 'all-in-menu' || (overflowMode === 'core-in-menu' && !hasAdditionalActions);
+
+  const { compactLevel } = useToolbarCompactMode({
+    enabled: !isMobile && isRightSectionFullyCollapsed,
+    hasSearch: shouldRenderSearch,
+    hasRefresh: Boolean(refresh),
+    hasCompactibleTabs,
+    remeasureKey: `${isRightSectionFullyCollapsed}-${overflowMode}-${refreshRemainingSeconds}-${hasCompactibleTabs}`,
+    toolbarRef: toolbarRowRef,
+    leftSlotRef,
+    leftSlotFullMeasureRef: hasCompactibleTabs ? leftSlotFullMeasureRef : undefined,
+    leftSlotCompactMeasureRef: hasCompactibleTabs ? leftSlotCompactMeasureRef : undefined,
+    rightPinnedRef,
+    searchFullMeasureRef,
+    refreshFullMeasureRef,
+  });
+
+  const useDesktopSearchIcon = !isMobile && isToolbarSearchIconMode(compactLevel);
+  const useDesktopCompactRefresh = !isMobile && isToolbarRefreshIconMode(compactLevel);
+  const desktopSearchMaxWidthClass = !isMobile && isRightSectionFullyCollapsed
+    ? getToolbarSearchMaxWidthClass(compactLevel)
+    : 'sm:max-w-xs';
+  const resolvedLeftSlot = typeof leftSlot === 'function' ? leftSlot({ compactLevel, isMobile }) : leftSlot;
+
+  useEffect(() => {
+    if (compactLevel < TOOLBAR_SEARCH_ICON_COMPACT_LEVEL) {
+      setIsDesktopCompactSearchOpen(false);
+    }
+  }, [compactLevel]);
+
+  const renderFilterTriggerButton = (): ReactElement => (
+    <Button
+      variant={showFilters || appliedFilterCount > 0 ? 'default' : 'outline'}
+      size="sm"
+      className={filterButtonClassName}
+    >
+      <Filter className="crm-me-2 h-4 w-4" />
+      {t('filters', { ns: 'common' })}
+      {appliedFilterCount > 0 && (
+        <span className="crm-ms-2 inline-flex min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none">
+          {appliedFilterCount}
+        </span>
+      )}
+    </Button>
+  );
+
+  const renderColumnsTriggerButton = (): ReactElement => (
+    <Button
+      variant={columnsOpen ? 'default' : 'outline'}
+      size="sm"
+      className={columnsButtonClassName}
+    >
+      <Columns3 className="crm-me-2 h-4 w-4" />
+      {t('common.editColumns')}
+    </Button>
+  );
+
+  const renderFilterOverflowMenuItem = (onClose: () => void): ReactElement => (
+    <DropdownMenuItem
+      className="cursor-pointer"
+      onSelect={(event) => {
+        event.preventDefault();
+        onClose();
+        setTimeout(() => setShowFilters(true), 150);
+      }}
+    >
+      <Filter className="crm-me-2 h-4 w-4" />
+      {t('filters', { ns: 'common' })}
+      {appliedFilterCount > 0 ? (
+        <span className="crm-ms-auto inline-flex min-w-5 items-center justify-center rounded-full bg-primary/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-primary">
+          {appliedFilterCount}
+        </span>
+      ) : null}
+    </DropdownMenuItem>
+  );
+
+  const renderColumnsOverflowMenuItem = (onClose: () => void): ReactElement => (
+    <DropdownMenuItem
+      className="cursor-pointer"
+      onSelect={(event) => {
+        event.preventDefault();
+        onClose();
+        setTimeout(() => setColumnsOpen(true), 150);
+      }}
+    >
+      <Columns3 className="crm-me-2 h-4 w-4" />
+      {t('common.editColumns')}
+    </DropdownMenuItem>
+  );
+
+  const renderExportOverflowSubmenu = (onClose: () => void): ReactElement => (
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger className="cursor-pointer">
+        <FileDown className="crm-me-2 h-4 w-4" />
+        {t('export', { ns: 'common', defaultValue: 'Çıktı Al' })}
+      </DropdownMenuSubTrigger>
+      <DropdownMenuSubContent>
+        <GridExportMenuItems
+          fileName={exportFileName}
+          columns={exportColumns}
+          rows={exportRows}
+          getExportData={getExportData}
+          translationNamespace={translationNamespace}
+          onActionComplete={onClose}
+        />
+      </DropdownMenuSubContent>
+    </DropdownMenuSub>
+  );
+
+  const renderDesktopOverflowMenuItems = (onClose: () => void): ReactElement => (
+    <>
+      {isActionOverflowed('additional') && additionalFilterActions ? (
+        <div className="px-2 py-1.5" onPointerDown={(event) => event.stopPropagation()}>
+          {additionalFilterActions}
+        </div>
+      ) : null}
+      {!isCoreInline ? renderFilterOverflowMenuItem(onClose) : null}
+      {!isCoreInline ? renderColumnsOverflowMenuItem(onClose) : null}
+      {!isCoreInline ? renderExportOverflowSubmenu(onClose) : null}
+    </>
+  );
 
   return (
     <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
-      <div className="flex w-full min-w-0 items-center gap-2">
+      <div ref={toolbarRowRef} className="relative flex w-full min-w-0 items-center gap-2">
+        <div className="pointer-events-none invisible absolute h-0 overflow-hidden" aria-hidden>
+          {shouldRenderSearch ? (
+            <div ref={searchFullMeasureRef} className="inline-flex">
+              <Input
+                readOnly
+                tabIndex={-1}
+                aria-hidden
+                placeholder={resolvedSearchPlaceholder}
+                className={cn(
+                  resolvedSearchClassName,
+                  'w-full border-slate-300 bg-white text-sm crm-ps-9 shadow-sm dark:border-white/15 dark:bg-transparent dark:shadow-none'
+                )}
+              />
+            </div>
+          ) : null}
+          {refresh ? (
+            <div ref={refreshFullMeasureRef} className="inline-flex">
+              <Button
+                variant="outline"
+                size="sm"
+                tabIndex={-1}
+                aria-hidden
+                className="shrink-0 border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent dark:shadow-none"
+              >
+                <RefreshCw className="h-4 w-4 crm-me-2" />
+                <span>{refreshRemainingSeconds > 0 ? `${refreshLabel} (${refreshRemainingSeconds}s)` : refreshLabel}</span>
+              </Button>
+            </div>
+          ) : null}
+          {hasCompactibleTabs ? (
+            <>
+              <div ref={leftSlotFullMeasureRef} className="inline-flex">
+                {leftSlot({ compactLevel: 0, isMobile: false })}
+              </div>
+              <div ref={leftSlotCompactMeasureRef} className="inline-flex">
+                {leftSlot({ compactLevel: TOOLBAR_TABS_COMPACT_LEVEL, isMobile: false })}
+              </div>
+            </>
+          ) : null}
+        </div>
+
         {compactSearchOnMobile && shouldRenderSearch && !isMobileSearchActive && (
           <Button
             variant="outline"
@@ -271,13 +508,28 @@ export function DataTableActionBar({
           </Button>
         )}
 
-        {shouldRenderSearch && (
+        {useDesktopSearchIcon && !isDesktopCompactSearchOpen ? (
+          <Button
+            variant="outline"
+            size="icon"
+            className="hidden shrink-0 h-9 w-9 border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent sm:inline-flex"
+            onClick={() => setIsDesktopCompactSearchOpen(true)}
+            aria-label={resolvedSearchPlaceholder}
+          >
+            <Search className="h-4 w-4" />
+          </Button>
+        ) : null}
+
+        {shouldRenderSearch && (!useDesktopSearchIcon || isDesktopCompactSearchOpen) ? (
           <div
             className={cn(
-              'group/search relative min-w-0 sm:max-w-xs',
+              'group/search relative min-w-0',
+              desktopSearchMaxWidthClass,
               compactSearchOnMobile
                 ? (isMobileSearchActive ? 'flex-1 flex' : 'hidden sm:flex flex-1')
-                : 'flex flex-1',
+                : useDesktopSearchIcon
+                  ? (isDesktopCompactSearchOpen ? 'hidden min-w-0 flex-1 sm:flex' : 'hidden sm:flex flex-1')
+                  : 'flex flex-1',
               search?.wrapperClassName
             )}
           >
@@ -291,15 +543,15 @@ export function DataTableActionBar({
               onChange={(event) => handleSearchInputChange(event.target.value)}
               className={cn(
                 resolvedSearchClassName,
-                'w-full border-slate-300 bg-white crm-ps-9 shadow-sm transition-all dark:border-white/15 dark:bg-transparent dark:shadow-none',
-                compactSearchOnMobile && isMobileSearchActive && 'crm-pe-8',
+                'w-full border-slate-300 bg-white text-sm crm-ps-9 shadow-sm transition-all dark:border-white/15 dark:bg-transparent dark:shadow-none',
+                (compactSearchOnMobile && isMobileSearchActive) || (useDesktopSearchIcon && isDesktopCompactSearchOpen) ? 'crm-pe-8' : undefined,
                 'focus:border-primary focus:ring-[3px] focus:ring-primary/20',
                 'focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/20',
                 'dark:focus:border-primary/60 dark:focus:ring-primary/10',
                 'dark:focus-visible:border-primary/60 dark:focus-visible:ring-primary/10'
               )}
             />
-            {compactSearchOnMobile && isMobileSearchActive && (
+            {compactSearchOnMobile && isMobileSearchActive ? (
               <Button
                 variant="ghost"
                 size="icon"
@@ -311,176 +563,208 @@ export function DataTableActionBar({
               >
                 <X className="h-4 w-4 text-slate-400" />
               </Button>
-            )}
+            ) : null}
+            {useDesktopSearchIcon && isDesktopCompactSearchOpen ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute crm-end-0 top-0 hidden h-full w-8 px-0 hover:bg-transparent sm:inline-flex"
+                onClick={() => setIsDesktopCompactSearchOpen(false)}
+                aria-label={t('common.close')}
+              >
+                <X className="h-4 w-4 text-slate-400" />
+              </Button>
+            ) : null}
           </div>
-        )}
+        ) : null}
 
-        <div className={cn("flex min-w-0 items-center gap-2 flex-1", compactSearchOnMobile && isMobileSearchActive ? "hidden sm:flex" : "flex")}>
-          {refresh && (
+        <div
+          ref={leftPinnedMiddleRef}
+          className={cn('flex shrink-0 items-center gap-2', compactSearchOnMobile && isMobileSearchActive ? 'hidden sm:flex' : 'flex')}
+        >
+          {refresh ? (
             <Button
               variant="outline"
-              size="sm"
+              size={useDesktopCompactRefresh ? 'icon' : 'sm'}
               className={cn(
-                "shrink-0 border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none",
-                compactSearchOnMobile && "max-sm:h-9 max-sm:w-9 max-sm:px-0"
+                'shrink-0 border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none',
+                compactSearchOnMobile && !useDesktopCompactRefresh && 'max-sm:h-9 max-sm:w-9 max-sm:px-0',
+                useDesktopCompactRefresh && 'hidden h-9 w-9 px-0 sm:inline-flex'
               )}
               onClick={handleRefresh}
               disabled={isRefreshDisabled}
+              aria-label={refreshLabel}
             >
-              <RefreshCw className={cn("h-4 w-4", compactSearchOnMobile ? "max-sm:[margin-inline-end:0] crm-me-2" : "crm-me-2", refresh?.isLoading && 'animate-spin')} />
-              <span className={cn(compactSearchOnMobile && "hidden sm:inline")}>
-                {refreshRemainingSeconds > 0 ? `${refreshLabel} (${refreshRemainingSeconds}s)` : refreshLabel}
-              </span>
+              <RefreshCw className={cn(
+                'h-4 w-4',
+                !useDesktopCompactRefresh && (compactSearchOnMobile ? 'max-sm:[margin-inline-end:0] crm-me-2' : 'crm-me-2'),
+                refresh?.isLoading && 'animate-spin'
+              )} />
+              {!useDesktopCompactRefresh ? (
+                <span className={cn(compactSearchOnMobile && 'hidden sm:inline')}>
+                  {refreshRemainingSeconds > 0 ? `${refreshLabel} (${refreshRemainingSeconds}s)` : refreshLabel}
+                </span>
+              ) : null}
             </Button>
-          )}
-          {leftSlot}
+          ) : null}
+          {resolvedLeftSlot ? (
+            <div ref={leftSlotRef} className="flex shrink-0 items-center">
+              {resolvedLeftSlot}
+            </div>
+          ) : null}
+        </div>
 
-          <div className="relative crm-ms-auto flex min-w-0 max-w-full flex-wrap items-center justify-end gap-2">
-          <Popover open={showFilters} onOpenChange={handleFilterOpenChange}>
-            <PopoverTrigger asChild>
-              <Button
-                variant={showFilters || appliedFilterCount > 0 ? 'default' : 'outline'}
-                size="sm"
-                className={cn(filterButtonClassName, 'max-sm:absolute max-sm:opacity-0 max-sm:pointer-events-none crm-end-0 sm:inline-flex')}
-              >
-                <Filter className="crm-me-2 h-4 w-4" />
-                {t('filters', { ns: 'common' })}
-                {appliedFilterCount > 0 && (
-                  <span className="crm-ms-2 inline-flex min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none">
-                    {appliedFilterCount}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent side="bottom" align="end" className="w-[560px] max-w-[95vw] p-0 rounded-2xl overflow-hidden">
-              <div className="flex items-center justify-between p-3 border-b border-white/5">
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  {resolveAdvancedFilterTitle()}
-                </h3>
-                <button
-                  type="button"
-                  onClick={() => setShowFilters(false)}
-                  className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
-                  aria-label={t('common.close')}
-                >
-                  <X size={16} />
-                </button>
-              </div>
-              <div className="p-3 overflow-y-auto max-h-[420px]">
-                <AdvancedFilter
-                  columns={filterColumns}
-                  defaultColumn={defaultFilterColumn}
-                  draftRows={draftFilterRows}
-                  onDraftRowsChange={onDraftFilterRowsChange}
-                  filterLogic={filterLogic}
-                  onFilterLogicChange={onFilterLogicChange}
-                  onSearch={() => {
-                    onApplyFilters();
-                    setShowFilters(false);
-                  }}
-                  onClear={onClearFilters}
+        <div
+          ref={containerRef}
+          className="relative flex min-w-0 flex-1 items-center justify-end overflow-hidden"
+        >
+          <div
+            ref={measureRef}
+            className="pointer-events-none invisible absolute flex items-center gap-2 whitespace-nowrap"
+            aria-hidden
+          >
+            {additionalFilterActions ? (
+              <div className="shrink-0">{additionalFilterActions}</div>
+            ) : null}
+            <div className="flex shrink-0 items-center gap-2">
+              <div className="shrink-0">{renderFilterTriggerButton()}</div>
+              <div className="shrink-0">{renderColumnsTriggerButton()}</div>
+              <div className="shrink-0">
+                <GridExportMenu
+                  fileName={exportFileName}
+                  columns={exportColumns}
+                  rows={exportRows}
+                  getExportData={getExportData}
                   translationNamespace={translationNamespace}
-                  embedded
                 />
               </div>
-            </PopoverContent>
-          </Popover>
-
-          <Popover open={columnsOpen} onOpenChange={handleColumnsOpenChange}>
-            <PopoverTrigger asChild>
-              <Button
-                variant={columnsOpen ? 'default' : 'outline'}
-                size="sm"
-                className={cn(columnsButtonClassName, 'max-sm:absolute max-sm:opacity-0 max-sm:pointer-events-none crm-end-0 sm:inline-flex')}
-              >
-                <Columns3 className="crm-me-2 h-4 w-4" />
-                {t('common.editColumns')}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-72 p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50">
-              <ColumnPreferencesPanel
-                pageKey={pageKey}
-                userId={userId}
-                columns={columns}
-                visibleColumns={visibleColumns}
-                columnOrder={columnOrder}
-                onVisibleColumnsChange={onVisibleColumnsChange}
-                onColumnOrderChange={onColumnOrderChange}
-              />
-            </PopoverContent>
-          </Popover>
-
-          <div className="hidden min-w-0 max-w-full flex-wrap items-center justify-end gap-2 overflow-x-auto pb-1 sm:flex">
-            {additionalFilterActions}
-
-            <GridExportMenu
-              fileName={exportFileName}
-              columns={exportColumns}
-              rows={exportRows}
-              getExportData={getExportData}
-              translationNamespace={translationNamespace}
-            />
+            </div>
           </div>
 
-          <DropdownMenu open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-9 w-9 border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent sm:hidden"
-                aria-label={t('moreActions', { ns: 'common', defaultValue: 'Diğer işlemler' })}
-              >
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52" onCloseAutoFocus={(e) => e.preventDefault()}>
-              {mobileMoreOptionsSlot}
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  setMobileMenuOpen(false);
-                  setTimeout(() => setShowFilters(true), 150);
-                }}
-              >
-                <Filter className="crm-me-2 h-4 w-4" />
-                {t('filters', { ns: 'common' })}
-                {appliedFilterCount > 0 ? (
-                  <span className="crm-ms-auto inline-flex min-w-5 items-center justify-center rounded-full bg-primary/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-primary">
-                    {appliedFilterCount}
-                  </span>
-                ) : null}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onSelect={(e) => {
-                  e.preventDefault();
-                  setMobileMenuOpen(false);
-                  setTimeout(() => setColumnsOpen(true), 150);
-                }}
-              >
-                <Columns3 className="crm-me-2 h-4 w-4" />
-                {t('common.editColumns')}
-              </DropdownMenuItem>
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="cursor-pointer">
-                  <FileDown className="crm-me-2 h-4 w-4" />
-                  {t('export', { ns: 'common', defaultValue: 'Çıktı Al' })}
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  <GridExportMenuItems
-                    fileName={exportFileName}
-                    columns={exportColumns}
-                    rows={exportRows}
-                    getExportData={getExportData}
+          <div ref={rightPinnedRef} className="flex min-w-0 max-w-full shrink-0 items-center justify-end gap-2 overflow-hidden">
+            {isActionInline('additional') && additionalFilterActions ? (
+              <div className="shrink-0">{additionalFilterActions}</div>
+            ) : null}
+
+            <Popover open={showFilters} onOpenChange={handleFilterOpenChange}>
+              {isActionInline('filter') ? (
+                <PopoverTrigger asChild>
+                  {renderFilterTriggerButton()}
+                </PopoverTrigger>
+              ) : (
+                <PopoverTrigger asChild>
+                  <span className="pointer-events-none absolute bottom-0 crm-end-0 h-px w-px overflow-hidden opacity-0" tabIndex={-1} aria-hidden />
+                </PopoverTrigger>
+              )}
+              <PopoverContent side="bottom" align="end" className="w-[560px] max-w-[95vw] p-0 rounded-2xl overflow-hidden">
+                <div className="flex items-center justify-between p-3 border-b border-white/5">
+                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    {resolveAdvancedFilterTitle()}
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowFilters(false)}
+                    className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+                    aria-label={t('common.close')}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+                <div className="p-3 overflow-y-auto max-h-[420px]">
+                  <AdvancedFilter
+                    columns={filterColumns}
+                    defaultColumn={defaultFilterColumn}
+                    draftRows={draftFilterRows}
+                    onDraftRowsChange={onDraftFilterRowsChange}
+                    filterLogic={filterLogic}
+                    onFilterLogicChange={onFilterLogicChange}
+                    onSearch={() => {
+                      onApplyFilters();
+                      setShowFilters(false);
+                    }}
+                    onClear={onClearFilters}
                     translationNamespace={translationNamespace}
-                    onActionComplete={() => setMobileMenuOpen(false)}
+                    embedded
                   />
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+
+            <Popover open={columnsOpen} onOpenChange={handleColumnsOpenChange}>
+              {isActionInline('columns') ? (
+                <PopoverTrigger asChild>
+                  {renderColumnsTriggerButton()}
+                </PopoverTrigger>
+              ) : (
+                <PopoverTrigger asChild>
+                  <span className="pointer-events-none absolute bottom-0 crm-end-0 h-px w-px overflow-hidden opacity-0" tabIndex={-1} aria-hidden />
+                </PopoverTrigger>
+              )}
+              <PopoverContent align="end" className="w-72 p-0 bg-white/95 dark:bg-[#1a1025]/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 shadow-xl rounded-xl z-50">
+                <ColumnPreferencesPanel
+                  pageKey={pageKey}
+                  userId={userId}
+                  columns={columns}
+                  visibleColumns={visibleColumns}
+                  columnOrder={columnOrder}
+                  onVisibleColumnsChange={onVisibleColumnsChange}
+                  onColumnOrderChange={onColumnOrderChange}
+                />
+              </PopoverContent>
+            </Popover>
+
+            {isActionInline('export') ? (
+              <GridExportMenu
+                fileName={exportFileName}
+                columns={exportColumns}
+                rows={exportRows}
+                getExportData={getExportData}
+                translationNamespace={translationNamespace}
+              />
+            ) : null}
+
+            {hasDesktopOverflow ? (
+              <DropdownMenu open={desktopOverflowOpen} onOpenChange={setDesktopOverflowOpen}>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-9 w-9 shrink-0 border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent"
+                    aria-label={t('moreActions', { ns: 'common', defaultValue: 'Diğer işlemler' })}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-52" onCloseAutoFocus={(event) => event.preventDefault()}>
+                  {renderDesktopOverflowMenuItems(() => setDesktopOverflowOpen(false))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : null}
+
+            <DropdownMenu open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 shrink-0 border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent sm:hidden"
+                  aria-label={t('moreActions', { ns: 'common', defaultValue: 'Diğer işlemler' })}
+                >
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-52" onCloseAutoFocus={(event) => event.preventDefault()}>
+                {mobileMoreOptionsSlot}
+                {additionalFilterActions ? (
+                  <div className="px-2 py-1.5 sm:hidden" onPointerDown={(event) => event.stopPropagation()}>
+                    {additionalFilterActions}
+                  </div>
+                ) : null}
+                {renderFilterOverflowMenuItem(() => setMobileMenuOpen(false))}
+                {renderColumnsOverflowMenuItem(() => setMobileMenuOpen(false))}
+                {renderExportOverflowSubmenu(() => setMobileMenuOpen(false))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </div>

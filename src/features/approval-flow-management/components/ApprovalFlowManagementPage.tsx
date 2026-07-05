@@ -1,15 +1,16 @@
 import { type ReactElement, useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
 
-import { useQueryClient } from '@tanstack/react-query';
+import { isToolbarTabsCompactMode } from '@/hooks/useToolbarCompactMode';
 import { DataTableActionBar, ManagementListPageHeader, type DataTableGridColumn, DescriptionCell } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
-import { arraysEqual } from '@/lib/utils';
+import { arraysEqual, cn } from '@/lib/utils';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -277,28 +278,42 @@ export function ApprovalFlowManagementPage(): ReactElement {
               isLoading,
               onRefresh: () => void handleRefresh(),
             }}
-            leftSlot={
-              <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl overflow-x-auto">
-                {(['all', 'active', 'inactive'] as const).map((filter) => (
-                  <Button
-                    key={filter}
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setActiveFilter(filter)}
-                    className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 transition-colors ${activeFilter === filter
-                      ? 'border border-primary/20 bg-accent text-primary dark:border-primary/25 dark:bg-primary/10'
-                      : 'text-slate-500 hover:bg-accent/40 hover:text-primary dark:text-slate-400 dark:hover:bg-primary/10 dark:hover:text-primary'
-                      }`}
-                  >
-                    {filter === 'all'
-                      ? t('common.all')
-                      : filter === 'active'
-                        ? t('approvalFlow.active')
-                        : t('approvalFlow.inactive')}
-                  </Button>
-                ))}
-              </div>
-            }
+            leftSlot={({ compactLevel, isMobile }) => {
+              const isCompactTabs = isMobile || isToolbarTabsCompactMode(compactLevel);
+
+              return (
+                <div
+                  className={cn(
+                    'flex items-center overflow-x-auto rounded-xl bg-slate-100/50 dark:bg-white/5',
+                    isCompactTabs ? 'gap-px p-px' : 'gap-1 p-1'
+                  )}
+                >
+                  {(['all', 'active', 'inactive'] as const).map((filter) => (
+                    <Button
+                      key={filter}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setActiveFilter(filter)}
+                      className={cn(
+                        'font-bold uppercase whitespace-nowrap transition-colors',
+                        isCompactTabs
+                          ? 'h-7 w-auto min-w-0 rounded-md !px-1 text-xs tracking-wide'
+                          : 'h-8 shrink-0 rounded-lg px-4 text-xs tracking-wider',
+                        activeFilter === filter
+                          ? 'border border-primary/20 bg-accent text-primary dark:border-primary/25 dark:bg-primary/10'
+                          : 'text-slate-500 hover:bg-accent/40 hover:text-primary dark:text-slate-400 dark:hover:bg-primary/10 dark:hover:text-primary'
+                      )}
+                    >
+                      {filter === 'all'
+                        ? t('common.all')
+                        : filter === 'active'
+                          ? t('approvalFlow.active')
+                          : t('approvalFlow.inactive')}
+                    </Button>
+                  ))}
+                </div>
+              );
+            }}
           />
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>

@@ -34,7 +34,6 @@ import { quotationApi } from '../api/quotation-api';
 import { pdfReportTemplateApi } from '@/features/pdf-report/api/pdf-report-template-api';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
-import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { SalesDocumentDraftRestoreDialog } from '@/features/sales-drafts/SalesDocumentDraftRestoreDialog';
 import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentDraft';
 import { usePrefetchLineImagesForPdf } from '../hooks/usePrefetchLineImagesForPdf';
@@ -215,7 +214,6 @@ export function QuotationCreateForm(): ReactElement {
   );
   const { koliBaskiMap, profilMap, demirMap, vidaMap, baskiMap } = useWindoDefinitionOptions();
   const { data: paymentTypes = [] } = usePaymentTypes();
-  const effectiveSystemSettings = useSystemSettingsStore((state) => state.settings);
   const { data: shippingAddresses = [] } = useShippingAddresses(
     watchedCustomerId != null && watchedCustomerId > 0 ? watchedCustomerId : undefined,
   );
@@ -532,7 +530,7 @@ export function QuotationCreateForm(): ReactElement {
 
   const defaultShowDiscountDetails = hasLineDiscounts || hasGeneralDiscount;
 
-  const buildExportPdfBlob = useCallback(async ({ draft, showDiscount }: { draft: boolean; showDiscount?: boolean }): Promise<Blob> => {
+  const buildExportPdfBlob = useCallback(async ({ draft, showDiscount, hideVat }: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> => {
     const qc = quotationFormSlice;
     const customerLabel =
       (await resolveQuotationCustomerLabelForPdf({
@@ -612,7 +610,7 @@ export function QuotationCreateForm(): ReactElement {
       lineDiscountLabels,
       showDiscount: showDiscount ?? defaultShowDiscountDetails,
       draft,
-      hideVat: effectiveSystemSettings.hideQuotationVatRate,
+      hideVat: hideVat ?? false,
     });
   }, [
     lines,
@@ -632,7 +630,6 @@ export function QuotationCreateForm(): ReactElement {
     vidaMap,
     baskiMap,
     defaultShowDiscountDetails,
-    effectiveSystemSettings.hideQuotationVatRate,
   ]);
 
   const openPdfExportPreview = (): void => {
@@ -942,6 +939,7 @@ export function QuotationCreateForm(): ReactElement {
           shareWhatsapp: t('shareWhatsapp'),
           shareMail: t('shareMail'),
           showDiscount: t('exportPreview.showDiscount'),
+          hideVat: t('exportPreview.hideVat'),
         }}
         onShareWhatsapp={handleModalShareWhatsapp}
         onShareMail={handleModalShareMail}

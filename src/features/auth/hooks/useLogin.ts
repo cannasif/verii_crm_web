@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { authApi } from '../api/auth-api';
 import { useAuthStore } from '@/stores/auth-store';
+import { persistBottomRightRailPlacement } from '@/features/ai-assistant/lib/ai-assistant-widget-placement';
 import { getUserFromToken } from '@/utils/jwt';
 import type { LoginRequest, Branch } from '../types/auth';
 import { ACCESS_CONTROL_QUERY_KEYS } from '@/features/access-control/utils/query-keys';
@@ -27,6 +28,7 @@ export const useLogin = (branches?: Branch[]) => {
           const rememberMe = variables.rememberMe;
 
           setAuth(user, token, selectedBranch, rememberMe, refreshToken);
+          persistBottomRightRailPlacement();
           await queryClient.invalidateQueries({ queryKey: ACCESS_CONTROL_QUERY_KEYS.ME_PERMISSIONS_BASE });
           await queryClient.refetchQueries({
             queryKey: ACCESS_CONTROL_QUERY_KEYS.ME_PERMISSIONS(user.id),

@@ -9,8 +9,9 @@ import { DataTableActionBar, type DataTableGridColumn } from '@/components/share
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
+import { isToolbarTabsCompactMode } from '@/hooks/useToolbarCompactMode';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
-import { arraysEqual } from '@/lib/utils';
+import { arraysEqual, cn } from '@/lib/utils';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -294,19 +295,31 @@ export function PricingRuleManagementPage(): ReactElement {
               cooldownSeconds: 60,
               label: resolveLabel(t, 'common.refresh', 'Yenile'),
             }}
-            leftSlot={
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-1 bg-slate-100/50 dark:bg-white/5 p-1 rounded-xl overflow-x-auto">
+            leftSlot={({ compactLevel, isMobile }) => {
+              const isCompactTabs = isMobile || isToolbarTabsCompactMode(compactLevel);
+
+              return (
+                <div
+                  className={cn(
+                    'flex items-center overflow-x-auto rounded-xl bg-slate-100/50 dark:bg-white/5',
+                    isCompactTabs ? 'gap-px p-px' : 'gap-1 p-1'
+                  )}
+                >
                   {(['all', 'active', 'inactive'] as const).map((filter) => (
                     <Button
                       key={filter}
                       variant="ghost"
                       size="sm"
                       onClick={() => setActiveFilter(filter)}
-                      className={`rounded-lg px-4 h-8 text-xs font-bold uppercase tracking-wider shrink-0 ${activeFilter === filter
-                        ? 'bg-primary/10 text-primary border border-primary/20'
-                        : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
-                        }`}
+                      className={cn(
+                        'font-bold uppercase whitespace-nowrap transition-all',
+                        isCompactTabs
+                          ? 'h-7 w-auto min-w-0 rounded-md !px-1 text-xs tracking-wide'
+                          : 'h-8 shrink-0 rounded-lg px-4 text-xs tracking-wider',
+                        activeFilter === filter
+                          ? 'bg-primary/10 text-primary border border-primary/20'
+                          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5'
+                      )}
                     >
                       {filter === 'all'
                         ? t('common.all')
@@ -316,12 +329,14 @@ export function PricingRuleManagementPage(): ReactElement {
                     </Button>
                   ))}
                 </div>
-                <DefinitionExcelActions
-                  definitionKey="pricing-rule"
-                  fileNamePrefix="fiyat-kurallari"
-                  onImportCompleted={handleRefresh}
-                />
-              </div>
+              );
+            }}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="pricing-rule"
+                fileNamePrefix="fiyat-kurallari"
+                onImportCompleted={handleRefresh}
+              />
             }
           />
         </CardHeader>

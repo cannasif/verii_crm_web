@@ -63,11 +63,12 @@ import { QuotationStructuredNotesList } from '@/features/quotation/components/Qu
 import { QuotationNotesAddLineButton } from '@/features/quotation/components/QuotationNotesAddLineButton';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
+import { DropdownLoadingPanel } from '@/components/shared/DropdownLoadingPanel';
 import { 
   Search, SearchX, User, Truck, Briefcase, Globe, 
   Calendar, CreditCard, Hash, FileText, ArrowRightLeft, 
   Layers, Folder, MapPin, BookUser, Check, Building2,
-  Banknote
+  Banknote, Loader2
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
@@ -245,11 +246,12 @@ export function DemandHeaderForm({
     specialCode2DefaultExists.data,
   ]);
 
-  const { data: shippingAddresses } = useShippingAddresses(watchedCustomerId || undefined);
-  const { data: relatedUsers = [] } = useDemandRelatedUsers(user?.id);
+  const { data: shippingAddresses, isLoading: isShippingAddressesLoading } = useShippingAddresses(watchedCustomerId || undefined);
+  const { data: relatedUsers = [], isLoading: isRelatedUsersLoading } = useDemandRelatedUsers(user?.id);
   const {
     data: customerOptions = [],
     isFetched: hasCustomerOptionsLoaded,
+    isLoading: isCustomerOptionsLoading,
   } = useCustomerOptions(watchedRepresentativeId);
   const shouldFetchCustomer = Boolean(watchedCustomerId && watchedCustomerId > 0);
   const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
@@ -523,7 +525,7 @@ export function DemandHeaderForm({
                           onChange={(e) => {
                             const v = e.target.value;
                             setCustomerSearchQuery(v);
-                            setCustomerComboboxOpen(v.trim().length > 0);
+                            setCustomerComboboxOpen(v.trim().length > 0 || isCustomerOptionsLoading);
                           }}
                           onKeyDown={customerKeyboard.onInputKeyDown}
                           placeholder={t('demand:header.selectCustomer')}
@@ -531,6 +533,9 @@ export function DemandHeaderForm({
                           autoComplete="off"
                         />
                       </FormControl>
+                      {isCustomerOptionsLoading ? (
+                        <Loader2 className="absolute right-3 top-1/2 z-20 h-4 w-4 -translate-y-1/2 animate-spin text-primary" />
+                      ) : null}
                       <Popover open={customerComboboxOpen} onOpenChange={setCustomerComboboxOpen}>
                         <PopoverAnchor className="absolute top-full left-0 h-0 w-full" />
                         <PopoverContent
@@ -545,6 +550,10 @@ export function DemandHeaderForm({
                               className="max-h-[350px] overflow-y-auto"
                             >
                               <CommandList className="p-2 space-y-1">
+                              {isCustomerOptionsLoading ? (
+                                <DropdownLoadingPanel className="text-slate-500" minHeightClassName="min-h-28" />
+                              ) : (
+                                <>
                               {filteredCustomerOptions.length === 0 && (
                                 <CommandEmpty className="py-8 text-center flex flex-col items-center gap-2">
                                   <SearchX className="w-5 h-5 text-slate-400" />
@@ -584,6 +593,8 @@ export function DemandHeaderForm({
                                   </CommandItem>
                                 ))}
                               </CommandGroup>
+                                </>
+                              )}
                             </CommandList>
                             </div>
                           </Command>
@@ -634,6 +645,7 @@ export function DemandHeaderForm({
                             }))}
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                            isLoading={isRelatedUsersLoading}
                             placeholder={t('select')}
                             className={cn(styles.selectTrigger, "min-w-0 px-4 font-medium text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
@@ -669,6 +681,7 @@ export function DemandHeaderForm({
                             }))}
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                            isLoading={isShippingAddressesLoading}
                             placeholder={t('demand:header.selectShippingAddress')}
                             className={cn(styles.selectTrigger, "min-w-0 px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"

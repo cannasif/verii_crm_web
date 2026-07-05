@@ -1,9 +1,10 @@
 import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react"
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { getIconPrefixPaddingStyle } from "@/lib/form-field-with-icon"
+import { DropdownLoadingPanel } from "@/components/shared/DropdownLoadingPanel"
 
 function Select({
   ...props
@@ -28,9 +29,12 @@ function SelectTrigger({
   size = "default",
   children,
   style,
+  isLoading = false,
+  disabled,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default"
+  isLoading?: boolean
 }) {
   const iconPrefixStyle = getIconPrefixPaddingStyle(className ?? "")
   return (
@@ -42,14 +46,29 @@ function SelectTrigger({
         className
       )}
       style={iconPrefixStyle ? { ...style, ...iconPrefixStyle } : style}
+      disabled={disabled || isLoading}
       {...props}
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="size-4 opacity-50" />
+        {isLoading ? (
+          <Loader2 className="size-4 animate-spin text-[var(--crm-brand-text)]" />
+        ) : (
+          <ChevronDownIcon className="size-4 opacity-50" />
+        )}
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
+}
+
+function SelectLoadingState({
+  className,
+  text,
+}: {
+  className?: string
+  text?: string
+}): React.ReactElement {
+  return <DropdownLoadingPanel className={className} text={text} />
 }
 
 function SelectContent({
@@ -181,6 +200,7 @@ export {
   SelectGroup,
   SelectItem,
   SelectLabel,
+  SelectLoadingState,
   SelectScrollDownButton,
   SelectScrollUpButton,
   SelectSeparator,

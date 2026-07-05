@@ -168,7 +168,7 @@ export function DefinitionExcelActions({
           type="button"
           variant="outline"
           size="sm"
-          className="h-9 shrink-0 whitespace-nowrap border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent"
+          className="h-9 shrink-0 whitespace-nowrap border-slate-300 bg-white shadow-sm dark:border-white/20 dark:bg-transparent"
           onClick={() => void handleTemplateDownload()}
           disabled={isTemplateDownloading || isImporting}
         >
@@ -179,7 +179,7 @@ export function DefinitionExcelActions({
           type="button"
           variant="outline"
           size="sm"
-          className="h-9 shrink-0 whitespace-nowrap border-slate-300 bg-white shadow-sm dark:border-white/15 dark:bg-transparent"
+          className="h-9 shrink-0 whitespace-nowrap border-slate-300 bg-white shadow-sm dark:border-white/20 dark:bg-transparent"
           onClick={handleImportClick}
           disabled={isTemplateDownloading || isImporting}
         >

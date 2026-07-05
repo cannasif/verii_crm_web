@@ -11,6 +11,8 @@ import { AiAssistantWidget } from '@/features/ai-assistant';
 import { RoutePermissionGuard } from '@/features/access-control/components/RoutePermissionGuard';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { filterNavItemsByPermission } from '@/features/access-control/utils/filterNavItems';
+import { useUIStore } from '@/stores/ui-store';
+import { Bot } from 'lucide-react';
 import { 
   DashboardCircleIcon, 
   UserGroupIcon, 
@@ -36,6 +38,8 @@ interface MainLayoutProps {
 
 export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
   const { t } = useTranslation('common');
+  const isAiAssistantInSidebar = useUIStore((state) => state.isAiAssistantInSidebar);
+  const isAiAssistantWidgetVisible = useUIStore((state) => state.isAiAssistantWidgetVisible);
   const { data: permissions, isLoading, isError } = useMyPermissionsQuery();
   const canManageIntegrationAuth =
     permissions?.isSystemAdmin === true ||
@@ -50,6 +54,15 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         href: '/',
         icon: <DashboardCircleIcon size={iconSize} className="text-blue-500" />,
       },
+      ...(isAiAssistantInSidebar && !isAiAssistantWidgetVisible
+        ? [
+            {
+              title: t('sidebar.aiAssistant'),
+              href: '/ai-assistant',
+              icon: <Bot size={iconSize} className="text-[var(--crm-brand-primary)]" />,
+            },
+          ]
+        : []),
       {
         title: t('sidebar.salesManagement'),
         icon: <ShoppingBag03Icon size={iconSize} className="text-orange-500" />,
@@ -275,7 +288,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
     ];
 
     return logicalMenuStructure;
-  }, [t]);
+  }, [t, isAiAssistantInSidebar, isAiAssistantWidgetVisible]);
 
   const items = useMemo(() => {
     const raw = navItems ?? defaultNavItems;

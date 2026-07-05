@@ -234,7 +234,7 @@ interface OrderLineTableProps {
   representativeId?: number | null;
   orderId?: number | null;
   enabled?: boolean;
-  buildExportPdfBlob?: (options: { draft: boolean; showDiscount?: boolean }) => Promise<Blob>;
+  buildExportPdfBlob?: (options: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }) => Promise<Blob>;
   exportPdfFileName?: string;
   offerType?: string | null;
 }

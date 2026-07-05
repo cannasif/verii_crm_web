@@ -1,20 +1,37 @@
-import { type ChangeEvent, type FormEvent, type KeyboardEvent, type PointerEvent, type ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { type ChangeEvent, type FormEvent, type KeyboardEvent, type PointerEvent, type ReactElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Bot, Check, ChevronsRight, Copy, ExternalLink, FileImage, GripVertical, ImagePlus, Maximize2, MessageCircle, Minimize2, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
+import { Bot, Check, ChevronsLeft, Copy, ExternalLink, FileImage, GripVertical, ImagePlus, Maximize2, MessageCircle, Minimize2, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
+import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
 import { useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
 import { AiAssistantAnswerCard } from './AiAssistantAnswerCard';
-import { AiAssistantContextPill } from './AiAssistantContextPill';
 import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
+import { AiAssistantDockDialog } from './AiAssistantDockDialog';
+import { AiAssistantLastErrorButton } from './AiAssistantLastErrorButton';
 import {
-  getLatestAiAssistantErrorContext,
-  subscribeAiAssistantErrorContext,
-  type AiAssistantErrorContext,
-} from '../lib/ai-assistant-error-context';
+  clampToContentBounds,
+  consumeAiAssistantWidgetPlacementResetOnShow,
+  createBottomRightRailPlacement,
+  getLeftEdgeAttachedPosition,
+  getRightAlignedPosition,
+  getRightEdgeAttachedPosition,
+  hasAiAssistantWidgetPlacementResetPending,
+  isNearContentRightEdge,
+  isNearSidebarRightEdge,
+  readInitialWidgetPlacement,
+  readViewportBounds,
+  readWidgetContentBounds,
+  resolveWidgetDragPosition,
+  type WidgetContentBounds,
+  type WidgetEdgeAttachment,
+  type WidgetPosition,
+  type WidgetSize,
+} from '../lib/ai-assistant-widget-placement';
+import { useAiAssistantWidgetBounds } from '../hooks/useAiAssistantWidgetBounds';
 import {
   createAiAssistantActionItemsFromToolActions,
   createAiAssistantChatHistoryKey,
@@ -43,6 +60,11 @@ import {
   readAiAssistantLanguagePreference,
   writeAiAssistantLanguagePreference,
 } from '../lib/ai-assistant-language';
+import {
+  getLatestAiAssistantErrorContext,
+  subscribeAiAssistantErrorContext,
+  type AiAssistantErrorContext,
+} from '../lib/ai-assistant-error-context';
 import { aiAssistantApi } from '../api/ai-assistant-api';
 import type { AiAssistantLanguagePreference } from '../types/ai-assistant.types';
 
@@ -56,8 +78,9 @@ const actionItemClassNameBySeverity: Record<string, string> = {
 const minimumThinkingDurationMs = 900;
 const missingTranslationText = 'Çeviri eksik';
 const widgetPositionStorageKey = 'crm-ai-assistant-widget-position';
+const edgeAttachmentStorageKey = 'crm-ai-assistant-edge-attachment';
 const widgetSessionStorageKey = 'crm-ai-assistant-widget-session-key';
-const widgetViewportPadding = 16;
+const dragActivationThresholdPx = 8;
 const widgetDefaultWidth = 500;
 const widgetDefaultHeight = 700;
 
@@ -93,6 +116,12 @@ const aiAssistantTextFallbacks: Record<string, string> = {
   expandPanel: 'Paneli genişlet',
   collapsePanel: 'Paneli küçült',
   dockPanel: 'Kenara al',
+  dockDialogTitle: 'Tam sayfa modu',
+  sidebarLinkLabel: 'Tam sayfa modu (sidebar kısayolu)',
+  sidebarLinkDescription: 'Açıkken sol menüde AI Asistan linki görünür ve yüzen panel devre dışı kalır.',
+  sidebarLinkEnabledNotice: 'Onayladığınızda yüzen panel kapanacak. AI Asistan\'a yalnızca sidebar linki veya tam sayfa üzerinden erişebilirsiniz.',
+  dockDialogCancel: 'İptal',
+  dockDialogConfirm: 'Onayla',
   openFromRail: 'AI asistanı kenar çubuğundan aç',
   dragPanel: 'Paneli sürükle',
   dockedChat: 'AI Asistan',
@@ -147,69 +176,135 @@ function readAssistantSessionKey(): string {
   return nextKey;
 }
 
-type WidgetPosition = {
-  x: number;
-  y: number;
-};
-
 type DragState = {
   pointerId: number;
   offsetX: number;
   offsetY: number;
+  startClientX: number;
+  startClientY: number;
+  mode: 'panel' | 'closed';
+  didActivate: boolean;
+  edgeAttachmentStart: WidgetEdgeAttachment;
 };
 
-function clampWidgetPosition(position: WidgetPosition, element?: HTMLElement | null): WidgetPosition {
-  if (typeof window === 'undefined') {
-    return position;
-  }
-
-  const width = element?.offsetWidth || widgetDefaultWidth;
-  const height = element?.offsetHeight || widgetDefaultHeight;
-  const maxX = Math.max(widgetViewportPadding, window.innerWidth - width - widgetViewportPadding);
-  const maxY = Math.max(widgetViewportPadding, window.innerHeight - height - widgetViewportPadding);
-
+function adjustWidgetPositionForSizeChange(
+  position: WidgetPosition,
+  previousSize: { width: number; height: number },
+  nextSize: { width: number; height: number }
+): WidgetPosition {
   return {
-    x: Math.min(Math.max(position.x, widgetViewportPadding), maxX),
-    y: Math.min(Math.max(position.y, widgetViewportPadding), maxY),
+    x: position.x + previousSize.width - nextSize.width,
+    y: position.y + previousSize.height - nextSize.height,
   };
 }
 
-function createDefaultWidgetPosition(): WidgetPosition {
+function getTargetPanelSize(expanded: boolean, bounds?: WidgetContentBounds): WidgetSize {
+  const contentBounds = bounds ?? readWidgetContentBounds();
+  const contentWidth = Math.max(0, contentBounds.right - contentBounds.left);
+
   if (typeof window === 'undefined') {
-    return { x: widgetViewportPadding, y: widgetViewportPadding };
+    return expanded
+      ? { width: 850, height: 850 }
+      : { width: widgetDefaultWidth, height: widgetDefaultHeight };
   }
 
-  return clampWidgetPosition({
-    x: window.innerWidth - widgetDefaultWidth - 24,
-    y: window.innerHeight - widgetDefaultHeight - 24,
-  });
+  if (expanded) {
+    return {
+      width: Math.min(850, contentWidth),
+      height: Math.min(850, window.innerHeight * 0.92),
+    };
+  }
+
+  return {
+    width: Math.min(500, contentWidth),
+    height: Math.min(700, window.innerHeight * 0.8),
+  };
 }
 
-function readWidgetPosition(): WidgetPosition {
-  if (typeof window === 'undefined' || !window.localStorage) {
-    return createDefaultWidgetPosition();
+function readWidgetPanelSize(element: HTMLElement | null): WidgetSize {
+  if (!element) {
+    return { width: widgetDefaultWidth, height: widgetDefaultHeight };
   }
 
-  const rawPosition = window.localStorage.getItem(widgetPositionStorageKey);
-  if (!rawPosition) {
-    return createDefaultWidgetPosition();
-  }
-
-  try {
-    const parsed = JSON.parse(rawPosition) as Partial<WidgetPosition>;
-    if (typeof parsed.x !== 'number' || typeof parsed.y !== 'number') {
-      return createDefaultWidgetPosition();
-    }
-
-    return clampWidgetPosition({ x: parsed.x, y: parsed.y });
-  } catch {
-    return createDefaultWidgetPosition();
-  }
+  const panelElement = element.querySelector('section');
+  return {
+    width: panelElement?.offsetWidth ?? element.offsetWidth,
+    height: panelElement?.offsetHeight ?? element.offsetHeight,
+  };
 }
 
 function writeWidgetPosition(position: WidgetPosition): void {
   if (typeof window === 'undefined' || !window.localStorage) return;
   window.localStorage.setItem(widgetPositionStorageKey, JSON.stringify(position));
+}
+
+function writeEdgeAttachment(attachment: WidgetEdgeAttachment): void {
+  if (typeof window === 'undefined' || !window.localStorage) return;
+  window.localStorage.setItem(edgeAttachmentStorageKey, attachment);
+}
+
+function readClosedWidgetSize(element: HTMLElement | null): WidgetSize {
+  const railElement = element?.querySelector('button');
+  if (!railElement) {
+    return { width: 120, height: 72 };
+  }
+
+  const rect = railElement.getBoundingClientRect();
+  return {
+    width: rect.width,
+    height: rect.height,
+  };
+}
+
+function resolveDisplayPosition(
+  position: WidgetPosition,
+  size: WidgetSize,
+  bounds: WidgetContentBounds,
+  edgeAttachment: WidgetEdgeAttachment,
+  isOpen: boolean
+): WidgetPosition {
+  if (edgeAttachment === 'right') {
+    return isOpen
+      ? getRightAlignedPosition(position.y, size, bounds)
+      : getRightEdgeAttachedPosition(position.y, size, bounds);
+  }
+
+  if (edgeAttachment === 'left') {
+    return getLeftEdgeAttachedPosition(position.y, size, bounds);
+  }
+
+  return clampToContentBounds(position, size, bounds);
+}
+
+function resolveEdgeClosedPosition(
+  position: WidgetPosition,
+  edgeClosedAnchorY: number | null
+): WidgetPosition {
+  if (edgeClosedAnchorY === null) {
+    return position;
+  }
+
+  return {
+    ...position,
+    y: edgeClosedAnchorY,
+  };
+}
+
+function resolveEdgePositionSource(
+  position: WidgetPosition,
+  edgeAnchorY: number | null,
+  isOpen: boolean,
+  isExpanded: boolean
+): WidgetPosition {
+  if (edgeAnchorY === null) {
+    return position;
+  }
+
+  if (!isOpen || !isExpanded) {
+    return resolveEdgeClosedPosition(position, edgeAnchorY);
+  }
+
+  return position;
 }
 
 function createReadableRouteContext(pathname: string): string {
@@ -258,7 +353,7 @@ function createRouteEntityContext(pathname: string): {
   };
 }
 
-export function AiAssistantWidget(): ReactElement {
+export function AiAssistantWidget(): ReactElement | null {
   const { t } = useTranslation('ai-assistant');
   const navigate = useNavigate();
   const location = useLocation();
@@ -281,7 +376,21 @@ export function AiAssistantWidget(): ReactElement {
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
-  const [widgetPosition, setWidgetPosition] = useState<WidgetPosition>(() => readWidgetPosition());
+  const initialWidgetPlacement = useRef(readInitialWidgetPlacement());
+  const [widgetPosition, setWidgetPosition] = useState<WidgetPosition>(
+    () => initialWidgetPlacement.current.position
+  );
+  const [edgeAttachment, setEdgeAttachment] = useState<WidgetEdgeAttachment>(
+    () => initialWidgetPlacement.current.edgeAttachment
+  );
+  const [isPlacementTransitionEnabled, setIsPlacementTransitionEnabled] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const placementTransitionEnableTimeoutRef = useRef<number | null>(null);
+  const [isDockDialogOpen, setIsDockDialogOpen] = useState(false);
+  const isAiAssistantInSidebar = useUIStore((state) => state.isAiAssistantInSidebar);
+  const setAiAssistantInSidebar = useUIStore((state) => state.setAiAssistantInSidebar);
+  const isAiAssistantWidgetVisible = useUIStore((state) => state.isAiAssistantWidgetVisible);
+  const setAiAssistantWidgetVisible = useUIStore((state) => state.setAiAssistantWidgetVisible);
   const [sessionKey, setSessionKey] = useState<string>(() => readAssistantSessionKey());
   const [languagePreference, setLanguagePreference] = useState<AiAssistantLanguagePreference>(() =>
     readAiAssistantLanguagePreference()
@@ -291,7 +400,16 @@ export function AiAssistantWidget(): ReactElement {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const widgetContainerRef = useRef<HTMLDivElement | null>(null);
+  const panelSizeRef = useRef({ width: widgetDefaultWidth, height: widgetDefaultHeight });
+  const widgetPositionRef = useRef(widgetPosition);
+  const edgeAttachmentRef = useRef(edgeAttachment);
+  const edgeClosedAnchorYRef = useRef<number | null>(initialWidgetPlacement.current.position.y);
   const dragStateRef = useRef<DragState | null>(null);
+  const contentBounds = useAiAssistantWidgetBounds();
+  const contentBoundsRef = useRef(contentBounds);
+  widgetPositionRef.current = widgetPosition;
+  edgeAttachmentRef.current = edgeAttachment;
+  contentBoundsRef.current = contentBounds;
   const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
   const skipNextHistoryWriteRef = useRef(false);
   const readText = (key: string, fallback?: string, options?: Record<string, unknown>): string => {
@@ -386,6 +504,66 @@ export function AiAssistantWidget(): ReactElement {
   const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
   const isAssistantBusy = askMutation.isPending || isThinking;
 
+  const schedulePlacementTransitionEnable = useCallback((delayMs = 200): void => {
+    if (placementTransitionEnableTimeoutRef.current !== null) {
+      window.clearTimeout(placementTransitionEnableTimeoutRef.current);
+    }
+
+    placementTransitionEnableTimeoutRef.current = window.setTimeout(() => {
+      placementTransitionEnableTimeoutRef.current = null;
+      setIsPlacementTransitionEnabled(true);
+    }, delayMs);
+  }, []);
+
+  const suppressPlacementTransition = useCallback((): void => {
+    if (placementTransitionEnableTimeoutRef.current !== null) {
+      window.clearTimeout(placementTransitionEnableTimeoutRef.current);
+      placementTransitionEnableTimeoutRef.current = null;
+    }
+
+    setIsPlacementTransitionEnabled(false);
+  }, []);
+
+  const applyBottomRightRailPlacement = useCallback((): void => {
+    suppressPlacementTransition();
+    const { position, edgeAttachment: nextEdgeAttachment } = createBottomRightRailPlacement();
+    edgeAttachmentRef.current = nextEdgeAttachment;
+    edgeClosedAnchorYRef.current = position.y;
+    widgetPositionRef.current = position;
+    setEdgeAttachment(nextEdgeAttachment);
+    setWidgetPosition(position);
+    writeWidgetPosition(position);
+    writeEdgeAttachment(nextEdgeAttachment);
+    setIsExpanded(false);
+    setIsOpen(false);
+    schedulePlacementTransitionEnable();
+  }, [schedulePlacementTransitionEnable, suppressPlacementTransition]);
+
+  useLayoutEffect(() => {
+    if (!isAiAssistantWidgetVisible || location.pathname.startsWith('/ai-assistant')) {
+      return;
+    }
+
+    if (!hasAiAssistantWidgetPlacementResetPending()) {
+      return;
+    }
+
+    consumeAiAssistantWidgetPlacementResetOnShow();
+    applyBottomRightRailPlacement();
+  }, [applyBottomRightRailPlacement, isAiAssistantWidgetVisible, location.pathname]);
+
+  useEffect(() => {
+    suppressPlacementTransition();
+    schedulePlacementTransitionEnable();
+
+    return () => {
+      if (placementTransitionEnableTimeoutRef.current !== null) {
+        window.clearTimeout(placementTransitionEnableTimeoutRef.current);
+        placementTransitionEnableTimeoutRef.current = null;
+      }
+    };
+  }, [contentBounds, schedulePlacementTransitionEnable, suppressPlacementTransition]);
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -398,23 +576,56 @@ export function AiAssistantWidget(): ReactElement {
     }
   }, [isOpen, messages, isAssistantBusy]);
 
-  useEffect(() => {
-    if (!isOpen) return;
+  useLayoutEffect(() => {
+    const element = widgetContainerRef.current;
+    if (!element || isDragging) return;
 
-    const handleResize = (): void => {
-      setWidgetPosition((currentPosition) => {
-        const nextPosition = clampWidgetPosition(currentPosition, widgetContainerRef.current);
-        writeWidgetPosition(nextPosition);
-        return nextPosition;
-      });
-    };
+    const activeBounds = isOpen ? readViewportBounds() : contentBounds;
+    const size = isOpen ? readWidgetPanelSize(element) : readClosedWidgetSize(element);
+    panelSizeRef.current = size;
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isOpen, isExpanded]);
+    setWidgetPosition((currentPosition) => {
+      const positionSource =
+        edgeAttachment !== 'none'
+          ? resolveEdgePositionSource(
+              currentPosition,
+              edgeClosedAnchorYRef.current,
+              isOpen,
+              isExpanded
+            )
+          : currentPosition;
 
-  const handleDragStart = useCallback((event: PointerEvent<HTMLElement>): void => {
+      const nextPosition = resolveDisplayPosition(
+        positionSource,
+        size,
+        activeBounds,
+        edgeAttachment,
+        isOpen
+      );
+
+      if (!isOpen && edgeAttachment !== 'none') {
+        edgeClosedAnchorYRef.current = nextPosition.y;
+      }
+
+      if (nextPosition.x === currentPosition.x && nextPosition.y === currentPosition.y) {
+        return currentPosition;
+      }
+
+      widgetPositionRef.current = nextPosition;
+      writeWidgetPosition(nextPosition);
+      return nextPosition;
+    });
+  }, [contentBounds, isOpen, isExpanded, edgeAttachment, isDragging]);
+
+  const openWidget = (): void => {
+    if (edgeAttachmentRef.current !== 'none') {
+      edgeClosedAnchorYRef.current = widgetPositionRef.current.y;
+    }
+
+    setIsOpen(true);
+  };
+
+  const startPanelDrag = useCallback((event: PointerEvent<HTMLElement>): void => {
     if (event.button !== 0) return;
 
     const target = event.target as HTMLElement;
@@ -425,42 +636,182 @@ export function AiAssistantWidget(): ReactElement {
     const widgetElement = widgetContainerRef.current;
     if (!widgetElement) return;
 
+    event.preventDefault();
+
     const rect = widgetElement.getBoundingClientRect();
+    const logicalPosition = { x: rect.left, y: rect.top };
+
+    if (edgeAttachmentRef.current !== 'none') {
+      edgeAttachmentRef.current = 'none';
+      setEdgeAttachment('none');
+      widgetPositionRef.current = logicalPosition;
+      setWidgetPosition(logicalPosition);
+    }
+
     dragStateRef.current = {
       pointerId: event.pointerId,
       offsetX: event.clientX - rect.left,
       offsetY: event.clientY - rect.top,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      mode: 'panel',
+      didActivate: false,
+      edgeAttachmentStart: 'none',
     };
-    event.currentTarget.setPointerCapture(event.pointerId);
+    setIsDragging(true);
   }, []);
 
-  const handleDragMove = useCallback((event: PointerEvent<HTMLElement>): void => {
-    const dragState = dragStateRef.current;
-    if (!dragState || dragState.pointerId !== event.pointerId) return;
+  const startClosedDrag = useCallback((event: PointerEvent<HTMLButtonElement>): void => {
+    if (event.button !== 0) return;
 
-    const nextPosition = clampWidgetPosition(
-      {
+    const widgetElement = widgetContainerRef.current;
+    if (!widgetElement) return;
+
+    event.preventDefault();
+
+    const rect = widgetElement.getBoundingClientRect();
+    const edgeAttachmentStart = edgeAttachmentRef.current;
+
+    dragStateRef.current = {
+      pointerId: event.pointerId,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+      startClientX: event.clientX,
+      startClientY: event.clientY,
+      mode: 'closed',
+      didActivate: false,
+      edgeAttachmentStart,
+    };
+    setIsDragging(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const previousUserSelect = document.body.style.userSelect;
+    const previousTouchAction = document.body.style.touchAction;
+    document.body.style.userSelect = 'none';
+    document.body.style.touchAction = 'none';
+
+    const finishDrag = (event: globalThis.PointerEvent): void => {
+      const dragState = dragStateRef.current;
+      if (!dragState || dragState.pointerId !== event.pointerId) return;
+
+      dragStateRef.current = null;
+      setIsDragging(false);
+
+      const element = widgetContainerRef.current;
+      const activeBounds = isOpen ? readViewportBounds() : contentBoundsRef.current;
+
+      if (dragState.mode === 'closed') {
+        const movedDistance = Math.hypot(
+          event.clientX - dragState.startClientX,
+          event.clientY - dragState.startClientY
+        );
+
+        if (!dragState.didActivate && movedDistance < dragActivationThresholdPx) {
+          openWidget();
+          return;
+        }
+      }
+
+      const size = isOpen ? readWidgetPanelSize(element) : readClosedWidgetSize(element);
+
+      const resolved = resolveWidgetDragPosition(
+        widgetPositionRef.current,
+        size,
+        activeBounds,
+        {
+          edgeAttachment: edgeAttachmentRef.current,
+          isOpen,
+          allowSnap: true,
+        }
+      );
+
+      const logicalPosition =
+        resolved.edgeAttachment === 'none'
+          ? resolved.position
+          : { x: resolved.position.x, y: resolved.position.y };
+
+      edgeAttachmentRef.current = resolved.edgeAttachment;
+      widgetPositionRef.current = logicalPosition;
+      setEdgeAttachment(resolved.edgeAttachment);
+      setWidgetPosition(logicalPosition);
+      writeWidgetPosition(logicalPosition);
+      writeEdgeAttachment(resolved.edgeAttachment);
+
+      if (!isOpen && resolved.edgeAttachment !== 'none') {
+        edgeClosedAnchorYRef.current = logicalPosition.y;
+      }
+    };
+
+    const handlePointerMove = (event: globalThis.PointerEvent): void => {
+      const dragState = dragStateRef.current;
+      if (!dragState || dragState.pointerId !== event.pointerId) return;
+
+      const movedDistance = Math.hypot(
+        event.clientX - dragState.startClientX,
+        event.clientY - dragState.startClientY
+      );
+
+      if (!dragState.didActivate && movedDistance >= dragActivationThresholdPx) {
+        dragState.didActivate = true;
+      }
+
+      const rawPosition = {
         x: event.clientX - dragState.offsetX,
         y: event.clientY - dragState.offsetY,
-      },
-      widgetContainerRef.current
-    );
+      };
 
-    setWidgetPosition(nextPosition);
-  }, []);
+      if (dragState.mode === 'closed') {
+        if (!dragState.didActivate) return;
 
-  const handleDragEnd = useCallback((event: PointerEvent<HTMLElement>): void => {
-    const dragState = dragStateRef.current;
-    if (!dragState || dragState.pointerId !== event.pointerId) return;
+        if (dragState.edgeAttachmentStart !== 'none') {
+          edgeAttachmentRef.current = 'none';
+          setEdgeAttachment('none');
+        }
 
-    dragStateRef.current = null;
-    const nextPosition = clampWidgetPosition(widgetPosition, widgetContainerRef.current);
-    setWidgetPosition(nextPosition);
-    writeWidgetPosition(nextPosition);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-  }, [widgetPosition]);
+        const size = readClosedWidgetSize(widgetContainerRef.current);
+        const nextPosition = clampToContentBounds(
+          rawPosition,
+          size,
+          contentBoundsRef.current
+        );
+        widgetPositionRef.current = nextPosition;
+        setWidgetPosition(nextPosition);
+        return;
+      }
+
+      const size = readWidgetPanelSize(widgetContainerRef.current);
+      const resolved = resolveWidgetDragPosition(rawPosition, size, readViewportBounds(), {
+        edgeAttachment: edgeAttachmentRef.current,
+        isOpen: true,
+        allowSnap: dragState.didActivate,
+      });
+
+      const logicalPosition =
+        resolved.edgeAttachment === 'none'
+          ? resolved.position
+          : { x: rawPosition.x, y: resolved.position.y };
+
+      edgeAttachmentRef.current = resolved.edgeAttachment;
+      widgetPositionRef.current = logicalPosition;
+      setEdgeAttachment(resolved.edgeAttachment);
+      setWidgetPosition(logicalPosition);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', finishDrag);
+    window.addEventListener('pointercancel', finishDrag);
+
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', finishDrag);
+      window.removeEventListener('pointercancel', finishDrag);
+      document.body.style.userSelect = previousUserSelect;
+      document.body.style.touchAction = previousTouchAction;
+    };
+  }, [isDragging, isOpen]);
 
   const askQuestion = async (value: string, errorContext?: AiAssistantErrorContext | null): Promise<void> => {
     const trimmedQuestion = value.trim();
@@ -570,6 +921,16 @@ export function AiAssistantWidget(): ReactElement {
   };
 
   const handleQuestionKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>): void => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      if (isAssistantBusy) {
+        return;
+      }
+
+      event.currentTarget.form?.requestSubmit();
+      return;
+    }
+
     if (event.key !== 'Tab' || event.shiftKey || !isOpen) {
       return;
     }
@@ -622,18 +983,85 @@ export function AiAssistantWidget(): ReactElement {
     setIsOpen(false);
   };
 
-  const openWidgetFromRail = (): void => {
+  const toggleExpanded = (): void => {
+    const element = widgetContainerRef.current;
+    const previousSize = readWidgetPanelSize(element);
+    const nextExpanded = !isExpanded;
+    const nextSize = getTargetPanelSize(nextExpanded, contentBounds);
+    const edge = edgeAttachmentRef.current;
+
     setWidgetPosition((currentPosition) => {
-      const nextPosition = clampWidgetPosition(currentPosition, widgetContainerRef.current);
+      const activeBounds = readViewportBounds();
+      const positionForLayout =
+        edge !== 'none'
+          ? resolveEdgePositionSource(
+              currentPosition,
+              edgeClosedAnchorYRef.current,
+              true,
+              nextExpanded
+            )
+          : currentPosition;
+      const nextPosition =
+        edge === 'right'
+          ? getRightAlignedPosition(positionForLayout.y, nextSize, activeBounds)
+          : edge === 'left'
+            ? getLeftEdgeAttachedPosition(positionForLayout.y, nextSize, activeBounds)
+            : clampToContentBounds(
+                adjustWidgetPositionForSizeChange(currentPosition, previousSize, nextSize),
+                nextSize,
+                activeBounds
+              );
+      widgetPositionRef.current = nextPosition;
       writeWidgetPosition(nextPosition);
       return nextPosition;
     });
-    setIsOpen(true);
+    panelSizeRef.current = nextSize;
+    setIsExpanded(nextExpanded);
   };
 
   const dockWidgetToRail = (): void => {
-    const nextPosition = clampWidgetPosition(widgetPosition, widgetContainerRef.current);
-    writeWidgetPosition(nextPosition);
+    applyBottomRightRailPlacement();
+  };
+
+  const handleDockDialogConfirm = (sidebarEnabled: boolean): void => {
+    setAiAssistantInSidebar(sidebarEnabled);
+    if (sidebarEnabled) {
+      setAiAssistantWidgetVisible(false);
+    }
+    dockWidgetToRail();
+  };
+
+  const openDockDialog = (): void => {
+    setIsDockDialogOpen(true);
+  };
+
+  const closeWidget = (): void => {
+    const widgetElement = widgetContainerRef.current;
+    const panelSize = readWidgetPanelSize(widgetElement);
+    const viewportBounds = readViewportBounds();
+    const nextEdgeAttachment: WidgetEdgeAttachment =
+      edgeAttachmentRef.current !== 'none'
+        ? edgeAttachmentRef.current
+        : isNearContentRightEdge(widgetPosition, panelSize, viewportBounds)
+          ? 'right'
+          : isNearSidebarRightEdge(widgetPosition)
+            ? 'left'
+            : 'none';
+    const logicalPosition = {
+      x: widgetPosition.x,
+      y:
+        nextEdgeAttachment !== 'none'
+          ? edgeClosedAnchorYRef.current ?? widgetPosition.y
+          : widgetPosition.y,
+    };
+
+    edgeAttachmentRef.current = nextEdgeAttachment;
+    widgetPositionRef.current = logicalPosition;
+    setEdgeAttachment(nextEdgeAttachment);
+    setWidgetPosition(logicalPosition);
+    writeWidgetPosition(logicalPosition);
+    writeEdgeAttachment(nextEdgeAttachment);
+    setIsExpanded(false);
     setIsOpen(false);
   };
 
@@ -645,11 +1073,52 @@ export function AiAssistantWidget(): ReactElement {
     }, 1600);
   };
 
+  const activeBounds = isOpen ? readViewportBounds() : contentBounds;
+  const displaySize = isOpen
+    ? panelSizeRef.current
+    : readClosedWidgetSize(widgetContainerRef.current);
+  const displayPosition =
+    !isDragging && edgeAttachment !== 'none'
+      ? resolveDisplayPosition(
+          resolveEdgePositionSource(
+            widgetPosition,
+            edgeClosedAnchorYRef.current,
+            isOpen,
+            isExpanded
+          ),
+          displaySize,
+          activeBounds,
+          edgeAttachment,
+          isOpen
+        )
+      : clampToContentBounds(widgetPosition, displaySize, activeBounds);
+
+  const closedRailClassName =
+    edgeAttachment === 'left'
+      ? 'rounded-e-3xl border-s-0 border-white/20'
+      : edgeAttachment === 'right'
+        ? 'rounded-s-3xl border-e-0 border-white/20'
+        : 'rounded-3xl border-white/20';
+
+  if (!isAiAssistantWidgetVisible || location.pathname.startsWith('/ai-assistant')) {
+    return null;
+  }
+
   return (
+    <>
+      <AiAssistantDockDialog
+        open={isDockDialogOpen}
+        sidebarEnabled={isAiAssistantInSidebar}
+        onOpenChange={setIsDockDialogOpen}
+        onConfirm={handleDockDialogConfirm}
+      />
     <div
       ref={widgetContainerRef}
-      className={isOpen ? 'fixed z-50 print:hidden' : 'fixed end-0 top-1/2 z-50 -translate-y-1/2 print:hidden'}
-      style={isOpen ? { left: `${widgetPosition.x}px`, top: `${widgetPosition.y}px` } : undefined}
+      className={`fixed print:hidden ${isOpen ? 'z-[60]' : 'z-50'} ${!isDragging && isPlacementTransitionEnabled ? 'transition-[left,top] duration-200 ease-out' : ''}`}
+      style={{
+        left: `${displayPosition.x}px`,
+        top: `${displayPosition.y}px`,
+      }}
     >
       <style>{`
         .ai-widget-container.is-expanded .text-sm {
@@ -673,18 +1142,15 @@ export function AiAssistantWidget(): ReactElement {
         }
       `}</style>
       {isOpen ? (
-        <section className={`ai-widget-container relative flex min-h-0 max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.25rem)] transition-all duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-primary/15 bg-background/98 shadow-2xl shadow-[0_24px_60px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/20 dark:bg-slate-950/98 ${isExpanded
-          ? 'is-expanded sm:max-w-[850px] h-[min(92dvh,850px)]'
-          : 'max-w-[500px] h-[min(80dvh,700px)]'
+        <section className={`ai-widget-container relative flex min-h-0 max-h-[calc(100dvh-2rem)] w-[min(500px,calc(100dvw-2rem))] transition-[box-shadow,opacity] duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-primary/15 bg-background/98 shadow-2xl shadow-[0_24px_60px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/20 dark:bg-slate-950/98 ${isExpanded
+          ? 'is-expanded w-[min(850px,calc(100dvw-2rem))] h-[min(92dvh,850px)]'
+          : 'h-[min(80dvh,700px)]'
           }`}>
           <div className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-35 dark:opacity-20" />
           <header
-            className="relative flex cursor-move touch-none select-none items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03]"
+            className={`relative flex touch-none select-none items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03] ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
             aria-label={readText('dragPanel')}
-            onPointerDown={handleDragStart}
-            onPointerMove={handleDragMove}
-            onPointerUp={handleDragEnd}
-            onPointerCancel={handleDragEnd}
+            onPointerDown={startPanelDrag}
           >
             <div className="flex min-w-0 items-center gap-3">
               <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[image:var(--crm-brand-gradient)] text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)]">
@@ -724,9 +1190,9 @@ export function AiAssistantWidget(): ReactElement {
                 title={readText('dockPanel')}
                 className="hidden h-10 w-10 rounded-2xl sm:inline-flex"
                 aria-label={readText('dockPanel')}
-                onClick={dockWidgetToRail}
+                onClick={openDockDialog}
               >
-                <ChevronsRight size={18} />
+                <ChevronsLeft size={18} />
               </Button>
               <Button
                 type="button"
@@ -734,7 +1200,7 @@ export function AiAssistantWidget(): ReactElement {
                 size="icon"
                 className="hidden h-10 w-10 rounded-2xl sm:inline-flex"
                 aria-label={isExpanded ? readText('collapsePanel') : readText('expandPanel')}
-                onClick={() => setIsExpanded(!isExpanded)}
+                onClick={toggleExpanded}
               >
                 {isExpanded ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
               </Button>
@@ -744,7 +1210,7 @@ export function AiAssistantWidget(): ReactElement {
                 size="icon"
                 className="h-10 w-10 rounded-2xl"
                 aria-label={readText('closeChat')}
-                onClick={() => setIsOpen(false)}
+                onClick={closeWidget}
               >
                 <X size={18} />
               </Button>
@@ -805,44 +1271,23 @@ export function AiAssistantWidget(): ReactElement {
                         <AiAssistantAnswerCard
                           title={readText('answerTitle')}
                           answer={message.content}
+                          headerAction={(
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 shrink-0 rounded-lg px-2 text-[0.68rem] font-black text-slate-500 hover:text-primary dark:text-slate-300"
+                              onClick={() => void copyAssistantMessage(message)}
+                            >
+                              {copiedMessageId === message.id ? (
+                                <Check size={12} className="me-1" />
+                              ) : (
+                                <Copy size={12} className="me-1" />
+                              )}
+                              {copiedMessageId === message.id ? readText('copied') : readText('copyAnswer')}
+                            </Button>
+                          )}
                         />
-                        <AiAssistantContextPill context={message.context} />
-                        <div className="mt-2 flex justify-end">
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 rounded-xl px-3 text-xs font-black text-slate-500 hover:text-primary dark:text-slate-300"
-                            onClick={() => void copyAssistantMessage(message)}
-                          >
-                            {copiedMessageId === message.id ? (
-                              <Check size={13} className="me-1.5" />
-                            ) : (
-                              <Copy size={13} className="me-1.5" />
-                            )}
-                            {copiedMessageId === message.id ? readText('copied') : readText('copyAnswer')}
-                          </Button>
-                        </div>
-                        {message.sources && message.sources.length > 0 && (
-                          <div className="mt-3 rounded-2xl border border-slate-200/80 bg-white/70 p-3 dark:border-white/10 dark:bg-white/[0.04]">
-                            <div className="mb-2 text-[0.62rem] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
-                              {readText('sourceTitle')}
-                            </div>
-                            <div className="grid gap-2">
-                              {message.sources.map((source) => (
-                                <div
-                                  key={`${message.id}-${source.label}-${source.module ?? ''}-${source.period ?? ''}`}
-                                  className="rounded-xl bg-slate-950/[0.03] px-3 py-2 text-xs font-semibold leading-5 text-slate-600 dark:bg-white/[0.04] dark:text-slate-300"
-                                >
-                                  <span className="font-black text-slate-900 dark:text-white">{source.label}</span>
-                                  {source.module ? <span> · {source.module}</span> : null}
-                                  {source.period ? <span> · {source.period}</span> : null}
-                                  <p className="mt-0.5 opacity-80">{source.description}</p>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
 
@@ -887,28 +1332,6 @@ export function AiAssistantWidget(): ReactElement {
 
             {isAssistantBusy && <AiAssistantThinkingIndicator />}
 
-            {latestErrorContext && (
-              <div className="rounded-3xl border border-amber-400/30 bg-amber-400/10 p-4">
-                <div className="mb-1 text-xs font-black uppercase tracking-[0.2em] text-amber-700 dark:text-amber-300">
-                  {readText('lastErrorTitle')}
-                </div>
-                <p className="line-clamp-2 text-xs font-semibold leading-5 text-amber-950 dark:text-amber-100">
-                  {latestErrorContext.httpStatusCode ? `${latestErrorContext.httpStatusCode} · ` : ''}
-                  {latestErrorContext.message}
-                </p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={isAssistantBusy}
-                  className="mt-3 h-9 rounded-2xl border-amber-300/60 bg-white/70 text-xs font-black text-amber-800 hover:bg-amber-50 dark:bg-white/5 dark:text-amber-100"
-                  onClick={() => void askLatestError()}
-                >
-                  {readText('askLastError')}
-                </Button>
-              </div>
-            )}
-
             <div className="flex flex-wrap gap-2">
               {suggestionItems.map((suggestion) => (
                 <button
@@ -926,7 +1349,7 @@ export function AiAssistantWidget(): ReactElement {
             <div ref={messagesEndRef} />
           </div>
 
-          <form className="relative border-t border-slate-200/80 bg-white/75 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-black/30" onSubmit={handleSubmit}>
+          <form className="relative border-t border-slate-200/80 bg-white/75 px-4 pb-3 pt-2 backdrop-blur-xl dark:border-white/10 dark:bg-black/30" onSubmit={handleSubmit}>
             <input
               ref={fileInputRef}
               type="file"
@@ -935,7 +1358,7 @@ export function AiAssistantWidget(): ReactElement {
               onChange={(event) => void handleAttachmentChange(event)}
             />
             {selectedAttachment && (
-              <div className="mb-3 flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-black text-primary dark:text-primary-foreground">
+              <div className="mb-2 flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-black text-primary dark:text-primary-foreground">
                 <FileImage size={14} className="shrink-0" />
                 <span className="min-w-0 truncate">{selectedAttachment.fileName}</span>
                 <span className="shrink-0 opacity-75">{formatAttachmentSize(selectedAttachment.size)}</span>
@@ -950,34 +1373,43 @@ export function AiAssistantWidget(): ReactElement {
               </div>
             )}
             {(questionError || askMutation.error?.message) && (
-              <div className="mb-3 flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-700 dark:text-red-100">
+              <div className="mb-2 flex min-w-0 max-w-full items-center gap-2 rounded-2xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-xs font-black text-red-700 dark:text-red-100">
                 <span className="min-w-0 truncate">{questionError || askMutation.error?.message}</span>
               </div>
             )}
-            <div className="mb-3 flex items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 px-3 py-2 dark:border-white/10 dark:bg-white/[0.04]">
-              <span className="text-[0.68rem] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                {readText('responseLanguage')}
-              </span>
-              <div className="flex shrink-0 rounded-full border border-slate-200 bg-white p-0.5 dark:border-white/10 dark:bg-black/20">
-                {aiAssistantLanguageOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    disabled={isAssistantBusy}
-                    title={option.value === 'auto' ? readText('responseLanguageAuto') : option.label}
-                    onClick={() => changeLanguagePreference(option.value)}
-                    className={`h-7 rounded-full px-3 text-[0.68rem] font-black transition ${languagePreference === option.value
-                      ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm'
-                      : 'text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10'
-                      } disabled:cursor-not-allowed disabled:opacity-60`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
+            <div className="mb-1.5 grid grid-cols-[2fr_3fr] gap-2">
+              <AiAssistantLastErrorButton
+                latestErrorContext={latestErrorContext}
+                isAssistantBusy={isAssistantBusy}
+                onAskLatestError={askLatestError}
+                fillHeight
+                compact
+              />
+              <div className="flex min-w-0 items-center justify-between gap-2 rounded-2xl border border-slate-300 bg-slate-50/80 px-3 py-1 dark:border-white/20 dark:bg-white/[0.04]">
+                <span className="shrink-0 text-[0.68rem] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  {readText('responseLanguage')}
+                </span>
+                <div className="flex min-w-[8.75rem] shrink-0 rounded-full border border-slate-300 bg-white p-0.5 dark:border-white/20 dark:bg-black/20">
+                  {aiAssistantLanguageOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      disabled={isAssistantBusy}
+                      title={option.value === 'auto' ? readText('responseLanguageAuto') : option.label}
+                      onClick={() => changeLanguagePreference(option.value)}
+                      className={`inline-flex h-6 min-w-[2.5rem] flex-1 items-center justify-center rounded-full px-2 text-center text-[0.62rem] font-black uppercase transition ${languagePreference === option.value
+                        ? 'border border-primary/40 bg-[image:var(--crm-brand-gradient)] text-white shadow-sm'
+                        : 'border border-transparent text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10'
+                        } disabled:cursor-not-allowed disabled:opacity-60`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="flex flex-col rounded-[1.6rem] border border-slate-200 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/[0.06] overflow-hidden focus-within:ring-2 focus-within:ring-primary/25 dark:focus-within:ring-primary/20 transition-all duration-200">
-              <div className="px-4 pt-3 pb-1">
+              <div className="px-3 pt-2 pb-0.5">
                 <Textarea
                   ref={textareaRef}
                   rows={2}
@@ -994,31 +1426,19 @@ export function AiAssistantWidget(): ReactElement {
                 />
               </div>
               <div className="border-t border-slate-100 dark:border-white/5" />
-              <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-slate-50/50 dark:bg-white/[0.02]">
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    disabled={isAssistantBusy}
-                    className={`h-9 w-9 shrink-0 rounded-full border transition-all duration-200 ${isActionsMenuOpen
-                      ? 'rotate-45 border-primary/40 bg-accent text-primary dark:bg-primary/10 dark:text-primary dark:border-primary/30'
-                      : 'border-slate-200 dark:border-white/10 hover:border-primary/30 dark:hover:border-primary/30'
-                      }`}
-                    aria-expanded={isActionsMenuOpen}
-                    onClick={() => setIsActionsMenuOpen(!isActionsMenuOpen)}
-                  >
-                    <Plus size={18} />
-                  </Button>
-
+              <div className="flex items-center justify-between gap-2 px-3 py-1 bg-slate-50/50 dark:bg-white/[0.02]">
+                <div className="relative flex min-w-0 flex-1 items-center gap-2">
                   {isActionsMenuOpen && (
-                    <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2 duration-200">
+                    <div
+                      className="absolute bottom-full start-0 z-20 mb-2 flex min-w-44 flex-col gap-1 rounded-2xl border border-slate-200 bg-white p-1.5 shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-200 dark:border-white/10 dark:bg-slate-900"
+                      role="menu"
+                    >
                       <Button
                         type="button"
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         disabled={isAssistantBusy}
-                        className="h-9 rounded-2xl border-slate-200 bg-white/80 px-3 text-xs font-black dark:border-white/10 dark:bg-white/[0.06] hover:border-primary/30 hover:bg-accent dark:hover:bg-primary/10 transition-colors"
+                        className="h-8 w-full justify-start rounded-xl px-2.5 text-xs font-black transition-colors hover:bg-accent dark:hover:bg-primary/10"
                         onClick={() => {
                           fileInputRef.current?.click();
                           setIsActionsMenuOpen(false);
@@ -1029,14 +1449,29 @@ export function AiAssistantWidget(): ReactElement {
                       </Button>
                     </div>
                   )}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    disabled={isAssistantBusy}
+                    className={`h-8 w-8 shrink-0 rounded-full border transition-all duration-200 ${isActionsMenuOpen
+                      ? 'rotate-45 border-primary/40 bg-accent text-primary dark:border-primary/30 dark:bg-primary/10 dark:text-primary'
+                      : 'border-slate-200 hover:border-primary/30 dark:border-white/10 dark:hover:border-primary/30'
+                      }`}
+                    aria-expanded={isActionsMenuOpen}
+                    onClick={() => setIsActionsMenuOpen(!isActionsMenuOpen)}
+                  >
+                    <Plus size={16} />
+                  </Button>
                 </div>
                 <Button
                   ref={sendButtonRef}
                   type="submit"
+                  size="sm"
                   disabled={isAssistantBusy || (!question.trim() && !selectedAttachment)}
-                  className="shrink-0 rounded-full bg-[image:var(--crm-brand-gradient)] px-5 text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)]"
+                  className="h-8 shrink-0 rounded-full bg-[image:var(--crm-brand-gradient)] px-4 text-xs font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)]"
                 >
-                  <SendHorizontal size={16} className="me-2" />
+                  <SendHorizontal size={15} className="me-1.5" />
                   {isAssistantBusy ? readText('sending') : readText('send')}
                 </Button>
               </div>
@@ -1048,8 +1483,8 @@ export function AiAssistantWidget(): ReactElement {
           type="button"
           aria-label={readText('openFromRail')}
           title={readText('openFromRail')}
-          onClick={openWidgetFromRail}
-          className="group flex max-h-[70dvh] items-center gap-2 overflow-hidden rounded-s-3xl border border-e-0 border-white/20 bg-[image:var(--crm-brand-gradient)] px-2.5 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:translate-x-[-2px] hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950 sm:px-3 sm:py-4"
+          onPointerDown={startClosedDrag}
+          className={`group flex max-h-[70dvh] items-center gap-2 overflow-hidden border bg-[image:var(--crm-brand-gradient)] px-2.5 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950 sm:px-3 sm:py-4 ${closedRailClassName} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${edgeAttachment === 'right' ? 'hover:translate-x-[-2px]' : edgeAttachment === 'left' ? 'hover:translate-x-[2px]' : 'hover:scale-[1.02]'}`}
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white/20">
             <MessageCircle size={20} />
@@ -1058,5 +1493,6 @@ export function AiAssistantWidget(): ReactElement {
         </button>
       )}
     </div>
+    </>
   );
 }

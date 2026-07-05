@@ -4,7 +4,7 @@ export { ColumnPreferencesPopover, ColumnPreferencesPanel } from './ColumnPrefer
 export type { ColumnDef } from './ColumnPreferencesPopover';
 export { GridExportMenu } from './GridExportMenu';
 export { DataTableActionBar } from './DataTableActionBar';
-export type { DataTableActionBarProps, DataTableSearchConfig } from './DataTableActionBar';
+export type { DataTableActionBarProps, DataTableSearchConfig, DataTableLeftSlotContext } from './DataTableActionBar';
 export { DataTableGrid } from './DataTableGrid';
 export type { DataTableGridColumn, DataTableSortDirection } from './DataTableGrid';
 export { ManagementDataTableChrome } from './ManagementDataTableChrome';

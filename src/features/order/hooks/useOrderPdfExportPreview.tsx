@@ -4,7 +4,6 @@ import { toast } from 'sonner';
 import { resolveQuotationCustomerLabelForPdf } from '@/lib/resolve-quotation-customer-label';
 import type { QuotationCustomerLabelOption } from '@/lib/resolve-quotation-customer-label';
 import { useAuthStore } from '@/stores/auth-store';
-import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { QuotationPdfExportPreviewDialog } from '@/features/quotation/components/QuotationPdfExportPreviewDialog';
 import { QuotationWhatsappSendDialog } from '@/features/quotation/components/QuotationWhatsappSendDialog';
 import {
@@ -57,8 +56,8 @@ interface UseOrderPdfExportPreviewReturn {
   pdfExportOpen: boolean;
   setPdfExportOpen: (open: boolean) => void;
   openPdfExportPreview: () => void;
-  buildExportPdfBlob: (options: { draft: boolean; showDiscount?: boolean }) => Promise<Blob>;
-  buildPreviewPdfBlob: (options?: { draft?: boolean; showDiscount?: boolean }) => Promise<Blob>;
+  buildExportPdfBlob: (options: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }) => Promise<Blob>;
+  buildPreviewPdfBlob: (options?: { draft?: boolean; showDiscount?: boolean; hideVat?: boolean }) => Promise<Blob>;
   hasLineDiscounts: boolean;
   shareFileName: string;
   handleModalShareWhatsapp: (pdfBlob: Blob) => void;
@@ -88,7 +87,6 @@ export function useOrderPdfExportPreview({
   const branch = useAuthStore((state) => state.branch);
   const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
   const { data: paymentTypes = [] } = usePaymentTypes();
-  const effectiveSystemSettings = useSystemSettingsStore((state) => state.settings);
   const previewCustomerId = orderFormSlice.potentialCustomerId ?? order?.potentialCustomerId ?? undefined;
   const { data: shippingAddresses = [] } = useShippingAddresses(
     previewCustomerId != null && previewCustomerId > 0 ? previewCustomerId : undefined,
@@ -142,7 +140,7 @@ export function useOrderPdfExportPreview({
   const defaultShowDiscountDetails = hasLineDiscounts || hasGeneralDiscount;
 
   const buildPreviewPdfBlob = useCallback(
-    async (options?: { draft?: boolean; showDiscount?: boolean }): Promise<Blob> => {
+    async (options?: { draft?: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> => {
       const oc = orderFormSlice;
       const customerLabel =
         (await resolveQuotationCustomerLabelForPdf({
@@ -200,7 +198,7 @@ export function useOrderPdfExportPreview({
         lineDiscountLabels,
         showDiscount,
         draft: options?.draft ?? false,
-        hideVat: effectiveSystemSettings.hideOrderVatRate,
+        hideVat: options?.hideVat ?? false,
       });
     },
     [
@@ -222,13 +220,12 @@ export function useOrderPdfExportPreview({
       quotationNotes,
       shippingAddresses,
       defaultShowDiscountDetails,
-      effectiveSystemSettings.hideOrderVatRate,
     ],
   );
 
   const buildExportPdfBlob = useCallback(
-    async ({ draft, showDiscount }: { draft: boolean; showDiscount?: boolean }): Promise<Blob> =>
-      buildPreviewPdfBlob({ draft, showDiscount }),
+    async ({ draft, showDiscount, hideVat }: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> =>
+      buildPreviewPdfBlob({ draft, showDiscount, hideVat }),
     [buildPreviewPdfBlob],
   );
 
@@ -418,6 +415,7 @@ export function useOrderPdfExportPreview({
             shareWhatsapp: t('shareWhatsapp'),
             shareMail: t('shareMail'),
             showDiscount: t('exportPreview.showDiscount'),
+            hideVat: t('exportPreview.hideVat'),
           }}
           onShareWhatsapp={handleModalShareWhatsapp}
           onShareMail={handleModalShareMail}

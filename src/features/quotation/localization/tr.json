@@ -371,7 +371,8 @@
     "download": "Bilgisayara indir",
     "errorDismiss": "Kapat",
     "downloadFileName": "teklif.pdf",
-    "showDiscount": "İskonto göster"
+    "showDiscount": "İskonto göster",
+    "hideVat": "KDV gizle"
   },
   "pdfExportTemplate": {
     "builtInTemplateTitle": "V3RII Hazır Şablon (Önizleme)",

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
@@ -16,7 +16,6 @@ import {
   MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
-  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
 
 import { ProductPricingGroupByTable, getColumnsConfig } from './ProductPricingGroupByTable';
@@ -310,28 +309,20 @@ export function ProductPricingGroupByManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
-            leftSlot={
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
-                  onClick={() => handleRefresh()}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                  )}
-                  {resolveLabel(t, 'common.refresh', 'Yenile')}
-                </Button>
-                <DefinitionExcelActions
-                  definitionKey="product-pricing-group-by"
-                  fileNamePrefix="urun-fiyatlandirma-grup"
-                  onImportCompleted={handleRefresh}
-                />
-              </div>
+            refresh={{
+              onRefresh: () => {
+                void handleRefresh();
+              },
+              isLoading,
+              cooldownSeconds: 60,
+              label: resolveLabel(t, 'common.refresh', 'Yenile'),
+            }}
+            additionalFilterActions={
+              <DefinitionExcelActions
+                definitionKey="product-pricing-group-by"
+                fileNamePrefix="urun-fiyatlandirma-grup"
+                onImportCompleted={handleRefresh}
+              />
             }
           />
         </CardHeader>
