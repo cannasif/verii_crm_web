@@ -1,0 +1,280 @@
+.light.theme-corporate-blue,
+.light.theme-emerald,
+.light.theme-clean-light,
+.light.theme-minimal-crm,
+.light.theme-flat-white,
+.light.theme-warm-sand,
+.light.theme-sky-mist,
+.light.theme-soft-rose,
+.light.theme-v3rii {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: var(--crm-brand-soft);
+  --accent-foreground: var(--crm-brand-on-soft);
+  --destructive: #dc2626;
+  --border: rgb(226 232 240 / 95%);
+  --input: rgb(226 232 240 / 95%);
+  --ring: var(--crm-brand-primary);
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #0f172a;
+  --sidebar-accent: var(--crm-brand-soft);
+  --sidebar-accent-foreground: var(--crm-brand-on-soft);
+  --sidebar-border: rgb(226 232 240 / 95%);
+  --sidebar-ring: var(--crm-brand-primary);
+  --primary: var(--crm-brand-primary);
+  --primary-foreground: var(--crm-brand-on-primary);
+  --sidebar-primary: var(--crm-brand-primary);
+  --sidebar-primary-foreground: var(--crm-brand-on-primary);
+}
+
+.light.theme-corporate-blue {
+  --crm-app-background: #f4f7fc;
+  --crm-app-panel: #ffffff;
+  --crm-app-panel-muted: #f8fafc;
+  --crm-app-panel-strong: #eff6ff;
+  --crm-app-border: rgb(191 219 254 / 80%);
+  --crm-app-text-muted: #64748b;
+}
+
+.light.theme-emerald {
+  --crm-app-background: #f3fbf7;
+  --crm-app-panel: #ffffff;
+  --crm-app-panel-muted: #f0fdf4;
+  --crm-app-panel-strong: #ecfdf5;
+  --crm-app-border: rgb(167 243 208 / 75%);
+  --crm-app-text-muted: #64748b;
+}
+
+.light.theme-clean-light {
+  --crm-app-background: #f8fafc;
+  --crm-app-panel: #ffffff;
+  --crm-app-panel-muted: #f8fafc;
+  --crm-app-panel-strong: #f1f5f9;
+  --crm-app-border: rgb(226 232 240 / 95%);
+  --crm-app-text-muted: #64748b;
+}
+
+.light.theme-minimal-crm {
+  --crm-app-background: #f4fbfc;
+  --crm-app-panel: #ffffff;
+  --crm-app-panel-muted: #ecfeff;
+  --crm-app-panel-strong: #e0f2fe;
+  --crm-app-border: rgb(165 243 252 / 70%);
+  --crm-app-text-muted: #64748b;
+}
+
+.light.theme-flat-white {
+  --crm-app-background: #f8fafc;
+  --crm-app-panel: #ffffff;
+  --crm-app-panel-muted: #f8fafc;
+  --crm-app-panel-strong: #f1f5f9;
+  --crm-app-border: rgb(226 232 240 / 95%);
+  --crm-app-text-muted: #64748b;
+}
+
+.light.theme-warm-sand {
+  --crm-app-background: #faf8f5;
+  --crm-app-panel: #ffffff;
+  --crm-app-panel-muted: #f5f2ed;
+  --crm-app-panel-strong: #efe9e1;
+  --crm-app-border: rgb(214 211 209 / 85%);
+  --crm-app-text-muted: #78716c;
+}
+
+.light.theme-sky-mist {
+  --crm-app-background: #f0f9ff;
+  --crm-app-panel: #ffffff;
+  --crm-app-panel-muted: #e0f2fe;
+  --crm-app-panel-strong: #dbeafe;
+  --crm-app-border: rgb(186 230 253 / 85%);
+  --crm-app-text-muted: #64748b;
+}
+
+.light.theme-soft-rose {
+  --crm-app-background: #fff1f2;
+  --crm-app-panel: #ffffff;
+  --crm-app-panel-muted: #ffe4e6;
+  --crm-app-panel-strong: #fecdd3;
+  --crm-app-border: rgb(254 205 211 / 85%);
+  --crm-app-text-muted: #9f1239;
+}
+
+.light.theme-v3rii {
+  --crm-app-background: #fdf2f8;
+  --crm-app-panel: #ffffff;
+  --crm-app-panel-muted: #fce7f3;
+  --crm-app-panel-strong: #fbcfe8;
+  --crm-app-border: rgb(251 207 232 / 90%);
+  --crm-app-text-muted: #9d174d;
+  --crm-brand-text: #be0062;
+  --crm-brand-on-soft: #9d174d;
+}
+
+.dark.theme-v3rii,
+.dark.theme-graphite,
+.dark.theme-executive,
+.dark.theme-burgundy,
+.dark.theme-industrial-steel,
+.dark.theme-high-contrast,
+.dark.theme-flat-navy,
+.dark.theme-flat-slate {
+  color-scheme: dark;
+  --background: #111827;
+  --foreground: #f8fafc;
+  --card: #1f2937;
+  --card-foreground: #f8fafc;
+  --popover: #1f2937;
+  --popover-foreground: #f8fafc;
+  --secondary: #374151;
+  --secondary-foreground: #f8fafc;
+  --muted: #374151;
+  --muted-foreground: #94a3b8;
+  --accent: var(--crm-brand-soft);
+  --accent-foreground: var(--crm-brand-on-soft);
+  --destructive: #ef4444;
+  --border: rgb(255 255 255 / 10%);
+  --input: rgb(255 255 255 / 12%);
+  --ring: var(--crm-brand-primary);
+  --sidebar: #1f2937;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-accent: var(--crm-brand-soft);
+  --sidebar-accent-foreground: var(--crm-brand-on-soft);
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: var(--crm-brand-primary);
+  --primary: var(--crm-brand-primary);
+  --primary-foreground: var(--crm-brand-on-primary);
+  --sidebar-primary: var(--crm-brand-primary);
+  --sidebar-primary-foreground: var(--crm-brand-on-primary);
+}
+
+.dark.theme-v3rii {
+  --background: #120c18;
+  --card: #1a1025;
+  --popover: #1e1627;
+  --sidebar: #1a1025;
+  --crm-app-background: #0c0516;
+  --crm-app-panel: #120c18;
+  --crm-app-panel-muted: rgb(255 255 255 / 5%);
+  --crm-app-panel-strong: #1a1025;
+  --crm-app-border: rgb(255 255 255 / 10%);
+  --crm-app-text-muted: #94a3b8;
+  --crm-brand-text: #f9a8d4;
+  --crm-brand-on-soft: #fbcfe8;
+  --crm-brand-soft: rgb(236 0 122 / 18%);
+}
+
+.dark.theme-graphite {
+  --background: #111827;
+  --card: #1f2937;
+  --popover: #1f2937;
+  --sidebar: #1f2937;
+  --crm-app-background: #0f172a;
+  --crm-app-panel: #111827;
+  --crm-app-panel-muted: #1f2937;
+  --crm-app-panel-strong: #273449;
+  --crm-app-border: rgb(148 163 184 / 18%);
+  --crm-app-text-muted: #94a3b8;
+  --crm-brand-text: #cbd5e1;
+  --crm-brand-on-soft: #e2e8f0;
+}
+
+.dark.theme-executive {
+  --background: #111827;
+  --card: #1a1730;
+  --popover: #1a1730;
+  --sidebar: #1a1730;
+  --crm-app-background: #0c0a18;
+  --crm-app-panel: #141126;
+  --crm-app-panel-muted: #1c1835;
+  --crm-app-panel-strong: #221d42;
+  --crm-app-border: rgb(109 40 217 / 22%);
+  --crm-app-text-muted: #a5b4fc;
+  --crm-brand-text: #c4b5fd;
+  --crm-brand-on-soft: #ddd6fe;
+}
+
+.dark.theme-burgundy {
+  --background: #1a0a0a;
+  --card: #2a1010;
+  --popover: #2a1010;
+  --sidebar: #2a1010;
+  --crm-app-background: #140808;
+  --crm-app-panel: #1f0c0c;
+  --crm-app-panel-muted: #2b1212;
+  --crm-app-panel-strong: #351616;
+  --crm-app-border: rgb(185 28 28 / 22%);
+  --crm-app-text-muted: #fca5a5;
+  --crm-brand-text: #fca5a5;
+  --crm-brand-on-soft: #fecaca;
+}
+
+.dark.theme-industrial-steel {
+  --background: #0f172a;
+  --card: #1e293b;
+  --popover: #1e293b;
+  --sidebar: #1e293b;
+  --crm-app-background: #0b1220;
+  --crm-app-panel: #111827;
+  --crm-app-panel-muted: #1e293b;
+  --crm-app-panel-strong: #273449;
+  --crm-app-border: rgb(148 163 184 / 18%);
+  --crm-app-text-muted: #94a3b8;
+  --crm-brand-text: #bae6fd;
+  --crm-brand-on-soft: #e0f2fe;
+}
+
+.dark.theme-high-contrast {
+  --background: #020617;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --popover: #0f172a;
+  --sidebar: #0f172a;
+  --muted-foreground: #cbd5e1;
+  --crm-app-background: #020617;
+  --crm-app-panel: #0f172a;
+  --crm-app-panel-muted: #111827;
+  --crm-app-panel-strong: #1e293b;
+  --crm-app-border: rgb(248 250 252 / 18%);
+  --crm-app-text-muted: #e2e8f0;
+  --crm-brand-text: #fde047;
+  --crm-brand-on-soft: #fef08a;
+}
+
+.dark.theme-flat-navy {
+  --background: #0f172a;
+  --card: #172554;
+  --popover: #172554;
+  --sidebar: #172554;
+  --crm-app-background: #0b1224;
+  --crm-app-panel: #0f172a;
+  --crm-app-panel-muted: #172554;
+  --crm-app-panel-strong: #1e3a8a;
+  --crm-app-border: rgb(96 165 250 / 18%);
+  --crm-app-text-muted: #93c5fd;
+  --crm-brand-text: #93c5fd;
+  --crm-brand-on-soft: #bfdbfe;
+}
+
+.dark.theme-flat-slate {
+  --background: #1e293b;
+  --card: #334155;
+  --popover: #334155;
+  --sidebar: #334155;
+  --crm-app-background: #111827;
+  --crm-app-panel: #1e293b;
+  --crm-app-panel-muted: #273449;
+  --crm-app-panel-strong: #334155;
+  --crm-app-border: rgb(148 163 184 / 18%);
+  --crm-app-text-muted: #cbd5e1;
+  --crm-brand-text: #cbd5e1;
+  --crm-brand-on-soft: #e2e8f0;
+}
