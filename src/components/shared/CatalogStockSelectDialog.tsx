@@ -69,11 +69,9 @@ import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } from './RelatedStocksSelectionDialog';
 import { CatalogSpecialCodeFilterPanel } from './CatalogSpecialCodeFilterPanel';
 import {
-  CATALOG_SPECIAL_CODE_FACET_POOL_SIZE,
   clearSpecialCodeSelections,
   EMPTY_SPECIAL_CODE_SELECTIONS,
   CATALOG_FILTER_DIMENSIONS,
-  extractFilterDimensionOptions,
   hasSpecialCodeSelection,
   toggleSpecialCodeValue,
   type CatalogFilterDimension,
@@ -701,29 +699,22 @@ export function CatalogStockSelectDialog({
   const specialCodeHasSelection = hasSpecialCodeSelection(specialCodeSelections);
 
   const specialCodeFacetPoolQuery = useQuery({
-    queryKey: ['catalog-special-code-facet-pool'],
-    queryFn: async (): Promise<StockGetDto[]> => {
-      const response = await stockApi.getList({
-        pageNumber: 1,
-        pageSize: CATALOG_SPECIAL_CODE_FACET_POOL_SIZE,
-        search: '',
-        sortBy: 'Id',
-        sortDirection: 'desc',
-        filterLogic: 'and',
-        filters: [],
-      });
-      return response.data ?? [];
-    },
+    queryKey: ['catalog-special-code-facet-options', debouncedStockSearch],
+    queryFn: () =>
+      stockApi.getCodeFilterOptions({
+        search: debouncedStockSearch,
+        pageSize: 150,
+      }),
     enabled: open && leftPanelMode === 'code',
-    staleTime: 120_000,
-    gcTime: 300_000,
+    staleTime: 300_000,
+    gcTime: 600_000,
   });
 
   const specialCodeOptionsByLevel = useMemo((): Record<CatalogFilterDimension, CatalogSpecialCodeOption[]> => {
-    const pool = specialCodeFacetPoolQuery.data ?? [];
+    const options = specialCodeFacetPoolQuery.data;
     const result = {} as Record<CatalogFilterDimension, CatalogSpecialCodeOption[]>;
     for (const dimension of CATALOG_FILTER_DIMENSIONS) {
-      result[dimension] = extractFilterDimensionOptions(pool, dimension);
+      result[dimension] = options?.[dimension] ?? [];
     }
     return result;
   }, [specialCodeFacetPoolQuery.data]);
