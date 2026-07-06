@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect } from 'react';
+import { type ReactElement, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { loadLanguage } from '@/lib/i18n';
 import {
@@ -24,13 +24,19 @@ import { Check, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { useTheme } from '@/components/theme-provider';
-import { brandThemes } from '@/lib/brand-themes';
+import {
+  darkBrandThemes,
+  getBrandThemeAppearance,
+  lightBrandThemes,
+  type BrandThemeDefinition,
+} from '@/lib/brand-themes';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUserDetailByUserId } from '@/features/user-detail-management/hooks/useUserDetailByUserId';
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
 import { cn } from '@/lib/utils';
+import { CRM_SELECT_MENU_ITEM_CLASS } from '@/lib/menu-interactive-styles';
 import { useNavigate } from 'react-router-dom';
 import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 
@@ -50,13 +56,44 @@ const languages = [
   { code: 'ar', name: 'العربية', flag: '🇸🇦', short: 'AR' },
 ];
 
+const SETTINGS_SWITCH_CLASS = 'scale-75 md:scale-100 shrink-0';
+
+const SETTINGS_PANEL_ITEM_CLASS = cn(
+  'border rounded-[1.5rem] md:rounded-[2rem] transition-all duration-200',
+  'border-slate-200 bg-white shadow-sm',
+  'dark:border-white/10 dark:bg-white/5 dark:shadow-none',
+);
+
+const SETTINGS_PROFILE_BUTTON_CLASS = cn(
+  'group w-full cursor-pointer p-2 md:p-3 lg:p-4 flex items-center justify-between',
+  'rounded-[1.5rem] border transition-colors duration-200 md:rounded-[2rem]',
+  'border-slate-200 bg-white shadow-sm',
+  'dark:border-white/10 dark:bg-white/5 dark:shadow-none',
+  'hover:!border-[var(--crm-brand-primary)] hover:bg-[var(--crm-brand-soft)] hover:shadow-[0_8px_22px_-14px_var(--crm-brand-shadow)]',
+  'dark:hover:!border-[var(--crm-brand-primary)] dark:hover:bg-[var(--crm-brand-soft)]',
+);
+
+const SETTINGS_ROW_CLASS = cn(
+  SETTINGS_PANEL_ITEM_CLASS,
+  'group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between',
+);
+
 export function UserProfileModal({
   open,
   onOpenChange,
   onOpenProfileDetails
 }: UserProfileModalProps): ReactElement {
   const { t, i18n } = useTranslation();
-  const { theme, brandTheme, isBrandThemeListEnabled, setTheme, setBrandTheme, setBrandThemeListEnabled } = useTheme();
+  const {
+    theme,
+    brandTheme,
+    isBrandThemeListEnabled,
+    v3riiAppearanceRevision,
+    setTheme,
+    setBrandTheme,
+    setBrandThemeListEnabled,
+    toggleV3riiAppearanceOverride,
+  } = useTheme();
   const { user, logout, branch } = useAuthStore();
   const navigate = useNavigate();
   const { data: userDetail } = useUserDetailByUserId(user?.id || 0, open);
@@ -78,10 +115,70 @@ export function UserProfileModal({
   const displayName = user?.name || user?.email || t('dashboard.user');
   const displayInitials = user?.name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U';
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     logout();
     onOpenChange(false);
     navigate('/auth/login', { replace: true });
+  };
+
+  const resolveThemeAppearanceLabel = useCallback((item: BrandThemeDefinition): string => {
+    void v3riiAppearanceRevision;
+    const appearance = item.id === 'v3rii' ? getBrandThemeAppearance('v3rii') : item.appearance;
+    return appearance === 'dark' ? t('theme.dark') : t('theme.light');
+  }, [t, v3riiAppearanceRevision]);
+
+  const handleThemeBadgeDoubleClick = useCallback((
+    event: React.MouseEvent<HTMLSpanElement>,
+    item: BrandThemeDefinition,
+  ): void => {
+    if (item.id !== 'v3rii') {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    toggleV3riiAppearanceOverride();
+  }, [toggleV3riiAppearanceOverride]);
+
+  const renderThemeCard = (item: BrandThemeDefinition): ReactElement => {
+    const isSelected = item.id === brandTheme;
+    return (
+      <button
+        key={item.id}
+        type="button"
+        onClick={() => setBrandTheme(item.id)}
+        className={cn(
+          'flex h-[4.75rem] w-full min-h-[4.75rem] items-center gap-2.5 rounded-xl border p-2.5 text-left transition-colors md:h-[5rem] md:gap-3 md:p-3',
+          'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 dark:border-white/10 dark:bg-transparent dark:hover:bg-white/5',
+          isSelected && 'border-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)]',
+        )}
+      >
+        <span className="flex h-9 w-11 shrink-0 overflow-hidden rounded-xl border border-white/40 shadow-sm md:w-12">
+          {item.swatches.map((color) => (
+            <span key={color} className="h-full flex-1" style={{ backgroundColor: color }} />
+          ))}
+        </span>
+        <span className="flex min-h-0 min-w-0 flex-1 flex-col justify-center">
+          <span className="flex min-w-0 items-center gap-1.5">
+            <span className="min-w-0 flex-1 truncate text-xs font-black md:text-sm">{item.label}</span>
+            <span
+              onDoubleClick={(event) => handleThemeBadgeDoubleClick(event, item)}
+              className="shrink-0 rounded-md border border-[var(--crm-app-border)] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[var(--crm-app-text-muted)] md:text-[10px]"
+            >
+              {resolveThemeAppearanceLabel(item)}
+            </span>
+          </span>
+          <span className="mt-0.5 line-clamp-2 text-[10px] leading-snug font-medium text-[var(--crm-app-text-muted)] md:text-[11px]">
+            {item.description}
+          </span>
+        </span>
+        <span className={cn(
+          'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--crm-brand-primary)] bg-[var(--crm-brand-primary)] text-white transition-opacity',
+          isSelected ? 'opacity-100' : 'opacity-0',
+        )}>
+          <Check size={14} strokeWidth={3} />
+        </span>
+      </button>
+    );
   };
 
   const handleLanguageChange = async (value: string): Promise<void> => {
@@ -176,10 +273,7 @@ export function UserProfileModal({
               "overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
             )}>
               <button
-                className={cn(
-                  "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all duration-300",
-                  "border-slate-100 bg-slate-50/50 hover:border-[var(--crm-brand-ring)] hover:bg-white hover:shadow-xl dark:border-white/5 dark:bg-white/5 dark:hover:bg-white/[0.08]"
-                )}
+                className={SETTINGS_PROFILE_BUTTON_CLASS}
                 onClick={onOpenProfileDetails}
               >
                 <div className="flex items-center gap-3 md:gap-4">
@@ -191,13 +285,10 @@ export function UserProfileModal({
                     <p className="text-[10px] md:text-xs opacity-50 hidden sm:block">{t('profile.editDescription')}</p>
                   </div>
                 </div>
-                <ArrowRight01Icon size={16} className="opacity-30 group-hover:translate-x-1 transition-transform md:w-[18px]" />
+                <ArrowRight01Icon size={16} className="opacity-40 transition-all group-hover:translate-x-1 group-hover:text-[var(--crm-brand-primary)] group-hover:opacity-100 md:w-[18px]" />
               </button>
 
-              <div className={cn(
-                "group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
-                "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
-              )}>
+              <div className={cn(SETTINGS_ROW_CLASS)}>
                 <div className="flex items-center gap-3 md:gap-4 flex-1">
                   <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400")}>
                     <LanguageSquareIcon size={18} className="md:w-6 md:h-6" />
@@ -222,10 +313,10 @@ export function UserProfileModal({
                         key={l.code}
                         value={l.code}
                         className={cn(
-                          "my-1 cursor-pointer rounded-xl transition-all duration-200",
+                          CRM_SELECT_MENU_ITEM_CLASS,
                           currentLanguage.code === l.code
                             ? "bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)] font-bold"
-                            : "hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-white/5 dark:focus:bg-white/5"
+                            : undefined
                         )}
                       >
                         <span className="flex items-center gap-2">
@@ -238,105 +329,76 @@ export function UserProfileModal({
                 </Select>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 md:gap-2.5">
-                <div className={cn(
-                  "sm:col-span-2 group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
-                  "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
-                )}>
+              <div className="flex flex-col gap-2 md:gap-2.5">
+                <div className={SETTINGS_ROW_CLASS}>
                   <div className="flex items-center gap-3 md:gap-4">
                     <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-amber-100 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400")}>
                       {isDark ? <Moon02Icon size={18} className="md:w-6 md:h-6" /> : <Sun01Icon size={18} className="md:w-6 md:h-6" />}
                     </div>
-                    <div className="text-left">
+                    <div className="text-left min-w-0">
                       <p className="font-bold text-sm md:text-base lg:text-lg">{t('appearance')}</p>
+                      <p className="mt-0.5 text-[10px] font-semibold leading-relaxed text-[var(--crm-app-text-muted)] md:text-xs">
+                        {isBrandThemeListEnabled
+                          ? t('appearanceLockedByBrandTheme')
+                          : isDark
+                            ? t('theme.dark')
+                            : t('theme.light')}
+                      </p>
                     </div>
                   </div>
-                  {isBrandThemeListEnabled ? (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="inline-flex shrink-0 cursor-not-allowed">
-                          <Switch
-                            checked={isDark}
-                            disabled
-                            className="scale-75 data-[state=checked]:bg-[var(--crm-brand-primary)] md:scale-100"
-                          />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent side="top" className="max-w-[300px] px-4 py-2.5 text-sm font-medium leading-relaxed">
-                        {t('appearanceLockedByBrandTheme')}
-                      </TooltipContent>
-                    </Tooltip>
-                  ) : (
-                    <Switch
-                      checked={isDark}
-                      onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-                      className="scale-75 data-[state=checked]:bg-[var(--crm-brand-primary)] md:scale-100"
-                    />
-                  )}
+                  <Switch
+                    checked={isDark}
+                    onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
+                    disabled={isBrandThemeListEnabled}
+                    className={cn(
+                      SETTINGS_SWITCH_CLASS,
+                      isBrandThemeListEnabled && 'cursor-not-allowed opacity-50',
+                    )}
+                  />
                 </div>
 
-                <div className={cn(
-                  "sm:col-span-3 group w-full p-2 md:p-3 lg:p-4 flex items-center justify-between border rounded-[1.5rem] md:rounded-[2rem] transition-all",
-                  "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
-                )}>
-                  <div className="flex items-center gap-3 md:gap-4 flex-1">
+                <div className={SETTINGS_ROW_CLASS}>
+                  <div className="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
                     <div className={cn("p-2.5 md:p-4 rounded-2xl shadow-lg", "bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)]")}>
                       <Palette size={18} className="md:h-6 md:w-6" />
                     </div>
                     <div className="text-left min-w-0">
-                      <p className="font-bold text-sm md:text-base lg:text-lg">Tema</p>
-                      <p className="mt-0.5 line-clamp-1 text-[10px] font-semibold text-[var(--crm-app-text-muted)] md:text-xs">
-                        {isBrandThemeListEnabled
-                          ? brandThemes.find((item) => item.id === brandTheme)?.label || 'Tema'
-                          : 'V3RII Neon + görünüm modu'}
+                      <p className="font-bold text-sm md:text-base lg:text-lg">{t('useCustomThemes')}</p>
+                      <p className="mt-0.5 line-clamp-2 text-[10px] font-semibold text-[var(--crm-app-text-muted)] md:text-xs">
+                        {isBrandThemeListEnabled ? t('useCustomThemesOnHint') : t('useCustomThemesOffHint')}
                       </p>
                     </div>
                   </div>
                   <Switch
                     checked={isBrandThemeListEnabled}
                     onCheckedChange={setBrandThemeListEnabled}
-                    className="scale-75 data-[state=checked]:bg-[var(--crm-brand-primary)] md:scale-100"
+                    className={SETTINGS_SWITCH_CLASS}
                   />
                 </div>
 
                 {isBrandThemeListEnabled && (
-                  <div className={cn(
-                    "sm:col-span-5 grid grid-cols-1 gap-2 rounded-[1.5rem] border p-2 transition-all sm:grid-cols-2",
-                    "border-slate-100 bg-slate-50/50 dark:border-white/5 dark:bg-white/5"
-                  )}>
-                    {brandThemes.map((item) => {
-                      const isSelected = item.id === brandTheme;
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => setBrandTheme(item.id)}
-                          className={cn(
-                            "flex min-h-16 items-center gap-3 rounded-xl border p-3 text-left transition-colors",
-                            "border-slate-100 hover:bg-slate-100 dark:border-white/5 dark:hover:bg-white/5",
-                            isSelected && "border-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)]"
-                          )}
-                        >
-                          <span className="flex h-9 w-12 shrink-0 overflow-hidden rounded-xl border border-white/40 shadow-sm">
-                            {item.swatches.map((color) => (
-                              <span key={color} className="h-full flex-1" style={{ backgroundColor: color }} />
-                            ))}
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-xs font-black md:text-sm">{item.label}</span>
-                            <span className="mt-0.5 line-clamp-1 text-[10px] font-medium text-[var(--crm-app-text-muted)] md:text-[11px]">
-                              {item.description}
-                            </span>
-                          </span>
-                          <span className={cn(
-                            "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--crm-brand-primary)] bg-[var(--crm-brand-primary)] text-white transition-opacity",
-                            isSelected ? "opacity-100" : "opacity-0"
-                          )}>
-                            <Check size={14} strokeWidth={3} />
-                          </span>
-                        </button>
-                      );
-                    })}
+                  <div className={cn(SETTINGS_PANEL_ITEM_CLASS, 'p-2 md:p-3')}>
+                    <p className="mb-2 px-1 text-[10px] font-black uppercase tracking-[0.14em] text-[var(--crm-app-text-muted)] md:text-xs">
+                      {t('customThemeSelection')}
+                    </p>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                      <div className="flex min-w-0 flex-col gap-2">
+                        <p className="px-1 text-[10px] font-black uppercase tracking-[0.12em] text-[var(--crm-app-text-muted)] md:text-[11px]">
+                          {t('customThemeDarkColumn')}
+                        </p>
+                        <div className="flex flex-col gap-2">
+                          {darkBrandThemes.map((item) => renderThemeCard(item))}
+                        </div>
+                      </div>
+                      <div className="flex min-w-0 flex-col gap-2">
+                        <p className="px-1 text-[10px] font-black uppercase tracking-[0.12em] text-[var(--crm-app-text-muted)] md:text-[11px]">
+                          {t('customThemeLightColumn')}
+                        </p>
+                        <div className="flex flex-col gap-2">
+                          {lightBrandThemes.map((item) => renderThemeCard(item))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

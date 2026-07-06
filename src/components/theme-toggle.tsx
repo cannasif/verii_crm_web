@@ -43,7 +43,10 @@ export function ThemeToggle({ variant = 'default' }: ThemeToggleProps) {
   if (variant === 'icon') {
     return (
       <button
-        onClick={() => setTheme(isDark ? "light" : "dark")}
+        onClick={() => {
+          if (isBrandThemeListEnabled) return
+          setTheme(isDark ? "light" : "dark")
+        }}
         disabled={isBrandThemeListEnabled}
         className={cn(
           "w-12 h-12 rounded-full border border-white/20 bg-zinc-900/80 backdrop-blur-xl shadow-lg shadow-black/40",

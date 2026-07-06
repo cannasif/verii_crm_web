@@ -7,13 +7,7 @@
     <title> V3RII CRM SYSTEM</title>
     <script>
       (function() {
-        const theme = localStorage.getItem('vite-ui-theme') || 'system';
-        if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.add('light');
-        }
-        const brandTheme = localStorage.getItem('vite-ui-brand-theme') || 'v3rii';
+        const isBrandThemeListEnabled = localStorage.getItem('vite-ui-brand-theme-list-enabled') === 'true';
         const brandThemeClassMap = {
           v3rii: 'theme-v3rii',
           corporateBlue: 'theme-corporate-blue',
@@ -28,9 +22,55 @@
           flatNavy: 'theme-flat-navy',
           flatSlate: 'theme-flat-slate',
           flatWhite: 'theme-flat-white',
+          warmSand: 'theme-warm-sand',
+          skyMist: 'theme-sky-mist',
+          softRose: 'theme-soft-rose',
         };
-        document.documentElement.classList.add(brandThemeClassMap[brandTheme] || 'theme-v3rii');
-        document.documentElement.dataset.brandTheme = brandThemeClassMap[brandTheme] ? brandTheme : 'v3rii';
+        const brandThemeAppearanceMap = {
+          v3rii: 'dark',
+          corporateBlue: 'light',
+          graphite: 'dark',
+          emerald: 'light',
+          executive: 'dark',
+          burgundy: 'dark',
+          industrialSteel: 'dark',
+          cleanLight: 'light',
+          highContrast: 'dark',
+          minimalCrm: 'light',
+          flatNavy: 'dark',
+          flatSlate: 'dark',
+          flatWhite: 'light',
+          warmSand: 'light',
+          skyMist: 'light',
+          softRose: 'light',
+        };
+
+        if (isBrandThemeListEnabled) {
+          const brandTheme =
+            localStorage.getItem('vite-ui-brand-theme-list-selection') ||
+            localStorage.getItem('vite-ui-brand-theme') ||
+            'v3rii';
+          const themeClass = brandThemeClassMap[brandTheme] || 'theme-v3rii';
+          let appearance = brandThemeAppearanceMap[brandTheme] || 'dark';
+          if (brandTheme === 'v3rii') {
+            const v3riiOverride = localStorage.getItem('vite-ui-v3rii-appearance-override');
+            if (v3riiOverride === 'light' || v3riiOverride === 'dark') {
+              appearance = v3riiOverride;
+            }
+          }
+          document.documentElement.classList.add(appearance);
+          document.documentElement.classList.add(themeClass);
+          document.documentElement.dataset.brandTheme = brandThemeClassMap[brandTheme] ? brandTheme : 'v3rii';
+          document.documentElement.dataset.brandThemeAppearance = appearance;
+          return;
+        }
+
+        const theme = localStorage.getItem('vite-ui-theme') || 'system';
+        if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.add('light');
+        }
       })();
     </script>
   </head>
