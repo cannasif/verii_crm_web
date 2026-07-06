@@ -697,6 +697,8 @@ export function CatalogStockSelectDialog({
   const favoriteHasNextPage = favoriteStocksQuery.data?.hasNextPage ?? (favoriteStockItems.length < favoriteTotalCount);
 
   const specialCodeHasSelection = hasSpecialCodeSelection(specialCodeSelections);
+  const specialCodeHasSearch = catalogStockApiSearch != null && catalogStockApiSearch.trim().length > 0;
+  const specialCodeCanQueryStocks = specialCodeHasSelection || specialCodeHasSearch;
 
   const specialCodeFacetPoolQuery = useQuery({
     queryKey: ['catalog-special-code-facet-options', debouncedStockSearch],
@@ -742,7 +744,7 @@ export function CatalogStockSelectDialog({
         totalCount: result.totalCount ?? result.data.length,
       };
     },
-    enabled: open && leftPanelMode === 'code' && specialCodeHasSelection,
+    enabled: open && leftPanelMode === 'code' && specialCodeCanQueryStocks,
     staleTime: 30_000,
     placeholderData: keepPreviousData,
   });
@@ -842,7 +844,7 @@ export function CatalogStockSelectDialog({
         activeStockRows.length > 0 &&
         (stockBrowseMode === 'campaign' ||
           stockBrowseMode === 'favorites' ||
-          (leftPanelMode === 'code' && specialCodeHasSelection) ||
+          (leftPanelMode === 'code' && specialCodeCanQueryStocks) ||
           (stockBrowseMode === 'category' && selectedLeafCategory != null)),
       staleTime: 5 * 60 * 1000,
     })),
@@ -1165,7 +1167,7 @@ export function CatalogStockSelectDialog({
       return t('catalogStockPicker.favoriteStocksChip');
     }
     if (leftPanelMode === 'code' && stockBrowseMode === 'specialCodes') {
-      if (!specialCodeHasSelection) {
+      if (!specialCodeCanQueryStocks) {
         return t('catalogStockPicker.specialCodesEmptyTitle');
       }
       if (specialCodeStocksQuery.isLoading) {
@@ -1198,7 +1200,7 @@ export function CatalogStockSelectDialog({
   }, [
     stockBrowseMode,
     leftPanelMode,
-    specialCodeHasSelection,
+    specialCodeCanQueryStocks,
     specialCodeStocksQuery.isLoading,
     specialCodePagedItems.length,
     specialCodeTotalCount,
@@ -1213,7 +1215,7 @@ export function CatalogStockSelectDialog({
 
   const helperDescription = useMemo((): string => {
     if (leftPanelMode === 'code' && stockBrowseMode === 'specialCodes') {
-      if (!specialCodeHasSelection) {
+      if (!specialCodeCanQueryStocks) {
         return t('catalogStockPicker.specialCodesPickHint');
       }
       if (specialCodeStocksQuery.isLoading) {
@@ -1249,7 +1251,7 @@ export function CatalogStockSelectDialog({
   }, [
     stockBrowseMode,
     leftPanelMode,
-    specialCodeHasSelection,
+    specialCodeCanQueryStocks,
     specialCodeStocksQuery.isLoading,
     specialCodePagedItems.length,
     campaignStocksQuery.isLoading,
@@ -1296,7 +1298,7 @@ export function CatalogStockSelectDialog({
   );
 
   const stockListScrollInner =
-    leftPanelMode === 'code' && stockBrowseMode === 'specialCodes' && !specialCodeHasSelection ? (
+    leftPanelMode === 'code' && stockBrowseMode === 'specialCodes' && !specialCodeCanQueryStocks ? (
       <div className="flex min-h-0 flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300/90 bg-slate-50/80 px-4 py-8 text-center shadow-sm shadow-slate-200/40 backdrop-blur-sm dark:border-white/15 dark:bg-white/[0.03] dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:shadow-none sm:px-6 sm:py-12">
         <div className="max-w-md">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl border border-primary/30 bg-primary/10 text-primary">
@@ -2369,7 +2371,7 @@ export function CatalogStockSelectDialog({
                           className="h-8 rounded-xl border border-slate-300/90 bg-white crm-ps-8 text-sm text-slate-900 shadow-sm placeholder:text-slate-500 backdrop-blur-sm focus-visible:border-primary/60 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-white/[0.06] dark:text-slate-100 dark:placeholder:text-slate-500 dark:shadow-none dark:focus-visible:border-primary/40 sm:h-9 sm:rounded-2xl sm:[padding-inline-start:2.5rem]"
                           disabled={
                             (stockBrowseMode === 'category' && !selectedLeafCategory) ||
-                            (leftPanelMode === 'code' && stockBrowseMode === 'specialCodes' && !specialCodeHasSelection)
+                            (leftPanelMode === 'code' && stockBrowseMode === 'specialCodes' && !specialCodeCanQueryStocks)
                           }
                         />
                       </div>
