@@ -2369,10 +2369,7 @@ export function CatalogStockSelectDialog({
                           onChange={(event) => setStockSearch(event.target.value)}
                           placeholder={t('catalogStockPicker.searchPlaceholder')}
                           className="h-8 rounded-xl border border-slate-300/90 bg-white crm-ps-8 text-sm text-slate-900 shadow-sm placeholder:text-slate-500 backdrop-blur-sm focus-visible:border-primary/60 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-white/[0.06] dark:text-slate-100 dark:placeholder:text-slate-500 dark:shadow-none dark:focus-visible:border-primary/40 sm:h-9 sm:rounded-2xl sm:[padding-inline-start:2.5rem]"
-                          disabled={
-                            (stockBrowseMode === 'category' && !selectedLeafCategory) ||
-                            (leftPanelMode === 'code' && stockBrowseMode === 'specialCodes' && !specialCodeCanQueryStocks)
-                          }
+                          disabled={stockBrowseMode === 'category' && !selectedLeafCategory}
                         />
                       </div>
                     </div>
