@@ -15,7 +15,12 @@ import {
   Warehouse,
 } from 'lucide-react';
 
-import { ndiApi, type NetsisCustomerDispatchDto, type NetsisCustomerDispatchLineDto } from '../api/ndi-api';
+import {
+  ndiApi,
+  type NdiTransferCreateResponseDto,
+  type NetsisCustomerDispatchDto,
+  type NetsisCustomerDispatchLineDto,
+} from '../api/ndi-api';
 
 interface NdiOrderLine {
   id: string;
@@ -48,11 +53,15 @@ interface NdiPreparedLine {
 
 interface NdiPreparedDocument {
   sourceDocumentNo: string;
-  targetDocumentNo: string;
   sourceNetsisCompany: string;
   targetNetsisCompany: string;
   targetSeries: string;
   documentType: 'İrsaliye' | 'Fatura';
+  followUpNote?: string;
+  customerCode: string;
+  customerName: string;
+  description: string;
+  date: string | null;
   lineCount: number;
 }
 
@@ -75,6 +84,7 @@ interface NdiOrder {
   customer: string;
   customerCode: string;
   date: string;
+  documentDate: string | null;
   status: 'open' | 'planned' | 'partial';
   route: string;
   branch: string;
@@ -299,6 +309,13 @@ function getKnownSeries(value: string): NdiBusinessSeries | null {
   return prefix === 'NUR' || prefix === 'VIN' || prefix === 'DIS' || prefix === 'SIP' ? prefix : null;
 }
 
+function resolveSourceDocumentSeries(value: string): string {
+  const normalized = value.trim();
+  const beforeDash = normalized.split('-').filter(Boolean)[0] ?? normalized;
+  const match = beforeDash.match(/^[A-Za-zÇĞİÖŞÜçğıöşü]+/);
+  return (match?.[0] || beforeDash.slice(0, 3)).toLocaleUpperCase('tr-TR');
+}
+
 function getRule(order: NdiOrder): NdiTransferRule {
   return transferRules.find((rule) => rule.id === order.operationProfile) ?? transferRules[0];
 }
@@ -412,9 +429,10 @@ function resolveTargetSeries(order: NdiOrder): { value: string; note: string; wa
   }
 
   if (action === 'IRSALIYELISTIR') {
+    const sourceDocumentSeries = resolveSourceDocumentSeries(order.orderNo);
     return {
-      value: series,
-      note: `${config.label}: irsaliye aktarımında kaynakta kullanılan irsaliye/fatura serisi ŞİRKET24 tarafına taşınır.`,
+      value: sourceDocumentSeries,
+      note: `${config.label}: irsaliye aktarımında kaynakta kullanılan ${sourceDocumentSeries} serisi ŞİRKET24 tarafına taşınır.`,
     };
   }
 
@@ -604,6 +622,7 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
     customer: dispatch.cariIsim || dispatch.cariKodu,
     customerCode: dispatch.cariKodu,
     date: formatDate(dispatch.tarih),
+    documentDate: dispatch.tarih ?? null,
     status: operationProfile === 'disTicaret' ? 'partial' : 'open',
     route: [dispatch.tipi, dispatch.teslimCariIsim].filter(Boolean).join(' / ') || '-',
     branch: dispatch.teslimCariKodu || dispatch.cariKodu || '-',
@@ -650,6 +669,10 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const [prepareError, setPrepareError] = useState<string | null>(null);
   const [preparedTransfer, setPreparedTransfer] = useState<NdiPreparedTransfer | null>(null);
   const [successDialogTransfer, setSuccessDialogTransfer] = useState<NdiPreparedTransfer | null>(null);
+  const [isSendingTransfer, setIsSendingTransfer] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [transferResult, setTransferResult] = useState<NdiTransferCreateResponseDto | null>(null);
+  const [transferResultDialog, setTransferResultDialog] = useState<NdiTransferCreateResponseDto | null>(null);
   const initializedSelectionRef = useRef(false);
   const preparedTransferRef = useRef<HTMLDivElement | null>(null);
 
@@ -768,6 +791,9 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const toggleOrder = (order: NdiOrder) => {
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
+    setTransferResult(null);
+    setTransferResultDialog(null);
+    setSendError(null);
     setPrepareAttempted(false);
     setPrepareError(null);
     setSelectedOrderIds((current) => {
@@ -789,6 +815,9 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const toggleLine = (lineId: string) => {
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
+    setTransferResult(null);
+    setTransferResultDialog(null);
+    setSendError(null);
     setPrepareAttempted(false);
     setPrepareError(null);
     setSelectedLineIds((current) => {
@@ -805,6 +834,9 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const toggleAllLines = () => {
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
+    setTransferResult(null);
+    setTransferResultDialog(null);
+    setSendError(null);
     setPrepareAttempted(false);
     setPrepareError(null);
     setSelectedLineIds((current) => {
@@ -828,6 +860,9 @@ export function NdiOrderTransferDemoPage(): ReactElement {
     setPrepareError(null);
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
+    setTransferResult(null);
+    setTransferResultDialog(null);
+    setSendError(null);
     void dispatchesQuery.refetch();
   };
 
@@ -835,6 +870,9 @@ export function NdiOrderTransferDemoPage(): ReactElement {
     setPrepareAttempted(true);
     setPrepareError(null);
     setPreparedTransfer(null);
+    setTransferResult(null);
+    setTransferResultDialog(null);
+    setSendError(null);
 
     if (!canPrepareSelectedLines) {
       return;
@@ -874,11 +912,18 @@ export function NdiOrderTransferDemoPage(): ReactElement {
 
         return {
           sourceDocumentNo: order.orderNo,
-          targetDocumentNo: `${targetSeries}-${order.orderNo}`,
           sourceNetsisCompany: outcome?.sourceNetsisCompany ?? SERIES_CONFIG[getBusinessSeries(order)].netsisCompany,
           targetNetsisCompany: outcome?.targetNetsisCompany ?? 'SIRKET24',
           targetSeries,
           documentType,
+          followUpNote:
+            documentType === 'İrsaliye' && (getBusinessSeries(order) === 'NUR' || getBusinessSeries(order) === 'VIN')
+              ? 'API gönderiminde bu irsaliye başarıyla oluşursa ŞİRKET24 otomatik faturası da oluşturulur.'
+              : undefined,
+          customerCode: order.customerCode,
+          customerName: order.customer,
+          description: order.description,
+          date: order.documentDate,
           lineCount: preparedLines.filter((line) => line.orderNo === order.orderNo).length,
         };
       });
@@ -911,6 +956,51 @@ export function NdiOrderTransferDemoPage(): ReactElement {
     window.setTimeout(() => {
       preparedTransferRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 80);
+  };
+
+  const sendPreparedTransferToNetsis = async (transfer: NdiPreparedTransfer) => {
+    setSendError(null);
+    setTransferResult(null);
+    setIsSendingTransfer(true);
+
+    try {
+      const result = await ndiApi.createNdiTransfer({
+        documents: transfer.createdDocuments.map((document) => ({
+          sourceDocumentNo: document.sourceDocumentNo,
+          sourceNetsisCompany: document.sourceNetsisCompany,
+          targetNetsisCompany: document.targetNetsisCompany,
+          targetSeries: document.targetSeries,
+          documentType: document.documentType,
+          customerCode: document.customerCode,
+          customerName: document.customerName,
+          description: document.description,
+          date: document.date,
+          lines: transfer.lines
+            .filter((line) => line.orderNo === document.sourceDocumentNo)
+            .map((line) => ({
+              stockCode: line.stockCode,
+              stockName: line.stockName,
+              quantity: line.transferQuantity,
+              unit: line.unit,
+              sourceWarehouse: line.sourceWarehouse,
+              targetWarehouse: line.targetWarehouse,
+              vatRate: line.targetVat,
+            })),
+        })),
+      });
+
+      setTransferResult(result);
+      setTransferResultDialog(result);
+      setSuccessDialogTransfer(null);
+      window.setTimeout(() => {
+        preparedTransferRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 80);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'NDI aktarımı Netsis tarafına gönderilemedi.';
+      setSendError(message);
+    } finally {
+      setIsSendingTransfer(false);
+    }
   };
 
   return (
@@ -1170,9 +1260,32 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                   <div className="mt-2 rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">{prepareError}</div>
                 </div>
               ) : null}
+              {sendError ? (
+                <div className="mt-3 rounded-lg border border-[#fecaca] bg-[#fff8f8] p-3">
+                  <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
+                    <AlertCircle size={16} /> Netsis gönderimi başarısız
+                  </div>
+                  <div className="mt-2 rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">{sendError}</div>
+                </div>
+              ) : null}
+              {isSendingTransfer ? (
+                <div className="mt-3 rounded-lg border border-[#bfdbfe] bg-[#eff6ff] p-3">
+                  <div className="flex items-center gap-2 text-sm font-black text-[#1d4ed8]">
+                    <Loader2 size={16} className="animate-spin" /> Netsis'e gönderiliyor
+                  </div>
+                  <p className="mt-1 text-xs font-bold text-[#1e3a8a]">
+                    Kayıtlar Netsis ItemSlips servisine gönderiliyor. Cevap gelmeden sonuç ekranı kapatılmaz.
+                  </p>
+                </div>
+              ) : null}
+              {transferResult ? <TransferResultPanel result={transferResult} /> : null}
               {preparedTransfer ? (
                 <div ref={preparedTransferRef}>
-                  <PreparedTransferPanel transfer={preparedTransfer} />
+                  <PreparedTransferPanel
+                    transfer={preparedTransfer}
+                    isSending={isSendingTransfer}
+                    onSend={() => sendPreparedTransferToNetsis(preparedTransfer)}
+                  />
                 </div>
               ) : null}
             </div>
@@ -1308,7 +1421,15 @@ export function NdiOrderTransferDemoPage(): ReactElement {
         </section>
       </main>
       {successDialogTransfer ? (
-        <TransferSuccessDialog transfer={successDialogTransfer} onClose={closePreparedTransferDialog} />
+        <TransferPreviewDialog
+          transfer={successDialogTransfer}
+          isSending={isSendingTransfer}
+          onClose={closePreparedTransferDialog}
+          onSend={() => sendPreparedTransferToNetsis(successDialogTransfer)}
+        />
+      ) : null}
+      {transferResultDialog ? (
+        <TransferResultDialog result={transferResultDialog} onClose={() => setTransferResultDialog(null)} />
       ) : null}
     </div>
   );
@@ -1324,7 +1445,15 @@ function StatePanel({ icon, title, description }: { icon: ReactElement; title: s
   );
 }
 
-function PreparedTransferPanel({ transfer }: { transfer: NdiPreparedTransfer }): ReactElement {
+function PreparedTransferPanel({
+  transfer,
+  isSending,
+  onSend,
+}: {
+  transfer: NdiPreparedTransfer;
+  isSending: boolean;
+  onSend: () => void;
+}): ReactElement {
   return (
     <div className="mt-3 rounded-lg border border-[#bbf7d0] bg-[#f7fffb] p-3">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -1333,7 +1462,7 @@ function PreparedTransferPanel({ transfer }: { transfer: NdiPreparedTransfer }):
             <CheckCircle2 size={16} /> Aktarım önizlemesi hazırlandı
           </div>
           <p className="mt-1 text-xs font-bold text-[#49627e]">
-            {transfer.actionLabel} kural çıktısı oluşturuldu. Tamam dediğinizde popup kapanır; hazırlanan kayıtlar bu panelde kalır.
+            {transfer.actionLabel} kural çıktısı oluşturuldu. Bu aşamada Netsis'e gönderilmedi; kontrol sonrası aşağıdaki butonla gönderilir.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -1351,19 +1480,36 @@ function PreparedTransferPanel({ transfer }: { transfer: NdiPreparedTransfer }):
 
       <div className="mt-3 grid gap-2 md:grid-cols-2">
         {transfer.createdDocuments.map((document) => (
-          <div key={`${document.sourceDocumentNo}-${document.targetDocumentNo}`} className="rounded-md border border-[#bbf7d0] bg-white px-3 py-2">
+          <div key={`${document.sourceDocumentNo}-${document.targetSeries}`} className="rounded-md border border-[#bbf7d0] bg-white px-3 py-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="text-xs font-black text-[#047857]">{document.documentType}</div>
               <div className="rounded-full bg-[#ecfdf5] px-2 py-0.5 text-[10px] font-black text-[#047857]">
                 {document.lineCount} kalem
               </div>
             </div>
-            <div className="mt-1 text-sm font-black text-[#172033]">{document.targetDocumentNo}</div>
+            <div className="mt-1 text-sm font-black text-[#172033]">Hedef seri: {document.targetSeries}</div>
             <div className="mt-1 text-[11px] font-bold text-[#536780]">
               {document.sourceNetsisCompany} / {document.sourceDocumentNo} {'->'} {document.targetNetsisCompany} / {document.targetSeries}
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-3 flex justify-end">
+        <button
+          type="button"
+          onClick={onSend}
+          disabled={isSending}
+          className="inline-flex items-center gap-2 rounded-lg bg-[#12325f] px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#1f5eff] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {isSending ? (
+            <>
+              <Loader2 size={16} className="animate-spin" /> Netsis'e gönderiliyor...
+            </>
+          ) : (
+            'Netsis’e Gönder'
+          )}
+        </button>
       </div>
 
       {transfer.warnings.length > 0 ? <RuleTextList title="Hazırlık Uyarıları" values={transfer.warnings} tone="warn" /> : null}
@@ -1407,7 +1553,17 @@ function PreparedTransferPanel({ transfer }: { transfer: NdiPreparedTransfer }):
   );
 }
 
-function TransferSuccessDialog({ transfer, onClose }: { transfer: NdiPreparedTransfer; onClose: () => void }): ReactElement {
+function TransferPreviewDialog({
+  transfer,
+  isSending,
+  onClose,
+  onSend,
+}: {
+  transfer: NdiPreparedTransfer;
+  isSending: boolean;
+  onClose: () => void;
+  onSend: () => void;
+}): ReactElement {
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-[#0b1220]/60 px-4 py-6">
       <div className="w-full max-w-3xl rounded-2xl border border-[#d7e1ef] bg-white shadow-2xl">
@@ -1417,9 +1573,9 @@ function TransferSuccessDialog({ transfer, onClose }: { transfer: NdiPreparedTra
               <CheckCircle2 size={22} />
             </div>
             <div>
-              <h3 className="text-xl font-black text-[#172033]">Aktarım önizlemesi hazırlandı</h3>
+              <h3 className="text-xl font-black text-[#172033]">Netsis aktarım önizlemesi</h3>
               <p className="mt-1 text-sm font-semibold text-[#5c6f87]">
-                Seçili kalemler Netsis kuralına göre hazırlandı. Tamam dediğinizde bu pencere kapanır ve aynı özet alttaki panelde kalır.
+                Seçili kalemler Excel/NDI kuralına göre hazırlandı. Bu adımda Netsis'e kayıt atılmaz; gerçek irsaliye/fatura oluşturma için alttaki gönderim butonunu kullanın.
               </p>
             </div>
           </div>
@@ -1427,20 +1583,20 @@ function TransferSuccessDialog({ transfer, onClose }: { transfer: NdiPreparedTra
 
         <div className="max-h-[55vh] overflow-auto p-5">
           <div className="mb-4 rounded-xl border border-[#bfdbfe] bg-[#eff6ff] px-4 py-3 text-sm font-bold text-[#1e3a8a]">
-            Bu adım kayıtları kontrol için hazırlar. Gerçek Netsis gönderimi bağlandığında dönen fatura/irsaliye numaraları burada
-            başarılı atılan kayıtlar olarak gösterilecektir.
+            Henüz Netsis'e kayıt atılmadı. Kontrol ettikten sonra "Netsis'te İrsaliye/Fatura Oluştur" dediğinizde API çağrılır,
+            işlem bitene kadar beklenir ve dönen Netsis belge numaraları ayrı sonuç ekranında gösterilir.
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {transfer.createdDocuments.map((document) => (
-              <div key={`${document.sourceDocumentNo}-${document.targetDocumentNo}`} className="rounded-xl border border-[#bbf7d0] bg-[#f7fffb] p-4">
+              <div key={`${document.sourceDocumentNo}-${document.targetSeries}`} className="rounded-xl border border-[#bbf7d0] bg-[#f7fffb] p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="rounded-full bg-[#dcfce7] px-2 py-1 text-xs font-black text-[#047857]">
                     {document.documentType}
                   </span>
                   <span className="text-xs font-black text-[#536780]">{document.lineCount} kalem</span>
                 </div>
-                <div className="mt-3 text-sm font-black uppercase tracking-[0.08em] text-[#536780]">Oluşacak Netsis belge no</div>
-                <div className="mt-1 break-all text-lg font-black text-[#172033]">{document.targetDocumentNo}</div>
+                <div className="mt-3 text-sm font-black uppercase tracking-[0.08em] text-[#536780]">Hedef Netsis seri</div>
+                <div className="mt-1 break-all text-lg font-black text-[#172033]">{document.targetSeries}</div>
                 <div className="mt-3 grid gap-2 text-xs font-bold text-[#536780]">
                   <div className="rounded-md bg-white px-3 py-2">
                     Kaynak: {document.sourceNetsisCompany} / {document.sourceDocumentNo}
@@ -1448,11 +1604,170 @@ function TransferSuccessDialog({ transfer, onClose }: { transfer: NdiPreparedTra
                   <div className="rounded-md bg-white px-3 py-2">
                     Hedef: {document.targetNetsisCompany} / Seri {document.targetSeries}
                   </div>
+                  {document.followUpNote ? (
+                    <div className="rounded-md border border-[#fde68a] bg-[#fffbeb] px-3 py-2 text-[#92400e]">
+                      {document.followUpNote}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             ))}
           </div>
           {transfer.warnings.length > 0 ? <RuleTextList title="Aktarım Uyarıları" values={transfer.warnings} tone="warn" /> : null}
+        </div>
+
+        <div className="flex flex-wrap justify-end gap-2 border-t border-[#d7e1ef] bg-[#f8fbff] p-4">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSending}
+            className="rounded-lg border border-[#d7e1ef] bg-white px-6 py-3 text-sm font-black text-[#12325f] shadow-sm transition hover:border-[#12325f] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Önizlemeyi kapat
+          </button>
+          <button
+            type="button"
+            onClick={onSend}
+            disabled={isSending}
+            className="inline-flex items-center gap-2 rounded-lg bg-[#12325f] px-6 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#1f5eff] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {isSending ? (
+              <>
+                <Loader2 size={16} className="animate-spin" /> Netsis'e gönderiliyor...
+              </>
+            ) : (
+              'Netsis’te İrsaliye/Fatura Oluştur'
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function TransferResultPanel({ result }: { result: NdiTransferCreateResponseDto }): ReactElement {
+  return (
+    <div className="mt-3 rounded-lg border border-[#bbf7d0] bg-[#f7fffb] p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="flex items-center gap-2 text-sm font-black text-[#047857]">
+            <CheckCircle2 size={16} /> Netsis aktarım sonucu
+          </div>
+          <p className="mt-1 text-xs font-bold text-[#49627e]">
+            Netsis API dönüşüne göre başarılı ve başarısız belgeler aşağıdadır.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <RuleBadge tone="success" label={`${result.createdDocuments.length} başarılı`} />
+          {result.failedDocuments.length > 0 ? <RuleBadge tone="danger" label={`${result.failedDocuments.length} hatalı`} /> : null}
+        </div>
+      </div>
+
+      {result.createdDocuments.length > 0 ? (
+        <div className="mt-3 grid gap-2 md:grid-cols-2">
+          {result.createdDocuments.map((document) => (
+            <div key={`${document.sourceDocumentNo}-${document.netsisDocumentNo}`} className="rounded-md border border-[#bbf7d0] bg-white px-3 py-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="rounded-full bg-[#dcfce7] px-2 py-1 text-[10px] font-black text-[#047857]">
+                  {document.documentType}
+                </span>
+                <span className="text-[10px] font-black text-[#536780]">{document.lineCount} kalem</span>
+              </div>
+              <div className="mt-2 text-[11px] font-black uppercase tracking-[0.08em] text-[#536780]">Netsis kayıt no</div>
+              <div className="mt-1 break-all text-lg font-black text-[#172033]">{document.netsisDocumentNo}</div>
+              <div className="mt-2 grid gap-1 text-[11px] font-bold text-[#536780]">
+                <div className="rounded bg-[#f8fbff] px-2 py-1">Kaynak: {document.sourceNetsisCompany} / {document.sourceDocumentNo}</div>
+                <div className="rounded bg-[#f8fbff] px-2 py-1">Hedef: {document.targetNetsisCompany} / Seri {document.targetSeries}</div>
+                {document.netsisRecordNo ? <div className="rounded bg-[#f8fbff] px-2 py-1">Kayıt No: {document.netsisRecordNo}</div> : null}
+                {document.netsisReferenceNo ? <div className="rounded bg-[#f8fbff] px-2 py-1">Referans No: {document.netsisReferenceNo}</div> : null}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
+      {result.failedDocuments.length > 0 ? (
+        <div className="mt-3 rounded-lg border border-[#fecaca] bg-[#fff8f8] p-3">
+          <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
+            <AlertCircle size={16} /> Hatalı belgeler
+          </div>
+          <div className="mt-2 space-y-1">
+            {result.failedDocuments.map((document) => (
+              <div key={`${document.sourceDocumentNo}-${document.errorMessage}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
+                {document.sourceDocumentNo} / {document.documentType} / Seri {document.targetSeries}: {document.errorMessage}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {result.warnings.length > 0 ? <RuleTextList title="Aktarım Uyarıları" values={result.warnings} tone="warn" /> : null}
+    </div>
+  );
+}
+
+function TransferResultDialog({ result, onClose }: { result: NdiTransferCreateResponseDto; onClose: () => void }): ReactElement {
+  return (
+    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-[#0b1220]/60 px-4 py-6">
+      <div className="w-full max-w-3xl rounded-2xl border border-[#d7e1ef] bg-white shadow-2xl">
+        <div className="border-b border-[#d7e1ef] p-5">
+          <div className="flex items-start gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#dcfce7] text-[#047857]">
+              <CheckCircle2 size={22} />
+            </div>
+            <div>
+              <h3 className="text-xl font-black text-[#172033]">Netsis API sonucu</h3>
+              <p className="mt-1 text-sm font-semibold text-[#5c6f87]">
+                Bu ekran Netsis'e gönderim çağrısından sonra açılır. Başarılı oluşan irsaliye/fatura numaraları ve varsa hatalı belgeler aşağıdadır.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="max-h-[58vh] overflow-auto p-5">
+          {result.createdDocuments.length > 0 ? (
+            <div className="grid gap-3 md:grid-cols-2">
+              {result.createdDocuments.map((document) => (
+                <div key={`${document.sourceDocumentNo}-${document.netsisDocumentNo}`} className="rounded-xl border border-[#bbf7d0] bg-[#f7fffb] p-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="rounded-full bg-[#dcfce7] px-2 py-1 text-xs font-black text-[#047857]">
+                      Başarılı {document.documentType}
+                    </span>
+                    <span className="text-xs font-black text-[#536780]">{document.lineCount} kalem</span>
+                  </div>
+                  <div className="mt-3 text-sm font-black uppercase tracking-[0.08em] text-[#536780]">Netsis belge/kayıt no</div>
+                  <div className="mt-1 break-all text-lg font-black text-[#172033]">{document.netsisDocumentNo}</div>
+                  <div className="mt-3 grid gap-2 text-xs font-bold text-[#536780]">
+                    <div className="rounded-md bg-white px-3 py-2">Kaynak: {document.sourceNetsisCompany} / {document.sourceDocumentNo}</div>
+                    <div className="rounded-md bg-white px-3 py-2">Hedef: {document.targetNetsisCompany} / Seri {document.targetSeries}</div>
+                    {document.netsisRecordNo ? <div className="rounded-md bg-white px-3 py-2">Kayıt No: {document.netsisRecordNo}</div> : null}
+                    {document.netsisReferenceNo ? <div className="rounded-md bg-white px-3 py-2">Referans No: {document.netsisReferenceNo}</div> : null}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-[#fecaca] bg-[#fff8f8] p-4 text-sm font-black text-[#b91c1c]">
+              Netsis tarafında başarılı kayıt dönmedi.
+            </div>
+          )}
+
+          {result.failedDocuments.length > 0 ? (
+            <div className="mt-4 rounded-xl border border-[#fecaca] bg-[#fff8f8] p-4">
+              <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
+                <AlertCircle size={16} /> Hatalı belgeler
+              </div>
+              <div className="mt-2 space-y-1">
+                {result.failedDocuments.map((document) => (
+                  <div key={`${document.sourceDocumentNo}-${document.errorMessage}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
+                    {document.sourceDocumentNo} / {document.documentType} / Seri {document.targetSeries}: {document.errorMessage}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {result.warnings.length > 0 ? <RuleTextList title="Aktarım Uyarıları" values={result.warnings} tone="warn" /> : null}
         </div>
 
         <div className="flex justify-end border-t border-[#d7e1ef] bg-[#f8fbff] p-4">
@@ -1461,7 +1776,7 @@ function TransferSuccessDialog({ transfer, onClose }: { transfer: NdiPreparedTra
             onClick={onClose}
             className="rounded-lg bg-[#12325f] px-6 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#1f5eff]"
           >
-            Tamam, özete dön
+            Sonucu gördüm, pencereyi kapat
           </button>
         </div>
       </div>

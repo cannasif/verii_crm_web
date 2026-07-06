@@ -48,12 +48,100 @@ export interface NetsisNdiTransferRuleDto {
   description: string;
 }
 
+export interface NdiTransferCreateLineRequest {
+  stockCode: string;
+  stockName?: string | null;
+  quantity: number;
+  unit?: string | null;
+  sourceWarehouse?: string | null;
+  targetWarehouse?: string | null;
+  vatRate?: number | null;
+}
+
+export interface NdiTransferCreateDocumentRequest {
+  sourceDocumentNo: string;
+  sourceNetsisCompany: string;
+  targetNetsisCompany: string;
+  targetSeries: string;
+  documentType: string;
+  customerCode: string;
+  customerName?: string | null;
+  description?: string | null;
+  date?: string | null;
+  lines: NdiTransferCreateLineRequest[];
+}
+
+export interface NdiTransferCreateRequest {
+  documents: NdiTransferCreateDocumentRequest[];
+}
+
+export interface NdiTransferCreatedDocumentDto {
+  sourceDocumentNo: string;
+  sourceNetsisCompany: string;
+  targetNetsisCompany: string;
+  targetSeries: string;
+  documentType: string;
+  netsisDocumentNo: string;
+  netsisRecordNo?: string | null;
+  netsisReferenceNo?: string | null;
+  lineCount: number;
+  rawResponse?: string | null;
+}
+
+export interface NdiTransferFailedDocumentDto {
+  sourceDocumentNo: string;
+  targetSeries: string;
+  documentType: string;
+  errorMessage: string;
+}
+
+export interface NdiTransferCreateResponseDto {
+  createdDocuments: NdiTransferCreatedDocumentDto[];
+  failedDocuments: NdiTransferFailedDocumentDto[];
+  warnings: string[];
+}
+
 function ensureSuccess<T>(response: ApiResponse<T>, fallbackMessage: string): T {
   if (response.success) {
     return response.data;
   }
 
   throw new Error(response.message || fallbackMessage);
+}
+
+function isNdiTransferCreateResponse(value: unknown): value is NdiTransferCreateResponseDto {
+  if (value == null || typeof value !== 'object') {
+    return false;
+  }
+
+  const candidate = value as Partial<NdiTransferCreateResponseDto>;
+  return (
+    Array.isArray(candidate.createdDocuments) &&
+    Array.isArray(candidate.failedDocuments) &&
+    Array.isArray(candidate.warnings)
+  );
+}
+
+function getNdiTransferResultFromError(error: unknown): NdiTransferCreateResponseDto | null {
+  if (error == null || typeof error !== 'object') {
+    return null;
+  }
+
+  const responseData = (error as { response?: { data?: unknown } }).response?.data;
+  if (responseData == null || typeof responseData !== 'object') {
+    return null;
+  }
+
+  const payload = responseData as { details?: unknown; data?: unknown };
+  if (isNdiTransferCreateResponse(payload.details)) {
+    return payload.details;
+  }
+
+  if (isNdiTransferCreateResponse(payload.data)) {
+    return payload.data;
+  }
+
+  return null;
 }
 
 export const ndiApi = {
@@ -82,5 +170,19 @@ export const ndiApi = {
   getNdiTransferRules: async (): Promise<NetsisNdiTransferRuleDto[]> => {
     const response = await api.get<ApiResponse<NetsisNdiTransferRuleDto[]>>('/api/NetsisRead/getNdiTransferRules');
     return ensureSuccess(response, 'NDI aktarim kurallari yuklenemedi.');
+  },
+
+  createNdiTransfer: async (request: NdiTransferCreateRequest): Promise<NdiTransferCreateResponseDto> => {
+    try {
+      const response = await api.post<ApiResponse<NdiTransferCreateResponseDto>>('/api/NetsisNdiTransfer/create', request);
+      return ensureSuccess(response, 'NDI aktarimi Netsis tarafina gonderilemedi.');
+    } catch (error) {
+      const partialResult = getNdiTransferResultFromError(error);
+      if (partialResult) {
+        return partialResult;
+      }
+
+      throw error;
+    }
   },
 };
