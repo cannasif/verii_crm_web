@@ -31,6 +31,7 @@ interface NdiOrderLine {
   stockCode: string;
   stockName: string;
   quantity: number;
+  unitPrice: number;
   remainingQuantity: number;
   unit: string;
   warehouse: string;
@@ -45,6 +46,7 @@ interface NdiPreparedLine {
   stockName: string;
   sourceQuantity: number;
   transferQuantity: number;
+  unitPrice: number;
   unit: string;
   sourceWarehouse: string;
   targetWarehouse: string;
@@ -642,6 +644,7 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
 function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, order?: NdiOrder): NdiOrderLine {
   const remainingQuantity = Number(line.bakiye ?? 0);
   const quantity = Number(line.miktar ?? 0);
+  const unitPrice = Number(line.netFiyat ?? 0);
 
   return {
     id: `${line.fisNo}::${line.stokKodu}::${index}`,
@@ -652,6 +655,7 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
     stockCode: line.stokKodu,
     stockName: line.stokAdi || line.stokKodu,
     quantity,
+    unitPrice,
     remainingQuantity,
     unit: line.olcuBr || '-',
     warehouse: order?.defaultWarehouse || 'NDI',
@@ -785,7 +789,8 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const batchAction = useMemo(() => resolveBatchAction(selectedOrders), [selectedOrders]);
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
-  const canPrepareSelectedLines = selectedLines.length > 0 && !batchAction.mixed && blockedRuleCount === 0;
+  const selectedLinesWithoutPrice = selectedLines.filter((line) => line.unitPrice <= 0);
+  const canPrepareSelectedLines = selectedLines.length > 0 && !batchAction.mixed && blockedRuleCount === 0 && selectedLinesWithoutPrice.length === 0;
   const prepareDisabled = selectedLines.length === 0 || linesQuery.isFetching || isPreparingTransfer;
 
   const toggleOrder = (order: NdiOrder) => {
@@ -898,6 +903,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
           stockName: line.stockName,
           sourceQuantity: line.remainingQuantity,
           transferQuantity: Math.max(0, line.remainingQuantity * lineRatio),
+          unitPrice: line.unitPrice,
           unit: line.unit,
           sourceWarehouse: line.warehouse,
           targetWarehouse: outcome?.targetWarehouse ?? line.warehouse,
@@ -981,6 +987,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
               stockCode: line.stockCode,
               stockName: line.stockName,
               quantity: line.transferQuantity,
+              unitPrice: line.unitPrice,
               unit: line.unit,
               sourceWarehouse: line.sourceWarehouse,
               targetWarehouse: line.targetWarehouse,
@@ -1234,6 +1241,11 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                     {batchAction.mixed ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">İrsaliye ve fatura senaryosu aynı hazırlıkta karıştırılamaz.</div>
                     ) : null}
+                    {selectedLinesWithoutPrice.map((line) => (
+                      <div key={`price-${line.id}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
+                        {line.orderNo} / {line.stockCode}: Netsis aktarımı için satır fiyatı yok veya 0. Kaynak irsaliye fonksiyonu NET_FIYAT döndürmelidir.
+                      </div>
+                    ))}
                     {ruleOutcomes.flatMap((outcome) => outcome.blocks.map((block) => (
                       <div key={`${outcome.orderNo}-${block}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
                         {outcome.orderNo}: {block}
@@ -1294,7 +1306,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
           <div className="border-b border-slate-300 dark:border-white/20" />
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1120px] border-collapse text-sm">
+            <table className="w-full min-w-[1220px] border-collapse text-sm">
               <thead>
                 <tr className="border-b border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-strong)] text-left text-xs font-black uppercase tracking-[0.08em] text-[var(--crm-app-text-muted)]">
                   <th className={`w-14 ${NDI_TABLE_CELL}`}>
@@ -1317,6 +1329,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                   <th className={NDI_TABLE_CELL}>Stok Adı</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Miktar</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Bakiye</th>
+                  <th className={`${NDI_TABLE_CELL} text-right`}>Fiyat</th>
                   <th className={NDI_TABLE_CELL}>Depo/Teslim</th>
                   <th className={NDI_TABLE_CELL}>Durum</th>
                   <th className={NDI_TABLE_CELL}>Cari Kodu</th>
@@ -1325,13 +1338,13 @@ export function NdiOrderTransferDemoPage(): ReactElement {
               <tbody>
                 {linesQuery.isFetching ? (
                   <tr>
-                    <td colSpan={9} className="px-4 py-10">
+                    <td colSpan={10} className="px-4 py-10">
                       <StatePanel icon={<Loader2 className="animate-spin" size={18} />} title="Kalemler yükleniyor" />
                     </td>
                   </tr>
                 ) : linesQuery.isError ? (
                   <tr>
-                    <td colSpan={9} className="px-4 py-10">
+                    <td colSpan={10} className="px-4 py-10">
                       <StatePanel
                         icon={<AlertCircle size={18} />}
                         title="Kalemler yüklenemedi"
@@ -1341,7 +1354,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                   </tr>
                 ) : selectedOrderLines.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="px-4 py-10">
+                    <td colSpan={10} className="px-4 py-10">
                       <StatePanel icon={<FileText size={18} />} title="Kalem bulunamadı" description="Satırları görmek için irsaliye seçin." />
                     </td>
                   </tr>
@@ -1377,6 +1390,9 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                         </td>
                         <td className={`${NDI_TABLE_CELL} text-right font-black text-emerald-600 dark:text-emerald-400`}>
                           {numberFormatter.format(line.remainingQuantity)} {line.unit}
+                        </td>
+                        <td className={`${NDI_TABLE_CELL} text-right font-black ${line.unitPrice > 0 ? 'text-foreground' : 'text-red-600 dark:text-red-300'}`}>
+                          {line.unitPrice > 0 ? numberFormatter.format(line.unitPrice) : 'Fiyat yok'}
                         </td>
                         <td className={NDI_TABLE_CELL}>
                           <span className="inline-flex items-center gap-1 rounded-full bg-[var(--crm-app-panel-strong)] px-2 py-1 text-xs font-black text-muted-foreground">
@@ -1522,6 +1538,7 @@ function PreparedTransferPanel({
               <th className="px-3 py-2">Stok</th>
               <th className="px-3 py-2 text-right">Kaynak</th>
               <th className="px-3 py-2 text-right">Aktarım</th>
+              <th className="px-3 py-2 text-right">Fiyat</th>
               <th className="px-3 py-2">Kaynak Depo</th>
               <th className="px-3 py-2">Hedef Depo</th>
               <th className="px-3 py-2">KDV</th>
@@ -1541,6 +1558,7 @@ function PreparedTransferPanel({
                 <td className="px-3 py-2 text-right font-black text-[#047857]">
                   {numberFormatter.format(line.transferQuantity)} {line.unit}
                 </td>
+                <td className="px-3 py-2 text-right font-black text-[#172033]">{numberFormatter.format(line.unitPrice)}</td>
                 <td className="px-3 py-2 font-bold text-[#42536b]">{line.sourceWarehouse}</td>
                 <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetWarehouse}</td>
                 <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetVat ?? '-'}</td>
