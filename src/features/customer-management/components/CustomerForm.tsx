@@ -313,7 +313,16 @@ export function CustomerForm({
     if (blockUntilNameFilled()) {
       return;
     }
-    await onSubmit(data);
+
+    const submitData = useCustomerCodeAsAccountingCode
+      ? {
+          ...data,
+          customerCode: (data.customerCode ?? '').trim(),
+          accountingCode: (data.customerCode ?? '').trim(),
+        }
+      : data;
+
+    await onSubmit(submitData);
     if (!isLoading) {
       onOpenChange(false);
     }
