@@ -184,6 +184,23 @@ export function CustomerForm({
 
   const selectedCountryId = form.watch('countryId');
   const selectedCityId = form.watch('cityId');
+  const watchedCustomerCode = form.watch('customerCode');
+  const watchedAccountingCode = form.watch('accountingCode');
+  const useCustomerCodeAsAccountingCode = Boolean(systemSettings.useCustomerCodeAsAccountingCode);
+
+  useEffect(() => {
+    if (!useCustomerCodeAsAccountingCode) {
+      return;
+    }
+
+    const nextAccountingCode = (watchedCustomerCode ?? '').trim();
+    if ((watchedAccountingCode ?? '') !== nextAccountingCode) {
+      form.setValue('accountingCode', nextAccountingCode, {
+        shouldDirty: false,
+        shouldValidate: true,
+      });
+    }
+  }, [form, useCustomerCodeAsAccountingCode, watchedAccountingCode, watchedCustomerCode]);
 
   const blockUntilNameFilled = useCallback(
     (_fieldName?: keyof CustomerFormData): boolean => {
@@ -757,7 +774,20 @@ export function CustomerForm({
                       {tf('accountingCode')}
                       <ErpFieldHelp text={erpHint('accountingCode', 'Doluysa ERP cari açmada Netsis MUHASEBE_KODU alanına gönderilir.')} />
                     </FormLabel>
-                    <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={tf('accountingCodePlaceholder')} /></FormControl>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value || ''}
+                        className={INPUT_STYLE}
+                        placeholder={tf('accountingCodePlaceholder')}
+                        disabled={useCustomerCodeAsAccountingCode}
+                      />
+                    </FormControl>
+                    {useCustomerCodeAsAccountingCode ? (
+                      <FormDescription className="text-xs text-emerald-600 dark:text-emerald-300">
+                        {tf('accountingCodeMirrorsCustomerCode')}
+                      </FormDescription>
+                    ) : null}
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />

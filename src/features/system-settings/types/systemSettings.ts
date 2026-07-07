@@ -21,6 +21,7 @@ export interface SystemSettingsDto {
   customerCodeMask?: string | null;
   customerCodeExample?: string | null;
   customerCodeErrorMessage?: string | null;
+  useCustomerCodeAsAccountingCode: boolean;
   demandApprovalCompletionAction: number;
   quotationApprovalCompletionAction: number;
   orderApprovalCompletionAction: number;
@@ -64,6 +65,7 @@ export interface EditableSystemSettingsDto {
   customerCodeMask?: string | null;
   customerCodeExample?: string | null;
   customerCodeErrorMessage?: string | null;
+  useCustomerCodeAsAccountingCode: boolean;
   demandApprovalCompletionAction: number;
   quotationApprovalCompletionAction: number;
   orderApprovalCompletionAction: number;
@@ -108,6 +110,7 @@ export const systemSettingsFormSchema = z.object({
   customerCodeMask: z.string().max(50, 'common.form.maxLength').nullable().optional(),
   customerCodeExample: z.string().max(50, 'common.form.maxLength').nullable().optional(),
   customerCodeErrorMessage: z.string().max(250, 'common.form.maxLength').nullable().optional(),
+  useCustomerCodeAsAccountingCode: z.boolean(),
   demandApprovalCompletionAction: approvalCompletionActionSchema(new Set([1, 2, 3, 4, 5])),
   quotationApprovalCompletionAction: approvalCompletionActionSchema(new Set([1, 2, 3, 4, 5, 6])),
   orderApprovalCompletionAction: approvalCompletionActionSchema(new Set([1, 2, 3, 4])),

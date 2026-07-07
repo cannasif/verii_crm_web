@@ -119,6 +119,7 @@
     "accountingCode": "Accounting code",
     "accountingCodeMaxLength": "Accounting code may be at most 50 characters",
     "accountingCodePlaceholder": "Accounting code...",
+    "accountingCodeMirrorsCustomerCode": "System setting is enabled, so accounting code mirrors the customer code.",
     "creditLimit": "Credit limit",
     "conflictTitle": "Conflicting customer records",
     "conflictDescription": "Save was stopped. Conflicting fields are listed below.",

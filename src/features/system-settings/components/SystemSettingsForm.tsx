@@ -55,6 +55,7 @@ const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   customerCodeMask: '',
   customerCodeExample: '',
   customerCodeErrorMessage: '',
+  useCustomerCodeAsAccountingCode: false,
   demandApprovalCompletionAction: 1,
   quotationApprovalCompletionAction: 1,
   orderApprovalCompletionAction: 1,
@@ -175,6 +176,7 @@ export function SystemSettingsForm({
       customerCodeMask: normalizedData.customerCodeMask ?? '',
       customerCodeExample: normalizedData.customerCodeExample ?? '',
       customerCodeErrorMessage: normalizedData.customerCodeErrorMessage ?? '',
+      useCustomerCodeAsAccountingCode: normalizedData.useCustomerCodeAsAccountingCode,
       demandApprovalCompletionAction: normalizedData.demandApprovalCompletionAction,
       quotationApprovalCompletionAction: normalizedData.quotationApprovalCompletionAction,
       orderApprovalCompletionAction: normalizedData.orderApprovalCompletionAction,
@@ -562,6 +564,29 @@ export function SystemSettingsForm({
                           </FormLabel>
                           <p className="text-muted-foreground text-xs">
                             {t('systemSettings.Descriptions.CustomerCodeRuleEnabled', 'Kapalıyken mevcut davranış korunur; açıkken müşteri kodu ve ERP cari kodu maskeye uymalıdır.')}
+                          </p>
+                        </div>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="useCustomerCodeAsAccountingCode"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <div className="flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50/80 p-3 dark:border-emerald-400/20 dark:bg-emerald-400/10">
+                        <FormControl>
+                          <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                        </FormControl>
+                        <div className="space-y-1">
+                          <FormLabel required={false} className="leading-5">
+                            {t('systemSettings.Fields.UseCustomerCodeAsAccountingCode', 'Muhasebe kodu müşteri kodu ile aynı olsun')}
+                          </FormLabel>
+                          <p className="text-muted-foreground text-xs">
+                            {t('systemSettings.Descriptions.UseCustomerCodeAsAccountingCode', 'Açıkken müşteri/cari kodu değiştikçe muhasebe kodu otomatik aynı değeri alır; müşteri formundaki muhasebe kodu alanı kilitlenir.')}
                           </p>
                         </div>
                       </div>

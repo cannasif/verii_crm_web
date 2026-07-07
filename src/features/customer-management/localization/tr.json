@@ -121,6 +121,7 @@
     "accountingCode": "Muhasebe Kodu",
     "accountingCodeMaxLength": "Muhasebe kodu en fazla 50 karakter olabilir",
     "accountingCodePlaceholder": "Muhasebe kodu...",
+    "accountingCodeMirrorsCustomerCode": "Sistem ayarı açık olduğu için muhasebe kodu müşteri kodu ile aynı tutulur.",
     "creditLimit": "Kredi Limiti",
     "conflictTitle": "Çakışan müşteri kayıtları bulundu",
     "conflictDescription": "Kayıt işlemi durduruldu. Aşağıdaki müşterilerle çakışan tüm alanlar listelendi.",

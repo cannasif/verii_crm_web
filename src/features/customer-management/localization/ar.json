@@ -119,6 +119,7 @@
     "accountingCode": "رمز المحاسبة",
     "accountingCodeMaxLength": "بحد أقصى 50 حرفاً",
     "accountingCodePlaceholder": "رمز المحاسبة...",
+    "accountingCodeMirrorsCustomerCode": "إعداد النظام مفعّل؛ لذلك يطابق رمز المحاسبة رمز العميل.",
     "creditLimit": "حد الائتمان",
     "conflictTitle": "تعارض في سجلات العملاء",
     "conflictDescription": "تم إيقاف الحفظ. الحقول المتعارضة مدرجة أدناه.",

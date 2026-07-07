@@ -119,6 +119,7 @@
     "accountingCode": "Codice contabile",
     "accountingCodeMaxLength": "Massimo 50 caratteri",
     "accountingCodePlaceholder": "Codice contabile...",
+    "accountingCodeMirrorsCustomerCode": "L'impostazione è attiva; il codice contabile segue il codice cliente.",
     "creditLimit": "Fido",
     "conflictTitle": "Conflitto tra anagrafiche",
     "conflictDescription": "Salvataggio interrotto. Campi in conflitto sotto.",

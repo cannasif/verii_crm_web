@@ -119,6 +119,7 @@
     "accountingCode": "Código contable",
     "accountingCodeMaxLength": "Máximo 50 caracteres",
     "accountingCodePlaceholder": "Código contable...",
+    "accountingCodeMirrorsCustomerCode": "La configuración está activa; el código contable copia el código de cliente.",
     "creditLimit": "Límite de crédito",
     "conflictTitle": "Registros de cliente en conflicto",
     "conflictDescription": "El guardado se detuvo. Los campos en conflicto aparecen abajo.",

@@ -119,6 +119,7 @@
     "accountingCode": "Code comptable",
     "accountingCodeMaxLength": "50 caractères maximum",
     "accountingCodePlaceholder": "Code comptable...",
+    "accountingCodeMirrorsCustomerCode": "Le paramètre système est actif ; le code comptable reprend le code client.",
     "creditLimit": "Plafond de crédit",
     "conflictTitle": "Conflit entre clients",
     "conflictDescription": "L’enregistrement a été interrompu. Champs en conflit ci-dessous.",

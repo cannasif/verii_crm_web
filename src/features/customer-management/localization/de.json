@@ -119,6 +119,7 @@
     "accountingCode": "Buchhaltungscode",
     "accountingCodeMaxLength": "Höchstens 50 Zeichen",
     "accountingCodePlaceholder": "Buchhaltungscode...",
+    "accountingCodeMirrorsCustomerCode": "Die Systemeinstellung ist aktiv; der Buchhaltungscode entspricht dem Kundencode.",
     "creditLimit": "Kreditlimit",
     "conflictTitle": "Doppelte Kundendaten",
     "conflictDescription": "Speichern wurde abgebrochen. Konfliktfelder siehe unten.",
