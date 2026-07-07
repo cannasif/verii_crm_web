@@ -32,6 +32,8 @@ interface NdiOrderLine {
   stockName: string;
   quantity: number;
   unitPrice: number;
+  currencyType?: number | null;
+  currencyRate?: number | null;
   remainingQuantity: number;
   unit: string;
   warehouse: string;
@@ -47,6 +49,8 @@ interface NdiPreparedLine {
   sourceQuantity: number;
   transferQuantity: number;
   unitPrice: number;
+  currencyType?: number | null;
+  currencyRate?: number | null;
   unit: string;
   sourceWarehouse: string;
   targetWarehouse: string;
@@ -645,6 +649,8 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
   const remainingQuantity = Number(line.bakiye ?? 0);
   const quantity = Number(line.miktar ?? 0);
   const unitPrice = Number(line.netFiyat ?? 0);
+  const currencyType = line.dovizTipi ?? null;
+  const currencyRate = line.dovizFiyat ?? null;
 
   return {
     id: `${line.fisNo}::${line.stokKodu}::${index}`,
@@ -656,6 +662,8 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
     stockName: line.stokAdi || line.stokKodu,
     quantity,
     unitPrice,
+    currencyType,
+    currencyRate,
     remainingQuantity,
     unit: line.olcuBr || '-',
     warehouse: order?.defaultWarehouse || 'NDI',
@@ -904,6 +912,8 @@ export function NdiOrderTransferDemoPage(): ReactElement {
           sourceQuantity: line.remainingQuantity,
           transferQuantity: Math.max(0, line.remainingQuantity * lineRatio),
           unitPrice: line.unitPrice,
+          currencyType: line.currencyType,
+          currencyRate: line.currencyRate,
           unit: line.unit,
           sourceWarehouse: line.warehouse,
           targetWarehouse: outcome?.targetWarehouse ?? line.warehouse,
@@ -988,6 +998,8 @@ export function NdiOrderTransferDemoPage(): ReactElement {
               stockName: line.stockName,
               quantity: line.transferQuantity,
               unitPrice: line.unitPrice,
+              currencyType: line.currencyType,
+              currencyRate: line.currencyRate,
               unit: line.unit,
               sourceWarehouse: line.sourceWarehouse,
               targetWarehouse: line.targetWarehouse,
@@ -1306,7 +1318,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
           <div className="border-b border-slate-300 dark:border-white/20" />
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1220px] border-collapse text-sm">
+            <table className="w-full min-w-[1320px] border-collapse text-sm">
               <thead>
                 <tr className="border-b border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-strong)] text-left text-xs font-black uppercase tracking-[0.08em] text-[var(--crm-app-text-muted)]">
                   <th className={`w-14 ${NDI_TABLE_CELL}`}>
@@ -1330,6 +1342,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                   <th className={`${NDI_TABLE_CELL} text-right`}>Miktar</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Bakiye</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Fiyat</th>
+                  <th className={`${NDI_TABLE_CELL} text-right`}>Kur</th>
                   <th className={NDI_TABLE_CELL}>Depo/Teslim</th>
                   <th className={NDI_TABLE_CELL}>Durum</th>
                   <th className={NDI_TABLE_CELL}>Cari Kodu</th>
@@ -1338,13 +1351,13 @@ export function NdiOrderTransferDemoPage(): ReactElement {
               <tbody>
                 {linesQuery.isFetching ? (
                   <tr>
-                    <td colSpan={10} className="px-4 py-10">
+                    <td colSpan={11} className="px-4 py-10">
                       <StatePanel icon={<Loader2 className="animate-spin" size={18} />} title="Kalemler yükleniyor" />
                     </td>
                   </tr>
                 ) : linesQuery.isError ? (
                   <tr>
-                    <td colSpan={10} className="px-4 py-10">
+                    <td colSpan={11} className="px-4 py-10">
                       <StatePanel
                         icon={<AlertCircle size={18} />}
                         title="Kalemler yüklenemedi"
@@ -1354,7 +1367,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                   </tr>
                 ) : selectedOrderLines.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="px-4 py-10">
+                    <td colSpan={11} className="px-4 py-10">
                       <StatePanel icon={<FileText size={18} />} title="Kalem bulunamadı" description="Satırları görmek için irsaliye seçin." />
                     </td>
                   </tr>
@@ -1393,6 +1406,11 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                         </td>
                         <td className={`${NDI_TABLE_CELL} text-right font-black ${line.unitPrice > 0 ? 'text-foreground' : 'text-red-600 dark:text-red-300'}`}>
                           {line.unitPrice > 0 ? numberFormatter.format(line.unitPrice) : 'Fiyat yok'}
+                        </td>
+                        <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
+                          {line.currencyType || line.currencyRate
+                            ? `${line.currencyType ?? '-'} / ${line.currencyRate ? numberFormatter.format(line.currencyRate) : '-'}`
+                            : '-'}
                         </td>
                         <td className={NDI_TABLE_CELL}>
                           <span className="inline-flex items-center gap-1 rounded-full bg-[var(--crm-app-panel-strong)] px-2 py-1 text-xs font-black text-muted-foreground">
@@ -1531,7 +1549,7 @@ function PreparedTransferPanel({
       {transfer.warnings.length > 0 ? <RuleTextList title="Hazırlık Uyarıları" values={transfer.warnings} tone="warn" /> : null}
 
       <div className="mt-3 max-h-56 overflow-auto rounded-md border border-[#d7e1ef] bg-white">
-        <table className="w-full min-w-[880px] text-xs">
+        <table className="w-full min-w-[960px] text-xs">
           <thead className="bg-[#edf3fb] text-left font-black uppercase tracking-[0.08em] text-[#536780]">
             <tr>
               <th className="px-3 py-2">İrsaliye</th>
@@ -1539,6 +1557,7 @@ function PreparedTransferPanel({
               <th className="px-3 py-2 text-right">Kaynak</th>
               <th className="px-3 py-2 text-right">Aktarım</th>
               <th className="px-3 py-2 text-right">Fiyat</th>
+              <th className="px-3 py-2 text-right">Kur</th>
               <th className="px-3 py-2">Kaynak Depo</th>
               <th className="px-3 py-2">Hedef Depo</th>
               <th className="px-3 py-2">KDV</th>
@@ -1559,6 +1578,9 @@ function PreparedTransferPanel({
                   {numberFormatter.format(line.transferQuantity)} {line.unit}
                 </td>
                 <td className="px-3 py-2 text-right font-black text-[#172033]">{numberFormatter.format(line.unitPrice)}</td>
+                <td className="px-3 py-2 text-right font-bold text-[#536780]">
+                  {line.currencyType || line.currencyRate ? `${line.currencyType ?? '-'} / ${line.currencyRate ? numberFormatter.format(line.currencyRate) : '-'}` : '-'}
+                </td>
                 <td className="px-3 py-2 font-bold text-[#42536b]">{line.sourceWarehouse}</td>
                 <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetWarehouse}</td>
                 <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetVat ?? '-'}</td>
