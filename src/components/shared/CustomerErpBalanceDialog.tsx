@@ -48,7 +48,7 @@ export function CustomerErpBalanceDialog({ open, onOpenChange, customerId, erpCu
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-[calc(100vw-1rem)] max-w-4xl rounded-2xl border-zinc-200 bg-white p-0 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
+      <DialogContent className="w-[calc(100vw-1rem)] max-w-4xl rounded-2xl border-zinc-200 bg-white p-0 shadow-2xl dark:border-zinc-800 dark:bg-zinc-950 lg:max-w-4xl">
         <DialogHeader className="border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
           <DialogTitle className="flex items-center gap-2 text-base font-semibold text-zinc-950 dark:text-white">
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
@@ -68,7 +68,7 @@ export function CustomerErpBalanceDialog({ open, onOpenChange, customerId, erpCu
 
         <div className="px-5 py-5">
           {isLoading ? (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,11rem),1fr))] gap-3">
               {cards.map((card) => (
                 <div key={card.key} className="min-w-0 rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
                   <Skeleton className="mb-5 h-4 w-32" />
@@ -87,7 +87,7 @@ export function CustomerErpBalanceDialog({ open, onOpenChange, customerId, erpCu
               </span>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,11rem),1fr))] gap-3">
               {cards.map((card) => (
                 <div
                   key={card.key}
