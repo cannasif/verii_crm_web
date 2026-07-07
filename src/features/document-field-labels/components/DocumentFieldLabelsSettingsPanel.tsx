@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2, Tags } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -35,6 +35,15 @@ function getDraftKey(item: Pick<DocumentFieldLabelDto, 'documentType' | 'scope' 
   return `${item.documentType}|${item.scope}|${item.fieldKey}`;
 }
 
+function isSupportedUpdateItem(item: UpdateDocumentFieldLabelDto | undefined): item is UpdateDocumentFieldLabelDto {
+  if (!item) {
+    return false;
+  }
+
+  return DOCUMENTS.some((document) => document.type === item.documentType)
+    && SCOPES.some((scope) => scope.scope === item.scope);
+}
+
 interface DocumentFieldLabelsSettingsPanelProps {
   onItemsChange?: (items: UpdateDocumentFieldLabelDto[]) => void;
 }
@@ -46,6 +55,7 @@ export function DocumentFieldLabelsSettingsPanel({
   const [drafts, setDrafts] = useState<DraftMap>({});
   const [activeDocument, setActiveDocument] = useState<DocumentFieldLabelDocumentType>('Quotation');
   const [activeScope, setActiveScope] = useState<DocumentFieldLabelScope>('HeaderNote');
+  const dirtyDraftKeysRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     if (!data) return;
@@ -64,7 +74,8 @@ export function DocumentFieldLabelsSettingsPanel({
     }
 
     setDrafts(nextDrafts);
-    onItemsChange?.(Object.values(nextDrafts));
+    dirtyDraftKeysRef.current.clear();
+    onItemsChange?.([]);
   }, [data, onItemsChange]);
 
   const visibleItems = useMemo(
@@ -103,7 +114,12 @@ export function DocumentFieldLabelsSettingsPanel({
         },
       };
 
-      onItemsChange?.(Object.values(nextDrafts));
+      dirtyDraftKeysRef.current.add(key);
+      onItemsChange?.(
+        Array.from(dirtyDraftKeysRef.current)
+          .map((draftKey) => nextDrafts[draftKey])
+          .filter(isSupportedUpdateItem),
+      );
       return nextDrafts;
     });
   };
