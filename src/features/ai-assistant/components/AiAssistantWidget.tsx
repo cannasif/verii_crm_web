@@ -1,7 +1,7 @@
 import { type ChangeEvent, type FormEvent, type KeyboardEvent, type PointerEvent, type ReactElement, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Bot, Check, ChevronsLeft, Copy, ExternalLink, FileImage, GripVertical, ImagePlus, Maximize2, MessageCircle, Minimize2, Plus, SendHorizontal, Sparkles, X } from 'lucide-react';
+import { Bot, Check, ChevronsLeft, Copy, ExternalLink, FileImage, GripVertical, Headphones, ImagePlus, Maximize2, MessageCircle, Mic, MicOff, Minimize2, Plus, SendHorizontal, Sparkles, Volume2, VolumeX, X } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
@@ -84,6 +84,15 @@ const widgetSessionStorageKey = 'crm-ai-assistant-widget-session-key';
 const dragActivationThresholdPx = 8;
 const widgetDefaultWidth = 500;
 const widgetDefaultHeight = 700;
+const cyberPanelClip = 'polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px)';
+const cyberChipClip = 'polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px)';
+
+type VoicePersona = 'female' | 'male';
+
+type SpeechWindow = Window & {
+  SpeechRecognition?: new () => SpeechRecognition;
+  webkitSpeechRecognition?: new () => SpeechRecognition;
+};
 
 const aiAssistantTextFallbacks: Record<string, string> = {
   pageTitle: 'AI Asistan',
@@ -137,6 +146,21 @@ const aiAssistantTextFallbacks: Record<string, string> = {
   erpMode: 'ERP kontrolü',
   responseLanguage: 'Yanıt dili',
   responseLanguageAuto: 'Otomatik dil algılama',
+  voiceSessionTitle: 'AI sesli sohbet',
+  voiceSessionDescription: 'Konuşun; CRM asistanı yazıya çevirip yanıtını seslendirsin.',
+  startVoiceChat: 'Konuşmaya başla',
+  stopVoiceChat: 'Dinlemeyi durdur',
+  closeVoiceChat: 'Sesli sohbeti kapat',
+  voiceListening: 'Dinliyorum ve metne çeviriyorum.',
+  voiceSpeaking: 'Yanıt seslendiriliyor.',
+  voiceReady: 'Hazır. Konuşmaya başlamak için dokunun.',
+  voiceContinue: 'Devam et ve dinle',
+  voiceContinueHint: 'Mobil Safari için tekrar dinlemek üzere devam et’e dokunun.',
+  voiceUnsupported: 'Tarayıcı sesli sohbeti desteklemiyor.',
+  voiceFemale: 'Kadın sesi',
+  voiceMale: 'Erkek sesi',
+  voiceOutputOn: 'Sesli cevap açık',
+  voiceOutputOff: 'Sesli cevap kapalı',
 };
 
 const defaultSuggestions = [
@@ -373,6 +397,16 @@ export function AiAssistantWidget(): ReactElement | null {
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const [isVoiceSessionOpen, setIsVoiceSessionOpen] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voiceOutputEnabled, setVoiceOutputEnabled] = useState(false);
+  const [voicePersona, setVoicePersona] = useState<VoicePersona>('female');
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [awaitingVoiceContinue, setAwaitingVoiceContinue] = useState(false);
+  const [requiresManualVoiceTurn, setRequiresManualVoiceTurn] = useState(false);
+  const [voiceStatusMessage, setVoiceStatusMessage] = useState<string | null>(null);
   const initialWidgetPlacement = useRef(readInitialWidgetPlacement());
   const [widgetPosition, setWidgetPosition] = useState<WidgetPosition>(
     () => initialWidgetPlacement.current.position
@@ -397,6 +431,19 @@ export function AiAssistantWidget(): ReactElement | null {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const widgetContainerRef = useRef<HTMLDivElement | null>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const isListeningRef = useRef(false);
+  const isOpenRef = useRef(isOpen);
+  const isVoiceSessionOpenRef = useRef(isVoiceSessionOpen);
+  const requiresManualVoiceTurnRef = useRef(false);
+  const isAssistantBusyRef = useRef(false);
+  const askQuestionRef = useRef<(value: string, errorContext?: AiAssistantErrorContext | null) => Promise<void>>(
+    async () => undefined
+  );
+  const latestTranscriptRef = useRef('');
+  const voiceTimeoutRef = useRef<number | null>(null);
+  const voiceFinalFallbackRef = useRef<number | null>(null);
+  const lastSpokenAnswerRef = useRef('');
   const panelSizeRef = useRef({ width: widgetDefaultWidth, height: widgetDefaultHeight });
   const widgetPositionRef = useRef(widgetPosition);
   const edgeAttachmentRef = useRef(edgeAttachment);
@@ -409,19 +456,212 @@ export function AiAssistantWidget(): ReactElement | null {
   contentBoundsRef.current = contentBounds;
   const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
   const skipNextHistoryWriteRef = useRef(false);
-  const readText = (key: string, fallback?: string, options?: Record<string, unknown>): string => {
+  const readText = useCallback((key: string, fallback?: string, options?: Record<string, unknown>): string => {
     const value = t(key, { defaultValue: fallback ?? aiAssistantTextFallbacks[key] ?? key, ...options });
     if (!value || value === key || value === missingTranslationText) {
       return fallback ?? aiAssistantTextFallbacks[key] ?? key;
     }
 
     return value;
-  };
+  }, [t]);
 
   const changeLanguagePreference = (nextLanguagePreference: AiAssistantLanguagePreference): void => {
     setLanguagePreference(nextLanguagePreference);
     writeAiAssistantLanguagePreference(nextLanguagePreference);
   };
+
+  const resolveSpeechLanguage = useCallback((): string => {
+    if (languagePreference === 'en') return 'en-US';
+    return 'tr-TR';
+  }, [languagePreference]);
+
+  const cleanSpeechText = useCallback((value: string): string =>
+    value
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/[#*_`>|-]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim(),
+  []);
+
+  const selectPreferredVoice = useCallback((persona = voicePersona): SpeechSynthesisVoice | null => {
+    const languagePrefix = resolveSpeechLanguage().startsWith('en') ? 'en' : 'tr';
+    const localizedVoices = availableVoices.filter((voice) =>
+      voice.lang.toLowerCase().startsWith(languagePrefix)
+    );
+    const femaleSignals = /female|woman|zira|seda|yelda|aylin|filiz|elif|google türkçe|google turkce/i;
+    const maleSignals = /male|man|cem|tolga|murat|kaan|ahmet|mehmet|emre|erkek/i;
+    const personaSignals = persona === 'female' ? femaleSignals : maleSignals;
+
+    return (
+      localizedVoices.find((voice) => personaSignals.test(voice.name)) ??
+      localizedVoices[persona === 'male' ? 1 : 0] ??
+      localizedVoices[0] ??
+      availableVoices.find((voice) => voice.default) ??
+      null
+    );
+  }, [availableVoices, resolveSpeechLanguage, voicePersona]);
+
+  const getVoiceProfile = useCallback((persona = voicePersona): { pitch: number; rate: number } => {
+    if (persona === 'male') {
+      return { pitch: 0.72, rate: 0.92 };
+    }
+
+    return { pitch: 1.06, rate: 0.98 };
+  }, [voicePersona]);
+
+  const clearVoiceTimers = useCallback((): void => {
+    if (voiceTimeoutRef.current !== null) {
+      window.clearTimeout(voiceTimeoutRef.current);
+      voiceTimeoutRef.current = null;
+    }
+
+    if (voiceFinalFallbackRef.current !== null) {
+      window.clearTimeout(voiceFinalFallbackRef.current);
+      voiceFinalFallbackRef.current = null;
+    }
+  }, []);
+
+  const stopListening = useCallback((): void => {
+    clearVoiceTimers();
+    recognitionRef.current?.stop();
+    recognitionRef.current = null;
+    latestTranscriptRef.current = '';
+    isListeningRef.current = false;
+    setIsListening(false);
+  }, [clearVoiceTimers]);
+
+  const stopSpeaking = useCallback((): void => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsSpeaking(false);
+  }, []);
+
+  const startVoiceListening = useCallback((): void => {
+    const SpeechRecognition = (window as SpeechWindow).SpeechRecognition || (window as SpeechWindow).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      setVoiceStatusMessage(readText('voiceUnsupported'));
+      return;
+    }
+
+    if (isListeningRef.current || isAssistantBusyRef.current) return;
+
+    clearVoiceTimers();
+    stopSpeaking();
+    setAwaitingVoiceContinue(false);
+    setVoiceStatusMessage(null);
+    latestTranscriptRef.current = '';
+
+    const recognition = new SpeechRecognition();
+    recognitionRef.current = recognition;
+    recognition.lang = resolveSpeechLanguage();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let transcript = '';
+      let finalTranscript = '';
+
+      for (let index = 0; index < event.results.length; index += 1) {
+        const result = event.results[index];
+        transcript += result[0].transcript;
+        if (result.isFinal) {
+          finalTranscript += result[0].transcript;
+        }
+      }
+
+      const nextQuestion = transcript.trim();
+      latestTranscriptRef.current = nextQuestion;
+      setQuestion(nextQuestion);
+
+      if (finalTranscript.trim()) {
+        stopListening();
+        void askQuestionRef.current(finalTranscript.trim());
+        return;
+      }
+
+      if (nextQuestion) {
+        if (voiceFinalFallbackRef.current !== null) {
+          window.clearTimeout(voiceFinalFallbackRef.current);
+        }
+
+        voiceFinalFallbackRef.current = window.setTimeout(() => {
+          const stableTranscript = latestTranscriptRef.current.trim();
+          stopListening();
+          if (stableTranscript) {
+            void askQuestionRef.current(stableTranscript);
+          }
+        }, 1400);
+      }
+    };
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      setVoiceStatusMessage(event.error === 'not-allowed' ? readText('voiceUnsupported') : null);
+      stopListening();
+    };
+
+    recognition.onend = () => {
+      clearVoiceTimers();
+      isListeningRef.current = false;
+      setIsListening(false);
+    };
+
+    try {
+      isListeningRef.current = true;
+      setIsListening(true);
+      recognition.start();
+      voiceTimeoutRef.current = window.setTimeout(() => {
+        const stableTranscript = latestTranscriptRef.current.trim();
+        stopListening();
+        if (stableTranscript) {
+          void askQuestionRef.current(stableTranscript);
+        }
+      }, 12000);
+    } catch {
+      stopListening();
+      setVoiceStatusMessage(readText('voiceUnsupported'));
+    }
+  }, [clearVoiceTimers, readText, resolveSpeechLanguage, stopListening, stopSpeaking]);
+
+  const finishVoiceTurn = useCallback((): void => {
+    setIsSpeaking(false);
+
+    if (!isVoiceSessionOpenRef.current || !isOpenRef.current) return;
+
+    if (requiresManualVoiceTurnRef.current) {
+      setAwaitingVoiceContinue(true);
+      return;
+    }
+
+    window.setTimeout(() => startVoiceListening(), 250);
+  }, [startVoiceListening]);
+
+  const speakAnswer = useCallback((value: string, persona = voicePersona, force = false): void => {
+    if ((!voiceOutputEnabled && !force) || !('speechSynthesis' in window)) return;
+
+    const cleaned = cleanSpeechText(value);
+    if (!cleaned) return;
+
+    stopListening();
+    window.speechSynthesis.cancel();
+    lastSpokenAnswerRef.current = value;
+
+    const voiceProfile = getVoiceProfile(persona);
+    const utterance = new SpeechSynthesisUtterance(cleaned);
+    utterance.lang = resolveSpeechLanguage();
+    utterance.rate = voiceProfile.rate;
+    utterance.pitch = voiceProfile.pitch;
+    utterance.voice = selectPreferredVoice(persona);
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = finishVoiceTurn;
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      if (requiresManualVoiceTurnRef.current) {
+        setAwaitingVoiceContinue(true);
+      }
+    };
+    window.speechSynthesis.speak(utterance);
+  }, [cleanSpeechText, finishVoiceTurn, getVoiceProfile, resolveSpeechLanguage, selectPreferredVoice, stopListening, voiceOutputEnabled, voicePersona]);
 
   useEffect(() => {
     if (loadedChatHistoryKeyRef.current !== chatHistoryKey) {
@@ -431,6 +671,41 @@ export function AiAssistantWidget(): ReactElement | null {
 
     setMessages(readAiAssistantChatHistory(chatHistoryKey));
   }, [chatHistoryKey]);
+
+  useEffect(() => {
+    const SpeechRecognition = (window as SpeechWindow).SpeechRecognition || (window as SpeechWindow).webkitSpeechRecognition;
+    setSpeechSupported(Boolean(SpeechRecognition && 'speechSynthesis' in window));
+
+    const userAgent = window.navigator.userAgent;
+    const isIos = /iPad|iPhone|iPod/.test(userAgent) || (userAgent.includes('Mac') && navigator.maxTouchPoints > 1);
+    const isSafari = /^((?!chrome|android|crios|fxios|edgios).)*safari/i.test(userAgent);
+    setRequiresManualVoiceTurn(isIos && isSafari);
+  }, []);
+
+  useEffect(() => {
+    if (!('speechSynthesis' in window)) return;
+
+    const loadVoices = (): void => setAvailableVoices(window.speechSynthesis.getVoices());
+    loadVoices();
+    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
+    return () => window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
+  }, []);
+
+  useEffect(() => {
+    isListeningRef.current = isListening;
+  }, [isListening]);
+
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+
+  useEffect(() => {
+    isVoiceSessionOpenRef.current = isVoiceSessionOpen;
+  }, [isVoiceSessionOpen]);
+
+  useEffect(() => {
+    requiresManualVoiceTurnRef.current = requiresManualVoiceTurn;
+  }, [requiresManualVoiceTurn]);
 
   useEffect(() => {
     if (skipNextHistoryWriteRef.current) {
@@ -500,6 +775,7 @@ export function AiAssistantWidget(): ReactElement | null {
   );
   const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
   const isAssistantBusy = askMutation.isPending || isThinking;
+  isAssistantBusyRef.current = isAssistantBusy;
 
   const schedulePlacementTransitionEnable = useCallback((delayMs = 200): void => {
     if (placementTransitionEnableTimeoutRef.current !== null) {
@@ -874,6 +1150,7 @@ export function AiAssistantWidget(): ReactElement | null {
           intent: result.intent,
         },
       ]);
+      speakAnswer(result.answer);
       setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
       showReportDraftReadyToast(result, openActionUrl);
       setQuestion('');
@@ -911,6 +1188,7 @@ export function AiAssistantWidget(): ReactElement | null {
       setIsThinking(false);
     }
   };
+  askQuestionRef.current = askQuestion;
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -951,6 +1229,45 @@ export function AiAssistantWidget(): ReactElement | null {
     setDynamicSuggestions([]);
     setQuestionError(null);
     clearSelectedAttachment();
+  };
+
+  const closeVoiceSession = (): void => {
+    stopListening();
+    stopSpeaking();
+    setIsVoiceSessionOpen(false);
+    setVoiceOutputEnabled(false);
+    setAwaitingVoiceContinue(false);
+    setVoiceStatusMessage(null);
+  };
+
+  const openVoiceSession = (): void => {
+    setIsVoiceSessionOpen(true);
+    setVoiceOutputEnabled(true);
+    setAwaitingVoiceContinue(false);
+    startVoiceListening();
+  };
+
+  const toggleVoiceSession = (): void => {
+    if (isVoiceSessionOpen) {
+      closeVoiceSession();
+      return;
+    }
+
+    openVoiceSession();
+  };
+
+  const continueVoiceSession = (): void => {
+    setAwaitingVoiceContinue(false);
+    setIsVoiceSessionOpen(true);
+    setVoiceOutputEnabled(true);
+    startVoiceListening();
+  };
+
+  const changeVoicePersona = (persona: VoicePersona): void => {
+    setVoicePersona(persona);
+    if (isSpeaking && lastSpokenAnswerRef.current) {
+      window.setTimeout(() => speakAnswer(lastSpokenAnswerRef.current, persona), 80);
+    }
   };
 
   const openActionUrl = async (actionUrl?: string | null, toolActionId?: number | null, confirmationRequired = false): Promise<void> => {
@@ -1017,6 +1334,7 @@ export function AiAssistantWidget(): ReactElement | null {
   };
 
   const dockWidgetToRail = (): void => {
+    closeVoiceSession();
     applyBottomRightRailPlacement();
   };
 
@@ -1033,6 +1351,7 @@ export function AiAssistantWidget(): ReactElement | null {
   };
 
   const closeWidget = (): void => {
+    closeVoiceSession();
     const widgetElement = widgetContainerRef.current;
     const panelSize = readWidgetPanelSize(widgetElement);
     const viewportBounds = readViewportBounds();
@@ -1071,6 +1390,15 @@ export function AiAssistantWidget(): ReactElement | null {
   };
 
   const activeBounds = isOpen ? readViewportBounds() : contentBounds;
+  const voiceSessionVisible = isVoiceSessionOpen || isListening || isSpeaking || awaitingVoiceContinue;
+  const voiceStatusText = voiceStatusMessage ??
+    (awaitingVoiceContinue
+      ? readText('voiceContinueHint')
+      : isSpeaking
+        ? readText('voiceSpeaking')
+        : isListening
+          ? readText('voiceListening')
+          : readText('voiceReady'));
   const displaySize = isOpen
     ? panelSizeRef.current
     : readClosedWidgetSize(widgetContainerRef.current);
@@ -1137,15 +1465,30 @@ export function AiAssistantWidget(): ReactElement | null {
           scrollbar-gutter: stable;
           -webkit-overflow-scrolling: touch;
         }
+        @keyframes crmAiVoiceBar {
+          0%, 100% { transform: scaleY(0.55); opacity: 0.55; }
+          50% { transform: scaleY(1.25); opacity: 1; }
+        }
+        @keyframes crmAiPulseRing {
+          0% { transform: scale(1); opacity: 0.55; }
+          70%, 100% { transform: scale(1.45); opacity: 0; }
+        }
       `}</style>
       {isOpen ? (
-        <section className={`ai-widget-container relative flex min-h-0 max-h-[calc(100dvh-2rem)] w-[min(500px,calc(100dvw-2rem))] transition-[box-shadow,opacity] duration-300 ease-in-out flex-col overflow-hidden rounded-[2rem] border border-primary/15 bg-background/98 shadow-2xl shadow-[0_24px_60px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/20 dark:bg-slate-950/98 ${isExpanded
+        <section
+          style={{ clipPath: cyberPanelClip }}
+          className={`ai-widget-container relative flex min-h-0 max-h-[calc(100dvh-2rem)] w-[min(500px,calc(100dvw-2rem))] transition-[box-shadow,opacity] duration-300 ease-in-out flex-col overflow-hidden border border-primary/30 bg-background/98 shadow-2xl shadow-[0_24px_70px_-24px_var(--crm-brand-shadow)] backdrop-blur-2xl dark:border-primary/35 dark:bg-slate-950/98 ${isExpanded
           ? 'is-expanded w-[min(850px,calc(100dvw-2rem))] h-[min(92dvh,850px)]'
           : 'h-[min(80dvh,700px)]'
-          }`}>
+          }`}
+        >
           <div className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-35 dark:opacity-20" />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.08]"
+            style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgb(236 0 122 / 45%) 3px, rgb(236 0 122 / 45%) 4px)' }}
+          />
           <header
-            className={`relative flex touch-none select-none items-center justify-between gap-3 border-b border-slate-200/70 bg-white/55 p-4 backdrop-blur-xl dark:border-white/10 dark:bg-white/[0.03] ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+            className={`relative flex touch-none select-none items-center justify-between gap-3 border-b border-primary/20 bg-white/65 p-4 backdrop-blur-xl dark:border-primary/25 dark:bg-black/35 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
             aria-label={readText('dragPanel')}
             onPointerDown={startPanelDrag}
           >
@@ -1184,6 +1527,35 @@ export function AiAssistantWidget(): ReactElement | null {
                 type="button"
                 variant="ghost"
                 size="icon"
+                title={voiceOutputEnabled ? readText('voiceOutputOn') : readText('voiceOutputOff')}
+                className={`h-10 w-10 rounded-2xl ${voiceOutputEnabled ? 'text-emerald-500 dark:text-emerald-300' : ''}`}
+                aria-pressed={voiceOutputEnabled}
+                onClick={() => {
+                  const next = !voiceOutputEnabled;
+                  setVoiceOutputEnabled(next);
+                  if (!next) {
+                    stopSpeaking();
+                    setAwaitingVoiceContinue(false);
+                  }
+                }}
+              >
+                {voiceOutputEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                title={isVoiceSessionOpen ? readText('closeVoiceChat') : readText('voiceSessionTitle')}
+                className={`h-10 w-10 rounded-2xl ${isVoiceSessionOpen ? 'text-emerald-500 dark:text-emerald-300' : ''}`}
+                aria-pressed={isVoiceSessionOpen}
+                onClick={toggleVoiceSession}
+              >
+                <Headphones size={18} />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
                 title={readText('dockPanel')}
                 className="hidden h-10 w-10 rounded-2xl sm:inline-flex"
                 aria-label={readText('dockPanel')}
@@ -1213,6 +1585,129 @@ export function AiAssistantWidget(): ReactElement | null {
               </Button>
             </div>
           </header>
+
+          {voiceSessionVisible && (
+            <div className="relative border-b border-primary/15 bg-primary/[0.04] px-4 py-3 dark:border-primary/20 dark:bg-primary/[0.05]">
+              <div
+                style={{ clipPath: cyberChipClip }}
+                className="relative overflow-hidden border border-primary/25 bg-white/80 p-3 shadow-[0_0_24px_rgb(236_0_122_/_12%)] backdrop-blur-xl dark:bg-black/35"
+              >
+                <div
+                  className="pointer-events-none absolute inset-0 opacity-20"
+                  style={{ backgroundImage: 'linear-gradient(90deg, rgb(236 0 122 / 18%), transparent 38%, rgb(255 75 0 / 14%))' }}
+                />
+                <div className="relative flex items-start gap-3">
+                  <div className="relative grid h-14 w-14 shrink-0 place-items-center">
+                    <span
+                      className={`absolute inset-0 border ${isListening ? 'border-emerald-400/60' : isSpeaking ? 'border-primary/60' : 'border-orange-400/50'}`}
+                      style={{ clipPath: 'circle(50%)', animation: 'crmAiPulseRing 1.8s ease-out infinite' }}
+                    />
+                    <span
+                      className={`absolute inset-2 border ${isListening ? 'border-emerald-400/45' : isSpeaking ? 'border-primary/45' : 'border-orange-400/35'}`}
+                      style={{ clipPath: 'circle(50%)', animation: 'crmAiPulseRing 2.4s ease-out infinite' }}
+                    />
+                    <div
+                      className="relative grid h-11 w-11 place-items-center border border-primary/30 bg-primary/10 text-primary"
+                      style={{ clipPath: 'circle(50%)' }}
+                    >
+                      <Headphones size={20} />
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-[0.68rem] font-black uppercase tracking-[0.22em] text-primary">
+                          {readText('voiceSessionTitle')}
+                        </div>
+                        <p className="mt-1 text-xs font-semibold leading-5 text-slate-600 dark:text-slate-300">
+                          {readText('voiceSessionDescription')}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={closeVoiceSession}
+                        className="shrink-0 border border-primary/25 bg-primary/10 px-2 py-1 text-[0.62rem] font-black uppercase tracking-wide text-primary transition hover:bg-primary/15"
+                        style={{ clipPath: cyberChipClip }}
+                      >
+                        {readText('closeVoiceChat')}
+                      </button>
+                    </div>
+
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      {(['female', 'male'] as VoicePersona[]).map((persona) => (
+                        <button
+                          key={persona}
+                          type="button"
+                          onClick={() => changeVoicePersona(persona)}
+                          className={`border px-2 py-1.5 text-[0.68rem] font-black uppercase tracking-wide transition ${
+                            voicePersona === persona
+                              ? 'border-emerald-400 bg-emerald-400/10 text-emerald-600 dark:text-emerald-300'
+                              : 'border-slate-200 bg-white/70 text-slate-500 hover:border-primary/30 hover:text-primary dark:border-white/10 dark:bg-white/[0.04] dark:text-slate-300'
+                          }`}
+                          style={{ clipPath: cyberChipClip }}
+                        >
+                          {persona === 'female' ? readText('voiceFemale') : readText('voiceMale')}
+                        </button>
+                      ))}
+                    </div>
+
+                    <div className="mt-3 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isListening) {
+                            stopListening();
+                            return;
+                          }
+                          if (awaitingVoiceContinue) {
+                            continueVoiceSession();
+                            return;
+                          }
+                          openVoiceSession();
+                        }}
+                        disabled={!speechSupported || isAssistantBusy}
+                        className={`min-h-10 flex-1 border px-3 py-2 text-[0.68rem] font-black uppercase tracking-wide transition disabled:cursor-not-allowed disabled:opacity-55 ${
+                          isListening
+                            ? 'border-red-400 bg-red-500/10 text-red-500 dark:text-red-300'
+                            : 'border-primary/40 bg-primary/10 text-primary hover:bg-primary/15'
+                        }`}
+                        style={{ clipPath: cyberChipClip }}
+                        >
+                          {isListening ? <MicOff size={14} className="me-1.5 inline" /> : <Mic size={14} className="me-1.5 inline" />}
+                          {isListening
+                            ? readText('stopVoiceChat')
+                          : awaitingVoiceContinue
+                            ? readText('voiceContinue')
+                            : readText('startVoiceChat')}
+                      </button>
+                      <div className="flex h-10 items-end gap-1 px-1" aria-hidden="true">
+                        {[0, 1, 2, 3, 4].map((bar) => (
+                          <span
+                            key={bar}
+                            className={`w-1.5 ${isListening ? 'bg-emerald-400' : isSpeaking ? 'bg-primary' : 'bg-orange-400/70'}`}
+                            style={{
+                              transformOrigin: 'bottom',
+                              height: `${12 + (bar % 3) * 7}px`,
+                              animation: `crmAiVoiceBar ${0.9 + bar * 0.12}s ease-in-out infinite`,
+                              animationDelay: `${bar * 80}ms`,
+                            }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className={`mt-2 flex items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.16em] ${
+                      isListening ? 'text-emerald-500 dark:text-emerald-300' : isSpeaking ? 'text-primary' : 'text-orange-500 dark:text-orange-300'
+                    }`}>
+                      <span className="h-1.5 w-1.5 animate-pulse bg-current" />
+                      {voiceStatusText}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div
             className="ai-widget-scroll-area relative min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-5 touch-pan-y"
@@ -1269,20 +1764,34 @@ export function AiAssistantWidget(): ReactElement | null {
                           title={readText('answerTitle')}
                           answer={message.content}
                           headerAction={(
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 shrink-0 rounded-lg px-2 text-[0.68rem] font-black text-slate-500 hover:text-primary dark:text-slate-300"
-                              onClick={() => void copyAssistantMessage(message)}
-                            >
-                              {copiedMessageId === message.id ? (
-                                <Check size={12} className="me-1" />
-                              ) : (
-                                <Copy size={12} className="me-1" />
-                              )}
-                              {copiedMessageId === message.id ? readText('copied') : readText('copyAnswer')}
-                            </Button>
+                            <div className="flex items-center gap-1">
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="h-7 w-7 shrink-0 rounded-lg text-slate-500 hover:text-primary dark:text-slate-300"
+                                onClick={() => {
+                                  setVoiceOutputEnabled(true);
+                                  speakAnswer(message.content, voicePersona, true);
+                                }}
+                              >
+                                <Volume2 size={13} />
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 shrink-0 rounded-lg px-2 text-[0.68rem] font-black text-slate-500 hover:text-primary dark:text-slate-300"
+                                onClick={() => void copyAssistantMessage(message)}
+                              >
+                                {copiedMessageId === message.id ? (
+                                  <Check size={12} className="me-1" />
+                                ) : (
+                                  <Copy size={12} className="me-1" />
+                                )}
+                                {copiedMessageId === message.id ? readText('copied') : readText('copyAnswer')}
+                              </Button>
+                            </div>
                           )}
                         />
                       </div>
@@ -1481,12 +1990,17 @@ export function AiAssistantWidget(): ReactElement | null {
           aria-label={readText('openFromRail')}
           title={readText('openFromRail')}
           onPointerDown={startClosedDrag}
-          className={`group flex max-h-[70dvh] items-center gap-2 overflow-hidden border bg-[image:var(--crm-brand-gradient)] px-2.5 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950 sm:px-3 sm:py-4 ${closedRailClassName} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${edgeAttachment === 'right' ? 'hover:translate-x-[-2px]' : edgeAttachment === 'left' ? 'hover:translate-x-[2px]' : 'hover:scale-[1.02]'}`}
+          style={{ clipPath: cyberChipClip }}
+          className={`group relative flex max-h-[70dvh] items-center gap-2 overflow-hidden border bg-[image:var(--crm-brand-gradient)] px-2.5 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950 sm:px-3 sm:py-4 ${closedRailClassName} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${edgeAttachment === 'right' ? 'hover:translate-x-[-2px]' : edgeAttachment === 'left' ? 'hover:translate-x-[2px]' : 'hover:scale-[1.02]'}`}
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white/20">
+          <span className="pointer-events-none absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgb(255 255 255 / 30%) 3px, rgb(255 255 255 / 30%) 4px)' }} />
+          <span className="absolute end-1 top-1 rounded-sm bg-white/20 px-1.5 py-0.5 text-[0.55rem] font-black tracking-wider">
+            AI
+          </span>
+          <span className="relative flex h-9 w-9 items-center justify-center rounded-2xl bg-white/20">
             <MessageCircle size={20} />
           </span>
-          <span className="hidden max-w-20 text-start leading-4 sm:inline">{readText('dockedChat')}</span>
+          <span className="relative hidden max-w-20 text-start leading-4 sm:inline">{readText('dockedChat')}</span>
         </button>
       )}
     </div>
