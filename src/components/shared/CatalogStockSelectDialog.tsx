@@ -65,6 +65,7 @@ import {
 import type { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import { formatSystemCurrency, getSystemCurrency } from '@/lib/system-settings';
 import { getCatalogFieldLabel } from '@/lib/catalog-field-labels';
+import { createClientId } from '@/lib/create-client-id';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { RelatedStocksSelectionDialog, type RelatedStockSelectionConfirmItem } from './RelatedStocksSelectionDialog';
 import { CatalogSpecialCodeFilterPanel } from './CatalogSpecialCodeFilterPanel';
@@ -869,7 +870,7 @@ export function CatalogStockSelectDialog({
       if (existingIndex >= 0) {
         return prev.map((p, i) => (i === existingIndex ? { ...p, result: { ...result } } : p));
       }
-      return [...prev, { pickId: crypto.randomUUID(), result: { ...result } }];
+      return [...prev, { pickId: createClientId(), result: { ...result } }];
     });
   };
 
@@ -883,7 +884,7 @@ export function CatalogStockSelectDialog({
       if (!found) {
         return prev;
       }
-      return [...prev, { pickId: crypto.randomUUID(), result: { ...found.result } }];
+      return [...prev, { pickId: createClientId(), result: { ...found.result } }];
     });
   };
 
@@ -1108,7 +1109,7 @@ export function CatalogStockSelectDialog({
         if (prev.some((p) => getSelectionKey(p.result) === key)) {
           return prev.filter((p) => getSelectionKey(p.result) !== key);
         }
-        return [...prev, { pickId: crypto.randomUUID(), result: { ...result } }];
+        return [...prev, { pickId: createClientId(), result: { ...result } }];
       });
       return;
     }

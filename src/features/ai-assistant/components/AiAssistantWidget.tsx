@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { createClientId } from '@/lib/create-client-id';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
 import { useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
 import { AiAssistantAnswerCard } from './AiAssistantAnswerCard';
@@ -152,11 +153,7 @@ function waitForMinimumThinkingDuration(): Promise<void> {
 }
 
 function createMessageId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID();
-  }
-
-  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  return createClientId();
 }
 
 function createSessionKey(): string {
