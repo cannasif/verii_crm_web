@@ -68,9 +68,9 @@ export function CustomerErpBalanceDialog({ open, onOpenChange, customerId, erpCu
 
         <div className="px-5 py-5">
           {isLoading ? (
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {cards.map((card) => (
-                <div key={card.key} className="rounded-xl border border-zinc-200 bg-zinc-50 p-5 dark:border-zinc-800 dark:bg-zinc-900/60">
+                <div key={card.key} className="min-w-0 rounded-xl border border-zinc-200 bg-zinc-50 p-4 dark:border-zinc-800 dark:bg-zinc-900/60">
                   <Skeleton className="mb-5 h-4 w-32" />
                   <Skeleton className="h-10 w-28" />
                 </div>
@@ -87,17 +87,19 @@ export function CustomerErpBalanceDialog({ open, onOpenChange, customerId, erpCu
               </span>
             </div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               {cards.map((card) => (
                 <div
                   key={card.key}
                   className={cn(
-                    'rounded-xl border border-zinc-200 bg-[#111827] p-5 shadow-sm dark:border-zinc-800 dark:bg-[#0f172a]',
+                    'min-w-0 overflow-hidden rounded-xl border border-zinc-200 bg-[#111827] p-4 shadow-sm dark:border-zinc-800 dark:bg-[#0f172a]',
                     card.key === 'balance' && 'ring-1 ring-emerald-500/20'
                   )}
                 >
                   <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">{card.title}</div>
-                  <div className="mt-4 font-mono text-4xl font-bold tabular-nums text-white">{card.value}</div>
+                  <div className="mt-4 whitespace-nowrap font-mono text-2xl font-bold leading-none tabular-nums text-white sm:text-[clamp(1.35rem,2.2vw,2.25rem)]">
+                    {card.value}
+                  </div>
                 </div>
               ))}
             </div>
