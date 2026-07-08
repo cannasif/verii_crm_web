@@ -1,6 +1,7 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { createDocumentReturnNavigationState } from '@/lib/document-return-navigation';
 import { ArrowDown, ArrowUp, ArrowUpDown, Clock } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
@@ -109,6 +110,7 @@ export function WaitingApprovalsPage(): ReactElement {
 
   const approveLabel = t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' });
   const rejectLabel = t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' });
+  const detailLabel = t('approval.actions.view', { ns: 'approval', defaultValue: 'Görüntüle' });
 
   const getStatusLabel = useCallback((status: number, statusName?: string | null): string => {
     const statusKey = getApprovalStatusTranslationKey(status);
@@ -266,7 +268,9 @@ export function WaitingApprovalsPage(): ReactElement {
   };
 
   const navigateToDemand = (approval: ApprovalActionGetDto): void => {
-    navigate(`/demands/${approval.entityId || approval.approvalRequestId}`);
+    navigate(`/demands/${approval.entityId || approval.approvalRequestId}`, {
+      state: createDocumentReturnNavigationState('/demands/waiting-approvals'),
+    });
   };
 
   const renderCell = (approval: ApprovalActionGetDto, key: WaitingApprovalColumnKey): ReactElement | string | number => {
@@ -296,6 +300,7 @@ export function WaitingApprovalsPage(): ReactElement {
     <WaitingApprovalsActionButtons
       approveLabel={approveLabel}
       rejectLabel={rejectLabel}
+      detailLabel={detailLabel}
       isPending={approveAction.isPending || rejectAction.isPending}
       onApprove={(event) => {
         event.stopPropagation();
@@ -307,7 +312,11 @@ export function WaitingApprovalsPage(): ReactElement {
         setRejectReason('');
         setRejectDialogOpen(true);
       }}
-      className="flex justify-center gap-2"
+      onDetail={(event) => {
+        event.stopPropagation();
+        navigateToDemand(approval);
+      }}
+      className="flex justify-center items-center gap-2"
     />
   );
 

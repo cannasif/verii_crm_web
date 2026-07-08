@@ -8,6 +8,13 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { createClientId } from '@/lib/create-client-id';
 import { aiAssistantApi } from '../api/ai-assistant-api';
+import {
+  downloadBlobAsPdf,
+  extractCustomerDossierId,
+  extractSalesRepDossierId,
+  isCustomerDossierPdfActionUrl,
+  isSalesRepDossierPdfActionUrl,
+} from '../lib/ai-assistant-download';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
 import { useAiAssistantChatPageBoundary } from '../hooks/useAiAssistantChatPageBoundary';
 import { useAiAssistantMessagesViewportClip } from '../hooks/useAiAssistantMessagesViewportClip';
@@ -40,8 +47,6 @@ import {
 } from '../lib/ai-assistant-attachments';
 import { copyTextToClipboard } from '../lib/ai-assistant-clipboard';
 import {
-  findCreatedPdfTemplateDraftAction,
-  findCreatedReportDraftAction,
   showReportDraftReadyToast,
 } from '../lib/ai-assistant-report-draft-toast';
 import {
@@ -381,10 +386,6 @@ export function AiAssistantPage(): ReactElement {
       setDynamicSuggestions(result.suggestedQuestions?.length ? result.suggestedQuestions : fallbackSuggestions);
       setQuestion('');
       clearSelectedAttachment();
-      const createdBuilderAction = findCreatedPdfTemplateDraftAction(result) ?? findCreatedReportDraftAction(result);
-      if (createdBuilderAction?.actionUrl) {
-        await openActionUrl(createdBuilderAction.actionUrl, createdBuilderAction.toolActionId, false);
-      }
     } finally {
       setIsThinking(false);
     }
@@ -473,6 +474,28 @@ export function AiAssistantPage(): ReactElement {
 
     if (actionUrl.startsWith('http')) {
       window.open(actionUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (isCustomerDossierPdfActionUrl(actionUrl)) {
+      const customerId = extractCustomerDossierId(actionUrl);
+      if (!customerId) {
+        return;
+      }
+
+      const blob = await aiAssistantApi.downloadCustomerDossierPdf(customerId);
+      downloadBlobAsPdf(blob, `cari-dosya-${customerId}.pdf`);
+      return;
+    }
+
+    if (isSalesRepDossierPdfActionUrl(actionUrl)) {
+      const userId = extractSalesRepDossierId(actionUrl);
+      if (!userId) {
+        return;
+      }
+
+      const blob = await aiAssistantApi.downloadSalesRepDossierPdf(userId);
+      downloadBlobAsPdf(blob, `temsilci-dosya-${userId}.pdf`);
       return;
     }
 

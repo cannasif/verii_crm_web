@@ -2,7 +2,8 @@ import { type Dispatch, type ReactElement, type SetStateAction, useState, useEff
 import { useQueryClient } from '@tanstack/react-query';
 import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { getDocumentReturnTo } from '@/lib/document-return-navigation';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useDemand } from '../hooks/useDemand';
@@ -28,7 +29,7 @@ import {
   DOCUMENT_DETAIL_BUTTON_DANGER,
   DOCUMENT_DETAIL_BUTTON_SAVE,
 } from '@/lib/document-detail-button-styles';
-import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
+import { useHeaderSaveTooltipState } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Layers, Loader2, FileCheck, FileText, XCircle, Save } from 'lucide-react';
 import { DemandApprovalFlowTab } from './DemandApprovalFlowTab';
@@ -93,16 +94,22 @@ export function DemandDetailPage(): ReactElement {
   const { t, i18n } = useTranslation(['demand', 'approval', 'common']);
   const { canUpdate } = useCrudPermissions('sales.demands.update');
   const { id } = useParams<{ id: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
   const branch = useAuthStore((state) => state.branch);
   const demandId = id ? parseInt(id, 10) : 0;
+  const returnTo = getDocumentReturnTo(location.state);
 
   const handleBackToList = useCallback(async (): Promise<void> => {
+    if (returnTo) {
+      navigate(returnTo);
+      return;
+    }
     await queryClient.refetchQueries({ queryKey: [DEMAND_QUERY_KEYS.DEMANDS] });
     navigate('/demands');
-  }, [queryClient, navigate]);
+  }, [queryClient, navigate, returnTo]);
 
   const { data: demand, isLoading } = useDemand(demandId);
   const { data: canEditWhileWaiting = false, isLoading: isLoadingCanEdit } = useCanEditDemand(demandId);
@@ -361,17 +368,11 @@ export function DemandDetailPage(): ReactElement {
   const watchedRepresentativeId = form.watch('demand.representativeId');
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   const watchedOfferDate = form.watch('demand.offerDate');
-  const demandFormSlice = form.watch('demand');
 
-  const demandSchemaPayload = useMemo(
-    () => ({ demand: demandFormSlice }),
-    [demandFormSlice],
-  );
-
-  const saveManualHintLines = useMemo(
-    () =>
-      buildHeaderSaveRequiredHintLines(demandFormSlice, (key) => t(key, { ns: 'common' }), watchedCurrency),
-    [demandFormSlice, watchedCurrency, t],
+  const { hintLines: saveManualHintLines, schemaPayload: demandSchemaPayload } = useHeaderSaveTooltipState(
+    form.control,
+    'demand',
+    (key) => t(key, { ns: 'common' }),
   );
 
   useEffect(() => {

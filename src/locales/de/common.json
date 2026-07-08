@@ -49,6 +49,7 @@
         "paymentType": "Zahlungsart",
         "offerType": "Angebotstyp",
         "documentSerial": "Seriennummer",
+        "ozelKod1": "Sondercode 1",
         "deliveryDate": "Lieferdatum"
       }
     },

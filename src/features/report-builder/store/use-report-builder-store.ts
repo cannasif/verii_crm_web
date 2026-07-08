@@ -185,9 +185,21 @@ function formatDateLiteral(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+function normalizeConnectionKey(connectionKey: string | undefined): string {
+  const trimmed = connectionKey?.trim() ?? '';
+  if (!trimmed) return 'CRM';
+  return trimmed.toLowerCase() === 'erp' ? 'ERP' : 'CRM';
+}
+
 function getDefaultBindingForParameter(parameter: DataSourceParameter) {
   const normalizedName = parameter.name.trim().toLowerCase();
-  if (normalizedName.includes('current_user_id') || normalizedName.includes('currentuserid')) {
+  if (
+    normalizedName === 'crm_id'
+    || normalizedName === 'userid'
+    || normalizedName === 'user_id'
+    || normalizedName.includes('current_user_id')
+    || normalizedName.includes('currentuserid')
+  ) {
     return { source: 'currentUserId' as const, value: undefined };
   }
   if (normalizedName.includes('current_user_email') || normalizedName.includes('currentuseremail')) {
@@ -225,6 +237,7 @@ interface BuilderUI {
   connectionsLoading: boolean;
   dataSourcesLoading: boolean;
   checkLoading: boolean;
+  schemaLoading: boolean;
   previewLoading: boolean;
   saveLoading: boolean;
   error: string | null;
@@ -313,6 +326,7 @@ const defaultUi: BuilderUI = {
   connectionsLoading: false,
   dataSourcesLoading: false,
   checkLoading: false,
+  schemaLoading: false,
   previewLoading: false,
   saveLoading: false,
   error: null,
@@ -549,7 +563,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
 
     try {
       set((s) => ({
-        ui: { ...s.ui, checkLoading: true, error: null },
+        ui: { ...s.ui, schemaLoading: true, error: null },
       }));
       const result = await reportingApi.checkDataSource({
         connectionKey: meta.connectionKey,
@@ -561,14 +575,14 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
         schema: fields,
         dataSourceParameters: result.parameters ?? [],
         dataSourceChecked: result.exists && fields.length > 0,
-        ui: { ...s.ui, checkLoading: false },
+        ui: { ...s.ui, schemaLoading: false },
       }));
     } catch (e) {
       const msg = e instanceof Error ? e.message : tr('common.reportBuilder.messages.checkFailed');
       set((s) => ({
         schema: [],
         dataSourceChecked: false,
-        ui: { ...s.ui, checkLoading: false, error: msg },
+        ui: { ...s.ui, schemaLoading: false, error: msg },
       }));
     }
   },
@@ -993,7 +1007,7 @@ export const useReportBuilderStore = create<ReportBuilderState>((set, get) => ({
         id: report.id,
         name: report.name,
         description: report.description,
-        connectionKey: report.connectionKey,
+        connectionKey: normalizeConnectionKey(report.connectionKey),
         dataSourceType: report.dataSourceType,
         dataSourceName: report.dataSourceName,
         canManage: report.canManage,

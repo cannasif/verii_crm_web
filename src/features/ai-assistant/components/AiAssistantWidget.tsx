@@ -52,8 +52,6 @@ import {
 } from '../lib/ai-assistant-attachments';
 import { copyTextToClipboard } from '../lib/ai-assistant-clipboard';
 import {
-  findCreatedPdfTemplateDraftAction,
-  findCreatedReportDraftAction,
   showReportDraftReadyToast,
 } from '../lib/ai-assistant-report-draft-toast';
 import {
@@ -67,6 +65,13 @@ import {
   type AiAssistantErrorContext,
 } from '../lib/ai-assistant-error-context';
 import { aiAssistantApi } from '../api/ai-assistant-api';
+import {
+  downloadBlobAsPdf,
+  extractCustomerDossierId,
+  extractSalesRepDossierId,
+  isCustomerDossierPdfActionUrl,
+  isSalesRepDossierPdfActionUrl,
+} from '../lib/ai-assistant-download';
 import type { AiAssistantLanguagePreference } from '../types/ai-assistant.types';
 
 const actionItemClassNameBySeverity: Record<string, string> = {
@@ -769,7 +774,6 @@ export function AiAssistantWidget(): ReactElement | null {
 
   const fallbackName = user?.name || user?.email || readText('fallbackName');
   const displayName = greeting?.fullName?.trim() || fallbackName;
-  const currentRouteContext = createReadableRouteContext(location.pathname);
   const fallbackSuggestions = defaultSuggestions.map((suggestion, index) =>
     readText(`suggestions.${index + 1}`, suggestion)
   );
@@ -1155,10 +1159,6 @@ export function AiAssistantWidget(): ReactElement | null {
       showReportDraftReadyToast(result, openActionUrl);
       setQuestion('');
       clearSelectedAttachment();
-      const createdBuilderAction = findCreatedPdfTemplateDraftAction(result) ?? findCreatedReportDraftAction(result);
-      if (createdBuilderAction?.actionUrl) {
-        await openActionUrl(createdBuilderAction.actionUrl, createdBuilderAction.toolActionId, false);
-      }
     } catch (error) {
       const fallbackErrorMessage =
         error instanceof Error
@@ -1293,6 +1293,28 @@ export function AiAssistantWidget(): ReactElement | null {
       return;
     }
 
+    if (isCustomerDossierPdfActionUrl(actionUrl)) {
+      const customerId = extractCustomerDossierId(actionUrl);
+      if (!customerId) {
+        return;
+      }
+
+      const blob = await aiAssistantApi.downloadCustomerDossierPdf(customerId);
+      downloadBlobAsPdf(blob, `cari-dosya-${customerId}.pdf`);
+      return;
+    }
+
+    if (isSalesRepDossierPdfActionUrl(actionUrl)) {
+      const userId = extractSalesRepDossierId(actionUrl);
+      if (!userId) {
+        return;
+      }
+
+      const blob = await aiAssistantApi.downloadSalesRepDossierPdf(userId);
+      downloadBlobAsPdf(blob, `temsilci-dosya-${userId}.pdf`);
+      return;
+    }
+
     navigate(actionUrl);
     setIsOpen(false);
   };
@@ -1378,8 +1400,39 @@ export function AiAssistantWidget(): ReactElement | null {
     writeWidgetPosition(logicalPosition);
     writeEdgeAttachment(nextEdgeAttachment);
     setIsExpanded(false);
+    setIsActionsMenuOpen(false);
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    if (!isOpen || isDragging || isDockDialogOpen) {
+      return;
+    }
+
+    const handlePointerDown: EventListener = (event): void => {
+      const target = event.target;
+      if (!(target instanceof Node)) {
+        return;
+      }
+
+      const widgetElement = widgetContainerRef.current;
+      if (!widgetElement?.contains(target)) {
+        const portalElement =
+          target instanceof Element
+            ? target.closest(
+                '[data-slot="dialog-content"], [data-slot="dialog-overlay"], [data-sonner-toast], [data-sonner-toaster]'
+              )
+            : null;
+
+        if (!portalElement) {
+          closeWidget();
+        }
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    return () => document.removeEventListener('pointerdown', handlePointerDown);
+  }, [isOpen, isDragging, isDockDialogOpen]);
 
   const copyAssistantMessage = async (message: AiAssistantChatMessage): Promise<void> => {
     await copyTextToClipboard(message.content);
@@ -1503,12 +1556,6 @@ export function AiAssistantWidget(): ReactElement | null {
                     {readText('pageTitle')}
                   </p>
                   <GripVertical size={14} className="hidden text-slate-400 sm:block" aria-hidden="true" />
-                </div>
-                <div className="mt-1 flex min-w-0 items-center gap-2 text-[0.68rem] font-black uppercase tracking-[0.14em] text-slate-500 dark:text-slate-300">
-                  <span>{readText('contextTitle')}</span>
-                  <span className="min-w-0 truncate rounded-full border border-primary/15 bg-primary/10 px-2 py-0.5 text-primary">
-                    {currentRouteContext}
-                  </span>
                 </div>
               </div>
             </div>
@@ -1994,9 +2041,6 @@ export function AiAssistantWidget(): ReactElement | null {
           className={`group relative flex max-h-[70dvh] items-center gap-2 overflow-hidden border bg-[image:var(--crm-brand-gradient)] px-2.5 py-3 text-sm font-black text-white shadow-[0_10px_20px_-10px_var(--crm-brand-shadow)] transition hover:shadow-[0_14px_28px_-10px_var(--crm-brand-shadow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:ring-offset-slate-950 sm:px-3 sm:py-4 ${closedRailClassName} ${isDragging ? 'cursor-grabbing' : 'cursor-grab'} ${edgeAttachment === 'right' ? 'hover:translate-x-[-2px]' : edgeAttachment === 'left' ? 'hover:translate-x-[2px]' : 'hover:scale-[1.02]'}`}
         >
           <span className="pointer-events-none absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgb(255 255 255 / 30%) 3px, rgb(255 255 255 / 30%) 4px)' }} />
-          <span className="absolute end-1 top-1 rounded-sm bg-white/20 px-1.5 py-0.5 text-[0.55rem] font-black tracking-wider">
-            AI
-          </span>
           <span className="relative flex h-9 w-9 items-center justify-center rounded-2xl bg-white/20">
             <MessageCircle size={20} />
           </span>

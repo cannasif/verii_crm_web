@@ -73,6 +73,7 @@ export interface AiAssistantActionItemDto {
   actionLabel?: string | null;
   actionUrl?: string | null;
   confirmationRequired?: boolean;
+  autoOpen?: boolean;
 }
 
 export interface AiAssistantToolActionDto {

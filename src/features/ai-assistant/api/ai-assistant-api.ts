@@ -94,4 +94,38 @@ export const aiAssistantApi = {
         })
     );
   },
+
+  downloadCustomerDossierPdf: async (customerId: number): Promise<Blob> => {
+    const blob = await api.get<Blob>(`/api/AiAssistant/customer-dossier/${customerId}/pdf`, {
+      responseType: 'blob',
+    });
+
+    if (!(blob instanceof Blob)) {
+      throw new Error(
+        i18n.t('apiErrors.customerDossierPdf', {
+          ns: 'ai-assistant',
+          defaultValue: 'Müşteri dosyası PDF indirilemedi.',
+        })
+      );
+    }
+
+    return blob;
+  },
+
+  downloadSalesRepDossierPdf: async (userId: number): Promise<Blob> => {
+    const blob = await api.get<Blob>(`/api/AiAssistant/sales-rep-dossier/${userId}/pdf`, {
+      responseType: 'blob',
+    });
+
+    if (!(blob instanceof Blob)) {
+      throw new Error(
+        i18n.t('apiErrors.salesRepDossierPdf', {
+          ns: 'ai-assistant',
+          defaultValue: 'Satış temsilcisi dosyası PDF indirilemedi.',
+        })
+      );
+    }
+
+    return blob;
+  },
 };

@@ -15,7 +15,7 @@ import { QuotationLineTable } from './QuotationLineTable';
 import { QuotationSummaryCard } from './QuotationSummaryCard';
 import { Button } from '@/components/ui/button';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
-import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
+import { useHeaderSaveTooltipState } from '@/lib/header-save-required-hints';
 import { Save, X, Eye, FileText, Layers, Calculator } from 'lucide-react';
 import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
 import { QuotationPdfExportPreviewDialog } from './QuotationPdfExportPreviewDialog';
@@ -183,9 +183,10 @@ export function QuotationCreateForm(): ReactElement {
   const watchedOfferDate = form.watch('quotation.offerDate');
   const quotationFormSlice = form.watch('quotation');
   const quotationDraftFormValues = form.watch();
-  const quotationSchemaPayload = useMemo(
-    () => ({ quotation: quotationFormSlice }),
-    [quotationFormSlice],
+  const { hintLines: saveManualHintLines, schemaPayload: quotationSchemaPayload } = useHeaderSaveTooltipState(
+    form.control,
+    'quotation',
+    (key) => t(key, { ns: 'common' }),
   );
   const salesDraft = useSalesDocumentDraft({
     documentType: 'quotation',
@@ -204,11 +205,6 @@ export function QuotationCreateForm(): ReactElement {
     enabled: !createMutation.isPending,
   });
 
-  const saveManualHintLines = useMemo(
-    () =>
-      buildHeaderSaveRequiredHintLines(quotationFormSlice, (key) => t(key, { ns: 'common' }), watchedCurrency),
-    [quotationFormSlice, watchedCurrency, t],
-  );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   const { data: selectedCustomer } = useCustomer(
     watchedCustomerId ?? 0,

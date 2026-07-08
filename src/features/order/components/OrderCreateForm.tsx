@@ -16,7 +16,7 @@ import { OrderLineTable } from './OrderLineTable';
 import { OrderSummaryCard } from './OrderSummaryCard';
 import { Button } from '@/components/ui/button';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
-import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
+import { useHeaderSaveTooltipState } from '@/lib/header-save-required-hints';
 import { Save, X, Eye, FileText, Layers, Calculator } from 'lucide-react';
 import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
 import { createOrderSchema, type CreateOrderSchema } from '../schemas/order-schema';
@@ -175,7 +175,11 @@ export function OrderCreateForm(): ReactElement {
   const watchedOfferDate = form.watch('order.offerDate');
   const orderFormSlice = form.watch('order');
   const orderDraftFormValues = form.watch();
-  const orderSchemaPayload = useMemo(() => ({ order: orderFormSlice }), [orderFormSlice]);
+  const { hintLines: saveManualHintLines, schemaPayload: orderSchemaPayload } = useHeaderSaveTooltipState(
+    form.control,
+    'order',
+    (key) => t(key, { ns: 'common' }),
+  );
   const salesDraft = useSalesDocumentDraft({
     documentType: 'order',
     rootKey: 'order',
@@ -193,11 +197,6 @@ export function OrderCreateForm(): ReactElement {
     enabled: !createMutation.isPending,
   });
 
-  const saveManualHintLines = useMemo(
-    () =>
-      buildHeaderSaveRequiredHintLines(orderFormSlice, (key) => t(key, { ns: 'common' }), watchedCurrency),
-    [orderFormSlice, watchedCurrency, t],
-  );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   const { data: selectedCustomer } = useCustomer(
     watchedCustomerId ?? 0,

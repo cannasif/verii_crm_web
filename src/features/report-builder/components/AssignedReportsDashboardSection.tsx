@@ -454,11 +454,15 @@ function SortableDashboardTile({
   );
 }
 
+function normalizeBindingSource(source: string | undefined): string {
+  return (source ?? 'literal').trim().toLowerCase();
+}
+
 function resolveBindingValue(binding: DataSourceParameterBinding, user: { id: number; email: string } | null): string {
-  switch (binding.source) {
-    case 'currentUserId':
+  switch (normalizeBindingSource(binding.source)) {
+    case 'currentuserid':
       return user?.id != null ? String(user.id) : '';
-    case 'currentUserEmail':
+    case 'currentuseremail':
       return user?.email ?? '';
     case 'today': {
       const date = new Date();

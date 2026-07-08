@@ -1,6 +1,7 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { createDocumentReturnNavigationState } from '@/lib/document-return-navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, ArrowUpDown, Clock } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
@@ -113,6 +114,7 @@ export function WaitingApprovalsPage(): ReactElement {
 
   const approveLabel = t('approval.actions.approve', { ns: 'approval', defaultValue: 'Onayla' });
   const rejectLabel = t('approval.actions.reject', { ns: 'approval', defaultValue: 'Reddet' });
+  const detailLabel = t('approval.actions.view', { ns: 'approval', defaultValue: 'Görüntüle' });
 
   const getStatusLabel = (status: number, statusName?: string | null): string => {
     const statusKey = getApprovalStatusTranslationKey(status);
@@ -289,7 +291,9 @@ export function WaitingApprovalsPage(): ReactElement {
     approval.entityId || approval.approvalRequestId;
 
   const navigateToQuotation = (approval: ApprovalActionGetDto): void => {
-    navigate(`/quotations/${getQuotationTargetId(approval)}`);
+    navigate(`/quotations/${getQuotationTargetId(approval)}`, {
+      state: createDocumentReturnNavigationState('/quotations/waiting-approvals'),
+    });
   };
 
   const renderCell = (
@@ -357,6 +361,7 @@ export function WaitingApprovalsPage(): ReactElement {
     <WaitingApprovalsActionButtons
       approveLabel={approveLabel}
       rejectLabel={rejectLabel}
+      detailLabel={detailLabel}
       isPending={approveAction.isPending || rejectAction.isPending}
       onApprove={(event) => {
         event.stopPropagation();
@@ -366,7 +371,11 @@ export function WaitingApprovalsPage(): ReactElement {
         event.stopPropagation();
         handleRejectClick(approval);
       }}
-      className="flex justify-center gap-2"
+      onDetail={(event) => {
+        event.stopPropagation();
+        navigateToQuotation(approval);
+      }}
+      className="flex justify-center items-center gap-2"
     />
   );
 

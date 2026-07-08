@@ -1,5 +1,5 @@
 import { Fragment, lazy, Suspense, type ReactElement, type ComponentType } from 'react';
-import { useEffect, useCallback, useState, useMemo } from 'react';
+import { useEffect, useCallback, useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useReportBuilderStore } from '../store';
@@ -287,11 +287,15 @@ function formatDateLiteral(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
+function normalizeBindingSource(source: string | undefined): string {
+  return (source ?? 'literal').trim().toLowerCase();
+}
+
 function resolveBindingValue(binding: DataSourceParameterBinding, user: { id: number; email: string } | null): string {
-  switch (binding.source) {
-    case 'currentUserId':
+  switch (normalizeBindingSource(binding.source)) {
+    case 'currentuserid':
       return user?.id != null ? String(user.id) : '';
-    case 'currentUserEmail':
+    case 'currentuseremail':
       return user?.email ?? '';
     case 'today':
       return formatDateLiteral(new Date());
@@ -415,6 +419,7 @@ export function ReportViewerPage(): ReactElement {
   const currentUser = useAuthStore((state) => state.user);
   const [widgetPreviews, setWidgetPreviews] = useState<Record<string, { columns: string[]; rows: unknown[][]; loading: boolean; error: string | null }>>({});
   const [viewerParameterValues, setViewerParameterValues] = useState<Record<string, string>>({});
+  const previewSessionRef = useRef<string | null>(null);
 
   const reportId = id ? parseInt(id, 10) : NaN;
   const isMyReportsView = location.pathname.startsWith('/reports/my/');
@@ -785,28 +790,20 @@ export function ReportViewerPage(): ReactElement {
     await exportSheetsToXlsx(`${baseName}-all-widgets.xlsx`, sheets);
   }, [config.activeWidgetId, config.widgets, exportCurrentWidgetXlsx, meta.name, preview.columns, preview.rows, widgetPreviews, t]);
 
-  const loadReport = useCallback(async () => {
-    if (Number.isNaN(reportId)) return;
-    try {
-      setUi({ checkLoading: true, error: null });
-      const report = await reportsApi.get(reportId);
-      hydrateFromReportDetail(report);
-    } catch (e) {
-      setUi({ checkLoading: false, error: e instanceof Error ? e.message : t('common.reportBuilder.messages.loadReportFailed') });
-      return;
-    }
-    setUi({ checkLoading: false });
-  }, [reportId, hydrateFromReportDetail, setUi, t]);
+  const hasDedicatedWidgetPreviews = (config.widgets?.length ?? 0) > 0;
+  const isPreviewRefreshing = ui.previewLoading
+    || Object.values(widgetPreviews).some((item) => item.loading);
 
   const runPreview = useCallback(async (parameterOverrides: Record<string, string>) => {
-    if (!meta.connectionKey || !meta.dataSourceType || !meta.dataSourceName) return;
+    const { meta: currentMeta, config: currentConfig } = useReportBuilderStore.getState();
+    if (!currentMeta.connectionKey || !currentMeta.dataSourceType || !currentMeta.dataSourceName) return;
     setUi({ previewLoading: true, error: null });
     try {
-      const configJson = buildRuntimeConfigJson(config, currentUser, parameterOverrides);
+      const configJson = buildRuntimeConfigJson(currentConfig, currentUser, parameterOverrides);
       const res = await reportsApi.preview({
-        connectionKey: meta.connectionKey,
-        dataSourceType: meta.dataSourceType,
-        dataSourceName: meta.dataSourceName,
+        connectionKey: currentMeta.connectionKey,
+        dataSourceType: currentMeta.dataSourceType,
+        dataSourceName: currentMeta.dataSourceName,
         configJson,
       });
       setPreview({ columns: res.columns ?? [], rows: res.rows ?? [] });
@@ -814,12 +811,16 @@ export function ReportViewerPage(): ReactElement {
     } catch (e) {
       setUi({ previewLoading: false, error: e instanceof Error ? e.message : t('common.reportBuilder.messages.previewFailed') });
     }
-  }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, config, currentUser, setPreview, setUi, t]);
+  }, [currentUser, setPreview, setUi, t]);
 
   const runAllWidgetPreviews = useCallback(async (parameterOverrides: Record<string, string>) => {
-    const widgets = config.widgets ?? [];
-    if (!meta.connectionKey || !meta.dataSourceType || !meta.dataSourceName || widgets.length === 0) return;
-    const runtimeDatasetParameters = JSON.parse(buildRuntimeConfigJson(config, currentUser, parameterOverrides)).datasetParameters as DataSourceParameterBinding[] | undefined;
+    const { meta: currentMeta, config: currentConfig } = useReportBuilderStore.getState();
+    const widgets = currentConfig.widgets ?? [];
+    if (!currentMeta.connectionKey || !currentMeta.dataSourceType || !currentMeta.dataSourceName || widgets.length === 0) return;
+    const currentLifecycle = currentConfig.lifecycle ?? { status: 'draft' as const, version: 1 };
+    const runtimeDatasetParameters = JSON.parse(
+      buildRuntimeConfigJson(currentConfig, currentUser, parameterOverrides)
+    ).datasetParameters as DataSourceParameterBinding[] | undefined;
 
     setWidgetPreviews((current) =>
       Object.fromEntries(
@@ -839,16 +840,16 @@ export function ReportViewerPage(): ReactElement {
       widgets.map(async (widget) => {
         try {
           const res = await reportsApi.preview({
-            connectionKey: meta.connectionKey,
-            dataSourceType: meta.dataSourceType,
-            dataSourceName: meta.dataSourceName,
+            connectionKey: currentMeta.connectionKey,
+            dataSourceType: currentMeta.dataSourceType,
+            dataSourceName: currentMeta.dataSourceName,
             configJson: buildConfigFromWidget(
               widget,
               widgets,
-              config.calculatedFields,
-              lifecycle,
+              currentConfig.calculatedFields,
+              currentLifecycle,
               runtimeDatasetParameters,
-              config.filters
+              currentConfig.filters
             ),
           });
           setWidgetPreviews((current) => ({
@@ -873,19 +874,63 @@ export function ReportViewerPage(): ReactElement {
         }
       })
     );
-  }, [config, currentUser, lifecycle, meta.connectionKey, meta.dataSourceType, meta.dataSourceName, t]);
+  }, [currentUser, t]);
+
+  const refreshPreviews = useCallback(async (
+    parameterOverrides: Record<string, string>,
+    options?: { includeSchema?: boolean }
+  ) => {
+    const { config: currentConfig } = useReportBuilderStore.getState();
+    if (options?.includeSchema) {
+      await loadSchemaForCurrentDataSource();
+    }
+
+    if ((currentConfig.widgets?.length ?? 0) > 0) {
+      await runAllWidgetPreviews(parameterOverrides);
+      return;
+    }
+
+    await runPreview(parameterOverrides);
+  }, [loadSchemaForCurrentDataSource, runAllWidgetPreviews, runPreview]);
+
+  const loadReport = useCallback(async () => {
+    if (Number.isNaN(reportId)) return;
+    previewSessionRef.current = null;
+    try {
+      setUi({ checkLoading: true, error: null });
+      const report = await reportsApi.get(reportId);
+      hydrateFromReportDetail(report);
+    } catch (e) {
+      setUi({ checkLoading: false, error: e instanceof Error ? e.message : t('common.reportBuilder.messages.loadReportFailed') });
+      return;
+    }
+    setUi({ checkLoading: false });
+  }, [reportId, hydrateFromReportDetail, setUi, t]);
 
   useEffect(() => {
     loadReport();
   }, [loadReport]);
 
   useEffect(() => {
-    if (meta.connectionKey && meta.dataSourceType && meta.dataSourceName) {
-      loadSchemaForCurrentDataSource();
-      runPreview(initialViewerParameterValues);
-      runAllWidgetPreviews(initialViewerParameterValues);
+    if (!meta.connectionKey || !meta.dataSourceType || !meta.dataSourceName) {
+      return;
     }
-  }, [meta.connectionKey, meta.dataSourceType, meta.dataSourceName, runPreview, runAllWidgetPreviews, loadSchemaForCurrentDataSource, initialViewerParameterValues]);
+
+    const sessionKey = `${reportId}:${meta.connectionKey}:${meta.dataSourceType}:${meta.dataSourceName}`;
+    if (previewSessionRef.current === sessionKey) {
+      return;
+    }
+
+    previewSessionRef.current = sessionKey;
+    void refreshPreviews(initialViewerParameterValues, { includeSchema: true });
+  }, [
+    reportId,
+    meta.connectionKey,
+    meta.dataSourceType,
+    meta.dataSourceName,
+    initialViewerParameterValues,
+    refreshPreviews,
+  ]);
 
   useEffect(() => {
     setViewerParameterValues(initialViewerParameterValues);
@@ -985,11 +1030,11 @@ export function ReportViewerPage(): ReactElement {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => runPreview(viewerParameterValues)}
-              disabled={ui.previewLoading}
+              onClick={() => void refreshPreviews(viewerParameterValues)}
+              disabled={isPreviewRefreshing}
               className="h-9 rounded-lg border-slate-200 font-semibold dark:border-white/10"
             >
-              <RefreshCw className={cn('mr-2 size-4 text-indigo-500', ui.previewLoading && 'animate-spin')} />
+              <RefreshCw className={cn('mr-2 size-4 text-indigo-500', isPreviewRefreshing && 'animate-spin')} />
               {t('common.refresh')}
             </Button>
             {meta.canManage !== false ? (
@@ -1202,10 +1247,9 @@ export function ReportViewerPage(): ReactElement {
                     <Suspense fallback={<Skeleton className="h-32 w-full rounded-xl" />}>
                       <RuntimeFiltersPanel
                         schema={schema}
-                        loading={ui.previewLoading}
+                        loading={isPreviewRefreshing}
                         onApply={async () => {
-                          await runPreview(viewerParameterValues);
-                          await runAllWidgetPreviews(viewerParameterValues);
+                          await refreshPreviews(viewerParameterValues);
                           setFiltersOpen(false);
                         }}
                         onReset={loadReport}
@@ -1230,8 +1274,7 @@ export function ReportViewerPage(): ReactElement {
                           disabled={!hasViewerParameterChanges}
                           className="h-9 rounded-lg bg-indigo-600 font-bold text-white hover:bg-indigo-500"
                           onClick={async () => {
-                            await runPreview(viewerParameterValues);
-                            await runAllWidgetPreviews(viewerParameterValues);
+                            await refreshPreviews(viewerParameterValues);
                             setFiltersOpen(false);
                           }}
                         >
@@ -1308,15 +1351,14 @@ export function ReportViewerPage(): ReactElement {
                     {section.widgets.map((widget) => {
                       const widgetPreview = widgetPreviews[widget.id];
                       const widgetIndex = orderedWidgets.findIndex((item) => item.id === widget.id);
-                      const isPrimaryWidget = widget.id === config.activeWidgetId;
-                      const isPrimaryForSubtitle = widget.id === config.activeWidgetId || widgetIndex === 0;
+                      const hasDedicatedPreview = hasDedicatedWidgetPreviews;
                       const layoutItem = widgetLayouts[widget.id] ?? {
                         colSpan: defaultColSpanFor(widget.size, maxCols),
                         rowSpan: clamp(defaultRowSpanFor(widget.height), 1, maxRows),
                       };
                       const widgetTitle = widget.title || t('common.reportBuilder.widgetTitleFallback', { index: widgetIndex + 1 });
                       const widgetSubtitle = widget.appearance?.subtitle ||
-                        (isPrimaryForSubtitle
+                        (widget.id === config.activeWidgetId || widgetIndex === 0
                           ? t('common.reportBuilder.primaryWidgetPreview')
                           : t('common.reportBuilder.additionalWidgetPreview'));
                       return (
@@ -1333,12 +1375,14 @@ export function ReportViewerPage(): ReactElement {
                           >
                             <Suspense fallback={<Skeleton className="h-full w-full rounded-2xl" />}>
                               <PreviewPanel
-                                columns={isPrimaryWidget ? preview.columns : widgetPreview?.columns ?? []}
-                                rows={isPrimaryWidget ? preview.rows : widgetPreview?.rows ?? []}
-                                chartType={isPrimaryWidget ? config.chartType : widget.chartType}
-                                loading={isPrimaryWidget ? ui.previewLoading : widgetPreview?.loading ?? false}
-                                error={isPrimaryWidget ? ui.error : widgetPreview?.error ?? null}
-                                empty={isPrimaryWidget ? false : !(widgetPreview?.columns?.length || widgetPreview?.rows?.length)}
+                                columns={hasDedicatedPreview ? widgetPreview?.columns ?? [] : preview.columns}
+                                rows={hasDedicatedPreview ? widgetPreview?.rows ?? [] : preview.rows}
+                                chartType={widget.chartType}
+                                loading={hasDedicatedPreview ? widgetPreview?.loading ?? false : ui.previewLoading}
+                                error={hasDedicatedPreview ? widgetPreview?.error ?? null : ui.error}
+                                empty={hasDedicatedPreview
+                                  ? !(widgetPreview?.columns?.length || widgetPreview?.rows?.length)
+                                  : !(preview.columns?.length || preview.rows?.length)}
                                 title={widgetTitle}
                                 subtitle={widgetSubtitle}
                                 appearance={widget.appearance}

@@ -783,9 +783,10 @@ export function ReportChart({
   }
 
   if (chartType === 'kpi') {
-    const numericCells = normalizedRows.flat().filter((value) => typeof value === 'number' || (typeof value === 'string' && !Number.isNaN(Number(value))));
-    const primaryValue = numericCells.length > 0 ? Number(numericCells[0]) : 0;
-    const secondaryValue = numericCells.length > 1 ? Number(numericCells[1]) : null;
+    const metricRow = orderedRows[0] ?? normalizedRows[0] ?? [];
+    const metricCells = Array.isArray(metricRow) ? metricRow : ensureRowArray(metricRow);
+    const primaryValue = metricCells.length > 0 ? Number(metricCells[0] ?? 0) : 0;
+    const secondaryValue = metricCells.length > 1 ? Number(metricCells[1] ?? 0) : null;
     const isPositive = secondaryValue != null ? primaryValue >= secondaryValue : true;
     const secondaryDiff = secondaryValue != null && secondaryValue !== 0
       ? (((primaryValue - secondaryValue) / Math.abs(secondaryValue)) * 100).toFixed(1)

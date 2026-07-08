@@ -395,6 +395,7 @@ export function ReportBuilderPage(): ReactElement {
   const [dataSourceSearch, setDataSourceSearch] = useState('');
   const [builderMode, setBuilderMode] = useState<'basic' | 'advanced'>('basic');
   const [advancedWorkspaceMode, setAdvancedWorkspaceMode] = useState<'guided' | 'expert'>('guided');
+  const autoAdvancedAppliedRef = useRef(false);
   const [guidedGoal, setGuidedGoal] = useState<'executive' | 'operations' | 'performance' | null>(null);
   const [guidedVisualIntent, setGuidedVisualIntent] = useState<GuidedWidgetTask | null>(null);
   const [guidedVisualRecommendation, setGuidedVisualRecommendation] = useState<GuidedWidgetTask | null>(null);
@@ -1031,6 +1032,18 @@ export function ReportBuilderPage(): ReactElement {
       loadReportById(reportId);
     }
   }, [isEdit, reportId, loadReportById]);
+
+  useEffect(() => {
+    if (autoAdvancedAppliedRef.current) {
+      return;
+    }
+
+    if (meta.id && (config.widgets?.length ?? 0) > 1) {
+      autoAdvancedAppliedRef.current = true;
+      setBuilderMode('advanced');
+      setAdvancedWorkspaceMode('guided');
+    }
+  }, [config.widgets?.length, meta.id]);
 
   useEffect(() => {
     if (!meta.connectionKey || !meta.dataSourceType) return;

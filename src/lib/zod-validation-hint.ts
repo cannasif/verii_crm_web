@@ -11,10 +11,14 @@ export function getZodValidationMessages(schema: z.ZodTypeAny, data: unknown): s
   const lines: string[] = [];
   for (const issue of parsed.error.issues) {
     const msg = issue.message?.trim() || issue.code;
-    if (msg && !seen.has(msg)) {
-      seen.add(msg);
-      lines.push(msg);
+    if (!msg || seen.has(msg)) {
+      continue;
     }
+    if (msg.startsWith('Invalid input:')) {
+      continue;
+    }
+    seen.add(msg);
+    lines.push(msg);
   }
   return lines;
 }

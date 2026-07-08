@@ -13,7 +13,7 @@ import { DemandLineTable } from './DemandLineTable';
 import { DemandSummaryCard } from './DemandSummaryCard';
 import { Button } from '@/components/ui/button';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
-import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
+import { useHeaderSaveTooltipState } from '@/lib/header-save-required-hints';
 import { Save, X, FileText, Layers, Calculator } from 'lucide-react';
 import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
@@ -107,9 +107,12 @@ export function DemandCreateForm(): ReactElement {
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedRepresentativeId = form.watch('demand.representativeId');
   const watchedOfferDate = form.watch('demand.offerDate');
-  const demandFormSlice = form.watch('demand');
+  const { hintLines: saveManualHintLines, schemaPayload: demandSchemaPayload } = useHeaderSaveTooltipState(
+    form.control,
+    'demand',
+    (key) => t(key, { ns: 'common' }),
+  );
   const demandDraftFormValues = form.watch();
-  const demandSchemaPayload = useMemo(() => ({ demand: demandFormSlice }), [demandFormSlice]);
   const salesDraft = useSalesDocumentDraft({
     documentType: 'demand',
     rootKey: 'demand',
@@ -127,11 +130,6 @@ export function DemandCreateForm(): ReactElement {
     enabled: !createMutation.isPending,
   });
 
-  const saveManualHintLines = useMemo(
-    () =>
-      buildHeaderSaveRequiredHintLines(demandFormSlice, (key) => t(key, { ns: 'common' }), watchedCurrency),
-    [demandFormSlice, watchedCurrency, t],
-  );
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   const offerDateSyncInitializedRef = useRef(false);
 

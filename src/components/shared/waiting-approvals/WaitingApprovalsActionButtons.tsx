@@ -1,26 +1,30 @@
 import { type ReactElement } from 'react';
-import { Check, X } from 'lucide-react';
+import { Check, Eye, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface WaitingApprovalsActionButtonsProps {
   approveLabel: string;
   rejectLabel: string;
+  detailLabel: string;
   isPending: boolean;
   onApprove: (event: React.MouseEvent) => void;
   onReject: (event: React.MouseEvent) => void;
+  onDetail: (event: React.MouseEvent) => void;
   className?: string;
 }
 
 export function WaitingApprovalsActionButtons({
   approveLabel,
   rejectLabel,
+  detailLabel,
   isPending,
   onApprove,
   onReject,
+  onDetail,
   className,
 }: WaitingApprovalsActionButtonsProps): ReactElement {
   return (
-    <div className={className ?? 'flex justify-end gap-2'}>
+    <div className={className ?? 'flex justify-end items-center gap-2'}>
       <Button
         variant="ghost"
         size="sm"
@@ -42,6 +46,17 @@ export function WaitingApprovalsActionButtons({
       >
         <X className="h-4 w-4 sm:mr-1.5" />
         <span className="hidden sm:inline font-bold">{rejectLabel}</span>
+      </Button>
+      <span className="mx-1 h-8 w-px shrink-0 bg-border" aria-hidden="true" />
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onDetail}
+        className="h-8 bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-800 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10"
+        title={detailLabel}
+      >
+        <Eye className="h-4 w-4 sm:mr-1.5" />
+        <span className="hidden sm:inline font-bold">{detailLabel}</span>
       </Button>
     </div>
   );

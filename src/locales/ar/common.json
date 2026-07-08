@@ -49,6 +49,7 @@
         "paymentType": "نوع الدفع",
         "offerType": "نوع العرض",
         "documentSerial": "الرقم التسلسلي",
+        "ozelKod1": "الكود الخاص 1",
         "deliveryDate": "تاريخ التسليم"
       }
     },

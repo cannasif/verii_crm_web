@@ -3,6 +3,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useForm, FormProvider, useFormState } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { getDocumentReturnTo } from '@/lib/document-return-navigation';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useQuotation } from '../hooks/useQuotation';
@@ -35,7 +36,7 @@ import {
   DOCUMENT_DETAIL_BUTTON_REVISE,
   DOCUMENT_DETAIL_BUTTON_SAVE,
 } from '@/lib/document-detail-button-styles';
-import { buildHeaderSaveRequiredHintLines } from '@/lib/header-save-required-hints';
+import { useHeaderSaveTooltipState } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Send, Layers, Loader2, FileCheck, FileText, Save, Eye, XCircle, GitBranchPlus } from 'lucide-react';
 import { QuotationApprovalFlowTab } from './QuotationApprovalFlowTab';
@@ -138,11 +139,16 @@ export function QuotationDetailPage(): ReactElement {
   const { setPageTitle } = useUIStore();
   const quotationIdFromPath = parseQuotationIdFromPath(location.pathname);
   const quotationId = quotationIdFromPath > 0 ? quotationIdFromPath : (paramId ? parseInt(paramId, 10) : 0) || 0;
+  const returnTo = getDocumentReturnTo(location.state);
 
   const handleBackToList = useCallback(async (): Promise<void> => {
+    if (returnTo) {
+      navigate(returnTo);
+      return;
+    }
     await queryClient.refetchQueries({ queryKey: [QUOTATION_QUERY_KEYS.QUOTATIONS] });
     navigate('/quotations');
-  }, [queryClient, navigate]);
+  }, [queryClient, navigate, returnTo]);
 
   const { data: quotation, isLoading } = useQuotation(quotationId);
   const { data: canEditWhileWaiting = false, isLoading: isLoadingCanEdit } = useCanEditQuotation(quotationId);
@@ -446,15 +452,10 @@ export function QuotationDetailPage(): ReactElement {
   const { data: shippingAddresses = [] } = useShippingAddresses(
     previewCustomerId != null && previewCustomerId > 0 ? previewCustomerId : undefined,
   );
-  const quotationSchemaPayload = useMemo(
-    () => ({ quotation: quotationFormSlice }),
-    [quotationFormSlice],
-  );
-
-  const saveManualHintLines = useMemo(
-    () =>
-      buildHeaderSaveRequiredHintLines(quotationFormSlice, (key) => t(key, { ns: 'common' }), watchedCurrency),
-    [quotationFormSlice, watchedCurrency, t],
+  const { hintLines: saveManualHintLines, schemaPayload: quotationSchemaPayload } = useHeaderSaveTooltipState(
+    form.control,
+    'quotation',
+    (key) => t(key, { ns: 'common' }),
   );
 
   const customerCode = useMemo(() => {

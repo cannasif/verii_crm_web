@@ -49,6 +49,7 @@
         "paymentType": "Ödeme tipi",
         "offerType": "Teklif tipi",
         "documentSerial": "Seri no",
+        "ozelKod1": "Özel Kod 1",
         "deliveryDate": "Teslimat tarihi"
       }
     },

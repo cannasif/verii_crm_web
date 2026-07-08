@@ -23,7 +23,11 @@ export function useUpdateSystemSettingsMutation() {
       toast.success(t('systemSettings.SavedSuccessfully'));
     },
     onError: (error) => {
-      toast.error(t(error.message) || error.message || t('common.UnexpectedError'));
+      toast.error(
+        t(error.message, {
+          defaultValue: error.message || t('common.UnexpectedError'),
+        })
+      );
     },
   });
 }

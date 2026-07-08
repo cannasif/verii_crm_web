@@ -1,5 +1,7 @@
+import { createElement } from 'react';
 import { toast } from 'sonner';
 import type { AiAssistantActionItemDto, AiAssistantAnswerDto } from '../types/ai-assistant.types';
+import { AiAssistantReportDraftToast } from '../components/AiAssistantReportDraftToast';
 
 type OpenReportDraftAction = (
   actionUrl: string,
@@ -55,12 +57,20 @@ export function findCreatedReportDraftAction(answer: AiAssistantAnswerDto): AiAs
     return null;
   }
 
+  if (action.autoOpen === false) {
+    return null;
+  }
+
   return action;
 }
 
 export function findCreatedPdfTemplateDraftAction(answer: AiAssistantAnswerDto): AiAssistantActionItemDto | null {
   const action = findPdfTemplateDraftAction(answer);
   if (!action?.actionUrl || !/^\/pdf-report-designer\/edit\/\d+$/.test(action.actionUrl)) {
+    return null;
+  }
+
+  if (action.autoOpen === false) {
     return null;
   }
 
@@ -71,30 +81,37 @@ export function showReportDraftReadyToast(
   answer: AiAssistantAnswerDto,
   openActionUrl: OpenReportDraftAction
 ): void {
-  const builderDraftAction = findPdfTemplateDraftAction(answer) ?? findReportDraftAction(answer);
+  const builderDraftAction = findCreatedPdfTemplateDraftAction(answer) ?? findCreatedReportDraftAction(answer);
   if (!builderDraftAction?.actionUrl) {
     return;
   }
 
   const isPdfAction = builderDraftAction.actionUrl.startsWith('/pdf-report-designer/');
+  const title = isPdfAction ? 'PDF taslağı hazır' : 'Rapor taslağı hazır';
+  const description = isPdfAction
+    ? 'AI PDF taslağını kaydetti. Taslağı açıp sayfa yerleşimi, tablo ve görsel alanlarını kontrol edebilirsiniz.'
+    : 'AI taslağı kaydetti. Taslağı açıp kolon, KPI ve grafik seçimlerini kontrol edebilirsiniz.';
 
-  toast.success(isPdfAction ? 'PDF taslağı hazır' : 'Rapor taslağı hazır', {
-    description: builderDraftAction.actionUrl.includes('/edit')
-      ? isPdfAction
-        ? 'AI PDF taslağını kaydetti. Linkten açıp sayfa yerleşimi, tablo ve görsel alanlarını kontrol edebilirsiniz.'
-        : 'AI taslağı kaydetti. Linkten açıp kolon, KPI ve grafik seçimlerini kontrol edebilirsiniz.'
-      : isPdfAction
-        ? 'AI PDF taslağı hazırladı. PDF Builder ekranında kayda devam edebilirsiniz.'
-        : 'AI taslağı hazırladı. Rapor oluşturucuda kayda devam edebilirsiniz.',
-    action: {
-      label: builderDraftAction.actionLabel ?? 'Taslağı aç',
-      onClick: () => {
-        void openActionUrl(
-          builderDraftAction.actionUrl!,
-          builderDraftAction.toolActionId,
-          builderDraftAction.confirmationRequired ?? Boolean(builderDraftAction.toolActionId)
-        );
-      },
-    },
-  });
+  toast.custom(
+    (toastId) =>
+      createElement(AiAssistantReportDraftToast, {
+        toastId,
+        title,
+        description,
+        isPdf: isPdfAction,
+        actionLabel: builderDraftAction.actionLabel ?? 'Taslağı aç',
+        onOpen: () => {
+          void openActionUrl(
+            builderDraftAction.actionUrl!,
+            builderDraftAction.toolActionId,
+            builderDraftAction.confirmationRequired ?? Boolean(builderDraftAction.toolActionId)
+          );
+        },
+      }),
+    {
+      duration: 10000,
+      unstyled: true,
+      className: 'ai-assistant-report-draft-toast !bg-transparent !border-0 !shadow-none !p-0',
+    }
+  );
 }

@@ -49,6 +49,7 @@
         "paymentType": "Tipo de pago",
         "offerType": "Tipo de oferta",
         "documentSerial": "Número de serie",
+        "ozelKod1": "Código especial 1",
         "deliveryDate": "Fecha de entrega"
       }
     },
