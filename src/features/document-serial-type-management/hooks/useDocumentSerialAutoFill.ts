@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
-import type { DocumentSerialTypeGetDto } from '../types/document-serial-type-types';
+import type {
+  CustomerDocumentSerialDocumentKind,
+  CustomerDocumentSerialSuggestionDto,
+  DocumentSerialTypeGetDto,
+} from '../types/document-serial-type-types';
 import { formatSuggestedDocumentNumber } from '../utils/format-suggested-document-number';
 import {
   getLastDocumentSerialTypeId,
   saveLastDocumentSerialTypeId,
 } from '../utils/document-serial-preference-store';
+import { useCustomerDocumentSerialSuggestion } from './useCustomerDocumentSerialSuggestion';
 
 export type SalesDocumentSerialRootKey = 'demand' | 'quotation' | 'order';
 
@@ -18,12 +23,18 @@ interface UseDocumentSerialAutoFillParams {
   availableDocumentSerialTypes: DocumentSerialTypeGetDto[];
   watchedDocumentSerialTypeId?: number | null;
   watchedRepresentativeId?: number | null;
+  watchedCustomerId?: number | null;
+  documentKind?: CustomerDocumentSerialDocumentKind | null;
   userId?: string | number | null;
   branchCode?: string | number | null;
 }
 
 interface UseDocumentSerialAutoFillReturn {
   handleDocumentSerialTypeSelect: (documentSerialTypeId: number | null) => void;
+  customerSerialSuggestion?: CustomerDocumentSerialSuggestionDto | null;
+  customerSuggestedSerialType?: DocumentSerialTypeGetDto;
+  isCustomerSerialSuggestionLoading: boolean;
+  applyCustomerSerialSuggestion: () => void;
 }
 
 export function useDocumentSerialAutoFill({
@@ -34,6 +45,8 @@ export function useDocumentSerialAutoFill({
   availableDocumentSerialTypes,
   watchedDocumentSerialTypeId,
   watchedRepresentativeId,
+  watchedCustomerId,
+  documentKind,
   userId,
   branchCode,
 }: UseDocumentSerialAutoFillParams): UseDocumentSerialAutoFillReturn {
@@ -43,6 +56,16 @@ export function useDocumentSerialAutoFill({
 
   const serialTypeField = `${rootKey}.documentSerialTypeId`;
   const offerNoField = `${rootKey}.offerNo`;
+  const customerSuggestionQuery = useCustomerDocumentSerialSuggestion(
+    watchedCustomerId,
+    documentKind,
+    branchCode,
+    !readOnly,
+  );
+
+  const customerSuggestedSerialType = customerSuggestionQuery.data?.documentSerialTypeId
+    ? availableDocumentSerialTypes.find((item) => item.id === customerSuggestionQuery.data?.documentSerialTypeId)
+    : undefined;
 
   const applySuggestedOfferNo = useCallback(
     (serialType: DocumentSerialTypeGetDto): void => {
@@ -99,6 +122,11 @@ export function useDocumentSerialAutoFill({
       watchedRepresentativeId,
     ],
   );
+
+  const applyCustomerSerialSuggestion = useCallback((): void => {
+    if (!customerSuggestedSerialType) return;
+    handleDocumentSerialTypeSelect(customerSuggestedSerialType.id);
+  }, [customerSuggestedSerialType, handleDocumentSerialTypeSelect]);
 
   useEffect(() => {
     if (readOnly || !isCreateMode) return;
@@ -168,5 +196,9 @@ export function useDocumentSerialAutoFill({
 
   return {
     handleDocumentSerialTypeSelect,
+    customerSerialSuggestion: customerSuggestionQuery.data,
+    customerSuggestedSerialType,
+    isCustomerSerialSuggestionLoading: customerSuggestionQuery.isLoading,
+    applyCustomerSerialSuggestion,
   };
 }

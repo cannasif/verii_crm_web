@@ -19,6 +19,8 @@ import { resolveQuotationCustomerLabelForPdf } from '@/lib/resolve-quotation-cus
 import { resolveWatchedDocumentCurrency } from '@/lib/line-unit-price-currency';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { recordCustomerDocumentSerialUsageSafely } from '@/features/document-serial-type-management/utils/customer-document-serial-usage';
+import { CustomerDocumentSerialDocumentKind } from '@/features/document-serial-type-management/types/document-serial-type-types';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
@@ -933,6 +935,14 @@ export function QuotationDetailPage(): ReactElement {
       await Promise.all(updatedRates.map((rate) => quotationApi.updateQuotationExchangeRate(rate.id, rate.dto)));
       await Promise.all(newRates.map((rate) => quotationApi.createQuotationExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
+      await recordCustomerDocumentSerialUsageSafely({
+        customerId: quotationData.potentialCustomerId,
+        documentKind: CustomerDocumentSerialDocumentKind.Quotation,
+        documentSerialTypeId: quotationData.documentSerialTypeId,
+        documentId: quotationId,
+        documentNo: quotationData.offerNo,
+        requestBranchCode: branch?.code ?? branch?.id,
+      });
 
       const refreshedLines = await quotationApi.getQuotationLinesByQuotationId(quotationId);
       queryClient.setQueryData(queryKeys.quotationLines(quotationId), refreshedLines);

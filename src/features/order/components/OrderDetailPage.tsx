@@ -17,6 +17,9 @@ import { useCustomerOptions } from '@/features/customer-management/hooks/useCust
 import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
 import { useOrderPdfExportPreview } from '../hooks/useOrderPdfExportPreview';
 import { useUIStore } from '@/stores/ui-store';
+import { useAuthStore } from '@/stores/auth-store';
+import { recordCustomerDocumentSerialUsageSafely } from '@/features/document-serial-type-management/utils/customer-document-serial-usage';
+import { CustomerDocumentSerialDocumentKind } from '@/features/document-serial-type-management/types/document-serial-type-types';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
@@ -96,6 +99,7 @@ export function OrderDetailPage(): ReactElement {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
+  const branch = useAuthStore((state) => state.branch);
   const orderId = id ? parseInt(id, 10) : 0;
 
   const handleBackToList = useCallback(async (): Promise<void> => {
@@ -612,6 +616,14 @@ export function OrderDetailPage(): ReactElement {
       await Promise.all(updatedRates.map((rate) => orderApi.updateOrderExchangeRate(rate.id, rate.dto)));
       await Promise.all(newRates.map((rate) => orderApi.createOrderExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
+      await recordCustomerDocumentSerialUsageSafely({
+        customerId: orderData.potentialCustomerId,
+        documentKind: CustomerDocumentSerialDocumentKind.Order,
+        documentSerialTypeId: orderData.documentSerialTypeId,
+        documentId: orderId,
+        documentNo: orderData.offerNo,
+        requestBranchCode: branch?.code ?? branch?.id,
+      });
 
       const refreshedLines = await orderApi.getOrderLinesByOrderId(orderId);
       queryClient.setQueryData(queryKeys.orderLines(orderId), refreshedLines);

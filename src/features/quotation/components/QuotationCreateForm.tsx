@@ -37,6 +37,8 @@ import { useAuthStore } from '@/stores/auth-store';
 import { SalesDocumentDraftRestoreDialog } from '@/features/sales-drafts/SalesDocumentDraftRestoreDialog';
 import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentDraft';
 import { usePrefetchLineImagesForPdf } from '../hooks/usePrefetchLineImagesForPdf';
+import { recordCustomerDocumentSerialUsageSafely } from '@/features/document-serial-type-management/utils/customer-document-serial-usage';
+import { CustomerDocumentSerialDocumentKind } from '@/features/document-serial-type-management/types/document-serial-type-types';
 import { useQuotationCalculations } from '../hooks/useQuotationCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
@@ -440,6 +442,14 @@ export function QuotationCreateForm(): ReactElement {
         if (notesList.length > 0) {
           await quotationApi.updateNotesListByQuotationId(result.data.id, { notes: notesList });
         }
+        await recordCustomerDocumentSerialUsageSafely({
+          customerId: quotationData.potentialCustomerId,
+          documentKind: CustomerDocumentSerialDocumentKind.Quotation,
+          documentSerialTypeId: quotationData.documentSerialTypeId,
+          documentId: result.data.id,
+          documentNo: result.data.offerNo ?? quotationData.offerNo,
+          requestBranchCode: branch?.code ?? branch?.id,
+        });
         toast.success(t('create.success'), {
           description: t('create.successMessage'),
         });

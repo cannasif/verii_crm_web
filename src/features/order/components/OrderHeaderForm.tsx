@@ -54,8 +54,10 @@ import {
 } from '@/features/customer-management/utils/customer-integration';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { useSpecialCodeExists, useSpecialCodesInfinite } from '@/services/hooks/useSpecialCodesInfinite';
+import { CustomerDocumentSerialSuggestionCard } from '@/features/document-serial-type-management/components/CustomerDocumentSerialSuggestionCard';
 import { useAvailableDocumentSerialTypes } from '@/features/document-serial-type-management/hooks/useAvailableDocumentSerialTypes';
 import { useDocumentSerialAutoFill } from '@/features/document-serial-type-management/hooks/useDocumentSerialAutoFill';
+import { CustomerDocumentSerialDocumentKind } from '@/features/document-serial-type-management/types/document-serial-type-types';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
 import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 import type { KurDto } from '@/services/erp-types';
@@ -252,7 +254,13 @@ export function OrderHeaderForm({
     PricingRuleType.Order
   );
 
-  const { handleDocumentSerialTypeSelect } = useDocumentSerialAutoFill({
+  const {
+    handleDocumentSerialTypeSelect,
+    customerSerialSuggestion,
+    customerSuggestedSerialType,
+    isCustomerSerialSuggestionLoading,
+    applyCustomerSerialSuggestion,
+  } = useDocumentSerialAutoFill({
     rootKey: 'order',
     ruleType: PricingRuleType.Order,
     documentId: orderId,
@@ -260,6 +268,8 @@ export function OrderHeaderForm({
     availableDocumentSerialTypes,
     watchedDocumentSerialTypeId,
     watchedRepresentativeId,
+    watchedCustomerId,
+    documentKind: CustomerDocumentSerialDocumentKind.Order,
     userId: user?.id,
     branchCode: branch?.code ?? branch?.id,
   });
@@ -847,6 +857,14 @@ export function OrderHeaderForm({
                           />
                         </FormControl>
                       </div>
+                      <CustomerDocumentSerialSuggestionCard
+                        suggestion={customerSerialSuggestion}
+                        serialType={customerSuggestedSerialType}
+                        isLoading={Boolean(watchedCustomerId) && isCustomerSerialSuggestionLoading}
+                        isApplied={customerSuggestedSerialType?.id === Number(field.value)}
+                        disabled={readOnly}
+                        onApply={applyCustomerSerialSuggestion}
+                      />
                       <FormMessage className="mt-1" />
                     </FormItem>
                   )}

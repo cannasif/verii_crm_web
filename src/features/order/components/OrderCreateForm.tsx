@@ -31,6 +31,8 @@ import { useAuthStore } from '@/stores/auth-store';
 import { SalesDocumentDraftRestoreDialog } from '@/features/sales-drafts/SalesDocumentDraftRestoreDialog';
 import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentDraft';
 import { useOrderCalculations } from '../hooks/useOrderCalculations';
+import { recordCustomerDocumentSerialUsageSafely } from '@/features/document-serial-type-management/utils/customer-document-serial-usage';
+import { CustomerDocumentSerialDocumentKind } from '@/features/document-serial-type-management/types/document-serial-type-types';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
 import { applyExchangeRateChangeToLines } from '@/features/sales-documents/utils/apply-exchange-rate-to-lines';
@@ -412,6 +414,14 @@ export function OrderCreateForm(): ReactElement {
         if (notesList.length > 0) {
           await orderApi.updateNotesListByOrderId(result.data.id, { notes: notesList });
         }
+        await recordCustomerDocumentSerialUsageSafely({
+          customerId: orderData.potentialCustomerId,
+          documentKind: CustomerDocumentSerialDocumentKind.Order,
+          documentSerialTypeId: orderData.documentSerialTypeId,
+          documentId: result.data.id,
+          documentNo: result.data.offerNo ?? orderData.offerNo,
+          requestBranchCode: branch?.code ?? branch?.id,
+        });
         toast.success(t('create.success'), {
           description: t('create.successMessage'),
         });

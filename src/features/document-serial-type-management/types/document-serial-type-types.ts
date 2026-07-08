@@ -104,3 +104,33 @@ export interface DocumentSerialTypeGetDto {
   createdByFullName?: string;
   createdByFullUser?: string;
 }
+
+export const CustomerDocumentSerialDocumentKind = {
+  Quotation: 1,
+  Order: 2,
+} as const;
+
+export type CustomerDocumentSerialDocumentKind =
+  (typeof CustomerDocumentSerialDocumentKind)[keyof typeof CustomerDocumentSerialDocumentKind];
+
+export interface CustomerDocumentSerialSuggestionDto {
+  customerId: number;
+  documentKind: CustomerDocumentSerialDocumentKind;
+  documentSerialTypeId: number;
+  serialPrefix?: string | null;
+  serialPrefixSnapshot?: string | null;
+  usageCount: number;
+  lastUsedAt?: string | null;
+  lastDocumentId?: number | null;
+  lastDocumentNo?: string | null;
+  requestBranchCode?: string | null;
+}
+
+export interface CustomerDocumentSerialUsageRecordDto {
+  customerId: number;
+  documentKind: CustomerDocumentSerialDocumentKind;
+  documentSerialTypeId: number;
+  documentId?: number | null;
+  documentNo?: string | null;
+  requestBranchCode?: string | null;
+}

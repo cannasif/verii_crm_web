@@ -1,6 +1,14 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
-import type { DocumentSerialTypeDto, CreateDocumentSerialTypeDto, UpdateDocumentSerialTypeDto, DocumentSerialTypeGetDto } from '../types/document-serial-type-types';
+import type {
+  CustomerDocumentSerialDocumentKind,
+  CustomerDocumentSerialSuggestionDto,
+  CustomerDocumentSerialUsageRecordDto,
+  DocumentSerialTypeDto,
+  CreateDocumentSerialTypeDto,
+  UpdateDocumentSerialTypeDto,
+  DocumentSerialTypeGetDto,
+} from '../types/document-serial-type-types';
 import type { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-types';
 
 export const documentSerialTypeApi = {
@@ -73,5 +81,30 @@ export const documentSerialTypeApi = {
       return response.data;
     }
     throw new Error(response.message || 'Uygun dosya tipleri yüklenemedi');
+  },
+
+  getCustomerSuggestion: async (
+    customerId: number,
+    documentKind: CustomerDocumentSerialDocumentKind,
+    requestBranchCode?: string | number | null,
+  ): Promise<CustomerDocumentSerialSuggestionDto | null> => {
+    const params = requestBranchCode != null && String(requestBranchCode).trim() !== ''
+      ? { requestBranchCode: String(requestBranchCode) }
+      : undefined;
+    const response = await api.get<ApiResponse<CustomerDocumentSerialSuggestionDto | null>>(
+      `/api/DocumentSerialType/suggestion/customer/${customerId}/document-kind/${documentKind}`,
+      { params },
+    );
+    if (response.success) {
+      return response.data ?? null;
+    }
+    throw new Error(response.message || 'Cari seri önerisi yüklenemedi');
+  },
+
+  recordCustomerSuggestionUsage: async (data: CustomerDocumentSerialUsageRecordDto): Promise<void> => {
+    const response = await api.post<ApiResponse<object>>('/api/DocumentSerialType/suggestion/record', data);
+    if (!response.success) {
+      throw new Error(response.message || 'Cari seri kullanımı kaydedilemedi');
+    }
   },
 };
