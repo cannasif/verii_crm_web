@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import { normalizePagedResponse } from '@/lib/paged-response';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import { mapPricingRuleLinesFromApi } from '@/lib/map-pricing-rule-line-from-api';
 import type {
@@ -312,16 +313,10 @@ export const quotationApi = {
       }
     );
     if (response.success && response.data) {
-      const pagedData = response.data;
-      const pagedDataWithItems = pagedData as PagedResponse<ApprovalActionGetDto> & { items?: ApprovalActionGetDto[] };
-      if (pagedDataWithItems.items && !pagedData.data) {
-        return {
-          ...pagedData,
-          data: pagedDataWithItems.items,
-        };
-      }
-
-      return pagedData;
+      return normalizePagedResponse<ApprovalActionGetDto>(response.data, {
+        pageNumber: params.pageNumber,
+        pageSize: params.pageSize,
+      });
     }
     return {
       data: [],

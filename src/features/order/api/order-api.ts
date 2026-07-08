@@ -1,4 +1,5 @@
 import { api } from '@/lib/axios';
+import { normalizePagedResponse } from '@/lib/paged-response';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
 import { mapPricingRuleLinesFromApi } from '@/lib/map-pricing-rule-line-from-api';
 import type {
@@ -302,7 +303,10 @@ export const orderApi = {
       }
     );
     if (response.success && response.data) {
-      return response.data;
+      return normalizePagedResponse<ApprovalActionGetDto>(response.data, {
+        pageNumber: params.pageNumber,
+        pageSize: params.pageSize,
+      });
     }
     return {
       data: [],
