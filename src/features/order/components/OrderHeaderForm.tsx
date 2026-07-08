@@ -857,14 +857,6 @@ export function OrderHeaderForm({
                           />
                         </FormControl>
                       </div>
-                      <CustomerDocumentSerialSuggestionCard
-                        suggestion={customerSerialSuggestion}
-                        serialType={customerSuggestedSerialType}
-                        isLoading={Boolean(watchedCustomerId) && isCustomerSerialSuggestionLoading}
-                        isApplied={customerSuggestedSerialType?.id === Number(field.value)}
-                        disabled={readOnly}
-                        onApply={applyCustomerSerialSuggestion}
-                      />
                       <FormMessage className="mt-1" />
                     </FormItem>
                   )}
@@ -921,6 +913,14 @@ export function OrderHeaderForm({
                           />
                         </FormControl>
                       </div>
+                      <CustomerDocumentSerialSuggestionCard
+                        suggestion={customerSerialSuggestion}
+                        serialType={customerSuggestedSerialType}
+                        isLoading={Boolean(watchedCustomerId) && isCustomerSerialSuggestionLoading}
+                        isApplied={customerSuggestedSerialType?.id === Number(field.value)}
+                        disabled={readOnly}
+                        onApply={applyCustomerSerialSuggestion}
+                      />
                       <FormMessage className="mt-1" />
                     </FormItem>
                   )}

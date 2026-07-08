@@ -30,6 +30,8 @@ import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentD
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
+import { recordCustomerDocumentSerialUsageSafely } from '@/features/document-serial-type-management/utils/customer-document-serial-usage';
+import { CustomerDocumentSerialDocumentKind } from '@/features/document-serial-type-management/types/document-serial-type-types';
 import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
 import { applyExchangeRateChangeToLines } from '@/features/sales-documents/utils/apply-exchange-rate-to-lines';
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
@@ -329,6 +331,14 @@ export function DemandCreateForm(): ReactElement {
         if (notesList.length > 0) {
           await demandApi.updateNotesListByDemandId(result.data.id, { notes: notesList });
         }
+        await recordCustomerDocumentSerialUsageSafely({
+          customerId: demandData.potentialCustomerId,
+          documentKind: CustomerDocumentSerialDocumentKind.Demand,
+          documentSerialTypeId: demandData.documentSerialTypeId,
+          documentId: result.data.id,
+          documentNo: result.data.offerNo ?? demandData.offerNo,
+          requestBranchCode: branch?.code ?? branch?.id,
+        });
         toast.success(t('create.success'), {
           description: t('create.successMessage'),
         });

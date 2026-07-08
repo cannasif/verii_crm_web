@@ -108,6 +108,7 @@ export interface DocumentSerialTypeGetDto {
 export const CustomerDocumentSerialDocumentKind = {
   Quotation: 1,
   Order: 2,
+  Demand: 3,
 } as const;
 
 export type CustomerDocumentSerialDocumentKind =

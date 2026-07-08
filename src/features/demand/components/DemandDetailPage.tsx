@@ -15,6 +15,7 @@ import { usePriceRuleOfDemand } from '../hooks/usePriceRuleOfDemand';
 import { useUserDiscountLimitsBySalesperson } from '../hooks/useUserDiscountLimitsBySalesperson';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
 import { useUIStore } from '@/stores/ui-store';
+import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
@@ -43,6 +44,8 @@ import { createEmptyQuotationNotes } from '@/features/quotation/components/Quota
 import { demandNotesGetDtoToDto, demandNotesDtoToNotesList } from '../utils/notes-mapper';
 import { DemandHeaderForm } from './DemandHeaderForm';
 import { DemandLineTable } from './DemandLineTable';
+import { recordCustomerDocumentSerialUsageSafely } from '@/features/document-serial-type-management/utils/customer-document-serial-usage';
+import { CustomerDocumentSerialDocumentKind } from '@/features/document-serial-type-management/types/document-serial-type-types';
 import { DemandSummaryCard } from './DemandSummaryCard';
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { calculateLineTotalsAmounts } from '@/lib/line-discount-display';
@@ -93,6 +96,7 @@ export function DemandDetailPage(): ReactElement {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { setPageTitle } = useUIStore();
+  const branch = useAuthStore((state) => state.branch);
   const demandId = id ? parseInt(id, 10) : 0;
 
   const handleBackToList = useCallback(async (): Promise<void> => {
@@ -584,6 +588,14 @@ export function DemandDetailPage(): ReactElement {
       await Promise.all(updatedRates.map((rate) => demandApi.updateDemandExchangeRate(rate.id, rate.dto)));
       await Promise.all(newRates.map((rate) => demandApi.createDemandExchangeRate(rate)));
       await updateNotesMutation.mutateAsync({ notes: notesList });
+      await recordCustomerDocumentSerialUsageSafely({
+        customerId: demandData.potentialCustomerId,
+        documentKind: CustomerDocumentSerialDocumentKind.Demand,
+        documentSerialTypeId: demandData.documentSerialTypeId,
+        documentId: demandId,
+        documentNo: demandData.offerNo,
+        requestBranchCode: branch?.code ?? branch?.id,
+      });
 
       const refreshedLines = await demandApi.getDemandLinesByDemandId(demandId);
       queryClient.setQueryData(queryKeys.demandLines(demandId), refreshedLines);
