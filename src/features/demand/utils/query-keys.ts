@@ -33,7 +33,8 @@ export const queryKeys = {
   priceRuleOfDemand: (customerCode: string, salesmenId: number, demandDate: string) => 
     [DEMAND_QUERY_KEYS.PRICE_RULE_OF_DEMAND, customerCode, salesmenId, demandDate] as const,
   userDiscountLimitsBySalesperson: (salespersonId: number) => ['user-discount-limits', 'salesperson', salespersonId] as const,
-  waitingApprovals: () => [DEMAND_QUERY_KEYS.WAITING_APPROVALS] as const,
+  waitingApprovals: (params?: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }) =>
+    [DEMAND_QUERY_KEYS.WAITING_APPROVALS, params] as const,
   demandExchangeRates: (demandId: number) => [DEMAND_QUERY_KEYS.DEMAND_EXCHANGE_RATES, demandId] as const,
   demandLines: (demandId: number) => [DEMAND_QUERY_KEYS.DEMAND_LINES, demandId] as const,
   demandNotes: (demandId: number) => [DEMAND_QUERY_KEYS.DEMAND_NOTES, demandId] as const,

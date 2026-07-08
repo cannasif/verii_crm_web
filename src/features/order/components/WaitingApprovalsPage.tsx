@@ -1,7 +1,6 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, ArrowUpDown, Clock } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
@@ -25,10 +24,12 @@ import {
 } from '@/lib/management-list-layout';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import { arraysEqual, cn } from '@/lib/utils';
+import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
+import { fetchAllPagedData } from '@/lib/fetch-all-paged-data';
+import { orderApi } from '../api/order-api';
 import { useWaitingApprovals } from '../hooks/useWaitingApprovals';
 import { useApproveAction } from '../hooks/useApproveAction';
 import { useRejectAction } from '../hooks/useRejectAction';
-import { queryKeys } from '../utils/query-keys';
 import type { ApprovalActionGetDto } from '../types/order-types';
 import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
 
@@ -36,37 +37,67 @@ const PAGE_KEY = 'order-waiting-approvals';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 
 type WaitingApprovalColumnKey =
-  | 'approvalRequestId'
-  | 'approvalRequestDescription'
-  | 'stepOrder'
-  | 'approvedByUserFullName'
-  | 'actionDate'
-  | 'status';
+  | 'QuotationOwnerName'
+  | 'QuotationOfferNo'
+  | 'QuotationRevisionNo'
+  | 'QuotationCustomerName'
+  | 'QuotationCustomerCode'
+  | 'QuotationGrandTotal'
+  | 'ApprovalRequestId'
+  | 'ApprovalRequestDescription'
+  | 'StepOrder'
+  | 'ApprovedByUserFullName'
+  | 'ActionDate'
+  | 'Status';
 
-const COLUMN_CONFIG: ReadonlyArray<{ key: WaitingApprovalColumnKey; labelKey: string; fallback: string }> = [
-  { key: 'approvalRequestId', labelKey: 'order.waitingApprovals.requestId', fallback: 'Onay No' },
-  { key: 'approvalRequestDescription', labelKey: 'order.waitingApprovals.description', fallback: 'Açıklama' },
-  { key: 'stepOrder', labelKey: 'order.waitingApprovals.stepOrder', fallback: 'Adım' },
-  { key: 'approvedByUserFullName', labelKey: 'order.waitingApprovals.approvedBy', fallback: 'Onaylayacak Kullanıcı' },
-  { key: 'actionDate', labelKey: 'order.waitingApprovals.actionDate', fallback: 'İşlem Tarihi' },
-  { key: 'status', labelKey: 'order.waitingApprovals.status', fallback: 'Durum' },
+type SortDirection = 'asc' | 'desc';
+
+type WaitingApprovalColumnConfig = {
+  key: WaitingApprovalColumnKey;
+  labelKey: string;
+  fallbackLabel: string;
+  filterType: FilterColumnConfig['type'];
+};
+
+const WAITING_APPROVAL_COLUMN_CONFIG: readonly WaitingApprovalColumnConfig[] = [
+  { key: 'QuotationOwnerName', labelKey: 'order.waitingApprovals.owner', fallbackLabel: 'Sipariş Sahibi', filterType: 'string' },
+  { key: 'QuotationOfferNo', labelKey: 'order.waitingApprovals.orderNo', fallbackLabel: 'Sipariş No', filterType: 'string' },
+  { key: 'QuotationRevisionNo', labelKey: 'order.waitingApprovals.revisionNo', fallbackLabel: 'Revize No', filterType: 'string' },
+  { key: 'QuotationCustomerName', labelKey: 'order.waitingApprovals.customer', fallbackLabel: 'Müşteri', filterType: 'string' },
+  { key: 'QuotationCustomerCode', labelKey: 'order.waitingApprovals.customerCode', fallbackLabel: 'Cari Kodu', filterType: 'string' },
+  { key: 'QuotationGrandTotal', labelKey: 'order.waitingApprovals.grandTotal', fallbackLabel: 'Genel Toplam', filterType: 'number' },
+  { key: 'ApprovalRequestId', labelKey: 'order.waitingApprovals.requestId', fallbackLabel: 'Onay No', filterType: 'number' },
+  { key: 'ApprovalRequestDescription', labelKey: 'order.waitingApprovals.description', fallbackLabel: 'Açıklama', filterType: 'string' },
+  { key: 'StepOrder', labelKey: 'order.waitingApprovals.stepOrder', fallbackLabel: 'Adım', filterType: 'number' },
+  { key: 'ApprovedByUserFullName', labelKey: 'order.waitingApprovals.approvedBy', fallbackLabel: 'Onaylayacak Kullanıcı', filterType: 'string' },
+  { key: 'ActionDate', labelKey: 'order.waitingApprovals.actionDate', fallbackLabel: 'İşlem Tarihi', filterType: 'date' },
+  { key: 'Status', labelKey: 'order.waitingApprovals.status', fallbackLabel: 'Durum', filterType: 'number' },
 ];
+
+function resolveLabel(
+  t: (key: string, options?: Record<string, unknown>) => string,
+  key: string,
+  fallback: string,
+): string {
+  const translated = t(key, { defaultValue: fallback });
+  return translated && translated !== key ? translated : fallback;
+}
 
 export function WaitingApprovalsPage(): ReactElement {
   const { t, i18n } = useTranslation(['order', 'common', 'approval']);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
-  const { data: approvals = [], isLoading, isFetching, isError } = useWaitingApprovals();
   const approveAction = useApproveAction();
   const rejectAction = useRejectAction();
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [sortBy, setSortBy] = useState<WaitingApprovalColumnKey>('actionDate');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [sortBy, setSortBy] = useState<WaitingApprovalColumnKey>('ActionDate');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
+  const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [selectedApproval, setSelectedApproval] = useState<ApprovalActionGetDto | null>(null);
   const [rejectReason, setRejectReason] = useState('');
@@ -97,79 +128,128 @@ export function WaitingApprovalsPage(): ReactElement {
   }, [i18n.language]);
 
   const baseColumns = useMemo(
-    () => COLUMN_CONFIG.map((column) => ({
-      key: column.key,
-      label: t(column.labelKey, { defaultValue: column.fallback }),
-    })),
+    () =>
+      WAITING_APPROVAL_COLUMN_CONFIG.map((column) => ({
+        key: column.key,
+        label: resolveLabel(t, column.labelKey, column.fallbackLabel),
+      })),
     [t],
   );
+
+  const columns = useMemo<DataTableGridColumn<WaitingApprovalColumnKey>[]>(
+    () =>
+      baseColumns.map((column) => ({
+        ...column,
+        headClassName: column.key === 'QuotationGrandTotal' ? 'text-right' : undefined,
+        cellClassName:
+          column.key === 'QuotationGrandTotal'
+            ? 'text-right font-semibold'
+            : column.key === 'QuotationOfferNo'
+              ? 'font-medium'
+              : undefined,
+        sortable: true,
+      })),
+    [baseColumns],
+  );
+
   const defaultColumnKeys = useMemo(() => baseColumns.map((column) => column.key), [baseColumns]);
   const [columnOrder, setColumnOrder] = useState<string[]>(defaultColumnKeys);
   const [visibleColumns, setVisibleColumns] = useState<string[]>(defaultColumnKeys);
 
   useEffect(() => {
-    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys);
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'QuotationOfferNo', false);
     setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
     setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
   }, [defaultColumnKeys, user?.id]);
 
-  const columns = useMemo<DataTableGridColumn<WaitingApprovalColumnKey>[]>(
-    () => baseColumns.map((column) => ({ ...column, sortable: true })),
-    [baseColumns],
-  );
+  const appliedFilters = useMemo(() => rowsToBackendFilters(appliedFilterRows), [appliedFilterRows]);
   const orderedVisibleColumns = columnOrder.filter((key) => visibleColumns.includes(key)) as WaitingApprovalColumnKey[];
 
-  const filteredRows = useMemo(() => {
-    const term = searchTerm.trim().toLocaleLowerCase(i18n.language);
-    if (!term) return approvals;
-    return approvals.filter((approval) =>
-      [
-        approval.approvalRequestId,
-        approval.approvalRequestDescription,
-        approval.stepOrder,
-        approval.approvedByUserFullName,
-        approval.statusName,
-        getStatusLabel(approval.status, approval.statusName),
-      ]
-        .filter((value) => value !== null && value !== undefined)
-        .some((value) => String(value).toLocaleLowerCase(i18n.language).includes(term)),
-    );
-  }, [approvals, getStatusLabel, i18n.language, searchTerm]);
-
-  const sortedRows = useMemo(() => {
-    return [...filteredRows].sort((a, b) => {
-      const aValue = sortBy === 'status' ? getStatusLabel(a.status, a.statusName) : a[sortBy];
-      const bValue = sortBy === 'status' ? getStatusLabel(b.status, b.statusName) : b[sortBy];
-      const comparison = String(aValue ?? '').localeCompare(String(bValue ?? ''), i18n.language, { numeric: true });
-      return sortDirection === 'asc' ? comparison : -comparison;
-    });
-  }, [filteredRows, getStatusLabel, i18n.language, sortBy, sortDirection]);
+  const waitingApprovalsQuery = useWaitingApprovals({
+    pageNumber,
+    pageSize,
+    search: searchTerm || undefined,
+    sortBy,
+    sortDirection,
+    filters: appliedFilters.length > 0 ? appliedFilters : undefined,
+  });
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, sortBy, sortDirection, appliedFilters]);
 
-  const totalCount = sortedRows.length;
-  const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
-  const currentPageRows = sortedRows.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
+  const pagedData = waitingApprovalsQuery.data;
+  const currentPageRows = useMemo(() => pagedData?.data ?? [], [pagedData?.data]);
+  const totalCount = pagedData?.totalCount ?? 0;
+  const totalPages = pagedData?.totalPages ?? 1;
+  const hasPreviousPage = pagedData?.hasPreviousPage ?? pageNumber > 1;
+  const hasNextPage = pagedData?.hasNextPage ?? false;
   const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
   const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
+
+  const filterColumns = useMemo<FilterColumnConfig[]>(
+    () =>
+      WAITING_APPROVAL_COLUMN_CONFIG.map((column) => ({
+        value: column.key,
+        type: column.filterType,
+        labelKey: column.labelKey,
+      })),
+    [],
+  );
 
   const exportColumns = useMemo(
     () => orderedVisibleColumns.map((key) => ({ key, label: baseColumns.find((column) => column.key === key)?.label ?? key })),
     [baseColumns, orderedVisibleColumns],
   );
   const exportRows = useMemo(
-    () => sortedRows.map((approval) => ({
-      approvalRequestId: approval.approvalRequestId,
-      approvalRequestDescription: approval.approvalRequestDescription ?? '-',
-      stepOrder: approval.stepOrder,
-      approvedByUserFullName: approval.approvedByUserFullName ?? '-',
-      actionDate: formatDate(approval.actionDate),
-      status: getStatusLabel(approval.status, approval.statusName),
+    () => currentPageRows.map((approval) => ({
+      QuotationOwnerName: approval.quotationOwnerName ?? '-',
+      QuotationOfferNo: approval.quotationOfferNo ?? '-',
+      QuotationRevisionNo: approval.quotationRevisionNo ?? '-',
+      QuotationCustomerName: approval.quotationCustomerName ?? '-',
+      QuotationCustomerCode: approval.quotationCustomerCode ?? '-',
+      QuotationGrandTotal: approval.quotationGrandTotalDisplay ?? '-',
+      ApprovalRequestId: approval.approvalRequestId,
+      ApprovalRequestDescription: approval.approvalRequestDescription ?? '-',
+      StepOrder: approval.stepOrder,
+      ApprovedByUserFullName: approval.approvedByUserFullName ?? '-',
+      ActionDate: formatDate(approval.actionDate),
+      Status: getStatusLabel(approval.status, approval.statusName),
     })),
-    [formatDate, getStatusLabel, sortedRows],
+    [currentPageRows, formatDate, getStatusLabel],
   );
+
+  const getExportData = useCallback(async (): Promise<{ columns: { key: string; label: string }[]; rows: Record<string, unknown>[] }> => {
+    const list = await fetchAllPagedData({
+      fetchPage: (exportPageNumber, exportPageSize) =>
+        orderApi.getWaitingApprovals({
+          pageNumber: exportPageNumber,
+          pageSize: exportPageSize,
+          search: searchTerm || undefined,
+          sortBy,
+          sortDirection,
+          filters: appliedFilters.length > 0 ? appliedFilters : undefined,
+        }),
+    });
+
+    return {
+      columns: exportColumns,
+      rows: list.map((approval: ApprovalActionGetDto) => ({
+        QuotationOwnerName: approval.quotationOwnerName ?? '-',
+        QuotationOfferNo: approval.quotationOfferNo ?? '-',
+        QuotationRevisionNo: approval.quotationRevisionNo ?? '-',
+        QuotationCustomerName: approval.quotationCustomerName ?? '-',
+        QuotationCustomerCode: approval.quotationCustomerCode ?? '-',
+        QuotationGrandTotal: approval.quotationGrandTotalDisplay ?? '-',
+        ApprovalRequestId: approval.approvalRequestId,
+        ApprovalRequestDescription: approval.approvalRequestDescription ?? '-',
+        StepOrder: approval.stepOrder,
+        ApprovedByUserFullName: approval.approvedByUserFullName ?? '-',
+        ActionDate: formatDate(approval.actionDate),
+        Status: getStatusLabel(approval.status, approval.statusName),
+      })),
+    };
+  }, [appliedFilters, exportColumns, formatDate, getStatusLabel, searchTerm, sortBy, sortDirection]);
 
   const handleSort = (column: WaitingApprovalColumnKey): void => {
     if (sortBy === column) {
@@ -186,16 +266,22 @@ export function WaitingApprovalsPage(): ReactElement {
   };
 
   const navigateToOrder = (approval: ApprovalActionGetDto): void => {
-    navigate(`/orders/${approval.approvalRequestId}`);
+    navigate(`/orders/${approval.entityId || approval.approvalRequestId}`);
   };
 
   const renderCell = (approval: ApprovalActionGetDto, key: WaitingApprovalColumnKey): ReactElement | string | number => {
-    if (key === 'approvalRequestId') return `#${approval.approvalRequestId}`;
-    if (key === 'approvalRequestDescription') return approval.approvalRequestDescription || '-';
-    if (key === 'stepOrder') return approval.stepOrder;
-    if (key === 'approvedByUserFullName') return approval.approvedByUserFullName || '-';
-    if (key === 'actionDate') return formatDate(approval.actionDate);
-    if (key === 'status') {
+    if (key === 'QuotationOwnerName') return approval.quotationOwnerName || '-';
+    if (key === 'QuotationOfferNo') return approval.quotationOfferNo || '-';
+    if (key === 'QuotationRevisionNo') return approval.quotationRevisionNo || '-';
+    if (key === 'QuotationCustomerName') return approval.quotationCustomerName || '-';
+    if (key === 'QuotationCustomerCode') return approval.quotationCustomerCode || '-';
+    if (key === 'QuotationGrandTotal') return approval.quotationGrandTotalDisplay || '-';
+    if (key === 'ApprovalRequestId') return `#${approval.approvalRequestId}`;
+    if (key === 'ApprovalRequestDescription') return approval.approvalRequestDescription || '-';
+    if (key === 'StepOrder') return approval.stepOrder;
+    if (key === 'ApprovedByUserFullName') return approval.approvedByUserFullName || '-';
+    if (key === 'ActionDate') return formatDate(approval.actionDate);
+    if (key === 'Status') {
       return (
         <WaitingApprovalsStatusBadge
           status={approval.status}
@@ -227,7 +313,7 @@ export function WaitingApprovalsPage(): ReactElement {
 
   const pendingCountLabel = totalCount > 0
     ? `${totalCount} adet bekleyen onay`
-    : isLoading
+    : waitingApprovalsQuery.isLoading
       ? t('order.loading')
       : t('order.waitingApprovals.noApprovals');
 
@@ -284,22 +370,31 @@ export function WaitingApprovalsPage(): ReactElement {
                   exportFileName="order-waiting-approvals"
                   exportColumns={exportColumns}
                   exportRows={exportRows}
-                  filterColumns={[]}
-                  defaultFilterColumn="approvalRequestDescription"
-                  draftFilterRows={[]}
-                  onDraftFilterRowsChange={() => {}}
-                  onApplyFilters={() => {}}
-                  onClearFilters={() => {}}
+                  getExportData={getExportData}
+                  filterColumns={filterColumns}
+                  defaultFilterColumn="QuotationOfferNo"
+                  draftFilterRows={draftFilterRows}
+                  onDraftFilterRowsChange={setDraftFilterRows}
+                  onApplyFilters={() => {
+                    setAppliedFilterRows(draftFilterRows);
+                    setPageNumber(1);
+                  }}
+                  onClearFilters={() => {
+                    setDraftFilterRows([]);
+                    setAppliedFilterRows([]);
+                    setSearchTerm('');
+                    setPageNumber(1);
+                  }}
                   translationNamespace="order"
-                  appliedFilterCount={0}
+                  appliedFilterCount={appliedFilterRows.length}
                   searchValue={searchTerm}
                   searchPlaceholder={t('common.search', { ns: 'common' })}
                   onSearchChange={setSearchTerm}
                   refresh={{
                     onRefresh: () => {
-                      void queryClient.invalidateQueries({ queryKey: queryKeys.waitingApprovals() });
+                      void waitingApprovalsQuery.refetch();
                     },
-                    isLoading: isFetching,
+                    isLoading: waitingApprovalsQuery.isFetching,
                     cooldownSeconds: 60,
                     label: t('order.list.refresh', { defaultValue: 'Yenile' }),
                   }}
@@ -318,12 +413,12 @@ export function WaitingApprovalsPage(): ReactElement {
                       sortDirection={sortDirection}
                       onSort={handleSort}
                       renderSortIcon={renderSortIcon}
-                      isLoading={isLoading || isFetching}
-                      isError={isError}
+                      isLoading={waitingApprovalsQuery.isLoading || waitingApprovalsQuery.isFetching}
+                      isError={waitingApprovalsQuery.isError}
                       loadingText={t('order.loading')}
                       errorText={t('order.loadError', { defaultValue: 'Veriler yüklenirken hata oluştu.' })}
                       emptyText={t('order.waitingApprovals.noApprovals')}
-                      minTableWidthClassName="min-w-[1000px]"
+                      minTableWidthClassName="min-w-[1500px]"
                       showActionsColumn
                       actionsHeaderLabel={t('order.actions')}
                       renderActionsCell={renderActionsCell}
@@ -336,10 +431,10 @@ export function WaitingApprovalsPage(): ReactElement {
                       onPageSizeChange={setPageSize}
                       pageNumber={pageNumber}
                       totalPages={totalPages}
-                      hasPreviousPage={pageNumber > 1}
-                      hasNextPage={pageNumber < totalPages}
+                      hasPreviousPage={hasPreviousPage}
+                      hasNextPage={hasNextPage}
                       onPreviousPage={() => setPageNumber((prev) => Math.max(prev - 1, 1))}
-                      onNextPage={() => setPageNumber((prev) => Math.min(prev + 1, totalPages))}
+                      onNextPage={() => setPageNumber((prev) => prev + 1)}
                       previousLabel={t('order.previous')}
                       nextLabel={t('order.next')}
                       paginationInfoText={t('common.paginationInfo', {
@@ -348,7 +443,7 @@ export function WaitingApprovalsPage(): ReactElement {
                         end: endRow,
                         total: totalCount,
                       })}
-                      disablePaginationButtons={isFetching}
+                      disablePaginationButtons={waitingApprovalsQuery.isFetching}
                     />
                   </ManagementDataTableChrome>
                 </div>

@@ -407,8 +407,16 @@ export interface UserDiscountLimitDto {
 
 export interface ApprovalActionGetDto {
   id: number;
+  entityId: number;
   approvalRequestId: number;
   approvalRequestDescription?: string | null;
+  quotationOfferNo?: string | null;
+  quotationRevisionNo?: string | null;
+  quotationCustomerName?: string | null;
+  quotationCustomerCode?: string | null;
+  quotationOwnerName?: string | null;
+  quotationGrandTotal?: number | null;
+  quotationGrandTotalDisplay?: string | null;
   stepOrder: number;
   approvedByUserId: number;
   approvedByUserFullName?: string | null;

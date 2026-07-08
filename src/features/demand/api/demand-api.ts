@@ -298,28 +298,31 @@ export const demandApi = {
     }
   },
 
-  getWaitingApprovals: async (): Promise<ApprovalActionGetDto[]> => {
-    const response = await api.get<
-      ApiResponse<ApprovalActionGetDto[] | PagedResponse<ApprovalActionGetDto>>
-    >('/api/demand/waiting-approvals');
+  getWaitingApprovals: async (params: PagedParams): Promise<PagedResponse<ApprovalActionGetDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<ApprovalActionGetDto>>>(
+      '/api/demand/waiting-approvals/query',
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 10,
+        search: params.search ?? '',
+        sortBy: params.sortBy ?? 'Id',
+        sortDirection: params.sortDirection ?? 'asc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+      }
+    );
     if (response.success && response.data) {
-      if (Array.isArray(response.data)) {
-        return response.data;
-      }
-
-      const pagedData = response.data as PagedResponse<ApprovalActionGetDto> & {
-        items?: ApprovalActionGetDto[];
-      };
-
-      if (Array.isArray(pagedData.data)) {
-        return pagedData.data;
-      }
-
-      if (Array.isArray(pagedData.items)) {
-        return pagedData.items;
-      }
+      return response.data;
     }
-    return [];
+    return {
+      data: [],
+      totalCount: 0,
+      pageNumber: params.pageNumber ?? 1,
+      pageSize: params.pageSize ?? 10,
+      totalPages: 0,
+      hasPreviousPage: false,
+      hasNextPage: false,
+    };
   },
 
   approve: async (data: ApproveActionDto): Promise<ApiResponse<boolean>> => {

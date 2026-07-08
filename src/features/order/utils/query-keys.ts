@@ -33,7 +33,8 @@ export const queryKeys = {
   priceRuleOfOrder: (customerCode: string, salesmenId: number, orderDate: string) => 
     [QUOTATION_QUERY_KEYS.PRICE_RULE_OF_QUOTATION, customerCode, salesmenId, orderDate] as const,
   userDiscountLimitsBySalesperson: (salespersonId: number) => ['user-discount-limits', 'salesperson', salespersonId] as const,
-  waitingApprovals: () => [QUOTATION_QUERY_KEYS.WAITING_APPROVALS] as const,
+  waitingApprovals: (params?: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }) =>
+    [QUOTATION_QUERY_KEYS.WAITING_APPROVALS, params] as const,
   orderExchangeRates: (orderId: number) => [QUOTATION_QUERY_KEYS.QUOTATION_EXCHANGE_RATES, orderId] as const,
   orderLines: (orderId: number) => [QUOTATION_QUERY_KEYS.QUOTATION_LINES, orderId] as const,
   orderNotes: (orderId: number) => [QUOTATION_QUERY_KEYS.ORDER_NOTES, orderId] as const,
