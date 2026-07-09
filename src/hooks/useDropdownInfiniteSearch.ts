@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useInfiniteQuery, type InfiniteData } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery, type InfiniteData } from '@tanstack/react-query';
 import type { PagedFilter, PagedResponse } from '@/types/api';
 
 interface DropdownFetchPageParams {
@@ -96,6 +96,7 @@ export function useDropdownInfiniteSearch<TItem>({
     getNextPageParam: (lastPage) => {
       return lastPage.hasNextPage ? lastPage.pageNumber + 1 : undefined;
     },
+    placeholderData: keepPreviousData,
   });
 
   const items = useMemo(() => {

@@ -342,7 +342,10 @@ export function ApprovalFlowStepList({
       </div>
 
       <Dialog open={(canCreate || canUpdate) && formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-lg shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl p-0 overflow-hidden">
+        <DialogContent
+          overlayClassName="z-[60]"
+          className="z-[60] bg-white dark:bg-[#130822] border border-slate-100 dark:border-white/10 text-slate-900 dark:text-white max-w-lg shadow-2xl shadow-slate-200/50 dark:shadow-black/50 sm:rounded-2xl p-0 overflow-visible"
+        >
           <DialogHeader className="border-b border-slate-100 dark:border-white/5 px-6 py-5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md shrink-0 flex-row items-center justify-between space-y-0">
             <div className="flex items-center gap-3">
                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/20 to-amber-500/20 border border-primary/10 flex items-center justify-center text-red-500 shrink-0">

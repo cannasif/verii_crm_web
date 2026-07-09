@@ -9,6 +9,7 @@ import {
   type ButtonHTMLAttributes,
 } from 'react';
 import { createPortal } from 'react-dom';
+import * as FocusScope from '@radix-ui/react-focus-scope';
 import { AlertCircle, Check, ChevronsUpDown, Loader2, Mic, MicOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -31,6 +32,31 @@ import {
 } from '@/components/shared/dropdown/constants';
 import { getIconPrefixPaddingStyle } from '@/lib/form-field-with-icon';
 import { matchesSearchTerm } from '@/lib/search';
+
+function dialogClipsOverflow(dialog: HTMLElement): boolean {
+  const style = window.getComputedStyle(dialog);
+  return (
+    style.overflow === 'hidden' ||
+    style.overflowX === 'hidden' ||
+    style.overflowY === 'hidden' ||
+    style.overflow === 'clip' ||
+    style.overflowX === 'clip' ||
+    style.overflowY === 'clip'
+  );
+}
+
+function shouldPortalDropdownToBody(
+  modal: boolean,
+  parentDialog: HTMLElement | null
+): boolean {
+  if (modal) {
+    return true;
+  }
+  if (!parentDialog) {
+    return true;
+  }
+  return dialogClipsOverflow(parentDialog);
+}
 
 export interface ComboboxOption {
   value: string;
@@ -72,7 +98,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
   className,
   popoverContentClassName,
   disabled = false,
-  modal: _modal = true,
+  modal = false,
   disableToggleOff = false,
   ...triggerProps
 }, ref) {
@@ -95,16 +121,20 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
   useImperativeHandle(ref, () => triggerButtonRef.current as HTMLButtonElement, []);
 
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+  const [portalToBody, setPortalToBody] = useState(false);
 
   useLayoutEffect(() => {
     if (typeof document === 'undefined') return;
     if (open) {
       const parentDialog = rootRef.current?.closest('[role="dialog"]') as HTMLElement | null;
-      setPortalContainer(parentDialog || document.body);
+      const useBodyPortal = shouldPortalDropdownToBody(modal, parentDialog);
+      setPortalToBody(useBodyPortal);
+      setPortalContainer(useBodyPortal ? document.body : (parentDialog || document.body));
     } else {
       setPortalContainer(null);
+      setPortalToBody(false);
     }
-  }, [open]);
+  }, [open, modal]);
 
   const handleTriggerKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>): void => {
     if (disabled) {
@@ -142,8 +172,10 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
         return;
       }
 
-      const parentDialog = rootRef.current?.closest('[role="dialog"]') as HTMLElement | null;
-      const container = parentDialog || document.body;
+      const parentDialog = portalToBody
+        ? null
+        : (rootRef.current?.closest('[role="dialog"]') as HTMLElement | null);
+      const container = portalToBody ? document.body : (parentDialog || document.body);
 
       const rect = trigger.getBoundingClientRect();
       const viewportH = window.innerHeight;
@@ -158,15 +190,15 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
         : rect.bottom + 4;
       let left = rect.left;
 
-      if (container !== document.body) {
+      if (!portalToBody && container !== document.body) {
         const containerRect = container.getBoundingClientRect();
         top = top - containerRect.top;
         left = left - containerRect.left;
       }
 
       const next = {
-        top: container === document.body ? Math.max(8, top) : top,
-        left: container === document.body 
+        top: portalToBody || container === document.body ? Math.max(8, top) : top,
+        left: portalToBody || container === document.body
           ? Math.max(8, Math.min(left, window.innerWidth - rect.width - 8))
           : left,
         width: rect.width,
@@ -192,7 +224,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
       window.removeEventListener('resize', updatePosition);
       window.removeEventListener('scroll', updatePosition, true);
     };
-  }, [open, disabled]);
+  }, [open, disabled, portalToBody]);
 
   useLayoutEffect(() => {
     if (!open || disabled || !dropdownPosition) {
@@ -204,7 +236,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
       if (!input) {
         return;
       }
-      input.focus();
+      input.focus({ preventScroll: true });
       const len = input.value.length;
       input.setSelectionRange(len, len);
     });
@@ -373,6 +405,8 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
       (pinnedSelection?.value === value ? pinnedSelection.label : null))
     : null;
   const listMinHeight = options.length > 0 || isFetchingNextPage ? DROPDOWN_MAX_HEIGHT_PX : undefined;
+  const showInitialLoading = isLoading && options.length === 0;
+  const showSearchRefreshing = isLoading && options.length > 0;
 
   const handleOptionSelect = (option: ComboboxOption): void => {
     let nextValue: string | null = null;
@@ -426,14 +460,19 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
         )}
       </button>
       {open && dropdownPosition && portalContainer ? createPortal(
+        <FocusScope.Root trapped={portalToBody} loop={portalToBody} asChild>
         <div
           ref={contentRef}
           id={contentDomId}
+          data-voice-search-combobox-portal={portalToBody ? '' : undefined}
           onPointerDown={(e) => {
             e.stopPropagation();
             if (e.nativeEvent) {
               e.nativeEvent.stopImmediatePropagation();
             }
+          }}
+          onKeyDown={(e) => {
+            e.stopPropagation();
           }}
           onWheel={(e) => {
             e.stopPropagation();
@@ -456,13 +495,13 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
             top: dropdownPosition.top,
             left: dropdownPosition.left,
             width: dropdownPosition.width,
-            zIndex: 1000,
+            zIndex: portalToBody ? 2000 : 1000,
             pointerEvents: 'auto',
           }}
         >
           <Command
             className="bg-transparent"
-            shouldFilter={!isAsyncMode}
+            shouldFilter
             filter={(itemValue, search) => (matchesSearchTerm(search, [itemValue]) ? 1 : 0)}
             defaultValue={value && selectedLabel ? `${selectedLabel} ${value}` : undefined}
           >
@@ -470,6 +509,9 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
               placeholder={searchPlaceholder || t('common.search')}
               value={searchQuery}
               onValueChange={setSearchQuery}
+              onKeyDown={(event) => {
+                event.stopPropagation();
+              }}
               className="border-b border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-transparent"
             >
               {isThresholdMode ? (
@@ -512,12 +554,12 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
                 overscrollBehavior: 'contain',
               }}
             >
-              {!isLoading ? (
+              {!showInitialLoading ? (
                 <CommandEmpty className="py-6 text-center text-sm text-slate-500 dark:text-slate-400">
                   {isThresholdMode ? minCharsHint : t('common.noResults')}
                 </CommandEmpty>
               ) : null}
-              {isLoading ? (
+              {showInitialLoading ? (
                 <div className="flex min-h-28 items-center justify-center py-6 text-sm text-slate-500 dark:text-slate-400">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {t('common.loading')}
@@ -545,7 +587,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
                   ))}
                 </CommandGroup>
               )}
-              {isFetchingNextPage ? (
+              {showSearchRefreshing || isFetchingNextPage ? (
                 <div className="flex items-center justify-center py-2 text-xs text-slate-500 dark:text-slate-400">
                   <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
                   {t('common.loading')}
@@ -553,7 +595,8 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
               ) : null}
             </CommandList>
           </Command>
-        </div>,
+        </div>
+        </FocusScope.Root>,
         portalContainer
       ) : null}
     </div>

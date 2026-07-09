@@ -14,7 +14,6 @@ import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useErpProjectCodesInfinite } from '@/services/hooks/useErpProjectCodesInfinite';
 import { VoiceSearchCombobox } from '@/components/shared/VoiceSearchCombobox';
-import type { ComboboxOption } from '@/components/shared/VoiceSearchCombobox';
 import { ErpFieldHint } from '@/components/shared/ErpFieldHint';
 import { ProductSelectDialog, type ProductSelectionResult } from '@/components/shared/ProductSelectDialog';
 import { LineFormStockSearchField } from '@/components/shared/LineFormStockSearchField';
@@ -52,6 +51,12 @@ import {
   sanitizeQuantityTrTyping,
 } from '@/lib/quantity-input-tr';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
+import {
+  useWindoBaskiOptionsInfinite,
+  useWindoDemirOptionsInfinite,
+  useWindoProfilOptionsInfinite,
+  useWindoVidaOptionsInfinite,
+} from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptionsInfinite';
 import { WindoQuickCreateDialog } from '@/features/windo-profil-demir-vida-management/components/WindoQuickCreateDialog';
 import {
   DOCUMENT_LINE_FORM_CANCEL_BUTTON_CLASS,
@@ -196,11 +201,27 @@ export function QuotationLineForm({
   }, [currency, currencyOptions]);
 
   const [formData, setFormData] = useState<QuotationLineFormState>(() => calculateLineTotals(applyDocumentVatDefaultOnLine(line, offerType, deliveryMethodName)));
-  const { profilOptions, demirOptions, vidaOptions, baskiOptions, allDemirOptions, allVidaOptions, isLoading: isDefinitionOptionsLoading } =
+  const { demirOptions, vidaOptions, baskiOptions, allDemirOptions, allVidaOptions, isLoading: isDefinitionOptionsLoading } =
     useWindoDefinitionOptions(formData.profilDefinitionId, {
       demirDefinitionId: formData.demirDefinitionId,
       vidaDefinitionId: formData.vidaDefinitionId,
     });
+  const [profilSearchTerm, setProfilSearchTerm] = useState('');
+  const [demirSearchTerm, setDemirSearchTerm] = useState('');
+  const [vidaSearchTerm, setVidaSearchTerm] = useState('');
+  const [baskiSearchTerm, setBaskiSearchTerm] = useState('');
+  const profilDropdown = useWindoProfilOptionsInfinite(profilSearchTerm);
+  const demirDropdown = useWindoDemirOptionsInfinite(
+    demirSearchTerm,
+    formData.profilDefinitionId,
+    formData.demirDefinitionId
+  );
+  const vidaDropdown = useWindoVidaOptionsInfinite(
+    vidaSearchTerm,
+    formData.profilDefinitionId,
+    formData.vidaDefinitionId
+  );
+  const baskiDropdown = useWindoBaskiOptionsInfinite(baskiSearchTerm);
   const hasAppliedDefaultBaskiRef = useRef(false);
 
   const [relatedLines, setRelatedLines] = useState<QuotationLineFormState[]>([]);
@@ -232,22 +253,10 @@ export function QuotationLineForm({
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const persistedLineId = imageUploadExtras?.quotationLineId;
-  const profilComboboxOptions = useMemo<ComboboxOption[]>(
-    () => profilOptions.map((option) => ({ value: String(option.id), label: option.name })),
-    [profilOptions]
-  );
-  const demirComboboxOptions = useMemo<ComboboxOption[]>(
-    () => demirOptions.map((option) => ({ value: String(option.id), label: option.name })),
-    [demirOptions]
-  );
-  const vidaComboboxOptions = useMemo<ComboboxOption[]>(
-    () => vidaOptions.map((option) => ({ value: String(option.id), label: option.name })),
-    [vidaOptions]
-  );
-  const baskiComboboxOptions = useMemo<ComboboxOption[]>(
-    () => baskiOptions.map((option) => ({ value: String(option.id), label: option.name })),
-    [baskiOptions]
-  );
+  const profilComboboxOptions = profilDropdown.options;
+  const demirComboboxOptions = demirDropdown.options;
+  const vidaComboboxOptions = vidaDropdown.options;
+  const baskiComboboxOptions = baskiDropdown.options;
   const handleWindoDefinitionCreated = async (
     kind: 'profil' | 'demir' | 'vida' | 'baski',
     item: { id: number; profilDefinitionId?: number | null }
@@ -1642,10 +1651,15 @@ export function QuotationLineForm({
                   options={profilComboboxOptions}
                   value={formData.profilDefinitionId ? String(formData.profilDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('profilDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoProfile')}
+                  onDebouncedSearchChange={setProfilSearchTerm}
+                  onFetchNextPage={profilDropdown.fetchNextPage}
+                  hasNextPage={profilDropdown.hasNextPage}
+                  isLoading={profilDropdown.isLoading}
+                  isFetchingNextPage={profilDropdown.isFetchingNextPage}
+                  placeholder={profilDropdown.isLoading ? t('loading') : t('lines.selectWindoProfile')}
                   searchPlaceholder={t('lines.searchWindoProfile')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
-                  disabled={isDefinitionOptionsLoading}
+                  disabled={profilDropdown.isLoading && profilComboboxOptions.length === 0}
                 />
                 <Button
                   type="button"
@@ -1669,10 +1683,15 @@ export function QuotationLineForm({
                   options={demirComboboxOptions}
                   value={formData.demirDefinitionId ? String(formData.demirDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('demirDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoRebar')}
+                  onDebouncedSearchChange={setDemirSearchTerm}
+                  onFetchNextPage={demirDropdown.fetchNextPage}
+                  hasNextPage={demirDropdown.hasNextPage}
+                  isLoading={demirDropdown.isLoading}
+                  isFetchingNextPage={demirDropdown.isFetchingNextPage}
+                  placeholder={demirDropdown.isLoading ? t('loading') : t('lines.selectWindoRebar')}
                   searchPlaceholder={t('lines.searchWindoRebar')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
-                  disabled={isDefinitionOptionsLoading}
+                  disabled={demirDropdown.isLoading && demirComboboxOptions.length === 0}
                 />
                 <Button
                   type="button"
@@ -1696,10 +1715,15 @@ export function QuotationLineForm({
                   options={vidaComboboxOptions}
                   value={formData.vidaDefinitionId ? String(formData.vidaDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('vidaDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectWindoScrew')}
+                  onDebouncedSearchChange={setVidaSearchTerm}
+                  onFetchNextPage={vidaDropdown.fetchNextPage}
+                  hasNextPage={vidaDropdown.hasNextPage}
+                  isLoading={vidaDropdown.isLoading}
+                  isFetchingNextPage={vidaDropdown.isFetchingNextPage}
+                  placeholder={vidaDropdown.isLoading ? t('loading') : t('lines.selectWindoScrew')}
                   searchPlaceholder={t('lines.searchWindoScrew')}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
-                  disabled={isDefinitionOptionsLoading}
+                  disabled={vidaDropdown.isLoading && vidaComboboxOptions.length === 0}
                 />
                 <Button
                   type="button"
@@ -1723,10 +1747,15 @@ export function QuotationLineForm({
                   options={baskiComboboxOptions}
                   value={formData.baskiDefinitionId ? String(formData.baskiDefinitionId) : null}
                   onSelect={(value) => handleFieldChange('baskiDefinitionId', value ? Number(value) : null)}
-                  placeholder={isDefinitionOptionsLoading ? t('loading') : t('lines.selectPrint', { defaultValue: 'Baskı seçin' })}
+                  onDebouncedSearchChange={setBaskiSearchTerm}
+                  onFetchNextPage={baskiDropdown.fetchNextPage}
+                  hasNextPage={baskiDropdown.hasNextPage}
+                  isLoading={baskiDropdown.isLoading}
+                  isFetchingNextPage={baskiDropdown.isFetchingNextPage}
+                  placeholder={baskiDropdown.isLoading ? t('loading') : t('lines.selectPrint', { defaultValue: 'Baskı seçin' })}
                   searchPlaceholder={t('lines.searchWindoPrint', { defaultValue: 'Baskı ara...' })}
                   className={`h-11 rounded-xl border-slate-200 bg-slate-50 text-slate-900 dark:border-white/10 dark:bg-white/[0.04] dark:text-white ${pinkFocusClass}`}
-                  disabled={isDefinitionOptionsLoading}
+                  disabled={baskiDropdown.isLoading && baskiComboboxOptions.length === 0}
                   disableToggleOff
                 />
                 <Input
