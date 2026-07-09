@@ -25,6 +25,7 @@ export interface NetsisCustomerDispatchLineDto {
   dovizTipi?: number | null;
   dovizFiyat?: number | null;
   dovizKuru?: number | null;
+  olcuBirimi?: string | null;
   olcuBr?: string | null;
   teslimMiktari: number;
   bakiye: number;
@@ -117,6 +118,30 @@ function ensureSuccess<T>(response: ApiResponse<T>, fallbackMessage: string): T 
   throw new Error(response.message || fallbackMessage);
 }
 
+function getApiErrorMessage(error: unknown, fallbackMessage: string): string {
+  if (error == null || typeof error !== 'object') {
+    return fallbackMessage;
+  }
+
+  const responseData = (error as { response?: { data?: unknown }; message?: string }).response?.data;
+  if (responseData && typeof responseData === 'object') {
+    const payload = responseData as Partial<ApiResponse<unknown>>;
+    if (typeof payload.exceptionMessage === 'string' && payload.exceptionMessage.trim()) {
+      return payload.exceptionMessage;
+    }
+    if (typeof payload.message === 'string' && payload.message.trim()) {
+      return payload.message;
+    }
+  }
+
+  const message = (error as { message?: string }).message;
+  if (typeof message === 'string' && message.trim() && message !== 'Network Error') {
+    return message;
+  }
+
+  return fallbackMessage;
+}
+
 function isNdiTransferCreateResponse(value: unknown): value is NdiTransferCreateResponseDto {
   if (value == null || typeof value !== 'object') {
     return false;
@@ -159,10 +184,15 @@ export const ndiApi = {
   },
 
   getCustomerDispatchLines: async (irsNoList: string): Promise<NetsisCustomerDispatchLineDto[]> => {
-    const response = await api.get<ApiResponse<NetsisCustomerDispatchLineDto[]>>('/api/NetsisRead/getCustomerDispatchLines', {
-      params: { irsNoList },
-    });
-    return ensureSuccess(response, 'Netsis irsaliye kalemleri yuklenemedi.');
+    const fallbackMessage = 'Netsis irsaliye kalemleri yuklenemedi. API baglantisi ve FN_RII_REH_MUSTIRS_KALEM fonksiyonu kontrol edilmeli.';
+    try {
+      const response = await api.get<ApiResponse<NetsisCustomerDispatchLineDto[]>>('/api/NetsisRead/getCustomerDispatchLines', {
+        params: { irsNoList },
+      });
+      return ensureSuccess(response, fallbackMessage);
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, fallbackMessage));
+    }
   },
 
   getCustomerDispatchOrderChecks: async (irsNoList: string): Promise<NetsisCustomerDispatchOrderCheckDto[]> => {

@@ -669,7 +669,7 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
     currencyRate,
     exchangeRate,
     remainingQuantity,
-    unit: line.olcuBr || '-',
+    unit: line.olcuBirimi || line.olcuBr || '-',
     warehouse: order?.defaultWarehouse || 'NDI',
     deliveryNote: line.cariKodu || order?.customerCode || '-',
     status: remainingQuantity <= 0 ? 'waiting' : remainingQuantity < quantity ? 'partial' : 'ready',
