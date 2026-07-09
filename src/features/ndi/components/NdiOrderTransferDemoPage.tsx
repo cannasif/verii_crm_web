@@ -689,7 +689,6 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const [sendError, setSendError] = useState<string | null>(null);
   const [transferResult, setTransferResult] = useState<NdiTransferCreateResponseDto | null>(null);
   const [transferResultDialog, setTransferResultDialog] = useState<NdiTransferCreateResponseDto | null>(null);
-  const initializedSelectionRef = useRef(false);
   const preparedTransferRef = useRef<HTMLDivElement | null>(null);
 
   const dispatchesQuery = useQuery({
@@ -701,19 +700,8 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const orders = useMemo(() => (dispatchesQuery.data ?? []).map(mapDispatchToOrder), [dispatchesQuery.data]);
   const ordersById = useMemo(() => new Map(orders.map((order) => [order.id, order])), [orders]);
 
-  useEffect(() => {
-    if (initializedSelectionRef.current || orders.length === 0) {
-      return;
-    }
-
-    const firstPrefix = getOrderPrefix(orders[0]);
-    const initialGroup = orders.filter((order) => getOrderPrefix(order) === firstPrefix).slice(0, 2);
-    setSelectedOrderIds(new Set(initialGroup.map((order) => order.id)));
-    initializedSelectionRef.current = true;
-  }, [orders]);
-
   const selectedOrders = useMemo(() => orders.filter((order) => selectedOrderIds.has(order.id)), [orders, selectedOrderIds]);
-  const selectedPrefix = selectedOrders[0] ? getOrderPrefix(selectedOrders[0]) : orders[0] ? getOrderPrefix(orders[0]) : '-';
+  const selectedPrefix = selectedOrders[0] ? getOrderPrefix(selectedOrders[0]) : '-';
   const selectedIrsNoList = useMemo(() => selectedOrders.map((order) => order.orderNo).join(','), [selectedOrders]);
 
   const linesQuery = useQuery({
@@ -784,6 +772,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
   const selectedShipmentTypes = Array.from(new Set(selectedOrders.map((order) => order.shipmentType)));
   const selectedRepresentatives = Array.from(new Set(selectedOrders.map((order) => order.representative)));
   const selectedRules = Array.from(new Map(selectedOrders.map((order) => [order.operationProfile, getRule(order)])).values());
+  const selectedRuleIds = new Set(selectedRules.map((rule) => rule.id));
   const selectedRuleTitles = selectedRules.map((rule) => rule.title).join(', ');
   const selectedLinesByOrderNo = useMemo(() => {
     const grouped = new Map<string, NdiOrderLine[]>();
@@ -825,7 +814,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
         next.add(order.id);
       }
 
-      return next.size > 0 ? next : new Set([order.id]);
+      return next;
     });
   };
 
@@ -870,7 +859,6 @@ export function NdiOrderTransferDemoPage(): ReactElement {
 
   const resetSelection = () => {
     setSearch('');
-    initializedSelectionRef.current = false;
     setSelectedOrderIds(new Set());
     setSelectedLineIds(new Set());
     setPrepareAttempted(false);
@@ -1215,7 +1203,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
                     <SlidersHorizontal size={15} /> Uygulanan İşlem Kuralları
                   </div>
                   <p className="mt-1 text-sm font-bold text-foreground">
-                    {selectedRuleTitles || 'Kural seçili değil'} · {batchAction.hint}
+                    {selectedRuleTitles ? `${selectedRuleTitles} · ${batchAction.hint}` : 'İrsaliye seçildiğinde çalışacak aktarım kuralı burada gösterilir.'}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -1234,7 +1222,7 @@ export function NdiOrderTransferDemoPage(): ReactElement {
               <p className="mt-2 rounded-md border border-[#d7e1ef] bg-[#f8fbff] px-3 py-2 text-xs font-bold text-[#536780]">
                 NURAY24, WIN24, DISTIC24 ve SIRKET24 değerleri seri değildir; Netsis kayıt/read işlemlerinde kullanılacak şirket/database bilgisidir.
               </p>
-              <SeriesGuide />
+              <SeriesGuide activeRuleIds={selectedRuleIds} />
               <div className="mt-3 grid gap-2 xl:grid-cols-2">
                 {ruleOutcomes.length === 0 ? (
                   <StatePanel icon={<SlidersHorizontal size={18} />} title="Kural çıktısı yok" description="Kural çıktısı için en az bir irsaliye seçin." />
@@ -1846,13 +1834,14 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
   );
 }
 
-function SeriesGuide(): ReactElement {
-  const rows = [
-    { title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> SIRKET24', 'İrsaliye -> kaynak seri', 'e-Fatura -> NRY', 'e-Arşiv -> NEA', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
-    { title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> SIRKET24', 'İrsaliye -> kaynak seri', 'e-Fatura -> VDF', 'e-Arşiv -> EAR', 'K -> KDV 0'] },
-    { title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura/İrsaliye -> EIR', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
-    { title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura -> SIP2026', 'KDV -> 0', 'Resmi evrak yok'] },
+function SeriesGuide({ activeRuleIds }: { activeRuleIds: Set<NdiTransferRule['id']> }): ReactElement {
+  const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
+    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> SIRKET24', 'İrsaliye -> kaynak seri', 'e-Fatura -> NRY', 'e-Arşiv -> NEA', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
+    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> SIRKET24', 'İrsaliye -> kaynak seri', 'e-Fatura -> VDF', 'e-Arşiv -> EAR', 'K -> KDV 0'] },
+    { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura/İrsaliye -> EIR', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
+    { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura -> SIP2026', 'KDV -> 0', 'Resmi evrak yok'] },
   ];
+  const hasActiveRule = activeRuleIds.size > 0;
 
   return (
     <div className="mt-3 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] p-3">
@@ -1860,25 +1849,39 @@ function SeriesGuide(): ReactElement {
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-[var(--crm-app-text-muted)]">Seri ve Depo Rehberi</div>
           <p className="mt-1 text-xs font-semibold text-[var(--crm-app-text-muted)]">
-            Kaynak seri, cari e-Belge tipi ve şirket kuralına göre ŞİRKET24 aktarım değeri belirlenir.
+            Seçilen irsaliyenin kaynak şirketi ve seri bilgisine göre çalışacak NDI kuralı aşağıda vurgulanır.
           </p>
         </div>
-        <RuleBadge tone="info" label="HTML işlem kurallarından" />
+        <RuleBadge tone={hasActiveRule ? 'success' : 'info'} label={hasActiveRule ? 'Aktif kural vurgulandı' : 'İrsaliye seçince kural görünür'} />
       </div>
 
       <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-        {rows.map((row) => (
-          <div key={row.title} className="rounded-md border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] px-3 py-2">
-            <div className="text-xs font-black text-foreground">{row.title}</div>
-            <div className="mt-2 space-y-1">
-              {row.items.map((item) => (
-                <div key={item} className="rounded bg-primary/10 px-2 py-1 text-[11px] font-black text-muted-foreground">
-                  {item}
-                </div>
-              ))}
+        {rows.map((row) => {
+          const isActive = activeRuleIds.has(row.id);
+
+          return (
+            <div
+              key={row.title}
+              className={`rounded-md border px-3 py-2 transition ${
+                isActive
+                  ? 'border-primary bg-primary/10 shadow-[0_0_0_2px_rgba(236,72,153,0.12)]'
+                  : 'border-slate-300 bg-[var(--crm-app-panel)] dark:border-white/20'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="text-xs font-black text-foreground">{row.title}</div>
+                {isActive ? <span className="rounded-full bg-primary px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.08em] text-white">Aktif</span> : null}
+              </div>
+              <div className="mt-2 space-y-1">
+                {row.items.map((item) => (
+                  <div key={item} className={`rounded px-2 py-1 text-[11px] font-black ${isActive ? 'bg-white/70 text-foreground dark:bg-black/20' : 'bg-primary/10 text-muted-foreground'}`}>
+                    {item}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
