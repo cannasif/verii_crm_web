@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CalendarDays, ChevronDown, CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins, type LucideIcon } from 'lucide-react';
@@ -48,6 +48,13 @@ import {
 } from '../hooks/useSalesmen360';
 import { SalesmenCurrencySummaryCards } from './SalesmenCurrencySummaryCards';
 import { SalesmenAmountComparisonByCurrencyTable } from './SalesmenAmountComparisonByCurrencyTable';
+import { Salesmen360ExcelExportButton } from './Salesmen360ExcelExportButton';
+import { exportGridToExcel } from '@/lib/grid-export';
+import {
+  buildSalesmenCohortExportColumns,
+  buildSalesmenCohortExportRows,
+  sanitizeSalesmen360ExportFileName,
+} from '../utils/salesmen-360-table-export';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import type {
   CohortRetentionDto,
@@ -367,22 +374,47 @@ function RevenueQualityPanel({ quality }: { quality: RevenueQualityDto | null | 
 
 function CohortRetentionPanel({
   rows,
+  userId,
 }: {
   rows: CohortRetentionDto[] | undefined;
+  userId: number;
 }): ReactElement {
   const { t, i18n } = useTranslation();
+  const [isExporting, setIsExporting] = useState(false);
   const first = rows?.[0];
   const cohortLabel = first?.cohortKey
     ? formatSalesmen360PeriodLabel(first.cohortKey, i18n.language)
     : '';
+  const exportColumns = useMemo(() => buildSalesmenCohortExportColumns(t), [t]);
+  const exportRows = useMemo(() => buildSalesmenCohortExportRows(rows), [rows]);
+
+  const handleExportExcel = useCallback(async (): Promise<void> => {
+    if (isExporting || exportRows.length === 0) return;
+    setIsExporting(true);
+    try {
+      await exportGridToExcel({
+        fileName: sanitizeSalesmen360ExportFileName('kohort-tutma', userId),
+        columns: exportColumns,
+        rows: exportRows,
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [exportColumns, exportRows, isExporting, userId]);
+
   return (
     <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
-      <div className="pt-3 pb-2.5 px-5 border-b border-slate-100 dark:border-white/5">
+      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 pb-2.5 pt-3 dark:border-white/5">
         <CardTitleWithInfo
           titleKey="salesman360.cohort.title"
           explainKey="salesman360.explain.cohortRetentionTitle"
           icon={Users}
           iconClassName="bg-indigo-50 dark:bg-indigo-500/10 border-indigo-100 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400"
+        />
+        <Salesmen360ExcelExportButton
+          disabled={exportRows.length === 0}
+          isExporting={isExporting}
+          onClick={() => void handleExportExcel()}
         />
       </div>
       <CardContent className="px-5 pt-2 pb-5">
@@ -1111,7 +1143,7 @@ export function Salesmen360Page(): ReactElement {
                   })
                 }
               />
-              {isCohortLoading ? <KpiCardSkeleton /> : <CohortRetentionPanel rows={cohortData} />}
+              {isCohortLoading ? <KpiCardSkeleton /> : <CohortRetentionPanel rows={cohortData} userId={userId} />}
 
               {overviewTotalsByCurrency.length > 0 && (
                 <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden group">
@@ -1194,6 +1226,7 @@ export function Salesmen360Page(): ReactElement {
                     <SalesmenAmountComparisonByCurrencyTable
                       rows={chartsAmountComparisonByCurrency}
                       isLoading={isChartsLoading}
+                      userId={userId}
                     />
                   </div>
                 </div>
