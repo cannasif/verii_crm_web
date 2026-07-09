@@ -1,4 +1,4 @@
-import { type ReactElement, type ReactNode, useMemo, useState } from 'react';
+import { type ReactElement, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, FileText, Plus, ShoppingCart, Activity, ChevronRight as RowChevron } from 'lucide-react';
@@ -8,10 +8,23 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { exportGridToExcel } from '@/lib/grid-export';
 import { useQuotationList } from '@/features/quotation/hooks/useQuotationList';
 import { useOrderList } from '@/features/order/hooks/useOrderList';
 import { useCustomerActivities } from '../hooks/useCustomerActivities';
 import { buildCustomerDocumentFilters } from '../utils/customer-document-filters';
+import {
+  buildActivityExportColumns,
+  buildActivityExportRows,
+  buildDocumentListExportColumns,
+  buildOrderExportRows,
+  buildQuotationExportRows,
+  fetchAllCustomerActivities,
+  fetchAllCustomerOrders,
+  fetchAllCustomerQuotations,
+  sanitizeCustomer360ExportFileName,
+} from '../utils/customer-360-table-export';
+import { Customer360ExcelExportButton } from './Customer360ExcelExportButton';
 import {
   CUSTOMER_360_ICON_CHIP_CLASS,
   CUSTOMER_360_RELATED_CARD_CLASS,
@@ -44,6 +57,7 @@ function RelatedCard({
   count,
   createLabel,
   onCreate,
+  headerActions,
   children,
 }: {
   icon: React.ElementType;
@@ -51,6 +65,7 @@ function RelatedCard({
   count?: number;
   createLabel: string;
   onCreate: () => void;
+  headerActions?: ReactNode;
   children: ReactNode;
 }): ReactElement {
   return (
@@ -68,15 +83,18 @@ function RelatedCard({
               </Badge>
             )}
           </div>
-          <Button
-            type="button"
-            size="sm"
-            onClick={onCreate}
-            className="gap-1.5 rounded-xl border-0 bg-[image:var(--crm-brand-gradient)] shadow-[0_4px_14px_-6px_var(--crm-brand-shadow)] hover:shadow-[0_6px_20px_-6px_var(--crm-brand-shadow)] text-white transition-all hover:-translate-y-0.5 hover:text-white"
-          >
-            <Plus className="h-4 w-4" />
-            {createLabel}
-          </Button>
+          <div className="flex items-center gap-2">
+            {headerActions}
+            <Button
+              type="button"
+              size="sm"
+              onClick={onCreate}
+              className="gap-1.5 rounded-xl border-0 bg-[image:var(--crm-brand-gradient)] shadow-[0_4px_14px_-6px_var(--crm-brand-shadow)] hover:shadow-[0_6px_20px_-6px_var(--crm-brand-shadow)] text-white transition-all hover:-translate-y-0.5 hover:text-white"
+            >
+              <Plus className="h-4 w-4" />
+              {createLabel}
+            </Button>
+          </div>
         </div>
         {children}
       </CardContent>
@@ -166,7 +184,9 @@ export function CustomerQuotationsTab({ customerId, customerCode, customerName }
   const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
   const navigate = useNavigate();
   const [pageNumber, setPageNumber] = useState(1);
+  const [isExporting, setIsExporting] = useState(false);
   const filters = useMemo(() => buildCustomerDocumentFilters(customerCode, customerName), [customerCode, customerName]);
+  const exportColumns = useMemo(() => buildDocumentListExportColumns(tc), [tc]);
   const { data, isLoading, isError } = useQuotationList({
     pageNumber,
     pageSize: PAGE_SIZE,
@@ -177,12 +197,34 @@ export function CustomerQuotationsTab({ customerId, customerCode, customerName }
   const rows = data?.data ?? [];
   const totalPages = data?.totalPages ?? 1;
 
+  const handleExportExcel = useCallback(async (): Promise<void> => {
+    if (isExporting || (data?.totalCount ?? 0) === 0) return;
+    setIsExporting(true);
+    try {
+      const allRows = await fetchAllCustomerQuotations(filters);
+      await exportGridToExcel({
+        fileName: sanitizeCustomer360ExportFileName('teklifler', customerId, customerCode),
+        columns: exportColumns,
+        rows: buildQuotationExportRows(allRows, i18n.language),
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [customerCode, customerId, data?.totalCount, exportColumns, filters, i18n.language, isExporting]);
+
   return (
     <RelatedCard
       icon={FileText}
       title={tc('tabs.quotations')}
       count={data?.totalCount}
       createLabel={tc('related.newQuotation')}
+      headerActions={
+        <Customer360ExcelExportButton
+          disabled={(data?.totalCount ?? 0) === 0}
+          isExporting={isExporting}
+          onClick={() => void handleExportExcel()}
+        />
+      }
       onCreate={() =>
         navigate('/quotations/create', {
           state: {
@@ -244,7 +286,9 @@ export function CustomerOrdersTab({ customerId, customerCode, customerName }: Cu
   const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
   const navigate = useNavigate();
   const [pageNumber, setPageNumber] = useState(1);
+  const [isExporting, setIsExporting] = useState(false);
   const filters = useMemo(() => buildCustomerDocumentFilters(customerCode, customerName), [customerCode, customerName]);
+  const exportColumns = useMemo(() => buildDocumentListExportColumns(tc), [tc]);
   const { data, isLoading, isError } = useOrderList({
     pageNumber,
     pageSize: PAGE_SIZE,
@@ -255,12 +299,34 @@ export function CustomerOrdersTab({ customerId, customerCode, customerName }: Cu
   const rows = data?.data ?? [];
   const totalPages = data?.totalPages ?? 1;
 
+  const handleExportExcel = useCallback(async (): Promise<void> => {
+    if (isExporting || (data?.totalCount ?? 0) === 0) return;
+    setIsExporting(true);
+    try {
+      const allRows = await fetchAllCustomerOrders(filters);
+      await exportGridToExcel({
+        fileName: sanitizeCustomer360ExportFileName('siparisler', customerId, customerCode),
+        columns: exportColumns,
+        rows: buildOrderExportRows(allRows, i18n.language),
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [customerCode, customerId, data?.totalCount, exportColumns, filters, i18n.language, isExporting]);
+
   return (
     <RelatedCard
       icon={ShoppingCart}
       title={tc('tabs.orders')}
       count={data?.totalCount}
       createLabel={tc('related.newOrder')}
+      headerActions={
+        <Customer360ExcelExportButton
+          disabled={(data?.totalCount ?? 0) === 0}
+          isExporting={isExporting}
+          onClick={() => void handleExportExcel()}
+        />
+      }
       onCreate={() =>
         navigate('/orders/create', {
           state: {
@@ -337,6 +403,8 @@ export function CustomerActivitiesTab({
   const { t, i18n } = useTranslation(['customer360', 'common']);
   const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
   const [pageNumber, setPageNumber] = useState(1);
+  const [isExporting, setIsExporting] = useState(false);
+  const exportColumns = useMemo(() => buildActivityExportColumns(tc), [tc]);
   const { data, isLoading, isError } = useCustomerActivities({
     customerId,
     customerCode,
@@ -347,12 +415,34 @@ export function CustomerActivitiesTab({
   const rows = data?.data ?? [];
   const totalPages = data?.totalPages ?? 1;
 
+  const handleExportExcel = useCallback(async (): Promise<void> => {
+    if (isExporting || (data?.totalCount ?? 0) === 0) return;
+    setIsExporting(true);
+    try {
+      const allRows = await fetchAllCustomerActivities({ customerId, customerCode, customerName });
+      await exportGridToExcel({
+        fileName: sanitizeCustomer360ExportFileName('aktiviteler', customerId, customerCode),
+        columns: exportColumns,
+        rows: buildActivityExportRows(allRows, i18n.language, tc),
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [customerCode, customerId, customerName, data?.totalCount, exportColumns, i18n.language, isExporting, tc]);
+
   return (
     <RelatedCard
       icon={Activity}
       title={tc('tabs.activities')}
       count={data?.totalCount}
       createLabel={tc('related.newActivity')}
+      headerActions={
+        <Customer360ExcelExportButton
+          disabled={(data?.totalCount ?? 0) === 0}
+          isExporting={isExporting}
+          onClick={() => void handleExportExcel()}
+        />
+      }
       onCreate={onNewActivity}
     >
       <ListStates

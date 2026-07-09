@@ -1,4 +1,4 @@
-import { type ReactElement, useMemo, useState, useEffect } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isAxiosError } from 'axios';
 import { ChevronLeft, ChevronRight, Loader2, Package, RefreshCw } from 'lucide-react';
@@ -8,12 +8,19 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { cn } from '@/lib/utils';
+import { exportGridToExcel } from '@/lib/grid-export';
 import { useErpOrderLines } from '@/features/order/hooks/useErpOrders';
 import type { NetsisOrderHeader, NetsisOrderLine } from '@/features/order/types/erp-order-types';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { hasPermission } from '@/features/access-control/utils/hasPermission';
 import { useCustomerErpOrders } from '../hooks/useCustomerErpOrders';
 import { paginateClient } from '../utils/erp-order-customer-filter';
+import {
+  buildErpOrderExportColumns,
+  buildErpOrderExportRows,
+  sanitizeCustomer360ExportFileName,
+} from '../utils/customer-360-table-export';
+import { Customer360ExcelExportButton } from './Customer360ExcelExportButton';
 import {
   CUSTOMER_360_ICON_CHIP_CLASS,
   CUSTOMER_360_RELATED_CARD_CLASS,
@@ -22,6 +29,7 @@ import {
 const PAGE_SIZE = 20;
 
 interface CustomerErpOrdersTabProps {
+  customerId: number;
   customerCode?: string | null;
 }
 
@@ -138,7 +146,7 @@ function Pager({
   );
 }
 
-export function CustomerErpOrdersTab({ customerCode }: CustomerErpOrdersTabProps): ReactElement | null {
+export function CustomerErpOrdersTab({ customerId, customerCode }: CustomerErpOrdersTabProps): ReactElement | null {
   const { t, i18n } = useTranslation(['customer360', 'order', 'common']);
   const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
   const { data: permissions } = useMyPermissionsQuery();
@@ -146,6 +154,8 @@ export function CustomerErpOrdersTab({ customerCode }: CustomerErpOrdersTabProps
 
   const [pageNumber, setPageNumber] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<NetsisOrderHeader | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+  const exportColumns = useMemo(() => buildErpOrderExportColumns(tc), [tc]);
 
   const { orders, normalizedCode, skipped, isLoading, isError, error, refetch, isFetching } =
     useCustomerErpOrders({
@@ -157,6 +167,20 @@ export function CustomerErpOrdersTab({ customerCode }: CustomerErpOrdersTabProps
     setPageNumber(1);
     setSelectedOrder(null);
   }, [customerCode, normalizedCode]);
+
+  const handleExportExcel = useCallback(async (): Promise<void> => {
+    if (isExporting || orders.length === 0) return;
+    setIsExporting(true);
+    try {
+      await exportGridToExcel({
+        fileName: sanitizeCustomer360ExportFileName('erp-siparisler', customerId, normalizedCode ?? customerCode),
+        columns: exportColumns,
+        rows: buildErpOrderExportRows(orders, i18n.language),
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [customerCode, customerId, exportColumns, i18n.language, isExporting, normalizedCode, orders]);
 
   const paged = useMemo(
     () => paginateClient(orders, pageNumber, PAGE_SIZE),
@@ -200,6 +224,11 @@ export function CustomerErpOrdersTab({ customerCode }: CustomerErpOrdersTabProps
                 <Badge variant="outline" className="font-mono text-xs">
                   {normalizedCode}
                 </Badge>
+                <Customer360ExcelExportButton
+                  disabled={orders.length === 0}
+                  isExporting={isExporting}
+                  onClick={() => void handleExportExcel()}
+                />
                 <Button
                   type="button"
                   variant="outline"

@@ -149,6 +149,18 @@ import {
   CUSTOMER_360_CARD_CLASS,
   CUSTOMER_360_ICON_CHIP_CLASS,
 } from '../utils/customer-360-card-styles';
+import {
+  buildErpMovementsExportColumns,
+  buildErpMovementsExportFileName,
+  buildErpMovementsExportRows,
+} from '../utils/erp-movements-export';
+import {
+  buildCohortExportColumns,
+  buildCohortExportRows,
+  sanitizeCustomer360ExportFileName,
+} from '../utils/customer-360-table-export';
+import { exportGridToExcel } from '@/lib/grid-export';
+import { Customer360ExcelExportButton } from './Customer360ExcelExportButton';
 
 const MODERN_CARD_CLASS = CUSTOMER_360_CARD_CLASS;
 
@@ -416,21 +428,48 @@ function RevenueQualityPanel({ quality }: { quality: RevenueQualityDto | null | 
 
 function CohortRetentionPanel({
   rows,
+  customerId,
+  customerCode,
 }: {
   rows: CohortRetentionDto[] | undefined;
+  customerId: number;
+  customerCode?: string | null;
 }): ReactElement {
   const { t } = useTranslation('customer360');
   const tc = (key: string, opts?: Record<string, unknown>) => t(key, opts);
+  const [isExporting, setIsExporting] = useState(false);
   const first = rows?.[0];
+  const exportColumns = useMemo(() => buildCohortExportColumns(tc), [tc]);
+  const exportRows = useMemo(() => buildCohortExportRows(rows), [rows]);
+
+  const handleExportExcel = useCallback(async (): Promise<void> => {
+    if (isExporting || exportRows.length === 0) return;
+    setIsExporting(true);
+    try {
+      await exportGridToExcel({
+        fileName: sanitizeCustomer360ExportFileName('kohort-tutma', customerId, customerCode),
+        columns: exportColumns,
+        rows: exportRows,
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [customerCode, customerId, exportColumns, exportRows, isExporting]);
+
   return (
     <Card className={MODERN_CARD_CLASS}>
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0">
         <CardTitle className="text-base">
           <CardTitleWithInfo
             titleKey="cohort.title"
             explainKey="explain.cohortRetentionTitle"
           />
         </CardTitle>
+        <Customer360ExcelExportButton
+          disabled={exportRows.length === 0}
+          isExporting={isExporting}
+          onClick={() => void handleExportExcel()}
+        />
       </CardHeader>
       <CardContent>
         {!first?.points?.length ? (
@@ -779,6 +818,7 @@ function erpSignedBalanceClass(value: number): string {
 function ErpMovementsTabContent({
   balance,
   movements,
+  customerCode,
   isLoading,
   isError,
   t,
@@ -786,11 +826,14 @@ function ErpMovementsTabContent({
 }: {
   balance?: Customer360ErpBalanceDto;
   movements: Customer360ErpMovementDto[];
+  customerCode?: string | null;
   isLoading: boolean;
   isError: boolean;
   t: (key: string, opts?: Record<string, unknown>) => string;
   tc: (key: string, opts?: Record<string, unknown>) => string;
 }): ReactElement {
+  const [isExporting, setIsExporting] = useState(false);
+
   const formatter = {
     format: (value: number) =>
       formatSystemNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
@@ -800,6 +843,28 @@ function ErpMovementsTabContent({
     value ? formatSystemDate(value) : '-';
 
   const formatNumber = (value?: number | null): string => formatter.format(value ?? 0);
+
+  const exportColumns = useMemo(
+    () => buildErpMovementsExportColumns((key) => tc(key)),
+    [tc]
+  );
+
+  const exportRows = useMemo(() => buildErpMovementsExportRows(movements), [movements]);
+
+  const handleExportExcel = useCallback(async (): Promise<void> => {
+    if (isExporting || movements.length === 0) return;
+    setIsExporting(true);
+    try {
+      const cariKod = customerCode ?? balance?.cariKod ?? movements[0]?.cariKod;
+      await exportGridToExcel({
+        fileName: buildErpMovementsExportFileName(cariKod),
+        columns: exportColumns,
+        rows: exportRows,
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [balance?.cariKod, customerCode, exportColumns, exportRows, isExporting, movements]);
 
   if (isLoading) {
     return (
@@ -844,10 +909,15 @@ function ErpMovementsTabContent({
       </div>
 
       <Card className={MODERN_CARD_CLASS}>
-        <CardHeader className="pb-2 pt-5">
+        <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 pb-2 pt-5">
           <CardTitle className="text-sm font-medium tracking-tight text-foreground">
             {tc('erpMovements.tableTitle')}
           </CardTitle>
+          <Customer360ExcelExportButton
+            disabled={movements.length === 0}
+            isExporting={isExporting}
+            onClick={() => void handleExportExcel()}
+          />
         </CardHeader>
         <CardContent className="pb-5 pt-0">
           {movements.length === 0 ? (
@@ -1657,7 +1727,11 @@ export function Customer360Page(): ReactElement {
             {isCohortLoading ? (
               <SectionSkeleton />
             ) : (
-              <CohortRetentionPanel rows={cohortData} />
+              <CohortRetentionPanel
+                rows={cohortData}
+                customerId={id}
+                customerCode={customerErpCode}
+              />
             )}
             <SectionCard
               title={tc('sections.contacts')}
@@ -1759,7 +1833,7 @@ export function Customer360Page(): ReactElement {
 
         {canViewErpOrders && (
           <TabsContent value="erpOrders" className="space-y-4">
-            <CustomerErpOrdersTab customerCode={customerErpCode} />
+            <CustomerErpOrdersTab customerId={id} customerCode={customerErpCode} />
           </TabsContent>
         )}
 
@@ -1903,6 +1977,7 @@ export function Customer360Page(): ReactElement {
           <ErpMovementsTabContent
             balance={erpBalance}
             movements={erpMovements}
+            customerCode={customerErpCode}
             isLoading={isErpMovementsLoading || isErpBalanceLoading}
             isError={isErpMovementsError || isErpBalanceError}
             t={t}

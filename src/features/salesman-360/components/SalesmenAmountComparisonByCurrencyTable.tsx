@@ -1,4 +1,4 @@
-import { type ReactElement, useMemo } from 'react';
+import { type ReactElement, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -10,19 +10,29 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
+import { exportGridToExcel } from '@/lib/grid-export';
 import type { Salesmen360AmountComparisonDto } from '../types/salesmen360.types';
 import { FileSearch, LineChart } from 'lucide-react';
+import { Salesmen360ExcelExportButton } from './Salesmen360ExcelExportButton';
+import {
+  buildSalesmenAmountComparisonExportColumns,
+  buildSalesmenAmountComparisonExportRows,
+  sanitizeSalesmen360ExportFileName,
+} from '../utils/salesmen-360-table-export';
 
 interface SalesmenAmountComparisonByCurrencyTableProps {
   rows: Salesmen360AmountComparisonDto[];
   isLoading: boolean;
+  userId: number;
 }
 
 export function SalesmenAmountComparisonByCurrencyTable({
   rows,
   isLoading,
+  userId,
 }: SalesmenAmountComparisonByCurrencyTableProps): ReactElement {
   const { t, i18n } = useTranslation();
+  const [isExporting, setIsExporting] = useState(false);
   const formatter = useMemo(
     () =>
       new Intl.NumberFormat(i18n.resolvedLanguage ?? i18n.language, {
@@ -31,6 +41,22 @@ export function SalesmenAmountComparisonByCurrencyTable({
       }),
     [i18n.resolvedLanguage, i18n.language]
   );
+  const exportColumns = useMemo(() => buildSalesmenAmountComparisonExportColumns(t), [t]);
+  const exportRows = useMemo(() => buildSalesmenAmountComparisonExportRows(rows), [rows]);
+
+  const handleExportExcel = useCallback(async (): Promise<void> => {
+    if (isExporting || exportRows.length === 0) return;
+    setIsExporting(true);
+    try {
+      await exportGridToExcel({
+        fileName: sanitizeSalesmen360ExportFileName('tutar-karsilastirmasi', userId),
+        columns: exportColumns,
+        rows: exportRows,
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [exportColumns, exportRows, isExporting, userId]);
 
   if (isLoading) {
     return (
@@ -63,13 +89,20 @@ export function SalesmenAmountComparisonByCurrencyTable({
 
   return (
     <Card className="rounded-2xl border border-slate-200 bg-white/80 dark:border-white/10 dark:bg-white/3 shadow-sm overflow-hidden h-full group">
-      <div className="px-5 pt-1 pb-2.5 border-b border-slate-100 dark:border-white/5 flex items-center gap-2.5">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 shadow-sm transition-transform group-hover:scale-105">
-          <LineChart className="size-4 text-indigo-600 dark:text-indigo-400" />
+      <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 pb-2.5 pt-1 dark:border-white/5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 shadow-sm transition-transform group-hover:scale-105">
+            <LineChart className="size-4 text-indigo-600 dark:text-indigo-400" />
+          </div>
+          <span className="text-base font-bold text-slate-800 dark:text-white">
+            {t('salesman360.analyticsCharts.amountComparisonTitle')}
+          </span>
         </div>
-        <span className="text-base font-bold text-slate-800 dark:text-white">
-          {t('salesman360.analyticsCharts.amountComparisonTitle')}
-        </span>
+        <Salesmen360ExcelExportButton
+          disabled={exportRows.length === 0}
+          isExporting={isExporting}
+          onClick={() => void handleExportExcel()}
+        />
       </div>
       <CardContent className="p-0">
         <div className="overflow-hidden">
