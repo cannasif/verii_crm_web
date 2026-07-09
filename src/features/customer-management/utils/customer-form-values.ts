@@ -15,18 +15,18 @@ export function resolveCustomerBranchCode(
   customerBranchCode: number | undefined,
   sessionBranchCode: string | number | undefined
 ): number {
-  if (customerBranchCode != null && customerBranchCode > 0) {
+  if (customerBranchCode != null && customerBranchCode >= 0) {
     return customerBranchCode;
   }
 
   if (sessionBranchCode != null) {
     const parsed = Number(sessionBranchCode);
-    if (Number.isFinite(parsed) && parsed > 0) {
+    if (Number.isFinite(parsed) && parsed >= 0) {
       return parsed;
     }
   }
 
-  return 1;
+  return 0;
 }
 
 export function resolveCustomerBusinessUnitCode(businessUnitCode: number | undefined): number {

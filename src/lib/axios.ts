@@ -95,6 +95,13 @@ function resolveBranchCodeFromPersistedState(): string | null {
   }
 }
 
+function normalizeBranchCodeHeader(value: string | number | null | undefined): string | null {
+  if (value == null) return null;
+
+  const normalized = String(value).trim();
+  return normalized.length > 0 ? normalized : null;
+}
+
 function normalizeApiEnvelope(payload: unknown): unknown {
   if (
     (typeof Blob !== 'undefined' && payload instanceof Blob) ||
@@ -563,8 +570,8 @@ api.interceptors.request.use((config) => {
   config.headers['X-Language'] = i18n.language || 'tr';
 
   const branch = useAuthStore.getState().branch;
-  const branchCode = branch?.code || resolveBranchCodeFromPersistedState();
-  if (branchCode) {
+  const branchCode = normalizeBranchCodeHeader(branch?.code) ?? resolveBranchCodeFromPersistedState();
+  if (branchCode != null) {
     config.headers['X-Branch-Code'] = branchCode;
   }
 
