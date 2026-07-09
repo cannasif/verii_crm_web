@@ -201,7 +201,6 @@ export function PricingRuleSalesmanTable({
                 searchPlaceholder={t('salesmen.search')}
                 className="w-[240px] h-9 bg-white dark:bg-white/5 border-slate-200 dark:border-white/10 text-xs"
                 disabled={isLoadingAction}
-                modal={true}
             />
           </div>
         )}

@@ -159,7 +159,6 @@ export function ApprovalUserRoleForm({
                       placeholder={t('approvalUserRole.form.selectUser')}
                       searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
-                      modal={true}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
                   </FormItem>
@@ -186,7 +185,6 @@ export function ApprovalUserRoleForm({
                       placeholder={t('approvalUserRole.form.selectApprovalRole')}
                       searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
-                      modal={true}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
                   </FormItem>

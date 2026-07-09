@@ -168,7 +168,6 @@ export function ApprovalFlowForm({
                       placeholder={t('approvalFlow.form.selectDocumentType')}
                       searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
-                      modal={true}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
                   </FormItem>

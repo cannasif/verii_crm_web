@@ -213,7 +213,6 @@ export function CityForm({
                               placeholder={t('cityManagement.form.selectCountry')}
                               searchPlaceholder={t('cityManagement.form.searchCountry')}
                               className={INPUT_STYLE}
-                              modal={true}
                             />
                             <FormMessage className="text-red-500 text-[10px] mt-1" />
                           </FormItem>

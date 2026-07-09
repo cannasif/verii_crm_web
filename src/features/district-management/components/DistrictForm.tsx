@@ -187,7 +187,6 @@ export function DistrictForm({
                       placeholder={t('districtManagement.form.selectCity')}
                       searchPlaceholder={t('districtManagement.form.searchCity')}
                       className={INPUT_STYLE}
-                      modal={true}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
                   </FormItem>

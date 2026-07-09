@@ -162,7 +162,6 @@ export function ApprovalRoleForm({
                       placeholder={t('approvalRole.form.selectApprovalRoleGroup')}
                       searchPlaceholder={t('common.search')}
                       className={INPUT_STYLE}
-                      modal={true}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
                   </FormItem>

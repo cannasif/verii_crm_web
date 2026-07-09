@@ -192,7 +192,6 @@ export function UserDiscountLimitForm({
                       placeholder={t('selectSalesperson')}
                       searchPlaceholder={t('common.search', { ns: 'common' })}
                       className={INPUT_STYLE}
-                      modal={true}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />
                   </FormItem>
@@ -216,7 +215,6 @@ export function UserDiscountLimitForm({
                       placeholder={t('enterErpProductGroupCode')}
                       searchPlaceholder={t('common.search', { ns: 'common' })}
                       className={INPUT_STYLE}
-                      modal={true}
                       disabled={isLoadingGroups}
                     />
                     <FormMessage className="text-red-500 text-[10px] mt-1" />

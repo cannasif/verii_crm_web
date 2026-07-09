@@ -155,6 +155,9 @@ import {
   buildErpMovementsExportColumns,
   buildErpMovementsExportFileName,
   buildErpMovementsExportRows,
+  buildErpMovementLinesExportColumns,
+  buildErpMovementLinesExportFileName,
+  buildErpMovementLinesExportRows,
 } from '../utils/erp-movements-export';
 import {
   buildCohortExportColumns,
@@ -836,6 +839,7 @@ function ErpMovementsTabContent({
 }): ReactElement {
   const [selectedMovement, setSelectedMovement] = useState<Customer360ErpMovementDto | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [isDetailExporting, setIsDetailExporting] = useState(false);
   const selectedDocumentNo = selectedMovement?.belgeNo?.trim() ?? '';
   const {
     data: movementLines = [],
@@ -860,6 +864,13 @@ function ErpMovementsTabContent({
 
   const exportRows = useMemo(() => buildErpMovementsExportRows(movements), [movements]);
 
+  const detailExportColumns = useMemo(
+    () => buildErpMovementLinesExportColumns((key) => tc(key)),
+    [tc]
+  );
+
+  const detailExportRows = useMemo(() => buildErpMovementLinesExportRows(movementLines), [movementLines]);
+
   const handleExportExcel = useCallback(async (): Promise<void> => {
     if (isExporting || movements.length === 0) return;
     setIsExporting(true);
@@ -874,6 +885,20 @@ function ErpMovementsTabContent({
       setIsExporting(false);
     }
   }, [balance?.cariKod, customerCode, exportColumns, exportRows, isExporting, movements]);
+
+  const handleDetailExportExcel = useCallback(async (): Promise<void> => {
+    if (isDetailExporting || movementLines.length === 0 || !selectedDocumentNo) return;
+    setIsDetailExporting(true);
+    try {
+      await exportGridToExcel({
+        fileName: buildErpMovementLinesExportFileName(selectedDocumentNo),
+        columns: detailExportColumns,
+        rows: detailExportRows,
+      });
+    } finally {
+      setIsDetailExporting(false);
+    }
+  }, [detailExportColumns, detailExportRows, isDetailExporting, movementLines.length, selectedDocumentNo]);
 
   if (isLoading) {
     return (
@@ -1053,17 +1078,26 @@ function ErpMovementsTabContent({
       </div>
 
       <Dialog open={selectedMovement != null} onOpenChange={(open) => !open && setSelectedMovement(null)}>
-        <DialogContent className="max-h-[85vh] max-w-5xl overflow-hidden rounded-2xl p-0">
+        <DialogContent className="max-h-[92vh] w-[95vw] !max-w-[min(96vw,80rem)] sm:!max-w-[min(96vw,80rem)] lg:!max-w-7xl overflow-hidden rounded-2xl p-0">
           <DialogHeader className="border-b border-border/70 px-6 py-5">
-            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
-              <FileText className="h-5 w-5 text-primary" />
-              {tc('erpMovements.detail.title')}
-            </DialogTitle>
-            <DialogDescription>
-              {tc('erpMovements.detail.description', { documentNo: selectedDocumentNo || '-' })}
-            </DialogDescription>
+            <div className="flex flex-col gap-3 pr-8 sm:flex-row sm:items-start sm:justify-between">
+              <div className="space-y-1.5 text-left">
+                <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+                  <FileText className="h-5 w-5 text-primary" />
+                  {tc('erpMovements.detail.title')}
+                </DialogTitle>
+                <DialogDescription>
+                  {tc('erpMovements.detail.description', { documentNo: selectedDocumentNo || '-' })}
+                </DialogDescription>
+              </div>
+              <Customer360ExcelExportButton
+                disabled={movementLines.length === 0 || isMovementLinesLoading || isMovementLinesError}
+                isExporting={isDetailExporting}
+                onClick={() => void handleDetailExportExcel()}
+              />
+            </div>
           </DialogHeader>
-          <div className="max-h-[62vh] overflow-auto px-6 py-5">
+          <div className="max-h-[74vh] overflow-auto px-6 py-5">
             {isMovementLinesLoading ? (
               <div className="space-y-3">
                 <Skeleton className="h-10 w-full" />

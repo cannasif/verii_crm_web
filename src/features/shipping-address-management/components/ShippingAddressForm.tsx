@@ -334,7 +334,6 @@ export function ShippingAddressForm({
                         placeholder={t('shippingAddressManagement.selectCountry')}
                         searchPlaceholder={t('shippingAddressManagement.searchCountry')}
                         className={INPUT_STYLE}
-                        modal={true}
                       />
                       <FormMessage className="text-red-500 text-[10px] mt-1" />
                     </FormItem>
@@ -363,7 +362,6 @@ export function ShippingAddressForm({
                         searchPlaceholder={t('shippingAddressManagement.searchCity')}
                         className={INPUT_STYLE}
                         disabled={!watchedCountryId}
-                        modal={true}
                       />
                       <FormMessage className="text-red-500 text-[10px] mt-1" />
                     </FormItem>
@@ -398,7 +396,6 @@ export function ShippingAddressForm({
                         searchPlaceholder={t('shippingAddressManagement.searchDistrict')}
                         className={INPUT_STYLE}
                         disabled={!watchedCityId}
-                        modal={true}
                       />
                       <FormMessage className="text-red-500 text-[10px] mt-1" />
                     </FormItem>

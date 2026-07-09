@@ -4,6 +4,26 @@ import { XIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+const VOICE_SEARCH_COMBOBOX_PORTAL_SELECTOR = "[data-voice-search-combobox-portal]"
+
+function isVoiceSearchComboboxPortalTarget(target: EventTarget | null): boolean {
+  return target instanceof Element && Boolean(target.closest(VOICE_SEARCH_COMBOBOX_PORTAL_SELECTOR))
+}
+
+function getDialogOutsideEventTarget(event: Event): EventTarget | null {
+  if ("detail" in event && event.detail && typeof event.detail === "object") {
+    const originalEvent = (event.detail as { originalEvent?: Event }).originalEvent
+    if (originalEvent?.target) {
+      return originalEvent.target
+    }
+  }
+  return event.target
+}
+
+function shouldIgnoreDialogOutsideEvent(event: Event): boolean {
+  return isVoiceSearchComboboxPortalTarget(getDialogOutsideEventTarget(event))
+}
+
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
@@ -49,6 +69,9 @@ function DialogContent({
   overlayClassName,
   children,
   showCloseButton = true,
+  onFocusOutside,
+  onPointerDownOutside,
+  onInteractOutside,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
@@ -59,6 +82,24 @@ function DialogContent({
       <DialogOverlay className={overlayClassName} />
       <DialogPrimitive.Content
         data-slot="dialog-content"
+        onFocusOutside={(event) => {
+          if (shouldIgnoreDialogOutsideEvent(event)) {
+            event.preventDefault()
+          }
+          onFocusOutside?.(event)
+        }}
+        onPointerDownOutside={(event) => {
+          if (shouldIgnoreDialogOutsideEvent(event)) {
+            event.preventDefault()
+          }
+          onPointerDownOutside?.(event)
+        }}
+        onInteractOutside={(event) => {
+          if (shouldIgnoreDialogOutsideEvent(event)) {
+            event.preventDefault()
+          }
+          onInteractOutside?.(event)
+        }}
         className={cn(
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] max-h-[calc(100dvh-1rem)] translate-x-[-50%] translate-y-[-50%] gap-4 overflow-y-auto rounded-lg border p-4 shadow-lg duration-200 sm:w-full sm:max-w-[calc(100%-2rem)] sm:max-h-[calc(100dvh-2rem)] sm:p-6 lg:max-w-lg",
           className
