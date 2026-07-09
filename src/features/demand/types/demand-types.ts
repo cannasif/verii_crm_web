@@ -229,6 +229,7 @@ export interface DemandGetDto {
   representativeName?: string | null;
   activityId?: number | null;
   activitySubject?: string | null;
+  requestBranchCode?: string | null;
   projectCode?: string | null;
   ozelKod1?: string | null;
   ozelKod2?: string | null;

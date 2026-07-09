@@ -560,7 +560,7 @@ export function QuotationDetailPage(): ReactElement {
       offerNo: qc.offerNo ?? quotation?.offerNo ?? null,
       customerName: customerLabel,
       branchName: branch?.name?.trim() || t('pdfExportTemplate.notSpecified'),
-      branchCode: branch?.code?.trim() || null,
+      branchCode: quotation?.requestBranchCode?.trim() || branch?.code?.trim() || null,
       generalDiscountRate: qc.generalDiscountRate ?? quotation?.generalDiscountRate ?? null,
       generalDiscountAmount: qc.generalDiscountAmount ?? quotation?.generalDiscountAmount ?? null,
       labels,
@@ -942,7 +942,7 @@ export function QuotationDetailPage(): ReactElement {
         documentSerialTypeId: quotationData.documentSerialTypeId,
         documentId: quotationId,
         documentNo: quotationData.offerNo,
-        requestBranchCode: branch?.code ?? null,
+        requestBranchCode: quotation?.requestBranchCode?.trim() || branch?.code?.trim() || null,
       });
 
       const refreshedLines = await quotationApi.getQuotationLinesByQuotationId(quotationId);

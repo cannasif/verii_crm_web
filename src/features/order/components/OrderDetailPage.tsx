@@ -624,7 +624,7 @@ export function OrderDetailPage(): ReactElement {
         documentSerialTypeId: orderData.documentSerialTypeId,
         documentId: orderId,
         documentNo: orderData.offerNo,
-        requestBranchCode: branch?.code ?? null,
+        requestBranchCode: order?.requestBranchCode?.trim() || branch?.code?.trim() || null,
       });
 
       const refreshedLines = await orderApi.getOrderLinesByOrderId(orderId);

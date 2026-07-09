@@ -268,6 +268,7 @@ export interface QuotationGetDto {
   shippingAddressText?: string | null;
   representativeId?: number | null;
   representativeName?: string | null;
+  requestBranchCode?: string | null;
   projectCode?: string | null;
   ozelKod1?: string | null;
   ozelKod2?: string | null;

@@ -595,7 +595,7 @@ export function DemandDetailPage(): ReactElement {
         documentSerialTypeId: demandData.documentSerialTypeId,
         documentId: demandId,
         documentNo: demandData.offerNo,
-        requestBranchCode: branch?.code ?? null,
+        requestBranchCode: demand?.requestBranchCode?.trim() || branch?.code?.trim() || null,
       });
 
       const refreshedLines = await demandApi.getDemandLinesByDemandId(demandId);

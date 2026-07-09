@@ -102,6 +102,21 @@ function normalizeBranchCodeHeader(value: string | number | null | undefined): s
   return normalized.length > 0 ? normalized : null;
 }
 
+function isBranchHeaderOptionalUrl(url: string | undefined): boolean {
+  if (!url) return false;
+
+  const path = url.split('?')[0].toLowerCase();
+  return (
+    path.includes('/api/auth/login') ||
+    path.includes('/api/auth/register') ||
+    path.includes('/api/auth/refresh-token') ||
+    path.includes('/api/auth/request-password-reset') ||
+    path.includes('/api/auth/reset-password') ||
+    path.includes('/api/netsisread/getbranches') ||
+    path.includes('/api/branch')
+  );
+}
+
 function normalizeApiEnvelope(payload: unknown): unknown {
   if (
     (typeof Blob !== 'undefined' && payload instanceof Blob) ||
@@ -573,6 +588,9 @@ api.interceptors.request.use((config) => {
   const branchCode = normalizeBranchCodeHeader(branch?.code) ?? resolveBranchCodeFromPersistedState();
   if (branchCode != null) {
     config.headers['X-Branch-Code'] = branchCode;
+  } else if (token && !isBranchHeaderOptionalUrl(config.url)) {
+    trackApiRequestEnd();
+    return Promise.reject(new Error('Şube seçimi olmadan işlem yapılamaz. Lütfen tekrar giriş yapıp şube seçin.'));
   }
 
   return config;
