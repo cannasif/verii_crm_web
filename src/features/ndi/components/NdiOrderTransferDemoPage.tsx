@@ -650,7 +650,7 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
 function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, order?: NdiOrder): NdiOrderLine {
   const remainingQuantity = Number(line.bakiye ?? 0);
   const quantity = Number(line.miktar ?? 0);
-  const unitPrice = Number(line.netFiyat ?? 0);
+  const unitPrice = Number(line.netFiyat && line.netFiyat > 0 ? line.netFiyat : (line.dovizFiyat ?? 0));
   const currencyType = line.dovizTipi ?? null;
   const currencyRate = line.dovizFiyat ?? null;
   const exchangeRate = line.dovizKuru ?? null;
