@@ -192,7 +192,7 @@ export function QuotationCreateForm(): ReactElement {
     documentType: 'quotation',
     rootKey: 'quotation',
     userId: user?.id,
-    branchCode: branch?.code ?? branch?.id,
+    branchCode: branch?.code ?? null,
     form,
     formValues: quotationDraftFormValues,
     lines,
@@ -444,7 +444,7 @@ export function QuotationCreateForm(): ReactElement {
           documentSerialTypeId: quotationData.documentSerialTypeId,
           documentId: result.data.id,
           documentNo: result.data.offerNo ?? quotationData.offerNo,
-          requestBranchCode: branch?.code ?? branch?.id,
+          requestBranchCode: branch?.code ?? null,
         });
         toast.success(t('create.success'), {
           description: t('create.successMessage'),
@@ -606,7 +606,7 @@ export function QuotationCreateForm(): ReactElement {
       offerNo: qc.offerNo,
       customerName: customerLabel,
       branchName: branch?.name?.trim() || t('pdfExportTemplate.notSpecified'),
-      branchCode: branch?.code?.trim() || branch?.id?.trim() || null,
+      branchCode: branch?.code?.trim() || null,
       generalDiscountRate: qc.generalDiscountRate,
       generalDiscountAmount: qc.generalDiscountAmount,
       labels,

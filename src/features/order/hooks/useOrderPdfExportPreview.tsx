@@ -188,7 +188,7 @@ export function useOrderPdfExportPreview({
         offerNo: oc.offerNo ?? order?.offerNo ?? null,
         customerName: customerLabel,
         branchName: branch?.name?.trim() || t('pdfExportTemplate.notSpecified'),
-        branchCode: branch?.code?.trim() || branch?.id?.trim() || null,
+        branchCode: branch?.code?.trim() || null,
         generalDiscountRate: oc.generalDiscountRate ?? order?.generalDiscountRate ?? null,
         generalDiscountAmount: oc.generalDiscountAmount ?? order?.generalDiscountAmount ?? null,
         labels: buildOrderPreviewPdfLabels(t),

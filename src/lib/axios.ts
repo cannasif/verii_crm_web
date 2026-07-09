@@ -82,10 +82,10 @@ function resolveBranchCodeFromPersistedState(): string | null {
     if (!raw) return null;
 
     const parsed = JSON.parse(raw) as {
-      state?: { branch?: { code?: string | number; id?: string | number } };
+      state?: { branch?: { code?: string | number | null } };
     };
 
-    const code = parsed?.state?.branch?.code ?? parsed?.state?.branch?.id;
+    const code = parsed?.state?.branch?.code;
     if (code == null) return null;
 
     const normalized = String(code).trim();

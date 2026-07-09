@@ -287,7 +287,7 @@ export function DemandHeaderForm({
     watchedCustomerId,
     documentKind: CustomerDocumentSerialDocumentKind.Demand,
     userId: user?.id,
-    branchCode: branch?.code ?? branch?.id,
+    branchCode: branch?.code ?? null,
   });
 
   const customerDisplayValue = useMemo(

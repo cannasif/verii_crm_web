@@ -293,7 +293,7 @@ export function QuotationHeaderForm({
     watchedCustomerId,
     documentKind: CustomerDocumentSerialDocumentKind.Quotation,
     userId: user?.id,
-    branchCode: branch?.code ?? branch?.id,
+    branchCode: branch?.code ?? null,
   });
 
   const selectedSerialType = useMemo(() => 

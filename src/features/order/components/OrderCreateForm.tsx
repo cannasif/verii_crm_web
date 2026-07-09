@@ -184,7 +184,7 @@ export function OrderCreateForm(): ReactElement {
     documentType: 'order',
     rootKey: 'order',
     userId: user?.id,
-    branchCode: branch?.code ?? branch?.id,
+    branchCode: branch?.code ?? null,
     form,
     formValues: orderDraftFormValues,
     lines,
@@ -419,7 +419,7 @@ export function OrderCreateForm(): ReactElement {
           documentSerialTypeId: orderData.documentSerialTypeId,
           documentId: result.data.id,
           documentNo: result.data.offerNo ?? orderData.offerNo,
-          requestBranchCode: branch?.code ?? branch?.id,
+          requestBranchCode: branch?.code ?? null,
         });
         toast.success(t('create.success'), {
           description: t('create.successMessage'),

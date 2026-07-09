@@ -117,7 +117,7 @@ export function DemandCreateForm(): ReactElement {
     documentType: 'demand',
     rootKey: 'demand',
     userId: user?.id,
-    branchCode: branch?.code ?? branch?.id,
+    branchCode: branch?.code ?? null,
     form,
     formValues: demandDraftFormValues,
     lines,
@@ -335,7 +335,7 @@ export function DemandCreateForm(): ReactElement {
           documentSerialTypeId: demandData.documentSerialTypeId,
           documentId: result.data.id,
           documentNo: result.data.offerNo ?? demandData.offerNo,
-          requestBranchCode: branch?.code ?? branch?.id,
+          requestBranchCode: branch?.code ?? null,
         });
         toast.success(t('create.success'), {
           description: t('create.successMessage'),

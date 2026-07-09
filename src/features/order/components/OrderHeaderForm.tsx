@@ -271,7 +271,7 @@ export function OrderHeaderForm({
     watchedCustomerId,
     documentKind: CustomerDocumentSerialDocumentKind.Order,
     userId: user?.id,
-    branchCode: branch?.code ?? branch?.id,
+    branchCode: branch?.code ?? null,
   });
 
   useEffect(() => {
