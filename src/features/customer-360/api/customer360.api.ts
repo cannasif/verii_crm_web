@@ -9,6 +9,7 @@ import type {
   Customer360OverviewDto,
   Customer360ErpBalanceDto,
   Customer360ErpMovementDto,
+  Customer360ErpMovementLineDto,
   ExecuteRecommendedActionDto,
 } from '../types/customer360.types';
 import { api } from '@/lib/axios';
@@ -168,6 +169,18 @@ export async function getCustomer360ErpMovements(params: {
     { signal }
   );
   return ensureData(response, 'ERP hareketleri yüklenemedi');
+}
+
+export async function getCustomer360ErpMovementLines(params: {
+  documentNo: string;
+  signal?: AbortSignal;
+}): Promise<Customer360ErpMovementLineDto[]> {
+  const { documentNo, signal } = params;
+  const response = await api.get<ApiResponse<Customer360ErpMovementLineDto[] | null>>(
+    `/api/NetsisRead/getStockDocumentLines?documentNo=${encodeURIComponent(documentNo)}`,
+    { signal }
+  );
+  return ensureData(response, 'ERP belge kalemleri yüklenemedi');
 }
 
 export async function getCustomer360ErpBalance(params: {

@@ -204,6 +204,20 @@ export interface Customer360ErpMovementDto {
   vadeSiraliDovizBakiye: number;
 }
 
+export interface Customer360ErpMovementLineDto {
+  stokKodu: string;
+  stokAdi?: string | null;
+  miktar: number;
+  brutFiyat: number;
+  netFiyat: number;
+  brutSatisTutari: number;
+  iskontoTutari: number;
+  kdvTutari: number;
+  tutar: number;
+  dovizliFiyat: number;
+  dovizliTutar: number;
+}
+
 export interface Customer360ErpBalanceDto {
   cariKod: string;
   netBakiye: number;

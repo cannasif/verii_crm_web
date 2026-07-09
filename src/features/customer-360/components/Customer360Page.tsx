@@ -70,6 +70,7 @@ import {
   useCustomer360QuickQuotationsQuery,
   useCustomer360ErpBalanceQuery,
   useCustomer360ErpMovementsQuery,
+  useCustomer360ErpMovementLinesQuery,
   useCustomerImagesQuery,
   useUploadCustomerImagesMutation,
   useDeleteCustomerImageMutation,
@@ -112,6 +113,7 @@ import type {
   Customer360QuickQuotationDto,
   Customer360ErpBalanceDto,
   Customer360ErpMovementDto,
+  Customer360ErpMovementLineDto,
   RecommendedActionDto,
   RevenueQualityDto,
 } from '../types/customer360.types';
@@ -791,6 +793,14 @@ function ErpMovementsTabContent({
   t: (key: string, opts?: Record<string, unknown>) => string;
   tc: (key: string, opts?: Record<string, unknown>) => string;
 }): ReactElement {
+  const [selectedMovement, setSelectedMovement] = useState<Customer360ErpMovementDto | null>(null);
+  const selectedDocumentNo = selectedMovement?.belgeNo?.trim() ?? '';
+  const {
+    data: movementLines = [],
+    isLoading: isMovementLinesLoading,
+    isError: isMovementLinesError,
+  } = useCustomer360ErpMovementLinesQuery(selectedDocumentNo);
+
   const formatter = {
     format: (value: number) =>
       formatSystemNumber(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
@@ -832,8 +842,12 @@ function ErpMovementsTabContent({
     );
   }
 
+  const renderLineAmount = (line: Customer360ErpMovementLineDto, key: keyof Customer360ErpMovementLineDto): string =>
+    formatNumber(typeof line[key] === 'number' ? (line[key] as number) : 0);
+
   return (
-    <div className="space-y-4">
+    <>
+      <div className="space-y-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <ErpBalanceCard title={tc('erpMovements.summary.totalDebit')} value={formatNumber(balance?.toplamBorc)} />
         <ErpBalanceCard title={tc('erpMovements.summary.totalCredit')} value={formatNumber(balance?.toplamAlacak)} />
@@ -854,7 +868,7 @@ function ErpMovementsTabContent({
             <p className="py-6 text-sm text-muted-foreground">{t('noData', { ns: 'common' })}</p>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-border/70 bg-muted/20">
-              <Table className="min-w-[1500px] text-[13px] leading-snug">
+              <Table className="min-w-[1600px] text-[13px] leading-snug">
                 <TableHeader>
                   <TableRow className="border-b border-border/60 hover:bg-transparent">
                     <TableHead className="h-9 px-3 py-2 text-xs font-medium text-muted-foreground">
@@ -895,6 +909,9 @@ function ErpMovementsTabContent({
                     </TableHead>
                     <TableHead className="h-9 px-3 py-2 text-right text-xs font-medium text-muted-foreground">
                       {tc('erpMovements.columns.fxBalanceByDueDate')}
+                    </TableHead>
+                    <TableHead className="h-9 px-3 py-2 text-right text-xs font-medium text-muted-foreground">
+                      {tc('erpMovements.columns.actions')}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -943,6 +960,19 @@ function ErpMovementsTabContent({
                       >
                         {formatNumber(row.vadeSiraliDovizBakiye)}
                       </TableCell>
+                      <TableCell className="px-3 py-2 text-right">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="h-8 gap-1.5 rounded-lg px-2.5 text-xs"
+                          disabled={!row.belgeNo?.trim()}
+                          onClick={() => setSelectedMovement(row)}
+                        >
+                          <FileText className="h-3.5 w-3.5" />
+                          {tc('erpMovements.detail.button')}
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -951,7 +981,75 @@ function ErpMovementsTabContent({
           )}
         </CardContent>
       </Card>
-    </div>
+      </div>
+
+      <Dialog open={selectedMovement != null} onOpenChange={(open) => !open && setSelectedMovement(null)}>
+        <DialogContent className="max-h-[85vh] max-w-5xl overflow-hidden rounded-2xl p-0">
+          <DialogHeader className="border-b border-border/70 px-6 py-5">
+            <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+              <FileText className="h-5 w-5 text-primary" />
+              {tc('erpMovements.detail.title')}
+            </DialogTitle>
+            <DialogDescription>
+              {tc('erpMovements.detail.description', { documentNo: selectedDocumentNo || '-' })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[62vh] overflow-auto px-6 py-5">
+            {isMovementLinesLoading ? (
+              <div className="space-y-3">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-48 w-full" />
+              </div>
+            ) : isMovementLinesError ? (
+              <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                {tc('erpMovements.detail.error')}
+              </div>
+            ) : movementLines.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border p-6 text-sm text-muted-foreground">
+                {tc('erpMovements.detail.empty')}
+              </div>
+            ) : (
+              <div className="overflow-x-auto rounded-xl border border-border/70">
+                <Table className="min-w-[1180px] text-[13px] leading-snug">
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead>{tc('erpMovements.detail.columns.stockCode')}</TableHead>
+                      <TableHead>{tc('erpMovements.detail.columns.stockName')}</TableHead>
+                      <TableHead className="text-right">{tc('erpMovements.detail.columns.quantity')}</TableHead>
+                      <TableHead className="text-right">{tc('erpMovements.detail.columns.grossPrice')}</TableHead>
+                      <TableHead className="text-right">{tc('erpMovements.detail.columns.netPrice')}</TableHead>
+                      <TableHead className="text-right">{tc('erpMovements.detail.columns.grossAmount')}</TableHead>
+                      <TableHead className="text-right">{tc('erpMovements.detail.columns.discountAmount')}</TableHead>
+                      <TableHead className="text-right">{tc('erpMovements.detail.columns.vatAmount')}</TableHead>
+                      <TableHead className="text-right">{tc('erpMovements.detail.columns.total')}</TableHead>
+                      <TableHead className="text-right">{tc('erpMovements.detail.columns.fxPrice')}</TableHead>
+                      <TableHead className="text-right">{tc('erpMovements.detail.columns.fxAmount')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {movementLines.map((line, index) => (
+                      <TableRow key={`${selectedDocumentNo}-${line.stokKodu}-${index}`}>
+                        <TableCell className="font-medium">{line.stokKodu || '-'}</TableCell>
+                        <TableCell className="max-w-[260px] truncate text-muted-foreground">{line.stokAdi || '-'}</TableCell>
+                        <TableCell className="text-right tabular-nums">{renderLineAmount(line, 'miktar')}</TableCell>
+                        <TableCell className="text-right tabular-nums">{renderLineAmount(line, 'brutFiyat')}</TableCell>
+                        <TableCell className="text-right tabular-nums">{renderLineAmount(line, 'netFiyat')}</TableCell>
+                        <TableCell className="text-right tabular-nums">{renderLineAmount(line, 'brutSatisTutari')}</TableCell>
+                        <TableCell className="text-right tabular-nums">{renderLineAmount(line, 'iskontoTutari')}</TableCell>
+                        <TableCell className="text-right tabular-nums">{renderLineAmount(line, 'kdvTutari')}</TableCell>
+                        <TableCell className="text-right font-semibold tabular-nums">{renderLineAmount(line, 'tutar')}</TableCell>
+                        <TableCell className="text-right tabular-nums">{renderLineAmount(line, 'dovizliFiyat')}</TableCell>
+                        <TableCell className="text-right tabular-nums">{renderLineAmount(line, 'dovizliTutar')}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 

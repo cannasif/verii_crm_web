@@ -12,12 +12,14 @@ import {
   getCustomer360AnalyticsCharts,
   getCustomer360QuickQuotations,
   getCustomer360ErpMovements,
+  getCustomer360ErpMovementLines,
   getCustomer360ErpBalance,
 } from '../api/customer360.api';
 import type {
   Customer360QuickQuotationDto,
   ExecuteRecommendedActionDto,
   Customer360ErpMovementDto,
+  Customer360ErpMovementLineDto,
   Customer360ErpBalanceDto,
 } from '../types/customer360.types';
 
@@ -124,6 +126,15 @@ export function useCustomer360ErpMovementsQuery(id: number) {
     queryFn: ({ signal }) => getCustomer360ErpMovements({ id, signal }),
     staleTime: ERP_MOVEMENTS_STALE_MS,
     enabled: id > 0,
+  });
+}
+
+export function useCustomer360ErpMovementLinesQuery(documentNo: string) {
+  return useQuery<Customer360ErpMovementLineDto[], Error>({
+    queryKey: ['customer360', 'erp-movement-lines', documentNo],
+    queryFn: ({ signal }) => getCustomer360ErpMovementLines({ documentNo, signal }),
+    staleTime: ERP_MOVEMENTS_STALE_MS,
+    enabled: documentNo.trim().length > 0,
   });
 }
 

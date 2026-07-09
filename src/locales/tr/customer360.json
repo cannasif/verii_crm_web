@@ -59,7 +59,28 @@
       "fxDebit": "Döviz Borç",
       "fxCredit": "Döviz Alacak",
       "fxBalanceByDate": "Tarih Sıralı Döviz Bakiye",
-      "fxBalanceByDueDate": "Vade Sıralı Döviz Bakiye"
+      "fxBalanceByDueDate": "Vade Sıralı Döviz Bakiye",
+      "actions": "İşlemler"
+    },
+    "detail": {
+      "button": "Detay",
+      "title": "Belge Kalem Detayı",
+      "description": "{{documentNo}} belge numarasına ait Netsis stok kalemleri.",
+      "error": "Belge kalemleri yüklenemedi.",
+      "empty": "Bu belge için stok kalemi bulunamadı.",
+      "columns": {
+        "stockCode": "Stok Kodu",
+        "stockName": "Stok Adı",
+        "quantity": "Miktar",
+        "grossPrice": "Brüt Fiyat",
+        "netPrice": "Net Fiyat",
+        "grossAmount": "Brüt Satış Tutarı",
+        "discountAmount": "İskonto Tutarı",
+        "vatAmount": "KDV Tutarı",
+        "total": "Tutar",
+        "fxPrice": "Dövizli Fiyat",
+        "fxAmount": "Dövizli Tutar"
+      }
     },
     "summary": {
       "totalDebit": "Toplam Borç",

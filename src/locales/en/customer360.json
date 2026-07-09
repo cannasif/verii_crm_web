@@ -166,7 +166,28 @@
       "fxDebit": "FX Debit",
       "fxCredit": "FX Credit",
       "fxBalanceByDate": "FX Balance by Date",
-      "fxBalanceByDueDate": "FX Balance by Due Date"
+      "fxBalanceByDueDate": "FX Balance by Due Date",
+      "actions": "Actions"
+    },
+    "detail": {
+      "button": "Detail",
+      "title": "Document Line Detail",
+      "description": "Netsis stock lines for document {{documentNo}}.",
+      "error": "Could not load document lines.",
+      "empty": "No stock lines found for this document.",
+      "columns": {
+        "stockCode": "Stock Code",
+        "stockName": "Stock Name",
+        "quantity": "Quantity",
+        "grossPrice": "Gross Price",
+        "netPrice": "Net Price",
+        "grossAmount": "Gross Sales Amount",
+        "discountAmount": "Discount Amount",
+        "vatAmount": "VAT Amount",
+        "total": "Total",
+        "fxPrice": "FX Price",
+        "fxAmount": "FX Amount"
+      }
     },
     "summary": {
       "totalDebit": "Total Debit",
