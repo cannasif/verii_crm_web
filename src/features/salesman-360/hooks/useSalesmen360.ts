@@ -3,19 +3,26 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import {
   executeSalesmenRecommendedAction,
+  getSalesmenErpMovements,
   getSalesmenCohort,
   getSalesmenOverview,
   getSalesmenAnalyticsSummary,
   getSalesmenAnalyticsCharts,
   getVisibleSalesmen,
 } from '../api/salesmen360Api';
-import type { ExecuteRecommendedActionDto, Salesmen360PeriodParams, Salesmen360VisibleUserDto } from '../types/salesmen360.types';
+import type {
+  ExecuteRecommendedActionDto,
+  Salesmen360ErpMovementDto,
+  Salesmen360PeriodParams,
+  Salesmen360VisibleUserDto,
+} from '../types/salesmen360.types';
 
 const OVERVIEW_STALE_MS = 30_000;
 const SUMMARY_STALE_MS = 30_000;
 const CHARTS_STALE_MS = 45_000;
 const COHORT_STALE_MS = 300_000;
 const VISIBLE_USERS_STALE_MS = 60_000;
+const ERP_MOVEMENTS_STALE_MS = 30_000;
 
 export function useVisibleSalesmenQuery() {
   return useQuery<Salesmen360VisibleUserDto[]>({
@@ -86,6 +93,15 @@ export function useSalesmenCohortQuery(userId: number, months = 12) {
     queryFn: ({ signal }) => getSalesmenCohort({ userId, months, signal }),
     staleTime: COHORT_STALE_MS,
     enabled: userId > 0,
+  });
+}
+
+export function useSalesmenErpMovementsQuery(userId: number, enabled = true) {
+  return useQuery<Salesmen360ErpMovementDto[]>({
+    queryKey: ['salesmen360', 'erp-movements', userId],
+    queryFn: ({ signal }) => getSalesmenErpMovements({ userId, signal }),
+    staleTime: ERP_MOVEMENTS_STALE_MS,
+    enabled: enabled && userId > 0,
   });
 }
 

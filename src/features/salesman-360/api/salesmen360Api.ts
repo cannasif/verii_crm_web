@@ -6,6 +6,7 @@ import type {
   Salesmen360AnalyticsSummaryDto,
   Salesmen360AnalyticsChartsDto,
   Salesmen360VisibleUserDto,
+  Salesmen360ErpMovementDto,
   ExecuteRecommendedActionDto,
   Salesmen360PeriodParams,
 } from '../types/salesmen360.types';
@@ -55,6 +56,17 @@ export async function getVisibleSalesmen(params?: {
     signal: params?.signal,
   });
   return ensureData(response, 'Visible salesmen could not be loaded');
+}
+
+export async function getSalesmenErpMovements(params: {
+  userId: number;
+  signal?: AbortSignal;
+}): Promise<Salesmen360ErpMovementDto[]> {
+  const { userId, signal } = params;
+  const response = await api.get<ApiResponse<Salesmen360ErpMovementDto[] | null>>(`/api/salesmen/${userId}/erp-movements`, {
+    signal,
+  });
+  return ensureData(response, 'ERP movements could not be loaded');
 }
 
 export async function getSalesmenAnalyticsSummary(params: {

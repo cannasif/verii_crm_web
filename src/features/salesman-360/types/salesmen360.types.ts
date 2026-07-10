@@ -12,6 +12,24 @@ export interface Salesmen360VisibleUserDto {
   isSelf: boolean;
 }
 
+export interface Salesmen360ErpMovementDto {
+  cariKod: string;
+  tarih?: string | null;
+  vadeTarihi?: string | null;
+  belgeNo?: string | null;
+  aciklama?: string | null;
+  dovizTuru?: number | null;
+  paraBirimi?: string | null;
+  borc: number;
+  alacak: number;
+  tarihSiraliTlBakiye: number;
+  vadeSiraliTlBakiye: number;
+  dovizBorc: number;
+  dovizAlacak: number;
+  tarihSiraliDovizBakiye: number;
+  vadeSiraliDovizBakiye: number;
+}
+
 export type Salesmen360PeriodKey = 'today' | 'week' | 'month' | 'year' | 'custom';
 
 export interface Salesmen360PeriodDto {

@@ -1,7 +1,7 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CalendarDays, ChevronDown, CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins, type LucideIcon } from 'lucide-react';
+import { CalendarDays, ChevronDown, CircleHelp, RefreshCw, LineChart, Target, Info, Loader2, BarChart3, TrendingUp, Zap, ChevronRight, Users, Coins, ClipboardList, type LucideIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { normalizeSearchValue } from '@/lib/search';
@@ -43,13 +43,14 @@ import {
   useSalesmenAnalyticsSummaryQuery,
   useSalesmenAnalyticsChartsQuery,
   useSalesmenCohortQuery,
+  useSalesmenErpMovementsQuery,
   useExecuteSalesmenActionMutation,
   useVisibleSalesmenQuery,
 } from '../hooks/useSalesmen360';
 import { SalesmenCurrencySummaryCards } from './SalesmenCurrencySummaryCards';
 import { SalesmenAmountComparisonByCurrencyTable } from './SalesmenAmountComparisonByCurrencyTable';
 import { Salesmen360ExcelExportButton } from './Salesmen360ExcelExportButton';
-import { exportGridToExcel } from '@/lib/grid-export';
+import { exportGridToExcel, type GridExportColumn } from '@/lib/grid-export';
 import {
   buildSalesmenCohortExportColumns,
   buildSalesmenCohortExportRows,
@@ -62,6 +63,7 @@ import type {
   RevenueQualityDto,
   Salesmen360DistributionDto,
   Salesmen360AmountComparisonDto,
+  Salesmen360ErpMovementDto,
   Salesmen360PeriodKey,
   Salesmen360VisibleUserDto,
 } from '../types/salesmen360.types';
@@ -91,6 +93,8 @@ type Salesmen360CurrencyFilterOption = {
   label: string;
   helper?: string;
 };
+
+type Salesmen360TabKey = 'overview' | 'analytics' | 'erpMovements';
 
 const SALESMEN_360_FILTER_OUTER =
   'flex min-h-11 w-fit max-w-full items-stretch overflow-hidden rounded-2xl border border-slate-200/90 bg-white/95 shadow-sm ring-1 ring-slate-950/[0.03] dark:border-white/10 dark:bg-linear-to-br dark:from-[#1E1627]/95 dark:to-[#130822]/98 dark:ring-white/[0.05]';
@@ -670,6 +674,189 @@ function DistributionAndTrendCharts({
   );
 }
 
+function SalesmenErpMovementsTabContent({
+  movements,
+  isLoading,
+  isError,
+  numberFormatter,
+  selectedUserId,
+  t,
+}: {
+  movements: Salesmen360ErpMovementDto[];
+  isLoading: boolean;
+  isError: boolean;
+  numberFormatter: Intl.NumberFormat;
+  selectedUserId: number;
+  t: (key: string) => string;
+}): ReactElement {
+  const [isExporting, setIsExporting] = useState(false);
+
+  const formatDate = useCallback((value?: string | null): string => {
+    if (!value) {
+      return '-';
+    }
+
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? value : date.toLocaleDateString('tr-TR');
+  }, []);
+
+  const columns = useMemo<GridExportColumn[]>(
+    () => [
+      { key: 'tarih', label: t('salesman360.erpMovements.columns.date') },
+      { key: 'vadeTarihi', label: t('salesman360.erpMovements.columns.dueDate') },
+      { key: 'belgeNo', label: t('salesman360.erpMovements.columns.documentNo') },
+      { key: 'cariKod', label: t('salesman360.erpMovements.columns.customerCode') },
+      { key: 'aciklama', label: t('salesman360.erpMovements.columns.description') },
+      { key: 'paraBirimi', label: t('salesman360.erpMovements.columns.currency') },
+      { key: 'borc', label: t('salesman360.erpMovements.columns.debit') },
+      { key: 'alacak', label: t('salesman360.erpMovements.columns.credit') },
+      { key: 'tarihSiraliTlBakiye', label: t('salesman360.erpMovements.columns.tlBalanceByDate') },
+      { key: 'vadeSiraliTlBakiye', label: t('salesman360.erpMovements.columns.tlBalanceByDueDate') },
+      { key: 'dovizBorc', label: t('salesman360.erpMovements.columns.fxDebit') },
+      { key: 'dovizAlacak', label: t('salesman360.erpMovements.columns.fxCredit') },
+      { key: 'tarihSiraliDovizBakiye', label: t('salesman360.erpMovements.columns.fxBalanceByDate') },
+      { key: 'vadeSiraliDovizBakiye', label: t('salesman360.erpMovements.columns.fxBalanceByDueDate') },
+    ],
+    [t]
+  );
+
+  const exportRows = useMemo(
+    () =>
+      movements.map((row) => ({
+        tarih: formatDate(row.tarih),
+        vadeTarihi: formatDate(row.vadeTarihi),
+        belgeNo: row.belgeNo ?? '-',
+        cariKod: row.cariKod ?? '-',
+        aciklama: row.aciklama ?? '-',
+        paraBirimi: row.paraBirimi ?? row.dovizTuru ?? '-',
+        borc: row.borc ?? 0,
+        alacak: row.alacak ?? 0,
+        tarihSiraliTlBakiye: row.tarihSiraliTlBakiye ?? 0,
+        vadeSiraliTlBakiye: row.vadeSiraliTlBakiye ?? 0,
+        dovizBorc: row.dovizBorc ?? 0,
+        dovizAlacak: row.dovizAlacak ?? 0,
+        tarihSiraliDovizBakiye: row.tarihSiraliDovizBakiye ?? 0,
+        vadeSiraliDovizBakiye: row.vadeSiraliDovizBakiye ?? 0,
+      })),
+    [formatDate, movements]
+  );
+
+  const handleExportExcel = useCallback(async () => {
+    if (isExporting || exportRows.length === 0) {
+      return;
+    }
+
+    setIsExporting(true);
+    try {
+      await exportGridToExcel({
+        fileName: sanitizeSalesmen360ExportFileName(t('salesman360.erpMovements.exportFileName'), selectedUserId),
+        columns,
+        rows: exportRows,
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  }, [columns, exportRows, isExporting, selectedUserId, t]);
+
+  const numberColumnKeys = new Set([
+    'borc',
+    'alacak',
+    'tarihSiraliTlBakiye',
+    'vadeSiraliTlBakiye',
+    'dovizBorc',
+    'dovizAlacak',
+    'tarihSiraliDovizBakiye',
+    'vadeSiraliDovizBakiye',
+  ]);
+
+  return (
+    <Card className="rounded-2xl border border-slate-200 bg-white/80 shadow-sm dark:border-white/10 dark:bg-white/3">
+      <CardHeader className="flex flex-row items-start justify-between gap-3 border-b border-slate-100 px-5 py-4 dark:border-white/5">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-sky-100 bg-sky-50 text-sky-600 dark:border-sky-500/20 dark:bg-sky-500/10 dark:text-sky-300">
+            <ClipboardList className="size-5" aria-hidden />
+          </div>
+          <div>
+            <CardTitle className="text-base font-bold text-slate-900 dark:text-white">
+              {t('salesman360.erpMovements.title')}
+            </CardTitle>
+            <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+              {t('salesman360.erpMovements.description')}
+            </p>
+          </div>
+        </div>
+        <Salesmen360ExcelExportButton
+          disabled={exportRows.length === 0 || isLoading || isError}
+          isExporting={isExporting}
+          onClick={() => void handleExportExcel()}
+        />
+      </CardHeader>
+      <CardContent className="p-0">
+        {isLoading ? (
+          <div className="space-y-2 p-5">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <Skeleton key={index} className="h-12 w-full rounded-xl" />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="p-10 text-center text-sm font-medium text-red-500">
+            {t('salesman360.erpMovements.error')}
+          </div>
+        ) : exportRows.length === 0 ? (
+          <div className="p-10 text-center text-sm font-medium text-slate-500 dark:text-slate-400">
+            {t('salesman360.erpMovements.empty')}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="dark:bg-[#231A2C]">
+                  {columns.map((column) => (
+                    <TableHead
+                      key={column.key}
+                      className={cn(
+                        'h-12 min-w-36 whitespace-nowrap border-r border-slate-100 text-xs font-bold uppercase tracking-wider text-slate-900 last:border-r-0 dark:border-white/5 dark:text-white',
+                        numberColumnKeys.has(column.key) && 'text-right'
+                      )}
+                    >
+                      {column.label}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {exportRows.map((row, index) => (
+                  <TableRow
+                    key={`${row.belgeNo}-${row.tarih}-${index}`}
+                    className="border-b border-slate-50 transition-colors last:border-0 hover:bg-accent/30 dark:border-white/5 dark:hover:bg-accent/5"
+                  >
+                    {columns.map((column) => {
+                      const value = row[column.key as keyof typeof row];
+                      return (
+                        <TableCell
+                          key={column.key}
+                          className={cn(
+                            'whitespace-nowrap border-r border-slate-100 font-medium text-slate-700 last:border-r-0 dark:border-white/5 dark:text-slate-200',
+                            numberColumnKeys.has(column.key) && 'text-right tabular-nums'
+                          )}
+                        >
+                          {numberColumnKeys.has(column.key) && typeof value === 'number'
+                            ? numberFormatter.format(value)
+                            : String(value ?? '-')}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 export function Salesmen360Page(): ReactElement {
   const params = useParams<{ userId: string }>();
   const navigate = useNavigate();
@@ -680,14 +867,20 @@ export function Salesmen360Page(): ReactElement {
   const userId = isAllSalesmen ? ALL_SALESMEN_ID : rawUserId === 'me' ? (authUser?.id ?? 0) : Number(rawUserId || 0);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('ALL');
   const [selectedPeriod, setSelectedPeriod] = useState<Salesmen360PeriodKey>('month');
-  const [activeTab, setActiveTab] = useState<'overview' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<Salesmen360TabKey>('overview');
   const visibleSalesmenQuery = useVisibleSalesmenQuery();
   const { currencyOptions: erpCurrencyOptions, isLoading: isCurrencyOptionsLoading } = useCurrencyOptions();
   const currencyParam = selectedCurrency === 'ALL' ? undefined : selectedCurrency;
   const periodParams = useMemo(() => ({ period: selectedPeriod }), [selectedPeriod]);
   const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam, periodParams, isAllSalesmen || userId > 0);
+  const showErpMovementsTab = !isAllSalesmen && userId > 0;
   const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } = useSalesmenAnalyticsSummaryQuery(userId, currencyParam, periodParams, activeTab === 'analytics');
   const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useSalesmenAnalyticsChartsQuery(userId, 12, currencyParam, periodParams, activeTab === 'analytics');
+  const {
+    data: erpMovements = [],
+    isLoading: isErpMovementsLoading,
+    isError: isErpMovementsError,
+  } = useSalesmenErpMovementsQuery(userId, activeTab === 'erpMovements' && showErpMovementsTab);
   const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(userId, 12);
   const executeActionMutation = useExecuteSalesmenActionMutation(userId);
   const visibleSalesmen = useMemo(
@@ -729,7 +922,7 @@ export function Salesmen360Page(): ReactElement {
   }, [isAllSalesmen, navigate, userId, visibleSalesmen]);
 
   useEffect(() => {
-    if (isAllSalesmen && activeTab === 'analytics') {
+    if (isAllSalesmen && activeTab !== 'overview') {
       setActiveTab('overview');
     }
   }, [activeTab, isAllSalesmen]);
@@ -1016,7 +1209,7 @@ export function Salesmen360Page(): ReactElement {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'overview' | 'analytics')} className="space-y-6">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Salesmen360TabKey)} className="space-y-6">
           <div className="flex justify-center sm:justify-start">
             <TabsList className="h-11 p-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-inner">
               <TabsTrigger
@@ -1031,6 +1224,14 @@ export function Salesmen360Page(): ReactElement {
                   className="rounded-xl px-6 font-bold text-muted-foreground transition-all data-[state=active]:bg-accent data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-primary/12 dark:data-[state=active]:text-primary"
                 >
                   {t('salesman360.tabs.analytics')}
+                </TabsTrigger>
+              )}
+              {showErpMovementsTab && (
+                <TabsTrigger
+                  value="erpMovements"
+                  className="rounded-xl px-6 font-bold text-muted-foreground transition-all data-[state=active]:bg-accent data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-primary/12 dark:data-[state=active]:text-primary"
+                >
+                  {t('salesman360.tabs.erpMovements')}
                 </TabsTrigger>
               )}
             </TabsList>
@@ -1260,6 +1461,18 @@ export function Salesmen360Page(): ReactElement {
               </>
             )}
           </TabsContent>
+          {showErpMovementsTab && (
+            <TabsContent value="erpMovements" className="space-y-6 outline-none">
+              <SalesmenErpMovementsTabContent
+                movements={erpMovements}
+                isLoading={isErpMovementsLoading}
+                isError={isErpMovementsError}
+                numberFormatter={currencyFormatter}
+                selectedUserId={userId}
+                t={t}
+              />
+            </TabsContent>
+          )}
         </Tabs>
       </div>
     </TooltipProvider>
