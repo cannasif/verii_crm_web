@@ -1,6 +1,6 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse, PagedFilter, PagedParams, PagedResponse } from '@/types/api';
-import type { SalesRepMatchCreateDto, SalesRepMatchGetDto } from '../types/sales-rep-match-types';
+import type { SalesRepMatchCreateDto, SalesRepMatchGetDto, SalesRepMatchUpdateDto } from '../types/sales-rep-match-types';
 
 export const salesRepMatchApi = {
   getList: async (
@@ -47,6 +47,14 @@ export const salesRepMatchApi = {
       return response.data;
     }
     throw new Error(response.message || 'Sales rep eşleşmesi oluşturulamadı');
+  },
+
+  update: async (id: number, data: SalesRepMatchUpdateDto): Promise<SalesRepMatchGetDto> => {
+    const response = await api.put<ApiResponse<SalesRepMatchGetDto>>(`/api/SalesRepCodeUserMatch/${id}`, data);
+    if (response.success && response.data) {
+      return response.data;
+    }
+    throw new Error(response.message || 'Sales rep eşleşmesi güncellenemedi');
   },
 
   delete: async (id: number): Promise<void> => {

@@ -22,6 +22,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { SalesRepMatchForm } from './SalesRepMatchForm';
 import { SalesRepMatchTable } from './SalesRepMatchTable';
 import { useCreateSalesRepMatch } from '../hooks/useCreateSalesRepMatch';
+import { useUpdateSalesRepMatch } from '../hooks/useUpdateSalesRepMatch';
 import { useSalesRepMatchList } from '../hooks/useSalesRepMatchList';
 import type { SalesRepMatchFormSchema, SalesRepMatchGetDto } from '../types/sales-rep-match-types';
 import { SALES_REP_MATCH_FILTER_COLUMNS } from '../types/sales-rep-match-filter.types';
@@ -54,6 +55,7 @@ export function SalesRepMatchManagementPage(): ReactElement {
   const queryClient = useQueryClient();
 
   const [formOpen, setFormOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<SalesRepMatchGetDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -67,6 +69,14 @@ export function SalesRepMatchManagementPage(): ReactElement {
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => defaultColumnKeys);
 
   const createSalesRepMatch = useCreateSalesRepMatch();
+  const updateSalesRepMatch = useUpdateSalesRepMatch();
+  const formInitialValues = useMemo(
+    () => editingItem ? {
+      salesRepCodeId: String(editingItem.salesRepCodeId),
+      userId: String(editingItem.userId),
+    } : null,
+    [editingItem]
+  );
 
   useEffect(() => {
     setPageTitle(t('menu'));
@@ -175,6 +185,18 @@ export function SalesRepMatchManagementPage(): ReactElement {
   );
 
   const handleSubmit = async (data: SalesRepMatchFormSchema): Promise<void> => {
+    if (editingItem) {
+      await updateSalesRepMatch.mutateAsync({
+        id: editingItem.id,
+        data: {
+          salesRepCodeId: Number(data.salesRepCodeId),
+          userId: Number(data.userId),
+        },
+      });
+      setEditingItem(null);
+      return;
+    }
+
     await createSalesRepMatch.mutateAsync({
       salesRepCodeId: Number(data.salesRepCodeId),
       userId: Number(data.userId),
@@ -206,7 +228,10 @@ export function SalesRepMatchManagementPage(): ReactElement {
           </p>
         </div>
         <Button
-          onClick={() => setFormOpen(true)}
+          onClick={() => {
+            setEditingItem(null);
+            setFormOpen(true);
+          }}
           className="h-11 bg-[image:var(--crm-brand-gradient)] px-8 font-bold text-white shadow-lg shadow-primary/20 ring-1 ring-primary/30 transition-all duration-300 hover:scale-[1.05] hover:opacity-90 active:scale-[0.98] rounded-xl opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
         >
           <Plus size={18} className="mr-2" />
@@ -330,6 +355,10 @@ export function SalesRepMatchManagementPage(): ReactElement {
                   return finalOrder;
                 });
               }}
+              onEdit={(item) => {
+                setEditingItem(item);
+                setFormOpen(true);
+              }}
             />
           </div>
         </CardContent>
@@ -337,9 +366,14 @@ export function SalesRepMatchManagementPage(): ReactElement {
 
       <SalesRepMatchForm
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditingItem(null);
+        }}
         onSubmit={handleSubmit}
-        isLoading={createSalesRepMatch.isPending}
+        isLoading={createSalesRepMatch.isPending || updateSalesRepMatch.isPending}
+        isEditing={editingItem != null}
+        initialValues={formInitialValues}
       />
     </div>
   );

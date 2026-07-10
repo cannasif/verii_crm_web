@@ -1,4 +1,4 @@
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +30,8 @@ interface SalesRepMatchFormProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: SalesRepMatchFormSchema) => void | Promise<void>;
   isLoading?: boolean;
+  initialValues?: SalesRepMatchFormInput | null;
+  isEditing?: boolean;
 }
 
 const INPUT_STYLE = `
@@ -50,6 +52,8 @@ export function SalesRepMatchForm({
   onOpenChange,
   onSubmit,
   isLoading = false,
+  initialValues = null,
+  isEditing = false,
 }: SalesRepMatchFormProps): ReactElement {
   const { t } = useTranslation(['sales-rep-match-management', 'common']);
   const [salesRepSearchTerm, setSalesRepSearchTerm] = useState('');
@@ -65,6 +69,11 @@ export function SalesRepMatchForm({
       userId: '0',
     },
   });
+
+  useEffect(() => {
+    if (!open) return;
+    form.reset(initialValues ?? { salesRepCodeId: '0', userId: '0' });
+  }, [form, initialValues, open]);
 
   const handleSubmit = async (data: SalesRepMatchFormSchema): Promise<void> => {
     await onSubmit(data);
@@ -83,10 +92,14 @@ export function SalesRepMatchForm({
             </div>
             <div>
               <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
-                {t('form.addTitle')}
+                {isEditing
+                  ? t('form.editTitle', { defaultValue: 'Satış Temsilcisi Eşleşmesini Düzenle' })
+                  : t('form.addTitle')}
               </DialogTitle>
               <DialogDescription className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">
-                {t('form.addDescription')}
+                {isEditing
+                  ? t('form.editDescription', { defaultValue: 'Satış temsilcisi ve kullanıcı eşleşmesini güncelleyin.' })
+                  : t('form.addDescription')}
               </DialogDescription>
             </div>
           </div>

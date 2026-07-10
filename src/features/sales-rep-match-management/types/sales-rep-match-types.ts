@@ -18,6 +18,8 @@ export interface SalesRepMatchCreateDto {
   userId: number;
 }
 
+export type SalesRepMatchUpdateDto = SalesRepMatchCreateDto;
+
 export const salesRepMatchFormSchema = z.object({
   salesRepCodeId: z.coerce
     .number({

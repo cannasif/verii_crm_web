@@ -1,7 +1,7 @@
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert02Icon } from 'hugeicons-react';
-import { Loader2, Trash2 } from 'lucide-react';
+import { Loader2, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -44,6 +44,7 @@ interface SalesRepMatchTableProps {
   nextLabel: string;
   paginationInfoText: string;
   onColumnOrderChange?: (newOrder: string[]) => void;
+  onEdit: (item: SalesRepMatchGetDto) => void;
 }
 
 export function SalesRepMatchTable({
@@ -72,9 +73,10 @@ export function SalesRepMatchTable({
   nextLabel,
   paginationInfoText,
   onColumnOrderChange,
+  onEdit,
 }: SalesRepMatchTableProps): ReactElement {
   const { t } = useTranslation(['sales-rep-match-management', 'common']);
-  const { canDelete } = useCrudPermissions();
+  const { canDelete, canUpdate } = useCrudPermissions();
   const deleteSalesRepMatch = useDeleteSalesRepMatch();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<SalesRepMatchGetDto | null>(null);
@@ -105,10 +107,21 @@ export function SalesRepMatchTable({
           errorText={t('error')}
           emptyText={emptyText}
           minTableWidthClassName="min-w-[960px] lg:min-w-[1160px]"
-          showActionsColumn={canDelete}
+          showActionsColumn={canUpdate || canDelete}
           actionsHeaderLabel={t('common.actions', { ns: 'common' })}
           renderActionsCell={(item) => (
             <div className="flex justify-end gap-2">
+              {canUpdate ? (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onEdit(item)}
+                  title={t('common.edit', { ns: 'common', defaultValue: 'Düzenle' })}
+                  className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/10"
+                >
+                  <Pencil size={16} />
+                </Button>
+              ) : null}
               {canDelete ? (
                 <Button
                   variant="ghost"
