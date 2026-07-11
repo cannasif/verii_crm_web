@@ -114,7 +114,7 @@ export function createAiAssistantActionItemsFromToolActions(
     toolName: action.toolName,
     title: action.title,
     description: action.description ?? '',
-    severity: action.status === 'Executed' ? 'success' : 'info',
+    severity: ['Executed', 'DraftCreated', 'Navigated'].includes(action.status) ? 'success' : 'info',
     actionLabel: action.actionLabel,
     actionUrl: action.actionUrl,
     confirmationRequired: action.confirmationRequired,
