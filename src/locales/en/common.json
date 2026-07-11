@@ -1726,7 +1726,31 @@
     },
     "tabs": {
       "overview": "Overview",
-      "analytics": "Analytics"
+      "analytics": "Analytics",
+      "erpMovements": "ERP Movements"
+    },
+    "erpMovements": {
+      "title": "ERP Movements",
+      "description": "Netsis customer general movements for the selected salesperson.",
+      "exportFileName": "salesman-erp-movements",
+      "empty": "No ERP movement records found.",
+      "error": "ERP movements could not be loaded.",
+      "columns": {
+        "date": "Date",
+        "dueDate": "Due Date",
+        "documentNo": "Document No",
+        "customerCode": "Customer Code",
+        "description": "Description",
+        "currency": "Currency",
+        "debit": "Debit",
+        "credit": "Credit",
+        "tlBalanceByDate": "TL Balance by Date",
+        "tlBalanceByDueDate": "TL Balance by Due Date",
+        "fxDebit": "FX Debit",
+        "fxCredit": "FX Credit",
+        "fxBalanceByDate": "FX Balance by Date",
+        "fxBalanceByDueDate": "FX Balance by Due Date"
+      }
     },
     "kpi": {
       "totalDemands": "Total Demands",

@@ -1725,7 +1725,31 @@
     },
     "tabs": {
       "overview": "Genel Bakış",
-      "analytics": "Analitik"
+      "analytics": "Analitik",
+      "erpMovements": "ERP Hareket"
+    },
+    "erpMovements": {
+      "title": "ERP Hareketleri",
+      "description": "Seçili satış temsilcisine bağlı Netsis cari genel hareketleri.",
+      "exportFileName": "satisci-erp-hareketleri",
+      "empty": "ERP hareket kaydı bulunamadı.",
+      "error": "ERP hareketleri yüklenemedi.",
+      "columns": {
+        "date": "Tarih",
+        "dueDate": "Vade Tarihi",
+        "documentNo": "Belge No",
+        "customerCode": "Cari Kodu",
+        "description": "Açıklama",
+        "currency": "Para Birimi",
+        "debit": "Borç",
+        "credit": "Alacak",
+        "tlBalanceByDate": "Tarih Sıralı TL Bakiye",
+        "tlBalanceByDueDate": "Vade Sıralı TL Bakiye",
+        "fxDebit": "Döviz Borç",
+        "fxCredit": "Döviz Alacak",
+        "fxBalanceByDate": "Tarih Sıralı Döviz Bakiye",
+        "fxBalanceByDueDate": "Vade Sıralı Döviz Bakiye"
+      }
     },
     "kpi": {
       "totalDemands": "Toplam Talep",

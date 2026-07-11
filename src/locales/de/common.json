@@ -1684,7 +1684,31 @@
     },
     "tabs": {
       "overview": "Overview",
-      "analytics": "Analytik"
+      "analytics": "Analytik",
+      "erpMovements": "ERP-Bewegungen"
+    },
+    "erpMovements": {
+      "title": "ERP-Bewegungen",
+      "description": "Netsis-Kontobewegungen für den ausgewählten Verkäufer.",
+      "exportFileName": "verkaeufer-erp-bewegungen",
+      "empty": "Keine ERP-Bewegungsdatensätze gefunden.",
+      "error": "ERP-Bewegungen konnten nicht geladen werden.",
+      "columns": {
+        "date": "Datum",
+        "dueDate": "Fälligkeitsdatum",
+        "documentNo": "Beleg-Nr.",
+        "customerCode": "Kundennummer",
+        "description": "Beschreibung",
+        "currency": "Währung",
+        "debit": "Soll",
+        "credit": "Haben",
+        "tlBalanceByDate": "TRY-Saldo nach Datum",
+        "tlBalanceByDueDate": "TRY-Saldo nach Fälligkeit",
+        "fxDebit": "Fremdwährung Soll",
+        "fxCredit": "Fremdwährung Haben",
+        "fxBalanceByDate": "FW-Saldo nach Datum",
+        "fxBalanceByDueDate": "FW-Saldo nach Fälligkeit"
+      }
     },
     "kpi": {
       "totalDemands": "Gesamte Anfragen",

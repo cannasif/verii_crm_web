@@ -16,6 +16,7 @@ interface GridExportConfig {
   columns: GridExportColumn[];
   rows: Record<string, unknown>[];
   getExportData?: () => Promise<{ columns: GridExportColumn[]; rows: Record<string, unknown>[] }>;
+  pdfRightAlignedColumnKeys?: readonly string[];
 }
 
 interface GridExportMenuProps extends GridExportConfig {
@@ -28,6 +29,7 @@ function useGridExport({
   columns,
   rows,
   getExportData,
+  pdfRightAlignedColumnKeys,
 }: GridExportConfig): {
   isExporting: boolean;
   handleExcelExport: () => Promise<void>;
@@ -61,7 +63,12 @@ function useGridExport({
     try {
       const { columns: resolvedColumns, rows: resolvedRows } = await resolveExportData();
       const { exportGridToPdf } = await import('@/lib/grid-export');
-      await exportGridToPdf({ fileName, columns: resolvedColumns, rows: resolvedRows });
+      await exportGridToPdf({
+        fileName,
+        columns: resolvedColumns,
+        rows: resolvedRows,
+        pdfRightAlignedColumnKeys,
+      });
     } finally {
       setIsExporting(false);
     }
@@ -75,6 +82,7 @@ export function GridExportMenuItems({
   columns,
   rows,
   getExportData,
+  pdfRightAlignedColumnKeys,
   translationNamespace,
   onActionComplete,
 }: GridExportConfig & {
@@ -87,6 +95,7 @@ export function GridExportMenuItems({
     columns,
     rows,
     getExportData,
+    pdfRightAlignedColumnKeys,
   });
 
   const runExcelExport = (): void => {
@@ -133,10 +142,11 @@ export function GridExportMenu({
   rows,
   translationNamespace,
   getExportData,
+  pdfRightAlignedColumnKeys,
   triggerClassName,
 }: GridExportMenuProps): ReactElement {
   const { t } = useTranslation(translationNamespace ? [translationNamespace, 'common'] : 'common');
-  const { isExporting } = useGridExport({ fileName, columns, rows, getExportData });
+  const { isExporting } = useGridExport({ fileName, columns, rows, getExportData, pdfRightAlignedColumnKeys });
 
   return (
     <DropdownMenu>
@@ -166,6 +176,7 @@ export function GridExportMenu({
           columns={columns}
           rows={rows}
           getExportData={getExportData}
+          pdfRightAlignedColumnKeys={pdfRightAlignedColumnKeys}
           translationNamespace={translationNamespace}
         />
       </DropdownMenuContent>

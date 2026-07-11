@@ -1684,7 +1684,31 @@
     },
     "tabs": {
       "overview": "Resumen",
-      "analytics": "Analíticas"
+      "analytics": "Analíticas",
+      "erpMovements": "Movimientos ERP"
+    },
+    "erpMovements": {
+      "title": "Movimientos ERP",
+      "description": "Movimientos generales de clientes Netsis del representante de ventas seleccionado.",
+      "exportFileName": "representante-movimientos-erp",
+      "empty": "No se encontraron registros de movimientos ERP.",
+      "error": "No se pudieron cargar los movimientos ERP.",
+      "columns": {
+        "date": "Fecha",
+        "dueDate": "Fecha de Vencimiento",
+        "documentNo": "Nº Documento",
+        "customerCode": "Código de cliente",
+        "description": "Descripción",
+        "currency": "Moneda",
+        "debit": "Débito",
+        "credit": "Crédito",
+        "tlBalanceByDate": "Saldo TRY por Fecha",
+        "tlBalanceByDueDate": "Saldo TRY por Vencimiento",
+        "fxDebit": "Débito ME",
+        "fxCredit": "Crédito ME",
+        "fxBalanceByDate": "Saldo ME por Fecha",
+        "fxBalanceByDueDate": "Saldo ME por Vencimiento"
+      }
     },
     "kpi": {
       "totalDemands": "Total demandas",

@@ -1684,7 +1684,31 @@
     },
     "tabs": {
       "overview": "نظرة عامة",
-      "analytics": "تحليلات"
+      "analytics": "تحليلات",
+      "erpMovements": "حركات ERP"
+    },
+    "erpMovements": {
+      "title": "حركات ERP",
+      "description": "حركات الحساب الجاري العامة في Netsis للمندوب المحدد.",
+      "exportFileName": "mandoob-harakat-erp",
+      "empty": "لم يتم العثور على سجلات حركات ERP.",
+      "error": "تعذر تحميل حركات ERP.",
+      "columns": {
+        "date": "التاريخ",
+        "dueDate": "تاريخ الاستحقاق",
+        "documentNo": "رقم المستند",
+        "customerCode": "رمز العميل",
+        "description": "الوصف",
+        "currency": "العملة",
+        "debit": "مدين",
+        "credit": "دائن",
+        "tlBalanceByDate": "الرصيد بالليرة التركية حسب التاريخ",
+        "tlBalanceByDueDate": "الرصيد بالليرة التركية حسب تاريخ الاستحقاق",
+        "fxDebit": "مدين بالعملة الأجنبية",
+        "fxCredit": "دائن بالعملة الأجنبية",
+        "fxBalanceByDate": "رصيد العملة الأجنبية حسب التاريخ",
+        "fxBalanceByDueDate": "رصيد العملة الأجنبية حسب تاريخ الاستحقاق"
+      }
     },
     "kpi": {
       "totalDemands": "إجمالي الطلبات",

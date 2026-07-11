@@ -1,4 +1,5 @@
 import { exportObjectsToXlsx } from './xlsx-export';
+import { registerPdfExportFont } from './pdf-export-font';
 
 export interface GridExportColumn {
   key: string;
@@ -11,10 +12,27 @@ interface GridExportParams {
   fileName: string;
   columns: GridExportColumn[];
   rows: GridExportRow[];
+  pdfRightAlignedColumnKeys?: readonly string[];
 }
 
-const dynamicImport = (moduleName: string): Promise<unknown> => {
-  return new Function('m', 'return import(m)')(moduleName) as Promise<unknown>;
+const buildPdfRightAlignedColumnStyles = (
+  columns: GridExportColumn[],
+  rightAlignedColumnKeys?: readonly string[]
+): Record<number, { halign: 'right' }> | undefined => {
+  if (!rightAlignedColumnKeys?.length) {
+    return undefined;
+  }
+
+  const rightAlignedKeys = new Set(rightAlignedColumnKeys);
+  const columnStyles: Record<number, { halign: 'right' }> = {};
+
+  columns.forEach((column, index) => {
+    if (rightAlignedKeys.has(column.key)) {
+      columnStyles[index] = { halign: 'right' };
+    }
+  });
+
+  return Object.keys(columnStyles).length > 0 ? columnStyles : undefined;
 };
 
 const normalizeCellValue = (value: unknown): string | number => {
@@ -74,28 +92,6 @@ const fallbackExportExcel = (params: GridExportParams): void => {
   downloadBlob(blob, `${fileName}.xls`);
 };
 
-const fallbackExportPdf = (params: GridExportParams): void => {
-  const { fileName, columns, rows } = params;
-  const headers = columns.map((column) => `<th>${escapeHtml(column.label)}</th>`).join('');
-  const body = rows
-    .map((row) => {
-      const cells = columns
-        .map((column) => `<td>${escapeHtml(String(normalizeCellValue(row[column.key])))}</td>`)
-        .join('');
-      return `<tr>${cells}</tr>`;
-    })
-    .join('');
-
-  const html = `<!doctype html><html><head><meta charset="utf-8" /><title>${escapeHtml(fileName)}</title><style>body{font-family:Arial,sans-serif;padding:16px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ccc;padding:6px;text-align:left;font-size:12px;}th{background:#f2f2f2;}</style></head><body><h2>${escapeHtml(fileName)}</h2><table><thead><tr>${headers}</tr></thead><tbody>${body}</tbody></table></body></html>`;
-  const popup = window.open('', '_blank', 'noopener,noreferrer,width=1100,height=760');
-  if (!popup) return;
-  popup.document.open();
-  popup.document.write(html);
-  popup.document.close();
-  popup.focus();
-  popup.print();
-};
-
 export async function exportGridToExcel(params: GridExportParams): Promise<void> {
   const exportRows = mapRowsForExport(params.columns, params.rows);
   try {
@@ -105,35 +101,52 @@ export async function exportGridToExcel(params: GridExportParams): Promise<void>
   }
 }
 
-interface JsPDFConstructor {
-  new (options?: { orientation?: 'landscape' }): { save: (filename: string) => void };
-}
-type AutoTableFn = (doc: unknown, options: Record<string, unknown>) => void;
-
 export async function exportGridToPdf(params: GridExportParams): Promise<void> {
   const exportRows = mapRowsForExport(params.columns, params.rows);
-  try {
-    const [jspdfMod, autoTableMod] = await Promise.all([
-      dynamicImport('jspdf') as Promise<{ default: JsPDFConstructor }>,
-      dynamicImport('jspdf-autotable') as Promise<{ default: AutoTableFn }>,
-    ]);
-    const JsPDF = jspdfMod.default;
-    const autoTable = autoTableMod.default;
+  const [{ jsPDF }, { autoTable }] = await Promise.all([
+    import('jspdf'),
+    import('jspdf-autotable'),
+  ]);
 
-    const doc = new JsPDF({ orientation: 'landscape' });
-    const head = [params.columns.map((column) => column.label)];
-    const body = exportRows.map((row) => params.columns.map((column) => row[column.label] ?? ''));
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+  const pdfFont = await registerPdfExportFont(doc);
+  const head = [params.columns.map((column) => column.label)];
+  const body = exportRows.map((row) => params.columns.map((column) => row[column.label] ?? ''));
+  const columnStyles = buildPdfRightAlignedColumnStyles(params.columns, params.pdfRightAlignedColumnKeys);
 
-    autoTable(doc, {
-      head,
-      body,
-      styles: { fontSize: 8, cellPadding: 2 },
-      headStyles: { fillColor: [27, 39, 66] },
-      margin: { top: 20 },
-    });
+  autoTable(doc, {
+    head,
+    body,
+    theme: 'grid',
+    ...(columnStyles ? { columnStyles } : {}),
+    styles: {
+      font: pdfFont,
+      fontStyle: 'normal',
+      fontSize: 8,
+      cellPadding: 3,
+      overflow: 'linebreak',
+      textColor: [30, 41, 59],
+      lineColor: [180, 188, 200],
+      lineWidth: 0.35,
+    },
+    headStyles: {
+      font: pdfFont,
+      fontStyle: 'bold',
+      fillColor: [27, 39, 66],
+      textColor: 255,
+      lineColor: [27, 39, 66],
+      lineWidth: 0.35,
+    },
+    bodyStyles: {
+      font: pdfFont,
+      fontStyle: 'normal',
+      lineColor: [180, 188, 200],
+      lineWidth: 0.35,
+    },
+    margin: { top: 24, left: 12, right: 12 },
+    tableWidth: 'auto',
+  });
 
-    doc.save(`${params.fileName}.pdf`);
-  } catch {
-    fallbackExportPdf(params);
-  }
+  const blob = doc.output('blob');
+  downloadBlob(blob, `${params.fileName}.pdf`);
 }
