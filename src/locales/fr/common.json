@@ -1684,7 +1684,31 @@
     },
     "tabs": {
       "overview": "Overview",
-      "analytics": "Analytique"
+      "analytics": "Analytique",
+      "erpMovements": "Mouvements ERP"
+    },
+    "erpMovements": {
+      "title": "Mouvements ERP",
+      "description": "Mouvements généraux Netsis des clients pour le commercial sélectionné.",
+      "exportFileName": "commercial-mouvements-erp",
+      "empty": "Aucun mouvement ERP trouvé.",
+      "error": "Impossible de charger les mouvements ERP.",
+      "columns": {
+        "date": "Date",
+        "dueDate": "Date d'échéance",
+        "documentNo": "N° Document",
+        "customerCode": "Code client",
+        "description": "Description",
+        "currency": "Devise",
+        "debit": "Débit",
+        "credit": "Crédit",
+        "tlBalanceByDate": "Solde TRY par Date",
+        "tlBalanceByDueDate": "Solde TRY par Échéance",
+        "fxDebit": "Débit Devise",
+        "fxCredit": "Crédit Devise",
+        "fxBalanceByDate": "Solde Devise par Date",
+        "fxBalanceByDueDate": "Solde Devise par Échéance"
+      }
     },
     "kpi": {
       "totalDemands": "Total demandes",

@@ -69,14 +69,15 @@ export interface DataTableActionBarProps {
   exportColumns: GridExportColumn[];
   exportRows: Record<string, unknown>[];
   getExportData?: () => Promise<{ columns: GridExportColumn[]; rows: Record<string, unknown>[] }>;
-  filterColumns: readonly FilterColumnConfig[];
-  defaultFilterColumn: string;
-  draftFilterRows: FilterRow[];
-  onDraftFilterRowsChange: (rows: FilterRow[]) => void;
+  pdfRightAlignedColumnKeys?: readonly string[];
+  filterColumns?: readonly FilterColumnConfig[];
+  defaultFilterColumn?: string;
+  draftFilterRows?: FilterRow[];
+  onDraftFilterRowsChange?: (rows: FilterRow[]) => void;
   filterLogic?: 'and' | 'or';
   onFilterLogicChange?: (value: 'and' | 'or') => void;
-  onApplyFilters: () => void;
-  onClearFilters: () => void;
+  onApplyFilters?: () => void;
+  onClearFilters?: () => void;
   translationNamespace?: string;
   appliedFilterCount?: number;
   searchValue?: string;
@@ -106,6 +107,7 @@ export function DataTableActionBar({
   exportColumns,
   exportRows,
   getExportData,
+  pdfRightAlignedColumnKeys,
   filterColumns,
   defaultFilterColumn,
   draftFilterRows,
@@ -285,6 +287,7 @@ export function DataTableActionBar({
   );
 
   const hasAdditionalActions = Boolean(additionalFilterActions);
+  const hasAdvancedFilter = Boolean(filterColumns && onApplyFilters && onClearFilters);
 
   const overflowStableWidthContext = useMemo(
     () => ({
@@ -432,6 +435,7 @@ export function DataTableActionBar({
           columns={exportColumns}
           rows={exportRows}
           getExportData={getExportData}
+          pdfRightAlignedColumnKeys={pdfRightAlignedColumnKeys}
           translationNamespace={translationNamespace}
           onActionComplete={onClose}
         />
@@ -446,7 +450,7 @@ export function DataTableActionBar({
           {additionalFilterActions}
         </div>
       ) : null}
-      {!isCoreInline ? renderFilterOverflowMenuItem(onClose) : null}
+      {hasAdvancedFilter && !isCoreInline ? renderFilterOverflowMenuItem(onClose) : null}
       {!isCoreInline ? renderColumnsOverflowMenuItem(onClose) : null}
       {!isCoreInline ? renderExportOverflowSubmenu(onClose) : null}
     </>
@@ -627,7 +631,7 @@ export function DataTableActionBar({
               <div className="shrink-0">{additionalFilterActions}</div>
             ) : null}
             <div className="flex shrink-0 items-center gap-2">
-              <div className="shrink-0">{renderFilterTriggerButton()}</div>
+              {hasAdvancedFilter ? <div className="shrink-0">{renderFilterTriggerButton()}</div> : null}
               <div className="shrink-0">{renderColumnsTriggerButton()}</div>
               <div className="shrink-0">
                 <GridExportMenu
@@ -635,6 +639,7 @@ export function DataTableActionBar({
                   columns={exportColumns}
                   rows={exportRows}
                   getExportData={getExportData}
+                  pdfRightAlignedColumnKeys={pdfRightAlignedColumnKeys}
                   translationNamespace={translationNamespace}
                 />
               </div>
@@ -646,49 +651,51 @@ export function DataTableActionBar({
               <div className="shrink-0">{additionalFilterActions}</div>
             ) : null}
 
-            <Popover open={showFilters} onOpenChange={handleFilterOpenChange}>
-              {isActionInline('filter') ? (
-                <PopoverTrigger asChild>
-                  {renderFilterTriggerButton()}
-                </PopoverTrigger>
-              ) : (
-                <PopoverTrigger asChild>
-                  <span className="pointer-events-none absolute bottom-0 crm-end-0 h-px w-px overflow-hidden opacity-0" tabIndex={-1} aria-hidden />
-                </PopoverTrigger>
-              )}
-              <PopoverContent side="bottom" align="end" className="w-[560px] max-w-[95vw] p-0 rounded-2xl overflow-hidden">
-                <div className="flex items-center justify-between p-3 border-b border-white/5">
-                  <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    {resolveAdvancedFilterTitle()}
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => setShowFilters(false)}
-                    className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
-                    aria-label={t('common.close')}
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-                <div className="p-3 overflow-y-auto max-h-[420px]">
-                  <AdvancedFilter
-                    columns={filterColumns}
-                    defaultColumn={defaultFilterColumn}
-                    draftRows={draftFilterRows}
-                    onDraftRowsChange={onDraftFilterRowsChange}
-                    filterLogic={filterLogic}
-                    onFilterLogicChange={onFilterLogicChange}
-                    onSearch={() => {
-                      onApplyFilters();
-                      setShowFilters(false);
-                    }}
-                    onClear={onClearFilters}
-                    translationNamespace={translationNamespace}
-                    embedded
-                  />
-                </div>
-              </PopoverContent>
-            </Popover>
+            {hasAdvancedFilter ? (
+              <Popover open={showFilters} onOpenChange={handleFilterOpenChange}>
+                {isActionInline('filter') ? (
+                  <PopoverTrigger asChild>
+                    {renderFilterTriggerButton()}
+                  </PopoverTrigger>
+                ) : (
+                  <PopoverTrigger asChild>
+                    <span className="pointer-events-none absolute bottom-0 crm-end-0 h-px w-px overflow-hidden opacity-0" tabIndex={-1} aria-hidden />
+                  </PopoverTrigger>
+                )}
+                <PopoverContent side="bottom" align="end" className="w-[560px] max-w-[95vw] p-0 rounded-2xl overflow-hidden">
+                  <div className="flex items-center justify-between p-3 border-b border-white/5">
+                    <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      {resolveAdvancedFilterTitle()}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setShowFilters(false)}
+                      className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors"
+                      aria-label={t('common.close')}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                  <div className="p-3 overflow-y-auto max-h-[420px]">
+                    <AdvancedFilter
+                      columns={filterColumns ?? []}
+                      defaultColumn={defaultFilterColumn ?? ''}
+                      draftRows={draftFilterRows ?? []}
+                      onDraftRowsChange={onDraftFilterRowsChange ?? (() => undefined)}
+                      filterLogic={filterLogic}
+                      onFilterLogicChange={onFilterLogicChange}
+                      onSearch={() => {
+                        onApplyFilters?.();
+                        setShowFilters(false);
+                      }}
+                      onClear={() => onClearFilters?.()}
+                      translationNamespace={translationNamespace}
+                      embedded
+                    />
+                  </div>
+                </PopoverContent>
+              </Popover>
+            ) : null}
 
             <Popover open={columnsOpen} onOpenChange={handleColumnsOpenChange}>
               {isActionInline('columns') ? (
@@ -719,6 +726,7 @@ export function DataTableActionBar({
                 columns={exportColumns}
                 rows={exportRows}
                 getExportData={getExportData}
+                pdfRightAlignedColumnKeys={pdfRightAlignedColumnKeys}
                 translationNamespace={translationNamespace}
               />
             ) : null}
@@ -759,7 +767,7 @@ export function DataTableActionBar({
                     {additionalFilterActions}
                   </div>
                 ) : null}
-                {renderFilterOverflowMenuItem(() => setMobileMenuOpen(false))}
+                {hasAdvancedFilter ? renderFilterOverflowMenuItem(() => setMobileMenuOpen(false)) : null}
                 {renderColumnsOverflowMenuItem(() => setMobileMenuOpen(false))}
                 {renderExportOverflowSubmenu(() => setMobileMenuOpen(false))}
               </DropdownMenuContent>
