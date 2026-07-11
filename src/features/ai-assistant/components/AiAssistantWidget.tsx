@@ -1281,20 +1281,22 @@ export function AiAssistantWidget(): ReactElement | null {
       confirmationResult = await aiAssistantApi.confirmAction(toolActionId);
     }
 
-    if (!actionUrl) {
+    const resolvedActionUrl = confirmationResult?.actionUrl || actionUrl;
+
+    if (!resolvedActionUrl) {
       if (confirmationResult?.resultMessage) {
         window.alert(confirmationResult.resultMessage);
       }
       return;
     }
 
-    if (actionUrl.startsWith('http')) {
-      window.open(actionUrl, '_blank', 'noopener,noreferrer');
+    if (resolvedActionUrl.startsWith('http')) {
+      window.open(resolvedActionUrl, '_blank', 'noopener,noreferrer');
       return;
     }
 
-    if (isCustomerDossierPdfActionUrl(actionUrl)) {
-      const customerId = extractCustomerDossierId(actionUrl);
+    if (isCustomerDossierPdfActionUrl(resolvedActionUrl)) {
+      const customerId = extractCustomerDossierId(resolvedActionUrl);
       if (!customerId) {
         return;
       }
@@ -1304,8 +1306,8 @@ export function AiAssistantWidget(): ReactElement | null {
       return;
     }
 
-    if (isSalesRepDossierPdfActionUrl(actionUrl)) {
-      const userId = extractSalesRepDossierId(actionUrl);
+    if (isSalesRepDossierPdfActionUrl(resolvedActionUrl)) {
+      const userId = extractSalesRepDossierId(resolvedActionUrl);
       if (!userId) {
         return;
       }
@@ -1315,7 +1317,7 @@ export function AiAssistantWidget(): ReactElement | null {
       return;
     }
 
-    navigate(actionUrl);
+    navigate(resolvedActionUrl);
     setIsOpen(false);
   };
 
