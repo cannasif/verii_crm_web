@@ -11,8 +11,8 @@ const OPERATOR_MAP: Record<string, string> = {
 };
 
 export function buildCustomerListSearchParam(raw: string): string | undefined {
-  const normalized = normalizeSearchValue(raw);
-  return normalized.length > 0 ? normalized : undefined;
+  const search = raw.trim();
+  return search.length > 0 ? search : undefined;
 }
 
 export function customerFilterRowsToPagedFilters(rows: FilterRow[]): PagedFilter[] {
