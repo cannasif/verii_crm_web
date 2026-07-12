@@ -116,32 +116,31 @@ function CollapsibleCard({
     >
       <div className="absolute inset-0 pointer-events-none bg-[image:var(--crm-brand-gradient-soft)] opacity-25 dark:opacity-15" />
       <div className="relative z-10 p-4">
-        <button
-          type="button"
-          onClick={() => setOpen((prev) => !prev)}
-          className="flex w-full items-start justify-between gap-3 text-left group"
-          aria-expanded={open}
-        >
-          <div className="flex min-w-0 items-start gap-3">
-            {icon ? (
-              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg border border-primary/15 bg-accent text-primary transition-transform group-hover:scale-105 dark:border-primary/25 dark:bg-primary/10">
-                {icon}
-              </span>
-            ) : null}
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-white">{title}</h2>
+        <div className="flex items-start gap-2">
+          <button
+            type="button"
+            onClick={() => setOpen((prev) => !prev)}
+            className="group flex min-w-0 flex-1 items-start justify-between gap-3 text-left"
+            aria-expanded={open}
+          >
+            <div className="flex min-w-0 items-start gap-3">
+              {icon ? (
+                <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg border border-primary/15 bg-accent text-primary transition-transform group-hover:scale-105 dark:border-primary/25 dark:bg-primary/10">
+                  {icon}
+                </span>
+              ) : null}
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-white">{title}</h2>
+                </div>
+                {description ? (
+                  <p className="text-slate-500 dark:text-slate-400 mt-1 text-[11px] font-medium leading-relaxed">{description}</p>
+                ) : null}
+                {summary && !open ? (
+                  <p className="mt-2 text-xs font-bold uppercase tracking-tight text-primary">{summary}</p>
+                ) : null}
               </div>
-              {description ? (
-                <p className="text-slate-500 dark:text-slate-400 mt-1 text-[11px] font-medium leading-relaxed">{description}</p>
-              ) : null}
-              {summary && !open ? (
-                <p className="mt-2 text-xs font-bold uppercase tracking-tight text-primary">{summary}</p>
-              ) : null}
             </div>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {action}
             <div className="flex size-7 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-colors group-hover:bg-accent group-hover:text-primary dark:bg-white/5 dark:group-hover:bg-primary/10">
               <ChevronDown
                 className={cn(
@@ -150,8 +149,9 @@ function CollapsibleCard({
                 )}
               />
             </div>
-          </div>
-        </button>
+          </button>
+          {action ? <div className="shrink-0">{action}</div> : null}
+        </div>
         {open ? <div className="mt-5 animate-in fade-in slide-in-from-top-2 duration-300">{children}</div> : null}
       </div>
     </div>

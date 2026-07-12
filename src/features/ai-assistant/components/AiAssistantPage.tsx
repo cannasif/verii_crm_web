@@ -454,12 +454,7 @@ export function AiAssistantPage(): ReactElement {
     onClearChat: clearChat,
   };
 
-  const openActionUrl = async (actionUrl?: string | null, toolActionId?: number | null, confirmationRequired = false): Promise<void> => {
-    if (confirmationRequired) {
-      const confirmed = window.confirm('AI önerisini onaylayıp ilgili ekrana geçmek istiyor musunuz?');
-      if (!confirmed) return;
-    }
-
+  const openActionUrl = async (actionUrl?: string | null, toolActionId?: number | null, _confirmationRequired = false): Promise<void> => {
     let confirmationResult: Awaited<ReturnType<typeof aiAssistantApi.confirmAction>> | null = null;
     if (toolActionId) {
       confirmationResult = await aiAssistantApi.confirmAction(toolActionId);
