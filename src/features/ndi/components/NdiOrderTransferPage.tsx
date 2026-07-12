@@ -676,7 +676,7 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
   };
 }
 
-export function NdiOrderTransferDemoPage(): ReactElement {
+export function NdiOrderTransferPage(): ReactElement {
   const [search, setSearch] = useState('');
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(() => new Set());
   const [selectedLineIds, setSelectedLineIds] = useState<Set<string>>(() => new Set());
