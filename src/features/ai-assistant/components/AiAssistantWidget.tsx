@@ -394,6 +394,7 @@ export function AiAssistantWidget(): ReactElement | null {
   );
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
   const [isThinking, setIsThinking] = useState(false);
+  const [pendingToolActionId, setPendingToolActionId] = useState<number | null>(null);
   const [latestErrorContext, setLatestErrorContext] = useState<AiAssistantErrorContext | null>(
     () => getLatestAiAssistantErrorContext()
   );
@@ -1271,10 +1272,14 @@ export function AiAssistantWidget(): ReactElement | null {
   };
 
   const openActionUrl = async (actionUrl?: string | null, toolActionId?: number | null, _confirmationRequired = false): Promise<void> => {
+    if (toolActionId && pendingToolActionId === toolActionId) return;
+
     let confirmationResult: Awaited<ReturnType<typeof aiAssistantApi.confirmAction>> | null = null;
-    if (toolActionId) {
-      confirmationResult = await aiAssistantApi.confirmAction(toolActionId);
-    }
+    try {
+      if (toolActionId) {
+        setPendingToolActionId(toolActionId);
+        confirmationResult = await aiAssistantApi.confirmAction(toolActionId);
+      }
 
     const resolvedActionUrl = confirmationResult?.actionUrl || actionUrl;
 
@@ -1312,8 +1317,13 @@ export function AiAssistantWidget(): ReactElement | null {
       return;
     }
 
-    navigate(resolvedActionUrl);
-    setIsOpen(false);
+      navigate(resolvedActionUrl);
+      setIsOpen(false);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : readText('actionFailed'));
+    } finally {
+      if (toolActionId) setPendingToolActionId(null);
+    }
   };
 
   const toggleExpanded = (): void => {
@@ -1859,6 +1869,7 @@ export function AiAssistantWidget(): ReactElement | null {
                                   type="button"
                                   size="sm"
                                   variant="outline"
+                                  disabled={Boolean(item.toolActionId && pendingToolActionId === item.toolActionId)}
                                   className="mt-3 h-8 rounded-xl bg-white/70 px-3 text-xs font-black dark:bg-white/10"
                                   onClick={() => void openActionUrl(
                                     item.actionUrl,

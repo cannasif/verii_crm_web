@@ -154,6 +154,7 @@ export function AiAssistantPage(): ReactElement {
   );
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([]);
   const [isThinking, setIsThinking] = useState(false);
+  const [pendingToolActionId, setPendingToolActionId] = useState<number | null>(null);
   const [latestErrorContext, setLatestErrorContext] = useState<AiAssistantErrorContext | null>(
     () => getLatestAiAssistantErrorContext()
   );
@@ -455,10 +456,14 @@ export function AiAssistantPage(): ReactElement {
   };
 
   const openActionUrl = async (actionUrl?: string | null, toolActionId?: number | null, _confirmationRequired = false): Promise<void> => {
+    if (toolActionId && pendingToolActionId === toolActionId) return;
+
     let confirmationResult: Awaited<ReturnType<typeof aiAssistantApi.confirmAction>> | null = null;
-    if (toolActionId) {
-      confirmationResult = await aiAssistantApi.confirmAction(toolActionId);
-    }
+    try {
+      if (toolActionId) {
+        setPendingToolActionId(toolActionId);
+        confirmationResult = await aiAssistantApi.confirmAction(toolActionId);
+      }
 
     const resolvedActionUrl = confirmationResult?.actionUrl || actionUrl;
 
@@ -496,7 +501,12 @@ export function AiAssistantPage(): ReactElement {
       return;
     }
 
-    navigate(resolvedActionUrl);
+      navigate(resolvedActionUrl);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : t('actionFailed'));
+    } finally {
+      if (toolActionId) setPendingToolActionId(null);
+    }
   };
 
   const copyAssistantMessage = async (message: AiAssistantChatMessage): Promise<void> => {
@@ -605,6 +615,7 @@ export function AiAssistantPage(): ReactElement {
                                     type="button"
                                     size="sm"
                                     variant="outline"
+                                    disabled={Boolean(item.toolActionId && pendingToolActionId === item.toolActionId)}
                                     className="mt-3 h-9 rounded-xl bg-white/70 px-3 text-xs font-black dark:bg-white/10"
                                     onClick={() => {
                                       void openActionUrl(
