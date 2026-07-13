@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
+import { matchesSearchTerm } from '@/lib/search';
 
 const SIDEBAR_EASE = 'ease-[cubic-bezier(0.4,0,0.2,1)]';
 const SIDEBAR_TRANSITION = `duration-[260ms] ${SIDEBAR_EASE}`;
@@ -32,20 +33,6 @@ interface SidebarProps {
   items: NavItem[];
 }
 
-const normalizeText = (text: string): string => {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '')
-    .replace(/ğ/g, 'g')
-    .replace(/ü/g, 'u')
-    .replace(/ş/g, 's')
-    .replace(/ı/g, 'i')
-    .replace(/ö/g, 'o')
-    .replace(/ç/g, 'c')
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-};
-
 function SubMenuComponent({ item, pathname, searchQuery }: { item: NavItem; pathname: string; searchQuery: string }): ReactElement {
   const { setSearchQuery, setSidebarOpen } = useUIStore();
   
@@ -53,8 +40,7 @@ function SubMenuComponent({ item, pathname, searchQuery }: { item: NavItem; path
   
   const hasMatchingChild = useMemo(() => {
     if (!searchQuery.trim()) return false;
-    const normalizedQuery = normalizeText(searchQuery);
-    return item.children?.some(child => normalizeText(child.title).includes(normalizedQuery));
+    return item.children?.some((child) => matchesSearchTerm(searchQuery, [child.title]));
   }, [item.children, searchQuery]);
 
   const [isOpen, setIsOpen] = useState(hasActiveChild);
@@ -156,10 +142,8 @@ function NavItemComponent({
   const matchesSearch = useMemo(() => {
     const query = searchQuery.trim();
     if (!query) return true;
-    const normalizedQuery = normalizeText(query);
     const checkMatch = (nav: NavItem): boolean => {
-       const normalizedTitle = normalizeText(nav.title);
-       if (normalizedTitle.includes(normalizedQuery)) return true;
+       if (matchesSearchTerm(query, [nav.title])) return true;
        return nav.children ? nav.children.some(checkMatch) : false;
     };
     return checkMatch(item);
@@ -167,10 +151,9 @@ function NavItemComponent({
 
   useEffect(() => {
     if (searchQuery.trim() !== "") {
-      const normalizedQuery = normalizeText(searchQuery);
       const hasMatchingChild = item.children?.some(child => {
         const checkRecursive = (nav: NavItem): boolean => {
-          if (normalizeText(nav.title).includes(normalizedQuery)) return true;
+          if (matchesSearchTerm(searchQuery, [nav.title])) return true;
           return nav.children ? nav.children.some(checkRecursive) : false;
         };
         return checkRecursive(child);

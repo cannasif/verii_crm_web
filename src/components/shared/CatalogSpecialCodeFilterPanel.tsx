@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { normalizeSearchValue } from '@/lib/search';
+import { matchesSearchTerm } from '@/lib/search';
 import { getCatalogFieldLabel } from '@/lib/catalog-field-labels';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import {
@@ -28,13 +28,8 @@ type CatalogSpecialCodeFilterPanelProps = {
   onClear: () => void;
 };
 
-function optionMatchesFilterSearch(option: CatalogSpecialCodeOption, normalizedQuery: string): boolean {
-  if (!normalizedQuery) {
-    return true;
-  }
-  const label = normalizeSearchValue(option.label);
-  const value = normalizeSearchValue(option.value);
-  return label.includes(normalizedQuery) || value.includes(normalizedQuery);
+function optionMatchesFilterSearch(option: CatalogSpecialCodeOption, query: string): boolean {
+  return matchesSearchTerm(query, [option.label, option.value]);
 }
 
 function buildInitialExpandedState(): Record<CatalogFilterDimension, boolean> {
@@ -65,11 +60,6 @@ export function CatalogSpecialCodeFilterPanel({
     useState<Record<CatalogFilterDimension, boolean>>(buildInitialExpandedState);
   const filterSearch = searchValue ?? internalFilterSearch;
 
-  const normalizedFilterSearch = useMemo(
-    () => normalizeSearchValue(filterSearch.trim()),
-    [filterSearch],
-  );
-
   const hasAnySelection = useMemo(
     () => CATALOG_FILTER_DIMENSIONS.some((dimension) => selections[dimension].length > 0),
     [selections],
@@ -81,11 +71,11 @@ export function CatalogSpecialCodeFilterPanel({
       result[dimension] = areOptionsServerFiltered
         ? optionsByLevel[dimension]
         : optionsByLevel[dimension].filter((option) =>
-            optionMatchesFilterSearch(option, normalizedFilterSearch),
+            optionMatchesFilterSearch(option, filterSearch),
           );
     }
     return result;
-  }, [areOptionsServerFiltered, optionsByLevel, normalizedFilterSearch]);
+  }, [areOptionsServerFiltered, filterSearch, optionsByLevel]);
 
   const toggleDimensionExpanded = useCallback((dimension: CatalogFilterDimension): void => {
     setExpandedByDimension((prev) => ({ ...prev, [dimension]: !prev[dimension] }));
@@ -145,7 +135,7 @@ export function CatalogSpecialCodeFilterPanel({
           const selectedSet = new Set(selections[dimension]);
           const levelLabel = getCatalogFieldLabel(systemSettings, dimension, t);
           const isExpanded =
-            normalizedFilterSearch.length > 0
+            filterSearch.trim().length > 0
               ? options.length > 0
               : expandedByDimension[dimension];
           const sectionId = `catalog-code-section-${dimension}`;

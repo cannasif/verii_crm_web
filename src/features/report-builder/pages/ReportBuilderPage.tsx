@@ -12,6 +12,7 @@ import {
 } from '@dnd-kit/core';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { matchesSearchTerm } from '@/lib/search';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
@@ -806,13 +807,12 @@ export function ReportBuilderPage(): ReactElement {
       })),
     [config.values, getFieldLabel],
   );
-  const simpleFieldSearchTerm = fieldsSearch.trim().toLowerCase();
   const simpleAvailableFields = useMemo(
     () =>
       allSelectableFields.filter((field) =>
-        !simpleFieldSearchTerm || `${field.label} ${field.name}`.toLowerCase().includes(simpleFieldSearchTerm),
+        matchesSearchTerm(fieldsSearch, [field.label, field.name]),
       ),
-    [allSelectableFields, simpleFieldSearchTerm],
+    [allSelectableFields, fieldsSearch],
   );
   const applySimpleTableValues = useCallback(
     (nextValues: typeof config.values) => {

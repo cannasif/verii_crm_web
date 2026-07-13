@@ -4,7 +4,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { normalizeSearchValue } from '@/lib/search';
+import { matchesSearchTerm } from '@/lib/search';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import type { CalculatedField, Field } from '../types';
@@ -189,14 +189,12 @@ export function FieldsPanel({
 
   const filtered = useMemo(() => {
     if (!search.trim()) return mergedFields;
-    const q = normalizeSearchValue(search);
-    return mergedFields.filter(
-      (f) =>
-        normalizeSearchValue(f.name).includes(q) ||
-        normalizeSearchValue(f.displayName).includes(q) ||
-        normalizeSearchValue(f.dotNetType ?? f.sqlType).includes(q) ||
-        normalizeSearchValue(f.semanticType).includes(q)
-    );
+    return mergedFields.filter((field) => matchesSearchTerm(search, [
+      field.name,
+      field.displayName,
+      field.dotNetType ?? field.sqlType,
+      field.semanticType,
+    ]));
   }, [mergedFields, search]);
 
   const semanticCounts = useMemo(() => {

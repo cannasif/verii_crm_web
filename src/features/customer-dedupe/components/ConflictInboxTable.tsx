@@ -10,19 +10,18 @@ import { MergePreviewDialog } from './MergePreviewDialog';
 import { useMergeCustomersMutation } from '../hooks/useMergeCustomersMutation';
 import { Eye, Merge } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { matchesSearchTerm } from '@/lib/search';
 
 function filterAndSort(
   list: CustomerDuplicateCandidateDto[],
   filters: ConflictFiltersState
 ): CustomerDuplicateCandidateDto[] {
   let result = [...list];
-  const search = filters.search.trim().toLowerCase();
-  if (search) {
-    result = result.filter(
-      (row) =>
-        row.masterCustomerName?.toLowerCase().includes(search) ||
-        row.duplicateCustomerName?.toLowerCase().includes(search)
-    );
+  if (filters.search.trim()) {
+    result = result.filter((row) => matchesSearchTerm(filters.search, [
+      row.masterCustomerName,
+      row.duplicateCustomerName,
+    ]));
   }
   if (filters.matchType) {
     result = result.filter((row) => row.matchType === filters.matchType);

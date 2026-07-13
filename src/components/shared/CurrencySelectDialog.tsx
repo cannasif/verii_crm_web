@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import type { KurDto } from '@/services/erp-types';
 import { VoiceSearchButton } from '@/components/ui/voice-search-button';
+import { matchesSearchTerm } from '@/lib/search';
 
 interface CurrencySelectDialogProps {
   open: boolean;
@@ -31,26 +32,12 @@ export function CurrencySelectDialog({
   const { data: exchangeRates = [], isLoading } = useExchangeRate();
   
   // Normalize text for search
-  const normalizeText = (text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/ğ/g, 'g')
-      .replace(/ü/g, 'u')
-      .replace(/ş/g, 's')
-      .replace(/ı/g, 'i')
-      .replace(/ö/g, 'o')
-      .replace(/ç/g, 'c');
-  };
-
   const filteredCurrencies = useMemo(() => {
     if (!searchQuery.trim()) return exchangeRates;
-    
-    const normalizedQuery = normalizeText(searchQuery);
-    return exchangeRates.filter((currency) => {
-      const code = String(currency.dovizTipi);
-      const name = currency.dovizIsmi ? normalizeText(currency.dovizIsmi) : '';
-      return code.includes(normalizedQuery) || name.includes(normalizedQuery);
-    });
+
+    return exchangeRates.filter((currency) =>
+      matchesSearchTerm(searchQuery, [currency.dovizTipi, currency.dovizIsmi])
+    );
   }, [exchangeRates, searchQuery]);
 
   const handleSelect = (currency: KurDto) => {

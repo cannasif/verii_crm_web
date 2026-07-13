@@ -9,6 +9,7 @@ import { DataTableActionBar, type DataTableGridColumn } from '@/components/share
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences } from '@/lib/column-preferences';
 import { arraysEqual } from '@/lib/utils';
+import { matchesSearchTerm } from '@/lib/search';
 import { PAYMENT_TYPE_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { PaymentTypeTable, getColumnsConfig } from './PaymentTypeTable';
 import { PaymentTypeForm } from './PaymentTypeForm';
@@ -94,12 +95,7 @@ export function PaymentTypeManagementPage(): ReactElement {
     if (!paymentTypes.length) return [];
     let result = [...paymentTypes];
     if (searchTerm) {
-      const lower = searchTerm.toLowerCase();
-      result = result.filter(
-        (c) =>
-          (c.name && c.name.toLowerCase().includes(lower)) ||
-          (c.description && c.description.toLowerCase().includes(lower))
-      );
+      result = result.filter((item) => matchesSearchTerm(searchTerm, [item.name, item.description]));
     }
     result = applyPaymentTypeFilters(result, appliedFilterRows);
     return result;

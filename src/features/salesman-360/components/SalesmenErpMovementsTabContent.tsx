@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuthStore } from '@/stores/auth-store';
 import { loadColumnPreferences } from '@/lib/column-preferences';
 import { MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME, MANAGEMENT_LIST_CARD_HEADER_CLASSNAME, MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME } from '@/lib/management-list-layout';
-import { normalizeSearchValue } from '@/lib/search';
+import { matchesSearchTerm } from '@/lib/search';
 import { arraysEqual } from '@/lib/utils';
 import type { Salesmen360ErpMovementDto } from '../types/salesmen360.types';
 import {
@@ -95,13 +95,11 @@ export function SalesmenErpMovementsTabContent({
   const sourceRows = useMemo(() => buildSalesmenErpMovementGridRows(movements), [movements]);
 
   const filteredRows = useMemo(() => {
-    const search = normalizeSearchValue(searchTerm);
-    if (!search) {
+    if (!searchTerm.trim()) {
       return sourceRows;
     }
 
-    return sourceRows.filter((row) =>
-      [
+    return sourceRows.filter((row) => matchesSearchTerm(searchTerm, [
         formatDate(row.tarih),
         formatDate(row.vadeTarihi),
         row.belgeNo,
@@ -117,10 +115,7 @@ export function SalesmenErpMovementsTabContent({
         row.dovizAlacak,
         row.tarihSiraliDovizBakiye,
         row.vadeSiraliDovizBakiye,
-      ]
-        .filter((value) => value != null && value !== '')
-        .some((value) => normalizeSearchValue(String(value)).includes(search))
-    );
+      ]));
   }, [formatDate, searchTerm, sourceRows]);
 
   const sortedRows = useMemo(

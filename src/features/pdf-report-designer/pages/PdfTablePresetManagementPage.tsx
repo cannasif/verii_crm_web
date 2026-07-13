@@ -26,7 +26,7 @@ import {
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
-import { normalizeSearchValue } from '@/lib/search';
+import { matchesSearchTerm } from '@/lib/search';
 import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -146,12 +146,12 @@ export function PdfTablePresetManagementPage(): ReactElement {
 
   const filteredPresets = useMemo(() => {
     if (!searchTerm.trim()) return presets;
-    const lower = normalizeSearchValue(searchTerm);
     return presets.filter(
-      (p) =>
-        normalizeSearchValue(p.name).includes(lower) ||
-        normalizeSearchValue(p.key).includes(lower) ||
-        (RULE_TYPE_LABEL_KEYS[p.ruleType] && normalizeSearchValue(t(RULE_TYPE_LABEL_KEYS[p.ruleType])).includes(lower))
+      (preset) => matchesSearchTerm(searchTerm, [
+        preset.name,
+        preset.key,
+        RULE_TYPE_LABEL_KEYS[preset.ruleType] ? t(RULE_TYPE_LABEL_KEYS[preset.ruleType]) : '',
+      ])
     ).sort((a, b) => {
       const getVal = (item: PdfTablePresetDto, key: PdfTablePresetColumnKey) => {
         if (key === 'columnCount') return item.columns.length;

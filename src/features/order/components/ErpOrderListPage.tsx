@@ -15,6 +15,7 @@ import {
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
 import { arraysEqual, cn } from '@/lib/utils';
+import { matchesSearchTerm } from '@/lib/search';
 import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -204,26 +205,21 @@ export function ErpOrderListPage(): ReactElement {
 
   const sourceRows = useMemo(() => orderQuery.data ?? [], [orderQuery.data]);
   const filteredRows = useMemo(() => {
-    const search = searchTerm.trim().toLocaleLowerCase('tr-TR');
     const advancedFilteredRows = applyFilterRowsClient(sourceRows, appliedFilterRows, ERP_ORDER_COLUMNS.map((column) => ({
       value: column.key,
       type: column.filterType,
       labelKey: column.labelKey,
     })));
-    if (!search) return advancedFilteredRows;
+    if (!searchTerm.trim()) return advancedFilteredRows;
 
-    return advancedFilteredRows.filter((row) =>
-      [
+    return advancedFilteredRows.filter((row) => matchesSearchTerm(searchTerm, [
         row.fatirsNo,
         row.cariKodu,
         row.cariIsim,
         row.plasiyerKodu,
         row.tarih,
         row.teslimTarihi,
-      ]
-        .filter(Boolean)
-        .some((value) => String(value).toLocaleLowerCase('tr-TR').includes(search))
-    );
+      ]));
   }, [appliedFilterRows, searchTerm, sourceRows]);
 
   const filterColumns = useMemo<FilterColumnConfig[]>(

@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/dialog';
 import { Edit2, Trash2, Loader2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { normalizeSearchValue } from '@/lib/search';
+import { matchesSearchTerm } from '@/lib/search';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 const LIST_PARAMS = {
@@ -63,12 +63,8 @@ export function ReportDefinitionList(): ReactElement {
   const items = useMemo(() => data?.data ?? [], [data]);
   const filteredItems = useMemo(() => {
     if (!searchTerm) return items;
-    const lower = normalizeSearchValue(searchTerm);
-    return items.filter(
-      (x) =>
-        normalizeSearchValue(x.name).includes(lower) ||
-        normalizeSearchValue(x.workspaceId).includes(lower) ||
-        normalizeSearchValue(x.reportId).includes(lower)
+    return items.filter((item) =>
+      matchesSearchTerm(searchTerm, [item.name, item.workspaceId, item.reportId])
     );
   }, [items, searchTerm]);
 
