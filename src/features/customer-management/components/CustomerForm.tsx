@@ -56,7 +56,7 @@ import {
   useFieldShake,
 } from '../utils/customer-form-ui';
 import { calculateCustomerCompletion, getCompletionColorClasses } from '../utils/customer-completion';
-import { normalizeCustomerNameToEnglishUpper } from '../utils/customer-name-normalizer';
+import { normalizeCustomerNameToEnglishCharacters } from '../utils/customer-name-normalizer';
 import {
   Building2,
   Hash,
@@ -317,7 +317,7 @@ export function CustomerForm({
     }
 
     const normalizedData = requireEnglishCustomerName
-      ? { ...data, name: normalizeCustomerNameToEnglishUpper(data.name) }
+      ? { ...data, name: normalizeCustomerNameToEnglishCharacters(data.name) }
       : data;
     const submitData = useCustomerCodeAsAccountingCode
       ? {
@@ -423,7 +423,7 @@ export function CustomerForm({
                         onBlur={() => {
                           field.onBlur();
                           if (requireEnglishCustomerName) {
-                            field.onChange(normalizeCustomerNameToEnglishUpper(field.value ?? ''));
+                            field.onChange(normalizeCustomerNameToEnglishCharacters(field.value ?? ''));
                           }
                         }}
                       />

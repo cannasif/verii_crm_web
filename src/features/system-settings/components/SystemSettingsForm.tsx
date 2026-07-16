@@ -611,7 +611,7 @@ export function SystemSettingsForm({
                             {t('systemSettings.Fields.RequireEnglishCustomerName', 'CRM cari adı İngilizce zorunlu')}
                           </FormLabel>
                           <p className="text-muted-foreground text-xs">
-                            {t('systemSettings.Descriptions.RequireEnglishCustomerName', 'Açıkken müşteri adı büyük harfe çevrilir ve Türkçe karakterler İngilizce karşılıklarıyla kaydedilir.')}
+                            {t('systemSettings.Descriptions.RequireEnglishCustomerName', 'Açıkken müşteri adındaki Türkçe karakterler, büyük/küçük harf yapısı korunarak İngilizce karşılıklarıyla kaydedilir.')}
                           </p>
                         </div>
                       </div>

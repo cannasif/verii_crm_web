@@ -4899,7 +4899,7 @@
       "VatReadonly": "When enabled, the VAT rate remains visible on the related demand, quotation, or order lines but cannot be changed by the user.",
       "CatalogLabels": "Leave empty to keep the default Netsis field names such as Group Code, Code1, and Code2. Maximum 50 characters.",
       "UseCustomerCodeAsAccountingCode": "When enabled, the accounting code automatically mirrors the customer/account code and the accounting code field is locked on customer forms.",
-      "RequireEnglishCustomerName": "When enabled, customer names are uppercased and Turkish characters are saved using their English equivalents."
+      "RequireEnglishCustomerName": "When enabled, Turkish characters in customer names are saved using their English equivalents while preserving letter case."
     },
     "Sections": {
       "VatVisibility": "VAT rate visibility",

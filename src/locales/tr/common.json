@@ -4941,7 +4941,7 @@
       "VatReadonly": "Açıldığında ilgili talep, teklif veya sipariş satırlarında KDV oranı görünür kalır ancak kullanıcı tarafından değiştirilemez.",
       "CatalogLabels": "Boş bırakılırsa Grup Kodu, Kod1, Kod2 gibi mevcut Netsis alan adları kullanılır. En fazla 50 karakter girilebilir.",
       "UseCustomerCodeAsAccountingCode": "Açıkken müşteri/cari kodu değiştikçe muhasebe kodu otomatik aynı değeri alır; müşteri formundaki muhasebe kodu alanı kilitlenir.",
-      "RequireEnglishCustomerName": "Açıkken müşteri adı büyük harfe çevrilir ve Türkçe karakterler İngilizce karşılıklarıyla kaydedilir."
+      "RequireEnglishCustomerName": "Açıkken müşteri adındaki Türkçe karakterler, büyük/küçük harf yapısı korunarak İngilizce karşılıklarıyla kaydedilir."
     },
     "Sections": {
       "VatVisibility": "KDV oranı görünürlüğü",

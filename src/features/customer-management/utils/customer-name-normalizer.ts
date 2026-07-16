@@ -1,13 +1,12 @@
-const TURKISH_I_PATTERN = /[\u0130\u0131]/g;
 const COMBINING_MARKS_PATTERN = /[\u0300-\u036f]/g;
 const WHITESPACE_PATTERN = /\s+/g;
 
-export function normalizeCustomerNameToEnglishUpper(value: string): string {
+export function normalizeCustomerNameToEnglishCharacters(value: string): string {
   return value
     .trim()
-    .replace(TURKISH_I_PATTERN, 'I')
+    .replace(/\u0130/g, 'I')
+    .replace(/\u0131/g, 'i')
     .normalize('NFD')
     .replace(COMBINING_MARKS_PATTERN, '')
-    .toUpperCase()
     .replace(WHITESPACE_PATTERN, ' ');
 }
