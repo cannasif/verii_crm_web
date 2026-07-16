@@ -111,6 +111,12 @@ const AUDIT_ACTION_LABELS: Readonly<Record<string, string>> = {
   'quotation.convert-to-order': 'Teklif siparişe dönüştürüldü',
   'quotation.erp-cleanup-copy.create': 'Teklif ERP temizleme kopyası oluşturuldu',
   'quotation.erp-cleanup-recreate': 'Teklif ERP kaydı yeniden oluşturuldu',
+  'netsis.itemslips.create-sales-demand': 'Talep Netsis\'e gönderildi',
+  'netsis.itemslips.create-sales-quotation': 'Teklif Netsis\'e gönderildi',
+  'netsis.itemslips.create-sales-order': 'Sipariş Netsis\'e gönderildi',
+  'netsis.itemslips.create-sales-invoice': 'Satış faturası Netsis\'e gönderildi',
+  'netsis.itemslips.create-sales-dispatch': 'İrsaliye Netsis\'e gönderildi',
+  'netsis.itemslips.delete': 'Netsis belgesi silindi',
 };
 
 function getAuditActionLabel(actionType: string): string {
