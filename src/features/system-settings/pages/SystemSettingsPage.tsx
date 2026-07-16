@@ -52,6 +52,7 @@ export function SystemSettingsPage(): ReactElement {
       customerCodeErrorMessage: values.customerCodeErrorMessage?.trim() || null,
       useCustomerCodeAsAccountingCode: values.useCustomerCodeAsAccountingCode,
       requireEnglishCustomerName: values.requireEnglishCustomerName,
+      useCurrentDateForErpRegistration: values.useCurrentDateForErpRegistration,
       demandApprovalCompletionAction: values.demandApprovalCompletionAction,
       quotationApprovalCompletionAction: values.quotationApprovalCompletionAction,
       orderApprovalCompletionAction: values.orderApprovalCompletionAction,

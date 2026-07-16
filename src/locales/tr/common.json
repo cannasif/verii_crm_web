@@ -4930,6 +4930,7 @@
       "CatalogCode5Label": "Kod5 adı",
       "UseCustomerCodeAsAccountingCode": "Muhasebe kodu müşteri kodu ile aynı olsun",
       "RequireEnglishCustomerName": "CRM cari adı İngilizce zorunlu",
+      "UseCurrentDateForErpRegistration": "ERP kayıt tarihi işlem tarihi olsun",
       "DemandApprovalCompletionAction": "Talep onaylanınca yapılacak işlem",
       "QuotationApprovalCompletionAction": "Teklif onaylanınca yapılacak işlem",
       "OrderApprovalCompletionAction": "Sipariş onaylanınca yapılacak işlem"
@@ -4941,7 +4942,8 @@
       "VatReadonly": "Açıldığında ilgili talep, teklif veya sipariş satırlarında KDV oranı görünür kalır ancak kullanıcı tarafından değiştirilemez.",
       "CatalogLabels": "Boş bırakılırsa Grup Kodu, Kod1, Kod2 gibi mevcut Netsis alan adları kullanılır. En fazla 50 karakter girilebilir.",
       "UseCustomerCodeAsAccountingCode": "Açıkken müşteri/cari kodu değiştikçe muhasebe kodu otomatik aynı değeri alır; müşteri formundaki muhasebe kodu alanı kilitlenir.",
-      "RequireEnglishCustomerName": "Açıkken müşteri adındaki Türkçe karakterler, büyük/küçük harf yapısı korunarak İngilizce karşılıklarıyla kaydedilir."
+      "RequireEnglishCustomerName": "Açıkken müşteri adındaki Türkçe karakterler, büyük/küçük harf yapısı korunarak İngilizce karşılıklarıyla kaydedilir.",
+      "UseCurrentDateForErpRegistration": "Açıkken Netsis kayıt tarihi ERP gönderim anıdır. Kapalıyken talep, teklif veya siparişin kendi belge tarihi kullanılır. Fiyat ve kur tarihi değişmez."
     },
     "Sections": {
       "VatVisibility": "KDV oranı görünürlüğü",

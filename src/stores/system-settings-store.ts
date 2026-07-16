@@ -51,6 +51,7 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettingsDto = {
   customerCodeErrorMessage: null,
   useCustomerCodeAsAccountingCode: false,
   requireEnglishCustomerName: false,
+  useCurrentDateForErpRegistration: true,
   demandApprovalCompletionAction: 1,
   quotationApprovalCompletionAction: 1,
   orderApprovalCompletionAction: 1,
@@ -99,6 +100,7 @@ export function normalizeSystemSettings(
     customerCodeErrorMessage: pickOptionalString(settings?.customerCodeErrorMessage, 250),
     useCustomerCodeAsAccountingCode: Boolean(settings?.useCustomerCodeAsAccountingCode),
     requireEnglishCustomerName: Boolean(settings?.requireEnglishCustomerName),
+    useCurrentDateForErpRegistration: settings?.useCurrentDateForErpRegistration !== false,
     demandApprovalCompletionAction: normalizeActionValue(
       settings?.demandApprovalCompletionAction,
       SUPPORTED_DEMAND_ACTIONS,

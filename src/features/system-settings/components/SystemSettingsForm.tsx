@@ -57,6 +57,7 @@ const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   customerCodeErrorMessage: '',
   useCustomerCodeAsAccountingCode: false,
   requireEnglishCustomerName: false,
+  useCurrentDateForErpRegistration: true,
   demandApprovalCompletionAction: 1,
   quotationApprovalCompletionAction: 1,
   orderApprovalCompletionAction: 1,
@@ -179,6 +180,7 @@ export function SystemSettingsForm({
       customerCodeErrorMessage: normalizedData.customerCodeErrorMessage ?? '',
       useCustomerCodeAsAccountingCode: normalizedData.useCustomerCodeAsAccountingCode,
       requireEnglishCustomerName: normalizedData.requireEnglishCustomerName,
+      useCurrentDateForErpRegistration: normalizedData.useCurrentDateForErpRegistration,
       demandApprovalCompletionAction: normalizedData.demandApprovalCompletionAction,
       quotationApprovalCompletionAction: normalizedData.quotationApprovalCompletionAction,
       orderApprovalCompletionAction: normalizedData.orderApprovalCompletionAction,
@@ -512,6 +514,29 @@ export function SystemSettingsForm({
             </div>
 
             <DocumentFieldLabelsSettingsPanel onItemsChange={handleDocumentFieldLabelsChange} />
+
+            <FormField
+              control={form.control}
+              name="useCurrentDateForErpRegistration"
+              render={({ field }) => (
+                <FormItem className="md:col-span-2">
+                  <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/80 p-4 dark:border-sky-400/20 dark:bg-sky-400/10">
+                    <FormControl>
+                      <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                    </FormControl>
+                    <div className="space-y-1">
+                      <FormLabel required={false}>
+                        {t('systemSettings.Fields.UseCurrentDateForErpRegistration', 'ERP kayıt tarihi işlem tarihi olsun')}
+                      </FormLabel>
+                      <p className="text-muted-foreground text-sm">
+                        {t('systemSettings.Descriptions.UseCurrentDateForErpRegistration', 'Açıkken Netsis kayıt tarihi ERP gönderim anıdır. Kapalıyken talep, teklif veya siparişin kendi belge tarihi kullanılır. Fiyat ve kur tarihi değişmez.')}
+                      </p>
+                    </div>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
