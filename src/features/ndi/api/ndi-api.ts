@@ -21,6 +21,7 @@ export interface NetsisCustomerDispatchLineDto {
   stokKodu: string;
   stokAdi?: string | null;
   miktar: number;
+  tlFiyat?: number | null;
   netFiyat?: number | null;
   dovizTipi?: number | null;
   dovizFiyat?: number | null;
@@ -58,6 +59,7 @@ export interface NdiTransferCreateLineRequest {
   stockName?: string | null;
   quantity: number;
   unitPrice?: number | null;
+  foreignUnitPrice?: number | null;
   currencyType?: number | null;
   currencyRate?: number | null;
   exchangeRate?: number | null;

@@ -32,6 +32,7 @@ interface NdiOrderLine {
   stockName: string;
   quantity: number;
   unitPrice: number;
+  foreignUnitPrice?: number | null;
   currencyType?: number | null;
   currencyRate?: number | null;
   exchangeRate?: number | null;
@@ -50,6 +51,7 @@ interface NdiPreparedLine {
   sourceQuantity: number;
   transferQuantity: number;
   unitPrice: number;
+  foreignUnitPrice?: number | null;
   currencyType?: number | null;
   currencyRate?: number | null;
   exchangeRate?: number | null;
@@ -650,9 +652,10 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
 function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, order?: NdiOrder): NdiOrderLine {
   const remainingQuantity = Number(line.bakiye ?? 0);
   const quantity = Number(line.miktar ?? 0);
-  const unitPrice = Number(line.netFiyat && line.netFiyat > 0 ? line.netFiyat : (line.dovizFiyat ?? 0));
+  const unitPrice = Number(line.tlFiyat && line.tlFiyat > 0 ? line.tlFiyat : (line.netFiyat ?? 0));
+  const foreignUnitPrice = line.dovizFiyat ?? null;
   const currencyType = line.dovizTipi ?? null;
-  const currencyRate = line.dovizFiyat ?? null;
+  const currencyRate = line.dovizKuru ?? null;
   const exchangeRate = line.dovizKuru ?? null;
 
   return {
@@ -665,6 +668,7 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
     stockName: line.stokAdi || line.stokKodu,
     quantity,
     unitPrice,
+    foreignUnitPrice,
     currencyType,
     currencyRate,
     exchangeRate,
@@ -903,8 +907,9 @@ export function NdiOrderTransferPage(): ReactElement {
           stockName: line.stockName,
           sourceQuantity: line.remainingQuantity,
           transferQuantity: Math.max(0, line.remainingQuantity * lineRatio),
-          unitPrice: line.unitPrice,
-          currencyType: line.currencyType,
+        unitPrice: line.unitPrice,
+        foreignUnitPrice: line.foreignUnitPrice,
+        currencyType: line.currencyType,
           currencyRate: line.currencyRate,
           exchangeRate: line.exchangeRate,
           unit: line.unit,
@@ -990,8 +995,9 @@ export function NdiOrderTransferPage(): ReactElement {
               stockCode: line.stockCode,
               stockName: line.stockName,
               quantity: line.transferQuantity,
-              unitPrice: line.unitPrice,
-              currencyType: line.currencyType,
+        unitPrice: line.unitPrice,
+        foreignUnitPrice: line.foreignUnitPrice,
+        currencyType: line.currencyType,
               currencyRate: line.currencyRate,
               exchangeRate: line.exchangeRate,
               unit: line.unit,
@@ -1335,7 +1341,7 @@ export function NdiOrderTransferPage(): ReactElement {
                   <th className={NDI_TABLE_CELL}>Stok Adı</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Miktar</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Bakiye</th>
-                  <th className={`${NDI_TABLE_CELL} text-right`}>Fiyat</th>
+                        <th className={`${NDI_TABLE_CELL} text-right`}>TL Fiyatı</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Döviz Fiyatı</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Kur</th>
                   <th className={NDI_TABLE_CELL}>Depo/Teslim</th>
@@ -1403,10 +1409,10 @@ export function NdiOrderTransferPage(): ReactElement {
                           {line.unitPrice > 0 ? numberFormatter.format(line.unitPrice) : 'Fiyat yok'}
                         </td>
                         <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
-                          {line.currencyType || line.currencyRate ? `${line.currencyType ?? '-'} / ${line.currencyRate ? numberFormatter.format(line.currencyRate) : '-'}` : '-'}
+                            {line.foreignUnitPrice && line.foreignUnitPrice > 0 ? numberFormatter.format(line.foreignUnitPrice) : '-'}
                         </td>
                         <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
-                          {line.exchangeRate ? numberFormatter.format(line.exchangeRate) : '-'}
+                            {line.currencyType || line.exchangeRate ? `${line.currencyType ?? '-'} / ${line.exchangeRate ? numberFormatter.format(line.exchangeRate) : '-'}` : '-'}
                         </td>
                         <td className={NDI_TABLE_CELL}>
                           <span className="inline-flex items-center gap-1 rounded-full bg-[var(--crm-app-panel-strong)] px-2 py-1 text-xs font-black text-muted-foreground">
@@ -1552,7 +1558,7 @@ function PreparedTransferPanel({
               <th className="px-3 py-2">Stok</th>
               <th className="px-3 py-2 text-right">Kaynak</th>
               <th className="px-3 py-2 text-right">Aktarım</th>
-              <th className="px-3 py-2 text-right">Fiyat</th>
+                            <th className="px-3 py-2 text-right">TL Fiyatı</th>
               <th className="px-3 py-2 text-right">Döviz Fiyatı</th>
               <th className="px-3 py-2 text-right">Kur</th>
               <th className="px-3 py-2">Kaynak Depo</th>
@@ -1576,9 +1582,11 @@ function PreparedTransferPanel({
                 </td>
                 <td className="px-3 py-2 text-right font-black text-[#172033]">{numberFormatter.format(line.unitPrice)}</td>
                 <td className="px-3 py-2 text-right font-bold text-[#536780]">
-                  {line.currencyType || line.currencyRate ? `${line.currencyType ?? '-'} / ${line.currencyRate ? numberFormatter.format(line.currencyRate) : '-'}` : '-'}
+                              {line.foreignUnitPrice && line.foreignUnitPrice > 0 ? numberFormatter.format(line.foreignUnitPrice) : '-'}
                 </td>
-                <td className="px-3 py-2 text-right font-bold text-[#536780]">{line.exchangeRate ? numberFormatter.format(line.exchangeRate) : '-'}</td>
+                            <td className="px-3 py-2 text-right font-bold text-[#536780]">
+                              {line.currencyType || line.exchangeRate ? `${line.currencyType ?? '-'} / ${line.exchangeRate ? numberFormatter.format(line.exchangeRate) : '-'}` : '-'}
+                            </td>
                 <td className="px-3 py-2 font-bold text-[#42536b]">{line.sourceWarehouse}</td>
                 <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetWarehouse}</td>
                 <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetVat ?? '-'}</td>
