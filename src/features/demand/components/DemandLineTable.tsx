@@ -228,6 +228,9 @@ interface DemandLineTableProps {
   demandId?: number | null;
   enabled?: boolean;
   offerType?: string | null;
+  buildExportPdfBlob?: (options: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }) => Promise<Blob>;
+  exportPdfFileName?: string;
+  exportPdfAsDraft?: boolean;
 }
 
 export function DemandLineTable({
@@ -243,6 +246,9 @@ export function DemandLineTable({
   demandId,
   enabled = true,
   offerType,
+  buildExportPdfBlob,
+  exportPdfFileName,
+  exportPdfAsDraft = false,
 }: DemandLineTableProps): ReactElement {
   const queryClient = useQueryClient();
   const form = useFormContext();
@@ -729,6 +735,34 @@ export function DemandLineTable({
   };
 
   const handleExportPDF = async (): Promise<void> => {
+    if (buildExportPdfBlob) {
+      if (lines.length === 0) {
+        toast.error(t('error'), {
+          description: t('lines.required'),
+        });
+        return;
+      }
+
+      try {
+        const blob = await buildExportPdfBlob({ draft: exportPdfAsDraft });
+        const fileName = exportPdfFileName ?? 'talep-kalemleri.pdf';
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = fileName;
+        anchor.rel = 'noopener';
+        anchor.click();
+        URL.revokeObjectURL(url);
+      } catch {
+        toast.error(t('error'), {
+          description: t('exportPreview.error', {
+            defaultValue: 'PDF oluşturulurken bir hata oluştu.',
+          }),
+        });
+      }
+      return;
+    }
+
     await exportDocumentLineTablePdf({
       fileName: 'talep-kalemleri.pdf',
       title: t('lines.title'),

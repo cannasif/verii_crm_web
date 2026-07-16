@@ -4901,10 +4901,18 @@
       "UseCustomerCodeAsAccountingCode": "When enabled, the accounting code automatically mirrors the customer/account code and the accounting code field is locked on customer forms.",
       "RequireEnglishCustomerName": "When enabled, Turkish characters in customer names are saved using their English equivalents while preserving letter case."
     },
+    "Tabs": {
+      "General": "General",
+      "VatSettings": "VAT rate settings",
+      "DocumentFieldLabels": "Document field labels",
+      "CodeFormatRules": "Code format rules"
+    },
     "Sections": {
       "VatVisibility": "VAT rate visibility",
       "VatReadonly": "VAT rate editing",
-      "CatalogLabels": "Catalog code field labels"
+      "CatalogLabels": "Catalog code field labels",
+      "CustomerCodeRule": "Code format rules",
+      "CustomerCodeRuleCustomerScope": "Customer code"
     },
     "Placeholders": {
       "DefaultLanguage": "Select language",

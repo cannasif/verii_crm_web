@@ -344,8 +344,9 @@ function drawHeader(
 ): number {
   drawHorizontalGradient(doc, 0, 0, PAGE_W, 3.2, GRAD_FROM, GRAD_TO);
 
+  const headerTitle = params.draft ? params.labels.draftWatermark : params.labels.documentTitle;
   doc.setFontSize(23);
-  drawStrongText(doc, bodyFont, params.labels.documentTitle, PAGE_W / 2, 18, NAVY, 0.5, {
+  drawStrongText(doc, bodyFont, headerTitle, PAGE_W / 2, 18, NAVY, 0.5, {
     align: 'center',
   });
 
@@ -620,25 +621,41 @@ function drawDraftWatermark(doc: jsPDF, bodyFont: string, text: string): void {
     typeof candidate.saveGraphicsState === 'function' &&
     typeof candidate.restoreGraphicsState === 'function';
 
-  const centerX = pageW / 2;
-  const centerY = pageH * 0.46;
+  const positions: Array<{ x: number; y: number }> = [
+    { x: pageW * 0.28, y: pageH * 0.26 },
+    { x: pageW * 0.62, y: pageH * 0.38 },
+    { x: pageW * 0.38, y: pageH * 0.56 },
+    { x: pageW * 0.68, y: pageH * 0.72 },
+    { x: pageW * 0.32, y: pageH * 0.84 },
+  ];
+
+  const drawAll = (opacitySupported: boolean): void => {
+    doc.setFont(bodyFont, 'bold');
+    doc.setFontSize(48);
+    if (opacitySupported) {
+      doc.setTextColor(229, 17, 125);
+    } else {
+      doc.setTextColor(232, 228, 236);
+    }
+    positions.forEach((position) => {
+      doc.text(text, position.x, position.y, {
+        align: 'center',
+        baseline: 'middle',
+        angle: 38,
+      });
+    });
+  };
 
   if (hasGState) {
     const gstate = candidate as JsPdfGStateExtension;
     gstate.saveGraphicsState();
-    gstate.setGState(new gstate.GState({ opacity: 0.05 }));
-    doc.setFont(bodyFont, 'bold');
-    doc.setFontSize(104);
-    doc.setTextColor(229, 17, 125);
-    doc.text(text, centerX, centerY, { align: 'center', baseline: 'middle', angle: 45 });
+    gstate.setGState(new gstate.GState({ opacity: 0.08 }));
+    drawAll(true);
     gstate.restoreGraphicsState();
     return;
   }
 
-  doc.setFont(bodyFont, 'bold');
-  doc.setFontSize(104);
-  doc.setTextColor(240, 241, 247);
-  doc.text(text, centerX, centerY, { align: 'center', baseline: 'middle', angle: 45 });
+  drawAll(false);
 }
 
 export async function buildQuotationPreviewPdfBlob(

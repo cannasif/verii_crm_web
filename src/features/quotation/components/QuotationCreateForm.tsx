@@ -571,7 +571,7 @@ export function QuotationCreateForm(): ReactElement {
       totalVat: t('pdfExportTemplate.totalVat'),
       grandTotalWithVat: t('pdfExportTemplate.grandTotalWithVat'),
       validityNote: t('pdfExportTemplate.validityNote'),
-      draftWatermark: t('pdfExportTemplate.draftWatermark'),
+      draftWatermark: t('pdfExportTemplate.draftWatermark', { defaultValue: 'TASLAKTIR' }),
     };
 
     const koliBaskiId = qc.koliBaskiDefinitionId ?? null;
@@ -857,6 +857,7 @@ export function QuotationCreateForm(): ReactElement {
                       customerName={customerOptions.find((c) => c.id === watchedCustomerId)?.name ?? null}
                       buildExportPdfBlob={buildExportPdfBlob}
                       exportPdfFileName={shareFileName}
+                      exportPdfAsDraft
                     />
                   </div>
                 </div>
@@ -932,6 +933,7 @@ export function QuotationCreateForm(): ReactElement {
         open={pdfExportOpen}
         onOpenChange={setPdfExportOpen}
         buildPdfBlob={buildExportPdfBlob}
+        asDraft
         hasLineDiscounts={defaultShowDiscountDetails}
         fileName={t('exportPreview.downloadFileName')}
         labels={{

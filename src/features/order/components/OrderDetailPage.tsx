@@ -144,6 +144,7 @@ export function OrderDetailPage(): ReactElement {
   const [activeTab, setActiveTab] = useState('detail');
   const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
   const orderStatus = Number((order as { status?: number; Status?: number })?.status ?? (order as { status?: number; Status?: number })?.Status);
+  const isDraftDocument = orderStatus === 0;
   const isApprovalWaiting = orderStatus === 1;
   const isReadOnlyByStatus = [2, 3, 4, 5, 6, 7].includes(orderStatus);
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
@@ -402,6 +403,7 @@ export function OrderDetailPage(): ReactElement {
     quotationNotes,
     detailShareFileName: pdfShareFileName,
     emptyLinesToastTitle: t('order.update.error'),
+    asDraft: isDraftDocument,
   });
 
   useEffect(() => {
@@ -914,6 +916,7 @@ export function OrderDetailPage(): ReactElement {
                       offerType={form.watch('order.offerType')}
                       buildExportPdfBlob={pdfExport.buildExportPdfBlob}
                       exportPdfFileName={pdfShareFileName}
+                      exportPdfAsDraft={isDraftDocument}
                     />
                     </div>
                   </section>

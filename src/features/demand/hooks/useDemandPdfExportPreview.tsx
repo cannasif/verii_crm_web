@@ -12,9 +12,9 @@ import {
 } from '@/features/quotation/components/QuotationMailShareDialogs';
 import { useQuotationNativeSharePrep } from '@/features/quotation/hooks/useQuotationNativeSharePrep';
 import { blobToFile, resolveCustomerPhone } from '@/features/quotation/utils/quotation-share-utils';
-import { isIntegratedOrderShare } from '../config/order-share-config';
-import { buildOrderPreviewPdfBlob } from '../utils/build-order-preview-pdf';
-import { buildOrderPreviewPdfLabels } from '../utils/build-order-preview-pdf-labels';
+import { isIntegratedDemandShare } from '../config/demand-share-config';
+import { buildDemandPreviewPdfBlob } from '../utils/build-demand-preview-pdf';
+import { buildDemandPreviewPdfLabels } from '../utils/build-demand-preview-pdf-labels';
 import {
   buildPreviewPdfDocumentFooterDetails,
   buildPreviewPdfDocumentFooterLabels,
@@ -27,33 +27,34 @@ import {
 } from '@/features/quotation/utils/build-preview-pdf-footer-details';
 import { usePrefetchLineImagesForPdf } from '@/features/quotation/hooks/usePrefetchLineImagesForPdf';
 import { useWindoDefinitionOptions } from '@/features/windo-profil-demir-vida-management/hooks/useWindoDefinitionOptions';
-import { usePaymentTypes } from '@/features/quotation/hooks/usePaymentTypes';
+import { usePaymentTypes } from '../hooks/usePaymentTypes';
 import { useShippingAddresses } from '../hooks/useShippingAddresses';
-import type { CreateOrderSchema } from '../schemas/order-schema';
-import type { OrderGetDto, OrderLineFormState } from '../types/order-types';
+import type { CreateDemandSchema } from '../schemas/demand-schema';
+import type { DemandGetDto, DemandLineFormState } from '../types/demand-types';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
-interface OrderPdfExportCustomer {
+
+interface DemandPdfExportCustomer {
   name?: string | null;
   phone?: string | null;
   phone2?: string | null;
   email?: string | null;
 }
 
-interface UseOrderPdfExportPreviewParams {
-  lines: OrderLineFormState[];
-  orderFormSlice: CreateOrderSchema['order'];
+interface UseDemandPdfExportPreviewParams {
+  lines: DemandLineFormState[];
+  demandFormSlice: CreateDemandSchema['demand'];
   currencyCode: string;
   customerOptions: QuotationCustomerLabelOption[];
-  selectedCustomer?: OrderPdfExportCustomer | null;
-  order?: OrderGetDto | null;
-  orderId?: number;
+  selectedCustomer?: DemandPdfExportCustomer | null;
+  demand?: DemandGetDto | null;
+  demandId?: number;
   quotationNotes?: QuotationNotesDto;
   detailShareFileName?: string;
   emptyLinesToastTitle?: string;
   asDraft?: boolean;
 }
 
-interface UseOrderPdfExportPreviewReturn {
+interface UseDemandPdfExportPreviewReturn {
   pdfExportOpen: boolean;
   setPdfExportOpen: (open: boolean) => void;
   openPdfExportPreview: () => void;
@@ -72,24 +73,24 @@ interface UseOrderPdfExportPreviewReturn {
   renderPdfExportDialogs: () => ReactElement;
 }
 
-export function useOrderPdfExportPreview({
+export function useDemandPdfExportPreview({
   lines,
-  orderFormSlice,
+  demandFormSlice,
   currencyCode,
   customerOptions,
   selectedCustomer,
-  order,
-  orderId = 0,
+  demand,
+  demandId = 0,
   quotationNotes = {},
   detailShareFileName,
   emptyLinesToastTitle,
   asDraft = false,
-}: UseOrderPdfExportPreviewParams): UseOrderPdfExportPreviewReturn {
-  const { t, i18n } = useTranslation('order');
+}: UseDemandPdfExportPreviewParams): UseDemandPdfExportPreviewReturn {
+  const { t, i18n } = useTranslation('demand');
   const branch = useAuthStore((state) => state.branch);
   const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
   const { data: paymentTypes = [] } = usePaymentTypes();
-  const previewCustomerId = orderFormSlice.potentialCustomerId ?? order?.potentialCustomerId ?? undefined;
+  const previewCustomerId = demandFormSlice.potentialCustomerId ?? demand?.potentialCustomerId ?? undefined;
   const { data: shippingAddresses = [] } = useShippingAddresses(
     previewCustomerId != null && previewCustomerId > 0 ? previewCustomerId : undefined,
   );
@@ -132,35 +133,35 @@ export function useOrderPdfExportPreview({
   usePrefetchLineImagesForPdf(lines);
 
   const hasGeneralDiscount = useMemo(() => {
-    const oc = orderFormSlice;
+    const dc = demandFormSlice;
     return previewPdfHasGeneralDiscount(
-      oc.generalDiscountRate ?? order?.generalDiscountRate ?? null,
-      oc.generalDiscountAmount ?? order?.generalDiscountAmount ?? null,
+      dc.generalDiscountRate ?? demand?.generalDiscountRate ?? null,
+      dc.generalDiscountAmount ?? demand?.generalDiscountAmount ?? null,
     );
-  }, [orderFormSlice, order]);
+  }, [demandFormSlice, demand]);
 
   const defaultShowDiscountDetails = hasLineDiscounts || hasGeneralDiscount;
 
   const buildPreviewPdfBlob = useCallback(
     async (options?: { draft?: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> => {
-      const oc = orderFormSlice;
+      const dc = demandFormSlice;
       const customerLabel =
         (await resolveQuotationCustomerLabelForPdf({
-          potentialCustomerId: oc.potentialCustomerId,
-          erpCustomerCode: oc.erpCustomerCode,
-          potentialCustomerName: order?.potentialCustomerName,
+          potentialCustomerId: dc.potentialCustomerId,
+          erpCustomerCode: dc.erpCustomerCode,
+          potentialCustomerName: demand?.potentialCustomerName,
           customerFromApi: selectedCustomer,
           customerOptions,
         })) || t('pdfExportTemplate.notSpecified');
 
-      const koliBaskiId = oc.koliBaskiDefinitionId ?? order?.koliBaskiDefinitionId ?? null;
+      const koliBaskiId = dc.koliBaskiDefinitionId ?? demand?.koliBaskiDefinitionId ?? null;
       const koliBaskiName =
-        order?.koliBaskiDefinitionName?.trim()
+        demand?.koliBaskiDefinitionName?.trim()
         || (koliBaskiId != null && koliBaskiId > 0 ? koliBaskiMap[koliBaskiId] : null)
         || null;
       const paymentTypeName = resolvePreviewPdfPaymentTypeName(
-        oc.paymentTypeId ?? order?.paymentTypeId ?? null,
-        order?.paymentTypeName ?? null,
+        dc.paymentTypeId ?? demand?.paymentTypeId ?? null,
+        demand?.paymentTypeName ?? null,
         paymentTypes,
       );
 
@@ -168,32 +169,32 @@ export function useOrderPdfExportPreview({
         {
           koliBaskiName,
           paymentTypeName,
-          description: oc.description ?? order?.description ?? null,
+          description: dc.description ?? demand?.description ?? null,
           quotationNotes,
           shippingAddressText: resolvePreviewPdfShippingAddressText({
-            shippingAddressId: oc.shippingAddressId ?? order?.shippingAddressId ?? null,
-            shippingAddressText: order?.shippingAddressText ?? null,
+            shippingAddressId: dc.shippingAddressId ?? demand?.shippingAddressId ?? null,
+            shippingAddressText: demand?.shippingAddressText ?? null,
             shippingAddresses,
           }),
         },
-        buildPreviewPdfDocumentFooterLabels(t, 'order'),
+        buildPreviewPdfDocumentFooterLabels(t, 'demand'),
       );
       const lineDetailLabels = buildPreviewPdfLineDetailLabels(t);
       const lineDiscountLabels = buildPreviewPdfLineDiscountLabels(t);
       const showDiscount = options?.showDiscount ?? defaultShowDiscountDetails;
 
-      return buildOrderPreviewPdfBlob({
+      return buildDemandPreviewPdfBlob({
         lines,
         currencyCode,
         locale: i18n.language,
-        offerDate: oc.offerDate ?? order?.offerDate ?? null,
-        offerNo: oc.offerNo ?? order?.offerNo ?? null,
+        offerDate: dc.offerDate ?? demand?.offerDate ?? null,
+        offerNo: dc.offerNo ?? demand?.offerNo ?? null,
         customerName: customerLabel,
         branchName: branch?.name?.trim() || t('pdfExportTemplate.notSpecified'),
-        branchCode: order?.requestBranchCode?.trim() || branch?.code?.trim() || null,
-        generalDiscountRate: oc.generalDiscountRate ?? order?.generalDiscountRate ?? null,
-        generalDiscountAmount: oc.generalDiscountAmount ?? order?.generalDiscountAmount ?? null,
-        labels: buildOrderPreviewPdfLabels(t),
+        branchCode: demand?.requestBranchCode?.trim() || branch?.code?.trim() || null,
+        generalDiscountRate: dc.generalDiscountRate ?? demand?.generalDiscountRate ?? null,
+        generalDiscountAmount: dc.generalDiscountAmount ?? demand?.generalDiscountAmount ?? null,
+        labels: buildDemandPreviewPdfLabels(t),
         footerDetails,
         lineDetailLabels,
         lineDetailMaps: { profilMap, demirMap, vidaMap, baskiMap },
@@ -204,8 +205,8 @@ export function useOrderPdfExportPreview({
       });
     },
     [
-      orderFormSlice,
-      order,
+      demandFormSlice,
+      demand,
       customerOptions,
       selectedCustomer,
       t,
@@ -234,7 +235,7 @@ export function useOrderPdfExportPreview({
   const reportBuiltInTemplates = useMemo(
     () => [
       {
-        id: 'v3rii-order-preview',
+        id: 'v3rii-demand-preview',
         title: t('pdfExportTemplate.builtInTemplateTitle'),
         isDefault: true,
         generate: () => buildPreviewPdfBlob({
@@ -257,83 +258,83 @@ export function useOrderPdfExportPreview({
   }, [lines.length, t, emptyLinesToastTitle]);
 
   const mailShareContext = useMemo<QuotationMailShareContext | null>(() => {
-    if (!isIntegratedOrderShare) return null;
-    if (!order && orderId <= 0) {
+    if (!isIntegratedDemandShare) return null;
+    if (!demand && demandId <= 0) {
       if (!pendingSharePdfBlob && !mailProviderPickerOpen && !googleMailOpen && !outlookMailOpen) {
         return null;
       }
-      const oc = orderFormSlice;
+      const dc = demandFormSlice;
       return {
         recordId: 0,
-        customerId: oc.potentialCustomerId,
+        customerId: dc.potentialCustomerId,
         customerName: selectedCustomer?.name ?? null,
-        customerCode: oc.erpCustomerCode,
-        recordNo: oc.offerNo,
+        customerCode: dc.erpCustomerCode,
+        recordNo: dc.offerNo,
         attachmentFile: pendingSharePdfBlob ? blobToFile(pendingSharePdfBlob, shareFileName) : null,
         autoAttachPdfOnOpen: false,
       };
     }
 
     if (
-      !order
+      !demand
       || (!mailProviderPickerOpen && !googleMailOpen && !outlookMailOpen && !pendingSharePdfBlob)
     ) {
       return null;
     }
 
-    const oc = orderFormSlice;
+    const dc = demandFormSlice;
 
     if (pendingSharePdfBlob) {
       return {
-        recordId: order.id,
-        customerId: oc.potentialCustomerId ?? order.potentialCustomerId,
-        contactId: order.contactId,
-        customerName: order.potentialCustomerName ?? selectedCustomer?.name,
-        customerCode: oc.erpCustomerCode ?? order.erpCustomerCode,
-        recordNo: oc.offerNo ?? order.offerNo,
-        revisionNo: order.revisionNo,
-        totalAmountDisplay: order.grandTotalDisplay ?? undefined,
-        validUntil: order.validUntil,
-        recordOwnerName: order.representativeName,
+        recordId: demand.id,
+        customerId: dc.potentialCustomerId ?? demand.potentialCustomerId,
+        contactId: demand.contactId,
+        customerName: demand.potentialCustomerName ?? selectedCustomer?.name,
+        customerCode: dc.erpCustomerCode ?? demand.erpCustomerCode,
+        recordNo: dc.offerNo ?? demand.offerNo,
+        revisionNo: demand.revisionNo,
+        totalAmountDisplay: demand.grandTotalDisplay ?? undefined,
+        validUntil: demand.validUntil,
+        recordOwnerName: demand.representativeName,
         attachmentFile: blobToFile(pendingSharePdfBlob, shareFileName),
         autoAttachPdfOnOpen: false,
       };
     }
 
     return {
-      recordId: order.id,
-      customerId: order.potentialCustomerId,
-      contactId: order.contactId,
-      customerName: order.potentialCustomerName,
-      customerCode: order.erpCustomerCode,
-      recordNo: order.offerNo,
-      revisionNo: order.revisionNo,
-      totalAmountDisplay: order.grandTotalDisplay ?? undefined,
-      validUntil: order.validUntil,
-      recordOwnerName: order.representativeName,
+      recordId: demand.id,
+      customerId: demand.potentialCustomerId,
+      contactId: demand.contactId,
+      customerName: demand.potentialCustomerName,
+      customerCode: demand.erpCustomerCode,
+      recordNo: demand.offerNo,
+      revisionNo: demand.revisionNo,
+      totalAmountDisplay: demand.grandTotalDisplay ?? undefined,
+      validUntil: demand.validUntil,
+      recordOwnerName: demand.representativeName,
       autoAttachPdfOnOpen: true,
     };
   }, [
-    order,
-    orderId,
+    demand,
+    demandId,
     mailProviderPickerOpen,
     googleMailOpen,
     outlookMailOpen,
     pendingSharePdfBlob,
-    orderFormSlice,
+    demandFormSlice,
     selectedCustomer?.name,
     shareFileName,
   ]);
 
   const handleModalShareWhatsapp = useCallback(
     (pdfBlob: Blob): void => {
-      const customerId = orderFormSlice.potentialCustomerId ?? order?.potentialCustomerId;
+      const customerId = demandFormSlice.potentialCustomerId ?? demand?.potentialCustomerId;
       if (!customerId || customerId <= 0) {
         toast.error(t('shareWhatsappDialog.customerRequired'));
         return;
       }
 
-      if (isIntegratedOrderShare) {
+      if (isIntegratedDemandShare) {
         setPendingSharePdfBlob(pdfBlob);
         setWhatsappShareOpen(true);
         return;
@@ -341,18 +342,18 @@ export function useOrderPdfExportPreview({
 
       openWhatsappPrep({
         pdfBlob,
-        fileName: orderId > 0 ? shareFileName : defaultShareFileName,
+        fileName: demandId > 0 ? shareFileName : defaultShareFileName,
         customerId,
-        contactId: order?.contactId,
+        contactId: demand?.contactId,
         customerPhone: selectedCustomer?.phone,
         customerPhone2: selectedCustomer?.phone2,
         message: t('share.whatsappMessage'),
       });
     },
     [
-      orderFormSlice.potentialCustomerId,
-      order,
-      orderId,
+      demandFormSlice.potentialCustomerId,
+      demand,
+      demandId,
       shareFileName,
       defaultShareFileName,
       selectedCustomer,
@@ -363,13 +364,13 @@ export function useOrderPdfExportPreview({
 
   const handleModalShareMail = useCallback(
     (pdfBlob: Blob): void => {
-      const customerId = orderFormSlice.potentialCustomerId ?? order?.potentialCustomerId;
+      const customerId = demandFormSlice.potentialCustomerId ?? demand?.potentialCustomerId;
       if (!customerId || customerId <= 0) {
         toast.error(t('shareMailDialog.customerRequired'));
         return;
       }
 
-      if (isIntegratedOrderShare) {
+      if (isIntegratedDemandShare) {
         setPendingSharePdfBlob(pdfBlob);
         setMailProviderPickerOpen(true);
         return;
@@ -377,19 +378,19 @@ export function useOrderPdfExportPreview({
 
       openMailPrep({
         pdfBlob,
-        fileName: orderId > 0 ? shareFileName : defaultShareFileName,
+        fileName: demandId > 0 ? shareFileName : defaultShareFileName,
         customerId,
-        contactId: order?.contactId,
-        recordId: orderId > 0 ? orderId : 0,
+        contactId: demand?.contactId,
+        recordId: demandId > 0 ? demandId : 0,
         customerEmail: selectedCustomer?.email,
         subject: t('share.mailSubject'),
         body: t('share.mailBody'),
       });
     },
     [
-      orderFormSlice.potentialCustomerId,
-      order,
-      orderId,
+      demandFormSlice.potentialCustomerId,
+      demand,
+      demandId,
       shareFileName,
       defaultShareFileName,
       selectedCustomer,
@@ -399,7 +400,7 @@ export function useOrderPdfExportPreview({
   );
 
   const renderPdfExportDialogs = useCallback((): ReactElement => {
-    const watchedCustomerId = orderFormSlice.potentialCustomerId ?? order?.potentialCustomerId;
+    const watchedCustomerId = demandFormSlice.potentialCustomerId ?? demand?.potentialCustomerId;
 
     return (
       <>
@@ -409,7 +410,7 @@ export function useOrderPdfExportPreview({
           buildPdfBlob={buildExportPdfBlob}
           asDraft={asDraft}
           hasLineDiscounts={defaultShowDiscountDetails}
-          fileName={orderId > 0 ? shareFileName : defaultShareFileName}
+          fileName={demandId > 0 ? shareFileName : defaultShareFileName}
           labels={{
             title: t('exportPreview.title'),
             subtitle: t('exportPreview.subtitle'),
@@ -429,15 +430,15 @@ export function useOrderPdfExportPreview({
 
         {prepDialog}
 
-        {isIntegratedOrderShare ? (
+        {isIntegratedDemandShare ? (
           <>
             <QuotationWhatsappSendDialog
               open={whatsappShareOpen}
               onOpenChange={setWhatsappShareOpen}
               pdfBlob={pendingSharePdfBlob}
-              fileName={orderId > 0 ? shareFileName : defaultShareFileName}
+              fileName={demandId > 0 ? shareFileName : defaultShareFileName}
               customerId={watchedCustomerId}
-              customerName={selectedCustomer?.name ?? order?.potentialCustomerName}
+              customerName={selectedCustomer?.name ?? demand?.potentialCustomerName}
               defaultPhone={resolveCustomerPhone(selectedCustomer?.phone, selectedCustomer?.phone2)}
               defaultMessage={t('share.whatsappMessage')}
             />
@@ -460,7 +461,7 @@ export function useOrderPdfExportPreview({
     buildExportPdfBlob,
     asDraft,
     defaultShowDiscountDetails,
-    orderId,
+    demandId,
     shareFileName,
     defaultShareFileName,
     t,
@@ -469,8 +470,8 @@ export function useOrderPdfExportPreview({
     prepDialog,
     whatsappShareOpen,
     pendingSharePdfBlob,
-    orderFormSlice.potentialCustomerId,
-    order,
+    demandFormSlice.potentialCustomerId,
+    demand,
     selectedCustomer,
     mailProviderPickerOpen,
     googleMailOpen,

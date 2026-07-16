@@ -4925,10 +4925,18 @@
       "VatReadonly": "Se abilitato, l'aliquota IVA resta visibile nelle righe di richiesta, preventivo o ordine correlate, ma non può essere modificata dall'utente.",
       "CatalogLabels": "Lascia vuoto per mantenere i nomi campo Netsis predefiniti, come Codice gruppo, Codice1 e Codice2. Massimo 50 caratteri."
     },
+    "Tabs": {
+      "General": "Generale",
+      "VatSettings": "Impostazioni aliquota IVA",
+      "DocumentFieldLabels": "Etichette campi documento",
+      "CodeFormatRules": "Regole formato codice"
+    },
     "Sections": {
       "VatVisibility": "Visibilità aliquota IVA",
       "VatReadonly": "Modifica aliquota IVA",
-      "CatalogLabels": "Etichette dei campi codice catalogo"
+      "CatalogLabels": "Etichette dei campi codice catalogo",
+      "CustomerCodeRule": "Regole formato codice",
+      "CustomerCodeRuleCustomerScope": "Codice cliente"
     },
     "Placeholders": {
       "DefaultLanguage": "Seleziona lingua",

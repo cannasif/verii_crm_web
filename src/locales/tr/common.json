@@ -4943,10 +4943,18 @@
       "UseCustomerCodeAsAccountingCode": "Açıkken müşteri/cari kodu değiştikçe muhasebe kodu otomatik aynı değeri alır; müşteri formundaki muhasebe kodu alanı kilitlenir.",
       "RequireEnglishCustomerName": "Açıkken müşteri adındaki Türkçe karakterler, büyük/küçük harf yapısı korunarak İngilizce karşılıklarıyla kaydedilir."
     },
+    "Tabs": {
+      "General": "Genel",
+      "VatSettings": "KDV oranı ayarları",
+      "DocumentFieldLabels": "Belge alanı başlıkları",
+      "CodeFormatRules": "Kod formatı kuralları"
+    },
     "Sections": {
       "VatVisibility": "KDV oranı görünürlüğü",
       "VatReadonly": "KDV oranı düzenleme yetkisi",
-      "CatalogLabels": "Katalog kod alanı isimleri"
+      "CatalogLabels": "Katalog kod alanı isimleri",
+      "CustomerCodeRule": "Kod format kuralları",
+      "CustomerCodeRuleCustomerScope": "Cari kodu"
     },
     "Placeholders": {
       "DefaultLanguage": "Dil seçin",

@@ -62,10 +62,10 @@ export function SystemSettingsPage(): ReactElement {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">{t('systemSettings.PageTitle')}</h1>
-        <p className="text-muted-foreground mt-1 text-sm">{t('systemSettings.PageDescription')}</p>
+    <div className="w-full min-w-0 max-w-full space-y-6 overflow-x-hidden">
+      <div className="min-w-0">
+        <h1 className="break-words text-2xl font-bold">{t('systemSettings.PageTitle')}</h1>
+        <p className="text-muted-foreground mt-1 break-words text-sm">{t('systemSettings.PageDescription')}</p>
       </div>
       <SystemSettingsForm
         data={data}

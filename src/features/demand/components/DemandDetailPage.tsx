@@ -27,11 +27,12 @@ import {
   DOCUMENT_DETAIL_BUTTON_APPROVAL,
   DOCUMENT_DETAIL_BUTTON_BASE,
   DOCUMENT_DETAIL_BUTTON_DANGER,
+  DOCUMENT_DETAIL_BUTTON_PREVIEW,
   DOCUMENT_DETAIL_BUTTON_SAVE,
 } from '@/lib/document-detail-button-styles';
 import { useHeaderSaveTooltipState } from '@/lib/header-save-required-hints';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Send, Layers, Loader2, FileCheck, FileText, XCircle, Save } from 'lucide-react';
+import { Send, Layers, Loader2, FileCheck, FileText, XCircle, Eye, Save } from 'lucide-react';
 import { DemandApprovalFlowTab } from './DemandApprovalFlowTab';
 import { DemandReportTab } from '@/features/report-designer';
 import { cn } from '@/lib/utils';
@@ -45,6 +46,8 @@ import { createEmptyQuotationNotes } from '@/features/quotation/components/Quota
 import { demandNotesGetDtoToDto, demandNotesDtoToNotesList } from '../utils/notes-mapper';
 import { DemandHeaderForm } from './DemandHeaderForm';
 import { DemandLineTable } from './DemandLineTable';
+import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
+import { useDemandPdfExportPreview } from '../hooks/useDemandPdfExportPreview';
 import { recordCustomerDocumentSerialUsageSafely } from '@/features/document-serial-type-management/utils/customer-document-serial-usage';
 import { CustomerDocumentSerialDocumentKind } from '@/features/document-serial-type-management/types/document-serial-type-types';
 import { DemandSummaryCard } from './DemandSummaryCard';
@@ -141,6 +144,7 @@ export function DemandDetailPage(): ReactElement {
   const [activeTab, setActiveTab] = useState('detail');
   const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
   const demandStatus = Number((demand as { status?: number; Status?: number })?.status ?? (demand as { status?: number; Status?: number })?.Status);
+  const isDraftDocument = demandStatus === 0;
   const isApprovalWaiting = demandStatus === 1;
   const isReadOnlyByStatus = [2, 3, 4, 5, 6, 7].includes(demandStatus);
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
@@ -368,12 +372,39 @@ export function DemandDetailPage(): ReactElement {
   const watchedRepresentativeId = form.watch('demand.representativeId');
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
   const watchedOfferDate = form.watch('demand.offerDate');
+  const demandFormSlice = form.watch('demand');
 
   const { hintLines: saveManualHintLines, schemaPayload: demandSchemaPayload } = useHeaderSaveTooltipState(
     form.control,
     'demand',
     (key) => t(key, { ns: 'common' }),
   );
+
+  const currencyCode = useMemo(() => {
+    const found = currencyOptions.find((opt) => opt.dovizTipi === watchedCurrency);
+    return found?.code || 'TRY';
+  }, [watchedCurrency, currencyOptions]);
+
+  const { data: selectedCustomer } = useCustomer(
+    watchedCustomerId ?? 0,
+    Boolean(watchedCustomerId && watchedCustomerId > 0),
+  );
+
+  const pdfShareFileName = `talep-${demand?.offerNo || 'detay'}.pdf`;
+
+  const pdfExport = useDemandPdfExportPreview({
+    lines,
+    demandFormSlice,
+    currencyCode,
+    customerOptions,
+    selectedCustomer,
+    demand,
+    demandId,
+    quotationNotes,
+    detailShareFileName: pdfShareFileName,
+    emptyLinesToastTitle: t('update.error'),
+    asDraft: isDraftDocument,
+  });
 
   useEffect(() => {
     if (!watchedOfferDate || isReadOnly) return;
@@ -881,6 +912,9 @@ export function DemandDetailPage(): ReactElement {
                       demandId={demandId}
                       enabled={linesEnabled}
                       offerType={form.watch('demand.offerType')}
+                      buildExportPdfBlob={pdfExport.buildExportPdfBlob}
+                      exportPdfFileName={pdfShareFileName}
+                      exportPdfAsDraft={isDraftDocument}
                     />
                     </div>
                   </section>
@@ -904,6 +938,15 @@ export function DemandDetailPage(): ReactElement {
               </div>
 
               <div className="flex flex-wrap items-center justify-end gap-3 pt-8 mt-8 border-t border-zinc-200 dark:border-white/10">
+                <Button
+                  type="button"
+                  onClick={pdfExport.openPdfExportPreview}
+                  className={`group ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_PREVIEW}`}
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  {t('exportPreview.trigger')}
+                </Button>
+
                 {!isReadOnly && (
                   <FormSubmitTooltipWrap
                     schema={createDemandSchema}
@@ -973,9 +1016,14 @@ export function DemandDetailPage(): ReactElement {
         </TabsContent>
 
         <TabsContent value="report" className="mt-6 focus-visible:outline-none">
-          <DemandReportTab demandId={demandId} />
+          <DemandReportTab
+            demandId={demandId}
+            builtInTemplates={pdfExport.reportBuiltInTemplates}
+          />
         </TabsContent>
       </Tabs>
+
+      {pdfExport.renderPdfExportDialogs()}
 
       <CustomerCancellationDialog
         open={customerCancellationOpen}

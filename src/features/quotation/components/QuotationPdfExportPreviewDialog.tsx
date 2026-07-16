@@ -46,6 +46,7 @@ export interface QuotationPdfExportPreviewDialogProps {
   buildPdfBlob: (options: { draft: boolean; showDiscount: boolean; hideVat: boolean }) => Promise<Blob>;
   fileName: string;
   labels: QuotationPdfExportPreviewDialogLabels;
+  asDraft?: boolean;
   hasLineDiscounts?: boolean;
   onShareWhatsapp: (pdfBlob: Blob) => void | Promise<void>;
   onShareMail: (pdfBlob: Blob) => void | Promise<void>;
@@ -57,6 +58,7 @@ export function QuotationPdfExportPreviewDialog({
   buildPdfBlob,
   fileName,
   labels,
+  asDraft = false,
   hasLineDiscounts = false,
   onShareWhatsapp,
   onShareMail,
@@ -103,7 +105,7 @@ export function QuotationPdfExportPreviewDialog({
 
     void (async (): Promise<void> => {
       try {
-        const blob = await buildPdfBlob({ draft: true, showDiscount, hideVat });
+        const blob = await buildPdfBlob({ draft: asDraft, showDiscount, hideVat });
         if (loadIdRef.current !== id) return;
         setBlobUrl(URL.createObjectURL(blob));
       } catch {
@@ -115,10 +117,10 @@ export function QuotationPdfExportPreviewDialog({
         }
       }
     })();
-  }, [open, buildPdfBlob, revokeBlobUrl, showDiscount, hideVat]);
+  }, [open, buildPdfBlob, revokeBlobUrl, showDiscount, hideVat, asDraft]);
 
   const handleDownload = async (): Promise<void> => {
-    const blob = await buildPdfBlob({ draft: false, showDiscount, hideVat });
+    const blob = await buildPdfBlob({ draft: asDraft, showDiscount, hideVat });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
@@ -131,7 +133,7 @@ export function QuotationPdfExportPreviewDialog({
   const handleShareWhatsapp = async (): Promise<void> => {
     try {
       setSharing(true);
-      const blob = await buildPdfBlob({ draft: false, showDiscount, hideVat });
+      const blob = await buildPdfBlob({ draft: asDraft, showDiscount, hideVat });
       await onShareWhatsapp(blob);
     } finally {
       setSharing(false);
@@ -141,7 +143,7 @@ export function QuotationPdfExportPreviewDialog({
   const handleShareMail = async (): Promise<void> => {
     try {
       setSharing(true);
-      const blob = await buildPdfBlob({ draft: false, showDiscount, hideVat });
+      const blob = await buildPdfBlob({ draft: asDraft, showDiscount, hideVat });
       await onShareMail(blob);
     } finally {
       setSharing(false);

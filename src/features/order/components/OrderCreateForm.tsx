@@ -216,6 +216,7 @@ export function OrderCreateForm(): ReactElement {
     currencyCode,
     customerOptions,
     selectedCustomer,
+    asDraft: true,
   });
 
   useEffect(() => {
@@ -593,6 +594,7 @@ export function OrderCreateForm(): ReactElement {
                       offerType={form.watch('order.offerType')}
                       buildExportPdfBlob={pdfExport.buildExportPdfBlob}
                       exportPdfFileName={pdfExport.shareFileName}
+                      exportPdfAsDraft
                     />
                   </div>
                 </div>
