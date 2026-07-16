@@ -56,6 +56,7 @@ import {
   useFieldShake,
 } from '../utils/customer-form-ui';
 import { calculateCustomerCompletion, getCompletionColorClasses } from '../utils/customer-completion';
+import { normalizeCustomerNameToEnglishUpper } from '../utils/customer-name-normalizer';
 import {
   Building2,
   Hash,
@@ -187,6 +188,7 @@ export function CustomerForm({
   const watchedCustomerCode = form.watch('customerCode');
   const watchedAccountingCode = form.watch('accountingCode');
   const useCustomerCodeAsAccountingCode = Boolean(systemSettings.useCustomerCodeAsAccountingCode);
+  const requireEnglishCustomerName = Boolean(systemSettings.requireEnglishCustomerName);
 
   useEffect(() => {
     if (!useCustomerCodeAsAccountingCode) {
@@ -314,13 +316,16 @@ export function CustomerForm({
       return;
     }
 
+    const normalizedData = requireEnglishCustomerName
+      ? { ...data, name: normalizeCustomerNameToEnglishUpper(data.name) }
+      : data;
     const submitData = useCustomerCodeAsAccountingCode
       ? {
-          ...data,
-          customerCode: (data.customerCode ?? '').trim(),
-          accountingCode: (data.customerCode ?? '').trim(),
+          ...normalizedData,
+          customerCode: (normalizedData.customerCode ?? '').trim(),
+          accountingCode: (normalizedData.customerCode ?? '').trim(),
         }
-      : data;
+      : normalizedData;
 
     await onSubmit(submitData);
     if (!isLoading) {
@@ -413,6 +418,12 @@ export function CustomerForm({
                           field.onChange(event);
                           if (event.target.value.trim()) {
                             form.clearErrors('name');
+                          }
+                        }}
+                        onBlur={() => {
+                          field.onBlur();
+                          if (requireEnglishCustomerName) {
+                            field.onChange(normalizeCustomerNameToEnglishUpper(field.value ?? ''));
                           }
                         }}
                       />
