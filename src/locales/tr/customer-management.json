@@ -189,6 +189,13 @@
     "saving": "Kaydediliyor...",
     "code": "Müşteri Kodu",
     "creditLimit": "Kredi Limiti",
+    "erpCariType": "ERP Cari Tipi",
+    "erpCariTypeBuyer": "Alıcı",
+    "erpCariTypeSeller": "Satıcı",
+    "erpHints": {
+      "erpCariType": "Netsis cari kartındaki CARI_TIP alanıdır. Alıcı A, Satıcı S koduyla ERP'ye gönderilir.",
+      "creditLimit": "Sıfırdan büyükse ERP cari açmada Netsis RISK_SINIRI alanına gönderilir. 0 ise ERP isteğine eklenmez."
+    },
     "countryPlaceholder": "Ülke seçin",
     "cityPlaceholder": "Şehir seçin",
     "districtPlaceholder": "İlçe seçin",

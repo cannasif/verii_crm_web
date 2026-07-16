@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+export type ErpCariType = 'A' | 'S';
+
 function normalizeOptionalEntityIdInput(value: unknown): number | undefined {
   if (value === null || value === undefined || value === '') {
     return undefined;
@@ -71,6 +73,7 @@ export interface CustomerDto {
   districtName?: string;
   customerTypeId?: number;
   customerTypeName?: string;
+  erpCariType?: ErpCariType;
   salesRepCode?: string;
   groupCode?: string;
   accountingCode?: string;
@@ -103,6 +106,7 @@ export interface CreateCustomerDto {
   cityId?: number;
   districtId?: number;
   customerTypeId?: number;
+  erpCariType: ErpCariType;
   salesRepCode?: string;
   groupCode?: string;
   accountingCode?: string;
@@ -130,6 +134,7 @@ export interface UpdateCustomerDto {
   cityId?: number;
   districtId?: number;
   customerTypeId?: number;
+  erpCariType: ErpCariType;
   salesRepCode?: string;
   groupCode?: string;
   accountingCode?: string;
@@ -168,6 +173,7 @@ export interface CustomerFormData {
   cityId?: number;
   districtId?: number;
   customerTypeId?: number;
+  erpCariType: ErpCariType;
   salesRepCode?: string;
   groupCode?: string;
   accountingCode?: string;
@@ -266,6 +272,7 @@ export const customerFormSchema = z.object({
   cityId: optionalEntityIdSchema('form.cityRequired'),
   districtId: optionalEntityIdSchema('form.districtRequired'),
   customerTypeId: optionalEntityIdSchema('form.customerTypeRequired'),
+  erpCariType: z.enum(['A', 'S']),
   salesRepCode: z
     .string()
     .max(50, 'form.salesRepCodeMaxLength')

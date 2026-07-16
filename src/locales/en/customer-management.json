@@ -178,6 +178,13 @@
       "district": "District",
       "country": "Country",
       "creditLimit": "Credit Limit",
+      "erpCariType": "ERP Account Type",
+      "erpCariTypeBuyer": "Buyer",
+      "erpCariTypeSeller": "Seller",
+      "erpHints": {
+        "erpCariType": "Maps to Netsis CARI_TIP. Buyer is sent as A and Seller as S.",
+        "creditLimit": "Values greater than zero are sent to Netsis as RISK_SINIRI. A zero value is omitted from the ERP request."
+      },
       "defaultShippingAddressId": "Default Shipping Address",
       "salesRep": "Sales Representative",
       "tckn": "TCKN",

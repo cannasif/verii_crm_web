@@ -64,6 +64,7 @@ export function mapCustomerToFormData(
     cityId: normalizeOptionalEntityId(customer.cityId),
     districtId: normalizeOptionalEntityId(customer.districtId),
     customerTypeId: normalizeOptionalEntityId(customer.customerTypeId),
+    erpCariType: customer.erpCariType === 'S' ? 'S' : 'A',
     isCompleted: false,
   };
 }
@@ -95,6 +96,7 @@ export function createEmptyCustomerFormData(
     cityId: undefined,
     districtId: undefined,
     customerTypeId: undefined,
+    erpCariType: 'A',
     isCompleted: false,
   };
 }

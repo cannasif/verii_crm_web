@@ -480,6 +480,24 @@ export function CustomerForm({
                   </FormItem>
                 )} />
 
+                <FormField control={form.control} name="erpCariType" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={LABEL_STYLE}>
+                      <Building2 size={16} className="text-primary" />
+                      {tf('erpCariType')}
+                      <ErpFieldHelp required text={erpHint('erpCariType', 'Netsis cari kartındaki CARI_TIP alanıdır. Alıcı A, Satıcı S koduyla ERP’ye gönderilir.')} />
+                    </FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl><SelectTrigger className={INPUT_STYLE}><SelectValue /></SelectTrigger></FormControl>
+                      <SelectContent>
+                        <SelectItem value="A">{tf('erpCariTypeBuyer')}</SelectItem>
+                        <SelectItem value="S">{tf('erpCariTypeSeller')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )} />
+
                 <FormField control={form.control} name="taxNumber" render={({ field, fieldState }) => (
                   <FormItem>
                     <FormLabel className={LABEL_STYLE}>
@@ -769,7 +787,11 @@ export function CustomerForm({
 
                 <FormField control={form.control} name="creditLimit" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className={LABEL_STYLE}><CreditCard size={16} className="text-primary" />{tf('creditLimit')}</FormLabel>
+                    <FormLabel className={LABEL_STYLE}>
+                      <CreditCard size={16} className="text-primary" />
+                      {tf('creditLimit')}
+                      <ErpFieldHelp text={erpHint('creditLimit', 'Sıfırdan büyükse ERP cari açmada Netsis RISK_SINIRI alanına gönderilir. 0 ise ERP isteğine eklenmez.')} />
+                    </FormLabel>
                     <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(e.target.valueAsNumber || 0)} className={INPUT_STYLE} /></FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
