@@ -104,6 +104,7 @@
     "offerDate": "Teklif Tarihi",
     "deliveryDate": "Teslimat Tarihi",
     "paymentType": "Ödeme Tipi",
+    "paymentTermDays": "Vade Günü",
     "selectPaymentType": "Ödeme tipi seçin",
     "description": "Açıklama",
     "descriptionPlaceholder": "Açıklama giriniz",

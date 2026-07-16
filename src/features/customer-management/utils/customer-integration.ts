@@ -84,6 +84,8 @@ export interface CustomerComboboxOption {
   name: string;
   phone?: string;
   email?: string;
+  erpCurrencyType?: number | null;
+  paymentTermDays?: number | null;
 }
 
 export function mapCustomerToComboboxOption(customer: CustomerDto): CustomerComboboxOption {
@@ -100,5 +102,7 @@ export function mapCustomerToComboboxOption(customer: CustomerDto): CustomerComb
     name: customer.name,
     phone: customer.phone,
     email: customer.email,
+    erpCurrencyType: customer.erpCurrencyType,
+    paymentTermDays: customer.paymentTermDays,
   };
 }

@@ -78,6 +78,8 @@ export interface CustomerDto {
   groupCode?: string;
   accountingCode?: string;
   creditLimit?: number | null;
+  erpCurrencyType?: number | null;
+  paymentTermDays?: number | null;
   defaultShippingAddressId?: number | null;
   branchCode: number;
   businessUnitCode: number;
@@ -111,6 +113,8 @@ export interface CreateCustomerDto {
   groupCode?: string;
   accountingCode?: string;
   creditLimit?: number | null;
+  erpCurrencyType?: number | null;
+  paymentTermDays?: number | null;
   defaultShippingAddressId?: number | null;
   branchCode: number;
   businessUnitCode: number;
@@ -139,6 +143,8 @@ export interface UpdateCustomerDto {
   groupCode?: string;
   accountingCode?: string;
   creditLimit?: number | null;
+  erpCurrencyType?: number | null;
+  paymentTermDays?: number | null;
   defaultShippingAddressId?: number | null;
   branchCode: number;
   businessUnitCode: number;
@@ -178,6 +184,8 @@ export interface CustomerFormData {
   groupCode?: string;
   accountingCode?: string;
   creditLimit?: number | null;
+  erpCurrencyType?: number | null;
+  paymentTermDays?: number | null;
   defaultShippingAddressId?: number | null;
   branchCode: number;
   businessUnitCode: number;
@@ -291,6 +299,14 @@ export const customerFormSchema = z.object({
   creditLimit: z
     .number()
     .min(0, 'form.creditLimit.min')
+    .optional()
+    .nullable(),
+  erpCurrencyType: z.number().int().min(0).max(255).optional().nullable(),
+  paymentTermDays: z
+    .number()
+    .int('form.paymentTermDaysInteger')
+    .min(0, 'form.paymentTermDaysMin')
+    .max(3650, 'form.paymentTermDaysMax')
     .optional()
     .nullable(),
   defaultShippingAddressId: z.preprocess(

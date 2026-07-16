@@ -94,6 +94,7 @@
     "offerDate": "Offer Date",
     "deliveryDate": "Delivery Date",
     "paymentType": "Payment Type",
+    "paymentTermDays": "Payment Term Days",
     "selectPaymentType": "Select payment type",
     "description": "Description",
     "descriptionPlaceholder": "Enter description",

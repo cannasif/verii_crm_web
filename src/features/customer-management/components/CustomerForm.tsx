@@ -57,6 +57,7 @@ import {
 } from '../utils/customer-form-ui';
 import { calculateCustomerCompletion, getCompletionColorClasses } from '../utils/customer-completion';
 import { normalizeCustomerNameToEnglishCharacters } from '../utils/customer-name-normalizer';
+import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import {
   Building2,
   Hash,
@@ -150,6 +151,7 @@ export function CustomerForm({
   const branch = useAuthStore((state) => state.branch);
   const systemSettings = useSystemSettingsStore((state) => state.settings);
   const { data: shippingAddresses = [] } = useShippingAddressesByCustomer(customer?.id ?? 0);
+  const { currencyOptions, isLoading: isCurrencyOptionsLoading } = useCurrencyOptions();
   const nameInputRef = useRef<HTMLInputElement>(null);
   const { triggerShake, isShaking } = useFieldShake();
   const [countrySearchTerm, setCountrySearchTerm] = useState('');
@@ -793,6 +795,59 @@ export function CustomerForm({
                       <ErpFieldHelp text={erpHint('creditLimit', 'Sıfırdan büyükse ERP cari açmada Netsis RISK_SINIRI alanına gönderilir. 0 ise ERP isteğine eklenmez.')} />
                     </FormLabel>
                     <FormControl><Input type="number" {...field} value={field.value ?? 0} onChange={(e) => field.onChange(e.target.valueAsNumber || 0)} className={INPUT_STYLE} /></FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="erpCurrencyType" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={LABEL_STYLE}>
+                      <CreditCard size={16} className="text-primary" />
+                      {tf('erpCurrencyType', { defaultValue: 'ERP Para Birimi' })}
+                      <ErpFieldHelp text={erpHint('erpCurrencyType', 'Netsis DOVIZ_TIPI alanına gönderilir. Seçenekler güncel ERP kur listesinden alınır.')} />
+                    </FormLabel>
+                    <Select
+                      value={field.value == null ? 'none' : String(field.value)}
+                      onValueChange={(value) => field.onChange(value === 'none' ? null : Number(value))}
+                      disabled={isCurrencyOptionsLoading}
+                    >
+                      <FormControl>
+                        <SelectTrigger className={INPUT_STYLE}>
+                          <SelectValue placeholder={isCurrencyOptionsLoading ? tf('currenciesLoading', { defaultValue: 'Para birimleri yükleniyor...' }) : tf('selectErpCurrencyType', { defaultValue: 'ERP para birimi seçin' })} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">{tf('none')}</SelectItem>
+                        {currencyOptions.map((option) => (
+                          <SelectItem key={option.dovizTipi} value={String(option.dovizTipi)}>
+                            {option.label} ({option.dovizTipi})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )} />
+
+                <FormField control={form.control} name="paymentTermDays" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={LABEL_STYLE}>
+                      <CreditCard size={16} className="text-primary" />
+                      {tf('paymentTermDays', { defaultValue: 'Vade Günü' })}
+                      <ErpFieldHelp text={erpHint('paymentTermDays', 'Netsis VADE_GUNU alanına gönderilir; yeni teklif ve siparişlerde varsayılan olarak kullanılır.')} />
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={0}
+                        max={3650}
+                        step={1}
+                        {...field}
+                        value={field.value ?? 0}
+                        onChange={(event) => field.onChange(event.target.value === '' ? null : event.target.valueAsNumber)}
+                        className={INPUT_STYLE}
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
                 )} />

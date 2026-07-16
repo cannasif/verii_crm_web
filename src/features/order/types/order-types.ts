@@ -70,6 +70,7 @@ export interface CreateOrderDto {
   cancelledAt?: string | null;
   cancellationReason?: string | null;
   paymentTypeId?: number | null;
+  paymentTermDays?: number | null;
   documentSerialTypeId?: number | null;
   offerType: string;
   deliveryMethod?: string | null;
@@ -240,6 +241,7 @@ export interface OrderGetDto {
   cancelledAt?: string | null;
   cancellationReason?: string | null;
   paymentTypeId?: number | null;
+  paymentTermDays?: number | null;
   paymentTypeName?: string | null;
   documentSerialTypeId?: number | null;
   offerType: string;

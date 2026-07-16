@@ -409,6 +409,7 @@ export function QuotationCreateForm(): ReactElement {
         status: (data.quotation.status && data.quotation.status > 0) ? data.quotation.status : null,
         description: data.quotation.description || null,
         paymentTypeId: (data.quotation.paymentTypeId && data.quotation.paymentTypeId > 0) ? data.quotation.paymentTypeId : null,
+        paymentTermDays: data.quotation.paymentTermDays ?? null,
         documentSerialTypeId: (data.quotation.documentSerialTypeId && data.quotation.documentSerialTypeId > 0) ? data.quotation.documentSerialTypeId : null,
         offerDate: data.quotation.offerDate || null,
         offerNo: data.quotation.offerNo || null,

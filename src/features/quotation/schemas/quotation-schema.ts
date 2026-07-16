@@ -15,6 +15,7 @@ export const createQuotationSchema = z.object({
     status: z.number().nullable().optional(),
     description: z.string().max(500, 'Açıklama en fazla 500 karakter olabilir').nullable().optional(),
     paymentTypeId: z.number().min(1, 'Ödeme planı seçilmelidir'),
+    paymentTermDays: z.number().int('Vade günü tam sayı olmalıdır').min(0, 'Vade günü 0’dan küçük olamaz').max(3650, 'Vade günü 3650’den büyük olamaz').nullable().optional(),
     documentSerialTypeId: z
       .number()
       .nullable()

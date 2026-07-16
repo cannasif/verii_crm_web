@@ -379,6 +379,12 @@ export function QuotationHeaderForm({
       shouldDirty: true,
       shouldValidate: true,
     });
+    if (option.erpCurrencyType != null) {
+      form.setValue('quotation.currency', String(option.erpCurrencyType), { shouldDirty: true, shouldValidate: true });
+    }
+    if (option.paymentTermDays != null) {
+      form.setValue('quotation.paymentTermDays', option.paymentTermDays, { shouldDirty: true, shouldValidate: true });
+    }
     setCustomerComboboxOpen(false);
   };
 
@@ -837,6 +843,31 @@ export function QuotationHeaderForm({
                           placeholder={t('select')}
                           className={cn(styles.selectTrigger, "min-w-0 pl-10 hover:border-primary/40 dark:hover:border-zinc-700 focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                           popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
+                          disabled={readOnly}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage className="mt-1" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="quotation.paymentTermDays"
+                render={({ field }) => (
+                  <FormItem className="space-y-0 relative group">
+                    <FormLabel className={styles.label}>{t('quotation:header.paymentTermDays', { defaultValue: 'Vade Günü' })}</FormLabel>
+                    <div className="relative">
+                      <div className={cn(styles.iconWrapper, getIconTone(field.value != null))}><Calendar className="h-4 w-4" /></div>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={0}
+                          max={3650}
+                          step={1}
+                          value={field.value ?? 0}
+                          onChange={(event) => field.onChange(event.target.value === '' ? null : event.target.valueAsNumber)}
+                          className={cn(styles.inputBase, 'pl-10')}
                           disabled={readOnly}
                         />
                       </FormControl>

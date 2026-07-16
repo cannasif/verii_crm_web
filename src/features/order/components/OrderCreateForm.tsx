@@ -388,6 +388,7 @@ export function OrderCreateForm(): ReactElement {
         status: (data.order.status && data.order.status > 0) ? data.order.status : null,
         description: data.order.description || null,
         paymentTypeId: (data.order.paymentTypeId && data.order.paymentTypeId > 0) ? data.order.paymentTypeId : null,
+        paymentTermDays: data.order.paymentTermDays ?? null,
         documentSerialTypeId: (data.order.documentSerialTypeId && data.order.documentSerialTypeId > 0) ? data.order.documentSerialTypeId : null,
         offerDate: data.order.offerDate || null,
         offerNo: data.order.offerNo || null,

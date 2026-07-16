@@ -99,6 +99,7 @@ export interface CreateQuotationDto {
   cancelledAt?: string | null;
   cancellationReason?: string | null;
   paymentTypeId?: number | null;
+  paymentTermDays?: number | null;
   documentSerialTypeId?: number | null;
   offerType: string;
   deliveryMethod?: string | null;
@@ -279,6 +280,7 @@ export interface QuotationGetDto {
   cancelledAt?: string | null;
   cancellationReason?: string | null;
   paymentTypeId?: number | null;
+  paymentTermDays?: number | null;
   paymentTypeName?: string | null;
   documentSerialTypeId?: number | null;
   offerType: string;
