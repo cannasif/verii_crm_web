@@ -198,15 +198,15 @@ const transferRules: NdiTransferRule[] = [
     title: 'NURAY - İrsaliye/Fatura',
     documentType: 'irsaliye',
     sourceSerial: 'NUR',
-    sourceNetsisCompany: 'NURAY24',
-    targetCompany: 'ŞİRKET24',
-    targetNetsisCompany: 'SIRKET24',
+    sourceNetsisCompany: 'SIRKET24',
+    targetCompany: 'NURAY',
+    targetNetsisCompany: 'NURAY24',
     targetSerial: 'Kaynak irsaliye/fatura serisi',
     shipmentRule: 'Cari sevk var ise irsaliye aktarımı zorunlu, yok ise zorunlu değil.',
-    taxRule: '1/4 siparişlerde kalem miktarının 1/4 adedi aktarılır ve ŞİRKET24 KDV %5 olur; TAM siparişlerde miktarın tamamı aktarılır ve ŞİRKET24 KDV %20 olur. NURAY KDV %20.',
+    taxRule: '1/4 siparişlerde kalem miktarının 1/4 adedi ve KDV %5; TAM siparişlerde miktarın tamamı ve KDV %20 ile NURAY24 şirketine aktarılır.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'İrsaliye oluşursa otomatik ŞİRKET24 faturası tetiklenir; fatura akışında e-Fatura NRY, e-Arşiv NEA kullanılır.',
-    officialNote: 'ŞİRKET24 tarafında resmi evrak oluşur.',
+    transferNote: 'İrsaliye NURAY24 şirketine oluşturulur; fatura işlemi ayrıca çalıştırılır.',
+    officialNote: 'SIRKET24 tarafına yeni kayıt veya fatura oluşturulmaz.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki NUR belgeleri toplu seçilebilir.',
   },
   {
@@ -214,15 +214,15 @@ const transferRules: NdiTransferRule[] = [
     title: 'WINDOFORM KAPI',
     documentType: 'irsaliye',
     sourceSerial: 'VIN',
-    sourceNetsisCompany: 'WIN24',
-    targetCompany: 'ŞİRKET24',
-    targetNetsisCompany: 'SIRKET24',
+    sourceNetsisCompany: 'SIRKET24',
+    targetCompany: 'WINDO',
+    targetNetsisCompany: 'WIN24',
     targetSerial: 'Kaynak irsaliye/fatura serisi',
     shipmentRule: 'Cari sevk var ise irsaliye zorunlu; özel kod K ise irsaliye zorunlu.',
     taxRule: 'Özel Kod K ihraç kayıtlı KDV 0, Özel Kod N normal satış KDV %20.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'İrsaliye oluşursa otomatik ŞİRKET24 faturası tetiklenir; fatura akışında e-Fatura VDF, e-Arşiv EAR kullanılır.',
-    officialNote: 'ŞİRKET24 tarafında resmi evrak oluşur.',
+    transferNote: 'İrsaliye WIN24 şirketine oluşturulur; fatura işlemi ayrıca çalıştırılır.',
+    officialNote: 'SIRKET24 tarafına yeni kayıt veya fatura oluşturulmaz.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki VIN belgeleri toplu seçilebilir.',
   },
   {
@@ -230,9 +230,9 @@ const transferRules: NdiTransferRule[] = [
     title: 'DIŞ TİCARET',
     documentType: 'irsaliye',
     sourceSerial: 'DIS',
-    sourceNetsisCompany: 'DISTIC24',
-    targetCompany: 'ŞİRKET24',
-    targetNetsisCompany: 'SIRKET24',
+    sourceNetsisCompany: 'SIRKET24',
+    targetCompany: 'WIN DIS',
+    targetNetsisCompany: 'DISTIC24',
     targetSerial: 'EIR',
     shipmentRule: 'Sevk durumuna bakılmadan aktarım yapılabilir.',
     taxRule: 'KDV 0; gün döviz kuru alınır.',
@@ -442,7 +442,7 @@ function resolveTargetSeries(order: NdiOrder): { value: string; note: string; wa
     const sourceDocumentSeries = resolveSourceDocumentSeries(order.orderNo);
     return {
       value: sourceDocumentSeries,
-      note: `${config.label}: irsaliye aktarımında kaynakta kullanılan ${sourceDocumentSeries} serisi ŞİRKET24 tarafına taşınır.`,
+      note: `${config.label}: irsaliye aktarımında kaynakta kullanılan ${sourceDocumentSeries} serisi ${config.netsisCompany} şirketine taşınır.`,
     };
   }
 
@@ -479,7 +479,7 @@ function resolveVat(order: NdiOrder): { sourceVat: number | null; targetVat: num
 
   if (series === 'NUR') {
     if (description.includes('1/4')) {
-      return { sourceVat: 20, targetVat: 5, note: 'Açıklamada 1/4 geçtiği için ŞİRKET24 KDV %5 uygulanır.' };
+      return { sourceVat: 20, targetVat: 5, note: 'Açıklamada 1/4 geçtiği için NURAY24 hedefinde KDV %5 uygulanır.' };
     }
     return { sourceVat: 20, targetVat: 20, note: 'TAM satış kabulüyle kaynak ve hedef KDV %20.' };
   }
@@ -926,14 +926,11 @@ export function NdiOrderTransferPage(): ReactElement {
 
         return {
           sourceDocumentNo: order.orderNo,
-          sourceNetsisCompany: outcome?.sourceNetsisCompany ?? SERIES_CONFIG[getBusinessSeries(order)].netsisCompany,
-          targetNetsisCompany: outcome?.targetNetsisCompany ?? 'SIRKET24',
+          sourceNetsisCompany: outcome?.sourceNetsisCompany ?? 'SIRKET24',
+          targetNetsisCompany: outcome?.targetNetsisCompany ?? SERIES_CONFIG[getBusinessSeries(order)].netsisCompany,
           targetSeries,
           documentType,
-          followUpNote:
-            documentType === 'İrsaliye' && (getBusinessSeries(order) === 'NUR' || getBusinessSeries(order) === 'VIN')
-              ? 'API gönderiminde bu irsaliye başarıyla oluşursa ŞİRKET24 otomatik faturası da oluşturulur.'
-              : undefined,
+          followUpNote: undefined,
           customerCode: order.customerCode,
           customerName: order.customer,
           description: order.description,
@@ -1226,7 +1223,7 @@ export function NdiOrderTransferPage(): ReactElement {
                 </div>
               </div>
               <p className="mt-2 rounded-md border border-[#d7e1ef] bg-[#f8fbff] px-3 py-2 text-xs font-bold text-[#536780]">
-                NURAY24, WIN24, DISTIC24 ve SIRKET24 değerleri seri değildir; Netsis kayıt/read işlemlerinde kullanılacak şirket/database bilgisidir.
+                SIRKET24 kaynak şirkettir; NURAY24, WIN24 ve DISTIC24 hedef şirkete özel login/token ve kayıt bilgisidir.
               </p>
               <SeriesGuide activeRuleIds={selectedRuleIds} />
               <div className="mt-3 grid gap-2 xl:grid-cols-2">
@@ -1844,9 +1841,9 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
 
 function SeriesGuide({ activeRuleIds }: { activeRuleIds: Set<NdiTransferRule['id']> }): ReactElement {
   const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
-    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> SIRKET24', 'İrsaliye -> kaynak seri', 'e-Fatura -> NRY', 'e-Arşiv -> NEA', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
-    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> SIRKET24', 'İrsaliye -> kaynak seri', 'e-Fatura -> VDF', 'e-Arşiv -> EAR', 'K -> KDV 0'] },
-    { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura/İrsaliye -> EIR', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
+    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> NURAY24', 'İrsaliye -> kaynak seri', 'Fatura ayrı işlem', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
+    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> WIN24', 'İrsaliye -> kaynak seri', 'Fatura ayrı işlem', 'K -> KDV 0'] },
+    { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> DISTIC24', 'Fatura/İrsaliye -> EIR', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
     { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura -> SIP2026', 'KDV -> 0', 'Resmi evrak yok'] },
   ];
   const hasActiveRule = activeRuleIds.size > 0;
