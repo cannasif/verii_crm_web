@@ -1,12 +1,14 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { AlertCircle, Eye, Loader2, RefreshCw, SearchX, List } from 'lucide-react';
+import { AlertCircle, Eye, History, Loader2, RefreshCw, Search, SearchX, List } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { rowsToBackendFilters, type FilterColumnConfig, type FilterRow } from '@/lib/advanced-filter-types';
 import {
@@ -26,7 +28,7 @@ import { DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS } from '@/lib/document-line-dialog
 import { arraysEqual, cn } from '@/lib/utils';
 
 const PAGE_KEY = 'audit-logs';
-const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 const EMPTY_ITEMS: AuditLogDto[] = [];
 const FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'result', type: 'string', labelKey: 'auditLogs.filters.result' },
@@ -81,6 +83,40 @@ function parseJsonPreview(payload?: string | null): string {
   }
 }
 
+const AUDIT_ACTION_LABELS: Readonly<Record<string, string>> = {
+  'order.create': 'Sipariş oluşturuldu',
+  'order.create-bulk': 'Sipariş ve kalemleri oluşturuldu',
+  'order.update': 'Sipariş güncellendi',
+  'order.update-bulk': 'Sipariş, kalem veya kur bilgileri güncellendi',
+  'order.delete': 'Sipariş silindi',
+  'order.create-revision': 'Sipariş revizyonu oluşturuldu',
+  'order.send-approval': 'Sipariş onaya gönderildi',
+  'order.approve-step': 'Sipariş onay adımı tamamlandı',
+  'order.approve': 'Sipariş onaylandı',
+  'order.reject': 'Sipariş reddedildi',
+  'order.approval-completion-action': 'Sipariş onay sonrası işlemi çalıştırıldı',
+  'order.erp-cleanup-copy.create': 'Sipariş ERP temizleme kopyası oluşturuldu',
+  'order.erp-cleanup-recreate': 'Sipariş ERP kaydı yeniden oluşturuldu',
+  'quotation.create': 'Teklif oluşturuldu',
+  'quotation.create-bulk': 'Teklif ve kalemleri oluşturuldu',
+  'quotation.update': 'Teklif güncellendi',
+  'quotation.update-bulk': 'Teklif, kalem veya kur bilgileri güncellendi',
+  'quotation.delete': 'Teklif silindi',
+  'quotation.create-revision': 'Teklif revizyonu oluşturuldu',
+  'quotation.send-approval': 'Teklif onaya gönderildi',
+  'quotation.approve-step': 'Teklif onay adımı tamamlandı',
+  'quotation.approve': 'Teklif onaylandı',
+  'quotation.reject': 'Teklif reddedildi',
+  'quotation.approval-completion-action': 'Teklif onay sonrası işlemi çalıştırıldı',
+  'quotation.convert-to-order': 'Teklif siparişe dönüştürüldü',
+  'quotation.erp-cleanup-copy.create': 'Teklif ERP temizleme kopyası oluşturuldu',
+  'quotation.erp-cleanup-recreate': 'Teklif ERP kaydı yeniden oluşturuldu',
+};
+
+function getAuditActionLabel(actionType: string): string {
+  return AUDIT_ACTION_LABELS[actionType] ?? actionType;
+}
+
 export function AuditLogsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
   const { setPageTitle } = useUIStore();
@@ -92,6 +128,8 @@ export function AuditLogsPage(): ReactElement {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [selectedAuditLogId, setSelectedAuditLogId] = useState<number | null>(null);
+  const [entityLookupType, setEntityLookupType] = useState('Order');
+  const [entityLookupId, setEntityLookupId] = useState('');
   const [visibleColumns, setVisibleColumns] = useState<string[]>(['createdDate', 'traceId', 'actionType', 'entityType', 'result', 'performedByUserEmail', 'requestPath']);
   const [columnOrder, setColumnOrder] = useState<string[]>(['createdDate', 'traceId', 'actionType', 'entityType', 'entityId', 'result', 'source', 'performedByUserEmail', 'branchCode', 'requestPath']);
 
@@ -114,6 +152,9 @@ export function AuditLogsPage(): ReactElement {
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
   const traceFilter = searchParams.get('traceId');
+  const entityTypeFilter = searchParams.get('entityType');
+  const entityIdFilter = searchParams.get('entityId');
+  const hasEntityFilter = Boolean(entityTypeFilter && entityIdFilter);
 
   useEffect(() => {
     setPageTitle(t('auditLogs.title'));
@@ -124,8 +165,23 @@ export function AuditLogsPage(): ReactElement {
     const nextParams = new URLSearchParams(searchParams);
     if (value) {
       nextParams.set('traceId', value);
+      nextParams.delete('entityType');
+      nextParams.delete('entityId');
     } else {
       nextParams.delete('traceId');
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
+
+  const setEntityFilter = (entityType: string | null, entityId: string | null): void => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (entityType && entityId) {
+      nextParams.set('entityType', entityType);
+      nextParams.set('entityId', entityId);
+      nextParams.delete('traceId');
+    } else {
+      nextParams.delete('entityType');
+      nextParams.delete('entityId');
     }
     setSearchParams(nextParams, { replace: true });
   };
@@ -148,8 +204,13 @@ export function AuditLogsPage(): ReactElement {
   );
 
   const listQuery = useQuery({
-    queryKey: ['audit-logs', traceFilter ?? 'all', queryParams],
-    queryFn: () => (traceFilter ? auditLogApi.getByTraceId(traceFilter, queryParams) : auditLogApi.getList(queryParams)),
+    queryKey: ['audit-logs', traceFilter ?? 'all', entityTypeFilter ?? 'all', entityIdFilter ?? 'all', queryParams],
+    queryFn: () => {
+      if (hasEntityFilter && entityTypeFilter && entityIdFilter) {
+        return auditLogApi.getByEntity(entityTypeFilter, entityIdFilter, queryParams);
+      }
+      return traceFilter ? auditLogApi.getByTraceId(traceFilter, queryParams) : auditLogApi.getList(queryParams);
+    },
   });
 
   const detailQuery = useQuery({
@@ -195,7 +256,7 @@ export function AuditLogsPage(): ReactElement {
   const exportRows = items.map((item) => ({
     createdDate: new Date(item.createdDate).toLocaleString(),
     traceId: item.traceId,
-    actionType: item.actionType,
+    actionType: getAuditActionLabel(item.actionType),
     entityType: item.entityType ?? '-',
     entityId: item.entityId ?? '-',
     result: item.result,
@@ -210,13 +271,13 @@ export function AuditLogsPage(): ReactElement {
   const currentPageErrorCount = items.filter((item) => ['error', 'failed'].includes(item.result.trim().toLowerCase())).length;
   const currentPageTraceCount = new Set(items.map((item) => item.traceId)).size;
   const appliedFilterCount = appliedFilterRows.filter((row) => row.value.trim()).length;
-  const traceTimeline = useMemo(
+  const timeline = useMemo(
     () => [...items].sort((left, right) => new Date(left.createdDate).getTime() - new Date(right.createdDate).getTime()),
     [items]
   );
-  const traceStartedAt = traceTimeline[0]?.createdDate;
-  const traceCompletedAt = traceTimeline.length > 0 ? traceTimeline[traceTimeline.length - 1]?.createdDate : undefined;
-  const traceEntityCount = new Set(traceTimeline.map((item) => item.entityType).filter(Boolean)).size;
+  const timelineStartedAt = timeline[0]?.createdDate;
+  const timelineCompletedAt = timeline.length > 0 ? timeline[timeline.length - 1]?.createdDate : undefined;
+  const traceEntityCount = new Set(timeline.map((item) => item.entityType).filter(Boolean)).size;
 
   const handleRefresh = async (): Promise<void> => {
     await queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
@@ -232,16 +293,19 @@ export function AuditLogsPage(): ReactElement {
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">{t('auditLogs.title')}</h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mt-1">{t('auditLogs.description')}</p>
         </div>
-        {traceFilter ? (
+        {traceFilter || hasEntityFilter ? (
           <Button
             className={cn(DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS, 'h-11 px-8 focus-visible:outline-none')}
             onClick={() => {
-              setTraceFilter(null);
+              if (hasEntityFilter) setEntityFilter(null, null);
+              else setTraceFilter(null);
               setPageNumber(1);
             }}
           >
             <SearchX className="mr-2 size-4 stroke-[3px]" />
-            {t('auditLogs.clearTraceFilter')}
+            {hasEntityFilter
+              ? t('auditLogs.clearEntityFilter', { defaultValue: 'Kayıt geçmişinden çık' })
+              : t('auditLogs.clearTraceFilter', { defaultValue: 'İstek akışından çık' })}
           </Button>
         ) : null}
       </div>
@@ -267,20 +331,24 @@ export function AuditLogsPage(): ReactElement {
         </Card>
       </div>
 
-      {traceFilter ? (
+      {traceFilter || hasEntityFilter ? (
         <>
           <div className="grid gap-4 xl:grid-cols-4">
             <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
               <CardContent className="p-5">
-                <div className="text-sm text-slate-500">{t('auditLogs.traceDrillDown.traceId')}</div>
-                <div className="mt-2 break-all font-mono text-xs text-slate-900 dark:text-white">{traceFilter}</div>
+                <div className="text-sm text-slate-500">
+                  {hasEntityFilter ? 'Kayıt' : t('auditLogs.traceDrillDown.traceId')}
+                </div>
+                <div className="mt-2 break-all font-mono text-xs text-slate-900 dark:text-white">
+                  {hasEntityFilter ? `${entityTypeFilter} #${entityIdFilter}` : traceFilter}
+                </div>
               </CardContent>
             </Card>
             <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
               <CardContent className="p-5">
                 <div className="text-sm text-slate-500">{t('auditLogs.traceDrillDown.startedAt')}</div>
                 <div className="mt-2 text-sm font-bold text-slate-900 dark:text-white">
-                  {traceStartedAt ? new Date(traceStartedAt).toLocaleString() : '-'}
+                  {timelineStartedAt ? new Date(timelineStartedAt).toLocaleString() : '-'}
                 </div>
               </CardContent>
             </Card>
@@ -288,25 +356,27 @@ export function AuditLogsPage(): ReactElement {
               <CardContent className="p-5">
                 <div className="text-sm text-slate-500">{t('auditLogs.traceDrillDown.completedAt')}</div>
                 <div className="mt-2 text-sm font-bold text-slate-900 dark:text-white">
-                  {traceCompletedAt ? new Date(traceCompletedAt).toLocaleString() : '-'}
+                  {timelineCompletedAt ? new Date(timelineCompletedAt).toLocaleString() : '-'}
                 </div>
               </CardContent>
             </Card>
             <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
               <CardContent className="p-5">
-                <div className="text-sm text-slate-500">{t('auditLogs.traceDrillDown.entities')}</div>
-                <div className="mt-2 text-3xl font-black text-slate-900 dark:text-white">{traceEntityCount}</div>
+                <div className="text-sm text-slate-500">{hasEntityFilter ? 'Toplam hareket' : t('auditLogs.traceDrillDown.entities')}</div>
+                <div className="mt-2 text-3xl font-black text-slate-900 dark:text-white">{hasEntityFilter ? totalCount : traceEntityCount}</div>
               </CardContent>
             </Card>
           </div>
 
           <Card className={MANAGEMENT_LIST_CARD_CLASSNAME}>
             <CardHeader className={MANAGEMENT_LIST_CARD_HEADER_CLASSNAME}>
-              <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>{t('auditLogs.traceDrillDown.timelineTitle')}</CardTitle>
+              <CardTitle className={MANAGEMENT_LIST_CARD_TITLE_CLASSNAME}>
+                {hasEntityFilter ? 'Kayıt hareketleri' : t('auditLogs.traceDrillDown.timelineTitle')}
+              </CardTitle>
             </CardHeader>
             <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
               <div className="space-y-3">
-                {traceTimeline.map((item) => (
+                {timeline.map((item) => (
                   <div
                     key={item.id}
                     className="flex flex-col gap-2 rounded-2xl border border-slate-200/80 bg-white/70 p-4 dark:border-white/10 dark:bg-white/5 lg:flex-row lg:items-center lg:justify-between"
@@ -315,7 +385,7 @@ export function AuditLogsPage(): ReactElement {
                       <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                         {new Date(item.createdDate).toLocaleString()}
                       </div>
-                      <div className="text-sm font-semibold text-slate-900 dark:text-white">{item.actionType}</div>
+                      <div className="text-sm font-semibold text-slate-900 dark:text-white">{getAuditActionLabel(item.actionType)}</div>
                       <div className="text-sm text-slate-500 dark:text-slate-400">
                         {(item.entityType ?? '-') + (item.entityId ? ` #${item.entityId}` : '')}
                       </div>
@@ -324,6 +394,15 @@ export function AuditLogsPage(): ReactElement {
                       <Badge variant={getResultBadgeVariant(item.result)}>{t(`auditLogs.results.${item.result.toLowerCase()}`, { defaultValue: item.result })}</Badge>
                       {item.requestMethod ? <Badge variant="outline">{item.requestMethod}</Badge> : null}
                       {item.requestPath ? <Badge variant="outline">{item.requestPath}</Badge> : null}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30"
+                        onClick={() => setSelectedAuditLogId(item.id)}
+                      >
+                        <Eye className="mr-2 size-4" />
+                        Detay
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -378,6 +457,43 @@ export function AuditLogsPage(): ReactElement {
             }}
             leftSlot={
               <div className="flex flex-wrap items-center gap-2">
+                <Select value={entityLookupType} onValueChange={setEntityLookupType}>
+                  <SelectTrigger className="h-9 w-[130px]">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Order">Sipariş</SelectItem>
+                    <SelectItem value="Quotation">Teklif</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Input
+                  value={entityLookupId}
+                  onChange={(event) => setEntityLookupId(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' && entityLookupId.trim()) {
+                      setEntityFilter(entityLookupType, entityLookupId.trim());
+                      setPageNumber(1);
+                      setPageSize(100);
+                    }
+                  }}
+                  inputMode="numeric"
+                  placeholder="Header ID"
+                  className="h-9 w-[120px]"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
+                  disabled={!entityLookupId.trim()}
+                  onClick={() => {
+                    setEntityFilter(entityLookupType, entityLookupId.trim());
+                    setPageNumber(1);
+                    setPageSize(100);
+                  }}
+                >
+                  <Search className="mr-2 size-4" />
+                  Hareketleri getir
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
@@ -395,6 +511,11 @@ export function AuditLogsPage(): ReactElement {
                 {traceFilter ? (
                   <Badge variant="secondary" className="rounded-xl px-3 py-1 font-mono text-xs">
                     {traceFilter}
+                  </Badge>
+                ) : null}
+                {hasEntityFilter ? (
+                  <Badge variant="secondary" className="rounded-xl px-3 py-1 font-mono text-xs">
+                    {entityTypeFilter} #{entityIdFilter}
                   </Badge>
                 ) : null}
               </div>
@@ -416,6 +537,9 @@ export function AuditLogsPage(): ReactElement {
                   }
                   if (key === 'result') {
                     return <Badge variant={getResultBadgeVariant(row.result)}>{t(`auditLogs.results.${row.result.toLowerCase()}`, { defaultValue: row.result })}</Badge>;
+                  }
+                  if (key === 'actionType') {
+                    return getAuditActionLabel(row.actionType);
                   }
                   return formatValue(row[key]);
                 }}
@@ -454,6 +578,21 @@ export function AuditLogsPage(): ReactElement {
                       <List size={16} className="mr-2" />
                       {t('auditLogs.filterTrace')}
                     </Button>
+                    {row.entityType && row.entityId ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="rounded-xl text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/30 font-semibold"
+                        onClick={() => {
+                          setEntityFilter(row.entityType ?? null, row.entityId ?? null);
+                          setPageNumber(1);
+                          setPageSize(100);
+                        }}
+                      >
+                        <History size={16} className="mr-2" />
+                        Tüm hareketler
+                      </Button>
+                    ) : null}
                   </div>
                 )}
                 pageSize={pageSize}
@@ -528,7 +667,10 @@ export function AuditLogsPage(): ReactElement {
                   <Card className="border-slate-200/70 shadow-none dark:border-white/10">
                     <CardContent className="space-y-2 p-4 text-sm">
                       <div className="text-slate-500">{t('auditLogs.table.actionType')}</div>
-                      <div>{selectedAuditLog.actionType}</div>
+                      <div>{getAuditActionLabel(selectedAuditLog.actionType)}</div>
+                      <div className="font-mono text-xs text-slate-500 dark:text-slate-400">
+                        {selectedAuditLog.actionType}
+                      </div>
                     </CardContent>
                   </Card>
                   <Card className="border-slate-200/70 shadow-none dark:border-white/10">

@@ -46,4 +46,21 @@ export const auditLogApi = {
     const data = extractData(response as ApiResponse<PagedResponse<AuditLogDto>>);
     return normalizePagedResponse(data);
   },
+
+  getByEntity: async (entityType: string, entityId: string, params: PagedRequest): Promise<PagedResponse<AuditLogDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<AuditLogDto>>>(
+      `/api/audit-logs/entity/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}/query`,
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 100,
+        search: params.search ?? '',
+        sortBy: params.sortBy ?? 'createdDate',
+        sortDirection: params.sortDirection ?? 'desc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+      }
+    );
+    const data = extractData(response as ApiResponse<PagedResponse<AuditLogDto>>);
+    return normalizePagedResponse(data);
+  },
 };
