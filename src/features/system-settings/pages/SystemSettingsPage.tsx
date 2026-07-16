@@ -51,6 +51,7 @@ export function SystemSettingsPage(): ReactElement {
       customerCodeExample: values.customerCodeExample?.trim() || null,
       customerCodeErrorMessage: values.customerCodeErrorMessage?.trim() || null,
       useCustomerCodeAsAccountingCode: values.useCustomerCodeAsAccountingCode,
+      requireEnglishCustomerName: values.requireEnglishCustomerName,
       demandApprovalCompletionAction: values.demandApprovalCompletionAction,
       quotationApprovalCompletionAction: values.quotationApprovalCompletionAction,
       orderApprovalCompletionAction: values.orderApprovalCompletionAction,

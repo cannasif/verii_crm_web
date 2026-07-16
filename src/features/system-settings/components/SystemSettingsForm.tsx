@@ -56,6 +56,7 @@ const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   customerCodeExample: '',
   customerCodeErrorMessage: '',
   useCustomerCodeAsAccountingCode: false,
+  requireEnglishCustomerName: false,
   demandApprovalCompletionAction: 1,
   quotationApprovalCompletionAction: 1,
   orderApprovalCompletionAction: 1,
@@ -177,6 +178,7 @@ export function SystemSettingsForm({
       customerCodeExample: normalizedData.customerCodeExample ?? '',
       customerCodeErrorMessage: normalizedData.customerCodeErrorMessage ?? '',
       useCustomerCodeAsAccountingCode: normalizedData.useCustomerCodeAsAccountingCode,
+      requireEnglishCustomerName: normalizedData.requireEnglishCustomerName,
       demandApprovalCompletionAction: normalizedData.demandApprovalCompletionAction,
       quotationApprovalCompletionAction: normalizedData.quotationApprovalCompletionAction,
       orderApprovalCompletionAction: normalizedData.orderApprovalCompletionAction,
@@ -587,6 +589,29 @@ export function SystemSettingsForm({
                           </FormLabel>
                           <p className="text-muted-foreground text-xs">
                             {t('systemSettings.Descriptions.UseCustomerCodeAsAccountingCode', 'Açıkken müşteri/cari kodu değiştikçe muhasebe kodu otomatik aynı değeri alır; müşteri formundaki muhasebe kodu alanı kilitlenir.')}
+                          </p>
+                        </div>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="requireEnglishCustomerName"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50/80 p-3 dark:border-sky-400/20 dark:bg-sky-400/10">
+                        <FormControl>
+                          <Checkbox checked={field.value} onCheckedChange={(checked) => field.onChange(Boolean(checked))} />
+                        </FormControl>
+                        <div className="space-y-1">
+                          <FormLabel required={false} className="leading-5">
+                            {t('systemSettings.Fields.RequireEnglishCustomerName', 'CRM cari adı İngilizce zorunlu')}
+                          </FormLabel>
+                          <p className="text-muted-foreground text-xs">
+                            {t('systemSettings.Descriptions.RequireEnglishCustomerName', 'Açıkken müşteri adı büyük harfe çevrilir ve Türkçe karakterler İngilizce karşılıklarıyla kaydedilir.')}
                           </p>
                         </div>
                       </div>

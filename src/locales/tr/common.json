@@ -4929,6 +4929,7 @@
       "CatalogCode4Label": "Kod4 adı",
       "CatalogCode5Label": "Kod5 adı",
       "UseCustomerCodeAsAccountingCode": "Muhasebe kodu müşteri kodu ile aynı olsun",
+      "RequireEnglishCustomerName": "CRM cari adı İngilizce zorunlu",
       "DemandApprovalCompletionAction": "Talep onaylanınca yapılacak işlem",
       "QuotationApprovalCompletionAction": "Teklif onaylanınca yapılacak işlem",
       "OrderApprovalCompletionAction": "Sipariş onaylanınca yapılacak işlem"
@@ -4939,7 +4940,8 @@
       "VatVisibility": "Açıldığında ilgili talep, teklif veya sipariş satırlarında KDV oranı giriş alanı gizlenir. Hesaplama verisi korunur.",
       "VatReadonly": "Açıldığında ilgili talep, teklif veya sipariş satırlarında KDV oranı görünür kalır ancak kullanıcı tarafından değiştirilemez.",
       "CatalogLabels": "Boş bırakılırsa Grup Kodu, Kod1, Kod2 gibi mevcut Netsis alan adları kullanılır. En fazla 50 karakter girilebilir.",
-      "UseCustomerCodeAsAccountingCode": "Açıkken müşteri/cari kodu değiştikçe muhasebe kodu otomatik aynı değeri alır; müşteri formundaki muhasebe kodu alanı kilitlenir."
+      "UseCustomerCodeAsAccountingCode": "Açıkken müşteri/cari kodu değiştikçe muhasebe kodu otomatik aynı değeri alır; müşteri formundaki muhasebe kodu alanı kilitlenir.",
+      "RequireEnglishCustomerName": "Açıkken müşteri adı büyük harfe çevrilir ve Türkçe karakterler İngilizce karşılıklarıyla kaydedilir."
     },
     "Sections": {
       "VatVisibility": "KDV oranı görünürlüğü",

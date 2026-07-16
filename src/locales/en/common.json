@@ -4887,6 +4887,7 @@
       "CatalogCode4Label": "Code4 label",
       "CatalogCode5Label": "Code5 label",
       "UseCustomerCodeAsAccountingCode": "Keep accounting code same as customer code",
+      "RequireEnglishCustomerName": "Require English CRM customer names",
       "DemandApprovalCompletionAction": "Demand approval completion action",
       "QuotationApprovalCompletionAction": "Quotation approval completion action",
       "OrderApprovalCompletionAction": "Order approval completion action"
@@ -4897,7 +4898,8 @@
       "VatVisibility": "When enabled, the VAT rate input is hidden on the related demand, quotation, or order line forms. Calculation data is preserved.",
       "VatReadonly": "When enabled, the VAT rate remains visible on the related demand, quotation, or order lines but cannot be changed by the user.",
       "CatalogLabels": "Leave empty to keep the default Netsis field names such as Group Code, Code1, and Code2. Maximum 50 characters.",
-      "UseCustomerCodeAsAccountingCode": "When enabled, the accounting code automatically mirrors the customer/account code and the accounting code field is locked on customer forms."
+      "UseCustomerCodeAsAccountingCode": "When enabled, the accounting code automatically mirrors the customer/account code and the accounting code field is locked on customer forms.",
+      "RequireEnglishCustomerName": "When enabled, customer names are uppercased and Turkish characters are saved using their English equivalents."
     },
     "Sections": {
       "VatVisibility": "VAT rate visibility",

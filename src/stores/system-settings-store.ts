@@ -50,6 +50,7 @@ const DEFAULT_SYSTEM_SETTINGS: SystemSettingsDto = {
   customerCodeExample: null,
   customerCodeErrorMessage: null,
   useCustomerCodeAsAccountingCode: false,
+  requireEnglishCustomerName: false,
   demandApprovalCompletionAction: 1,
   quotationApprovalCompletionAction: 1,
   orderApprovalCompletionAction: 1,
@@ -97,6 +98,7 @@ export function normalizeSystemSettings(
     customerCodeExample: pickOptionalLabel(settings?.customerCodeExample),
     customerCodeErrorMessage: pickOptionalString(settings?.customerCodeErrorMessage, 250),
     useCustomerCodeAsAccountingCode: Boolean(settings?.useCustomerCodeAsAccountingCode),
+    requireEnglishCustomerName: Boolean(settings?.requireEnglishCustomerName),
     demandApprovalCompletionAction: normalizeActionValue(
       settings?.demandApprovalCompletionAction,
       SUPPORTED_DEMAND_ACTIONS,
