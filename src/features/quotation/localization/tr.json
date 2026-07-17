@@ -397,7 +397,7 @@
     "totalVat": "KDV",
     "grandTotalWithVat": "Genel Toplam (KDV Dahil)",
     "validityNote": "Bu teklif oluşturulduktan sonra 15 gün geçerlidir.",
-    "draftWatermark": "TASLAK"
+    "draftWatermark": "TASLAKTIR"
   },
   "revision": {
     "success": "Revize kaydı oluşturuldu.",

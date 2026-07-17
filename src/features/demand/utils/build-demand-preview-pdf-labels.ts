@@ -1,13 +1,13 @@
 import type { TFunction } from 'i18next';
 import type { QuotationPreviewPdfLabels } from '@/features/quotation/utils/build-quotation-preview-pdf';
 
-export function buildOrderPreviewPdfLabels(t: TFunction<'order'>): QuotationPreviewPdfLabels {
+export function buildDemandPreviewPdfLabels(t: TFunction<'demand'>): QuotationPreviewPdfLabels {
   return {
     documentTitle: t('pdfExportTemplate.documentTitle'),
     senderLabel: t('pdfExportTemplate.senderLabel'),
     recipientLabel: t('pdfExportTemplate.recipientLabel'),
     metaDate: t('pdfExportTemplate.metaDate'),
-    metaOfferNo: t('pdfExportTemplate.metaOrderNo'),
+    metaOfferNo: t('pdfExportTemplate.metaDemandNo'),
     notSpecified: t('pdfExportTemplate.notSpecified'),
     lineImage: t('pdfExportTemplate.lineImage'),
     productCode: t('lines.productCode'),

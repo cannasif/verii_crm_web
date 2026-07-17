@@ -14,7 +14,7 @@ import { DemandSummaryCard } from './DemandSummaryCard';
 import { Button } from '@/components/ui/button';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
 import { useHeaderSaveTooltipState } from '@/lib/header-save-required-hints';
-import { Save, X, FileText, Layers, Calculator } from 'lucide-react';
+import { Save, X, FileText, Layers, Calculator, Eye } from 'lucide-react';
 import { DocumentCreatePageHeader } from '@/components/shared/DocumentCreatePageHeader';
 import { createDemandSchema, type CreateDemandSchema } from '../schemas/demand-schema';
 import type { DemandLineFormState, DemandExchangeRateFormState, DemandBulkCreateDto, CreateDemandDto, PricingRuleLineGetDto, UserDiscountLimitDto } from '../types/demand-types';
@@ -30,6 +30,8 @@ import { useSalesDocumentDraft } from '@/features/sales-drafts/useSalesDocumentD
 import { useDemandCalculations } from '../hooks/useDemandCalculations';
 import { useExchangeRate } from '@/services/hooks/useExchangeRate';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
+import { useCustomer } from '@/features/customer-management/hooks/useCustomer';
+import { useDemandPdfExportPreview } from '../hooks/useDemandPdfExportPreview';
 import { recordCustomerDocumentSerialUsageSafely } from '@/features/document-serial-type-management/utils/customer-document-serial-usage';
 import { CustomerDocumentSerialDocumentKind } from '@/features/document-serial-type-management/types/document-serial-type-types';
 import { buildEffectiveExchangeRates } from '@/features/sales-documents/utils/exchange-rate-snapshot';
@@ -37,6 +39,7 @@ import { applyExchangeRateChangeToLines } from '@/features/sales-documents/utils
 import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import {
   DOCUMENT_DETAIL_BUTTON_BASE,
+  DOCUMENT_DETAIL_BUTTON_PREVIEW,
   DOCUMENT_DETAIL_BUTTON_SAVE,
 } from '@/lib/document-detail-button-styles';
 
@@ -131,7 +134,27 @@ export function DemandCreateForm(): ReactElement {
   });
 
   const { data: customerOptions = [] } = useCustomerOptions(watchedRepresentativeId);
+  const { data: selectedCustomer } = useCustomer(
+    watchedCustomerId ?? 0,
+    Boolean(watchedCustomerId && watchedCustomerId > 0),
+  );
   const offerDateSyncInitializedRef = useRef(false);
+  const demandFormSlice = form.watch('demand');
+  const { currencyOptions } = useCurrencyOptions();
+  const currencyCode = useMemo(() => {
+    const found = currencyOptions.find((opt) => opt.dovizTipi === watchedCurrency);
+    return found?.code || 'TRY';
+  }, [watchedCurrency, currencyOptions]);
+
+  const pdfExport = useDemandPdfExportPreview({
+    lines,
+    demandFormSlice,
+    currencyCode,
+    customerOptions,
+    selectedCustomer,
+    quotationNotes,
+    asDraft: true,
+  });
 
   useEffect(() => {
     if (!watchedOfferDate) return;
@@ -154,7 +177,6 @@ export function DemandCreateForm(): ReactElement {
     setLines((prev) => applyExchangeRateChangeToLines(prev, oldExchangeRate, newExchangeRate));
   }, []);
   const { data: erpRates = [] } = useExchangeRate();
-  const { currencyOptions } = useCurrencyOptions();
 
   useEffect(() => {
     if (erpRates.length > 0 && currencyOptions.length > 0) {
@@ -511,6 +533,9 @@ export function DemandCreateForm(): ReactElement {
                       erpCustomerCode={watchedErpCustomerCode}
                       representativeId={watchedRepresentativeId}
                       offerType={form.watch('demand.offerType')}
+                      buildExportPdfBlob={pdfExport.buildExportPdfBlob}
+                      exportPdfFileName={pdfExport.shareFileName}
+                      exportPdfAsDraft
                     />
                   </div>
                 </div>
@@ -549,6 +574,14 @@ export function DemandCreateForm(): ReactElement {
               <X className="mr-2 h-4 w-4 transition-colors" />
               {t('cancel')}
             </Button>
+            <Button
+              type="button"
+              onClick={pdfExport.openPdfExportPreview}
+              className={`group ${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_PREVIEW}`}
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              {t('exportPreview.trigger')}
+            </Button>
             <FormSubmitTooltipWrap
               schema={createDemandSchema}
               value={demandSchemaPayload}
@@ -571,6 +604,8 @@ export function DemandCreateForm(): ReactElement {
           </div>
         </form>
       </FormProvider>
+
+      {pdfExport.renderPdfExportDialogs()}
     </div>
   );
 }

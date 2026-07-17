@@ -288,6 +288,7 @@ interface QuotationLineTableProps {
   customerName?: string | null;
   buildExportPdfBlob?: (options: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }) => Promise<Blob>;
   exportPdfFileName?: string;
+  exportPdfAsDraft?: boolean;
   offerType?: string | null;
 }
 
@@ -307,6 +308,7 @@ export function QuotationLineTable({
   customerName: _customerName,
   buildExportPdfBlob,
   exportPdfFileName,
+  exportPdfAsDraft = false,
   offerType,
 }: QuotationLineTableProps): ReactElement {
   const queryClient = useQueryClient();
@@ -519,7 +521,7 @@ export function QuotationLineTable({
     }
 
     try {
-      const blob = await buildExportPdfBlob({ draft: false });
+      const blob = await buildExportPdfBlob({ draft: exportPdfAsDraft });
       const fileName = exportPdfFileName ?? 'teklif-kalemleri.pdf';
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');

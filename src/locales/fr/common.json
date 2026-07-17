@@ -4851,10 +4851,18 @@
       "VatReadonly": "Lorsque cette option est activée, le taux de TVA reste visible dans les lignes de demande, devis ou commande concernées, mais l'utilisateur ne peut pas le modifier.",
       "CatalogLabels": "Laissez vide pour conserver les noms de champs Netsis par défaut, comme Code groupe, Code1 et Code2. Maximum 50 caractères."
     },
+    "Tabs": {
+      "General": "Général",
+      "VatSettings": "Paramètres du taux de TVA",
+      "DocumentFieldLabels": "Libellés des champs de document",
+      "CodeFormatRules": "Règles de format de code"
+    },
     "Sections": {
       "VatVisibility": "Visibilité du taux de TVA",
       "VatReadonly": "Modification du taux de TVA",
-      "CatalogLabels": "Libellés des champs de code catalogue"
+      "CatalogLabels": "Libellés des champs de code catalogue",
+      "CustomerCodeRule": "Règles de format de code",
+      "CustomerCodeRuleCustomerScope": "Code client"
     },
     "Placeholders": {
       "DefaultLanguage": "Sélectionner la langue",

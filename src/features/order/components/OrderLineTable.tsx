@@ -236,6 +236,7 @@ interface OrderLineTableProps {
   enabled?: boolean;
   buildExportPdfBlob?: (options: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }) => Promise<Blob>;
   exportPdfFileName?: string;
+  exportPdfAsDraft?: boolean;
   offerType?: string | null;
 }
 
@@ -253,6 +254,7 @@ export function OrderLineTable({
   enabled = true,
   buildExportPdfBlob,
   exportPdfFileName,
+  exportPdfAsDraft = false,
   offerType,
 }: OrderLineTableProps): ReactElement {
   const queryClient = useQueryClient();
@@ -890,7 +892,7 @@ export function OrderLineTable({
       }
 
       try {
-        const blob = await buildExportPdfBlob({ draft: false });
+        const blob = await buildExportPdfBlob({ draft: exportPdfAsDraft });
         const fileName = exportPdfFileName ?? 'siparis-kalemleri.pdf';
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement('a');

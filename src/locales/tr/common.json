@@ -4945,10 +4945,18 @@
       "RequireEnglishCustomerName": "Açıkken müşteri adındaki Türkçe karakterler, büyük/küçük harf yapısı korunarak İngilizce karşılıklarıyla kaydedilir.",
       "UseCurrentDateForErpRegistration": "Açıkken Netsis kayıt tarihi ERP gönderim anıdır. Kapalıyken talep, teklif veya siparişin kendi belge tarihi kullanılır. Fiyat ve kur tarihi değişmez."
     },
+    "Tabs": {
+      "General": "Genel",
+      "VatSettings": "KDV oranı ayarları",
+      "DocumentFieldLabels": "Belge alanı başlıkları",
+      "CodeFormatRules": "Kod formatı kuralları"
+    },
     "Sections": {
       "VatVisibility": "KDV oranı görünürlüğü",
       "VatReadonly": "KDV oranı düzenleme yetkisi",
-      "CatalogLabels": "Katalog kod alanı isimleri"
+      "CatalogLabels": "Katalog kod alanı isimleri",
+      "CustomerCodeRule": "Kod format kuralları",
+      "CustomerCodeRuleCustomerScope": "Cari kodu"
     },
     "Placeholders": {
       "DefaultLanguage": "Dil seçin",

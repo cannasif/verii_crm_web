@@ -375,5 +375,62 @@
     "reasonLabel": "İptal nedeni",
     "reasonPlaceholder": "Müşterinin iptal nedenini yazın...",
     "confirmButton": "İptal Et"
+  },
+  "shareWhatsapp": "WhatsApp ile Paylaş",
+  "shareMail": "E-posta ile Paylaş",
+  "share": {
+    "mailSubject": "Talep paylaşımı",
+    "mailBody": "Talep detaylarını inceler misiniz?",
+    "whatsappMessage": "Talep detaylarını sizinle paylaşıyorum.",
+    "nativeOpened": "Paylaşım ekranı açıldı.",
+    "nativeWhatsappFallback": "PDF indirildi. WhatsApp açıldı; dosyayı sohbete ekleyin.",
+    "nativeMailFallback": "PDF indirildi. {{email}} adresiyle mail penceresi açıldı; indirilen PDF'i ek olarak ekleyin.",
+    "nativeMailSentApi": "Talep PDF ekiyle {{email}} adresine gönderildi.",
+    "nativeMailSendFailed": "E-posta gönderilemedi.",
+    "nativeEmailRequired": "Müşteri veya kontak için kayıtlı e-posta bulunamadı.",
+    "nativeEmailInvalid": "Geçerli bir e-posta adresi girin."
+  },
+  "shareWhatsappDialog": {
+    "phoneRequired": "Müşteri veya kontak için kayıtlı telefon bulunamadı.",
+    "customerRequired": "Paylaşım için önce müşteri seçmelisiniz."
+  },
+  "shareMailDialog": {
+    "customerRequired": "Paylaşım için önce müşteri seçmelisiniz."
+  },
+  "exportPreview": {
+    "trigger": "Önizle ve Paylaş",
+    "title": "Önizle ve paylaş",
+    "subtitle": "PDF'i inceleyin; indirin veya WhatsApp ve e-posta ile paylaşın.",
+    "close": "Kapat",
+    "loading": "PDF hazırlanıyor...",
+    "error": "PDF oluşturulamadı. Lütfen tekrar deneyin.",
+    "download": "Bilgisayara indir",
+    "errorDismiss": "Kapat",
+    "downloadFileName": "talep.pdf",
+    "showDiscount": "İskonto göster",
+    "hideVat": "KDV gizle"
+  },
+  "pdfExportTemplate": {
+    "builtInTemplateTitle": "V3RII Hazır Şablon (Önizleme)",
+    "documentTitle": "TALEP",
+    "metaDate": "Tarih",
+    "metaDemandNo": "Talep No",
+    "notSpecified": "—",
+    "senderLabel": "Talep Eden",
+    "recipientLabel": "Talep Edilen",
+    "lineImage": "Görsel",
+    "unitPriceNet": "Net Birim",
+    "netUnitPriceColumn": "Net Birim Fiyat",
+    "lineDiscount": "İskonto",
+    "vatRate": "KDV %",
+    "priceDetail": "Fiyat Detayı",
+    "grossTotal": "Brüt Toplam",
+    "lineDiscountTotal": "Satır İskontosu",
+    "generalDiscount": "Genel İskonto",
+    "netSubtotal": "Net Ara Toplam",
+    "totalVat": "KDV",
+    "grandTotalWithVat": "Genel Toplam (KDV Dahil)",
+    "footerNote": "Bu belge talep onayı için hazırlanmıştır.",
+    "draftWatermark": "TASLAKTIR"
   }
 }

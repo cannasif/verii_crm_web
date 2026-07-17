@@ -339,5 +339,8 @@
     "description": "Bu talebi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.",
     "reasonPlaceholder": "Müşterinin iptal nedenini yazın...",
     "confirmButton": "İptal Et"
+  },
+  "pdfExportTemplate": {
+    "draftWatermark": "TASLAKTIR"
   }
 }

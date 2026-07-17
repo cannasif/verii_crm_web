@@ -4896,10 +4896,18 @@
       "VatReadonly": "Cuando está activado, el IVA permanece visible en las líneas de demanda, cotización o pedido relacionadas, pero el usuario no puede modificarlo.",
       "CatalogLabels": "Déjelo vacío para usar los nombres de campo predeterminados de Netsis, como Código de grupo, Código1 y Código2. Máximo 50 caracteres."
     },
+    "Tabs": {
+      "General": "General",
+      "VatSettings": "Configuración del IVA",
+      "DocumentFieldLabels": "Etiquetas de campos de documento",
+      "CodeFormatRules": "Reglas de formato de código"
+    },
     "Sections": {
       "VatVisibility": "Visibilidad del IVA",
       "VatReadonly": "Edición del IVA",
-      "CatalogLabels": "Etiquetas de campos de código de catálogo"
+      "CatalogLabels": "Etiquetas de campos de código de catálogo",
+      "CustomerCodeRule": "Reglas de formato de código",
+      "CustomerCodeRuleCustomerScope": "Código de cliente"
     },
     "Placeholders": {
       "DefaultLanguage": "Seleccionar idioma",

@@ -126,9 +126,9 @@ export function DocumentFieldLabelsSettingsPanel({
 
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
+      <div className="w-full min-w-0 rounded-2xl border border-slate-200 bg-slate-50 p-3 sm:p-4 dark:border-white/10 dark:bg-white/[0.03]">
         <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-4 w-4 shrink-0 animate-spin" />
           Belge alan başlıkları yükleniyor...
         </div>
       </div>
@@ -137,29 +137,29 @@ export function DocumentFieldLabelsSettingsPanel({
 
   if (isError) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
+      <div className="w-full min-w-0 break-words rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 sm:p-4 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
         {error instanceof Error ? error.message : 'Belge alan başlıkları yüklenemedi.'}
       </div>
     );
   }
 
   return (
-    <div className="md:col-span-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.03]">
-      <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+    <div className="w-full min-w-0 max-w-full overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-3 sm:p-4 dark:border-white/10 dark:bg-white/[0.03]">
+      <div className="mb-4 flex min-w-0 flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex min-w-0 items-start gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
             <Tags className="h-5 w-5" />
           </div>
-          <div className="space-y-1">
-            <p className="text-sm font-semibold">Belge alan başlıkları</p>
-            <p className="text-muted-foreground text-sm">
+          <div className="min-w-0 flex-1 space-y-1 overflow-hidden">
+            <p className="break-words text-sm font-semibold">Belge alan başlıkları</p>
+            <p className="text-muted-foreground break-words text-sm">
               Talep, teklif, sipariş ve satınalma belgelerindeki not penceresi ile satır açıklama alanlarının başlıklarını müşteri terminolojisine göre değiştirir. Boş bırakılan alanlarda mevcut sistem adı kullanılır. Burada yapılan başlık değişikliği dil değişiminden etkilenmez.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="mb-3 flex flex-wrap gap-2">
+      <div className="mb-3 flex min-w-0 flex-wrap gap-2">
         {SCOPES.map((scope) => (
           <button
             key={scope.scope}
@@ -177,7 +177,7 @@ export function DocumentFieldLabelsSettingsPanel({
         ))}
       </div>
 
-      <div className="mb-4 flex flex-wrap gap-2">
+      <div className="mb-4 flex min-w-0 flex-wrap gap-2">
         {DOCUMENTS.map((document) => (
           <button
             key={document.type}
@@ -195,13 +195,13 @@ export function DocumentFieldLabelsSettingsPanel({
         ))}
       </div>
 
-      <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+      <div className="mb-4 min-w-0 break-words rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
         {activeScope === 'HeaderNote'
           ? 'Örnek: Teklif sekmesinde Not 1 alanına “Elma”, Not 2 alanına “Armut” yazılırsa teklif not penceresinde “TEKLİF NOTU 1” yerine “Elma”, “TEKLİF NOTU 2” yerine “Armut” görünür.'
           : 'Örnek: Teklif satır açıklamalarında Açıklama 1 alanına “Üretim Notu” yazılırsa satır ekleme ekranında “Açıklama 1” yerine “Üretim Notu” görünür.'}
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid w-full min-w-0 grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
         {visibleItems.map((item) => {
           const draft = drafts[getDraftKey(item)];
           const effectiveLabel = draft?.customLabel?.trim() || item.defaultLabel;
@@ -210,12 +210,12 @@ export function DocumentFieldLabelsSettingsPanel({
           return (
             <div
               key={getDraftKey(item)}
-              className="rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#0C0516]"
+              className="min-w-0 max-w-full overflow-hidden rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#0C0516]"
             >
-              <div className="mb-3 flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold">{effectiveLabel}</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+              <div className="mb-3 flex min-w-0 items-start justify-between gap-2">
+                <div className="min-w-0 flex-1 overflow-hidden">
+                  <p className="truncate text-sm font-semibold" title={effectiveLabel}>{effectiveLabel}</p>
+                  <p className="break-words text-xs text-slate-500 dark:text-slate-400">
                     {documentLabel} · {activeScopeDefinition.label} · varsayılan: {item.defaultLabel}
                   </p>
                 </div>
@@ -232,7 +232,7 @@ export function DocumentFieldLabelsSettingsPanel({
                 value={draft?.customLabel ?? ''}
                 placeholder={item.defaultLabel}
                 onChange={(event) => handleDraftChange(item, event.target.value)}
-                className="rounded-xl border-slate-200 bg-white dark:border-white/10 dark:bg-black/20"
+                className="w-full min-w-0 max-w-full rounded-xl border-slate-200 bg-white dark:border-white/10 dark:bg-black/20"
               />
             </div>
           );

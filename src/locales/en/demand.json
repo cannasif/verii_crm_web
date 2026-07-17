@@ -371,5 +371,62 @@
     "reasonLabel": "Cancellation reason",
     "reasonPlaceholder": "Write the customer's cancellation reason...",
     "confirmButton": "Cancel"
+  },
+  "shareWhatsapp": "Share by WhatsApp",
+  "shareMail": "Share by Mail",
+  "share": {
+    "mailSubject": "Demand share",
+    "mailBody": "Could you review the demand details?",
+    "whatsappMessage": "I am sharing the demand details with you.",
+    "nativeOpened": "Share screen opened.",
+    "nativeWhatsappFallback": "PDF downloaded. WhatsApp opened; attach the file to the chat.",
+    "nativeMailFallback": "PDF downloaded. Mail window opened for {{email}}; attach the downloaded PDF.",
+    "nativeMailSentApi": "Demand was sent to {{email}} with PDF attachment.",
+    "nativeMailSendFailed": "Email could not be sent.",
+    "nativeEmailRequired": "No registered email found for customer or contact.",
+    "nativeEmailInvalid": "Enter a valid email address."
+  },
+  "shareWhatsappDialog": {
+    "phoneRequired": "No registered phone found for customer or contact.",
+    "customerRequired": "Select a customer before sharing."
+  },
+  "shareMailDialog": {
+    "customerRequired": "Select a customer before sharing."
+  },
+  "exportPreview": {
+    "trigger": "Preview & Share",
+    "title": "Preview & share",
+    "subtitle": "Review the PDF; download or share via WhatsApp and email.",
+    "close": "Close",
+    "loading": "Preparing PDF...",
+    "error": "PDF could not be created. Please try again.",
+    "download": "Download",
+    "errorDismiss": "Close",
+    "downloadFileName": "demand.pdf",
+    "showDiscount": "Show discount",
+    "hideVat": "Hide VAT"
+  },
+  "pdfExportTemplate": {
+    "builtInTemplateTitle": "V3RII Ready Template (Preview)",
+    "documentTitle": "DEMAND",
+    "metaDate": "Date",
+    "metaDemandNo": "Demand No",
+    "notSpecified": "—",
+    "senderLabel": "Requested By",
+    "recipientLabel": "Requested From",
+    "lineImage": "Image",
+    "unitPriceNet": "Net unit",
+    "netUnitPriceColumn": "Net unit price",
+    "lineDiscount": "Discount",
+    "vatRate": "VAT %",
+    "priceDetail": "Price detail",
+    "grossTotal": "Gross total",
+    "lineDiscountTotal": "Line discount",
+    "generalDiscount": "General discount",
+    "netSubtotal": "Net subtotal",
+    "totalVat": "VAT",
+    "grandTotalWithVat": "Grand total (incl. VAT)",
+    "footerNote": "This document was prepared for demand approval.",
+    "draftWatermark": "DRAFT"
   }
 }

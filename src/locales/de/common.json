@@ -4853,10 +4853,18 @@
       "VatReadonly": "Wenn aktiviert, bleibt der MwSt.-Satz in den entsprechenden Anfrage-, Angebots- oder Auftragszeilen sichtbar, kann aber vom Benutzer nicht geändert werden.",
       "CatalogLabels": "Leer lassen, um die Standard-Netsis-Feldnamen wie Gruppencode, Code1 und Code2 zu verwenden. Maximal 50 Zeichen."
     },
+    "Tabs": {
+      "General": "Allgemein",
+      "VatSettings": "MwSt.-Satz-Einstellungen",
+      "DocumentFieldLabels": "Dokumentfeldbezeichnungen",
+      "CodeFormatRules": "Codeformatregeln"
+    },
     "Sections": {
       "VatVisibility": "Sichtbarkeit des MwSt.-Satzes",
       "VatReadonly": "Bearbeitung des MwSt.-Satzes",
-      "CatalogLabels": "Bezeichnungen der Katalogcode-Felder"
+      "CatalogLabels": "Bezeichnungen der Katalogcode-Felder",
+      "CustomerCodeRule": "Codeformatregeln",
+      "CustomerCodeRuleCustomerScope": "Kundennummer"
     },
     "Placeholders": {
       "DefaultLanguage": "Sprache wählen",

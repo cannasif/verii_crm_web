@@ -4903,10 +4903,18 @@
       "RequireEnglishCustomerName": "When enabled, Turkish characters in customer names are saved using their English equivalents while preserving letter case.",
       "UseCurrentDateForErpRegistration": "When enabled, the Netsis registration date is the ERP submission time. When disabled, the demand, quotation, or order document date is used. Pricing and exchange-rate dates are unchanged."
     },
+    "Tabs": {
+      "General": "General",
+      "VatSettings": "VAT rate settings",
+      "DocumentFieldLabels": "Document field labels",
+      "CodeFormatRules": "Code format rules"
+    },
     "Sections": {
       "VatVisibility": "VAT rate visibility",
       "VatReadonly": "VAT rate editing",
-      "CatalogLabels": "Catalog code field labels"
+      "CatalogLabels": "Catalog code field labels",
+      "CustomerCodeRule": "Code format rules",
+      "CustomerCodeRuleCustomerScope": "Customer code"
     },
     "Placeholders": {
       "DefaultLanguage": "Select language",

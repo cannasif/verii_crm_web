@@ -188,6 +188,7 @@ export function QuotationDetailPage(): ReactElement {
   const [outlookMailOpen, setOutlookMailOpen] = useState(false);
   const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
   const quotationStatus = Number((quotation as { status?: number; Status?: number })?.status ?? (quotation as { status?: number; Status?: number })?.Status);
+  const isDraftDocument = quotationStatus === 0;
   const isApprovalWaiting = quotationStatus === 1;
   const isReadOnlyByStatus = [2, 3, 4, 5, 6, 7].includes(quotationStatus);
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
@@ -521,7 +522,7 @@ export function QuotationDetailPage(): ReactElement {
       totalVat: t('pdfExportTemplate.totalVat'),
       grandTotalWithVat: t('pdfExportTemplate.grandTotalWithVat'),
       validityNote: t('pdfExportTemplate.validityNote'),
-      draftWatermark: t('pdfExportTemplate.draftWatermark'),
+      draftWatermark: t('pdfExportTemplate.draftWatermark', { defaultValue: 'TASLAKTIR' }),
     };
 
     const koliBaskiId = qc.koliBaskiDefinitionId ?? quotation?.koliBaskiDefinitionId ?? null;
@@ -602,10 +603,13 @@ export function QuotationDetailPage(): ReactElement {
           defaultValue: 'V3RII Hazır Şablon (Önizleme)',
         }),
         isDefault: true,
-        generate: () => buildPreviewPdfBlob({ draft: false, showDiscount: defaultShowDiscountDetails }),
+        generate: () => buildPreviewPdfBlob({
+          draft: isDraftDocument,
+          showDiscount: defaultShowDiscountDetails,
+        }),
       },
     ],
-    [buildPreviewPdfBlob, defaultShowDiscountDetails, t]
+    [buildPreviewPdfBlob, defaultShowDiscountDetails, isDraftDocument, t]
   );
 
   const buildExportPdfBlob = useCallback(
@@ -1256,6 +1260,7 @@ export function QuotationDetailPage(): ReactElement {
                       customerName={quotation?.potentialCustomerName ?? null}
                       buildExportPdfBlob={buildPreviewPdfBlob}
                       exportPdfFileName={`teklif-${quotation?.offerNo || 'kalemler'}.pdf`}
+                      exportPdfAsDraft={isDraftDocument}
                     />
                     </div>
                   </section>
@@ -1394,6 +1399,7 @@ export function QuotationDetailPage(): ReactElement {
         open={pdfExportOpen}
         onOpenChange={setPdfExportOpen}
         buildPdfBlob={buildExportPdfBlob}
+        asDraft={isDraftDocument}
         hasLineDiscounts={defaultShowDiscountDetails}
         fileName={shareFileName}
         labels={{
