@@ -755,9 +755,7 @@ export function CustomerForm({
                       onSelect={(value) => {
                         field.onChange(value ? Number(value) : undefined);
                         const selectedDistrict = districtDropdown.items.find((item) => item.id === Number(value));
-                        if (selectedDistrict?.postalCode && !form.getValues('postalCode')?.trim()) {
-                          form.setValue('postalCode', selectedDistrict.postalCode, { shouldDirty: true, shouldValidate: true });
-                        }
+                        form.setValue('postalCode', selectedDistrict?.postalCode ?? '', { shouldDirty: true, shouldValidate: true });
                       }}
                       onDebouncedSearchChange={setDistrictSearchTerm}
                       onFetchNextPage={districtDropdown.fetchNextPage}
@@ -778,7 +776,7 @@ export function CustomerForm({
                     <FormLabel className={LABEL_STYLE}>
                       <MapPin size={16} className="text-primary" />
                       {tf('postalCode')}
-                      <ErpFieldHelp text={erpHint('postalCode', 'Doluysa ERP cari açmada Netsis POSTA_KODU alanına gönderilir. İlçe tanımında posta kodu varsa boş alana otomatik yazılır.')} />
+                      <ErpFieldHelp text={erpHint('postalCode', 'Doluysa ERP cari açmada Netsis POSTA_KODU alanına gönderilir. İlçe seçildiğinde ilçe tanımındaki posta kodu otomatik yazılır.')} />
                     </FormLabel>
                     <FormControl><Input {...field} value={field.value || ''} className={INPUT_STYLE} placeholder={tf('postalCodePlaceholder')} /></FormControl>
                     <FormMessage className="text-xs" />
