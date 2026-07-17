@@ -3,7 +3,6 @@ import { applyFilterRowsClient } from '@/lib/advanced-filter-types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 
 export const SHIPPING_ADDRESS_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
-  { value: 'customerName', type: 'string', labelKey: 'advancedFilter.columnCustomerName' },
   { value: 'erpShippingCode', type: 'string', labelKey: 'advancedFilter.columnErpShippingCode' },
   { value: 'erpMainCustomerCode', type: 'string', labelKey: 'advancedFilter.columnErpMainCustomerCode' },
   { value: 'name', type: 'string', labelKey: 'advancedFilter.columnName' },
