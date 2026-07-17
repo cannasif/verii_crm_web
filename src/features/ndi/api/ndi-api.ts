@@ -112,6 +112,26 @@ export interface NdiTransferCreateResponseDto {
   warnings: string[];
 }
 
+export interface NdiConnectionTestRequest {
+  dbName: string;
+  username: string;
+  password: string;
+  branchCode: string;
+  dbUser: string;
+  dbPassword: string;
+  dbType: string;
+}
+
+export interface NdiConnectionTestResult {
+  isSuccessful: boolean;
+  dbName: string;
+  username: string;
+  branchCode: string;
+  source: string;
+  expiresInSeconds: number;
+  message: string;
+}
+
 function ensureSuccess<T>(response: ApiResponse<T>, fallbackMessage: string): T {
   if (response.success) {
     return response.data;
@@ -223,6 +243,19 @@ export const ndiApi = {
       }
 
       throw error;
+    }
+  },
+
+  testConnection: async (request: NdiConnectionTestRequest): Promise<NdiConnectionTestResult> => {
+    const fallbackMessage = 'Netsis bağlantısı test edilemedi.';
+    try {
+      const response = await api.post<ApiResponse<NdiConnectionTestResult>>(
+        '/api/NetsisNdiTransfer/connection-test',
+        request
+      );
+      return ensureSuccess(response, fallbackMessage);
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, fallbackMessage));
     }
   },
 };

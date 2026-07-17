@@ -21,6 +21,7 @@ import {
   type NetsisCustomerDispatchDto,
   type NetsisCustomerDispatchLineDto,
 } from '../api/ndi-api';
+import { NdiConnectionTestDialog } from './NdiConnectionTestDialog';
 
 interface NdiOrderLine {
   id: string;
@@ -1037,6 +1038,7 @@ export function NdiOrderTransferPage(): ReactElement {
               </p>
             </div>
 
+            <NdiConnectionTestDialog />
             <div className="grid grid-cols-3 gap-2 text-sm">
               <MetricPill label="Grup" value={`${selectedPrefix} / ${selectedOrders.length} belge`} />
               <MetricPill label="Seçili Kalem" value={String(selectedLines.length)} />
