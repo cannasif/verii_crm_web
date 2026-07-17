@@ -274,8 +274,6 @@ export function ShippingAddressManagementPage(): ReactElement {
 
   const renderCell = (row: ShippingAddressDto, key: ShippingAddressColumnKey): React.ReactNode => {
     switch (key) {
-      case 'customerName':
-        return <span className="font-medium text-slate-700 dark:text-slate-300">{row.customerName || '-'}</span>;
       case 'erpShippingCode':
         return row.erpShippingCode ? (
           <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-200">{row.erpShippingCode}</span>
