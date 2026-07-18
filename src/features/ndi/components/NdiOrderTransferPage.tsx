@@ -2,6 +2,8 @@ import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
   AlertCircle,
+  ArrowRight,
+  Building2,
   CheckCircle2,
   Circle,
   FileText,
@@ -18,6 +20,8 @@ import {
 import {
   ndiApi,
   type NdiTransferCreateResponseDto,
+  type NdiTransferCreatedDocumentDto,
+  type NdiTransferFailedDocumentDto,
   type NetsisCustomerDispatchDto,
   type NetsisCustomerDispatchLineDto,
 } from '../api/ndi-api';
@@ -1698,6 +1702,128 @@ function TransferPreviewDialog({
   );
 }
 
+function TransferCompanyRoute({
+  sourceCompany,
+  sourceDocumentNo,
+  targetCompany,
+  documentType,
+  targetSeries,
+}: {
+  sourceCompany: string;
+  sourceDocumentNo: string;
+  targetCompany: string;
+  documentType: string;
+  targetSeries: string;
+}): ReactElement {
+  return (
+    <div className="grid grid-cols-[minmax(0,1fr)_32px_minmax(0,1fr)] items-stretch border-y border-[#d7e1ef] bg-white">
+      <div className="min-w-0 px-3 py-2">
+        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-[#64748b]">
+          <Building2 size={13} /> Kaynak firma
+        </div>
+        <div className="mt-1 truncate text-sm font-black text-[#172033]">{sourceCompany}</div>
+        <div className="mt-1 text-[10px] font-bold uppercase text-[#64748b]">Gönderilen belge</div>
+        <div className="break-all text-xs font-black text-[#334155]">{sourceDocumentNo}</div>
+      </div>
+
+      <div className="flex items-center justify-center text-[#2563eb]" aria-hidden="true">
+        <ArrowRight size={22} strokeWidth={2.5} />
+      </div>
+
+      <div className="min-w-0 bg-[#eff6ff] px-3 py-2">
+        <div className="flex items-center gap-1.5 text-[10px] font-black uppercase text-[#1d4ed8]">
+          <Building2 size={13} /> Hedef firma
+        </div>
+        <div className="mt-1 truncate text-sm font-black text-[#172033]">{targetCompany}</div>
+        <div className="mt-1 text-[10px] font-bold uppercase text-[#64748b]">Oluşturulan belge</div>
+        <div className="break-words text-xs font-black text-[#334155]">{documentType} / Seri {targetSeries}</div>
+      </div>
+    </div>
+  );
+}
+
+function CreatedTransferDocumentCard({ document }: { document: NdiTransferCreatedDocumentDto }): ReactElement {
+  return (
+    <div className="rounded-lg border border-[#bbf7d0] bg-[#f7fffb] p-3">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="rounded-full bg-[#dcfce7] px-2 py-1 text-xs font-black text-[#047857]">
+          Başarılı {document.documentType}
+        </span>
+        <span className="text-xs font-black text-[#536780]">{document.lineCount} kalem</span>
+      </div>
+
+      <div className="mt-3">
+        <TransferCompanyRoute
+          sourceCompany={document.sourceNetsisCompany}
+          sourceDocumentNo={document.sourceDocumentNo}
+          targetCompany={document.targetNetsisCompany}
+          documentType={document.documentType}
+          targetSeries={document.targetSeries}
+        />
+      </div>
+
+      <div className="mt-3 border-t border-[#bbf7d0] pt-3">
+        <div className="text-[10px] font-black uppercase text-[#047857]">Hedefte oluşan Netsis belge no</div>
+        <div className="mt-1 break-all text-lg font-black text-[#172033]">{document.netsisDocumentNo}</div>
+      </div>
+
+      {document.netsisRecordNo || document.netsisReferenceNo ? (
+        <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-bold text-[#536780]">
+          {document.netsisRecordNo ? <span>Kayıt No: {document.netsisRecordNo}</span> : null}
+          {document.netsisReferenceNo ? <span>Referans No: {document.netsisReferenceNo}</span> : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function FailedTransferDocumentCard({ document }: { document: NdiTransferFailedDocumentDto }): ReactElement {
+  return (
+    <div className="rounded-lg border border-[#fecaca] bg-[#fff8f8] p-3">
+      <TransferCompanyRoute
+        sourceCompany={document.sourceNetsisCompany}
+        sourceDocumentNo={document.sourceDocumentNo}
+        targetCompany={document.targetNetsisCompany}
+        documentType={document.documentType}
+        targetSeries={document.targetSeries}
+      />
+      <div className="mt-2 rounded-md border border-[#fecaca] bg-white px-3 py-2">
+        <div className="text-[10px] font-black uppercase text-[#b91c1c]">Netsis hata detayı</div>
+        <div className="mt-1 break-words text-xs font-bold text-[#7f1d1d]">{document.errorMessage}</div>
+      </div>
+    </div>
+  );
+}
+
+function TransferResultSummary({ result }: { result: NdiTransferCreateResponseDto }): ReactElement {
+  const invoiceCount = result.createdDocuments.filter((document) =>
+    document.documentType.toLocaleLowerCase('tr-TR').includes('fatura')
+  ).length;
+  const dispatchCount = result.createdDocuments.length - invoiceCount;
+  const failedCount = result.failedDocuments.length;
+
+  let summary = 'Netsis tarafında başarılı belge oluşturulmadı.';
+  if (dispatchCount > 0 && invoiceCount > 0) {
+    summary = `${dispatchCount} irsaliye ve ${invoiceCount} fatura oluşturuldu.`;
+  } else if (dispatchCount > 0) {
+    summary = `${dispatchCount} irsaliye oluşturuldu. Fatura oluşturulmadı.`;
+  } else if (invoiceCount > 0) {
+    summary = `${invoiceCount} fatura oluşturuldu. İrsaliye oluşturulmadı.`;
+  }
+
+  return (
+    <div className="border-y border-[#bfdbfe] bg-[#eff6ff] px-4 py-3">
+      <div className="text-[10px] font-black uppercase text-[#1d4ed8]">Bu işlemde ne oldu?</div>
+      <div className="mt-1 text-base font-black text-[#172033]">{summary}</div>
+      <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs font-bold text-[#475569]">
+        <span>İrsaliye: {dispatchCount > 0 ? `${dispatchCount} oluşturuldu` : 'Oluşturulmadı'}</span>
+        <span>Fatura: {invoiceCount > 0 ? `${invoiceCount} oluşturuldu` : 'Oluşturulmadı'}</span>
+        <span>Hatalı işlem: {failedCount > 0 ? failedCount : 'Yok'}</span>
+      </div>
+    </div>
+  );
+}
+
 function TransferResultPanel({ result }: { result: NdiTransferCreateResponseDto }): ReactElement {
   return (
     <div className="mt-3 rounded-lg border border-[#bbf7d0] bg-[#f7fffb] p-3">
@@ -1716,25 +1842,14 @@ function TransferResultPanel({ result }: { result: NdiTransferCreateResponseDto 
         </div>
       </div>
 
+      <div className="mt-3">
+        <TransferResultSummary result={result} />
+      </div>
+
       {result.createdDocuments.length > 0 ? (
-        <div className="mt-3 grid gap-2 md:grid-cols-2">
+        <div className="mt-3 grid gap-3 xl:grid-cols-2">
           {result.createdDocuments.map((document) => (
-            <div key={`${document.sourceDocumentNo}-${document.netsisDocumentNo}`} className="rounded-md border border-[#bbf7d0] bg-white px-3 py-2">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="rounded-full bg-[#dcfce7] px-2 py-1 text-[10px] font-black text-[#047857]">
-                  {document.documentType}
-                </span>
-                <span className="text-[10px] font-black text-[#536780]">{document.lineCount} kalem</span>
-              </div>
-              <div className="mt-2 text-[11px] font-black uppercase tracking-[0.08em] text-[#536780]">Netsis kayıt no</div>
-              <div className="mt-1 break-all text-lg font-black text-[#172033]">{document.netsisDocumentNo}</div>
-              <div className="mt-2 grid gap-1 text-[11px] font-bold text-[#536780]">
-                <div className="rounded bg-[#f8fbff] px-2 py-1">Kaynak: {document.sourceNetsisCompany} / {document.sourceDocumentNo}</div>
-                <div className="rounded bg-[#f8fbff] px-2 py-1">Hedef: {document.targetNetsisCompany} / Seri {document.targetSeries}</div>
-                {document.netsisRecordNo ? <div className="rounded bg-[#f8fbff] px-2 py-1">Kayıt No: {document.netsisRecordNo}</div> : null}
-                {document.netsisReferenceNo ? <div className="rounded bg-[#f8fbff] px-2 py-1">Referans No: {document.netsisReferenceNo}</div> : null}
-              </div>
-            </div>
+            <CreatedTransferDocumentCard key={`${document.sourceDocumentNo}-${document.netsisDocumentNo}`} document={document} />
           ))}
         </div>
       ) : null}
@@ -1744,11 +1859,9 @@ function TransferResultPanel({ result }: { result: NdiTransferCreateResponseDto 
           <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
             <AlertCircle size={16} /> Hatalı belgeler
           </div>
-          <div className="mt-2 space-y-1">
+          <div className="mt-3 space-y-3">
             {result.failedDocuments.map((document) => (
-              <div key={`${document.sourceDocumentNo}-${document.errorMessage}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
-                {document.sourceDocumentNo} / {document.documentType} / Kaynak {document.sourceNetsisCompany} {'->'} Hedef {document.targetNetsisCompany} / Seri {document.targetSeries}: {document.errorMessage}
-              </div>
+              <FailedTransferDocumentCard key={`${document.sourceDocumentNo}-${document.errorMessage}`} document={document} />
             ))}
           </div>
         </div>
@@ -1778,25 +1891,12 @@ function TransferResultDialog({ result, onClose }: { result: NdiTransferCreateRe
         </div>
 
         <div className="max-h-[58vh] overflow-auto p-5">
+          <TransferResultSummary result={result} />
+
           {result.createdDocuments.length > 0 ? (
-            <div className="grid gap-3 md:grid-cols-2">
+            <div className="mt-4 grid gap-3">
               {result.createdDocuments.map((document) => (
-                <div key={`${document.sourceDocumentNo}-${document.netsisDocumentNo}`} className="rounded-xl border border-[#bbf7d0] bg-[#f7fffb] p-4">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="rounded-full bg-[#dcfce7] px-2 py-1 text-xs font-black text-[#047857]">
-                      Başarılı {document.documentType}
-                    </span>
-                    <span className="text-xs font-black text-[#536780]">{document.lineCount} kalem</span>
-                  </div>
-                  <div className="mt-3 text-sm font-black uppercase tracking-[0.08em] text-[#536780]">Netsis belge/kayıt no</div>
-                  <div className="mt-1 break-all text-lg font-black text-[#172033]">{document.netsisDocumentNo}</div>
-                  <div className="mt-3 grid gap-2 text-xs font-bold text-[#536780]">
-                    <div className="rounded-md bg-white px-3 py-2">Kaynak: {document.sourceNetsisCompany} / {document.sourceDocumentNo}</div>
-                    <div className="rounded-md bg-white px-3 py-2">Hedef: {document.targetNetsisCompany} / Seri {document.targetSeries}</div>
-                    {document.netsisRecordNo ? <div className="rounded-md bg-white px-3 py-2">Kayıt No: {document.netsisRecordNo}</div> : null}
-                    {document.netsisReferenceNo ? <div className="rounded-md bg-white px-3 py-2">Referans No: {document.netsisReferenceNo}</div> : null}
-                  </div>
-                </div>
+                <CreatedTransferDocumentCard key={`${document.sourceDocumentNo}-${document.netsisDocumentNo}`} document={document} />
               ))}
             </div>
           ) : (
@@ -1810,11 +1910,9 @@ function TransferResultDialog({ result, onClose }: { result: NdiTransferCreateRe
               <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
                 <AlertCircle size={16} /> Hatalı belgeler
               </div>
-              <div className="mt-2 space-y-1">
+              <div className="mt-3 space-y-3">
                 {result.failedDocuments.map((document) => (
-                  <div key={`${document.sourceDocumentNo}-${document.errorMessage}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
-                    {document.sourceDocumentNo} / {document.documentType} / Kaynak {document.sourceNetsisCompany} {'->'} Hedef {document.targetNetsisCompany} / Seri {document.targetSeries}: {document.errorMessage}
-                  </div>
+                  <FailedTransferDocumentCard key={`${document.sourceDocumentNo}-${document.errorMessage}`} document={document} />
                 ))}
               </div>
             </div>
