@@ -20,6 +20,7 @@ export interface NetsisCustomerDispatchLineDto {
   cariKodu?: string | null;
   stokKodu: string;
   stokAdi?: string | null;
+  depoKodu?: number | null;
   miktar: number;
   tlFiyat?: number | null;
   netFiyat?: number | null;
@@ -101,6 +102,8 @@ export interface NdiTransferCreatedDocumentDto {
 
 export interface NdiTransferFailedDocumentDto {
   sourceDocumentNo: string;
+  sourceNetsisCompany: string;
+  targetNetsisCompany: string;
   targetSeries: string;
   documentType: string;
   errorMessage: string;

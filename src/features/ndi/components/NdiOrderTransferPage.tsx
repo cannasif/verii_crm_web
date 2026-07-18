@@ -638,7 +638,7 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
     route: [dispatch.tipi, dispatch.teslimCariIsim].filter(Boolean).join(' / ') || '-',
     branch: dispatch.teslimCariKodu || dispatch.cariKodu || '-',
     shipmentType,
-    defaultWarehouse: dispatch.teslimCariKodu || 'NDI',
+    defaultWarehouse: '-',
     representative: dispatch.plasiyerAciklama || dispatch.plasiyerKodu || '-',
     operationProfile,
     documentType: 'irsaliye',
@@ -675,7 +675,7 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
     exchangeRate,
     remainingQuantity,
     unit: line.olcuBirimi || line.olcuBr || '-',
-    warehouse: order?.defaultWarehouse || 'NDI',
+    warehouse: line.depoKodu == null ? '' : String(line.depoKodu),
     deliveryNote: line.cariKodu || order?.customerCode || '-',
     status: remainingQuantity <= 0 ? 'waiting' : remainingQuantity < quantity ? 'partial' : 'ready',
   };
@@ -788,6 +788,14 @@ export function NdiOrderTransferPage(): ReactElement {
     });
     return grouped;
   }, [selectedOrderLines]);
+  const warehouseLabelByOrderNo = useMemo(() => {
+    const labels = new Map<string, string>();
+    selectedLinesByOrderNo.forEach((lines, orderNo) => {
+      const warehouses = Array.from(new Set(lines.map((line) => line.warehouse).filter(Boolean)));
+      labels.set(orderNo, warehouses.join(', ') || '-');
+    });
+    return labels;
+  }, [selectedLinesByOrderNo]);
   const ruleOutcomes = useMemo(
     () => selectedOrders.map((order) => buildRuleOutcome(order, selectedLinesByOrderNo.get(order.orderNo) ?? [])),
     [selectedOrders, selectedLinesByOrderNo]
@@ -915,7 +923,7 @@ export function NdiOrderTransferPage(): ReactElement {
           exchangeRate: line.exchangeRate,
           unit: line.unit,
           sourceWarehouse: line.warehouse,
-          targetWarehouse: outcome?.targetWarehouse ?? line.warehouse,
+          targetWarehouse: outcome?.targetWarehouseLocked ? outcome.targetWarehouse : line.warehouse,
           targetVat: outcome?.targetVat ?? null,
         };
       });
@@ -1135,7 +1143,7 @@ export function NdiOrderTransferPage(): ReactElement {
                           <Truck size={14} /> {order.route}
                         </span>
                         <span className="flex items-center gap-1">
-                          <Warehouse size={14} /> {order.defaultWarehouse}
+                          <Warehouse size={14} /> {warehouseLabelByOrderNo.get(order.orderNo) ?? order.defaultWarehouse}
                         </span>
                         <span className="text-right">{order.shipmentType}</span>
                       </div>
@@ -1739,7 +1747,7 @@ function TransferResultPanel({ result }: { result: NdiTransferCreateResponseDto 
           <div className="mt-2 space-y-1">
             {result.failedDocuments.map((document) => (
               <div key={`${document.sourceDocumentNo}-${document.errorMessage}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
-                {document.sourceDocumentNo} / {document.documentType} / Seri {document.targetSeries}: {document.errorMessage}
+                {document.sourceDocumentNo} / {document.documentType} / Kaynak {document.sourceNetsisCompany} {'->'} Hedef {document.targetNetsisCompany} / Seri {document.targetSeries}: {document.errorMessage}
               </div>
             ))}
           </div>
@@ -1805,7 +1813,7 @@ function TransferResultDialog({ result, onClose }: { result: NdiTransferCreateRe
               <div className="mt-2 space-y-1">
                 {result.failedDocuments.map((document) => (
                   <div key={`${document.sourceDocumentNo}-${document.errorMessage}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
-                    {document.sourceDocumentNo} / {document.documentType} / Seri {document.targetSeries}: {document.errorMessage}
+                    {document.sourceDocumentNo} / {document.documentType} / Kaynak {document.sourceNetsisCompany} {'->'} Hedef {document.targetNetsisCompany} / Seri {document.targetSeries}: {document.errorMessage}
                   </div>
                 ))}
               </div>
