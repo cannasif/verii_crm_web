@@ -217,8 +217,8 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Cari sevk var ise irsaliye aktarımı zorunlu, yok ise zorunlu değil.',
     taxRule: '1/4 siparişlerde kalem miktarının 1/4 adedi ve KDV %5; TAM siparişlerde miktarın tamamı ve KDV %20 ile NURAY24 şirketine aktarılır.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'Sevk carisi varsa irsaliye; yurt içi ve sevk carisi yoksa fatura oluşturulur.',
-    officialNote: 'Belge türü sipariş ve sevk koşulundan otomatik belirlenir.',
+    transferNote: 'Sevk carisi varsa NURAY24 irsaliyesi ve ardından SIRKET24 faturası; yurt içi ve sevk carisi yoksa NURAY24 faturası oluşturulur.',
+    officialNote: 'Otomatik SIRKET24 faturası yalnızca bağlı NUR sipariş numarası bulunduğunda oluşturulur.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki NUR belgeleri toplu seçilebilir.',
   },
   {
@@ -233,8 +233,8 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Cari sevk var ise irsaliye zorunlu; özel kod K ise irsaliye zorunlu.',
     taxRule: 'Özel Kod K ihraç kayıtlı KDV 0, Özel Kod N normal satış KDV %20.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'Sevk carisi/özel kod K varsa irsaliye; yurt içi ve sevk carisi yoksa fatura oluşturulur.',
-    officialNote: 'Belge türü sipariş ve sevk koşulundan otomatik belirlenir.',
+    transferNote: 'Sevk carisi/özel kod K varsa WIN24 irsaliyesi ve ardından SIRKET24 faturası; yurt içi ve sevk carisi yoksa WIN24 faturası oluşturulur.',
+    officialNote: 'Otomatik SIRKET24 faturası yalnızca bağlı VIN sipariş numarası bulunduğunda oluşturulur.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki VIN belgeleri toplu seçilebilir.',
   },
   {
@@ -2255,8 +2255,8 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
 
 function SeriesGuide({ activeRuleIds }: { activeRuleIds: Set<NdiTransferRule['id']> }): ReactElement {
   const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
-    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> NURAY24', 'Seri -> siparişten', 'Sevk varsa irsaliye', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
-    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> WIN24', 'Seri -> siparişten', 'Sevk/K -> irsaliye', 'Sevksiz yurt içi -> fatura', 'K -> KDV 0'] },
+    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> NURAY24', 'Seri -> siparişten', 'Sevk varsa -> NURAY24 irsaliye + SIRKET24 fatura', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
+    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> WIN24', 'Seri -> siparişten', 'Sevk/K -> WIN24 irsaliye + SIRKET24 fatura', 'Sevksiz yurt içi -> WIN24 fatura', 'K -> KDV 0'] },
     { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> DISTIC24', 'Seri -> siparişten', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
     { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura serisi -> siparişten', 'KDV -> 0', 'Resmi evrak yok'] },
   ];
