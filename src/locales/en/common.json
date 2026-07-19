@@ -1465,6 +1465,7 @@
     "erpDocumentCleanupLogs": "ERP Record Cleanup Logs",
     "ndi": "NDI",
     "ndiOrderLineSelection": "Order Line Selection",
+    "ndiTransferredDocuments": "Transferred Documents",
     "purchaseManagement": "Purchase Management",
     "purchaseDashboard": "Purchase Home",
     "purchaseRequests": "Purchase Requests",

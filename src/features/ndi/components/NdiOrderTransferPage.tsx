@@ -1623,18 +1623,166 @@ export function NdiOrderTransferPage(): ReactElement {
   );
 }
 
+export function NdiTransferredRecordsPage(): ReactElement {
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [reopeningRecordId, setReopeningRecordId] = useState<number | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const transferredQuery = useQuery({
+    queryKey: ['ndi', 'transferred'],
+    queryFn: ndiApi.getTransferred,
+    staleTime: 30_000,
+  });
+
+  const records = useMemo(() => transferredQuery.data ?? [], [transferredQuery.data]);
+  const filteredRecords = useMemo(() => {
+    const normalizedSearch = search.trim().toLocaleLowerCase('tr-TR');
+
+    return records.filter((record) => {
+      if (statusFilter !== 'all' && record.status !== statusFilter) {
+        return false;
+      }
+
+      if (!normalizedSearch) {
+        return true;
+      }
+
+      const searchableValues = [
+        record.sourceDocumentNo,
+        record.sourceOrderNo,
+        record.sourceNetsisCompany,
+        record.customerCode,
+        record.customerName,
+        ...record.documents.flatMap((document) => [
+          document.targetNetsisCompany,
+          document.documentType,
+          document.targetSeries,
+          document.netsisDocumentNo,
+        ]),
+      ];
+
+      return searchableValues.some((value) => value?.toLocaleLowerCase('tr-TR').includes(normalizedSearch));
+    });
+  }, [records, search, statusFilter]);
+
+  const transferredCount = records.filter((record) => record.status === 'Transferred').length;
+  const partialCount = records.filter((record) => record.status === 'PartiallyTransferred').length;
+  const documentCount = records.reduce((total, record) => total + record.documents.length, 0);
+
+  const reopenTransferredRecord = async (record: NdiTransferredRecordDto) => {
+    const confirmed = window.confirm(
+      `${record.sourceDocumentNo} belgesini yeniden işleme almak istiyor musunuz? Belge ana listeye dönecek; Netsis'e otomatik gönderilmeyecek.`
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setActionError(null);
+    setReopeningRecordId(record.id);
+    try {
+      await ndiApi.reopenTransfer(record.id);
+      await transferredQuery.refetch();
+    } catch (error) {
+      setActionError(error instanceof Error ? error.message : 'Belge yeniden işleme alınamadı.');
+    } finally {
+      setReopeningRecordId(null);
+    }
+  };
+
+  return (
+    <div className="-mx-4 -mt-4 min-h-screen bg-[var(--crm-app-background)] text-foreground md:-mx-6 md:-mt-6">
+      <header className="border-b border-slate-300 bg-[var(--crm-app-panel)] px-4 py-5 dark:border-white/20 md:px-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex min-w-0 items-start gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <PackageCheck size={22} />
+            </div>
+            <div className="min-w-0">
+              <div className="text-xs font-black uppercase text-primary">NDI</div>
+              <h1 className="mt-1 text-2xl font-black">Aktarılan Belgeler</h1>
+              <p className="mt-1 max-w-3xl text-sm font-semibold text-[var(--crm-app-text-muted)]">
+                Netsis aktarım geçmişini, oluşan irsaliye ve faturaları, hedef firmaları ve kalem ayrıntılarını inceleyin.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => void transferredQuery.refetch()}
+            className="inline-flex h-10 items-center gap-2 rounded-md border border-slate-300 px-3 text-sm font-black text-foreground hover:bg-[var(--crm-app-panel-muted)] dark:border-white/20"
+          >
+            <RefreshCw size={17} className={transferredQuery.isFetching ? 'animate-spin' : ''} />
+            Yenile
+          </button>
+        </div>
+
+        <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <MetricPill label="Kayıt" value={String(records.length)} />
+          <MetricPill label="Aktarıldı" value={String(transferredCount)} />
+          <MetricPill label="Kısmi" value={String(partialCount)} />
+          <MetricPill label="Netsis Belgesi" value={String(documentCount)} />
+        </div>
+      </header>
+
+      <div className="flex flex-wrap items-center gap-3 border-b border-slate-300 bg-[var(--crm-app-panel)] px-4 py-3 dark:border-white/20 md:px-6">
+        <label className="relative min-w-[260px] flex-1">
+          <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={17} />
+          <input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Belge, sipariş, müşteri veya firma ara..."
+            className="h-10 w-full rounded-md border border-slate-300 bg-[var(--crm-app-panel)] pl-10 pr-3 text-sm font-semibold outline-none focus:border-primary dark:border-white/20"
+          />
+        </label>
+        <select
+          value={statusFilter}
+          onChange={(event) => setStatusFilter(event.target.value)}
+          aria-label="Aktarım durumu"
+          className="h-10 min-w-48 rounded-md border border-slate-300 bg-[var(--crm-app-panel)] px-3 text-sm font-bold outline-none focus:border-primary dark:border-white/20"
+        >
+          <option value="all">Tüm durumlar</option>
+          <option value="Transferred">Aktarıldı</option>
+          <option value="PartiallyTransferred">Kısmi aktarıldı</option>
+          <option value="Processing">Aktarılıyor</option>
+          <option value="Reopened">Yeniden işleme alındı</option>
+        </select>
+      </div>
+
+      {actionError ? (
+        <div className="mx-4 mt-4 flex items-center gap-2 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm font-bold text-red-800 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-200 md:mx-6">
+          <AlertCircle size={18} /> {actionError}
+        </div>
+      ) : null}
+
+      <TransferredRecordsPanel
+        records={filteredRecords}
+        isLoading={transferredQuery.isLoading}
+        isError={transferredQuery.isError}
+        onRefresh={() => void transferredQuery.refetch()}
+        onReopen={(record) => void reopenTransferredRecord(record)}
+        reopeningRecordId={reopeningRecordId}
+        showHeader={false}
+      />
+    </div>
+  );
+}
+
 function TransferredRecordsPanel({
   records,
   isLoading,
   isError,
   onRefresh,
   onReopen,
+  reopeningRecordId = null,
+  showHeader = true,
 }: {
   records: NdiTransferredRecordDto[];
   isLoading: boolean;
   isError: boolean;
   onRefresh: () => void;
   onReopen: (record: NdiTransferredRecordDto) => void;
+  reopeningRecordId?: number | null;
+  showHeader?: boolean;
 }): ReactElement {
   const statusLabels: Record<string, string> = {
     Processing: 'Aktarılıyor',
@@ -1646,7 +1794,7 @@ function TransferredRecordsPanel({
   return (
     <main className="w-full px-4 pb-6 pt-4 md:px-6">
       <section className="overflow-hidden rounded-lg border border-slate-300 bg-[var(--crm-app-panel)] shadow-sm dark:border-white/20">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-300 px-4 py-4 dark:border-white/20">
+        {showHeader ? <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-300 px-4 py-4 dark:border-white/20">
           <div>
             <h2 className="text-lg font-black">Aktarılmış Belgeler Rehberi</h2>
             <p className="mt-1 text-xs font-semibold text-[var(--crm-app-text-muted)]">
@@ -1661,7 +1809,7 @@ function TransferredRecordsPanel({
           >
             <RefreshCw size={17} className={isLoading ? 'animate-spin' : ''} />
           </button>
-        </div>
+        </div> : null}
 
         {isLoading ? (
           <div className="p-4"><StatePanel icon={<Loader2 className="animate-spin" size={18} />} title="Aktarılan belgeler yükleniyor" /></div>
@@ -1771,10 +1919,11 @@ function TransferredRecordsPanel({
                       <button
                         type="button"
                         onClick={() => onReopen(record)}
-                        disabled={!record.isActive || record.status === 'Processing'}
+                        disabled={!record.isActive || record.status === 'Processing' || reopeningRecordId != null}
                         className="inline-flex items-center gap-2 rounded-md border border-primary px-3 py-2 text-xs font-black text-primary disabled:cursor-not-allowed disabled:opacity-40"
                       >
-                        <ArrowRight size={15} /> Yeniden işleme al
+                        {reopeningRecordId === record.id ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
+                        Yeniden işleme al
                       </button>
                     </td>
                   </tr>

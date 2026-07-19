@@ -100,6 +100,7 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         icon: <File01Icon size={iconSize} className="text-[var(--crm-brand-primary)]" />,
         children: [
           { title: t('sidebar.ndiOrderLineSelection'), href: '/ndi/order-line-selection' },
+          { title: t('sidebar.ndiTransferredDocuments'), href: '/ndi/transferred-documents' },
         ],
       },
       {

@@ -1464,6 +1464,7 @@
     "erpDocumentCleanupLogs": "ERP Kayıt Temizleme Logları",
     "ndi": "NDI",
     "ndiOrderLineSelection": "Sipariş Kalem Seçimi",
+    "ndiTransferredDocuments": "Aktarılan Belgeler",
     "purchaseManagement": "Satınalma Yönetimi",
     "purchaseDashboard": "Satınalma Ana Sayfa",
     "purchaseRequests": "Satınalma Talepleri",

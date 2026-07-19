@@ -1,1 +1,1 @@
-export { NdiOrderTransferPage } from './components/NdiOrderTransferPage';
+export { NdiOrderTransferPage, NdiTransferredRecordsPage } from './components/NdiOrderTransferPage';
