@@ -320,6 +320,11 @@ const numberFormatter = new Intl.NumberFormat('tr-TR', {
   maximumFractionDigits: 2,
 });
 
+const priceFormatter = new Intl.NumberFormat('tr-TR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 6,
+});
+
 const NDI_TABLE_CELL = 'border-r border-slate-300 px-4 py-3 dark:border-white/20 last:border-r-0';
 
 function getOrderPrefix(order: NdiOrder): string {
@@ -1690,11 +1695,69 @@ function TransferredRecordsPanel({
                       <div className="text-xs text-muted-foreground">{record.customerCode}</div>
                     </td>
                     <td className={NDI_TABLE_CELL}>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         {record.documents.map((document) => (
-                          <div key={`${document.targetNetsisCompany}-${document.documentType}-${document.netsisDocumentNo}`} className="font-bold text-foreground">
-                            {document.targetNetsisCompany} · {document.documentType} · {document.netsisDocumentNo} · Seri {document.targetSeries}
-                          </div>
+                          <details
+                            key={`${document.targetNetsisCompany}-${document.documentType}-${document.netsisDocumentNo}`}
+                            className="border-b border-slate-200 pb-2 last:border-b-0 dark:border-white/10"
+                          >
+                            <summary className="cursor-pointer font-bold text-foreground">
+                              {document.targetNetsisCompany} · {document.documentType} · {document.netsisDocumentNo} · Seri {document.targetSeries} · {document.lineCount} kalem
+                            </summary>
+                            {document.lines.length === 0 ? (
+                              <p className="mt-2 text-xs font-semibold text-muted-foreground">
+                                Bu kayıt kalem takibi eklenmeden önce oluşturulmuş.
+                              </p>
+                            ) : (
+                              <div className="mt-2 overflow-x-auto">
+                                <table className="min-w-[860px] w-full border-collapse text-xs">
+                                  <thead className="bg-[var(--crm-app-panel-muted)] text-left font-black text-[var(--crm-app-text-muted)]">
+                                    <tr>
+                                      <th className="border p-2 dark:border-white/15">#</th>
+                                      <th className="border p-2 dark:border-white/15">Stok</th>
+                                      <th className="border p-2 text-right dark:border-white/15">Miktar</th>
+                                      <th className="border p-2 text-right dark:border-white/15">Birim fiyat</th>
+                                      <th className="border p-2 text-right dark:border-white/15">Tutar</th>
+                                      <th className="border p-2 text-right dark:border-white/15">Döviz fiyatı</th>
+                                      <th className="border p-2 dark:border-white/15">KDV</th>
+                                      <th className="border p-2 dark:border-white/15">Depo</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {document.lines.map((line) => (
+                                      <tr key={`${document.netsisDocumentNo}-${line.lineNumber}-${line.stockCode}`}>
+                                        <td className="border p-2 dark:border-white/15">{line.lineNumber}</td>
+                                        <td className="border p-2 dark:border-white/15">
+                                          <div className="font-black text-foreground">{line.stockCode}</div>
+                                          <div className="text-muted-foreground">{line.stockName || '-'}</div>
+                                        </td>
+                                        <td className="border p-2 text-right font-bold dark:border-white/15">
+                                          {numberFormatter.format(line.quantity)} {line.unit || ''}
+                                        </td>
+                                        <td className="border p-2 text-right font-bold dark:border-white/15">
+                                          {priceFormatter.format(line.unitPrice)} TL
+                                        </td>
+                                        <td className="border p-2 text-right font-black dark:border-white/15">
+                                          {priceFormatter.format(line.lineTotal)} TL
+                                        </td>
+                                        <td className="border p-2 text-right dark:border-white/15">
+                                          {line.foreignUnitPrice != null
+                                            ? `${priceFormatter.format(line.foreignUnitPrice)} (Tip ${line.currencyType ?? '-'})`
+                                            : '-'}
+                                        </td>
+                                        <td className="border p-2 dark:border-white/15">
+                                          {line.vatRate != null ? `%${numberFormatter.format(line.vatRate)}` : '-'}
+                                        </td>
+                                        <td className="border p-2 dark:border-white/15">
+                                          {line.sourceWarehouse || '-'} → {line.targetWarehouse || '-'}
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
+                            )}
+                          </details>
                         ))}
                       </div>
                     </td>

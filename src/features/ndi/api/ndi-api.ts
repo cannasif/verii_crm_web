@@ -125,6 +125,25 @@ export interface NdiTransferredDocumentDto {
   targetSeries: string;
   netsisDocumentNo: string;
   lineCount: number;
+  lines: NdiTransferredDocumentLineDto[];
+}
+
+export interface NdiTransferredDocumentLineDto {
+  lineNumber: number;
+  stockCode: string;
+  stockName?: string | null;
+  quantity: number;
+  unit?: string | null;
+  unitPrice: number;
+  lineTotal: number;
+  foreignUnitPrice?: number | null;
+  foreignLineTotal?: number | null;
+  currencyType?: number | null;
+  currencyRate?: number | null;
+  exchangeRate?: number | null;
+  vatRate?: number | null;
+  sourceWarehouse?: string | null;
+  targetWarehouse?: string | null;
 }
 
 export interface NdiTransferredRecordDto {
