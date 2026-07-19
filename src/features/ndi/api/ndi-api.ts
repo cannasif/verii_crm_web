@@ -72,10 +72,14 @@ export interface NdiTransferCreateLineRequest {
 
 export interface NdiTransferCreateDocumentRequest {
   sourceDocumentNo: string;
+  sourceOrderNo?: string | null;
   sourceNetsisCompany: string;
   targetNetsisCompany: string;
   targetSeries: string;
   documentType: string;
+  sourceType?: string | null;
+  hasShipment: boolean;
+  specialCode?: string | null;
   customerCode: string;
   customerName?: string | null;
   description?: string | null;
@@ -113,6 +117,29 @@ export interface NdiTransferCreateResponseDto {
   createdDocuments: NdiTransferCreatedDocumentDto[];
   failedDocuments: NdiTransferFailedDocumentDto[];
   warnings: string[];
+}
+
+export interface NdiTransferredDocumentDto {
+  targetNetsisCompany: string;
+  documentType: string;
+  targetSeries: string;
+  netsisDocumentNo: string;
+  lineCount: number;
+}
+
+export interface NdiTransferredRecordDto {
+  id: number;
+  sourceDocumentNo: string;
+  sourceOrderNo?: string | null;
+  sourceNetsisCompany: string;
+  customerCode: string;
+  customerName?: string | null;
+  status: string;
+  isActive: boolean;
+  createdDate: string;
+  completedDate?: string | null;
+  errorMessage?: string | null;
+  documents: NdiTransferredDocumentDto[];
 }
 
 export interface NdiConnectionTestRequest {
@@ -247,6 +274,16 @@ export const ndiApi = {
 
       throw error;
     }
+  },
+
+  getTransferred: async (): Promise<NdiTransferredRecordDto[]> => {
+    const response = await api.get<ApiResponse<NdiTransferredRecordDto[]>>('/api/NetsisNdiTransfer/transferred');
+    return ensureSuccess(response, 'Aktarılan NDI belgeleri yüklenemedi.');
+  },
+
+  reopenTransfer: async (id: number): Promise<boolean> => {
+    const response = await api.post<ApiResponse<boolean>>(`/api/NetsisNdiTransfer/${id}/reopen`);
+    return ensureSuccess(response, 'Belge yeniden işleme alınamadı.');
   },
 
   testConnection: async (request: NdiConnectionTestRequest): Promise<NdiConnectionTestResult> => {

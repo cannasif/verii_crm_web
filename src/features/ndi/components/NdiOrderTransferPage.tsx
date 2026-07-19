@@ -22,6 +22,7 @@ import {
   type NdiTransferCreateResponseDto,
   type NdiTransferCreatedDocumentDto,
   type NdiTransferFailedDocumentDto,
+  type NdiTransferredRecordDto,
   type NetsisCustomerDispatchDto,
   type NetsisCustomerDispatchLineDto,
 } from '../api/ndi-api';
@@ -68,10 +69,14 @@ interface NdiPreparedLine {
 
 interface NdiPreparedDocument {
   sourceDocumentNo: string;
+  sourceOrderNo?: string | null;
   sourceNetsisCompany: string;
   targetNetsisCompany: string;
   targetSeries: string;
   documentType: 'İrsaliye' | 'Fatura';
+  sourceType: string;
+  hasShipment: boolean;
+  specialCode?: 'K' | 'N';
   followUpNote?: string;
   customerCode: string;
   customerName: string;
@@ -96,6 +101,7 @@ interface NdiPreparedTransfer {
 interface NdiOrder {
   id: string;
   orderNo: string;
+  sourceOrderNo?: string | null;
   customer: string;
   customerCode: string;
   date: string;
@@ -134,6 +140,7 @@ interface NdiTransferRule {
 
 type NdiBusinessSeries = 'NUR' | 'VIN' | 'DIS' | 'SIP';
 type NdiBatchAction = 'IRSALIYELISTIR' | 'FATURALASTIR';
+type NdiQuantityMode = 'auto' | 'full' | 'quarter';
 
 interface NdiSeriesConfig {
   label: string;
@@ -210,8 +217,8 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Cari sevk var ise irsaliye aktarımı zorunlu, yok ise zorunlu değil.',
     taxRule: '1/4 siparişlerde kalem miktarının 1/4 adedi ve KDV %5; TAM siparişlerde miktarın tamamı ve KDV %20 ile NURAY24 şirketine aktarılır.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'İrsaliye NURAY24 şirketine oluşturulur; fatura işlemi ayrıca çalıştırılır.',
-    officialNote: 'SIRKET24 tarafına yeni kayıt veya fatura oluşturulmaz.',
+    transferNote: 'Sevk carisi varsa irsaliye; yurt içi ve sevk carisi yoksa fatura oluşturulur.',
+    officialNote: 'Belge türü sipariş ve sevk koşulundan otomatik belirlenir.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki NUR belgeleri toplu seçilebilir.',
   },
   {
@@ -226,8 +233,8 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Cari sevk var ise irsaliye zorunlu; özel kod K ise irsaliye zorunlu.',
     taxRule: 'Özel Kod K ihraç kayıtlı KDV 0, Özel Kod N normal satış KDV %20.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'İrsaliye WIN24 şirketine oluşturulur; fatura işlemi ayrıca çalıştırılır.',
-    officialNote: 'SIRKET24 tarafına yeni kayıt veya fatura oluşturulmaz.',
+    transferNote: 'Sevk carisi/özel kod K varsa irsaliye; yurt içi ve sevk carisi yoksa fatura oluşturulur.',
+    officialNote: 'Belge türü sipariş ve sevk koşulundan otomatik belirlenir.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki VIN belgeleri toplu seçilebilir.',
   },
   {
@@ -238,12 +245,12 @@ const transferRules: NdiTransferRule[] = [
     sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'WIN DIS',
     targetNetsisCompany: 'DISTIC24',
-    targetSerial: 'EIR',
+    targetSerial: 'Sipariş serisi',
     shipmentRule: 'Sevk durumuna bakılmadan aktarım yapılabilir.',
     taxRule: 'KDV 0; gün döviz kuru alınır.',
     warehouseRule: 'Varsayılan depo kodu 100 olmalı.',
-    transferNote: 'Fatura serisi de irsaliye serisi de EIR olmalıdır.',
-    officialNote: 'Dış ticaret aktarımında resmi belge EIR seri kuralıyla hazırlanır.',
+    transferNote: 'Fatura veya irsaliye serisi bağlı sipariş numarasından alınır.',
+    officialNote: 'Sipariş numarası yoksa kaynak belge serisi yedek olarak kullanılır.',
     bulkNote: 'İrsaliye birleştirme ve toplu aktarım desteklenebilir.',
   },
   {
@@ -254,11 +261,11 @@ const transferRules: NdiTransferRule[] = [
     sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'ŞİRKET24',
     targetNetsisCompany: 'SIRKET24',
-    targetSerial: 'SIP2026',
+    targetSerial: 'Sipariş serisi',
     shipmentRule: 'Sevk var/yok fark etmez.',
     taxRule: 'KDV 0; resmi evrak oluşmayacak.',
     warehouseRule: 'Depo kuralı yok.',
-    transferNote: 'Sadece ŞİRKET24 faturası oluşur; fatura seri numarası SIP2026 olmalıdır.',
+    transferNote: 'ŞİRKET24 faturası oluşur; seri bağlı sipariş numarasından alınır.',
     officialNote: 'Resmi evrak oluşmayacak.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki SIP belgeleri toplu seçilebilir.',
   },
@@ -378,7 +385,7 @@ function resolveOperationProfile(dispatch: NetsisCustomerDispatchDto): NdiOrder[
 }
 
 function getBusinessSeries(order: NdiOrder): NdiBusinessSeries {
-  const knownSeries = getKnownSeries(order.orderNo);
+  const knownSeries = getKnownSeries(order.sourceOrderNo || order.orderNo);
   if (knownSeries) {
     return knownSeries;
   }
@@ -402,7 +409,14 @@ function getActionLabel(action: NdiBatchAction): string {
 
 function resolvePrimaryAction(order: NdiOrder): NdiBatchAction {
   const series = getBusinessSeries(order);
+  const normalizedType = normalizeText(order.tip);
+  const isDomestic = normalizedType === '2' || normalizedType.includes('yurt içi') || normalizedType.includes('yurt ici');
+
   if (series === 'SIP' || order.documentType === 'fatura') {
+    return 'FATURALASTIR';
+  }
+
+  if (isDomestic && !order.hasShipment && order.specialCode !== 'K') {
     return 'FATURALASTIR';
   }
 
@@ -433,29 +447,12 @@ function resolveTargetSeries(order: NdiOrder): { value: string; note: string; wa
   const action = resolvePrimaryAction(order);
   const config = SERIES_CONFIG[series];
 
-  if (series === 'DIS') {
-    return { value: 'EIR', note: 'Dış ticaret kayıtlarında fatura ve irsaliye sabit EIR serisiyle hazırlanır.' };
-  }
-  if (series === 'SIP') {
-    return {
-      value: config.fatura ?? 'SIP2026',
-      note: 'Şirket24 fatura akışı sabit SIP2026 serisiyle hazırlanır; resmi evrak oluşturulmaz.',
-    };
-  }
-
-  if (action === 'IRSALIYELISTIR') {
-    const sourceDocumentSeries = resolveSourceDocumentSeries(order.orderNo);
-    return {
-      value: sourceDocumentSeries,
-      note: `${config.label}: irsaliye aktarımında kaynakta kullanılan ${sourceDocumentSeries} serisi ${config.netsisCompany} şirketine taşınır.`,
-    };
-  }
-
-  const defaultSeries = config.eFatura ?? '-';
+  const seriesSource = order.sourceOrderNo || order.orderNo;
+  const sourceOrderSeries = resolveSourceDocumentSeries(seriesSource);
   return {
-    value: defaultSeries,
-    note: `${config.label}: cari e-Belge tipine göre e-Fatura ${config.eFatura}, e-Arşiv ${config.eArsiv} serisi kullanılır.`,
-    warning: 'Bu read fonksiyonu cari e-Belge tipini dönmediği için hedef seri entegrasyon sırasında cari kartından kesinleştirilmelidir.',
+    value: sourceOrderSeries,
+    note: `${config.label}: ${action === 'IRSALIYELISTIR' ? 'irsaliye' : 'fatura'} serisi öncelikle ${order.sourceOrderNo ? `sipariş ${order.sourceOrderNo}` : `kaynak belge ${order.orderNo}`} üzerinden ${sourceOrderSeries} olarak alındı.`,
+    warning: order.sourceOrderNo ? undefined : 'Sipariş numarası dönmediği için seri kaynak belge numarasından yedek olarak üretildi.',
   };
 }
 
@@ -474,7 +471,7 @@ function resolveWarehouse(order: NdiOrder): { value: string; label: string; lock
   };
 }
 
-function resolveVat(order: NdiOrder): { sourceVat: number | null; targetVat: number | null; note: string; block?: string } {
+function resolveVat(order: NdiOrder, quantityMode: NdiQuantityMode): { sourceVat: number | null; targetVat: number | null; note: string; block?: string } {
   const series = getBusinessSeries(order);
   const description = normalizeText(order.description);
 
@@ -483,7 +480,7 @@ function resolveVat(order: NdiOrder): { sourceVat: number | null; targetVat: num
   }
 
   if (series === 'NUR') {
-    if (description.includes('1/4')) {
+    if (quantityMode === 'quarter' || (quantityMode === 'auto' && description.includes('1/4'))) {
       return { sourceVat: 20, targetVat: 5, note: 'Açıklamada 1/4 geçtiği için NURAY24 hedefinde KDV %5 uygulanır.' };
     }
     return { sourceVat: 20, targetVat: 20, note: 'TAM satış kabulüyle kaynak ve hedef KDV %20.' };
@@ -502,12 +499,21 @@ function resolveVat(order: NdiOrder): { sourceVat: number | null; targetVat: num
   return { sourceVat: null, targetVat: null, note: 'KDV kuralı belirlenemedi.', block: 'Seri tanımsız olduğu için KDV kuralı uygulanamadı.' };
 }
 
-function resolveQuantityRule(order: NdiOrder, lines: NdiOrderLine[]): { label: string; requestedQuantity: number; transferQuantity: number; note: string; block?: string } {
+function resolveQuantityRule(order: NdiOrder, lines: NdiOrderLine[], quantityMode: NdiQuantityMode): { label: string; requestedQuantity: number; transferQuantity: number; note: string; block?: string } {
   const series = getBusinessSeries(order);
   const description = normalizeText(order.description);
   const requestedQuantity = lines.reduce((total, line) => total + Math.max(line.remainingQuantity, 0), 0);
 
-  if (series !== 'NUR') {
+  if (quantityMode === 'quarter') {
+    return {
+      label: '1/4',
+      requestedQuantity,
+      transferQuantity: requestedQuantity / 4,
+      note: `Kullanıcı 1/4 aktarımı seçti: ${numberFormatter.format(requestedQuantity)} miktarın ${numberFormatter.format(requestedQuantity / 4)} kadarı aktarılır.`,
+    };
+  }
+
+  if (quantityMode === 'full' || series !== 'NUR') {
     return {
       label: 'Tam',
       requestedQuantity,
@@ -545,15 +551,15 @@ function resolveQuantityRule(order: NdiOrder, lines: NdiOrderLine[]): { label: s
   };
 }
 
-function buildRuleOutcome(order: NdiOrder, lines: NdiOrderLine[]): NdiRuleOutcome {
+function buildRuleOutcome(order: NdiOrder, lines: NdiOrderLine[], quantityMode: NdiQuantityMode): NdiRuleOutcome {
   const series = getBusinessSeries(order);
   const sourcePrefix = getOrderPrefix(order);
   const action = resolvePrimaryAction(order);
   const rule = getRule(order);
   const targetSeries = resolveTargetSeries(order);
   const warehouse = resolveWarehouse(order);
-  const vat = resolveVat(order);
-  const quantityRule = resolveQuantityRule(order, lines);
+  const vat = resolveVat(order, quantityMode);
+  const quantityRule = resolveQuantityRule(order, lines, quantityMode);
   const zeroBalanceCount = lines.filter((line) => line.quantity > 0 && line.remainingQuantity <= 0).length;
   const warnings: string[] = [];
   const blocks: string[] = [];
@@ -580,7 +586,7 @@ function buildRuleOutcome(order: NdiOrder, lines: NdiOrderLine[]): NdiRuleOutcom
   if (quantityRule.block) {
     blocks.push(quantityRule.block);
   }
-  if (series === 'NUR' && !order.description.trim()) {
+  if (series === 'NUR' && quantityMode === 'auto' && !order.description.trim()) {
     blocks.push('NURAY akışında 1/4 veya TAM ayrımı için irsaliye açıklaması boş olmamalı.');
   }
   if (series === 'VIN' && order.specialCode === 'K' && action !== 'IRSALIYELISTIR') {
@@ -634,6 +640,7 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
   return {
     id: dispatch.irsaliyeNo,
     orderNo: dispatch.irsaliyeNo,
+    sourceOrderNo: null,
     customer: dispatch.cariIsim || dispatch.cariKodu,
     customerCode: dispatch.cariKodu,
     date: formatDate(dispatch.tarih),
@@ -646,7 +653,7 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
     representative: dispatch.plasiyerAciklama || dispatch.plasiyerKodu || '-',
     operationProfile,
     documentType: 'irsaliye',
-    hasShipment: true,
+    hasShipment: Boolean(dispatch.teslimCariKodu?.trim()),
     specialCode: operationProfile === 'disTicaret' || (exportType && exportType !== '-') ? 'K' : 'N',
     description: dispatch.aciklama || '',
     tip: dispatch.tipi || '-',
@@ -686,7 +693,9 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
 }
 
 export function NdiOrderTransferPage(): ReactElement {
+  const [activeTab, setActiveTab] = useState<'pending' | 'transferred'>('pending');
   const [search, setSearch] = useState('');
+  const [quantityMode, setQuantityMode] = useState<NdiQuantityMode>('auto');
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(() => new Set());
   const [selectedLineIds, setSelectedLineIds] = useState<Set<string>>(() => new Set());
   const [prepareAttempted, setPrepareAttempted] = useState(false);
@@ -712,6 +721,46 @@ export function NdiOrderTransferPage(): ReactElement {
   const selectedOrders = useMemo(() => orders.filter((order) => selectedOrderIds.has(order.id)), [orders, selectedOrderIds]);
   const selectedPrefix = selectedOrders[0] ? getOrderPrefix(selectedOrders[0]) : '-';
   const selectedIrsNoList = useMemo(() => selectedOrders.map((order) => order.orderNo).join(','), [selectedOrders]);
+
+  const orderChecksQuery = useQuery({
+    queryKey: ['ndi', 'customer-dispatch-order-checks', selectedIrsNoList],
+    queryFn: () => ndiApi.getCustomerDispatchOrderChecks(selectedIrsNoList),
+    enabled: selectedIrsNoList.length > 0,
+    staleTime: 30_000,
+  });
+
+  const transferredQuery = useQuery({
+    queryKey: ['ndi', 'transferred'],
+    queryFn: ndiApi.getTransferred,
+    staleTime: 30_000,
+  });
+
+  const selectedOrdersForTransfer = useMemo(() => {
+    const checks = new Map((orderChecksQuery.data ?? []).map((check) => [check.fatirsNo, check]));
+
+    return selectedOrders.map((order) => {
+      const check = checks.get(order.orderNo);
+      const sourceOrderNo = check?.siparisNo?.trim() || null;
+      const series = getKnownSeries(sourceOrderNo || order.orderNo);
+      const operationProfile: NdiOrder['operationProfile'] = series === 'NUR'
+        ? 'nuray'
+        : series === 'DIS'
+          ? 'disTicaret'
+          : series === 'SIP'
+            ? 'sirket24'
+            : series === 'VIN'
+              ? 'windoformKapi'
+              : order.operationProfile;
+
+      return {
+        ...order,
+        sourceOrderNo,
+        operationProfile,
+        hasShipment: Boolean(check?.teslimCariKodu?.trim() || order.hasShipment),
+        description: check?.aciklama?.trim() || order.description,
+      };
+    });
+  }, [orderChecksQuery.data, selectedOrders]);
 
   const linesQuery = useQuery({
     queryKey: ['ndi', 'customer-dispatch-lines', selectedIrsNoList],
@@ -778,9 +827,9 @@ export function NdiOrderTransferPage(): ReactElement {
   const selectedLines = selectedOrderLines.filter((line) => selectedLineIds.has(line.id));
   const selectedQuantity = selectedLines.reduce((total, line) => total + line.remainingQuantity, 0);
   const selectedWarehouses = Array.from(new Set(selectedOrderLines.map((line) => line.warehouse)));
-  const selectedShipmentTypes = Array.from(new Set(selectedOrders.map((order) => order.shipmentType)));
-  const selectedRepresentatives = Array.from(new Set(selectedOrders.map((order) => order.representative)));
-  const selectedRules = Array.from(new Map(selectedOrders.map((order) => [order.operationProfile, getRule(order)])).values());
+  const selectedShipmentTypes = Array.from(new Set(selectedOrdersForTransfer.map((order) => order.shipmentType)));
+  const selectedRepresentatives = Array.from(new Set(selectedOrdersForTransfer.map((order) => order.representative)));
+  const selectedRules = Array.from(new Map(selectedOrdersForTransfer.map((order) => [order.operationProfile, getRule(order)])).values());
   const selectedRuleIds = new Set(selectedRules.map((rule) => rule.id));
   const selectedRuleTitles = selectedRules.map((rule) => rule.title).join(', ');
   const selectedLinesByOrderNo = useMemo(() => {
@@ -801,15 +850,15 @@ export function NdiOrderTransferPage(): ReactElement {
     return labels;
   }, [selectedLinesByOrderNo]);
   const ruleOutcomes = useMemo(
-    () => selectedOrders.map((order) => buildRuleOutcome(order, selectedLinesByOrderNo.get(order.orderNo) ?? [])),
-    [selectedOrders, selectedLinesByOrderNo]
+    () => selectedOrdersForTransfer.map((order) => buildRuleOutcome(order, selectedLinesByOrderNo.get(order.orderNo) ?? [], quantityMode)),
+    [quantityMode, selectedLinesByOrderNo, selectedOrdersForTransfer]
   );
-  const batchAction = useMemo(() => resolveBatchAction(selectedOrders), [selectedOrders]);
+  const batchAction = useMemo(() => resolveBatchAction(selectedOrdersForTransfer), [selectedOrdersForTransfer]);
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
   const selectedLinesWithoutPrice = selectedLines.filter((line) => line.unitPrice <= 0);
   const canPrepareSelectedLines = selectedLines.length > 0 && !batchAction.mixed && blockedRuleCount === 0 && selectedLinesWithoutPrice.length === 0;
-  const prepareDisabled = selectedLines.length === 0 || linesQuery.isFetching || isPreparingTransfer;
+  const prepareDisabled = selectedLines.length === 0 || linesQuery.isFetching || orderChecksQuery.isFetching || isPreparingTransfer;
 
   const toggleOrder = (order: NdiOrder) => {
     setPreparedTransfer(null);
@@ -876,6 +925,7 @@ export function NdiOrderTransferPage(): ReactElement {
 
   const resetSelection = () => {
     setSearch('');
+    setQuantityMode('auto');
     setSelectedOrderIds(new Set());
     setSelectedLineIds(new Set());
     setPrepareAttempted(false);
@@ -886,6 +936,28 @@ export function NdiOrderTransferPage(): ReactElement {
     setTransferResultDialog(null);
     setSendError(null);
     void dispatchesQuery.refetch();
+  };
+
+  const changeQuantityMode = (mode: NdiQuantityMode) => {
+    setQuantityMode(mode);
+    setPreparedTransfer(null);
+    setSuccessDialogTransfer(null);
+    setTransferResult(null);
+    setTransferResultDialog(null);
+    setPrepareAttempted(false);
+    setPrepareError(null);
+  };
+
+  const reopenTransferredRecord = async (record: NdiTransferredRecordDto) => {
+    const confirmed = window.confirm(
+      `${record.sourceDocumentNo} belgesini yeniden işleme almak istiyor musunuz? Belge ana listeye dönecek; Netsis'e otomatik gönderilmeyecek.`
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    await ndiApi.reopenTransfer(record.id);
+    await Promise.all([transferredQuery.refetch(), dispatchesQuery.refetch()]);
   };
 
   const prepareSelectedLines = async () => {
@@ -932,17 +1004,21 @@ export function NdiOrderTransferPage(): ReactElement {
         };
       });
 
-      const createdDocuments: NdiPreparedDocument[] = selectedOrders.map((order) => {
+      const createdDocuments: NdiPreparedDocument[] = selectedOrdersForTransfer.map((order) => {
         const outcome = outcomeByOrderNo.get(order.orderNo);
         const targetSeries = outcome?.targetSeries ?? getBusinessSeries(order);
         const documentType: NdiPreparedDocument['documentType'] = outcome?.action === 'FATURALASTIR' ? 'Fatura' : 'İrsaliye';
 
         return {
           sourceDocumentNo: order.orderNo,
+          sourceOrderNo: order.sourceOrderNo,
           sourceNetsisCompany: outcome?.sourceNetsisCompany ?? 'SIRKET24',
           targetNetsisCompany: outcome?.targetNetsisCompany ?? SERIES_CONFIG[getBusinessSeries(order)].netsisCompany,
           targetSeries,
           documentType,
+          sourceType: order.tip,
+          hasShipment: order.hasShipment,
+          specialCode: order.specialCode,
           followUpNote: undefined,
           customerCode: order.customerCode,
           customerName: order.customer,
@@ -956,7 +1032,7 @@ export function NdiOrderTransferPage(): ReactElement {
         actionLabel: batchAction.action ? getActionLabel(batchAction.action) : 'Hazırla',
         sourceNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.sourceNetsisCompany))),
         targetNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))),
-        documentNos: selectedOrders.map((order) => order.orderNo),
+        documentNos: selectedOrdersForTransfer.map((order) => order.orderNo),
         createdDocuments,
         lineCount: preparedLines.length,
         totalSourceQuantity: preparedLines.reduce((total, line) => total + line.sourceQuantity, 0),
@@ -991,10 +1067,14 @@ export function NdiOrderTransferPage(): ReactElement {
       const result = await ndiApi.createNdiTransfer({
         documents: transfer.createdDocuments.map((document) => ({
           sourceDocumentNo: document.sourceDocumentNo,
+          sourceOrderNo: document.sourceOrderNo,
           sourceNetsisCompany: document.sourceNetsisCompany,
           targetNetsisCompany: document.targetNetsisCompany,
           targetSeries: document.targetSeries,
           documentType: document.documentType,
+          sourceType: document.sourceType,
+          hasShipment: document.hasShipment,
+          specialCode: document.specialCode,
           customerCode: document.customerCode,
           customerName: document.customerName,
           description: document.description,
@@ -1021,6 +1101,12 @@ export function NdiOrderTransferPage(): ReactElement {
       setTransferResult(result);
       setTransferResultDialog(result);
       setSuccessDialogTransfer(null);
+      if (result.createdDocuments.length > 0) {
+        setSelectedOrderIds(new Set());
+        setSelectedLineIds(new Set());
+        setPreparedTransfer(null);
+        await Promise.all([dispatchesQuery.refetch(), transferredQuery.refetch()]);
+      }
       window.setTimeout(() => {
         preparedTransferRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 80);
@@ -1060,6 +1146,32 @@ export function NdiOrderTransferPage(): ReactElement {
         </div>
       </div>
 
+      <div className="flex w-full gap-1 border-b border-slate-300 bg-[var(--crm-app-panel)] px-4 pt-3 dark:border-white/20 md:px-6">
+        <button
+          type="button"
+          onClick={() => setActiveTab('pending')}
+          className={`border-b-2 px-4 py-3 text-sm font-black ${activeTab === 'pending' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'}`}
+        >
+          İrsaliye Listesi
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('transferred')}
+          className={`border-b-2 px-4 py-3 text-sm font-black ${activeTab === 'transferred' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground'}`}
+        >
+          Aktarılanlar
+        </button>
+      </div>
+
+      {activeTab === 'transferred' ? (
+        <TransferredRecordsPanel
+          records={transferredQuery.data ?? []}
+          isLoading={transferredQuery.isLoading}
+          isError={transferredQuery.isError}
+          onRefresh={() => void transferredQuery.refetch()}
+          onReopen={(record) => void reopenTransferredRecord(record)}
+        />
+      ) : (
       <main className="grid w-full gap-4 px-4 pb-5 pt-4 md:px-6 xl:grid-cols-[430px_1fr]">
         <section className="rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] shadow-sm">
           <div className="px-4 pt-4 pb-3">
@@ -1211,6 +1323,29 @@ export function NdiOrderTransferPage(): ReactElement {
                     : '-'
                 }
               />
+            </div>
+
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-300 bg-[var(--crm-app-panel)] p-3 dark:border-white/20">
+              <div>
+                <div className="text-xs font-black uppercase text-[var(--crm-app-text-muted)]">Aktarım miktarı</div>
+                <div className="mt-1 text-sm font-bold text-foreground">Seçim satır miktarına doğrudan uygulanır.</div>
+              </div>
+              <div className="inline-flex rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] p-1 dark:border-white/20">
+                {([
+                  ['auto', 'Sipariş Kuralı'],
+                  ['full', 'Tam'],
+                  ['quarter', '1/4'],
+                ] as const).map(([mode, label]) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => changeQuantityMode(mode)}
+                    className={`min-w-20 rounded px-3 py-2 text-xs font-black transition ${quantityMode === mode ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="mt-3 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] p-3">
@@ -1467,6 +1602,7 @@ export function NdiOrderTransferPage(): ReactElement {
           </div>
         </section>
       </main>
+      )}
       {successDialogTransfer ? (
         <TransferPreviewDialog
           transfer={successDialogTransfer}
@@ -1479,6 +1615,113 @@ export function NdiOrderTransferPage(): ReactElement {
         <TransferResultDialog result={transferResultDialog} onClose={() => setTransferResultDialog(null)} />
       ) : null}
     </div>
+  );
+}
+
+function TransferredRecordsPanel({
+  records,
+  isLoading,
+  isError,
+  onRefresh,
+  onReopen,
+}: {
+  records: NdiTransferredRecordDto[];
+  isLoading: boolean;
+  isError: boolean;
+  onRefresh: () => void;
+  onReopen: (record: NdiTransferredRecordDto) => void;
+}): ReactElement {
+  const statusLabels: Record<string, string> = {
+    Processing: 'Aktarılıyor',
+    Transferred: 'Aktarıldı',
+    PartiallyTransferred: 'Kısmi aktarıldı',
+    Reopened: 'Yeniden işleme alındı',
+  };
+
+  return (
+    <main className="w-full px-4 pb-6 pt-4 md:px-6">
+      <section className="overflow-hidden rounded-lg border border-slate-300 bg-[var(--crm-app-panel)] shadow-sm dark:border-white/20">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-300 px-4 py-4 dark:border-white/20">
+          <div>
+            <h2 className="text-lg font-black">Aktarılmış Belgeler Rehberi</h2>
+            <p className="mt-1 text-xs font-semibold text-[var(--crm-app-text-muted)]">
+              Netsis'te belge oluşan kayıtlar burada tutulur. Yeniden işleme alma, otomatik aktarım yapmadan kaydı ana listeye döndürür.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onRefresh}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-300 text-foreground dark:border-white/20"
+            aria-label="Aktarılan belgeleri yenile"
+          >
+            <RefreshCw size={17} className={isLoading ? 'animate-spin' : ''} />
+          </button>
+        </div>
+
+        {isLoading ? (
+          <div className="p-4"><StatePanel icon={<Loader2 className="animate-spin" size={18} />} title="Aktarılan belgeler yükleniyor" /></div>
+        ) : isError ? (
+          <div className="p-4"><StatePanel icon={<AlertCircle size={18} />} title="Aktarılan belgeler yüklenemedi" /></div>
+        ) : records.length === 0 ? (
+          <div className="p-4"><StatePanel icon={<PackageCheck size={18} />} title="Aktarılmış belge yok" description="Başarılı Netsis aktarımları burada görünecek." /></div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-[1050px] w-full border-collapse text-sm">
+              <thead className="bg-[var(--crm-app-panel-muted)] text-left text-xs font-black uppercase text-[var(--crm-app-text-muted)]">
+                <tr>
+                  <th className={NDI_TABLE_CELL}>Kaynak Belge / Sipariş</th>
+                  <th className={NDI_TABLE_CELL}>Müşteri</th>
+                  <th className={NDI_TABLE_CELL}>Oluşan Netsis Belgeleri</th>
+                  <th className={NDI_TABLE_CELL}>Durum</th>
+                  <th className={NDI_TABLE_CELL}>Tarih</th>
+                  <th className={NDI_TABLE_CELL}>İşlem</th>
+                </tr>
+              </thead>
+              <tbody>
+                {records.map((record) => (
+                  <tr key={record.id} className="border-t border-slate-300 dark:border-white/20">
+                    <td className={NDI_TABLE_CELL}>
+                      <div className="font-black text-foreground">{record.sourceDocumentNo}</div>
+                      <div className="mt-1 text-xs font-bold text-primary">Sipariş: {record.sourceOrderNo || '-'}</div>
+                      <div className="text-xs text-muted-foreground">Kaynak: {record.sourceNetsisCompany}</div>
+                    </td>
+                    <td className={NDI_TABLE_CELL}>
+                      <div className="font-bold text-foreground">{record.customerName || record.customerCode}</div>
+                      <div className="text-xs text-muted-foreground">{record.customerCode}</div>
+                    </td>
+                    <td className={NDI_TABLE_CELL}>
+                      <div className="space-y-1">
+                        {record.documents.map((document) => (
+                          <div key={`${document.targetNetsisCompany}-${document.documentType}-${document.netsisDocumentNo}`} className="font-bold text-foreground">
+                            {document.targetNetsisCompany} · {document.documentType} · {document.netsisDocumentNo} · Seri {document.targetSeries}
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className={NDI_TABLE_CELL}>
+                      <span className="rounded-full bg-emerald-100 px-2 py-1 text-xs font-black text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300">
+                        {statusLabels[record.status] || record.status}
+                      </span>
+                    </td>
+                    <td className={NDI_TABLE_CELL}>{formatDate(record.completedDate || record.createdDate)}</td>
+                    <td className={NDI_TABLE_CELL}>
+                      <button
+                        type="button"
+                        onClick={() => onReopen(record)}
+                        disabled={!record.isActive || record.status === 'Processing'}
+                        className="inline-flex items-center gap-2 rounded-md border border-primary px-3 py-2 text-xs font-black text-primary disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        <ArrowRight size={15} /> Yeniden işleme al
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    </main>
   );
 }
 
@@ -1949,10 +2192,10 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
 
 function SeriesGuide({ activeRuleIds }: { activeRuleIds: Set<NdiTransferRule['id']> }): ReactElement {
   const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
-    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> NURAY24', 'İrsaliye -> kaynak seri', 'Fatura ayrı işlem', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
-    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> WIN24', 'İrsaliye -> kaynak seri', 'Fatura ayrı işlem', 'K -> KDV 0'] },
-    { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> DISTIC24', 'Fatura/İrsaliye -> EIR', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
-    { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura -> SIP2026', 'KDV -> 0', 'Resmi evrak yok'] },
+    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> NURAY24', 'Seri -> siparişten', 'Sevk varsa irsaliye', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
+    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> WIN24', 'Seri -> siparişten', 'Sevk/K -> irsaliye', 'Sevksiz yurt içi -> fatura', 'K -> KDV 0'] },
+    { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> DISTIC24', 'Seri -> siparişten', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
+    { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura serisi -> siparişten', 'KDV -> 0', 'Resmi evrak yok'] },
   ];
   const hasActiveRule = activeRuleIds.size > 0;
 
