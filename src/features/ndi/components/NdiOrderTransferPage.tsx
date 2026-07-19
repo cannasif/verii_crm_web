@@ -2083,6 +2083,41 @@ function CreatedTransferDocumentCard({ document }: { document: NdiTransferCreate
   );
 }
 
+function CreatedTransferDocumentsResult({ documents }: { documents: NdiTransferCreatedDocumentDto[] }): ReactElement {
+  return (
+    <div className="overflow-hidden rounded-lg border border-[#bfdbfe] bg-white">
+      <div className="border-b border-[#bfdbfe] bg-[#eff6ff] px-3 py-2 text-[10px] font-black uppercase text-[#1d4ed8]">
+        Oluşturulan Netsis belgeleri
+      </div>
+      <div className="divide-y divide-[#dbeafe]">
+        {documents.map((document) => (
+          <div
+            key={`${document.sourceDocumentNo}-${document.targetNetsisCompany}-${document.documentType}-${document.netsisDocumentNo}`}
+            className="grid gap-2 px-3 py-3 sm:grid-cols-[minmax(120px,0.8fr)_minmax(120px,0.8fr)_minmax(180px,1.4fr)_minmax(90px,0.6fr)] sm:items-center"
+          >
+            <div>
+              <div className="text-[10px] font-black uppercase text-[#64748b]">Hedef firma</div>
+              <div className="mt-0.5 text-sm font-black text-[#172033]">{document.targetNetsisCompany}</div>
+            </div>
+            <div>
+              <div className="text-[10px] font-black uppercase text-[#64748b]">Belge türü</div>
+              <div className="mt-0.5 text-sm font-black text-[#047857]">{document.documentType}</div>
+            </div>
+            <div>
+              <div className="text-[10px] font-black uppercase text-[#64748b]">Netsis belge no</div>
+              <div className="mt-0.5 break-all text-base font-black text-[#172033]">{document.netsisDocumentNo}</div>
+            </div>
+            <div>
+              <div className="text-[10px] font-black uppercase text-[#64748b]">Seri</div>
+              <div className="mt-0.5 text-sm font-black text-[#172033]">{document.targetSeries}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FailedTransferDocumentCard({ document }: { document: NdiTransferFailedDocumentDto }): ReactElement {
   return (
     <div className="rounded-lg border border-[#fecaca] bg-[#fff8f8] p-3">
@@ -2153,11 +2188,19 @@ function TransferResultPanel({ result }: { result: NdiTransferCreateResponseDto 
       </div>
 
       {result.createdDocuments.length > 0 ? (
-        <div className="mt-3 grid gap-3 xl:grid-cols-2">
-          {result.createdDocuments.map((document) => (
-            <CreatedTransferDocumentCard key={`${document.sourceDocumentNo}-${document.netsisDocumentNo}`} document={document} />
-          ))}
-        </div>
+        <>
+          <div className="mt-3">
+            <CreatedTransferDocumentsResult documents={result.createdDocuments} />
+          </div>
+          <div className="mt-3 grid gap-3 xl:grid-cols-2">
+            {result.createdDocuments.map((document) => (
+              <CreatedTransferDocumentCard
+                key={`${document.sourceDocumentNo}-${document.targetNetsisCompany}-${document.documentType}-${document.netsisDocumentNo}`}
+                document={document}
+              />
+            ))}
+          </div>
+        </>
       ) : null}
 
       {result.failedDocuments.length > 0 ? (
@@ -2200,11 +2243,19 @@ function TransferResultDialog({ result, onClose }: { result: NdiTransferCreateRe
           <TransferResultSummary result={result} />
 
           {result.createdDocuments.length > 0 ? (
-            <div className="mt-4 grid gap-3">
-              {result.createdDocuments.map((document) => (
-                <CreatedTransferDocumentCard key={`${document.sourceDocumentNo}-${document.netsisDocumentNo}`} document={document} />
-              ))}
-            </div>
+            <>
+              <div className="mt-4">
+                <CreatedTransferDocumentsResult documents={result.createdDocuments} />
+              </div>
+              <div className="mt-4 grid gap-3">
+                {result.createdDocuments.map((document) => (
+                  <CreatedTransferDocumentCard
+                    key={`${document.sourceDocumentNo}-${document.targetNetsisCompany}-${document.documentType}-${document.netsisDocumentNo}`}
+                    document={document}
+                  />
+                ))}
+              </div>
+            </>
           ) : (
             <div className="rounded-xl border border-[#fecaca] bg-[#fff8f8] p-4 text-sm font-black text-[#b91c1c]">
               Netsis tarafında başarılı kayıt dönmedi.
