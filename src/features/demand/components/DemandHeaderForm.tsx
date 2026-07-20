@@ -82,6 +82,7 @@ import { isZodFieldRequired } from '@/lib/zod-required';
 import {
   canApplySpecialCodeDefault,
   getDefaultSpecialCodeForOfferType,
+  resolveSalesTypeCodeById,
 } from '@/lib/sales-document-special-code-defaults';
 
 interface DemandHeaderFormProps {
@@ -156,7 +157,7 @@ export function DemandHeaderForm({
   const watchedDocumentSerialTypeId = form.watch('demand.documentSerialTypeId');
   const prevRepresentativeIdRef = useRef<number | null | undefined>(watchedRepresentativeId);
   const watchedOfferType = form.watch('demand.offerType');
-  const defaultSpecialCode = getDefaultSpecialCodeForOfferType(watchedOfferType);
+  const watchedDeliveryMethod = form.watch('demand.deliveryMethod');
   const specialCodeManualChangeRef = useRef({ ozelKod1: false, ozelKod2: false });
 
   const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, true);
@@ -166,6 +167,11 @@ export function DemandHeaderForm({
     !!watchedOfferType,
     watchedOfferType ?? null
   );
+  const selectedDeliveryMethodCode = useMemo(
+    () => resolveSalesTypeCodeById(watchedDeliveryMethod, deliveryMethodDropdown.items),
+    [watchedDeliveryMethod, deliveryMethodDropdown.items],
+  );
+  const defaultSpecialCode = getDefaultSpecialCodeForOfferType(watchedOfferType, selectedDeliveryMethodCode);
   const customerActivitiesQuery = useCustomerActivities(watchedCustomerId, activitySearchTerm);
   const activityOptions = useMemo(
     () =>
@@ -187,6 +193,7 @@ export function DemandHeaderForm({
     if (prevOfferTypeRef.current !== watchedOfferType) {
       prevOfferTypeRef.current = watchedOfferType;
       form.setValue('demand.deliveryMethod', null);
+      specialCodeManualChangeRef.current.ozelKod1 = false;
     }
   }, [watchedOfferType, form]);
 
@@ -241,6 +248,7 @@ export function DemandHeaderForm({
     }
   }, [
     defaultSpecialCode,
+    selectedDeliveryMethodCode,
     demandId,
     readOnly,
     form,

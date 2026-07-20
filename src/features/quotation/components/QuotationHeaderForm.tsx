@@ -83,6 +83,7 @@ import { isZodFieldRequired } from '@/lib/zod-required';
 import {
   canApplySpecialCodeDefault,
   getDefaultSpecialCodeForOfferType,
+  resolveSalesTypeCodeById,
 } from '@/lib/sales-document-special-code-defaults';
 
 interface QuotationHeaderFormProps {
@@ -160,7 +161,7 @@ export function QuotationHeaderForm({
   const watchedDocumentSerialTypeId = form.watch('quotation.documentSerialTypeId');
   
   const watchedOfferType = form.watch('quotation.offerType');
-  const defaultSpecialCode = getDefaultSpecialCodeForOfferType(watchedOfferType);
+  const watchedDeliveryMethod = form.watch('quotation.deliveryMethod');
   const specialCodeManualChangeRef = useRef({ ozelKod1: false, ozelKod2: false });
 
   const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, true);
@@ -169,6 +170,11 @@ export function QuotationHeaderForm({
     !!watchedOfferType,
     watchedOfferType ?? null
   );
+  const selectedDeliveryMethodCode = useMemo(
+    () => resolveSalesTypeCodeById(watchedDeliveryMethod, deliveryMethodDropdown.items),
+    [watchedDeliveryMethod, deliveryMethodDropdown.items],
+  );
+  const defaultSpecialCode = getDefaultSpecialCodeForOfferType(watchedOfferType, selectedDeliveryMethodCode);
   const customerActivitiesQuery = useCustomerActivities(watchedCustomerId, activitySearchTerm);
   const activityOptions = useMemo(
     () =>
@@ -190,6 +196,7 @@ export function QuotationHeaderForm({
     if (prevOfferTypeRef.current !== watchedOfferType) {
       prevOfferTypeRef.current = watchedOfferType;
       form.setValue('quotation.deliveryMethod', null);
+      specialCodeManualChangeRef.current.ozelKod1 = false;
     }
   }, [watchedOfferType, form]);
 
@@ -244,6 +251,7 @@ export function QuotationHeaderForm({
     }
   }, [
     defaultSpecialCode,
+    selectedDeliveryMethodCode,
     quotationId,
     readOnly,
     form,

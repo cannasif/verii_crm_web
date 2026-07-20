@@ -82,6 +82,7 @@ import { isZodFieldRequired } from '@/lib/zod-required';
 import {
   canApplySpecialCodeDefault,
   getDefaultSpecialCodeForOfferType,
+  resolveSalesTypeCodeById,
 } from '@/lib/sales-document-special-code-defaults';
 
 interface OrderHeaderFormProps {
@@ -156,7 +157,7 @@ export function OrderHeaderForm({
   const watchedDocumentSerialTypeId = form.watch('order.documentSerialTypeId');
   const prevRepresentativeIdRef = useRef<number | null | undefined>(watchedRepresentativeId);
   const watchedOfferType = form.watch('order.offerType');
-  const defaultSpecialCode = getDefaultSpecialCodeForOfferType(watchedOfferType);
+  const watchedDeliveryMethod = form.watch('order.deliveryMethod');
   const specialCodeManualChangeRef = useRef({ ozelKod1: false, ozelKod2: false });
 
   const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, true);
@@ -166,6 +167,11 @@ export function OrderHeaderForm({
     !!watchedOfferType,
     watchedOfferType ?? null
   );
+  const selectedDeliveryMethodCode = useMemo(
+    () => resolveSalesTypeCodeById(watchedDeliveryMethod, deliveryMethodDropdown.items),
+    [watchedDeliveryMethod, deliveryMethodDropdown.items],
+  );
+  const defaultSpecialCode = getDefaultSpecialCodeForOfferType(watchedOfferType, selectedDeliveryMethodCode);
   const specialCode1Dropdown = useSpecialCodesInfinite(1, ozelKod1SearchTerm);
   const specialCode2Dropdown = useSpecialCodesInfinite(2, ozelKod2SearchTerm);
   const specialCode1DefaultExists = useSpecialCodeExists(1, defaultSpecialCode, !readOnly && !orderId);
@@ -176,6 +182,7 @@ export function OrderHeaderForm({
     if (prevOfferTypeRef.current !== watchedOfferType) {
       prevOfferTypeRef.current = watchedOfferType;
       form.setValue('order.deliveryMethod', null);
+      specialCodeManualChangeRef.current.ozelKod1 = false;
     }
   }, [watchedOfferType, form]);
 
@@ -213,6 +220,7 @@ export function OrderHeaderForm({
     }
   }, [
     defaultSpecialCode,
+    selectedDeliveryMethodCode,
     orderId,
     readOnly,
     form,
