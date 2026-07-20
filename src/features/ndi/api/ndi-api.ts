@@ -79,6 +79,7 @@ export interface NdiTransferCreateDocumentRequest {
   documentType: string;
   sourceType?: string | null;
   hasShipment: boolean;
+  shippingCustomerCode?: string | null;
   specialCode?: string | null;
   customerCode: string;
   customerName?: string | null;

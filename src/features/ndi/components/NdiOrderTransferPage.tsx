@@ -76,6 +76,7 @@ interface NdiPreparedDocument {
   documentType: 'İrsaliye' | 'Fatura';
   sourceType: string;
   hasShipment: boolean;
+  shippingCustomerCode?: string | null;
   specialCode?: 'K' | 'N';
   followUpNote?: string;
   customerCode: string;
@@ -117,6 +118,7 @@ interface NdiOrder {
   operationProfile: 'nuray' | 'windoformKapi' | 'disTicaret' | 'sirket24';
   documentType: 'irsaliye' | 'fatura';
   hasShipment: boolean;
+  shippingCustomerCode?: string | null;
   specialCode?: 'K' | 'N';
   description: string;
   tip: string;
@@ -148,6 +150,13 @@ const normalizeNdiSeriesInput = (value: string): string =>
   value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 3);
 
 const isValidNdiSeries = (value: string): boolean => /^[A-Z0-9]{3}$/.test(value);
+
+const hasSeparateShippingCustomer = (customerCode: string, shippingCustomerCode?: string | null): boolean => {
+  const normalizedCustomerCode = customerCode.trim().toLocaleUpperCase('tr-TR');
+  const normalizedShippingCode = shippingCustomerCode?.trim().toLocaleUpperCase('tr-TR') ?? '';
+
+  return normalizedShippingCode.length > 0 && normalizedShippingCode !== normalizedCustomerCode;
+};
 
 interface NdiSeriesConfig {
   label: string;
@@ -224,7 +233,7 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Cari sevk var ise irsaliye aktarımı zorunlu, yok ise zorunlu değil.',
     taxRule: '1/4 siparişlerde kalem miktarının 1/4 adedi ve KDV %5; TAM siparişlerde miktarın tamamı ve KDV %20 ile NURAY24 şirketine aktarılır.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'Sevk carisi varsa NURAY24 irsaliyesi ve ardından SIRKET24 faturası; yurt içi ve sevk carisi yoksa NURAY24 faturası oluşturulur.',
+    transferNote: 'Ayrı sevk carisi varsa NURAY24 irsaliyesi ve ardından SIRKET24 faturası; ayrı sevk carisi yoksa NURAY24 faturası oluşturulur.',
     officialNote: 'Otomatik SIRKET24 faturası yalnızca bağlı NUR sipariş numarası bulunduğunda oluşturulur.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki NUR belgeleri toplu seçilebilir.',
   },
@@ -240,7 +249,7 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Cari sevk var ise irsaliye zorunlu; özel kod K ise irsaliye zorunlu.',
     taxRule: 'Özel Kod K ihraç kayıtlı KDV 0, Özel Kod N normal satış KDV %20.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'Sevk carisi/özel kod K varsa WIN24 irsaliyesi ve ardından SIRKET24 faturası; yurt içi ve sevk carisi yoksa WIN24 faturası oluşturulur.',
+    transferNote: 'Ayrı sevk carisi/özel kod K varsa WIN24 irsaliyesi ve ardından SIRKET24 faturası; ayrı sevk carisi yoksa WIN24 faturası oluşturulur.',
     officialNote: 'Otomatik SIRKET24 faturası yalnızca bağlı VIN sipariş numarası bulunduğunda oluşturulur.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki VIN belgeleri toplu seçilebilir.',
   },
@@ -421,14 +430,12 @@ function getActionLabel(action: NdiBatchAction): string {
 
 function resolvePrimaryAction(order: NdiOrder): NdiBatchAction {
   const series = getBusinessSeries(order);
-  const normalizedType = normalizeText(order.tip);
-  const isDomestic = normalizedType === '2' || normalizedType.includes('yurt içi') || normalizedType.includes('yurt ici');
 
   if (series === 'SIP' || order.documentType === 'fatura') {
     return 'FATURALASTIR';
   }
 
-  if (isDomestic && !order.hasShipment && order.specialCode !== 'K') {
+  if ((series === 'NUR' || series === 'VIN') && !order.hasShipment && order.specialCode !== 'K') {
     return 'FATURALASTIR';
   }
 
@@ -665,7 +672,8 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
     representative: dispatch.plasiyerAciklama || dispatch.plasiyerKodu || '-',
     operationProfile,
     documentType: 'irsaliye',
-    hasShipment: Boolean(dispatch.teslimCariKodu?.trim()),
+    hasShipment: hasSeparateShippingCustomer(dispatch.cariKodu, dispatch.teslimCariKodu),
+    shippingCustomerCode: dispatch.teslimCariKodu?.trim() || null,
     specialCode: operationProfile === 'disTicaret' || (exportType && exportType !== '-') ? 'K' : 'N',
     description: dispatch.aciklama || '',
     tip: dispatch.tipi || '-',
@@ -755,6 +763,7 @@ export function NdiOrderTransferPage(): ReactElement {
     return selectedOrders.map((order) => {
       const check = checks.get(order.orderNo);
       const sourceOrderNo = check?.siparisNo?.trim() || null;
+      const shippingCustomerCode = check?.teslimCariKodu?.trim() || order.shippingCustomerCode || null;
       const series = getKnownSeries(sourceOrderNo || order.orderNo);
       const operationProfile: NdiOrder['operationProfile'] = series === 'NUR'
         ? 'nuray'
@@ -770,7 +779,8 @@ export function NdiOrderTransferPage(): ReactElement {
         ...order,
         sourceOrderNo,
         operationProfile,
-        hasShipment: Boolean(check?.teslimCariKodu?.trim() || order.hasShipment),
+        hasShipment: hasSeparateShippingCustomer(order.customerCode, shippingCustomerCode),
+        shippingCustomerCode,
         description: check?.aciklama?.trim() || order.description,
       };
     });
@@ -1066,6 +1076,7 @@ export function NdiOrderTransferPage(): ReactElement {
           documentType,
           sourceType: order.tip,
           hasShipment: order.hasShipment,
+          shippingCustomerCode: order.shippingCustomerCode,
           specialCode: order.specialCode,
           followUpNote: undefined,
           customerCode: order.customerCode,
@@ -1126,6 +1137,7 @@ export function NdiOrderTransferPage(): ReactElement {
           documentType: document.documentType,
           sourceType: document.sourceType,
           hasShipment: document.hasShipment,
+          shippingCustomerCode: document.shippingCustomerCode,
           specialCode: document.specialCode,
           customerCode: document.customerCode,
           customerName: document.customerName,
@@ -2567,7 +2579,7 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
 function SeriesGuide({ activeRuleIds }: { activeRuleIds: Set<NdiTransferRule['id']> }): ReactElement {
   const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
     { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> NURAY24', 'Belge serisi -> kullanıcı girişinden', 'Sevk varsa -> NURAY24 irsaliye + SIRKET24 fatura', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
-    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> WIN24', 'Belge serisi -> kullanıcı girişinden', 'Sevk/K -> WIN24 irsaliye + SIRKET24 fatura', 'Sevksiz yurt içi -> WIN24 fatura', 'K -> KDV 0'] },
+    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> WIN24', 'Belge serisi -> kullanıcı girişinden', 'Ayrı sevk/K -> WIN24 irsaliye + SIRKET24 fatura', 'Ayrı sevk carisi yok -> WIN24 fatura', 'K -> KDV 0'] },
     { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> DISTIC24', 'Belge serisi -> kullanıcı girişinden', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
     { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura serisi -> kullanıcı girişinden', 'KDV -> 0', 'Resmi evrak yok'] },
   ];
