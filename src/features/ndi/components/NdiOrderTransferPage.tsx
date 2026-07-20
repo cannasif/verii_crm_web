@@ -87,6 +87,8 @@ interface NdiPreparedDocument {
 
 interface NdiPreparedTransfer {
   actionLabel: string;
+  dispatchSeries: string;
+  invoiceSeries: string;
   sourceNetsisCompanies: string[];
   targetNetsisCompanies: string[];
   documentNos: string[];
@@ -141,6 +143,11 @@ interface NdiTransferRule {
 type NdiBusinessSeries = 'NUR' | 'VIN' | 'DIS' | 'SIP';
 type NdiBatchAction = 'IRSALIYELISTIR' | 'FATURALASTIR';
 type NdiQuantityMode = 'auto' | 'full' | 'quarter';
+
+const normalizeNdiSeriesInput = (value: string): string =>
+  value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 3);
+
+const isValidNdiSeries = (value: string): boolean => /^[A-Z0-9]{3}$/.test(value);
 
 interface NdiSeriesConfig {
   label: string;
@@ -213,7 +220,7 @@ const transferRules: NdiTransferRule[] = [
     sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'NURAY',
     targetNetsisCompany: 'NURAY24',
-    targetSerial: 'Kaynak irsaliye/fatura serisi',
+    targetSerial: 'Kullanıcının girdiği 3 karakterli seri',
     shipmentRule: 'Cari sevk var ise irsaliye aktarımı zorunlu, yok ise zorunlu değil.',
     taxRule: '1/4 siparişlerde kalem miktarının 1/4 adedi ve KDV %5; TAM siparişlerde miktarın tamamı ve KDV %20 ile NURAY24 şirketine aktarılır.',
     warehouseRule: 'Kaynak depo korunur.',
@@ -229,7 +236,7 @@ const transferRules: NdiTransferRule[] = [
     sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'WINDO',
     targetNetsisCompany: 'WIN24',
-    targetSerial: 'Kaynak irsaliye/fatura serisi',
+    targetSerial: 'Kullanıcının girdiği 3 karakterli seri',
     shipmentRule: 'Cari sevk var ise irsaliye zorunlu; özel kod K ise irsaliye zorunlu.',
     taxRule: 'Özel Kod K ihraç kayıtlı KDV 0, Özel Kod N normal satış KDV %20.',
     warehouseRule: 'Kaynak depo korunur.',
@@ -245,7 +252,7 @@ const transferRules: NdiTransferRule[] = [
     sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'WIN DIS',
     targetNetsisCompany: 'DISTIC24',
-    targetSerial: 'Sipariş serisi',
+    targetSerial: 'Kullanıcının girdiği 3 karakterli seri',
     shipmentRule: 'Sevk durumuna bakılmadan aktarım yapılabilir.',
     taxRule: 'KDV 0; gün döviz kuru alınır.',
     warehouseRule: 'Varsayılan depo kodu 100 olmalı.',
@@ -261,7 +268,7 @@ const transferRules: NdiTransferRule[] = [
     sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'ŞİRKET24',
     targetNetsisCompany: 'SIRKET24',
-    targetSerial: 'Sipariş serisi',
+    targetSerial: 'Kullanıcının girdiği 3 karakterli seri',
     shipmentRule: 'Sevk var/yok fark etmez.',
     taxRule: 'KDV 0; resmi evrak oluşmayacak.',
     warehouseRule: 'Depo kuralı yok.',
@@ -701,6 +708,8 @@ export function NdiOrderTransferPage(): ReactElement {
   const [activeTab, setActiveTab] = useState<'pending' | 'transferred'>('pending');
   const [search, setSearch] = useState('');
   const [quantityMode, setQuantityMode] = useState<NdiQuantityMode>('auto');
+  const [dispatchSeries, setDispatchSeries] = useState('');
+  const [invoiceSeries, setInvoiceSeries] = useState('');
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(() => new Set());
   const [selectedLineIds, setSelectedLineIds] = useState<Set<string>>(() => new Set());
   const [prepareAttempted, setPrepareAttempted] = useState(false);
@@ -855,14 +864,31 @@ export function NdiOrderTransferPage(): ReactElement {
     return labels;
   }, [selectedLinesByOrderNo]);
   const ruleOutcomes = useMemo(
-    () => selectedOrdersForTransfer.map((order) => buildRuleOutcome(order, selectedLinesByOrderNo.get(order.orderNo) ?? [], quantityMode)),
-    [quantityMode, selectedLinesByOrderNo, selectedOrdersForTransfer]
+    () => selectedOrdersForTransfer.map((order) => {
+      const outcome = buildRuleOutcome(order, selectedLinesByOrderNo.get(order.orderNo) ?? [], quantityMode);
+      const usesInvoiceSeries = outcome.action === 'FATURALASTIR';
+      const targetSeries = usesInvoiceSeries ? invoiceSeries : dispatchSeries;
+
+      return {
+        ...outcome,
+        targetSeries: targetSeries || '-',
+        seriesNote: usesInvoiceSeries
+          ? `Fatura serisi kullanıcı girişinden ${targetSeries || '-'} olarak alınacak.`
+          : `İrsaliye serisi kullanıcı girişinden ${targetSeries || '-'} olarak alınacak.`,
+      };
+    }),
+    [dispatchSeries, invoiceSeries, quantityMode, selectedLinesByOrderNo, selectedOrdersForTransfer]
   );
   const batchAction = useMemo(() => resolveBatchAction(selectedOrdersForTransfer), [selectedOrdersForTransfer]);
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
   const selectedLinesWithoutPrice = selectedLines.filter((line) => line.unitPrice <= 0);
-  const canPrepareSelectedLines = selectedLines.length > 0 && !batchAction.mixed && blockedRuleCount === 0 && selectedLinesWithoutPrice.length === 0;
+  const hasValidDocumentSeries = isValidNdiSeries(dispatchSeries) && isValidNdiSeries(invoiceSeries);
+  const canPrepareSelectedLines = selectedLines.length > 0
+    && !batchAction.mixed
+    && blockedRuleCount === 0
+    && selectedLinesWithoutPrice.length === 0
+    && hasValidDocumentSeries;
   const prepareDisabled = selectedLines.length === 0 || linesQuery.isFetching || orderChecksQuery.isFetching || isPreparingTransfer;
 
   const toggleOrder = (order: NdiOrder) => {
@@ -953,6 +979,23 @@ export function NdiOrderTransferPage(): ReactElement {
     setPrepareError(null);
   };
 
+  const changeDocumentSeries = (type: 'dispatch' | 'invoice', value: string) => {
+    const normalizedValue = normalizeNdiSeriesInput(value);
+    if (type === 'dispatch') {
+      setDispatchSeries(normalizedValue);
+    } else {
+      setInvoiceSeries(normalizedValue);
+    }
+
+    setPreparedTransfer(null);
+    setSuccessDialogTransfer(null);
+    setTransferResult(null);
+    setTransferResultDialog(null);
+    setSendError(null);
+    setPrepareAttempted(false);
+    setPrepareError(null);
+  };
+
   const reopenTransferredRecord = async (record: NdiTransferredRecordDto) => {
     const confirmed = window.confirm(
       `${record.sourceDocumentNo} belgesini yeniden işleme almak istiyor musunuz? Belge ana listeye dönecek; Netsis'e otomatik gönderilmeyecek.`
@@ -1035,6 +1078,8 @@ export function NdiOrderTransferPage(): ReactElement {
 
       const transfer = {
         actionLabel: batchAction.action ? getActionLabel(batchAction.action) : 'Hazırla',
+        dispatchSeries,
+        invoiceSeries,
         sourceNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.sourceNetsisCompany))),
         targetNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))),
         documentNos: selectedOrdersForTransfer.map((order) => order.orderNo),
@@ -1070,6 +1115,8 @@ export function NdiOrderTransferPage(): ReactElement {
 
     try {
       const result = await ndiApi.createNdiTransfer({
+        dispatchSeries: transfer.dispatchSeries,
+        invoiceSeries: transfer.invoiceSeries,
         documents: transfer.createdDocuments.map((document) => ({
           sourceDocumentNo: document.sourceDocumentNo,
           sourceOrderNo: document.sourceOrderNo,
@@ -1313,8 +1360,8 @@ export function NdiOrderTransferPage(): ReactElement {
 
           <div className="border-b border-slate-300 dark:border-white/20" />
 
-          <div className="bg-[var(--crm-app-panel-muted)] p-4">
-            <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+            <div className="bg-[var(--crm-app-panel-muted)] p-4">
+              <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
               <InfoChip icon={<ShieldCheck size={15} />} label="Seçim Kuralı" value={`Prefix: ${selectedPrefix}`} />
               <InfoChip icon={<Warehouse size={15} />} label="Depolar" value={selectedWarehouses.join(', ') || '-'} />
               <InfoChip icon={<Truck size={15} />} label="Sevkiyat" value={selectedShipmentTypes.join(', ') || '-'} />
@@ -1328,6 +1375,58 @@ export function NdiOrderTransferPage(): ReactElement {
                     : '-'
                 }
               />
+              </div>
+
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <label className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && !isValidNdiSeries(dispatchSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
+                <span className="flex items-center gap-2 text-xs font-black uppercase text-[var(--crm-app-text-muted)]">
+                  <Truck size={15} /> İrsaliye Belge Serisi
+                </span>
+                <div className="mt-2 flex items-center gap-3">
+                  <input
+                    value={dispatchSeries}
+                    onChange={(event) => changeDocumentSeries('dispatch', event.target.value)}
+                    minLength={3}
+                    maxLength={3}
+                    autoCapitalize="characters"
+                    autoComplete="off"
+                    placeholder="Örn: NUR"
+                    aria-invalid={prepareAttempted && !isValidNdiSeries(dispatchSeries)}
+                    className="h-11 min-w-0 flex-1 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 text-base font-black uppercase tracking-[0.16em] outline-none focus:border-primary dark:border-white/20"
+                  />
+                  <span className={`text-xs font-black ${isValidNdiSeries(dispatchSeries) ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}`}>
+                    {dispatchSeries.length}/3
+                  </span>
+                </div>
+                <span className="mt-2 block text-xs font-semibold text-[var(--crm-app-text-muted)]">
+                  Hedef firmada satış irsaliyesi numarası bu seriyle üretilecek.
+                </span>
+              </label>
+
+              <label className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && !isValidNdiSeries(invoiceSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
+                <span className="flex items-center gap-2 text-xs font-black uppercase text-[var(--crm-app-text-muted)]">
+                  <FileText size={15} /> Fatura Belge Serisi
+                </span>
+                <div className="mt-2 flex items-center gap-3">
+                  <input
+                    value={invoiceSeries}
+                    onChange={(event) => changeDocumentSeries('invoice', event.target.value)}
+                    minLength={3}
+                    maxLength={3}
+                    autoCapitalize="characters"
+                    autoComplete="off"
+                    placeholder="Örn: FTR"
+                    aria-invalid={prepareAttempted && !isValidNdiSeries(invoiceSeries)}
+                    className="h-11 min-w-0 flex-1 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 text-base font-black uppercase tracking-[0.16em] outline-none focus:border-primary dark:border-white/20"
+                  />
+                  <span className={`text-xs font-black ${isValidNdiSeries(invoiceSeries) ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}`}>
+                    {invoiceSeries.length}/3
+                  </span>
+                </div>
+                <span className="mt-2 block text-xs font-semibold text-[var(--crm-app-text-muted)]">
+                  Hedef firmada satış faturası numarası bu seriyle üretilecek.
+                </span>
+              </label>
             </div>
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-300 bg-[var(--crm-app-panel)] p-3 dark:border-white/20">
@@ -1400,6 +1499,12 @@ export function NdiOrderTransferPage(): ReactElement {
                   <div className="mt-2 space-y-1">
                     {selectedLines.length === 0 ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">En az bir satır seçilmelidir.</div>
+                    ) : null}
+                    {!isValidNdiSeries(dispatchSeries) ? (
+                      <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">İrsaliye belge serisi tam 3 harf veya rakam olmalıdır.</div>
+                    ) : null}
+                    {!isValidNdiSeries(invoiceSeries) ? (
+                      <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">Fatura belge serisi tam 3 harf veya rakam olmalıdır.</div>
                     ) : null}
                     {batchAction.mixed ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">İrsaliye ve fatura senaryosu aynı hazırlıkta karıştırılamaz.</div>
@@ -1973,10 +2078,12 @@ function PreparedTransferPanel({
         </div>
       </div>
 
-      <div className="mt-3 grid gap-2 md:grid-cols-4">
+      <div className="mt-3 grid gap-2 md:grid-cols-3 xl:grid-cols-6">
         <RuleMini label="Belgeler" value={transfer.documentNos.join(', ')} />
         <RuleMini label="Kaynak Netsis" value={transfer.sourceNetsisCompanies.join(', ')} />
         <RuleMini label="Hedef Netsis" value={transfer.targetNetsisCompanies.join(', ')} />
+        <RuleMini label="İrsaliye Serisi" value={transfer.dispatchSeries} />
+        <RuleMini label="Fatura Serisi" value={transfer.invoiceSeries} />
         <RuleMini label="Aktarılacak Miktar" value={numberFormatter.format(transfer.totalTransferQuantity)} />
       </div>
 
@@ -2097,6 +2204,10 @@ function TransferPreviewDialog({
           <div className="mb-4 rounded-xl border border-[#bfdbfe] bg-[#eff6ff] px-4 py-3 text-sm font-bold text-[#1e3a8a]">
             Henüz Netsis'e kayıt atılmadı. Kontrol ettikten sonra "Netsis'te İrsaliye/Fatura Oluştur" dediğinizde API çağrılır,
             işlem bitene kadar beklenir ve dönen Netsis belge numaraları ayrı sonuç ekranında gösterilir.
+          </div>
+          <div className="mb-4 grid gap-2 sm:grid-cols-2">
+            <RuleMini label="İrsaliye Belge Serisi" value={transfer.dispatchSeries} />
+            <RuleMini label="Fatura Belge Serisi" value={transfer.invoiceSeries} />
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {transfer.createdDocuments.map((document) => (
@@ -2455,10 +2566,10 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
 
 function SeriesGuide({ activeRuleIds }: { activeRuleIds: Set<NdiTransferRule['id']> }): ReactElement {
   const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
-    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> NURAY24', 'Seri -> siparişten', 'Sevk varsa -> NURAY24 irsaliye + SIRKET24 fatura', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
-    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> WIN24', 'Seri -> siparişten', 'Sevk/K -> WIN24 irsaliye + SIRKET24 fatura', 'Sevksiz yurt içi -> WIN24 fatura', 'K -> KDV 0'] },
-    { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> DISTIC24', 'Seri -> siparişten', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
-    { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura serisi -> siparişten', 'KDV -> 0', 'Resmi evrak yok'] },
+    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> NURAY24', 'Belge serisi -> kullanıcı girişinden', 'Sevk varsa -> NURAY24 irsaliye + SIRKET24 fatura', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
+    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> WIN24', 'Belge serisi -> kullanıcı girişinden', 'Sevk/K -> WIN24 irsaliye + SIRKET24 fatura', 'Sevksiz yurt içi -> WIN24 fatura', 'K -> KDV 0'] },
+    { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Kayıt hedefi -> DISTIC24', 'Belge serisi -> kullanıcı girişinden', 'Depo -> 100 sabit', 'KDV -> 0', 'Gün kuru alınır'] },
+    { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura serisi -> kullanıcı girişinden', 'KDV -> 0', 'Resmi evrak yok'] },
   ];
   const hasActiveRule = activeRuleIds.size > 0;
 

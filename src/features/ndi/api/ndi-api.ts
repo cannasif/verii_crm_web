@@ -88,6 +88,8 @@ export interface NdiTransferCreateDocumentRequest {
 }
 
 export interface NdiTransferCreateRequest {
+  dispatchSeries: string;
+  invoiceSeries: string;
   documents: NdiTransferCreateDocumentRequest[];
 }
 
