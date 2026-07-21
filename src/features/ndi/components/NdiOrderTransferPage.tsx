@@ -742,6 +742,7 @@ export function NdiOrderTransferPage(): ReactElement {
 
   const selectedOrders = useMemo(() => orders.filter((order) => selectedOrderIds.has(order.id)), [orders, selectedOrderIds]);
   const selectedPrefix = selectedOrders[0] ? getOrderPrefix(selectedOrders[0]) : '-';
+  const selectedCustomerCode = selectedOrders[0]?.customerCode?.trim() ?? '';
   const selectedIrsNoList = useMemo(() => selectedOrders.map((order) => order.orderNo).join(','), [selectedOrders]);
 
   const orderChecksQuery = useQuery({
@@ -889,6 +890,14 @@ export function NdiOrderTransferPage(): ReactElement {
     }),
     [dispatchSeries, invoiceSeries, quantityMode, selectedLinesByOrderNo, selectedOrdersForTransfer]
   );
+  const selectedSeriesCompany = ruleOutcomes[0]?.targetNetsisCompany ?? '';
+  const customerDocumentSeriesQuery = useQuery({
+    queryKey: ['ndi', 'customer-document-series', selectedSeriesCompany, selectedCustomerCode],
+    queryFn: () => ndiApi.getCustomerDocumentSeries(selectedSeriesCompany, selectedCustomerCode),
+    enabled: selectedSeriesCompany.length > 0 && selectedCustomerCode.length > 0,
+    staleTime: 60_000,
+  });
+  const customerDocumentSeries = customerDocumentSeriesQuery.data ?? [];
   const batchAction = useMemo(() => resolveBatchAction(selectedOrdersForTransfer), [selectedOrdersForTransfer]);
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
@@ -902,6 +911,14 @@ export function NdiOrderTransferPage(): ReactElement {
   const prepareDisabled = selectedLines.length === 0 || linesQuery.isFetching || orderChecksQuery.isFetching || isPreparingTransfer;
 
   const toggleOrder = (order: NdiOrder) => {
+    const selectedCustomer = selectedOrders[0]?.customerCode?.trim();
+    if (!selectedOrderIds.has(order.id)
+      && selectedCustomer
+      && selectedCustomer.localeCompare(order.customerCode.trim(), undefined, { sensitivity: 'accent' }) !== 0) {
+      setPrepareError(`Aynı anda yalnızca ${selectedCustomer} carisine ait irsaliyeler seçilebilir.`);
+      return;
+    }
+
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
     setTransferResult(null);
@@ -924,6 +941,13 @@ export function NdiOrderTransferPage(): ReactElement {
       return next;
     });
   };
+
+  useEffect(() => {
+    setDispatchSeries('');
+    setInvoiceSeries('');
+    setPreparedTransfer(null);
+    setSuccessDialogTransfer(null);
+  }, [selectedCustomerCode, selectedSeriesCompany]);
 
   const toggleLine = (lineId: string) => {
     setPreparedTransfer(null);
@@ -1395,23 +1419,25 @@ export function NdiOrderTransferPage(): ReactElement {
                   <Truck size={15} /> İrsaliye Belge Serisi
                 </span>
                 <div className="mt-2 flex items-center gap-3">
-                  <input
+                  <select
                     value={dispatchSeries}
                     onChange={(event) => changeDocumentSeries('dispatch', event.target.value)}
-                    minLength={3}
-                    maxLength={3}
-                    autoCapitalize="characters"
-                    autoComplete="off"
-                    placeholder="Örn: NUR"
+                    disabled={!selectedCustomerCode || customerDocumentSeriesQuery.isFetching}
                     aria-invalid={prepareAttempted && !isValidNdiSeries(dispatchSeries)}
-                    className="h-11 min-w-0 flex-1 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 text-base font-black uppercase tracking-[0.16em] outline-none focus:border-primary dark:border-white/20"
-                  />
-                  <span className={`text-xs font-black ${isValidNdiSeries(dispatchSeries) ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}`}>
-                    {dispatchSeries.length}/3
-                  </span>
+                    className="h-11 min-w-0 flex-1 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 text-sm font-black outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/20"
+                  >
+                    <option value="">{customerDocumentSeriesQuery.isFetching ? 'Seriler yükleniyor...' : 'İrsaliye tipi ve serisi seçin'}</option>
+                    {customerDocumentSeries.map((series, index) => (
+                      <option key={`${series.dispatchDocumentType}-${series.dispatchSeries}-${index}`} value={series.dispatchSeries}>
+                        {series.dispatchDocumentType || 'İrsaliye'} — {series.dispatchSeries}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <span className="mt-2 block text-xs font-semibold text-[var(--crm-app-text-muted)]">
-                  Hedef firmada satış irsaliyesi numarası bu seriyle üretilecek.
+                  {selectedCustomerCode
+                    ? `${selectedSeriesCompany} · Cari ${selectedCustomerCode}`
+                    : 'Önce bir irsaliye seçin.'}
                 </span>
               </label>
 
@@ -1420,23 +1446,25 @@ export function NdiOrderTransferPage(): ReactElement {
                   <FileText size={15} /> Fatura Belge Serisi
                 </span>
                 <div className="mt-2 flex items-center gap-3">
-                  <input
+                  <select
                     value={invoiceSeries}
                     onChange={(event) => changeDocumentSeries('invoice', event.target.value)}
-                    minLength={3}
-                    maxLength={3}
-                    autoCapitalize="characters"
-                    autoComplete="off"
-                    placeholder="Örn: FTR"
+                    disabled={!selectedCustomerCode || customerDocumentSeriesQuery.isFetching}
                     aria-invalid={prepareAttempted && !isValidNdiSeries(invoiceSeries)}
-                    className="h-11 min-w-0 flex-1 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 text-base font-black uppercase tracking-[0.16em] outline-none focus:border-primary dark:border-white/20"
-                  />
-                  <span className={`text-xs font-black ${isValidNdiSeries(invoiceSeries) ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}`}>
-                    {invoiceSeries.length}/3
-                  </span>
+                    className="h-11 min-w-0 flex-1 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 text-sm font-black outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/20"
+                  >
+                    <option value="">{customerDocumentSeriesQuery.isFetching ? 'Seriler yükleniyor...' : 'E-fatura tipi ve serisi seçin'}</option>
+                    {customerDocumentSeries.map((series, index) => (
+                      <option key={`${series.eInvoiceActive}-${series.invoiceDocumentType}-${series.invoiceSeries}-${index}`} value={series.invoiceSeries}>
+                        E-Fatura: {series.eInvoiceActive || '-'} — {series.invoiceDocumentType || 'Fatura'} — {series.invoiceSeries}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <span className="mt-2 block text-xs font-semibold text-[var(--crm-app-text-muted)]">
-                  Hedef firmada satış faturası numarası bu seriyle üretilecek.
+                  {customerDocumentSeriesQuery.isError
+                    ? 'Cari belge serileri alınamadı. Tekrar deneyin.'
+                    : 'Fonksiyondan gelen e-fatura durumu, belge tipi ve seri gösterilir.'}
                 </span>
               </label>
             </div>

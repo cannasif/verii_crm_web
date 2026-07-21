@@ -55,6 +55,19 @@ export interface NetsisNdiTransferRuleDto {
   description: string;
 }
 
+export interface NetsisCustomerDocumentSeriesDto {
+  baseName?: string | null;
+  customerCode: string;
+  customerName?: string | null;
+  taxNumber?: string | null;
+  identityNumber?: string | null;
+  eInvoiceActive?: string | null;
+  invoiceDocumentType?: string | null;
+  invoiceSeries: string;
+  dispatchDocumentType?: string | null;
+  dispatchSeries: string;
+}
+
 export interface NdiTransferCreateLineRequest {
   stockCode: string;
   stockName?: string | null;
@@ -282,6 +295,14 @@ export const ndiApi = {
   getNdiTransferRules: async (): Promise<NetsisNdiTransferRuleDto[]> => {
     const response = await api.get<ApiResponse<NetsisNdiTransferRuleDto[]>>('/api/NetsisRead/getNdiTransferRules');
     return ensureSuccess(response, 'NDI aktarim kurallari yuklenemedi.');
+  },
+
+  getCustomerDocumentSeries: async (company: string, customerCode: string): Promise<NetsisCustomerDocumentSeriesDto[]> => {
+    const response = await api.get<ApiResponse<NetsisCustomerDocumentSeriesDto[]>>(
+      '/api/NetsisRead/getCustomerDocumentSeries',
+      { params: { company, customerCode } }
+    );
+    return ensureSuccess(response, 'Cari belge serileri yüklenemedi.');
   },
 
   createNdiTransfer: async (request: NdiTransferCreateRequest): Promise<NdiTransferCreateResponseDto> => {
