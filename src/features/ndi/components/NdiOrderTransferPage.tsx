@@ -5,6 +5,7 @@ import {
   ArrowRight,
   Building2,
   CheckCircle2,
+  ChevronDown,
   Circle,
   FileText,
   Loader2,
@@ -119,6 +120,7 @@ interface NdiOrder {
   documentType: 'irsaliye' | 'fatura';
   hasShipment: boolean;
   shippingCustomerCode?: string | null;
+  shippingCustomerName?: string | null;
   specialCode?: 'K' | 'N';
   description: string;
   tip: string;
@@ -674,6 +676,7 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
     documentType: 'irsaliye',
     hasShipment: hasSeparateShippingCustomer(dispatch.cariKodu, dispatch.teslimCariKodu),
     shippingCustomerCode: dispatch.teslimCariKodu?.trim() || null,
+    shippingCustomerName: dispatch.teslimCariIsim?.trim() || null,
     specialCode: operationProfile === 'disTicaret' || (exportType && exportType !== '-') ? 'K' : 'N',
     description: dispatch.aciklama || '',
     tip: dispatch.tipi || '-',
@@ -729,6 +732,7 @@ export function NdiOrderTransferPage(): ReactElement {
   const [sendError, setSendError] = useState<string | null>(null);
   const [transferResult, setTransferResult] = useState<NdiTransferCreateResponseDto | null>(null);
   const [transferResultDialog, setTransferResultDialog] = useState<NdiTransferCreateResponseDto | null>(null);
+  const [revealedGuideRuleId, setRevealedGuideRuleId] = useState<NdiTransferRule['id'] | null>(null);
   const preparedTransferRef = useRef<HTMLDivElement | null>(null);
 
   const dispatchesQuery = useQuery({
@@ -856,6 +860,30 @@ export function NdiOrderTransferPage(): ReactElement {
   const selectedRules = Array.from(new Map(selectedOrdersForTransfer.map((order) => [order.operationProfile, getRule(order)])).values());
   const selectedRuleIds = new Set(selectedRules.map((rule) => rule.id));
   const selectedRuleTitles = selectedRules.map((rule) => rule.title).join(', ');
+  const selectedRuleIdsKey = useMemo(
+    () => selectedRules.map((rule) => rule.id).sort().join(','),
+    [selectedRules]
+  );
+
+  useEffect(() => {
+    if (selectedIrsNoList.length === 0) {
+      setRevealedGuideRuleId(null);
+      return;
+    }
+
+    setRevealedGuideRuleId((current) => {
+      if (current === null) {
+        return null;
+      }
+
+      const activeRuleIds = selectedRuleIdsKey.split(',').filter(Boolean) as NdiTransferRule['id'][];
+      if (activeRuleIds.includes(current)) {
+        return current;
+      }
+
+      return activeRuleIds[0] ?? null;
+    });
+  }, [selectedIrsNoList, selectedRuleIdsKey]);
   const selectedLinesByOrderNo = useMemo(() => {
     const grouped = new Map<string, NdiOrderLine[]>();
     selectedOrderLines.forEach((line) => {
@@ -889,6 +917,16 @@ export function NdiOrderTransferPage(): ReactElement {
     }),
     [dispatchSeries, invoiceSeries, quantityMode, selectedLinesByOrderNo, selectedOrdersForTransfer]
   );
+  const orderProfileByOrderId = useMemo(
+    () => new Map(selectedOrdersForTransfer.map((order) => [order.id, order.operationProfile])),
+    [selectedOrdersForTransfer]
+  );
+  const visibleRuleOutcomes = revealedGuideRuleId
+    ? ruleOutcomes.filter((outcome) => orderProfileByOrderId.get(outcome.orderId) === revealedGuideRuleId)
+    : [];
+  const visibleSelectedRules = revealedGuideRuleId
+    ? selectedRules.filter((rule) => rule.id === revealedGuideRuleId)
+    : [];
   const batchAction = useMemo(() => resolveBatchAction(selectedOrdersForTransfer), [selectedOrdersForTransfer]);
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
@@ -1236,8 +1274,8 @@ export function NdiOrderTransferPage(): ReactElement {
           onReopen={(record) => void reopenTransferredRecord(record)}
         />
       ) : (
-      <main className="grid w-full gap-4 px-4 pb-5 pt-4 md:px-6 xl:grid-cols-[430px_1fr]">
-        <section className="rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] shadow-sm">
+      <main className="grid w-full items-stretch gap-4 px-4 pb-5 pt-4 md:px-6 xl:grid-cols-[430px_1fr]">
+        <section className="flex min-h-0 flex-col rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] shadow-sm">
           <div className="px-4 pt-4 pb-3">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -1274,7 +1312,7 @@ export function NdiOrderTransferPage(): ReactElement {
             </div>
           </div>
 
-          <div className="max-h-[650px] space-y-2 overflow-y-auto p-3">
+          <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
             {dispatchesQuery.isLoading ? (
               <StatePanel icon={<Loader2 className="animate-spin" size={18} />} title="İrsaliyeler yükleniyor" />
             ) : dispatchesQuery.isError ? (
@@ -1320,7 +1358,10 @@ export function NdiOrderTransferPage(): ReactElement {
                         <span>{order.date}</span>
                         <span className="text-right">{order.customerCode}</span>
                         <span className="col-span-2 flex items-center gap-1">
-                          <Truck size={14} /> {order.route}
+                          <Truck size={14} />
+                          <span>
+                            Sevk Carisi: {order.shippingCustomerName || order.shippingCustomerCode || '-'}
+                          </span>
                         </span>
                         <span className="flex items-center gap-1">
                           <Warehouse size={14} /> {warehouseLabelByOrderNo.get(order.orderNo) ?? order.defaultWarehouse}
@@ -1376,7 +1417,7 @@ export function NdiOrderTransferPage(): ReactElement {
               <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
               <InfoChip icon={<ShieldCheck size={15} />} label="Seçim Kuralı" value={`Prefix: ${selectedPrefix}`} />
               <InfoChip icon={<Warehouse size={15} />} label="Depolar" value={selectedWarehouses.join(', ') || '-'} />
-              <InfoChip icon={<Truck size={15} />} label="Sevkiyat" value={selectedShipmentTypes.join(', ') || '-'} />
+              <InfoChip icon={<Truck size={15} />} label="Sevkiyat tipi" value={selectedShipmentTypes.join(', ') || '-'} />
               <InfoChip icon={<FileText size={15} />} label="Sorumlu" value={selectedRepresentatives.join(', ') || '-'} />
               <InfoChip
                 icon={<PackageCheck size={15} />}
@@ -1487,22 +1528,15 @@ export function NdiOrderTransferPage(): ReactElement {
                   <RuleBadge tone="success" label="Ek alan aktarılır" />
                 </div>
               </div>
-              <p className="mt-2 rounded-md border border-[#d7e1ef] bg-[#f8fbff] px-3 py-2 text-xs font-bold text-[#536780]">
-                SIRKET24 kaynak şirkettir; NURAY24, WIN24 ve DISTIC24 hedef şirkete özel login/token ve kayıt bilgisidir.
-              </p>
-              <SeriesGuide activeRuleIds={selectedRuleIds} />
-              <div className="mt-3 grid gap-2 xl:grid-cols-2">
-                {ruleOutcomes.length === 0 ? (
-                  <StatePanel icon={<SlidersHorizontal size={18} />} title="Kural çıktısı yok" description="Kural çıktısı için en az bir irsaliye seçin." />
-                ) : (
-                  ruleOutcomes.map((outcome) => <RuleOutcomeCard key={outcome.orderId} outcome={outcome} />)
-                )}
-              </div>
-              <div className="mt-3 grid gap-2 lg:grid-cols-2">
-                {selectedRules.map((rule) => (
-                  <RuleCard key={rule.id} rule={rule} />
-                ))}
-              </div>
+              <SeriesGuide
+                activeRuleIds={selectedRuleIds}
+                revealedRuleId={revealedGuideRuleId}
+                onToggleReveal={(ruleId) => {
+                  setRevealedGuideRuleId((current) => (current === ruleId ? null : ruleId));
+                }}
+                ruleOutcomes={visibleRuleOutcomes}
+                selectedRules={visibleSelectedRules}
+              />
               {prepareAttempted && !canPrepareSelectedLines ? (
                 <div className="mt-3 rounded-lg border border-[#fecaca] bg-[#fff8f8] p-3">
                   <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
@@ -2576,7 +2610,19 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
   );
 }
 
-function SeriesGuide({ activeRuleIds }: { activeRuleIds: Set<NdiTransferRule['id']> }): ReactElement {
+function SeriesGuide({
+  activeRuleIds,
+  revealedRuleId,
+  onToggleReveal,
+  ruleOutcomes,
+  selectedRules,
+}: {
+  activeRuleIds: Set<NdiTransferRule['id']>;
+  revealedRuleId: NdiTransferRule['id'] | null;
+  onToggleReveal: (ruleId: NdiTransferRule['id']) => void;
+  ruleOutcomes: NdiRuleOutcome[];
+  selectedRules: NdiTransferRule[];
+}): ReactElement {
   const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
     { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Kayıt hedefi -> NURAY24', 'Belge serisi -> kullanıcı girişinden', 'Sevk varsa -> NURAY24 irsaliye + SIRKET24 fatura', '1/4 -> miktar 1/4 + KDV %5', 'TAM -> miktar tam + KDV %20'] },
     { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kayıt hedefi -> WIN24', 'Belge serisi -> kullanıcı girişinden', 'Ayrı sevk/K -> WIN24 irsaliye + SIRKET24 fatura', 'Ayrı sevk carisi yok -> WIN24 fatura', 'K -> KDV 0'] },
@@ -2584,6 +2630,82 @@ function SeriesGuide({ activeRuleIds }: { activeRuleIds: Set<NdiTransferRule['id
     { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Kayıt hedefi -> SIRKET24', 'Fatura serisi -> kullanıcı girişinden', 'KDV -> 0', 'Resmi evrak yok'] },
   ];
   const hasActiveRule = activeRuleIds.size > 0;
+  const isOpen = revealedRuleId !== null;
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+  const orderedSelectedRules = [...selectedRules].sort((left, right) => {
+    if (left.id === 'windoformKapi') {
+      return 1;
+    }
+
+    if (right.id === 'windoformKapi') {
+      return -1;
+    }
+
+    return 0;
+  });
+
+  const handleRowClick = (ruleId: NdiTransferRule['id'], event: React.MouseEvent): void => {
+    if (!activeRuleIds.has(ruleId)) {
+      return;
+    }
+
+    if (isPointerDragClick(event, pointerStartRef.current)) {
+      return;
+    }
+
+    window.getSelection()?.removeAllRanges();
+    onToggleReveal(ruleId);
+  };
+
+  const renderCompanyCard = (row: (typeof rows)[number], fullWidth = false): ReactElement => {
+    const isActive = activeRuleIds.has(row.id);
+    const isRevealed = revealedRuleId === row.id;
+
+    return (
+      <div
+        key={row.id}
+        role={isActive ? 'button' : undefined}
+        tabIndex={isActive ? 0 : undefined}
+        onMouseDown={(event) => {
+          pointerStartRef.current = { x: event.clientX, y: event.clientY };
+        }}
+        onClick={(event) => handleRowClick(row.id, event)}
+        onKeyDown={(event) => {
+          if (!isActive) {
+            return;
+          }
+
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onToggleReveal(row.id);
+          }
+        }}
+        className={`rounded-md border px-3 py-2 transition ${
+          isRevealed
+            ? 'cursor-pointer border-primary bg-primary/15 shadow-[0_0_0_2px_rgba(236,72,153,0.18)]'
+            : isActive
+              ? 'cursor-pointer border-primary bg-primary/10 shadow-[0_0_0_2px_rgba(236,72,153,0.12)] hover:bg-primary/15'
+              : 'border-slate-300 bg-[var(--crm-app-panel)] dark:border-white/20'
+        } ${fullWidth ? 'w-full' : ''}`}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <div className="text-xs font-black text-foreground">{row.title}</div>
+          {isRevealed ? (
+            <span className="rounded-full bg-primary px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.08em] text-white">Açık</span>
+          ) : isActive ? (
+            <span className="rounded-full bg-primary px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.08em] text-white">Aktif</span>
+          ) : null}
+        </div>
+        <div className="mt-2 space-y-1">
+          {row.items.map((item) => (
+            <div key={item} className={`rounded px-2 py-1 text-[11px] font-black ${isActive || isRevealed ? 'bg-white/70 text-foreground dark:bg-black/20' : 'bg-primary/10 text-muted-foreground'}`}>
+              {item}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="mt-3 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] p-3">
@@ -2591,57 +2713,132 @@ function SeriesGuide({ activeRuleIds }: { activeRuleIds: Set<NdiTransferRule['id
         <div>
           <div className="text-xs font-black uppercase tracking-[0.16em] text-[var(--crm-app-text-muted)]">Seri ve Depo Rehberi</div>
           <p className="mt-1 text-xs font-semibold text-[var(--crm-app-text-muted)]">
-            Seçilen irsaliyenin kaynak şirketi ve seri bilgisine göre çalışacak NDI kuralı aşağıda vurgulanır.
+            {isOpen
+              ? 'Sol taraftan şirket seçimini değiştirebilir, sağ tarafta kural detaylarını inceleyebilirsiniz.'
+              : hasActiveRule
+                ? 'Seçilen irsaliyeye uygun şirket kartı vurgulanır. Kural detaylarını görmek için ilgili karta tıklayın.'
+                : 'Seçilen irsaliyenin kaynak şirketi ve seri bilgisine göre çalışacak NDI kuralı aşağıda vurgulanır.'}
           </p>
         </div>
-        <RuleBadge tone={hasActiveRule ? 'success' : 'info'} label={hasActiveRule ? 'Aktif kural vurgulandı' : 'İrsaliye seçince kural görünür'} />
+        <RuleBadge
+          tone={revealedRuleId ? 'success' : hasActiveRule ? 'warn' : 'info'}
+          label={revealedRuleId ? 'Kural detayı açık' : hasActiveRule ? 'Kart seçimi gerekli' : 'İrsaliye seçince kural görünür'}
+        />
       </div>
 
-      <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-        {rows.map((row) => {
-          const isActive = activeRuleIds.has(row.id);
-
-          return (
-            <div
-              key={row.title}
-              className={`rounded-md border px-3 py-2 transition ${
-                isActive
-                  ? 'border-primary bg-primary/10 shadow-[0_0_0_2px_rgba(236,72,153,0.12)]'
-                  : 'border-slate-300 bg-[var(--crm-app-panel)] dark:border-white/20'
-              }`}
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="text-xs font-black text-foreground">{row.title}</div>
-                {isActive ? <span className="rounded-full bg-primary px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.08em] text-white">Aktif</span> : null}
-              </div>
-              <div className="mt-2 space-y-1">
-                {row.items.map((item) => (
-                  <div key={item} className={`rounded px-2 py-1 text-[11px] font-black ${isActive ? 'bg-white/70 text-foreground dark:bg-black/20' : 'bg-primary/10 text-muted-foreground'}`}>
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+      {isOpen ? (
+        <div className="mt-3 grid items-start gap-3 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)]">
+          <div className="flex flex-col gap-2">
+            {rows.map((row) => renderCompanyCard(row, true))}
+          </div>
+          <div className="flex min-w-0 flex-col gap-2">
+            {ruleOutcomes.map((outcome) => (
+              <RuleOutcomeCard key={outcome.orderId} outcome={outcome} />
+            ))}
+            {orderedSelectedRules.map((rule) => (
+              <RuleCard key={rule.id} rule={rule} />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+            {rows.map((row) => renderCompanyCard(row))}
+          </div>
+          {hasActiveRule ? (
+            <p className="mt-3 rounded-md border border-dashed border-slate-300 px-3 py-3 text-center text-base font-semibold text-[var(--crm-app-text-muted)] dark:border-white/20">
+              Kural detaylarını görmek için vurgulanan şirket kartına tıklayın.
+            </p>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }
 
-function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement {
+const POINTER_DRAG_THRESHOLD = 5;
+
+function isPointerDragClick(event: React.MouseEvent, pointerStart: { x: number; y: number } | null): boolean {
+  if (pointerStart === null) {
+    return false;
+  }
+
+  const deltaX = Math.abs(event.clientX - pointerStart.x);
+  const deltaY = Math.abs(event.clientY - pointerStart.y);
+  return deltaX > POINTER_DRAG_THRESHOLD || deltaY > POINTER_DRAG_THRESHOLD;
+}
+
+function useCollapsibleCardToggle(initialExpanded = false): {
+  expanded: boolean;
+  toggle: () => void;
+  handleMouseDown: (event: React.MouseEvent) => void;
+  handleClick: (event: React.MouseEvent) => void;
+} {
+  const [expanded, setExpanded] = useState(initialExpanded);
+  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleMouseDown = (event: React.MouseEvent): void => {
+    pointerStartRef.current = { x: event.clientX, y: event.clientY };
+  };
+
+  const handleClick = (event: React.MouseEvent): void => {
+    if (isPointerDragClick(event, pointerStartRef.current)) {
+      return;
+    }
+
+    window.getSelection()?.removeAllRanges();
+    setExpanded((current) => !current);
+  };
+
+  const toggle = (): void => {
+    setExpanded((current) => !current);
+  };
+
+  return {
+    expanded,
+    toggle,
+    handleMouseDown,
+    handleClick,
+  };
+}
+
+function ExpandToggleButton({ expanded, onToggle }: { expanded: boolean; onToggle: () => void }): ReactElement {
   return (
-    <div className={`rounded-lg border p-3 ${outcome.canProceed ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-700/50 dark:bg-emerald-950/30' : 'border-red-300 bg-red-50 dark:border-red-700/50 dark:bg-red-950/30'}`}>
+    <button
+      type="button"
+      onClick={(event) => {
+        event.stopPropagation();
+        onToggle();
+      }}
+      aria-expanded={expanded}
+      aria-label={expanded ? 'Kuralları daralt' : 'Kuralları genişlet'}
+      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-slate-300 bg-[var(--crm-app-panel)] text-foreground transition hover:bg-primary/10 dark:border-white/20"
+    >
+      <ChevronDown size={14} className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`} />
+    </button>
+  );
+}
+
+function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement {
+  const { expanded, toggle, handleMouseDown, handleClick } = useCollapsibleCardToggle();
+
+  return (
+    <div
+      onMouseDown={handleMouseDown}
+      onClick={handleClick}
+      className={`cursor-pointer rounded-lg border p-3 transition hover:shadow-sm ${outcome.canProceed ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-700/50 dark:bg-emerald-950/30' : 'border-red-300 bg-red-50 dark:border-red-700/50 dark:bg-red-950/30'}`}
+    >
       <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
+        <div className="min-w-0 flex-1">
           <div className="font-black text-foreground">{outcome.orderNo}</div>
           <div className="text-xs font-bold text-[var(--crm-app-text-muted)]">
             {outcome.companyLabel} · Netsis {outcome.sourceNetsisCompany} {'->'} {outcome.targetNetsisCompany} · {outcome.actionLabel} · kaynak prefix {outcome.sourcePrefix}
           </div>
         </div>
-        <div className="flex flex-wrap gap-1">
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
           <RuleBadge tone={outcome.canProceed ? 'success' : 'danger'} label={outcome.canProceed ? 'Hazır' : 'Bloklu'} />
           <RuleBadge tone={outcome.targetWarehouseLocked ? 'warn' : 'info'} label={outcome.targetWarehouseLocked ? 'Depo sabit' : 'Depo seçilebilir'} />
+          <ExpandToggleButton expanded={expanded} onToggle={toggle} />
         </div>
       </div>
 
@@ -2658,10 +2855,14 @@ function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement
         />
       </div>
 
-      <RuleTextList title="Sistem Kuralları" values={outcome.systemNotes} tone="info" />
-      <RuleTextList title="Kullanıcı Kontrolü" values={outcome.userNotes} tone="success" />
-      <RuleTextList title="Uyarılar" values={outcome.warnings} tone="warn" />
-      <RuleTextList title="Bloklayan Kurallar" values={outcome.blocks} tone="danger" />
+      {expanded ? (
+        <>
+          <RuleTextList title="Sistem Kuralları" values={outcome.systemNotes} tone="info" />
+          <RuleTextList title="Kullanıcı Kontrolü" values={outcome.userNotes} tone="success" />
+          <RuleTextList title="Uyarılar" values={outcome.warnings} tone="warn" />
+          <RuleTextList title="Bloklayan Kurallar" values={outcome.blocks} tone="danger" />
+        </>
+      ) : null}
     </div>
   );
 }
@@ -2703,25 +2904,36 @@ function RuleTextList({ title, values, tone }: { title: string; values: string[]
 }
 
 function RuleCard({ rule }: { rule: NdiTransferRule }): ReactElement {
+  const { expanded, toggle, handleMouseDown, handleClick } = useCollapsibleCardToggle();
+
   return (
-    <div className="rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] p-3">
+    <div
+      onMouseDown={handleMouseDown}
+      onClick={handleClick}
+      className="cursor-pointer rounded-lg border border-slate-300 bg-[var(--crm-app-panel-muted)] p-3 transition hover:shadow-sm dark:border-white/20"
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="font-black text-foreground">{rule.title}</div>
-        <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-primary">
-          {rule.documentType}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-primary">
+            {rule.documentType}
+          </span>
+          <ExpandToggleButton expanded={expanded} onToggle={toggle} />
+        </div>
       </div>
-      <div className="mt-3 grid gap-2 text-xs font-bold text-[var(--crm-app-text-muted)] sm:grid-cols-2">
-        <RuleLine label="Kaynak Seri" value={rule.sourceSerial} />
-        <RuleLine label="Netsis Şirketi" value={`${rule.sourceNetsisCompany} -> ${rule.targetNetsisCompany}`} />
-        <RuleLine label="Hedef" value={`${rule.targetCompany} / ${rule.targetSerial}`} />
-        <RuleLine label="Sevk" value={rule.shipmentRule} />
-        <RuleLine label="KDV" value={rule.taxRule} />
-        <RuleLine label="Depo" value={rule.warehouseRule} />
-        <RuleLine label="Not" value={rule.transferNote} />
-        <RuleLine label="Evrak" value={rule.officialNote} />
-        <RuleLine label="Toplu" value={rule.bulkNote} />
-      </div>
+      {expanded ? (
+        <div className="mt-3 grid gap-2 text-xs font-bold text-[var(--crm-app-text-muted)] sm:grid-cols-2">
+          <RuleLine label="Kaynak Seri" value={rule.sourceSerial} />
+          <RuleLine label="Netsis Şirketi" value={`${rule.sourceNetsisCompany} -> ${rule.targetNetsisCompany}`} />
+          <RuleLine label="Hedef" value={`${rule.targetCompany} / ${rule.targetSerial}`} />
+          <RuleLine label="Sevk" value={rule.shipmentRule} />
+          <RuleLine label="KDV" value={rule.taxRule} />
+          <RuleLine label="Depo" value={rule.warehouseRule} />
+          <RuleLine label="Not" value={rule.transferNote} />
+          <RuleLine label="Evrak" value={rule.officialNote} />
+          <RuleLine label="Toplu" value={rule.bulkNote} />
+        </div>
+      ) : null}
     </div>
   );
 }
