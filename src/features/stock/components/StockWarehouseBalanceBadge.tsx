@@ -1,5 +1,6 @@
-import { type ReactElement, useMemo } from 'react';
+import { type KeyboardEvent, type MouseEvent, type ReactElement, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Loader2, RefreshCw, Warehouse } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
@@ -17,6 +18,7 @@ interface StockWarehouseBalanceBadgeProps {
   balance?: number | null;
   balanceText?: string | null;
   className?: string;
+  loadOnDemand?: boolean;
 }
 
 function resolveBadgeTone(totalBalance: number): 'negative' | 'positive' {
@@ -64,10 +66,16 @@ export function StockWarehouseBalanceBadge({
   balance,
   balanceText,
   className,
+  loadOnDemand = false,
 }: StockWarehouseBalanceBadgeProps): ReactElement | null {
-  const { i18n } = useTranslation('common');
+  const { t, i18n } = useTranslation('common');
+  const [requestedStockId, setRequestedStockId] = useState<number | null>(null);
   const hasPrefetchedBalance = balance !== undefined && balance !== null;
-  const { data: balances, isLoading, isError } = useWarehouseBalancesByStockId(stockId, !hasPrefetchedBalance);
+  const balanceRequested = !loadOnDemand || requestedStockId === stockId;
+  const { data: balances, isLoading, isFetching, isError, refetch } = useWarehouseBalancesByStockId(
+    stockId,
+    !hasPrefetchedBalance && balanceRequested,
+  );
 
   const rows = useMemo(() => balances ?? [], [balances]);
   const totalBalance = useMemo(
@@ -85,11 +93,94 @@ export function StockWarehouseBalanceBadge({
     return null;
   }
 
+  const stopAndRequest = (event: MouseEvent<HTMLElement>): void => {
+    event.stopPropagation();
+    setRequestedStockId(stockId);
+  };
+
+  const requestWithKeyboard = (event: KeyboardEvent<HTMLElement>): void => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    setRequestedStockId(stockId);
+  };
+
+  if (!hasPrefetchedBalance && loadOnDemand && !balanceRequested) {
+    return (
+      <Badge
+        variant="outline"
+        role="button"
+        tabIndex={0}
+        aria-label={t('warehouseBalanceTooltip.loadLabel')}
+        className={cn(
+          'inline-flex h-6 w-fit max-w-full shrink-0 cursor-pointer items-center gap-1 self-start whitespace-nowrap',
+          'border-zinc-300 bg-white px-2 py-0 text-[10px] font-semibold text-zinc-700 shadow-sm',
+          'hover:bg-zinc-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
+          'dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800',
+          className,
+        )}
+        onClick={stopAndRequest}
+        onKeyDown={requestWithKeyboard}
+        onPointerDown={(event) => event.stopPropagation()}
+      >
+        <Warehouse className="h-3 w-3" aria-hidden="true" />
+        {t('warehouseBalanceTooltip.loadLabel')}
+      </Badge>
+    );
+  }
+
+  if (!hasPrefetchedBalance && loadOnDemand && (isLoading || isFetching)) {
+    return (
+      <Badge
+        variant="outline"
+        aria-label={t('warehouseBalanceTooltip.loadingLabel')}
+        className={cn('inline-flex h-6 w-[5.5rem] items-center justify-center px-2 py-0', className)}
+        onClick={(event) => event.stopPropagation()}
+        onPointerDown={(event) => event.stopPropagation()}
+      >
+        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+      </Badge>
+    );
+  }
+
+  if (!hasPrefetchedBalance && isError && loadOnDemand) {
+    return (
+      <Badge
+        variant="outline"
+        role="button"
+        tabIndex={0}
+        aria-label={t('warehouseBalanceTooltip.retryLabel')}
+        className={cn(
+          'inline-flex h-6 w-fit cursor-pointer items-center gap-1 border-red-300 bg-red-50 px-2 py-0 text-[10px] font-semibold text-red-700',
+          'hover:bg-red-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400/40',
+          'dark:border-red-500/50 dark:bg-red-950/30 dark:text-red-200',
+          className,
+        )}
+        onClick={(event) => {
+          event.stopPropagation();
+          void refetch();
+        }}
+        onKeyDown={(event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          event.stopPropagation();
+          void refetch();
+        }}
+        onPointerDown={(event) => event.stopPropagation()}
+      >
+        <RefreshCw className="h-3 w-3" aria-hidden="true" />
+        {t('warehouseBalanceTooltip.retryLabel')}
+      </Badge>
+    );
+  }
+
   if (!hasPrefetchedBalance && isLoading) {
     return <Skeleton className={cn('h-6 w-[5.5rem] rounded-full', className)} />;
   }
 
-  if (!hasPrefetchedBalance && (isError || rows.length === 0)) {
+  if (!hasPrefetchedBalance && (isError || (rows.length === 0 && !loadOnDemand))) {
     return null;
   }
 

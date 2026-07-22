@@ -3659,6 +3659,9 @@
     }
   },
   "warehouseBalanceTooltip": {
+    "loadLabel": "Balance",
+    "loadingLabel": "Loading balance",
+    "retryLabel": "Retry",
     "totalLabel": "Total balance",
     "warehouseCount": "{{count}} warehouses",
     "branch": "Branch {{branch}}",

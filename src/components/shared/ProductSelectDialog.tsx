@@ -253,7 +253,7 @@ function ProductSelectCatalogStockCard({
         </h3>
 
         <div className="mt-auto flex w-fit max-w-full pt-1">
-          <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} />
+          <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} loadOnDemand />
         </div>
 
         {(stock.grupKodu || stock.kod1) ? (
@@ -400,7 +400,7 @@ function ProductSelectCatalogStockList({
                   </td>
                   <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
                     <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
-                      <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} />
+                      <StockWarehouseBalanceBadge stockId={stock.id} unit={stock.unit} loadOnDemand />
                     </div>
                   </td>
                   <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">

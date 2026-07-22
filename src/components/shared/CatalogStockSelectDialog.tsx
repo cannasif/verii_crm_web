@@ -1442,7 +1442,7 @@ export function CatalogStockSelectDialog({
                       </td>
                       <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
                         <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
-                          <StockWarehouseBalanceBadge stockId={stock.stockId} unit={stock.unit} />
+                          <StockWarehouseBalanceBadge stockId={stock.stockId} unit={stock.unit} loadOnDemand />
                         </div>
                       </td>
                       <td className="crm-border-end border-slate-200/90 px-2 py-1 align-middle text-center sm:py-1.5 dark:border-white/10">
@@ -1649,7 +1649,7 @@ export function CatalogStockSelectDialog({
                       ) : null}
 
                       <div className="mt-auto flex w-fit max-w-full pt-1">
-                        <StockWarehouseBalanceBadge stockId={stock.stockId} unit={stock.unit} />
+                        <StockWarehouseBalanceBadge stockId={stock.stockId} unit={stock.unit} loadOnDemand />
                       </div>
 
                       {(stock.grupKodu || stock.kod1) ? (

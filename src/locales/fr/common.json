@@ -3616,6 +3616,9 @@
     }
   },
   "warehouseBalanceTooltip": {
+    "loadLabel": "Stock",
+    "loadingLabel": "Chargement du stock",
+    "retryLabel": "Réessayer",
     "totalLabel": "Solde total",
     "warehouseCount": "{{count}} entrepôts",
     "branch": "Agence {{branch}}",

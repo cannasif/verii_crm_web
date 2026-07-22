@@ -3690,6 +3690,9 @@
     }
   },
   "warehouseBalanceTooltip": {
+    "loadLabel": "Saldo",
+    "loadingLabel": "Caricamento saldo",
+    "retryLabel": "Riprova",
     "totalLabel": "Saldo totale",
     "warehouseCount": "{{count}} magazzini",
     "branch": "Filiale {{branch}}",
