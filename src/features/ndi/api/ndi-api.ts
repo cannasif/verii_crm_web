@@ -71,6 +71,7 @@ export interface NetsisCustomerDocumentSeriesDto {
 export interface NdiTransferCreateLineRequest {
   stockCode: string;
   stockName?: string | null;
+  sourceQuantity: number;
   quantity: number;
   unitPrice?: number | null;
   foreignUnitPrice?: number | null;
@@ -104,6 +105,7 @@ export interface NdiTransferCreateDocumentRequest {
 export interface NdiTransferCreateRequest {
   dispatchSeries: string;
   invoiceSeries: string;
+  quantityMode: 'auto' | 'full' | 'quarter';
   documents: NdiTransferCreateDocumentRequest[];
 }
 

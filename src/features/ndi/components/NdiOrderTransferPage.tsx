@@ -93,6 +93,7 @@ interface NdiPreparedTransfer {
   actionLabel: string;
   dispatchSeries: string;
   invoiceSeries: string;
+  quantityMode: NdiQuantityMode;
   sourceNetsisCompanies: string[];
   targetNetsisCompanies: string[];
   documentNos: string[];
@@ -269,8 +270,8 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Sevk durumuna bakılmadan aktarım yapılabilir.',
     taxRule: 'KDV 0; gün döviz kuru alınır.',
     warehouseRule: 'Varsayılan depo kodu 100 olmalı.',
-    transferNote: 'Fatura veya irsaliye serisi bağlı sipariş numarasından alınır.',
-    officialNote: 'Sipariş numarası yoksa kaynak belge serisi yedek olarak kullanılır.',
+    transferNote: 'Fatura veya irsaliye serisi kullanıcının seçtiği 3 karakterli seriden alınır.',
+    officialNote: 'Belge numarası DISTIC24 şirketinden ve seçilen seriyle ayrı olarak alınır.',
     bulkNote: 'İrsaliye birleştirme ve toplu aktarım desteklenebilir.',
   },
   {
@@ -285,7 +286,7 @@ const transferRules: NdiTransferRule[] = [
     shipmentRule: 'Sevk var/yok fark etmez.',
     taxRule: 'KDV 0; resmi evrak oluşmayacak.',
     warehouseRule: 'Depo kuralı yok.',
-    transferNote: 'ŞİRKET24 faturası oluşur; seri bağlı sipariş numarasından alınır.',
+    transferNote: 'ŞİRKET24 faturası oluşur; seri kullanıcının seçtiği 3 karakterli seriden alınır.',
     officialNote: 'Resmi evrak oluşmayacak.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki SIP belgeleri toplu seçilebilir.',
   },
@@ -354,13 +355,6 @@ function getOrderPrefix(order: NdiOrder): string {
 function getKnownSeries(value: string): NdiBusinessSeries | null {
   const prefix = value.slice(0, 3).toLocaleUpperCase('tr-TR');
   return prefix === 'NUR' || prefix === 'VIN' || prefix === 'DIS' || prefix === 'SIP' ? prefix : null;
-}
-
-function resolveSourceDocumentSeries(value: string): string {
-  const normalized = value.trim();
-  const beforeDash = normalized.split('-').filter(Boolean)[0] ?? normalized;
-  const match = beforeDash.match(/^[A-Za-zÇĞİÖŞÜçğıöşü]+/);
-  return (match?.[0] || beforeDash.slice(0, 3)).toLocaleUpperCase('tr-TR');
 }
 
 function getRule(order: NdiOrder): NdiTransferRule {
@@ -467,30 +461,25 @@ function resolveBatchAction(orders: NdiOrder[]): { action: NdiBatchAction | null
 
 function resolveTargetSeries(order: NdiOrder): { value: string; note: string; warning?: string } {
   const series = getBusinessSeries(order);
-  const action = resolvePrimaryAction(order);
   const config = SERIES_CONFIG[series];
-
-  const seriesSource = order.sourceOrderNo || order.orderNo;
-  const sourceOrderSeries = resolveSourceDocumentSeries(seriesSource);
   return {
-    value: sourceOrderSeries,
-    note: `${config.label}: ${action === 'IRSALIYELISTIR' ? 'irsaliye' : 'fatura'} serisi öncelikle ${order.sourceOrderNo ? `sipariş ${order.sourceOrderNo}` : `kaynak belge ${order.orderNo}`} üzerinden ${sourceOrderSeries} olarak alındı.`,
-    warning: order.sourceOrderNo ? undefined : 'Sipariş numarası dönmediği için seri kaynak belge numarasından yedek olarak üretildi.',
+    value: '',
+    note: `${config.label}: belge serisi kullanıcının seçtiği 3 karakterli irsaliye veya fatura serisinden alınır.`,
   };
 }
 
 function resolveWarehouse(order: NdiOrder): { value: string; label: string; locked: boolean; note: string } {
   const warehouseConfig = COMPANY_WAREHOUSE_CONFIG[order.operationProfile];
   const option = warehouseConfig.warehouses.find((item) => item.code === warehouseConfig.default) ?? warehouseConfig.warehouses[0];
-  const locked = !warehouseConfig.editable || getBusinessSeries(order) === 'DIS';
+  const isDistic = getBusinessSeries(order) === 'DIS';
 
   return {
-    value: option?.code ?? '100',
-    label: option ? `${option.code} - ${option.label}` : '100',
-    locked,
-    note: locked
+    value: isDistic ? (option?.code ?? '100') : '',
+    label: isDistic ? (option ? `${option.code} - ${option.label}` : '100') : 'Kaynak kalem deposu',
+    locked: isDistic,
+    note: isDistic
       ? `${warehouseConfig.label} için hedef depo ${warehouseConfig.default} sabit kuraldır.`
-      : `${warehouseConfig.label} için varsayılan depo ${warehouseConfig.default}; aktarımda değiştirilebilir.`,
+      : `${warehouseConfig.label} için her kalemin kaynak depo kodu değiştirilmeden korunur.`,
   };
 }
 
@@ -527,6 +516,15 @@ function resolveQuantityRule(order: NdiOrder, lines: NdiOrderLine[], quantityMod
   const description = normalizeText(order.description);
   const requestedQuantity = lines.reduce((total, line) => total + Math.max(line.remainingQuantity, 0), 0);
 
+  if (series !== 'NUR') {
+    return {
+      label: 'Tam',
+      requestedQuantity,
+      transferQuantity: requestedQuantity,
+      note: 'Bu akışta seçilen satırların kalan miktarının tamamı aktarılır.',
+    };
+  }
+
   if (quantityMode === 'quarter') {
     return {
       label: '1/4',
@@ -536,7 +534,7 @@ function resolveQuantityRule(order: NdiOrder, lines: NdiOrderLine[], quantityMod
     };
   }
 
-  if (quantityMode === 'full' || series !== 'NUR') {
+  if (quantityMode === 'full') {
     return {
       label: 'Tam',
       requestedQuantity,
@@ -867,6 +865,13 @@ export function NdiOrderTransferPage(): ReactElement {
     () => selectedRules.map((rule) => rule.id).sort().join(','),
     [selectedRules]
   );
+  const quarterModeAvailable = selectedRules.length > 0 && selectedRules.every((rule) => rule.id === 'nuray');
+
+  useEffect(() => {
+    if (!quarterModeAvailable && quantityMode === 'quarter') {
+      setQuantityMode('full');
+    }
+  }, [quarterModeAvailable, quantityMode]);
 
   useEffect(() => {
     if (selectedIrsNoList.length === 0) {
@@ -1196,6 +1201,7 @@ export function NdiOrderTransferPage(): ReactElement {
         actionLabel: batchAction.action ? getActionLabel(batchAction.action) : 'Hazırla',
         dispatchSeries,
         invoiceSeries,
+        quantityMode,
         sourceNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.sourceNetsisCompany))),
         targetNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))),
         documentNos: selectedOrdersForTransfer.map((order) => order.orderNo),
@@ -1233,6 +1239,7 @@ export function NdiOrderTransferPage(): ReactElement {
       const result = await ndiApi.createNdiTransfer({
         dispatchSeries: transfer.dispatchSeries,
         invoiceSeries: transfer.invoiceSeries,
+        quantityMode: transfer.quantityMode,
         documents: transfer.createdDocuments.map((document) => ({
           sourceDocumentNo: document.sourceDocumentNo,
           sourceOrderNo: document.sourceOrderNo,
@@ -1253,6 +1260,7 @@ export function NdiOrderTransferPage(): ReactElement {
             .map((line) => ({
               stockCode: line.stockCode,
               stockName: line.stockName,
+              sourceQuantity: line.sourceQuantity,
               quantity: line.transferQuantity,
         unitPrice: line.unitPrice,
         foreignUnitPrice: line.foreignUnitPrice,
@@ -1570,7 +1578,9 @@ export function NdiOrderTransferPage(): ReactElement {
                     key={mode}
                     type="button"
                     onClick={() => changeQuantityMode(mode)}
-                    className={`min-w-20 rounded px-3 py-2 text-xs font-black transition ${quantityMode === mode ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                    disabled={mode === 'quarter' && !quarterModeAvailable}
+                    title={mode === 'quarter' && !quarterModeAvailable ? '1/4 aktarım yalnızca NURAY belgelerinde kullanılabilir.' : undefined}
+                    className={`min-w-20 rounded px-3 py-2 text-xs font-black transition disabled:cursor-not-allowed disabled:opacity-40 ${quantityMode === mode ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
                   >
                     {label}
                   </button>
@@ -2910,7 +2920,7 @@ function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement
         </div>
         <div className="flex flex-wrap items-center gap-1 sm:max-w-[45%] sm:shrink-0 sm:justify-end">
           <RuleBadge tone={outcome.canProceed ? 'success' : 'danger'} label={outcome.canProceed ? 'Hazır' : 'Bloklu'} />
-          <RuleBadge tone={outcome.targetWarehouseLocked ? 'warn' : 'info'} label={outcome.targetWarehouseLocked ? 'Depo sabit' : 'Depo seçilebilir'} />
+          <RuleBadge tone={outcome.targetWarehouseLocked ? 'warn' : 'info'} label={outcome.targetWarehouseLocked ? 'Depo sabit' : 'Kaynak depo'} />
           <ExpandToggleButton expanded={expanded} onToggle={toggle} />
         </div>
       </div>
