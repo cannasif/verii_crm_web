@@ -1341,9 +1341,9 @@ export function NdiOrderTransferPage(): ReactElement {
           onReopen={(record) => void reopenTransferredRecord(record)}
         />
       ) : (
-      <main className="grid w-full items-stretch gap-4 px-4 pb-5 pt-4 md:px-6 xl:grid-cols-[430px_1fr]">
-        <section className="flex min-h-0 flex-col rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] shadow-sm">
-          <div className="px-4 pt-4 pb-3">
+      <main className="grid w-full items-start gap-4 px-4 pb-5 pt-4 md:px-6 xl:grid-cols-[430px_1fr]">
+        <section className="flex h-[1050px] flex-col overflow-hidden rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] shadow-sm">
+          <div className="shrink-0 px-4 pt-4 pb-3">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <FileText size={20} />
@@ -1355,9 +1355,9 @@ export function NdiOrderTransferPage(): ReactElement {
             </div>
           </div>
 
-          <div className="border-b border-slate-300 dark:border-white/20" />
+          <div className="shrink-0 border-b border-slate-300 dark:border-white/20" />
 
-          <div className="px-4 py-4">
+          <div className="shrink-0 px-4 py-4">
             <div className="flex gap-2">
               <label className="flex min-w-0 flex-1 items-center gap-2 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] px-3 py-2 focus-within:border-primary">
                 <Search size={18} className="text-[var(--crm-app-text-muted)]" />
