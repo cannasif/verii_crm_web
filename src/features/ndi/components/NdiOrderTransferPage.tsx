@@ -18,6 +18,8 @@ import {
   Warehouse,
 } from 'lucide-react';
 
+import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
+
 import {
   ndiApi,
   type NdiTransferCreateResponseDto,
@@ -925,7 +927,48 @@ export function NdiOrderTransferPage(): ReactElement {
     enabled: selectedSeriesCompany.length > 0 && selectedCustomerCode.length > 0,
     staleTime: 60_000,
   });
-  const customerDocumentSeries = customerDocumentSeriesQuery.data ?? [];
+  const customerDocumentSeries = useMemo(
+    () => customerDocumentSeriesQuery.data ?? [],
+    [customerDocumentSeriesQuery.data]
+  );
+  const dispatchSeriesOptions = useMemo((): ComboboxOption[] => {
+    const seen = new Set<string>();
+    const options: ComboboxOption[] = [];
+
+    customerDocumentSeries.forEach((series) => {
+      const value = series.dispatchSeries?.trim() ?? '';
+      if (!value || seen.has(value)) {
+        return;
+      }
+
+      seen.add(value);
+      options.push({
+        value,
+        label: `${series.dispatchDocumentType || 'İrsaliye'} — ${series.dispatchSeries}`,
+      });
+    });
+
+    return options;
+  }, [customerDocumentSeries]);
+  const invoiceSeriesOptions = useMemo((): ComboboxOption[] => {
+    const seen = new Set<string>();
+    const options: ComboboxOption[] = [];
+
+    customerDocumentSeries.forEach((series) => {
+      const value = series.invoiceSeries?.trim() ?? '';
+      if (!value || seen.has(value)) {
+        return;
+      }
+
+      seen.add(value);
+      options.push({
+        value,
+        label: `E-Fatura: ${series.eInvoiceActive || '-'} — ${series.invoiceDocumentType || 'Fatura'} — ${series.invoiceSeries}`,
+      });
+    });
+
+    return options;
+  }, [customerDocumentSeries]);
   const orderProfileByOrderId = useMemo(
     () => new Map(selectedOrdersForTransfer.map((order) => [order.id, order.operationProfile])),
     [selectedOrdersForTransfer]
@@ -1455,59 +1498,61 @@ export function NdiOrderTransferPage(): ReactElement {
               </div>
 
             <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <label className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && !isValidNdiSeries(dispatchSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
+              <div className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && !isValidNdiSeries(dispatchSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
                 <span className="flex items-center gap-2 text-xs font-black uppercase text-[var(--crm-app-text-muted)]">
                   <Truck size={15} /> İrsaliye Belge Serisi
                 </span>
-                <div className="mt-2 flex items-center gap-3">
-                  <select
+                <div className="mt-2">
+                  <Combobox
+                    options={dispatchSeriesOptions}
                     value={dispatchSeries}
-                    onChange={(event) => changeDocumentSeries('dispatch', event.target.value)}
-                    disabled={!selectedCustomerCode || customerDocumentSeriesQuery.isFetching}
-                    aria-invalid={prepareAttempted && !isValidNdiSeries(dispatchSeries)}
-                    className="h-11 min-w-0 flex-1 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 text-sm font-black outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/20"
-                  >
-                    <option value="">{customerDocumentSeriesQuery.isFetching ? 'Seriler yükleniyor...' : 'İrsaliye tipi ve serisi seçin'}</option>
-                    {customerDocumentSeries.map((series, index) => (
-                      <option key={`${series.dispatchDocumentType}-${series.dispatchSeries}-${index}`} value={series.dispatchSeries}>
-                        {series.dispatchDocumentType || 'İrsaliye'} — {series.dispatchSeries}
-                      </option>
-                    ))}
-                  </select>
+                    onValueChange={(value) => changeDocumentSeries('dispatch', value)}
+                    placeholder="İrsaliye tipi ve serisi seçin"
+                    emptyText={selectedCustomerCode ? 'İrsaliye serisi bulunamadı.' : 'Önce bir irsaliye seçin.'}
+                    disabled={!selectedCustomerCode}
+                    isLoading={customerDocumentSeriesQuery.isFetching}
+                    loadingText="Seriler yükleniyor..."
+                    searchable={false}
+                    className="h-11 font-black"
+                  />
                 </div>
                 <span className="mt-2 block text-xs font-semibold text-[var(--crm-app-text-muted)]">
                   {selectedCustomerCode
                     ? `${selectedSeriesCompany} · Cari ${selectedCustomerCode}`
                     : 'Önce bir irsaliye seçin.'}
                 </span>
-              </label>
+              </div>
 
-              <label className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && !isValidNdiSeries(invoiceSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
+              <div className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && !isValidNdiSeries(invoiceSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
                 <span className="flex items-center gap-2 text-xs font-black uppercase text-[var(--crm-app-text-muted)]">
                   <FileText size={15} /> Fatura Belge Serisi
                 </span>
-                <div className="mt-2 flex items-center gap-3">
-                  <select
+                <div className="mt-2">
+                  <Combobox
+                    options={invoiceSeriesOptions}
                     value={invoiceSeries}
-                    onChange={(event) => changeDocumentSeries('invoice', event.target.value)}
-                    disabled={!selectedCustomerCode || customerDocumentSeriesQuery.isFetching}
-                    aria-invalid={prepareAttempted && !isValidNdiSeries(invoiceSeries)}
-                    className="h-11 min-w-0 flex-1 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 text-sm font-black outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/20"
-                  >
-                    <option value="">{customerDocumentSeriesQuery.isFetching ? 'Seriler yükleniyor...' : 'E-fatura tipi ve serisi seçin'}</option>
-                    {customerDocumentSeries.map((series, index) => (
-                      <option key={`${series.eInvoiceActive}-${series.invoiceDocumentType}-${series.invoiceSeries}-${index}`} value={series.invoiceSeries}>
-                        E-Fatura: {series.eInvoiceActive || '-'} — {series.invoiceDocumentType || 'Fatura'} — {series.invoiceSeries}
-                      </option>
-                    ))}
-                  </select>
+                    onValueChange={(value) => changeDocumentSeries('invoice', value)}
+                    placeholder="E-fatura tipi ve serisi seçin"
+                    emptyText={
+                      customerDocumentSeriesQuery.isError
+                        ? 'Cari belge serileri alınamadı. Tekrar deneyin.'
+                        : selectedCustomerCode
+                          ? 'Fatura serisi bulunamadı.'
+                          : 'Önce bir irsaliye seçin.'
+                    }
+                    disabled={!selectedCustomerCode}
+                    isLoading={customerDocumentSeriesQuery.isFetching}
+                    loadingText="Seriler yükleniyor..."
+                    searchable={false}
+                    className="h-11 font-black"
+                  />
                 </div>
                 <span className="mt-2 block text-xs font-semibold text-[var(--crm-app-text-muted)]">
                   {customerDocumentSeriesQuery.isError
                     ? 'Cari belge serileri alınamadı. Tekrar deneyin.'
                     : 'Fonksiyondan gelen e-fatura durumu, belge tipi ve seri gösterilir.'}
                 </span>
-              </label>
+              </div>
             </div>
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-300 bg-[var(--crm-app-panel)] p-3 dark:border-white/20">
@@ -2856,14 +2901,14 @@ function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement
       onClick={handleClick}
       className={`cursor-pointer rounded-lg border p-3 transition hover:shadow-sm ${outcome.canProceed ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-700/50 dark:bg-emerald-950/30' : 'border-red-300 bg-red-50 dark:border-red-700/50 dark:bg-red-950/30'}`}
     >
-      <div className="flex flex-wrap items-start justify-between gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
           <div className="font-black text-foreground">{outcome.orderNo}</div>
-          <div className="text-xs font-bold text-[var(--crm-app-text-muted)]">
+          <div className="break-words text-xs font-bold text-[var(--crm-app-text-muted)]">
             {outcome.companyLabel} · Netsis {outcome.sourceNetsisCompany} {'->'} {outcome.targetNetsisCompany} · {outcome.actionLabel} · kaynak prefix {outcome.sourcePrefix}
           </div>
         </div>
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
+        <div className="flex flex-wrap items-center gap-1 sm:max-w-[45%] sm:shrink-0 sm:justify-end">
           <RuleBadge tone={outcome.canProceed ? 'success' : 'danger'} label={outcome.canProceed ? 'Hazır' : 'Bloklu'} />
           <RuleBadge tone={outcome.targetWarehouseLocked ? 'warn' : 'info'} label={outcome.targetWarehouseLocked ? 'Depo sabit' : 'Depo seçilebilir'} />
           <ExpandToggleButton expanded={expanded} onToggle={toggle} />

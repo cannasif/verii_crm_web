@@ -36,6 +36,7 @@ interface ComboboxProps {
   isLoading?: boolean
   loadingText?: string
   onSearchChange?: (search: string) => void
+  searchable?: boolean
 }
 
 export function Combobox({
@@ -51,6 +52,7 @@ export function Combobox({
   isLoading = false,
   loadingText = "Yukleniyor...",
   onSearchChange,
+  searchable = true,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState("")
@@ -98,17 +100,19 @@ export function Combobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[calc(var(--radix-popover-trigger-width))] p-0" align="start">
-        <Command>
-          <CommandInput
-            placeholder={searchPlaceholder}
-            value={searchQuery}
-            onValueChange={handleSearchChange}
-          >
-            <VoiceSearchButton
-              onResult={(text) => handleSearchChange(text)}
-              className="h-7 w-7 mr-1"
-            />
-          </CommandInput>
+        <Command shouldFilter={searchable}>
+          {searchable ? (
+            <CommandInput
+              placeholder={searchPlaceholder}
+              value={searchQuery}
+              onValueChange={handleSearchChange}
+            >
+              <VoiceSearchButton
+                onResult={(text) => handleSearchChange(text)}
+                className="h-7 w-7 mr-1"
+              />
+            </CommandInput>
+          ) : null}
           <CommandList
             className="overflow-y-auto overscroll-contain"
             style={{ maxHeight: DROPDOWN_MAX_HEIGHT_PX }}
