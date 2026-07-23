@@ -31,6 +31,8 @@ export interface NetsisCustomerDispatchLineDto {
   olcuBr?: string | null;
   teslimMiktari: number;
   bakiye: number;
+  ekalan?: string | null;
+  ekalan1?: string | null;
 }
 
 export interface NetsisCustomerDispatchOrderCheckDto {
@@ -82,6 +84,8 @@ export interface NdiTransferCreateLineRequest {
   sourceWarehouse?: string | null;
   targetWarehouse?: string | null;
   vatRate?: number | null;
+  ekalan?: string | null;
+  ekalan1?: string | null;
 }
 
 export interface NdiTransferCreateDocumentRequest {

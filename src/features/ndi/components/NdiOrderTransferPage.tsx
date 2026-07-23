@@ -49,6 +49,8 @@ interface NdiOrderLine {
   unit: string;
   warehouse: string;
   deliveryNote: string;
+  ekalan?: string | null;
+  ekalan1?: string | null;
   status: 'ready' | 'partial' | 'waiting';
 }
 
@@ -68,6 +70,8 @@ interface NdiPreparedLine {
   sourceWarehouse: string;
   targetWarehouse: string;
   targetVat: number | null;
+  ekalan?: string | null;
+  ekalan1?: string | null;
 }
 
 interface NdiPreparedDocument {
@@ -744,6 +748,8 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
     unit: line.olcuBirimi || line.olcuBr || '-',
     warehouse: line.depoKodu == null ? '' : String(line.depoKodu),
     deliveryNote: line.cariKodu || order?.customerCode || '-',
+    ekalan: line.ekalan?.trim() || null,
+    ekalan1: line.ekalan1?.trim() || null,
     status: remainingQuantity <= 0 ? 'waiting' : remainingQuantity < quantity ? 'partial' : 'ready',
   };
 }
@@ -1184,6 +1190,8 @@ export function NdiOrderTransferPage(): ReactElement {
           sourceWarehouse: line.warehouse,
           targetWarehouse: outcome?.targetWarehouseLocked ? outcome.targetWarehouse : line.warehouse,
           targetVat: outcome?.primaryVat ?? null,
+          ekalan: line.ekalan,
+          ekalan1: line.ekalan1,
         };
       });
 
@@ -1286,6 +1294,8 @@ export function NdiOrderTransferPage(): ReactElement {
               sourceWarehouse: line.sourceWarehouse,
               targetWarehouse: line.targetWarehouse,
               vatRate: line.targetVat,
+              ekalan: line.ekalan,
+              ekalan1: line.ekalan1,
             })),
         })),
       });
