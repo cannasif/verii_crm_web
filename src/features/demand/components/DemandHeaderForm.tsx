@@ -84,6 +84,8 @@ import {
   getDefaultSpecialCodeForOfferType,
   resolveSalesTypeCodeById,
 } from '@/lib/sales-document-special-code-defaults';
+import { useSystemSettingsQuery } from '@/features/system-settings/hooks/useSystemSettingsQuery';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 
 interface DemandHeaderFormProps {
   exchangeRates?: DemandExchangeRateFormState[];
@@ -126,6 +128,10 @@ export function DemandHeaderForm({
   const { data: erpRates = [] } = useExchangeRate();
   const user = useAuthStore((state) => state.user);
   const branch = useAuthStore((state) => state.branch);
+  const storedSystemSettings = useSystemSettingsStore((state) => state.settings);
+  const { data: freshSystemSettings } = useSystemSettingsQuery();
+  const specialCodesReadOnly =
+    readOnly || (freshSystemSettings ?? storedSystemSettings).enableDemandSpecialCodeEditing === false;
 
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
   const [customerBalanceDialogOpen, setCustomerBalanceDialogOpen] = useState(false);
@@ -1076,7 +1082,7 @@ export function DemandHeaderForm({
                             isFetchingNextPage={specialCode1Dropdown.isFetchingNextPage}
                             placeholder={t('demand:header.ozelKod1Placeholder')}
                             searchPlaceholder={t('demand:header.specialCodeSearchPlaceholder')}
-                            disabled={readOnly}
+                            disabled={specialCodesReadOnly}
                           />
                         </FormControl>
                       </div>
@@ -1112,7 +1118,7 @@ export function DemandHeaderForm({
                             isFetchingNextPage={specialCode2Dropdown.isFetchingNextPage}
                             placeholder={t('demand:header.ozelKod2Placeholder')}
                             searchPlaceholder={t('demand:header.specialCodeSearchPlaceholder')}
-                            disabled={readOnly || true}
+                            disabled={specialCodesReadOnly}
                           />
                         </FormControl>
                       </div>

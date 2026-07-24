@@ -46,6 +46,9 @@ const DEFAULT_FORM_VALUES: SystemSettingsFormSchema = {
   readonlyDemandVatRate: false,
   readonlyQuotationVatRate: false,
   readonlyOrderVatRate: false,
+  enableDemandSpecialCodeEditing: true,
+  enableQuotationSpecialCodeEditing: true,
+  enableOrderSpecialCodeEditing: true,
   catalogGroupCodeLabel: '',
   catalogCode1Label: '',
   catalogCode2Label: '',
@@ -169,6 +172,9 @@ export function SystemSettingsForm({
       readonlyDemandVatRate: normalizedData.readonlyDemandVatRate,
       readonlyQuotationVatRate: normalizedData.readonlyQuotationVatRate,
       readonlyOrderVatRate: normalizedData.readonlyOrderVatRate,
+      enableDemandSpecialCodeEditing: normalizedData.enableDemandSpecialCodeEditing,
+      enableQuotationSpecialCodeEditing: normalizedData.enableQuotationSpecialCodeEditing,
+      enableOrderSpecialCodeEditing: normalizedData.enableOrderSpecialCodeEditing,
       catalogGroupCodeLabel: normalizedData.catalogGroupCodeLabel ?? '',
       catalogCode1Label: normalizedData.catalogCode1Label ?? '',
       catalogCode2Label: normalizedData.catalogCode2Label ?? '',
@@ -524,6 +530,43 @@ export function SystemSettingsForm({
                       </FormItem>
                     )}
                   />
+
+                  {([
+                    'Demand',
+                    'Quotation',
+                    'Order',
+                  ] as const).map((documentType) => {
+                    const fieldName = `enable${documentType}SpecialCodeEditing` as const;
+                    return (
+                      <FormField
+                        key={fieldName}
+                        control={form.control}
+                        name={fieldName}
+                        render={({ field }) => (
+                          <FormItem className="min-w-0">
+                            <div className="flex min-w-0 items-start gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 sm:p-4 dark:border-white/10 dark:bg-white/[0.03]">
+                              <FormControl>
+                                <Checkbox
+                                  className="mt-0.5 shrink-0"
+                                  checked={field.value}
+                                  onCheckedChange={(checked) => field.onChange(Boolean(checked))}
+                                />
+                              </FormControl>
+                              <div className="min-w-0 flex-1 space-y-1 overflow-hidden">
+                                <FormLabel required={false} className="break-words">
+                                  {t(`systemSettings.Fields.Enable${documentType}SpecialCodeEditing`)}
+                                </FormLabel>
+                                <p className="text-muted-foreground break-words text-sm">
+                                  {t(`systemSettings.Descriptions.Enable${documentType}SpecialCodeEditing`)}
+                                </p>
+                              </div>
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    );
+                  })}
 
                   <FormField
                     control={form.control}

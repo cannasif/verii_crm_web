@@ -85,6 +85,8 @@ import {
   getDefaultSpecialCodeForOfferType,
   resolveSalesTypeCodeById,
 } from '@/lib/sales-document-special-code-defaults';
+import { useSystemSettingsQuery } from '@/features/system-settings/hooks/useSystemSettingsQuery';
+import { useSystemSettingsStore } from '@/stores/system-settings-store';
 
 interface QuotationHeaderFormProps {
   exchangeRates?: QuotationExchangeRateFormState[];
@@ -127,6 +129,10 @@ export function QuotationHeaderForm({
   const { data: erpRates = [] } = useExchangeRate();
   const user = useAuthStore((state) => state.user);
   const branch = useAuthStore((state) => state.branch);
+  const storedSystemSettings = useSystemSettingsStore((state) => state.settings);
+  const { data: freshSystemSettings } = useSystemSettingsQuery();
+  const specialCodesReadOnly =
+    readOnly || (freshSystemSettings ?? storedSystemSettings).enableQuotationSpecialCodeEditing === false;
   
   const [customerSelectDialogOpen, setCustomerSelectDialogOpen] = useState(false);
   const [customerBalanceDialogOpen, setCustomerBalanceDialogOpen] = useState(false);
@@ -1119,7 +1125,7 @@ export function QuotationHeaderForm({
                             isFetchingNextPage={specialCode1Dropdown.isFetchingNextPage}
                             placeholder={t('quotation:header.ozelKod1Placeholder')}
                             searchPlaceholder={t('quotation:header.specialCodeSearchPlaceholder')}
-                            disabled={readOnly}
+                            disabled={specialCodesReadOnly}
                           />
                         </FormControl>
                       </div>
@@ -1155,7 +1161,7 @@ export function QuotationHeaderForm({
                             isFetchingNextPage={specialCode2Dropdown.isFetchingNextPage}
                             placeholder={t('quotation:header.ozelKod2Placeholder')}
                             searchPlaceholder={t('quotation:header.specialCodeSearchPlaceholder')}
-                            disabled={readOnly || true}
+                            disabled={specialCodesReadOnly}
                           />
                         </FormControl>
                       </div>
