@@ -499,8 +499,7 @@ function resolveFixedDispatchSeries(order?: NdiOrder): string {
     return '';
   }
 
-  const series = getBusinessSeries(order);
-  return series === 'DIS' ? 'EIR' : series;
+  return 'EIR';
 }
 
 function resolveWarehouse(order: NdiOrder): { value: string; label: string; locked: boolean; note: string } {
@@ -721,7 +720,7 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
   };
 }
 
-function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, order?: NdiOrder): NdiOrderLine {
+function mapDispatchLine(line: NetsisCustomerDispatchLineDto, indexInFis: number, order?: NdiOrder): NdiOrderLine {
   const remainingQuantity = Number(line.bakiye ?? 0);
   const quantity = Number(line.miktar ?? 0);
   const unitPrice = Number(line.tlFiyat && line.tlFiyat > 0 ? line.tlFiyat : (line.netFiyat ?? 0));
@@ -731,7 +730,7 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
   const exchangeRate = line.dovizKuru ?? null;
 
   return {
-    id: `${line.fisNo}::${line.stokKodu}::${index}`,
+    id: `${line.fisNo}::${line.stokKodu}::${indexInFis}`,
     orderNo: line.fisNo,
     customer: order?.customer || line.cariKodu || '-',
     route: order?.route || '-',
@@ -754,6 +753,19 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, index: number, ord
   };
 }
 
+function mapDispatchLines(
+  lines: NetsisCustomerDispatchLineDto[],
+  ordersById: Map<string, NdiOrder>
+): NdiOrderLine[] {
+  const indexByFisNo = new Map<string, number>();
+
+  return lines.map((line) => {
+    const indexInFis = indexByFisNo.get(line.fisNo) ?? 0;
+    indexByFisNo.set(line.fisNo, indexInFis + 1);
+    return mapDispatchLine(line, indexInFis, ordersById.get(line.fisNo));
+  });
+}
+
 export function NdiOrderTransferPage(): ReactElement {
   const [activeTab, setActiveTab] = useState<'pending' | 'transferred'>('pending');
   const [search, setSearch] = useState('');
@@ -773,6 +785,7 @@ export function NdiOrderTransferPage(): ReactElement {
   const [transferResultDialog, setTransferResultDialog] = useState<NdiTransferCreateResponseDto | null>(null);
   const [revealedGuideRuleId, setRevealedGuideRuleId] = useState<NdiTransferRule['id'] | null>(null);
   const preparedTransferRef = useRef<HTMLDivElement | null>(null);
+  const previousLineIdsRef = useRef<Set<string>>(new Set());
 
   const dispatchesQuery = useQuery({
     queryKey: ['ndi', 'customer-dispatches'],
@@ -843,30 +856,45 @@ export function NdiOrderTransferPage(): ReactElement {
   });
 
   const selectedOrderLines = useMemo(
-    () => (linesQuery.data ?? []).map((line, index) => mapDispatchLine(line, index, ordersById.get(line.fisNo))),
+    () => mapDispatchLines(linesQuery.data ?? [], ordersById),
     [linesQuery.data, ordersById]
   );
 
   const lineIdsKey = useMemo(() => selectedOrderLines.map((line) => line.id).join('|'), [selectedOrderLines]);
 
   useEffect(() => {
-    if (!lineIdsKey) {
+    if (selectedIrsNoList.length === 0) {
+      previousLineIdsRef.current = new Set();
       setSelectedLineIds((current) => (current.size === 0 ? current : new Set()));
       return;
     }
 
-    const currentLineIds = selectedOrderLines.map((line) => line.id);
-    setSelectedLineIds((current) => {
-      const retained = currentLineIds.filter((lineId) => current.has(lineId));
-      const nextIds = retained.length > 0 ? retained : currentLineIds;
+    if (!linesQuery.data) {
+      return;
+    }
 
-      if (nextIds.length === current.size && nextIds.every((lineId) => current.has(lineId))) {
+    const currentLineIds = selectedOrderLines.map((line) => line.id);
+    const previousLineIds = previousLineIdsRef.current;
+
+    setSelectedLineIds((current) => {
+      const next = new Set<string>();
+
+      currentLineIds.forEach((lineId) => {
+        const isNewlyAppeared = !previousLineIds.has(lineId);
+        if (isNewlyAppeared || current.has(lineId)) {
+          next.add(lineId);
+        }
+      });
+
+      if (next.size === current.size && [...next].every((lineId) => current.has(lineId))) {
         return current;
       }
 
-      return new Set(nextIds);
+      return next;
     });
-  }, [lineIdsKey, selectedOrderLines]);
+
+    previousLineIdsRef.current = new Set(currentLineIds);
+  }, [lineIdsKey, linesQuery.data, selectedIrsNoList, selectedOrderLines]);
 
   const lineCountByOrderNo = useMemo(() => {
     const counts = new Map<string, number>();
