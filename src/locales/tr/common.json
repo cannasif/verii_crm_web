@@ -73,6 +73,15 @@
     "remove": "Kaldır",
     "start": "Başla",
     "actions": "İşlemler",
+    "dataGrid": {
+      "cellMenu": "Hücre ve satır menüsü",
+      "selectedCell": "Seçili hücre",
+      "emptyCell": "Bu hücrede kopyalanabilir bir değer yok.",
+      "copyCell": "Hücre değerini kopyala",
+      "cellCopied": "Hücre değeri kopyalandı.",
+      "cellCopyFailed": "Hücre değeri kopyalanamadı.",
+      "rowActions": "Satır işlemleri"
+    },
     "processing": "İşleniyor...",
     "selectDate": "Tarih seçin",
     "UnexpectedError": "Beklenmeyen bir hata oluştu",

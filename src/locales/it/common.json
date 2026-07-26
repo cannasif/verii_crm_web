@@ -73,6 +73,15 @@
     "remove": "Rimuovi",
     "start": "Inizia",
     "actions": "Azioni",
+    "dataGrid": {
+      "cellMenu": "Menu cella e riga",
+      "selectedCell": "Cella selezionata",
+      "emptyCell": "Questa cella non contiene un valore copiabile.",
+      "copyCell": "Copia valore della cella",
+      "cellCopied": "Valore della cella copiato.",
+      "cellCopyFailed": "Impossibile copiare il valore della cella.",
+      "rowActions": "Azioni riga"
+    },
     "processing": "Elaborazione...",
     "selectDate": "Seleziona data",
     "UnexpectedError": "An unexpected error occurred",

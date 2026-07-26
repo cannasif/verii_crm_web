@@ -1,14 +1,23 @@
 import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, GripVertical, Loader2 } from 'lucide-react';
+import { ChevronDown, Copy, GripVertical, Loader2 } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { copyTextToClipboard } from '@/lib/clipboard';
 import { cn } from '@/lib/utils';
 import { DataTableActionBar, type DataTableActionBarProps } from './DataTableActionBar';
 
@@ -22,6 +31,7 @@ export interface DataTableGridColumn<TKey extends string> {
   headClassName?: string;
   cellClassName?: string;
   defaultWidth?: number;
+  contextCopyDisabled?: boolean;
 }
 
 interface DataTableGridProps<TRow, TKey extends string> {
@@ -45,6 +55,10 @@ interface DataTableGridProps<TRow, TKey extends string> {
   showActionsColumn?: boolean;
   actionsHeaderLabel?: string;
   renderActionsCell?: (row: TRow) => ReactNode;
+  renderContextActions?: (row: TRow) => ReactNode;
+  getCellContextValue?: (row: TRow, columnKey: TKey) => unknown;
+  isCellContextCopyDisabled?: (row: TRow, columnKey: TKey) => boolean;
+  enableCellContextMenu?: boolean;
   actionsCellClassName?: string;
   iconOnlyActions?: boolean;
   rowClassName?: string | ((row: TRow) => string | undefined);
@@ -72,6 +86,27 @@ interface DataTableGridProps<TRow, TKey extends string> {
 const MIN_COL_WIDTH = 60;
 const DEFAULT_COL_WIDTH = 150;
 const ACTIONS_COL_WIDTH = 84;
+
+interface DataTableCellContext<TRow, TKey extends string> {
+  row: TRow;
+  rowId: string | number;
+  columnKey: TKey | null;
+  columnLabel: string;
+  value: string | null;
+  copyDisabled: boolean;
+}
+
+function toContextText(value: unknown): string | null {
+  if (value == null) return null;
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean' || typeof value === 'bigint') {
+    return String(value);
+  }
+  return null;
+}
 
 function isInteractiveTarget(target: EventTarget | null): boolean {
   if (!(target instanceof Element)) return false;
@@ -239,6 +274,10 @@ export function DataTableGrid<TRow, TKey extends string>({
   showActionsColumn = false,
   actionsHeaderLabel = '',
   renderActionsCell,
+  renderContextActions,
+  getCellContextValue,
+  isCellContextCopyDisabled,
+  enableCellContextMenu = true,
   actionsCellClassName = 'crm-text-end align-middle',
   iconOnlyActions = true,
   rowClassName,
@@ -361,6 +400,8 @@ export function DataTableGrid<TRow, TKey extends string>({
 
 
   const [isDragging, setIsDragging] = useState(false);
+  const [cellContext, setCellContext] = useState<DataTableCellContext<TRow, TKey> | null>(null);
+  const [contextMenuVersion, setContextMenuVersion] = useState(0);
   const lastRowClickRef = useRef<{ key: string | number; timestamp: number } | null>(null);
   const suppressNativeDoubleClickUntilRef = useRef(0);
   const tableScrollRef = useRef<HTMLDivElement | null>(null);
@@ -434,6 +475,40 @@ export function DataTableGrid<TRow, TKey extends string>({
     if (!onRowDoubleClick) return;
     if (Date.now() <= suppressNativeDoubleClickUntilRef.current) return;
     onRowDoubleClick(row);
+  };
+
+  const prepareCellContext = (
+    row: TRow,
+    columnKey: TKey | null,
+    columnLabel: string,
+    cell: HTMLTableCellElement,
+    copyDisabled: boolean
+  ): void => {
+    if (!enableCellContextMenu) return;
+
+    const explicitValue = columnKey == null ? undefined : getCellContextValue?.(row, columnKey);
+    const visibleValue = toContextText(cell.innerText);
+    const rawValue = columnKey == null
+      ? undefined
+      : (row as Record<string, unknown>)[columnKey];
+
+    setCellContext({
+      row,
+      rowId: rowKey(row),
+      columnKey,
+      columnLabel,
+      value: toContextText(explicitValue) ?? visibleValue ?? toContextText(rawValue),
+      copyDisabled,
+    });
+  };
+
+  const copyCellValue = async (value: string): Promise<void> => {
+    try {
+      await copyTextToClipboard(value);
+      toast.success(t('dataGrid.cellCopied'));
+    } catch {
+      toast.error(t('dataGrid.cellCopyFailed'));
+    }
   };
 
   const sensors = useSensors(
@@ -592,57 +667,154 @@ export function DataTableGrid<TRow, TKey extends string>({
               {!isLoading &&
                 !isError &&
                 rows.map((row) => {
+                  const currentRowKey = rowKey(row);
                   const customRowClass =
                     typeof rowClassName === 'function' ? rowClassName(row) : rowClassName;
+                  const contextActions = renderContextActions
+                    ?? (showActionsColumn ? renderActionsCell : undefined);
                   return (
-                    <TableRow
-                      key={rowKey(row)}
-                      className={customRowClass}
-                      onClick={
-                        onRowClick || onRowDoubleClick
-                          ? (e) => handleRowClick(row, e)
-                          : undefined
-                      }
-                      onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
+                    <ContextMenu
+                      key={`${currentRowKey}:${contextMenuVersion}`}
+                      onOpenChange={(open) => {
+                        if (!open && cellContext?.rowId === currentRowKey) {
+                          setCellContext(null);
+                        }
+                      }}
                     >
-                      {localVisibleColumnKeys.map((key) => {
-                        const column = columns.find((item) => item.key === key);
-                        const colWidth = columnWidths[key];
-                        return (
-                          <TableCell
-                            key={`${rowKey(row)}-${key}`}
-                            className={cn(column?.cellClassName, colWidth !== undefined && 'max-w-0')}
-                            style={
-                              colWidth !== undefined
-                                ? { width: `${colWidth}px`, maxWidth: `${colWidth}px`, overflow: 'hidden' }
-                                : undefined
-                            }
-                          >
-                            <div className={cn(
-                              'min-w-0',
-                              colWidth !== undefined && 'overflow-hidden truncate [&>div]:min-w-0 [&>div]:overflow-hidden [&_span]:truncate [&_span]:min-w-0'
-                            )}>
-                              {renderCell(row, key, colWidth)}
-                            </div>
-                          </TableCell>
-                        );
-                      })}
-                      {showActionsColumn && (
-                        <TableCell
-                          className={cn(
-                            actionsCellClassName,
-                            iconOnlyActions &&
-                            '[&_button]:h-8 [&_button]:w-8 [&_button]:p-0 [&_button]:min-w-8 [&_button]:text-[0px] [&_button]:leading-none [&_button_svg]:h-4 [&_button_svg]:w-4 [&_button_svg]:mx-auto [&_button_svg]:shrink-0 [&_button_span]:hidden'
-                          )}
-                          onClick={(event) => event.stopPropagation()}
-                          onDoubleClick={(event) => event.stopPropagation()}
-                          data-no-drag-scroll="true"
-                          data-skip-row-double-click="true"
+                      <ContextMenuTrigger asChild disabled={!enableCellContextMenu}>
+                        <TableRow
+                          className={customRowClass}
+                          onClick={
+                            onRowClick || onRowDoubleClick
+                              ? (e) => handleRowClick(row, e)
+                              : undefined
+                          }
+                          onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
                         >
-                          {renderActionsCell?.(row)}
-                        </TableCell>
+                          {localVisibleColumnKeys.map((key) => {
+                            const column = columns.find((item) => item.key === key);
+                            const colWidth = columnWidths[key];
+                            const copyDisabled = Boolean(
+                              column?.contextCopyDisabled || isCellContextCopyDisabled?.(row, key)
+                            );
+                            return (
+                              <TableCell
+                                key={`${currentRowKey}-${key}`}
+                                className={cn(column?.cellClassName, colWidth !== undefined && 'max-w-0')}
+                                style={
+                                  colWidth !== undefined
+                                    ? { width: `${colWidth}px`, maxWidth: `${colWidth}px`, overflow: 'hidden' }
+                                    : undefined
+                                }
+                                onContextMenu={(event) => {
+                                  prepareCellContext(
+                                    row,
+                                    key,
+                                    column?.label ?? key,
+                                    event.currentTarget,
+                                    copyDisabled
+                                  );
+                                }}
+                                data-grid-context-cell={key}
+                              >
+                                <div className={cn(
+                                  'min-w-0',
+                                  colWidth !== undefined && 'overflow-hidden truncate [&>div]:min-w-0 [&>div]:overflow-hidden [&_span]:truncate [&_span]:min-w-0'
+                                )}>
+                                  {renderCell(row, key, colWidth)}
+                                </div>
+                              </TableCell>
+                            );
+                          })}
+                          {showActionsColumn && (
+                            <TableCell
+                              className={cn(
+                                actionsCellClassName,
+                                iconOnlyActions &&
+                                '[&_button]:h-8 [&_button]:w-8 [&_button]:p-0 [&_button]:min-w-8 [&_button]:text-[0px] [&_button]:leading-none [&_button_svg]:h-4 [&_button_svg]:w-4 [&_button_svg]:mx-auto [&_button_svg]:shrink-0 [&_button_span]:hidden'
+                              )}
+                              onClick={(event) => event.stopPropagation()}
+                              onDoubleClick={(event) => event.stopPropagation()}
+                              onContextMenu={(event) => {
+                                prepareCellContext(
+                                  row,
+                                  null,
+                                  resolvedActionsHeaderLabel || t('dataGrid.rowActions'),
+                                  event.currentTarget,
+                                  true
+                                );
+                              }}
+                              data-grid-context-cell="actions"
+                              data-no-drag-scroll="true"
+                              data-skip-row-double-click="true"
+                            >
+                              {renderActionsCell?.(row)}
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      </ContextMenuTrigger>
+                      {cellContext?.rowId === currentRowKey && (
+                        <ContextMenuContent
+                          className="z-[4000] w-80 max-w-[calc(100vw-1rem)] p-2"
+                          data-grid-context-menu="true"
+                        >
+                          <ContextMenuLabel className="rounded-md bg-muted/70 px-3 py-2.5 normal-case">
+                            <span className="block text-[0.65rem] font-semibold uppercase text-muted-foreground">
+                              {t('dataGrid.selectedCell')}
+                            </span>
+                            <strong className="mt-1 block truncate text-sm text-foreground">
+                              {cellContext.columnLabel}
+                            </strong>
+                            <span
+                              className="mt-1 block max-h-24 overflow-auto whitespace-pre-wrap break-all font-mono text-xs font-normal text-muted-foreground"
+                              data-grid-context-value="true"
+                            >
+                              {cellContext.value ?? t('dataGrid.emptyCell')}
+                            </span>
+                          </ContextMenuLabel>
+                          {cellContext.value != null && !cellContext.copyDisabled && (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              className="mt-1 flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-start text-sm outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+                              onClick={() => {
+                                const value = cellContext.value;
+                                if (!value) return;
+                                setCellContext(null);
+                                setContextMenuVersion((current) => current + 1);
+                                void copyCellValue(value);
+                              }}
+                              data-grid-context-copy="true"
+                            >
+                              <Copy className="size-4 shrink-0 text-[var(--crm-brand-text)]" />
+                              {t('dataGrid.copyCell')}
+                            </button>
+                          )}
+                          {contextActions && (
+                            <>
+                              <ContextMenuSeparator />
+                              <ContextMenuLabel className="px-2 pb-1 pt-1">
+                                {t('dataGrid.rowActions')}
+                              </ContextMenuLabel>
+                              <div
+                                className="flex flex-wrap items-center gap-1 px-1 pb-1 [&_button]:min-h-9"
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  setCellContext(null);
+                                  setContextMenuVersion((current) => current + 1);
+                                }}
+                                onDoubleClick={(event) => event.stopPropagation()}
+                                data-grid-context-actions="true"
+                                data-no-drag-scroll="true"
+                                data-skip-row-double-click="true"
+                              >
+                                {contextActions(row)}
+                              </div>
+                            </>
+                          )}
+                        </ContextMenuContent>
                       )}
-                    </TableRow>
+                    </ContextMenu>
                   );
                 })}
             </TableBody>

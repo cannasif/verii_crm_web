@@ -73,6 +73,15 @@
     "remove": "Kaldır",
     "start": "Start",
     "actions": "Actions",
+    "dataGrid": {
+      "cellMenu": "Cell and row menu",
+      "selectedCell": "Selected cell",
+      "emptyCell": "This cell does not contain a copyable value.",
+      "copyCell": "Copy cell value",
+      "cellCopied": "Cell value copied.",
+      "cellCopyFailed": "Cell value could not be copied.",
+      "rowActions": "Row actions"
+    },
     "processing": "Processing...",
     "selectDate": "Select date",
     "UnexpectedError": "An unexpected error occurred",
