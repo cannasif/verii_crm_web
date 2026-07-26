@@ -30,14 +30,35 @@ export default defineConfig({
       },
       output: {
         manualChunks(id) {
-          if (!id.includes("node_modules")) return
-          if (id.includes("powerbi-client")) return "vendor-powerbi"
-          if (id.includes("@tiptap")) return "vendor-tiptap"
-          if (id.includes("xlsx")) return "vendor-xlsx"
-          if (id.includes("pptxgenjs") || id.includes("jspdf")) return "vendor-doc-export"
-          if (id.includes("three") || id.includes("@react-three")) return "vendor-three"
-          if (id.includes("recharts")) return "vendor-recharts"
-          if (id.includes("html2canvas")) return "vendor-html2canvas"
+          const moduleId = id.replaceAll("\\", "/")
+          if (!moduleId.includes("/node_modules/")) return
+          if (moduleId.includes("/powerbi-client/")) return "vendor-powerbi"
+          if (moduleId.includes("/@tiptap/")) return "vendor-tiptap"
+          if (moduleId.includes("/xlsx/")) return "vendor-xlsx"
+          if (moduleId.includes("/pptxgenjs/") || moduleId.includes("/jspdf")) return "vendor-doc-export"
+          if (moduleId.includes("/three/") || moduleId.includes("/@react-three/")) return "vendor-three"
+          if (moduleId.includes("/recharts/")) return "vendor-recharts"
+          if (moduleId.includes("/html2canvas/")) return "vendor-html2canvas"
+
+          if (
+            moduleId.includes("/react/") ||
+            moduleId.includes("/react-dom/") ||
+            moduleId.includes("/scheduler/")
+          ) {
+            return "vendor-react-core"
+          }
+
+          if (moduleId.includes("/react-router/") || moduleId.includes("/react-router-dom/")) {
+            return "vendor-router"
+          }
+
+          if (
+            moduleId.includes("/@tanstack/") ||
+            moduleId.includes("/axios/") ||
+            moduleId.includes("/@microsoft/signalr/")
+          ) {
+            return "vendor-data-runtime"
+          }
         },
       },
     },
