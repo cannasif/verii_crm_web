@@ -84,7 +84,8 @@ interface NdiPreparedDocument {
   sourceType: string;
   hasShipment: boolean;
   shippingCustomerCode?: string | null;
-  specialCode?: 'K' | 'N';
+  specialCode1?: string | null;
+  specialCode2?: string | null;
   followUpNote?: string;
   customerCode: string;
   customerName: string;
@@ -128,7 +129,8 @@ interface NdiOrder {
   hasShipment: boolean;
   shippingCustomerCode?: string | null;
   shippingCustomerName?: string | null;
-  specialCode?: 'K' | 'N';
+  specialCode1?: string | null;
+  specialCode2?: string | null;
   description: string;
   tip: string;
   exportType: string;
@@ -441,8 +443,8 @@ function resolvePrimaryAction(order: NdiOrder): NdiBatchAction {
     return 'FATURALASTIR';
   }
 
-  if (series === 'VIN' && !order.hasShipment && order.specialCode !== 'K') {
-    return 'FATURALASTIR';
+  if (series === 'VIN') {
+    return 'IRSALIYELISTIR';
   }
 
   return 'IRSALIYELISTIR';
@@ -520,6 +522,7 @@ function resolveWarehouse(order: NdiOrder): { value: string; label: string; lock
 function resolveVat(order: NdiOrder, quantityMode: NdiQuantityMode): { primaryVat: number | null; sirket24Vat: number | null; note: string; block?: string } {
   const series = getBusinessSeries(order);
   const description = normalizeText(order.description);
+  const specialCode1 = order.specialCode1?.trim().toLocaleUpperCase('tr-TR');
 
   if (series === 'DIS' || series === 'SIP') {
     return { primaryVat: 0, sirket24Vat: 0, note: 'Dış ticaret ve yalnız Şirket24 senaryosunda KDV %0.' };
@@ -533,10 +536,10 @@ function resolveVat(order: NdiOrder, quantityMode: NdiQuantityMode): { primaryVa
   }
 
   if (series === 'VIN') {
-    if (order.specialCode === 'K') {
+    if (specialCode1 === 'K') {
       return { primaryVat: 20, sirket24Vat: 0, note: 'Özel Kod K: WIN24 KDV %20, SIRKET24 KDV %0.' };
     }
-    if (order.specialCode === 'N') {
+    if (specialCode1 === 'N') {
       return { primaryVat: 20, sirket24Vat: 20, note: 'Özel Kod N: WIN24 ve SIRKET24 KDV %20.' };
     }
     return { primaryVat: 20, sirket24Vat: null, note: 'SIRKET24 KDV’si için Özel Kod 1 gerekli.', block: 'WINDOFORM için Özel Kod 1 K veya N olmalı.' };
@@ -644,10 +647,10 @@ function buildRuleOutcome(order: NdiOrder, lines: NdiOrderLine[], quantityMode: 
   if (series === 'NUR' && quantityMode === 'auto' && !order.description.trim()) {
     blocks.push('NURAY akışında 1/4 veya TAM ayrımı için irsaliye açıklaması boş olmamalı.');
   }
-  if (series === 'VIN' && order.specialCode === 'K' && action !== 'IRSALIYELISTIR') {
+  if (series === 'VIN' && order.specialCode1?.trim().toLocaleUpperCase('tr-TR') === 'K' && action !== 'IRSALIYELISTIR') {
     blocks.push('WINDOFORM Özel Kod K ihraç kayıtlı işlemde irsaliye zorunludur; fatura akışı tek başına hazırlanmamalıdır.');
   }
-  if (series === 'VIN' && order.specialCode === 'K') {
+  if (series === 'VIN' && order.specialCode1?.trim().toLocaleUpperCase('tr-TR') === 'K') {
     userNotes.push('İhraç kayıtlı işlem: WIN24 irsaliyesi zorunlu; WIN24 KDV %20, SIRKET24 KDV %0.');
   }
   if (series === 'NUR' && order.description.trim()) {
@@ -713,7 +716,9 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
     hasShipment: hasSeparateShippingCustomer(dispatch.cariKodu, dispatch.teslimCariKodu),
     shippingCustomerCode: dispatch.teslimCariKodu?.trim() || null,
     shippingCustomerName: dispatch.teslimCariIsim?.trim() || null,
-    specialCode: operationProfile === 'disTicaret' || (exportType && exportType !== '-') ? 'K' : 'N',
+    specialCode1: dispatch.ozelKod1?.trim()
+      || (operationProfile === 'disTicaret' || (exportType && exportType !== '-') ? 'K' : 'N'),
+    specialCode2: dispatch.ozelKod2?.trim() || null,
     description: dispatch.aciklama || '',
     tip: dispatch.tipi || '-',
     exportType,
@@ -1238,7 +1243,8 @@ export function NdiOrderTransferPage(): ReactElement {
           sourceType: order.tip,
           hasShipment: order.hasShipment,
           shippingCustomerCode: order.shippingCustomerCode,
-          specialCode: order.specialCode,
+          specialCode1: order.specialCode1,
+          specialCode2: order.specialCode2,
           followUpNote: undefined,
           customerCode: order.customerCode,
           customerName: order.customer,
@@ -1301,7 +1307,8 @@ export function NdiOrderTransferPage(): ReactElement {
           sourceType: document.sourceType,
           hasShipment: document.hasShipment,
           shippingCustomerCode: document.shippingCustomerCode,
-          specialCode: document.specialCode,
+          specialCode1: document.specialCode1,
+          specialCode2: document.specialCode2,
           customerCode: document.customerCode,
           customerName: document.customerName,
           description: document.description,
@@ -2762,7 +2769,7 @@ function SeriesGuide({
 }): ReactElement {
   const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
     { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Sevk var -> NUR irsaliye; sevk yok -> NRY/NEA fatura', 'NURAY24 KDV -> %20', '1/4 -> miktar 1/4 + SIRKET24 KDV %5', 'TAM -> miktar tam + SIRKET24 KDV %20', 'Hedef başarılı olmadan SIRKET24 başlamaz'] },
-    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['K -> her durumda VIN irsaliye', 'N + sevk -> VIN irsaliye', 'N + sevksiz -> VDF/EAR fatura', 'WIN24 KDV -> %20', 'SIRKET24 KDV -> K %0 / N %20'] },
+    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kaynak irsaliye -> WIN24 irsaliye', 'Özel Kod 1 ve Özel Kod 2 hedef belgeye aktarılır', 'WIN24 KDV -> %20', 'SIRKET24 KDV -> K %0 / N %20', 'Açıklama 1-4 alanları aktarılmaz'] },
     { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (EIR)', items: ['Sevk var -> EIR irsaliye', 'Sevk yok -> EIR doğrudan fatura', 'Ardından SIRKET24 faturası -> KDV %0', 'Depo boşsa -> 100', 'Belge tarihindeki kur alınır'] },
     { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Yalnız doğrudan fatura', 'Seri -> SIP / belge no -> SIP2026', 'KDV -> %0', 'İrsaliye ve resmi e-belge yok'] },
   ];

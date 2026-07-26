@@ -13,6 +13,8 @@ export interface NetsisCustomerDispatchDto {
   plasiyerAciklama?: string | null;
   teslimCariKodu?: string | null;
   teslimCariIsim?: string | null;
+  ozelKod1?: string | null;
+  ozelKod2?: string | null;
 }
 
 export interface NetsisCustomerDispatchLineDto {
@@ -98,6 +100,8 @@ export interface NdiTransferCreateDocumentRequest {
   sourceType?: string | null;
   hasShipment: boolean;
   shippingCustomerCode?: string | null;
+  specialCode1?: string | null;
+  specialCode2?: string | null;
   specialCode?: string | null;
   customerCode: string;
   customerName?: string | null;
