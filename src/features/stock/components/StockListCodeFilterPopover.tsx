@@ -71,6 +71,7 @@ export function StockListCodeFilterPopover({
         search: deferredOptionSearch,
         pageSize: 150,
       }),
+    enabled: open,
     staleTime: 300_000,
     gcTime: 600_000,
   });
