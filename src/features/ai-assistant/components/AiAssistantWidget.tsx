@@ -110,16 +110,16 @@ const aiAssistantTextFallbacks: Record<string, string> = {
   askLastErrorQuestion: 'Son hatayı açıklar mısın?',
   answerTitle: 'AI Yanıtı',
   sourceTitle: 'Kaynak',
-  actionItemsTitle: 'Önerilen kontroller',
+  actionItemsTitle: 'Önerilen aksiyonlar',
   openAction: 'Aç',
   copyAnswer: 'Yanıtı kopyala',
   copied: 'Kopyalandı',
   lastErrorTitle: 'Son hata yakalandı',
   askLastError: 'Bu hatayı açıkla',
   eyebrow: 'CRM AI Asistan',
-  chatDescription: 'Müşteri önceliği, satış kayıtları, onaylar ve ERP akışını sorabilirsiniz.',
-  inputPlaceholder: 'Örn. Bu ay kaç teklif oluşturdum?',
-  chatHint: 'Müşteri aksiyonları, performans, onay, ERP aktarımı ve hata açıklaması sorabilirsiniz.',
+  chatDescription: 'Satış özeti, müşteri önceliği, toplantı hazırlığı, onaylar ve ERP akışını sorabilirsiniz.',
+  inputPlaceholder: 'Örn. Günlük satış özetimi hazırla',
+  chatHint: 'Müşteri aksiyonları, toplantı hazırlığı, onay, ERP ve teklif takip taslağı sorabilirsiniz.',
   attachImage: 'Görsel ekle',
   removeImage: 'Görseli kaldır',
   imageTooLarge: 'Görsel en fazla {{size}} MB olabilir.',
@@ -169,10 +169,10 @@ const aiAssistantTextFallbacks: Record<string, string> = {
 };
 
 const defaultSuggestions = [
+  'Günlük satış özetimi hazırla.',
+  'Bekleyen onaylarımı göster.',
   'Bu ay kaç teklif oluşturdum?',
-  'Onaylanan siparişlerimin oranı nedir?',
-  "ERP'ye aktarılan satış kayıtlarım kaç adet?",
-  'Bugünkü aktivitelerimi özetle.',
+  'Bu hata ne anlama geliyor?',
 ];
 
 function waitForMinimumThinkingDuration(): Promise<void> {
