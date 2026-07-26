@@ -441,7 +441,7 @@ function CohortRetentionPanel({
   customerCode?: string | null;
 }): ReactElement {
   const { t } = useTranslation('customer360');
-  const tc = (key: string, opts?: Record<string, unknown>) => t(key, opts);
+  const tc = useCallback((key: string, opts?: Record<string, unknown>) => t(key, opts), [t]);
   const [isExporting, setIsExporting] = useState(false);
   const first = rows?.[0];
   const exportColumns = useMemo(() => buildCohortExportColumns(tc), [tc]);

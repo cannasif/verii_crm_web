@@ -117,9 +117,9 @@ const aiAssistantTextFallbacks: Record<string, string> = {
   lastErrorTitle: 'Son hata yakalandı',
   askLastError: 'Bu hatayı açıkla',
   eyebrow: 'CRM AI Asistan',
-  chatDescription: 'Talep, teklif, sipariş, aktivite ve ERP özetlerinizi sorabilirsiniz.',
+  chatDescription: 'Müşteri önceliği, satış kayıtları, onaylar ve ERP akışını sorabilirsiniz.',
   inputPlaceholder: 'Örn. Bu ay kaç teklif oluşturdum?',
-  chatHint: 'Performans, adet, oran, ERP aktarımı ve hata açıklaması sorabilirsiniz.',
+  chatHint: 'Müşteri aksiyonları, performans, onay, ERP aktarımı ve hata açıklaması sorabilirsiniz.',
   attachImage: 'Görsel ekle',
   removeImage: 'Görseli kaldır',
   imageTooLarge: 'Görsel en fazla {{size}} MB olabilir.',
@@ -1232,14 +1232,14 @@ export function AiAssistantWidget(): ReactElement | null {
     clearSelectedAttachment();
   };
 
-  const closeVoiceSession = (): void => {
+  const closeVoiceSession = useCallback((): void => {
     stopListening();
     stopSpeaking();
     setIsVoiceSessionOpen(false);
     setVoiceOutputEnabled(false);
     setAwaitingVoiceContinue(false);
     setVoiceStatusMessage(null);
-  };
+  }, [stopListening, stopSpeaking]);
 
   const openVoiceSession = (): void => {
     setIsVoiceSessionOpen(true);
@@ -1379,7 +1379,7 @@ export function AiAssistantWidget(): ReactElement | null {
     setIsDockDialogOpen(true);
   };
 
-  const closeWidget = (): void => {
+  const closeWidget = useCallback((): void => {
     closeVoiceSession();
     const widgetElement = widgetContainerRef.current;
     const panelSize = readWidgetPanelSize(widgetElement);
@@ -1409,7 +1409,7 @@ export function AiAssistantWidget(): ReactElement | null {
     setIsExpanded(false);
     setIsActionsMenuOpen(false);
     setIsOpen(false);
-  };
+  }, [closeVoiceSession, widgetPosition]);
 
   useEffect(() => {
     if (!isOpen || isDragging || isDockDialogOpen) {
@@ -1439,7 +1439,7 @@ export function AiAssistantWidget(): ReactElement | null {
 
     document.addEventListener('pointerdown', handlePointerDown);
     return () => document.removeEventListener('pointerdown', handlePointerDown);
-  }, [isOpen, isDragging, isDockDialogOpen]);
+  }, [closeWidget, isOpen, isDragging, isDockDialogOpen]);
 
   const copyAssistantMessage = async (message: AiAssistantChatMessage): Promise<void> => {
     await copyTextToClipboard(message.content);

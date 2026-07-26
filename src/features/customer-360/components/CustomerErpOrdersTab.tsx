@@ -148,7 +148,10 @@ function Pager({
 
 export function CustomerErpOrdersTab({ customerId, customerCode }: CustomerErpOrdersTabProps): ReactElement | null {
   const { t, i18n } = useTranslation(['customer360', 'order', 'common']);
-  const tc = (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts });
+  const tc = useCallback(
+    (key: string, opts?: Record<string, unknown>) => t(key, { ns: 'customer360', ...opts }),
+    [t]
+  );
   const { data: permissions } = useMyPermissionsQuery();
   const canViewErpOrders = hasPermission(permissions, 'sales.erp-orders.view');
 
