@@ -42,6 +42,7 @@ import {
   useSalesmenOverviewQuery,
   useSalesmenAnalyticsSummaryQuery,
   useSalesmenAnalyticsChartsQuery,
+  useSalesmenPerformanceQuery,
   useSalesmenCohortQuery,
   useSalesmenErpMovementsQuery,
   useExecuteSalesmenActionMutation,
@@ -50,6 +51,7 @@ import {
 import { SalesmenCurrencySummaryCards } from './SalesmenCurrencySummaryCards';
 import { SalesmenAmountComparisonByCurrencyTable } from './SalesmenAmountComparisonByCurrencyTable';
 import { SalesmenErpMovementsTabContent } from './SalesmenErpMovementsTabContent';
+import { SalesmenPerformanceDashboard } from './SalesmenPerformanceDashboard';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import type {
   CohortRetentionDto,
@@ -649,6 +651,17 @@ export function Salesmen360Page(): ReactElement {
   const currencyParam = selectedCurrency === 'ALL' ? undefined : selectedCurrency;
   const periodParams = useMemo(() => ({ period: selectedPeriod }), [selectedPeriod]);
   const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam, periodParams, isAllSalesmen || userId > 0);
+  const {
+    data: performance,
+    isLoading: isPerformanceLoading,
+    isError: isPerformanceError,
+    refetch: refetchPerformance,
+  } = useSalesmenPerformanceQuery(
+    userId,
+    currencyParam,
+    periodParams,
+    activeTab === 'overview' && (isAllSalesmen || userId > 0)
+  );
   const showErpMovementsTab = !isAllSalesmen && userId > 0;
   const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } = useSalesmenAnalyticsSummaryQuery(userId, currencyParam, periodParams, activeTab === 'analytics');
   const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useSalesmenAnalyticsChartsQuery(userId, 12, currencyParam, periodParams, activeTab === 'analytics');
@@ -1014,6 +1027,16 @@ export function Salesmen360Page(): ReactElement {
           </div>
 
           <TabsContent value="overview" className="space-y-6 outline-none">
+            <SalesmenPerformanceDashboard
+              data={performance}
+              isLoading={isPerformanceLoading}
+              isError={isPerformanceError}
+              onRetry={() => {
+                void refetchPerformance();
+              }}
+              locale={i18n.resolvedLanguage ?? i18n.language}
+            />
+
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
               <Card
                 role="button"

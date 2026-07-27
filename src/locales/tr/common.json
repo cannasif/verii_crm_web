@@ -1738,6 +1738,160 @@
       "analytics": "Analitik",
       "erpMovements": "ERP Hareket"
     },
+    "performance": {
+      "title": "Satış Performans Merkezi",
+      "personalDescription": "Seçili dönemdeki satış akışı, aktivite disiplini ve cari kazanımı.",
+      "teamDescription": "{{count}} görünür satış temsilcisinin ekip özeti ve kişi bazlı karşılaştırması.",
+      "error": "Satış performansı verileri yüklenemedi.",
+      "count": "Adet",
+      "orderStatusTitle": "Sipariş durum dağılımı",
+      "trendTitle": "Dönemsel performans eğilimi",
+      "activityTypesTitle": "Aktivite türleri ve tamamlanma",
+      "activityTotal": "Toplam",
+      "activityCompleted": "Tamamlanan",
+      "teamComparisonTitle": "Satışçı karşılaştırması",
+      "leaderboardTitle": "Kişi bazlı performans tablosu",
+      "salesman": "Satış temsilcisi",
+      "conversion": "Teklif dönüşümü",
+      "businessCard": "Kartvizit",
+      "completedActivities": "Tamamlanan aktiviteler",
+      "erpCustomers": "ERP cari kodu oluşanlar",
+      "businessCardCustomers": "Kartvizit görseli bulunan yeni cariler",
+      "kpi": {
+        "orders": "Toplam sipariş",
+        "ordersDetail": "{{approved}} onaylı · {{rejected}} kapanan/reddedilen",
+        "pending": "Onay bekleyen",
+        "pendingDetail": "{{draft}} sipariş taslakta",
+        "erpOrders": "ERP kaydı oluşan",
+        "erpOrdersDetail": "Siparişlerin %{{rate}} kadarı ERP'ye aktarıldı",
+        "quotations": "Toplam teklif",
+        "quotationsDetail": "{{converted}} siparişleşti · %{{rate}} dönüşüm",
+        "activities": "Toplam aktivite",
+        "activitiesDetail": "{{completed}} tamamlandı · {{planned}} planlandı",
+        "customers": "Açılan cari",
+        "customersDetail": "{{erp}} ERP'li · {{card}} kartvizit görselli"
+      },
+      "pipeline": {
+        "title": "Tekliften ERP kaydına satış akışı",
+        "description": "Darboğazı görmek için teklif, dönüşüm, sipariş ve ERP kayıt adımları birlikte izlenir.",
+        "quotations": "Teklif",
+        "converted": "Siparişleşen teklif",
+        "orders": "Sipariş",
+        "erp": "ERP kaydı"
+      },
+      "status": {
+        "draft": "Taslak",
+        "pendingApproval": "Onayda",
+        "approved": "Onaylandı",
+        "rejectedOrClosed": "Kapandı / reddedildi"
+      },
+      "detail": {
+        "tabs": {
+          "flow": "Dönüşüm ve Tutar",
+          "activity": "Aktivite ve Takip",
+          "customer": "Cari Kazanımı",
+          "work": "Kim Ne Yaptı?"
+        },
+        "document": {
+          "demand": "Talep",
+          "quotation": "Teklif",
+          "order": "Sipariş",
+          "erp": "ERP Kaydı"
+        },
+        "flow": {
+          "title": "Uçtan uca satış dönüşüm hunisi",
+          "description": "Talebin teklife, teklifin siparişe ve siparişin ERP kaydına dönüşümü.",
+          "converted": "dönüşen"
+        },
+        "statusMatrix": {
+          "title": "Belge türü ve süreç durumu matrisi"
+        },
+        "status": {
+          "draft": "Taslak",
+          "waiting": "Onay bekliyor",
+          "approved": "Onaylandı",
+          "rejected": "Reddedildi",
+          "closed": "Kapandı",
+          "customerCancelled": "Müşteri iptali",
+          "revision": "Revizyon",
+          "superseded": "Yeni revizyonla değişti",
+          "scheduled": "Planlandı",
+          "completed": "Tamamlandı",
+          "cancelled": "İptal edildi",
+          "erpIntegrated": "ERP kaydı oluştu",
+          "crm": "Yalnız CRM",
+          "unknown": "Bilinmiyor"
+        },
+        "financial": {
+          "title": "Para birimi bazında satış tutarları",
+          "averageOrder": "Ortalama sipariş"
+        },
+        "activity": {
+          "completion": "Tamamlanma oranı",
+          "overdue": "Geciken aktivite",
+          "nextSevenDays": "Önümüzdeki 7 gün",
+          "highPriority": "Yüksek öncelikli açık",
+          "customerLinked": "Cari bağlantı oranı",
+          "averageDuration": "Ort. tamamlanma süresi",
+          "quality": "Aktivite kalitesi ve tür başarısı"
+        },
+        "customer": {
+          "total": "açılan cari",
+          "erpRate": "ERP cari oranı",
+          "engagementRate": "Etkileşim oranı",
+          "contactInfo": "İletişim bilgisi dolu",
+          "businessCard": "Kartvizit görselli",
+          "journey": "Yeni cariden satışa ilerleme",
+          "teamTitle": "Satışçı bazında cari kazanımı",
+          "stage": {
+            "total": "Yeni cari",
+            "activity": "Aktivite yapılan",
+            "quotation": "Teklif verilen",
+            "order": "Sipariş veren",
+            "erp": "ERP kodu oluşan"
+          }
+        },
+        "attention": {
+          "title": "Dikkat ve takip merkezi",
+          "description": "Aksiyon bekleyen kayıtlar satışçısı ve gecikme yaşıyla birlikte gösterilir.",
+          "overdue": "Geciken aktivite",
+          "expired": "Süresi geçmiş açık teklif",
+          "pending": "3+ gündür onay bekleyen",
+          "unengaged": "Aktivitesiz yeni cari",
+          "activityTitle": "Geciken aktivite detayları",
+          "allTitle": "Tüm aksiyon bekleyen kayıtlar",
+          "none": "Aksiyon bekleyen kayıt bulunmuyor.",
+          "issue": "Aksiyon",
+          "age": "Yaş",
+          "days_one": "{{count}} gün",
+          "days_other": "{{count}} gün",
+          "kind": {
+            "overdueActivity": "Geciken aktivite",
+            "expiredQuotation": "Süresi geçmiş teklif",
+            "stalePendingOrder": "Uzun süredir onayda",
+            "customerWithoutActivity": "Aktivite girilmemiş cari"
+          }
+        },
+        "work": {
+          "title": "Dönem içi satış hareketleri",
+          "description": "Seçili kişi veya görünür ekip için talep, teklif, sipariş, aktivite ve cari kayıtlarının işlem seviyesi özeti.",
+          "search": "Belge, cari veya satışçı ara...",
+          "record": "Kayıt",
+          "customer": "Cari",
+          "status": "Durum",
+          "date": "Tarih",
+          "amount": "Tutar",
+          "kind": {
+            "all": "Tümü",
+            "demand": "Talep",
+            "quotation": "Teklif",
+            "order": "Sipariş",
+            "activity": "Aktivite",
+            "customer": "Cari"
+          }
+        }
+      }
+    },
     "erpMovements": {
       "title": "ERP Hareketleri",
       "description": "Seçili satış temsilcisine bağlı Netsis cari genel hareketleri.",

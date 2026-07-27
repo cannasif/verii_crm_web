@@ -1739,6 +1739,160 @@
       "analytics": "Analytics",
       "erpMovements": "ERP Movements"
     },
+    "performance": {
+      "title": "Sales Performance Center",
+      "personalDescription": "Sales flow, activity discipline, and customer acquisition for the selected period.",
+      "teamDescription": "Team summary and rep-level comparison for {{count}} visible sales representatives.",
+      "error": "Sales performance data could not be loaded.",
+      "count": "Count",
+      "orderStatusTitle": "Order status distribution",
+      "trendTitle": "Performance trend",
+      "activityTypesTitle": "Activity types and completion",
+      "activityTotal": "Total",
+      "activityCompleted": "Completed",
+      "teamComparisonTitle": "Sales representative comparison",
+      "leaderboardTitle": "Performance by representative",
+      "salesman": "Sales representative",
+      "conversion": "Quotation conversion",
+      "businessCard": "Business card",
+      "completedActivities": "Completed activities",
+      "erpCustomers": "Customers with an ERP code",
+      "businessCardCustomers": "New customers with a business-card image",
+      "kpi": {
+        "orders": "Total orders",
+        "ordersDetail": "{{approved}} approved · {{rejected}} closed/rejected",
+        "pending": "Pending approval",
+        "pendingDetail": "{{draft}} orders in draft",
+        "erpOrders": "ERP records",
+        "erpOrdersDetail": "{{rate}}% of orders were recorded in ERP",
+        "quotations": "Total quotations",
+        "quotationsDetail": "{{converted}} converted · {{rate}}% conversion",
+        "activities": "Total activities",
+        "activitiesDetail": "{{completed}} completed · {{planned}} planned",
+        "customers": "New customers",
+        "customersDetail": "{{erp}} with ERP code · {{card}} with card image"
+      },
+      "pipeline": {
+        "title": "Quotation-to-ERP sales flow",
+        "description": "Quotation, conversion, order, and ERP stages are monitored together to expose bottlenecks.",
+        "quotations": "Quotations",
+        "converted": "Converted quotations",
+        "orders": "Orders",
+        "erp": "ERP records"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Pending approval",
+        "approved": "Approved",
+        "rejectedOrClosed": "Closed / rejected"
+      },
+      "detail": {
+        "tabs": {
+          "flow": "Conversion & Value",
+          "activity": "Activities & Follow-up",
+          "customer": "Customer Acquisition",
+          "work": "Who Did What?"
+        },
+        "document": {
+          "demand": "Demand",
+          "quotation": "Quotation",
+          "order": "Order",
+          "erp": "ERP Record"
+        },
+        "flow": {
+          "title": "End-to-end sales conversion funnel",
+          "description": "Conversion from demand to quotation, quotation to order, and order to ERP.",
+          "converted": "converted"
+        },
+        "statusMatrix": {
+          "title": "Document type and workflow status matrix"
+        },
+        "status": {
+          "draft": "Draft",
+          "waiting": "Pending approval",
+          "approved": "Approved",
+          "rejected": "Rejected",
+          "closed": "Closed",
+          "customerCancelled": "Customer cancelled",
+          "revision": "Revision",
+          "superseded": "Superseded by revision",
+          "scheduled": "Scheduled",
+          "completed": "Completed",
+          "cancelled": "Cancelled",
+          "erpIntegrated": "ERP record created",
+          "crm": "CRM only",
+          "unknown": "Unknown"
+        },
+        "financial": {
+          "title": "Sales value by currency",
+          "averageOrder": "Average order"
+        },
+        "activity": {
+          "completion": "Completion rate",
+          "overdue": "Overdue activities",
+          "nextSevenDays": "Next 7 days",
+          "highPriority": "High-priority open",
+          "customerLinked": "Customer link rate",
+          "averageDuration": "Avg. completion time",
+          "quality": "Activity quality and type success"
+        },
+        "customer": {
+          "total": "new customers",
+          "erpRate": "ERP customer rate",
+          "engagementRate": "Engagement rate",
+          "contactInfo": "With contact details",
+          "businessCard": "With card image",
+          "journey": "New-customer sales progression",
+          "teamTitle": "Customer acquisition by representative",
+          "stage": {
+            "total": "New customer",
+            "activity": "Engaged",
+            "quotation": "Quoted",
+            "order": "Ordered",
+            "erp": "ERP code created"
+          }
+        },
+        "attention": {
+          "title": "Attention and follow-up center",
+          "description": "Records that need action are shown with their owner and age.",
+          "overdue": "Overdue activities",
+          "expired": "Expired open quotations",
+          "pending": "Pending for 3+ days",
+          "unengaged": "New customers without activity",
+          "activityTitle": "Overdue activity details",
+          "allTitle": "All records requiring action",
+          "none": "No records currently require action.",
+          "issue": "Action",
+          "age": "Age",
+          "days_one": "{{count}} day",
+          "days_other": "{{count}} days",
+          "kind": {
+            "overdueActivity": "Overdue activity",
+            "expiredQuotation": "Expired quotation",
+            "stalePendingOrder": "Long-pending approval",
+            "customerWithoutActivity": "Customer without activity"
+          }
+        },
+        "work": {
+          "title": "Sales activity stream",
+          "description": "Record-level summary of demands, quotations, orders, activities, and customers for the selected person or visible team.",
+          "search": "Search document, customer, or representative...",
+          "record": "Record",
+          "customer": "Customer",
+          "status": "Status",
+          "date": "Date",
+          "amount": "Amount",
+          "kind": {
+            "all": "All",
+            "demand": "Demand",
+            "quotation": "Quotation",
+            "order": "Order",
+            "activity": "Activity",
+            "customer": "Customer"
+          }
+        }
+      }
+    },
     "erpMovements": {
       "title": "ERP Movements",
       "description": "Netsis customer general movements for the selected salesperson.",
