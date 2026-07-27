@@ -238,7 +238,7 @@ const transferRules: NdiTransferRule[] = [
     targetCompany: 'NURAY',
     targetNetsisCompany: 'NURAY24',
     targetSerial: 'Seçilen irsaliye ve fatura belge serileri',
-    shipmentRule: 'Önce NURAY24 irsaliyesi, ardından bu irsaliyeden NURAY24 faturası oluşturulur.',
+    shipmentRule: 'Ayrı sevk carisi varsa NURAY24 irsaliyesi ve ona bağlı fatura; yoksa doğrudan NURAY24 faturası oluşturulur.',
     taxRule: 'NURAY24 KDV her zaman %20; Şirket24 KDV 1/4 işlemde %5, TAM işlemde %20.',
     warehouseRule: 'Kaynak depo korunur.',
     transferNote: 'NURAY24 faturası başarılı olursa kaynak SIRKET24 irsaliyesi de seçilen fatura serisiyle faturalaştırılır.',
@@ -254,7 +254,7 @@ const transferRules: NdiTransferRule[] = [
     targetCompany: 'WINDO',
     targetNetsisCompany: 'WIN24',
     targetSerial: 'Seçilen irsaliye ve fatura belge serileri',
-    shipmentRule: 'Önce WIN24 irsaliyesi, ardından bu irsaliyeden WIN24 faturası oluşturulur.',
+    shipmentRule: 'Ayrı sevk carisi varsa WIN24 irsaliyesi ve ona bağlı fatura; yoksa doğrudan WIN24 faturası oluşturulur. Özel Kod K için irsaliye zorunludur.',
     taxRule: 'WIN24 KDV %20; SIRKET24 KDV Özel Kod K için %0, Özel Kod N için %20.',
     warehouseRule: 'Kaynak depo korunur.',
     transferNote: 'WIN24 faturası başarılı olursa kaynak SIRKET24 irsaliyesi de seçilen fatura serisiyle faturalaştırılır.',
@@ -270,7 +270,7 @@ const transferRules: NdiTransferRule[] = [
     targetCompany: 'WIN DIS',
     targetNetsisCompany: 'DISTIC24',
     targetSerial: 'Seçilen irsaliye ve fatura belge serileri',
-    shipmentRule: 'Önce DISTIC24 irsaliyesi, ardından bu irsaliyeden DISTIC24 faturası oluşturulur.',
+    shipmentRule: 'Ayrı sevk carisi varsa DISTIC24 irsaliyesi ve ona bağlı fatura; yoksa doğrudan DISTIC24 faturası oluşturulur.',
     taxRule: 'SIRKET24 KDV %0; hedef belge KDV’si dış ticaret senaryosuna göre uygulanır.',
     warehouseRule: 'Varsayılan depo kodu 100 olmalı.',
     transferNote: 'DISTIC24 faturası başarılı olursa kaynak SIRKET24 irsaliyesi de seçilen fatura serisiyle faturalaştırılır.',
@@ -436,7 +436,11 @@ function resolvePrimaryAction(order: NdiOrder): NdiBatchAction {
     return 'FATURALASTIR';
   }
 
-  return 'IRSALIYELISTIR';
+  const dispatchIsMandatory = order.hasShipment
+    || hasSeparateShippingCustomer(order.customerCode, order.shippingCustomerCode)
+    || (series === 'VIN' && order.specialCode1?.trim().toLocaleUpperCase('tr-TR') === 'K');
+
+  return dispatchIsMandatory ? 'IRSALIYELISTIR' : 'FATURALASTIR';
 }
 
 function resolveBatchAction(orders: NdiOrder[]): { action: NdiBatchAction | null; mixed: boolean; hint: string } {
@@ -2495,20 +2499,58 @@ function TransferCompanyRoute({
   );
 }
 
-function CreatedTransferDocumentCard({ document }: { document: NdiTransferCreatedDocumentDto }): ReactElement {
+interface NdiGroupedCreatedDocument {
+  document: NdiTransferCreatedDocumentDto;
+  sourceDocumentNos: string[];
+  lineCount: number;
+}
+
+function groupCreatedDocuments(documents: NdiTransferCreatedDocumentDto[]): NdiGroupedCreatedDocument[] {
+  const groups = new Map<string, NdiGroupedCreatedDocument>();
+  documents.forEach((document) => {
+    const key = [
+      document.targetNetsisCompany,
+      document.documentType,
+      document.targetSeries,
+      document.netsisDocumentNo,
+    ].join('|').toLocaleUpperCase('tr-TR');
+    const current = groups.get(key);
+    if (current) {
+      if (!current.sourceDocumentNos.includes(document.sourceDocumentNo)) {
+        current.sourceDocumentNos.push(document.sourceDocumentNo);
+      }
+      current.lineCount += document.lineCount;
+      return;
+    }
+
+    groups.set(key, {
+      document,
+      sourceDocumentNos: [document.sourceDocumentNo],
+      lineCount: document.lineCount,
+    });
+  });
+
+  return Array.from(groups.values());
+}
+
+function CreatedTransferDocumentCard({ group }: { group: NdiGroupedCreatedDocument }): ReactElement {
+  const { document, sourceDocumentNos, lineCount } = group;
   return (
     <div className="rounded-lg border border-[#bbf7d0] bg-[#f7fffb] p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="rounded-full bg-[#dcfce7] px-2 py-1 text-xs font-black text-[#047857]">
           Başarılı {document.documentType}
         </span>
-        <span className="text-xs font-black text-[#536780]">{document.lineCount} kalem</span>
+        <div className="flex flex-wrap gap-2 text-xs font-black text-[#536780]">
+          {sourceDocumentNos.length > 1 ? <span>{sourceDocumentNos.length} kaynak belge birleşti</span> : null}
+          <span>{lineCount} kalem</span>
+        </div>
       </div>
 
       <div className="mt-3">
         <TransferCompanyRoute
           sourceCompany={document.sourceNetsisCompany}
-          sourceDocumentNo={document.sourceDocumentNo}
+          sourceDocumentNo={sourceDocumentNos.join(', ')}
           targetCompany={document.targetNetsisCompany}
           documentType={document.documentType}
           targetSeries={document.targetSeries}
@@ -2531,15 +2573,16 @@ function CreatedTransferDocumentCard({ document }: { document: NdiTransferCreate
 }
 
 function CreatedTransferDocumentsResult({ documents }: { documents: NdiTransferCreatedDocumentDto[] }): ReactElement {
+  const groupedDocuments = groupCreatedDocuments(documents);
   return (
     <div className="overflow-hidden rounded-lg border border-[#bfdbfe] bg-white">
       <div className="border-b border-[#bfdbfe] bg-[#eff6ff] px-3 py-2 text-[10px] font-black uppercase text-[#1d4ed8]">
-        Oluşturulan Netsis belgeleri
+        Oluşturulan Netsis belgeleri · {groupedDocuments.length} benzersiz belge
       </div>
       <div className="divide-y divide-[#dbeafe]">
-        {documents.map((document) => (
+        {groupedDocuments.map(({ document, sourceDocumentNos }) => (
           <div
-            key={`${document.sourceDocumentNo}-${document.targetNetsisCompany}-${document.documentType}-${document.netsisDocumentNo}`}
+            key={`${document.targetNetsisCompany}-${document.documentType}-${document.netsisDocumentNo}`}
             className="grid gap-2 px-3 py-3 sm:grid-cols-[minmax(120px,0.8fr)_minmax(120px,0.8fr)_minmax(180px,1.4fr)_minmax(90px,0.6fr)] sm:items-center"
           >
             <div>
@@ -2549,6 +2592,11 @@ function CreatedTransferDocumentsResult({ documents }: { documents: NdiTransferC
             <div>
               <div className="text-[10px] font-black uppercase text-[#64748b]">Belge türü</div>
               <div className="mt-0.5 text-sm font-black text-[#047857]">{document.documentType}</div>
+              {sourceDocumentNos.length > 1 ? (
+                <div className="mt-0.5 text-[10px] font-bold text-[#1d4ed8]">
+                  {sourceDocumentNos.length} irsaliye tek belgede
+                </div>
+              ) : null}
             </div>
             <div>
               <div className="text-[10px] font-black uppercase text-[#64748b]">Netsis belge no</div>
@@ -2584,10 +2632,11 @@ function FailedTransferDocumentCard({ document }: { document: NdiTransferFailedD
 }
 
 function TransferResultSummary({ result }: { result: NdiTransferCreateResponseDto }): ReactElement {
-  const invoiceCount = result.createdDocuments.filter((document) =>
+  const groupedDocuments = groupCreatedDocuments(result.createdDocuments);
+  const invoiceCount = groupedDocuments.filter(({ document }) =>
     document.documentType.toLocaleLowerCase('tr-TR').includes('fatura')
   ).length;
-  const dispatchCount = result.createdDocuments.length - invoiceCount;
+  const dispatchCount = groupedDocuments.length - invoiceCount;
   const failedCount = result.failedDocuments.length;
 
   let summary = 'Netsis tarafında başarılı belge oluşturulmadı.';
@@ -2613,6 +2662,7 @@ function TransferResultSummary({ result }: { result: NdiTransferCreateResponseDt
 }
 
 function TransferResultPanel({ result }: { result: NdiTransferCreateResponseDto }): ReactElement {
+  const groupedCreatedDocuments = groupCreatedDocuments(result.createdDocuments);
   return (
     <div className="mt-3 rounded-lg border border-[#bbf7d0] bg-[#f7fffb] p-3">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -2625,7 +2675,7 @@ function TransferResultPanel({ result }: { result: NdiTransferCreateResponseDto 
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <RuleBadge tone="success" label={`${result.createdDocuments.length} başarılı`} />
+          <RuleBadge tone="success" label={`${groupedCreatedDocuments.length} benzersiz belge`} />
           {result.failedDocuments.length > 0 ? <RuleBadge tone="danger" label={`${result.failedDocuments.length} hatalı`} /> : null}
         </div>
       </div>
@@ -2640,10 +2690,10 @@ function TransferResultPanel({ result }: { result: NdiTransferCreateResponseDto 
             <CreatedTransferDocumentsResult documents={result.createdDocuments} />
           </div>
           <div className="mt-3 grid gap-3 xl:grid-cols-2">
-            {result.createdDocuments.map((document) => (
+            {groupedCreatedDocuments.map((group) => (
               <CreatedTransferDocumentCard
-                key={`${document.sourceDocumentNo}-${document.targetNetsisCompany}-${document.documentType}-${document.netsisDocumentNo}`}
-                document={document}
+                key={`${group.document.targetNetsisCompany}-${group.document.documentType}-${group.document.netsisDocumentNo}`}
+                group={group}
               />
             ))}
           </div>
@@ -2669,6 +2719,7 @@ function TransferResultPanel({ result }: { result: NdiTransferCreateResponseDto 
 }
 
 function TransferResultDialog({ result, onClose }: { result: NdiTransferCreateResponseDto; onClose: () => void }): ReactElement {
+  const groupedCreatedDocuments = groupCreatedDocuments(result.createdDocuments);
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center bg-[#0b1220]/60 px-4 py-6">
       <div className="w-full max-w-3xl rounded-2xl border border-[#d7e1ef] bg-white shadow-2xl">
@@ -2695,10 +2746,10 @@ function TransferResultDialog({ result, onClose }: { result: NdiTransferCreateRe
                 <CreatedTransferDocumentsResult documents={result.createdDocuments} />
               </div>
               <div className="mt-4 grid gap-3">
-                {result.createdDocuments.map((document) => (
+                {groupedCreatedDocuments.map((group) => (
                   <CreatedTransferDocumentCard
-                    key={`${document.sourceDocumentNo}-${document.targetNetsisCompany}-${document.documentType}-${document.netsisDocumentNo}`}
-                    document={document}
+                    key={`${group.document.targetNetsisCompany}-${group.document.documentType}-${group.document.netsisDocumentNo}`}
+                    group={group}
                   />
                 ))}
               </div>
@@ -2766,9 +2817,9 @@ function SeriesGuide({
 }): ReactElement {
   const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
     { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Sevk var -> NUR irsaliye; sevk yok -> NRY/NEA fatura', 'NURAY24 KDV -> %20', '1/4 -> miktar 1/4 + SIRKET24 KDV %5', 'TAM -> miktar tam + SIRKET24 KDV %20', 'Hedef başarılı olmadan SIRKET24 başlamaz'] },
-    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Kaynak irsaliye -> WIN24 irsaliye', 'Özel Kod 1 ve Özel Kod 2 hedef belgeye aktarılır', 'WIN24 KDV -> %20', 'SIRKET24 KDV -> K %0 / N %20', 'Açıklama 1-4 alanları aktarılmaz'] },
+    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Sevk var veya Özel Kod K -> WIN24 irsaliye + bağlı fatura', 'Sevk yok -> WIN24 doğrudan fatura', 'Özel Kod 1 ve Özel Kod 2 hedef belgeye aktarılır', 'WIN24 KDV -> %20', 'SIRKET24 KDV -> K %0 / N %20'] },
     { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (EIR)', items: ['Sevk var -> EIR irsaliye', 'Sevk yok -> EIR doğrudan fatura', 'Ardından SIRKET24 faturası -> KDV %0', 'Depo boşsa -> 100', 'Belge tarihindeki kur alınır'] },
-    { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Yalnız doğrudan fatura', 'Seri -> SIP / belge no -> SIP2026', 'KDV -> %0', 'İrsaliye ve resmi e-belge yok'] },
+    { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Mevcut SIRKET24 irsaliyesi seçilen seriyle faturalaştırılır', 'Yeni irsaliye oluşturulmaz', 'KDV -> %0', 'Fatura kaynak irsaliye bağlantısını korur'] },
   ];
   const hasActiveRule = activeRuleIds.size > 0;
   const isOpen = revealedRuleId !== null;
