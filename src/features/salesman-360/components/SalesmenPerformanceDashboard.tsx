@@ -30,6 +30,7 @@ import { cn } from '@/lib/utils';
 import type {
   Salesmen360PerformanceDto,
   Salesmen360PerformanceTotalsDto,
+  Salesmen360PeriodParams,
 } from '../types/salesmen360.types';
 import { formatSalesmen360PeriodLabel } from '../utils/localizedDisplay';
 import { PerformanceChartFrame } from './performance/PerformanceChartFrame';
@@ -169,17 +170,23 @@ function ConversionRail({
 }
 
 export function SalesmenPerformanceDashboard({
+  userId,
   data,
   isLoading,
   isError,
   onRetry,
   locale,
+  currency,
+  periodParams,
 }: {
+  userId: number;
   data?: Salesmen360PerformanceDto;
   isLoading: boolean;
   isError: boolean;
   onRetry: () => void;
   locale: string;
+  currency?: string;
+  periodParams?: Salesmen360PeriodParams;
 }): ReactElement {
   const { t } = useTranslation();
   const Recharts = useRechartsModule(Boolean(data) && !isLoading && !isError);
@@ -531,7 +538,13 @@ export function SalesmenPerformanceDashboard({
         </div>
       )}
 
-      <SalesPerformanceDetailPanels data={data} locale={locale} />
+      <SalesPerformanceDetailPanels
+        userId={userId}
+        data={data}
+        locale={locale}
+        currency={currency}
+        periodParams={periodParams}
+      />
     </section>
   );
 }

@@ -1028,6 +1028,7 @@ export function Salesmen360Page(): ReactElement {
 
           <TabsContent value="overview" className="space-y-6 outline-none">
             <SalesmenPerformanceDashboard
+              userId={userId}
               data={performance}
               isLoading={isPerformanceLoading}
               isError={isPerformanceError}
@@ -1035,6 +1036,8 @@ export function Salesmen360Page(): ReactElement {
                 void refetchPerformance();
               }}
               locale={i18n.resolvedLanguage ?? i18n.language}
+              currency={currencyParam}
+              periodParams={periodParams}
             />
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">

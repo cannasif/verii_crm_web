@@ -10,6 +10,7 @@ import type {
   ExecuteRecommendedActionDto,
   Salesmen360PeriodParams,
   Salesmen360PerformanceDto,
+  Salesmen360WorkFeedDto,
 } from '../types/salesmen360.types';
 import { api } from '@/lib/axios';
 
@@ -126,6 +127,42 @@ export async function getSalesmenPerformance(params: {
     { signal }
   );
   return ensureData(response, 'Sales performance could not be loaded');
+}
+
+export async function getSalesmenPerformanceWorkFeed(params: {
+  userId: number;
+  page?: number;
+  pageSize?: number;
+  kind?: string;
+  search?: string;
+  currency?: string;
+  periodParams?: Salesmen360PeriodParams;
+  signal?: AbortSignal;
+}): Promise<Salesmen360WorkFeedDto> {
+  const {
+    userId,
+    page = 1,
+    pageSize = 20,
+    kind,
+    search: searchTerm,
+    currency,
+    periodParams,
+    signal,
+  } = params;
+  const search = new URLSearchParams({
+    page: String(page),
+    pageSize: String(pageSize),
+  });
+  appendPeriodParams(search, periodParams);
+  if (kind) search.set('kind', kind);
+  if (searchTerm?.trim()) search.set('search', searchTerm.trim());
+  if (currency) search.set('currency', currency);
+
+  const response = await api.get<ApiResponse<Salesmen360WorkFeedDto | null>>(
+    `/api/salesmen/${userId}/performance/work-items?${search.toString()}`,
+    { signal }
+  );
+  return ensureData(response, 'Sales performance work items could not be loaded');
 }
 
 export async function getSalesmenCohort(params: {

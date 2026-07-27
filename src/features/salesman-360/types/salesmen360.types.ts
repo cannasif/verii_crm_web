@@ -309,6 +309,14 @@ export interface Salesmen360WorkItemDto {
   isOverdue: boolean;
 }
 
+export interface Salesmen360WorkFeedDto {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  items: Salesmen360WorkItemDto[];
+}
+
 export interface Salesmen360AttentionItemDto {
   kind: 'overdueActivity' | 'expiredQuotation' | 'stalePendingOrder' | 'customerWithoutActivity' | string;
   entityId: number;

@@ -1881,6 +1881,8 @@
           "status": "Durum",
           "date": "Tarih",
           "amount": "Tutar",
+          "loadError": "Satış hareketleri yüklenemedi.",
+          "pageSummary": "Toplam {{total}} kayıt · Sayfa {{page}} / {{totalPages}}",
           "kind": {
             "all": "Tümü",
             "demand": "Talep",

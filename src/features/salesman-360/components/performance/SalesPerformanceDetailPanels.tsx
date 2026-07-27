@@ -1,4 +1,4 @@
-import { type ReactElement, useMemo, useState } from 'react';
+import { type ReactElement, useDeferredValue, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -6,6 +6,8 @@ import {
   BadgeCheck,
   CalendarClock,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   CircleDollarSign,
   Clock3,
   ContactRound,
@@ -22,6 +24,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -36,9 +39,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import { cn } from '@/lib/utils';
+import { useSalesmenPerformanceWorkFeedQuery } from '../../hooks/useSalesmen360';
 import type {
   Salesmen360AttentionItemDto,
   Salesmen360PerformanceDto,
+  Salesmen360PeriodParams,
   Salesmen360WorkItemDto,
 } from '../../types/salesmen360.types';
 import { PerformanceChartFrame } from './PerformanceChartFrame';
@@ -225,32 +230,55 @@ function AttentionTable({
 }
 
 export function SalesPerformanceDetailPanels({
+  userId,
   data,
   locale,
+  currency,
+  periodParams,
 }: {
+  userId: number;
   data: Salesmen360PerformanceDto;
   locale: string;
+  currency?: string;
+  periodParams?: Salesmen360PeriodParams;
 }): ReactElement {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const Recharts = useRechartsModule(true);
+  const [activeDetailTab, setActiveDetailTab] = useState('flow');
   const [workKind, setWorkKind] = useState<(typeof WORK_KIND_FILTERS)[number]>('all');
   const [workSearch, setWorkSearch] = useState('');
+  const deferredWorkSearch = useDeferredValue(workSearch.trim());
+  const [workPage, setWorkPage] = useState(1);
+  const workFeedQuery = useSalesmenPerformanceWorkFeedQuery({
+    userId,
+    page: workPage,
+    pageSize: 20,
+    kind: workKind === 'all' ? undefined : workKind,
+    search: deferredWorkSearch || undefined,
+    currency,
+    periodParams,
+    enabled: activeDetailTab === 'work',
+  });
+
+  useEffect(() => {
+    setWorkPage(1);
+  }, [
+    userId,
+    workKind,
+    deferredWorkSearch,
+    currency,
+    periodParams?.period,
+    periodParams?.startDate,
+    periodParams?.endDate,
+  ]);
 
   const statusChartData = data.documentStatuses.map((item) => ({
     ...item,
     documentLabel: t(`salesman360.performance.detail.document.${item.documentType}`),
   }));
-  const filteredWork = useMemo(() => {
-    const normalized = workSearch.trim().toLocaleLowerCase(locale);
-    return data.recentWork.filter((item) => {
-      if (workKind !== 'all' && item.kind !== workKind) return false;
-      if (!normalized) return true;
-      return [item.title, item.salesmanName, item.customerName, item.typeName, item.status]
-        .filter(Boolean)
-        .some((value) => String(value).toLocaleLowerCase(locale).includes(normalized));
-    });
-  }, [data.recentWork, locale, workKind, workSearch]);
+  const workFeed = workFeedQuery.data;
+  const workItems = workFeed?.items ?? [];
 
   const funnelStages = [
     {
@@ -314,7 +342,7 @@ export function SalesPerformanceDetailPanels({
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="flow" className="space-y-5">
+      <Tabs value={activeDetailTab} onValueChange={setActiveDetailTab} className="space-y-5">
         <div className="overflow-x-auto pb-1">
           <TabsList className="h-auto min-w-max rounded-2xl border border-slate-200 bg-slate-100/80 p-1 dark:border-white/10 dark:bg-white/5">
             <TabsTrigger value="flow" className="rounded-xl px-4 py-2.5 font-bold">
@@ -582,7 +610,36 @@ export function SalesPerformanceDetailPanels({
                     <TableHead className="text-right">{t('salesman360.performance.detail.work.amount')}</TableHead>
                   </TableRow></TableHeader>
                   <TableBody>
-                    {filteredWork.map((item) => {
+                    {workFeedQuery.isLoading ? (
+                      Array.from({ length: 5 }, (_, index) => (
+                        <TableRow key={index}>
+                          <TableCell colSpan={6}><Skeleton className="h-10 rounded-xl" /></TableCell>
+                        </TableRow>
+                      ))
+                    ) : null}
+                    {!workFeedQuery.isLoading && workFeedQuery.isError ? (
+                      <TableRow>
+                        <TableCell colSpan={6} className="h-28 text-center">
+                          <div className="flex flex-col items-center gap-3">
+                            <span className="text-sm font-semibold text-red-500">
+                              {t('salesman360.performance.detail.work.loadError')}
+                            </span>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="rounded-xl"
+                              onClick={() => {
+                                void workFeedQuery.refetch();
+                              }}
+                            >
+                              {t('salesman360.retry')}
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : null}
+                    {!workFeedQuery.isLoading && !workFeedQuery.isError ? workItems.map((item) => {
                       const route = getWorkItemRoute(item);
                       return (
                         <TableRow
@@ -636,13 +693,48 @@ export function SalesPerformanceDetailPanels({
                           </TableCell>
                         </TableRow>
                       );
-                    })}
-                    {filteredWork.length === 0 ? (
+                    }) : null}
+                    {!workFeedQuery.isLoading && !workFeedQuery.isError && workItems.length === 0 ? (
                       <TableRow><TableCell colSpan={6} className="h-28 text-center text-slate-400">{t('common.noData')}</TableCell></TableRow>
                     ) : null}
                   </TableBody>
                 </Table>
               </div>
+              {!workFeedQuery.isLoading && !workFeedQuery.isError && workFeed ? (
+                <div className="flex flex-col gap-3 border-t border-slate-200/80 px-5 py-4 dark:border-white/8 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    {t('salesman360.performance.detail.work.pageSummary', {
+                      total: workFeed.totalCount,
+                      page: workFeed.totalPages === 0 ? 0 : workFeed.page,
+                      totalPages: workFeed.totalPages,
+                    })}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="rounded-xl"
+                      disabled={workFeed.page <= 1}
+                      onClick={() => setWorkPage((current) => Math.max(1, current - 1))}
+                    >
+                      <ChevronLeft className="mr-1 size-4" />
+                      {t('common.previous')}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="rounded-xl"
+                      disabled={workFeed.totalPages === 0 || workFeed.page >= workFeed.totalPages}
+                      onClick={() => setWorkPage((current) => current + 1)}
+                    >
+                      {t('common.next')}
+                      <ChevronRight className="ml-1 size-4" />
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
             </CardContent>
           </Card>
 

@@ -9,6 +9,7 @@ import {
   getSalesmenAnalyticsSummary,
   getSalesmenAnalyticsCharts,
   getSalesmenPerformance,
+  getSalesmenPerformanceWorkFeed,
   getVisibleSalesmen,
 } from '../api/salesmen360Api';
 import type {
@@ -100,6 +101,55 @@ export function useSalesmenPerformanceQuery(
     queryFn: ({ signal }) =>
       getSalesmenPerformance({
         userId,
+        currency: currency && currency !== 'ALL' ? currency : undefined,
+        periodParams,
+        signal,
+      }),
+    staleTime: PERFORMANCE_STALE_MS,
+    enabled: enabled && userId >= 0,
+  });
+}
+
+export function useSalesmenPerformanceWorkFeedQuery(params: {
+  userId: number;
+  page: number;
+  pageSize?: number;
+  kind?: string;
+  search?: string;
+  currency?: string;
+  periodParams?: Salesmen360PeriodParams;
+  enabled?: boolean;
+}) {
+  const {
+    userId,
+    page,
+    pageSize = 20,
+    kind,
+    search,
+    currency,
+    periodParams,
+    enabled = true,
+  } = params;
+  return useQuery({
+    queryKey: [
+      'salesmen360',
+      'performance',
+      'work-items',
+      userId,
+      page,
+      pageSize,
+      kind ?? 'all',
+      search ?? '',
+      currency ?? 'ALL',
+      ...getPeriodQueryKey(periodParams),
+    ],
+    queryFn: ({ signal }) =>
+      getSalesmenPerformanceWorkFeed({
+        userId,
+        page,
+        pageSize,
+        kind,
+        search,
         currency: currency && currency !== 'ALL' ? currency : undefined,
         periodParams,
         signal,

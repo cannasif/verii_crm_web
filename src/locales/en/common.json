@@ -1882,6 +1882,8 @@
           "status": "Status",
           "date": "Date",
           "amount": "Amount",
+          "loadError": "Sales activity records could not be loaded.",
+          "pageSummary": "{{total}} records · Page {{page}} of {{totalPages}}",
           "kind": {
             "all": "All",
             "demand": "Demand",
