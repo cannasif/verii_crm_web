@@ -167,3 +167,175 @@ export interface Salesmen360AnalyticsChartsDto {
   amountComparison: Salesmen360AmountComparisonDto;
   amountComparisonByCurrency?: Salesmen360AmountComparisonDto[];
 }
+
+export interface Salesmen360PerformanceTotalsDto {
+  totalDemands: number;
+  convertedDemands: number;
+  demandConversionRate: number;
+  totalQuotations: number;
+  convertedQuotations: number;
+  quotationConversionRate: number;
+  totalOrders: number;
+  draftOrders: number;
+  pendingApprovalOrders: number;
+  approvedOrders: number;
+  rejectedOrClosedOrders: number;
+  erpIntegratedOrders: number;
+  erpIntegrationRate: number;
+  totalActivities: number;
+  completedActivities: number;
+  plannedActivities: number;
+  cancelledActivities: number;
+  totalCustomers: number;
+  erpIntegratedCustomers: number;
+  businessCardCustomers: number;
+}
+
+export interface Salesmen360DocumentFunnelDto {
+  totalDemands: number;
+  convertedDemands: number;
+  demandToQuotationRate: number;
+  totalQuotations: number;
+  convertedQuotations: number;
+  quotationToOrderRate: number;
+  totalOrders: number;
+  erpIntegratedOrders: number;
+  orderToErpRate: number;
+}
+
+export interface Salesmen360DocumentStatusDto {
+  documentType: 'demand' | 'quotation' | 'order' | string;
+  total: number;
+  draft: number;
+  waiting: number;
+  approved: number;
+  rejected: number;
+  closed: number;
+  customerCancelled: number;
+  revision: number;
+}
+
+export interface Salesmen360FinancialSummaryDto {
+  currency: string;
+  demandAmount: number;
+  quotationAmount: number;
+  convertedQuotationAmount: number;
+  orderAmount: number;
+  erpOrderAmount: number;
+  averageOrderAmount: number;
+}
+
+export interface Salesmen360ActivityInsightsDto {
+  total: number;
+  completed: number;
+  scheduled: number;
+  cancelled: number;
+  overdue: number;
+  dueNextSevenDays: number;
+  highPriorityOpen: number;
+  customerLinked: number;
+  completionRate: number;
+  customerLinkRate: number;
+  averageCompletedDurationMinutes: number;
+}
+
+export interface Salesmen360CustomerInsightsDto {
+  total: number;
+  erpIntegrated: number;
+  businessCard: number;
+  withContactInfo: number;
+  withActivity: number;
+  withQuotation: number;
+  withOrder: number;
+  withoutActivity: number;
+  erpIntegrationRate: number;
+  engagementRate: number;
+}
+
+export interface Salesmen360AttentionSummaryDto {
+  total: number;
+  overdueActivities: number;
+  expiredOpenQuotations: number;
+  stalePendingOrders: number;
+  customersWithoutActivity: number;
+}
+
+export interface Salesmen360OrderStatusItemDto {
+  status: 'draft' | 'pendingApproval' | 'approved' | 'rejectedOrClosed' | string;
+  count: number;
+}
+
+export interface Salesmen360ActivityTypeItemDto {
+  activityTypeId: number;
+  activityTypeName: string;
+  count: number;
+  completedCount: number;
+}
+
+export interface Salesmen360PerformanceTrendItemDto {
+  periodKey: string;
+  demandCount: number;
+  quotationCount: number;
+  orderCount: number;
+  erpOrderCount: number;
+  activityCount: number;
+  completedActivityCount: number;
+  customerCount: number;
+}
+
+export interface Salesmen360SalesmanPerformanceDto extends Salesmen360PerformanceTotalsDto {
+  userId: number;
+  fullName: string;
+  email?: string | null;
+  overdueActivities: number;
+  activityCompletionRate: number;
+  customerEngagementRate: number;
+}
+
+export interface Salesmen360WorkItemDto {
+  kind: 'demand' | 'quotation' | 'order' | 'activity' | 'customer' | string;
+  entityId: number;
+  title: string;
+  salesmanId: number;
+  salesmanName: string;
+  customerId?: number | null;
+  customerName?: string | null;
+  date: string;
+  status: string;
+  typeName?: string | null;
+  amount?: number | null;
+  currency?: string | null;
+  isErpIntegrated: boolean;
+  isOverdue: boolean;
+}
+
+export interface Salesmen360AttentionItemDto {
+  kind: 'overdueActivity' | 'expiredQuotation' | 'stalePendingOrder' | 'customerWithoutActivity' | string;
+  entityId: number;
+  title: string;
+  salesmanId: number;
+  salesmanName: string;
+  customerName?: string | null;
+  date: string;
+  ageDays: number;
+}
+
+export interface Salesmen360PerformanceDto {
+  period: Salesmen360PeriodDto;
+  isTeamView: boolean;
+  salesmanCount: number;
+  currency?: string | null;
+  totals: Salesmen360PerformanceTotalsDto;
+  funnel: Salesmen360DocumentFunnelDto;
+  activityInsights: Salesmen360ActivityInsightsDto;
+  customerInsights: Salesmen360CustomerInsightsDto;
+  attention: Salesmen360AttentionSummaryDto;
+  orderStatuses: Salesmen360OrderStatusItemDto[];
+  documentStatuses: Salesmen360DocumentStatusDto[];
+  financialsByCurrency: Salesmen360FinancialSummaryDto[];
+  activityTypes: Salesmen360ActivityTypeItemDto[];
+  trend: Salesmen360PerformanceTrendItemDto[];
+  salesmen: Salesmen360SalesmanPerformanceDto[];
+  recentWork: Salesmen360WorkItemDto[];
+  attentionItems: Salesmen360AttentionItemDto[];
+}

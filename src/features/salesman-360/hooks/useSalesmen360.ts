@@ -8,6 +8,7 @@ import {
   getSalesmenOverview,
   getSalesmenAnalyticsSummary,
   getSalesmenAnalyticsCharts,
+  getSalesmenPerformance,
   getVisibleSalesmen,
 } from '../api/salesmen360Api';
 import type {
@@ -23,6 +24,7 @@ const CHARTS_STALE_MS = 45_000;
 const COHORT_STALE_MS = 300_000;
 const VISIBLE_USERS_STALE_MS = 60_000;
 const ERP_MOVEMENTS_STALE_MS = 30_000;
+const PERFORMANCE_STALE_MS = 30_000;
 
 export function useVisibleSalesmenQuery() {
   return useQuery<Salesmen360VisibleUserDto[]>({
@@ -84,6 +86,26 @@ export function useSalesmenAnalyticsChartsQuery(
       }),
     staleTime: CHARTS_STALE_MS,
     enabled: userId > 0 && enabled,
+  });
+}
+
+export function useSalesmenPerformanceQuery(
+  userId: number,
+  currency?: string,
+  periodParams?: Salesmen360PeriodParams,
+  enabled = true
+) {
+  return useQuery({
+    queryKey: ['salesmen360', 'performance', userId, currency ?? 'ALL', ...getPeriodQueryKey(periodParams)],
+    queryFn: ({ signal }) =>
+      getSalesmenPerformance({
+        userId,
+        currency: currency && currency !== 'ALL' ? currency : undefined,
+        periodParams,
+        signal,
+      }),
+    staleTime: PERFORMANCE_STALE_MS,
+    enabled: enabled && userId >= 0,
   });
 }
 

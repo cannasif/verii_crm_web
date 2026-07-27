@@ -9,6 +9,7 @@ import type {
   Salesmen360ErpMovementDto,
   ExecuteRecommendedActionDto,
   Salesmen360PeriodParams,
+  Salesmen360PerformanceDto,
 } from '../types/salesmen360.types';
 import { api } from '@/lib/axios';
 
@@ -106,6 +107,25 @@ export async function getSalesmenAnalyticsCharts(params: {
     signal,
   });
   return ensureData(response, 'Analytics charts could not be loaded');
+}
+
+export async function getSalesmenPerformance(params: {
+  userId: number;
+  currency?: string;
+  periodParams?: Salesmen360PeriodParams;
+  signal?: AbortSignal;
+}): Promise<Salesmen360PerformanceDto> {
+  const { userId, currency, periodParams, signal } = params;
+  const search = new URLSearchParams();
+  appendPeriodParams(search, periodParams);
+  if (currency != null && currency !== '') {
+    search.set('currency', currency);
+  }
+  const response = await api.get<ApiResponse<Salesmen360PerformanceDto | null>>(
+    `/api/salesmen/${userId}/performance?${search.toString()}`,
+    { signal }
+  );
+  return ensureData(response, 'Sales performance could not be loaded');
 }
 
 export async function getSalesmenCohort(params: {
