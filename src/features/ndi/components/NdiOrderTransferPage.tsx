@@ -479,29 +479,11 @@ function resolveTargetSeries(order: NdiOrder): { value: string; note: string; wa
 }
 
 function resolveEffectiveTargetSeries(
-  order: NdiOrder,
   action: NdiBatchAction,
+  selectedDispatchSeries: string,
   selectedInvoiceSeries: string
 ): string {
-  const series = getBusinessSeries(order);
-  if (series === 'DIS') {
-    return 'EIR';
-  }
-  if (series === 'SIP') {
-    return 'SIP';
-  }
-  if (action === 'IRSALIYELISTIR') {
-    return series;
-  }
-  return selectedInvoiceSeries;
-}
-
-function resolveFixedDispatchSeries(order?: NdiOrder): string {
-  if (!order) {
-    return '';
-  }
-
-  return 'EIR';
+  return action === 'IRSALIYELISTIR' ? selectedDispatchSeries : selectedInvoiceSeries;
 }
 
 function resolveWarehouse(order: NdiOrder): { value: string; label: string; locked: boolean; note: string } {
@@ -847,12 +829,6 @@ export function NdiOrderTransferPage(): ReactElement {
       };
     });
   }, [orderChecksQuery.data, selectedOrders]);
-  const fixedDispatchSeries = resolveFixedDispatchSeries(selectedOrdersForTransfer[0]);
-  const fixedInvoiceSeries = selectedOrdersForTransfer.length > 0
-    && selectedOrdersForTransfer.every((order) => getBusinessSeries(order) === 'SIP')
-    ? 'SIP'
-    : '';
-
   const linesQuery = useQuery({
     queryKey: ['ndi', 'customer-dispatch-lines', selectedIrsNoList],
     queryFn: () => ndiApi.getCustomerDispatchLines(selectedIrsNoList),
@@ -990,17 +966,17 @@ export function NdiOrderTransferPage(): ReactElement {
     () => selectedOrdersForTransfer.map((order) => {
       const outcome = buildRuleOutcome(order, selectedLinesByOrderNo.get(order.orderNo) ?? [], quantityMode);
       const usesInvoiceSeries = outcome.action === 'FATURALASTIR';
-      const targetSeries = resolveEffectiveTargetSeries(order, outcome.action, invoiceSeries);
+      const targetSeries = resolveEffectiveTargetSeries(outcome.action, dispatchSeries, invoiceSeries);
 
       return {
         ...outcome,
         targetSeries: targetSeries || '-',
         seriesNote: usesInvoiceSeries
           ? `${outcome.companyLabel} fatura serisi ${targetSeries || '-'} olarak uygulanacak.`
-          : `${outcome.companyLabel} irsaliye serisi iş kuralından ${targetSeries || '-'} olarak uygulanacak.`,
+          : `${outcome.companyLabel} irsaliye serisi ${targetSeries || '-'} olarak uygulanacak.`,
       };
     }),
-    [invoiceSeries, quantityMode, selectedLinesByOrderNo, selectedOrdersForTransfer]
+    [dispatchSeries, invoiceSeries, quantityMode, selectedLinesByOrderNo, selectedOrdersForTransfer]
   );
   const selectedSeriesCompany = ruleOutcomes[0]?.targetNetsisCompany ?? '';
   const customerDocumentSeriesQuery = useQuery({
@@ -1013,6 +989,25 @@ export function NdiOrderTransferPage(): ReactElement {
     () => customerDocumentSeriesQuery.data ?? [],
     [customerDocumentSeriesQuery.data]
   );
+  const dispatchSeriesOptions = useMemo((): ComboboxOption[] => {
+    const seen = new Set<string>();
+    const options: ComboboxOption[] = [];
+
+    customerDocumentSeries.forEach((series) => {
+      const value = series.dispatchSeries?.trim() ?? '';
+      if (!value || seen.has(value)) {
+        return;
+      }
+
+      seen.add(value);
+      options.push({
+        value,
+        label: `${series.dispatchDocumentType || 'İrsaliye'} — ${series.dispatchSeries}`,
+      });
+    });
+
+    return options;
+  }, [customerDocumentSeries]);
   const invoiceSeriesOptions = useMemo((): ComboboxOption[] => {
     const seen = new Set<string>();
     const options: ComboboxOption[] = [];
@@ -1087,11 +1082,11 @@ export function NdiOrderTransferPage(): ReactElement {
   };
 
   useEffect(() => {
-    setDispatchSeries(fixedDispatchSeries);
-    setInvoiceSeries(fixedInvoiceSeries);
+    setDispatchSeries('');
+    setInvoiceSeries('');
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
-  }, [fixedDispatchSeries, fixedInvoiceSeries, selectedCustomerCode, selectedSeriesCompany]);
+  }, [selectedCustomerCode, selectedSeriesCompany]);
 
   const toggleLine = (lineId: string) => {
     setPreparedTransfer(null);
@@ -1157,9 +1152,13 @@ export function NdiOrderTransferPage(): ReactElement {
     setPrepareError(null);
   };
 
-  const changeInvoiceSeries = (value: string) => {
+  const changeDocumentSeries = (type: 'dispatch' | 'invoice', value: string) => {
     const normalizedValue = normalizeNdiSeriesInput(value);
-    setInvoiceSeries(normalizedValue);
+    if (type === 'dispatch') {
+      setDispatchSeries(normalizedValue);
+    } else {
+      setInvoiceSeries(normalizedValue);
+    }
 
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
@@ -1571,13 +1570,28 @@ export function NdiOrderTransferPage(): ReactElement {
                   <Truck size={15} /> İrsaliye Belge Serisi
                 </span>
                 <div className="mt-2">
-                  <div className="flex h-11 items-center rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 text-sm font-black text-foreground dark:border-white/20">
-                    {dispatchSeries || 'Önce bir irsaliye seçin'}
-                  </div>
+                  <Combobox
+                    options={dispatchSeriesOptions}
+                    value={dispatchSeries}
+                    onValueChange={(value) => changeDocumentSeries('dispatch', value)}
+                    placeholder="İrsaliye tipi ve serisi seçin"
+                    emptyText={
+                      customerDocumentSeriesQuery.isError
+                        ? 'Cari belge serileri alınamadı. Tekrar deneyin.'
+                        : selectedCustomerCode
+                          ? 'İrsaliye serisi bulunamadı.'
+                          : 'Önce bir irsaliye seçin.'
+                    }
+                    disabled={!selectedCustomerCode}
+                    isLoading={customerDocumentSeriesQuery.isFetching}
+                    loadingText="Seriler yükleniyor..."
+                    searchable={false}
+                    className="h-11 font-black"
+                  />
                 </div>
                 <span className="mt-2 block text-xs font-semibold text-[var(--crm-app-text-muted)]">
                   {selectedCustomerCode
-                    ? `${selectedSeriesCompany} · İş kuralından otomatik belirlenir`
+                    ? `${selectedSeriesCompany} · Fonksiyondan gelen irsaliye tipi ve serisi seçilir`
                     : 'Önce bir irsaliye seçin.'}
                 </span>
               </div>
@@ -1587,37 +1601,29 @@ export function NdiOrderTransferPage(): ReactElement {
                   <FileText size={15} /> Fatura Belge Serisi
                 </span>
                 <div className="mt-2">
-                  {fixedInvoiceSeries ? (
-                    <div className="flex h-11 items-center rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 text-sm font-black text-foreground dark:border-white/20">
-                      {fixedInvoiceSeries}
-                    </div>
-                  ) : (
-                    <Combobox
-                      options={invoiceSeriesOptions}
-                      value={invoiceSeries}
-                      onValueChange={changeInvoiceSeries}
-                      placeholder="E-fatura tipi ve serisi seçin"
-                      emptyText={
-                        customerDocumentSeriesQuery.isError
-                          ? 'Cari belge serileri alınamadı. Tekrar deneyin.'
-                          : selectedCustomerCode
-                            ? 'Fatura serisi bulunamadı.'
-                            : 'Önce bir irsaliye seçin.'
-                      }
-                      disabled={!selectedCustomerCode}
-                      isLoading={customerDocumentSeriesQuery.isFetching}
-                      loadingText="Seriler yükleniyor..."
-                      searchable={false}
-                      className="h-11 font-black"
-                    />
-                  )}
+                  <Combobox
+                    options={invoiceSeriesOptions}
+                    value={invoiceSeries}
+                    onValueChange={(value) => changeDocumentSeries('invoice', value)}
+                    placeholder="E-fatura tipi ve serisi seçin"
+                    emptyText={
+                      customerDocumentSeriesQuery.isError
+                        ? 'Cari belge serileri alınamadı. Tekrar deneyin.'
+                        : selectedCustomerCode
+                          ? 'Fatura serisi bulunamadı.'
+                          : 'Önce bir irsaliye seçin.'
+                    }
+                    disabled={!selectedCustomerCode}
+                    isLoading={customerDocumentSeriesQuery.isFetching}
+                    loadingText="Seriler yükleniyor..."
+                    searchable={false}
+                    className="h-11 font-black"
+                  />
                 </div>
                 <span className="mt-2 block text-xs font-semibold text-[var(--crm-app-text-muted)]">
                   {customerDocumentSeriesQuery.isError
                     ? 'Cari belge serileri alınamadı. Tekrar deneyin.'
-                    : fixedInvoiceSeries
-                      ? 'Yalnız Şirket24 senaryosunda SIP serisi otomatik uygulanır.'
-                      : 'Fonksiyondan gelen e-fatura durumu, belge tipi ve seri gösterilir.'}
+                    : 'Fonksiyondan gelen e-fatura durumu, belge tipi ve seri gösterilir.'}
                 </span>
               </div>
             </div>
