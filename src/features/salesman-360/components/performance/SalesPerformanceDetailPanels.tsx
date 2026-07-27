@@ -1,22 +1,17 @@
-import { type ReactElement, useDeferredValue, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { type ReactElement, useState } from 'react';
 import {
   AlertTriangle,
   ArrowRight,
   BadgeCheck,
   CalendarClock,
   CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
   CircleDollarSign,
   Clock3,
   ContactRound,
-  ExternalLink,
   FileCheck2,
   FileText,
   ListChecks,
   ScanLine,
-  Search,
   ShoppingCart,
   Target,
   TrendingUp,
@@ -24,9 +19,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -39,14 +32,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import { cn } from '@/lib/utils';
-import { useSalesmenPerformanceWorkFeedQuery } from '../../hooks/useSalesmen360';
 import type {
-  Salesmen360AttentionItemDto,
   Salesmen360PerformanceDto,
   Salesmen360PeriodParams,
-  Salesmen360WorkItemDto,
 } from '../../types/salesmen360.types';
+import { PerformanceAttentionTable } from './PerformanceAttentionTable';
 import { PerformanceChartFrame } from './PerformanceChartFrame';
+import { formatPerformanceAmount } from './performanceFormatters';
+import { SalesWorkFeedTab } from './tabs/SalesWorkFeedTab';
 
 const STATUS_SERIES = [
   { key: 'draft', color: '#94a3b8' },
@@ -58,52 +51,11 @@ const STATUS_SERIES = [
   { key: 'revision', color: '#8b5cf6' },
 ] as const;
 
-const WORK_KIND_FILTERS = ['all', 'demand', 'quotation', 'order', 'activity', 'customer'] as const;
-
 function formatRate(value: number, locale: string): string {
   return new Intl.NumberFormat(locale, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 1,
   }).format(value ?? 0);
-}
-
-function formatDate(value: string, locale: string): string {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return '-';
-  return new Intl.DateTimeFormat(locale, {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(date);
-}
-
-function formatAmount(value: number, currency: string, locale: string): string {
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency,
-      maximumFractionDigits: 2,
-    }).format(value);
-  } catch {
-    return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(value)} ${currency}`;
-  }
-}
-
-function getWorkItemRoute(item: Salesmen360WorkItemDto): string | null {
-  switch (item.kind) {
-    case 'demand':
-      return `/demands/${item.entityId}`;
-    case 'quotation':
-      return `/quotations/${item.entityId}`;
-    case 'order':
-      return `/orders/${item.entityId}`;
-    case 'customer':
-      return `/customer-360/${item.customerId ?? item.entityId}`;
-    default:
-      return null;
-  }
 }
 
 function InsightTile({
@@ -169,66 +121,6 @@ function RateRow({
   );
 }
 
-function AttentionTable({
-  items,
-  locale,
-}: {
-  items: Salesmen360AttentionItemDto[];
-  locale: string;
-}): ReactElement {
-  const { t } = useTranslation();
-
-  if (items.length === 0) {
-    return (
-      <div className="flex min-h-44 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/40 text-emerald-600 dark:border-emerald-400/20 dark:bg-emerald-500/5">
-        <CheckCircle2 className="size-8" />
-        <p className="text-sm font-bold">{t('salesman360.performance.detail.attention.none')}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-white/8">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-slate-50/80 dark:bg-white/3">
-            <TableHead>{t('salesman360.performance.detail.attention.issue')}</TableHead>
-            <TableHead>{t('salesman360.performance.salesman')}</TableHead>
-            <TableHead>{t('salesman360.performance.detail.work.customer')}</TableHead>
-            <TableHead>{t('salesman360.performance.detail.work.date')}</TableHead>
-            <TableHead className="text-right">{t('salesman360.performance.detail.attention.age')}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map((item) => (
-            <TableRow key={`${item.kind}-${item.entityId}`}>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <span className="flex size-8 items-center justify-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300">
-                    <AlertTriangle className="size-4" />
-                  </span>
-                  <div>
-                    <p className="font-bold text-slate-900 dark:text-white">{item.title}</p>
-                    <p className="text-[11px] font-semibold text-amber-600 dark:text-amber-300">
-                      {t(`salesman360.performance.detail.attention.kind.${item.kind}`)}
-                    </p>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell className="font-semibold">{item.salesmanName}</TableCell>
-              <TableCell>{item.customerName || '-'}</TableCell>
-              <TableCell className="whitespace-nowrap text-xs">{formatDate(item.date, locale)}</TableCell>
-              <TableCell className="text-right font-black tabular-nums text-amber-600">
-                {t('salesman360.performance.detail.attention.days', { count: item.ageDays })}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
-  );
-}
-
 export function SalesPerformanceDetailPanels({
   userId,
   data,
@@ -243,42 +135,13 @@ export function SalesPerformanceDetailPanels({
   periodParams?: Salesmen360PeriodParams;
 }): ReactElement {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const Recharts = useRechartsModule(true);
   const [activeDetailTab, setActiveDetailTab] = useState('flow');
-  const [workKind, setWorkKind] = useState<(typeof WORK_KIND_FILTERS)[number]>('all');
-  const [workSearch, setWorkSearch] = useState('');
-  const deferredWorkSearch = useDeferredValue(workSearch.trim());
-  const [workPage, setWorkPage] = useState(1);
-  const workFeedQuery = useSalesmenPerformanceWorkFeedQuery({
-    userId,
-    page: workPage,
-    pageSize: 20,
-    kind: workKind === 'all' ? undefined : workKind,
-    search: deferredWorkSearch || undefined,
-    currency,
-    periodParams,
-    enabled: activeDetailTab === 'work',
-  });
-
-  useEffect(() => {
-    setWorkPage(1);
-  }, [
-    userId,
-    workKind,
-    deferredWorkSearch,
-    currency,
-    periodParams?.period,
-    periodParams?.startDate,
-    periodParams?.endDate,
-  ]);
 
   const statusChartData = data.documentStatuses.map((item) => ({
     ...item,
     documentLabel: t(`salesman360.performance.detail.document.${item.documentType}`),
   }));
-  const workFeed = workFeedQuery.data;
-  const workItems = workFeed?.items ?? [];
 
   const funnelStages = [
     {
@@ -445,12 +308,12 @@ export function SalesPerformanceDetailPanels({
                       <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">{row.currency}</span>
                       <span className="text-[10px] font-bold text-slate-400">{t('salesman360.performance.detail.financial.averageOrder')}</span>
                     </div>
-                    <p className="mb-4 text-lg font-black">{formatAmount(row.averageOrderAmount, row.currency, locale)}</p>
+                    <p className="mb-4 text-lg font-black">{formatPerformanceAmount(row.averageOrderAmount, row.currency, locale)}</p>
                     <div className="grid grid-cols-2 gap-3 text-xs">
-                      <div><p className="text-slate-400">{t('salesman360.performance.detail.document.demand')}</p><p className="font-bold">{formatAmount(row.demandAmount, row.currency, locale)}</p></div>
-                      <div><p className="text-slate-400">{t('salesman360.performance.detail.document.quotation')}</p><p className="font-bold">{formatAmount(row.quotationAmount, row.currency, locale)}</p></div>
-                      <div><p className="text-slate-400">{t('salesman360.performance.detail.document.order')}</p><p className="font-bold">{formatAmount(row.orderAmount, row.currency, locale)}</p></div>
-                      <div><p className="text-slate-400">{t('salesman360.performance.detail.document.erp')}</p><p className="font-bold text-emerald-600">{formatAmount(row.erpOrderAmount, row.currency, locale)}</p></div>
+                      <div><p className="text-slate-400">{t('salesman360.performance.detail.document.demand')}</p><p className="font-bold">{formatPerformanceAmount(row.demandAmount, row.currency, locale)}</p></div>
+                      <div><p className="text-slate-400">{t('salesman360.performance.detail.document.quotation')}</p><p className="font-bold">{formatPerformanceAmount(row.quotationAmount, row.currency, locale)}</p></div>
+                      <div><p className="text-slate-400">{t('salesman360.performance.detail.document.order')}</p><p className="font-bold">{formatPerformanceAmount(row.orderAmount, row.currency, locale)}</p></div>
+                      <div><p className="text-slate-400">{t('salesman360.performance.detail.document.erp')}</p><p className="font-bold text-emerald-600">{formatPerformanceAmount(row.erpOrderAmount, row.currency, locale)}</p></div>
                     </div>
                   </div>
                 ))}
@@ -493,7 +356,10 @@ export function SalesPerformanceDetailPanels({
                 <CardTitle className="text-base">{t('salesman360.performance.detail.attention.activityTitle')}</CardTitle>
               </CardHeader>
               <CardContent>
-                <AttentionTable items={data.attentionItems.filter((item) => item.kind === 'overdueActivity')} locale={locale} />
+                <PerformanceAttentionTable
+                  items={data.attentionItems.filter((item) => item.kind === 'overdueActivity')}
+                  locale={locale}
+                />
               </CardContent>
             </Card>
           </div>
@@ -558,7 +424,7 @@ export function SalesPerformanceDetailPanels({
                           <TableCell className="text-right font-semibold tabular-nums">{row.totalCustomers}</TableCell>
                           <TableCell className="text-right font-semibold tabular-nums">{row.erpIntegratedCustomers}</TableCell>
                           <TableCell className="text-right font-semibold tabular-nums">{row.businessCardCustomers}</TableCell>
-                          <TableCell className="text-right font-black tabular-nums text-sky-600">%{formatRate(row.customerEngagementRate, locale)}</TableCell>
+                      <TableCell className="text-right font-black tabular-nums text-sky-600">%{formatRate(row.customerEngagementRate, locale)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -569,184 +435,14 @@ export function SalesPerformanceDetailPanels({
           ) : null}
         </TabsContent>
 
-        <TabsContent value="work" className="space-y-5 outline-none">
-          <Card className="rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3">
-            <CardHeader className="gap-4 pb-3 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <CardTitle className="text-base">{t('salesman360.performance.detail.work.title')}</CardTitle>
-                <p className="mt-1 text-xs font-medium text-slate-500">{t('salesman360.performance.detail.work.description')}</p>
-              </div>
-              <div className="relative w-full lg:w-72">
-                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                <Input value={workSearch} onChange={(event) => setWorkSearch(event.target.value)} placeholder={t('salesman360.performance.detail.work.search')} className="rounded-xl pl-9" />
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4 p-0">
-              <div className="flex gap-2 overflow-x-auto px-5">
-                {WORK_KIND_FILTERS.map((kind) => (
-                  <button
-                    key={kind}
-                    type="button"
-                    onClick={() => setWorkKind(kind)}
-                    className={cn(
-                      'whitespace-nowrap rounded-full border px-3 py-1.5 text-xs font-bold transition-colors',
-                      workKind === kind
-                        ? 'border-primary bg-primary text-primary-foreground'
-                        : 'border-slate-200 bg-white text-slate-600 hover:border-primary/40 dark:border-white/10 dark:bg-white/3 dark:text-slate-300'
-                    )}
-                  >
-                    {t(`salesman360.performance.detail.work.kind.${kind}`)}
-                  </button>
-                ))}
-              </div>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader><TableRow className="bg-slate-50/80 dark:bg-white/3">
-                    <TableHead>{t('salesman360.performance.detail.work.record')}</TableHead>
-                    <TableHead>{t('salesman360.performance.salesman')}</TableHead>
-                    <TableHead>{t('salesman360.performance.detail.work.customer')}</TableHead>
-                    <TableHead>{t('salesman360.performance.detail.work.status')}</TableHead>
-                    <TableHead>{t('salesman360.performance.detail.work.date')}</TableHead>
-                    <TableHead className="text-right">{t('salesman360.performance.detail.work.amount')}</TableHead>
-                  </TableRow></TableHeader>
-                  <TableBody>
-                    {workFeedQuery.isLoading ? (
-                      Array.from({ length: 5 }, (_, index) => (
-                        <TableRow key={index}>
-                          <TableCell colSpan={6}><Skeleton className="h-10 rounded-xl" /></TableCell>
-                        </TableRow>
-                      ))
-                    ) : null}
-                    {!workFeedQuery.isLoading && workFeedQuery.isError ? (
-                      <TableRow>
-                        <TableCell colSpan={6} className="h-28 text-center">
-                          <div className="flex flex-col items-center gap-3">
-                            <span className="text-sm font-semibold text-red-500">
-                              {t('salesman360.performance.detail.work.loadError')}
-                            </span>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              className="rounded-xl"
-                              onClick={() => {
-                                void workFeedQuery.refetch();
-                              }}
-                            >
-                              {t('salesman360.retry')}
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ) : null}
-                    {!workFeedQuery.isLoading && !workFeedQuery.isError ? workItems.map((item) => {
-                      const route = getWorkItemRoute(item);
-                      return (
-                        <TableRow
-                          key={`${item.kind}-${item.entityId}`}
-                          className={cn(route && 'cursor-pointer hover:bg-primary/5')}
-                          onClick={route ? () => navigate(route) : undefined}
-                          onKeyDown={route
-                            ? (event) => {
-                                if (event.key === 'Enter' || event.key === ' ') {
-                                  event.preventDefault();
-                                  navigate(route);
-                                }
-                              }
-                            : undefined}
-                          role={route ? 'link' : undefined}
-                          tabIndex={route ? 0 : undefined}
-                        >
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-black uppercase text-slate-500 dark:bg-white/8 dark:text-slate-300">
-                                {t(`salesman360.performance.detail.work.kind.${item.kind}`)}
-                              </span>
-                              <div>
-                                <p className="font-bold text-slate-900 dark:text-white">{item.title}</p>
-                                {item.typeName ? <p className="text-[11px] text-slate-400">{item.typeName}</p> : null}
-                              </div>
-                              {route ? <ExternalLink className="size-3.5 text-slate-300" /> : null}
-                            </div>
-                          </TableCell>
-                          <TableCell className="font-semibold">{item.salesmanName}</TableCell>
-                          <TableCell>{item.customerName || '-'}</TableCell>
-                          <TableCell>
-                            <span className={cn(
-                              'inline-flex rounded-full px-2 py-1 text-[10px] font-black',
-                              item.isErpIntegrated
-                                ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300'
-                                : item.isOverdue
-                                  ? 'bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300'
-                                  : 'bg-slate-100 text-slate-600 dark:bg-white/8 dark:text-slate-300'
-                            )}>
-                              {item.isErpIntegrated
-                                ? t('salesman360.performance.detail.status.erpIntegrated')
-                                : t(`salesman360.performance.detail.status.${item.status}`)}
-                            </span>
-                          </TableCell>
-                          <TableCell className="whitespace-nowrap text-xs">{formatDate(item.date, locale)}</TableCell>
-                          <TableCell className="text-right font-bold tabular-nums">
-                            {item.amount != null && item.currency
-                              ? formatAmount(item.amount, item.currency, locale)
-                              : '-'}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    }) : null}
-                    {!workFeedQuery.isLoading && !workFeedQuery.isError && workItems.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="h-28 text-center text-slate-400">{t('common.noData')}</TableCell></TableRow>
-                    ) : null}
-                  </TableBody>
-                </Table>
-              </div>
-              {!workFeedQuery.isLoading && !workFeedQuery.isError && workFeed ? (
-                <div className="flex flex-col gap-3 border-t border-slate-200/80 px-5 py-4 dark:border-white/8 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    {t('salesman360.performance.detail.work.pageSummary', {
-                      total: workFeed.totalCount,
-                      page: workFeed.totalPages === 0 ? 0 : workFeed.page,
-                      totalPages: workFeed.totalPages,
-                    })}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="rounded-xl"
-                      disabled={workFeed.page <= 1}
-                      onClick={() => setWorkPage((current) => Math.max(1, current - 1))}
-                    >
-                      <ChevronLeft className="mr-1 size-4" />
-                      {t('common.previous')}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      className="rounded-xl"
-                      disabled={workFeed.totalPages === 0 || workFeed.page >= workFeed.totalPages}
-                      onClick={() => setWorkPage((current) => current + 1)}
-                    >
-                      {t('common.next')}
-                      <ChevronRight className="ml-1 size-4" />
-                    </Button>
-                  </div>
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
-
-          <Card className="rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">{t('salesman360.performance.detail.attention.allTitle')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AttentionTable items={data.attentionItems} locale={locale} />
-            </CardContent>
-          </Card>
-        </TabsContent>
+        <SalesWorkFeedTab
+          userId={userId}
+          locale={locale}
+          currency={currency}
+          periodParams={periodParams}
+          attentionItems={data.attentionItems}
+          enabled={activeDetailTab === "work"}
+        />
       </Tabs>
     </div>
   );
