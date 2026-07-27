@@ -2,6 +2,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "./styles/brand-theme-shells.css";
+@import "./styles/skin-shells.css";
 
 .ProseMirror {
   outline: none;

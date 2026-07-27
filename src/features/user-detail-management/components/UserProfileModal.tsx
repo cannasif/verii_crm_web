@@ -20,7 +20,7 @@ import {
 } from 'hugeicons-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Check, Palette } from 'lucide-react';
+import { Check, MonitorCog, Palette, Sparkles, TerminalSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -89,10 +89,12 @@ export function UserProfileModal({
     brandTheme,
     isBrandThemeListEnabled,
     v3riiAppearanceRevision,
+    skin,
     setTheme,
     setBrandTheme,
     setBrandThemeListEnabled,
     toggleV3riiAppearanceOverride,
+    setSkin,
   } = useTheme();
   const { user, logout, branch } = useAuthStore();
   const navigate = useNavigate();
@@ -355,6 +357,55 @@ export function UserProfileModal({
                       isBrandThemeListEnabled && 'cursor-not-allowed opacity-50',
                     )}
                   />
+                </div>
+
+                <div className={SETTINGS_ROW_CLASS}>
+                  <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
+                    <div className={cn("rounded-2xl bg-slate-800 p-2.5 text-white shadow-lg md:p-4 dark:bg-white/10")}>
+                      <MonitorCog size={18} className="md:h-6 md:w-6" />
+                    </div>
+                    <div className="min-w-0 text-left">
+                      <p className="text-sm font-bold md:text-base lg:text-lg">{t('shell.interfaceStyle')}</p>
+                      <p className="mt-0.5 text-[10px] font-semibold text-[var(--crm-app-text-muted)] md:text-xs">
+                        {t(`shell.${skin}Hint`)}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className="crm-skin-switch shrink-0"
+                    role="radiogroup"
+                    aria-label={t('shell.interfaceStyle')}
+                  >
+                    <span className="crm-skin-switch__glider" data-skin={skin} aria-hidden />
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={skin === 'terminal'}
+                      title={t('shell.terminalHint')}
+                      onClick={() => setSkin('terminal')}
+                      className={cn(
+                        'crm-skin-switch__option',
+                        skin === 'terminal' && 'crm-skin-switch__option--active',
+                      )}
+                    >
+                      <TerminalSquare aria-hidden />
+                      <span>{t('shell.terminal')}</span>
+                    </button>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={skin === 'premium'}
+                      title={t('shell.premiumHint')}
+                      onClick={() => setSkin('premium')}
+                      className={cn(
+                        'crm-skin-switch__option',
+                        skin === 'premium' && 'crm-skin-switch__option--active',
+                      )}
+                    >
+                      <Sparkles aria-hidden />
+                      <span>{t('shell.premium')}</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className={SETTINGS_ROW_CLASS}>

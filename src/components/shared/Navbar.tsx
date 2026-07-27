@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useRef } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SidebarLeft01Icon, SearchList01Icon, Cancel01Icon, Mic01Icon } from 'hugeicons-react'
@@ -10,9 +10,35 @@ import { useAppShellStore } from '@/stores/app-shell-store';
 import { getImageUrl } from '@/features/user-detail-management/utils/image-url';
 import { cn } from '@/lib/utils';
 import { useVoiceSearch } from '@/hooks/useVoiceSearch';
+import { useTheme } from '@/components/theme-provider';
+import { matchesSearchTerm } from '@/lib/search';
+import type { NavItem } from './nav-items';
 
-export function Navbar(): ReactElement {
+interface NavbarProps {
+  navItems?: NavItem[];
+}
+
+interface SearchDestination {
+  title: string;
+  href: string;
+  group?: string;
+}
+
+function flattenDestinations(items: NavItem[], group?: string): SearchDestination[] {
+  return items.flatMap((item) => {
+    const currentGroup = group ?? item.title;
+    const current = item.href ? [{ title: item.title, href: item.href, group }] : [];
+    const children = item.children?.length
+      ? flattenDestinations(item.children, currentGroup)
+      : [];
+    return [...current, ...children];
+  });
+}
+
+export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
   const { t } = useTranslation();
+  const { skin } = useTheme();
+  const isPremium = skin === 'premium';
   const navigate = useNavigate();
   const location = useLocation();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -23,11 +49,17 @@ export function Navbar(): ReactElement {
   const userDetail = useAppShellStore((state) =>
     user?.id ? state.userSummaries[String(user.id)]?.data ?? null : null
   );
+  const premiumSearchResults = useMemo(() => {
+    if (!isPremium || !searchQuery.trim()) return [];
+    return flattenDestinations(navItems)
+      .filter((item) => matchesSearchTerm(searchQuery, [item.title, item.group]))
+      .slice(0, 8);
+  }, [isPremium, navItems, searchQuery]);
 
   const { isListening, isSupported, startListening } = useVoiceSearch({
     onResult: (text) => {
       setSearchQuery(text);
-      if (text.trim().length > 0) {
+      if (!isPremium && text.trim().length > 0) {
         setSidebarOpen(true);
       }
     },
@@ -54,7 +86,7 @@ export function Navbar(): ReactElement {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const val = e.target.value;
     setSearchQuery(val);
-    if (val.trim().length > 0) {
+    if (!isPremium && val.trim().length > 0) {
       setSidebarOpen(true);
     }
   };
@@ -62,20 +94,35 @@ export function Navbar(): ReactElement {
   return (
     <>
       <header className={cn(
+        "app-navbar-panel",
         "min-h-20 h-auto pt-[env(safe-area-inset-top)] px-4 sm:px-8 flex items-center justify-between border-b transition-all sticky top-0 z-40 backdrop-blur-xl",
         "border-[var(--crm-app-border)] bg-[color-mix(in_srgb,var(--crm-app-panel)_82%,transparent)]"
       )}>
         <div className="flex items-center gap-2 sm:gap-4 shrink-0 h-20">
-          <button
-            type="button"
-            onClick={toggleSidebar}
-            aria-pressed={isSidebarOpen}
-            className="p-2 shrink-0 rounded-xl text-slate-500 dark:text-slate-400 hover:text-[var(--crm-brand-primary)] hover:bg-[var(--crm-brand-soft)] hover:shadow-[0_0_15px_var(--crm-brand-shadow)] transition-all duration-300 focus:outline-none"
-          >
-            <SidebarLeft01Icon size={24} />
-          </button>
+          {isPremium ? (
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="crm-premium-navbar-logo-button"
+              aria-label={t('sidebar.home')}
+            >
+              <img src="/veriicrmlogo-sm.png" alt="V3RII CRM" className="crm-premium-navbar-logo" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={toggleSidebar}
+              aria-pressed={isSidebarOpen}
+              className="p-2 shrink-0 rounded-xl text-slate-500 dark:text-slate-400 hover:text-[var(--crm-brand-primary)] hover:bg-[var(--crm-brand-soft)] hover:shadow-[0_0_15px_var(--crm-brand-shadow)] transition-all duration-300 focus:outline-none"
+            >
+              <SidebarLeft01Icon size={24} />
+            </button>
+          )}
 
-          <div className="relative hidden md:block w-full max-md group">
+          <div className={cn(
+            "relative hidden md:block w-full max-md group",
+            isPremium && "crm-premium-navbar-search",
+          )}>
             <div className="absolute inset-0 rounded-2xl bg-[image:var(--crm-brand-gradient-soft)] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
             <div className="relative flex items-center">
               <SearchList01Icon className="absolute left-4 text-slate-400 w-5 h-5 group-focus-within:text-[var(--crm-brand-primary)] transition-colors duration-300" />
@@ -89,7 +136,8 @@ export function Navbar(): ReactElement {
                   "w-full py-3 pl-12 pr-24 text-base md:text-sm font-medium transition-all duration-300 outline-none rounded-2xl border",
                   "bg-slate-100/50 border-slate-200 text-slate-900 placeholder:text-slate-500 focus:bg-white focus:border-[var(--crm-brand-ring)]",
                   "dark:bg-white/5 dark:border-white/10 dark:text-white dark:placeholder:text-slate-500 dark:focus:bg-[var(--crm-app-panel-strong)]",
-                  "focus:ring-4 focus:ring-[var(--crm-brand-ring)] focus:shadow-[0_0_20px_var(--crm-brand-shadow)]"
+                  "focus:ring-4 focus:ring-[var(--crm-brand-ring)] focus:shadow-[0_0_20px_var(--crm-brand-shadow)]",
+                  isPremium && "crm-premium-navbar-search__input",
                 )}
               />
               <div className="absolute right-3 flex items-center gap-2">
@@ -118,6 +166,28 @@ export function Navbar(): ReactElement {
                 )}
               </div>
             </div>
+            {isPremium && searchQuery.trim() && (
+              <div className="crm-premium-navbar-search__results">
+                {premiumSearchResults.length > 0 ? (
+                  premiumSearchResults.map((item) => (
+                    <button
+                      key={item.href}
+                      type="button"
+                      className="crm-premium-navbar-search__result"
+                      onClick={() => {
+                        setSearchQuery('');
+                        navigate(item.href);
+                      }}
+                    >
+                      <span>{item.title}</span>
+                      {item.group && <small>{item.group}</small>}
+                    </button>
+                  ))
+                ) : (
+                  <p className="crm-premium-navbar-search__empty">{t('shell.noNavigationResult')}</p>
+                )}
+              </div>
+            )}
           </div>
 
           {isSupported && (

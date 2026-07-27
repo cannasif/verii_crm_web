@@ -5760,6 +5760,15 @@
       "error": "Fehler"
     }
   },
+  "shell": {
+    "interfaceStyle": "Oberflächenstil",
+    "terminal": "Terminal",
+    "premium": "Premium",
+    "terminalHint": "Kompaktes Seitenleistenlayout und bestehender CRM-Arbeitsbereich",
+    "premiumHint": "Breiter Glas-Arbeitsbereich mit oberer Navigation",
+    "mainNavigation": "Hauptnavigation",
+    "noNavigationResult": "Kein passendes Menü gefunden"
+  },
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "ERP-Datensatz wurde vom Vertriebsmitarbeiter für eine Revision geschlossen",

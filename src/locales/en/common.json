@@ -5816,6 +5816,15 @@
       "error": "Error"
     }
   },
+  "shell": {
+    "interfaceStyle": "Interface style",
+    "terminal": "Terminal",
+    "premium": "Premium",
+    "terminalHint": "Compact sidebar layout and the existing CRM workspace",
+    "premiumHint": "Wide glass workspace with top navigation",
+    "mainNavigation": "Main navigation",
+    "noNavigationResult": "No matching menu found"
+  },
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "ERP record closed by salesperson for revision",

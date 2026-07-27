@@ -4,6 +4,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
 import { ChevronDown, ChevronRight, X } from 'lucide-react';
 import { matchesSearchTerm } from '@/lib/search';
+import type { NavItem } from './nav-items';
 
 const SIDEBAR_EASE = 'ease-[cubic-bezier(0.4,0,0.2,1)]';
 const SIDEBAR_TRANSITION = `duration-[260ms] ${SIDEBAR_EASE}`;
@@ -22,13 +23,6 @@ const areSetsEqual = (left: Set<string>, right: Set<string>): boolean => {
   return true;
 };
 
-interface NavItem {
-  title: string;
-  href?: string;
-  icon?: ReactElement;
-  children?: NavItem[];
-  defaultExpanded?: boolean;
-}
 interface SidebarProps {
   items: NavItem[];
 }

@@ -12,6 +12,12 @@ import {
   isBrandTheme,
   toggleV3riiAppearanceOverride,
 } from "@/lib/brand-themes"
+import {
+  CRM_SKIN_CLASS_MAP,
+  CRM_SKIN_STORAGE_KEY,
+  type CrmSkin,
+  readStoredCrmSkin,
+} from "@/lib/skins"
 
 type Theme = "dark" | "light" | "system"
 
@@ -20,6 +26,7 @@ type ThemeProviderProps = {
   defaultTheme?: Theme
   storageKey?: string
   brandThemeStorageKey?: string
+  skinStorageKey?: string
 }
 
 type ThemeProviderState = {
@@ -27,10 +34,12 @@ type ThemeProviderState = {
   brandTheme: BrandTheme
   isBrandThemeListEnabled: boolean
   v3riiAppearanceRevision: number
+  skin: CrmSkin
   setTheme: (theme: Theme) => void
   setBrandTheme: (theme: BrandTheme) => void
   setBrandThemeListEnabled: (enabled: boolean) => void
   toggleV3riiAppearanceOverride: () => void
+  setSkin: (skin: CrmSkin) => void
 }
 
 const initialState: ThemeProviderState = {
@@ -38,10 +47,12 @@ const initialState: ThemeProviderState = {
   brandTheme: "v3rii",
   isBrandThemeListEnabled: false,
   v3riiAppearanceRevision: 0,
+  skin: "terminal",
   setTheme: () => null,
   setBrandTheme: () => null,
   setBrandThemeListEnabled: () => null,
   toggleV3riiAppearanceOverride: () => null,
+  setSkin: () => null,
 }
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
@@ -96,11 +107,26 @@ function clearBrandThemeState(root: HTMLElement): void {
   root.removeAttribute("data-brand-theme-appearance")
 }
 
+function applySkinClass(root: HTMLElement, skin: CrmSkin): void {
+  for (const className of Object.values(CRM_SKIN_CLASS_MAP)) {
+    if (className) {
+      root.classList.remove(className)
+    }
+  }
+
+  const skinClass = CRM_SKIN_CLASS_MAP[skin]
+  if (skinClass) {
+    root.classList.add(skinClass)
+  }
+  root.dataset.skin = skin
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = "system",
   storageKey = "vite-ui-theme",
   brandThemeStorageKey = BRAND_THEME_STORAGE_KEY,
+  skinStorageKey = CRM_SKIN_STORAGE_KEY,
   ...props
 }: ThemeProviderProps) {
   const [isBrandThemeListEnabled, setBrandThemeListEnabled] = useState<boolean>(() => {
@@ -118,6 +144,7 @@ export function ThemeProvider({
   })
 
   const [v3riiAppearanceRevision, setV3riiAppearanceRevision] = useState<number>(0)
+  const [skin, setSkin] = useState<CrmSkin>(() => readStoredCrmSkin(skinStorageKey))
 
   useEffect(() => {
     const root = window.document.documentElement
@@ -148,6 +175,10 @@ export function ThemeProvider({
 
     clearBrandThemeState(root)
   }, [brandTheme, isBrandThemeListEnabled, v3riiAppearanceRevision])
+
+  useEffect(() => {
+    applySkinClass(window.document.documentElement, skin)
+  }, [skin])
 
   const handleToggleV3riiAppearanceOverride = useCallback(() => {
     toggleV3riiAppearanceOverride()
@@ -214,16 +245,23 @@ export function ThemeProvider({
     setBrandTheme(DEFAULT_V3RII_THEME)
   }, [brandThemeStorageKey, defaultTheme, storageKey])
 
+  const setSkinAndStore = useCallback((newSkin: CrmSkin) => {
+    localStorage.setItem(skinStorageKey, newSkin)
+    setSkin(newSkin)
+  }, [skinStorageKey])
+
   const value = useMemo(() => ({
     theme,
     brandTheme,
     isBrandThemeListEnabled,
     v3riiAppearanceRevision,
+    skin,
     setTheme: setThemeAndStore,
     setBrandTheme: setBrandThemeAndStore,
     setBrandThemeListEnabled: setBrandThemeListEnabledAndStore,
     toggleV3riiAppearanceOverride: handleToggleV3riiAppearanceOverride,
-  }), [theme, brandTheme, isBrandThemeListEnabled, v3riiAppearanceRevision, setThemeAndStore, setBrandThemeAndStore, setBrandThemeListEnabledAndStore, handleToggleV3riiAppearanceOverride])
+    setSkin: setSkinAndStore,
+  }), [theme, brandTheme, isBrandThemeListEnabled, v3riiAppearanceRevision, skin, setThemeAndStore, setBrandThemeAndStore, setBrandThemeListEnabledAndStore, handleToggleV3riiAppearanceOverride, setSkinAndStore])
 
   return (
     <ThemeProviderContext.Provider {...props} value={value}>

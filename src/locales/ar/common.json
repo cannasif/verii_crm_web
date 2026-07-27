@@ -5803,6 +5803,15 @@
       "error": "خطأ"
     }
   },
+  "shell": {
+    "interfaceStyle": "نمط الواجهة",
+    "terminal": "طرفية",
+    "premium": "مميز",
+    "terminalHint": "تخطيط مضغوط بشريط جانبي ومساحة CRM الحالية",
+    "premiumHint": "مساحة عمل زجاجية واسعة مع تنقل علوي",
+    "mainNavigation": "التنقل الرئيسي",
+    "noNavigationResult": "لم يتم العثور على قائمة مطابقة"
+  },
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "تم إغلاق سجل ERP بواسطة مندوب المبيعات للمراجعة",

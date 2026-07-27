@@ -5797,6 +5797,15 @@
       "error": "Error"
     }
   },
+  "shell": {
+    "interfaceStyle": "Estilo de interfaz",
+    "terminal": "Terminal",
+    "premium": "Premium",
+    "terminalHint": "Diseño compacto con barra lateral y espacio CRM actual",
+    "premiumHint": "Espacio amplio acristalado con navegación superior",
+    "mainNavigation": "Navegación principal",
+    "noNavigationResult": "No se encontró un menú coincidente"
+  },
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "Registro ERP limpiado para revisión",

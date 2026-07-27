@@ -5815,6 +5815,15 @@
       "error": "Hatalı"
     }
   },
+  "shell": {
+    "interfaceStyle": "Arayüz stili",
+    "terminal": "Terminal",
+    "premium": "Premium",
+    "terminalHint": "Kompakt sidebar düzeni ve mevcut CRM çalışma alanı",
+    "premiumHint": "Üst navigasyonlu geniş ve cam yüzeyli çalışma alanı",
+    "mainNavigation": "Ana menü",
+    "noNavigationResult": "Eşleşen menü bulunamadı"
+  },
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "ERP kaydı revizyon için plasiyer tarafından kapatıldı",
