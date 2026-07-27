@@ -172,9 +172,6 @@ const hasSeparateShippingCustomer = (customerCode: string, shippingCustomerCode?
 interface NdiSeriesConfig {
   label: string;
   netsisCompany: string;
-  eFatura?: string;
-  eArsiv?: string;
-  fatura?: string;
 }
 
 interface NdiWarehouseOption {
@@ -240,12 +237,12 @@ const transferRules: NdiTransferRule[] = [
     sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'NURAY',
     targetNetsisCompany: 'NURAY24',
-    targetSerial: 'İrsaliye NUR; fatura E-Fatura NRY / E-Arşiv NEA',
-    shipmentRule: 'Sevk varsa NURAY24 irsaliyesi, sevk yoksa NURAY24 doğrudan faturası oluşur.',
+    targetSerial: 'Seçilen irsaliye ve fatura belge serileri',
+    shipmentRule: 'Önce NURAY24 irsaliyesi, ardından bu irsaliyeden NURAY24 faturası oluşturulur.',
     taxRule: 'NURAY24 KDV her zaman %20; Şirket24 KDV 1/4 işlemde %5, TAM işlemde %20.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'Önce NURAY24 belgesi oluşur; başarılıysa sevkte irsaliye faturalaştırılarak, sevksizde doğrudan SIRKET24 faturası oluşur.',
-    officialNote: 'NURAY24 başarısızsa SIRKET24 işlemi başlatılmaz; kısmi başarıda yalnız eksik SIRKET24 faturası tekrar denenir.',
+    transferNote: 'NURAY24 faturası başarılı olursa kaynak SIRKET24 irsaliyesi de seçilen fatura serisiyle faturalaştırılır.',
+    officialNote: 'Her aşama bir öncekinin başarısına bağlıdır; yeniden denemede başarılı belgeler tekrar oluşturulmaz.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki NUR belgeleri toplu seçilebilir.',
   },
   {
@@ -256,12 +253,12 @@ const transferRules: NdiTransferRule[] = [
     sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'WINDO',
     targetNetsisCompany: 'WIN24',
-    targetSerial: 'İrsaliye VIN; fatura E-Fatura VDF / E-Arşiv EAR',
-    shipmentRule: 'Özel Kod K her durumda irsaliye; Özel Kod N sevkte irsaliye, sevksizde doğrudan fatura.',
+    targetSerial: 'Seçilen irsaliye ve fatura belge serileri',
+    shipmentRule: 'Önce WIN24 irsaliyesi, ardından bu irsaliyeden WIN24 faturası oluşturulur.',
     taxRule: 'WIN24 KDV %20; SIRKET24 KDV Özel Kod K için %0, Özel Kod N için %20.',
     warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'Önce WIN24 belgesi oluşur; başarılıysa sevkte irsaliye faturalaştırılarak, sevksizde doğrudan SIRKET24 faturası oluşur.',
-    officialNote: 'WIN24 başarısızsa SIRKET24 işlemi başlatılmaz; aynı irsaliye ikinci kez faturalaştırılmaz.',
+    transferNote: 'WIN24 faturası başarılı olursa kaynak SIRKET24 irsaliyesi de seçilen fatura serisiyle faturalaştırılır.',
+    officialNote: 'Her aşama bir öncekinin başarısına bağlıdır; aynı irsaliye ikinci kez faturalaştırılmaz.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki VIN belgeleri toplu seçilebilir.',
   },
   {
@@ -272,12 +269,12 @@ const transferRules: NdiTransferRule[] = [
     sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'WIN DIS',
     targetNetsisCompany: 'DISTIC24',
-    targetSerial: 'İrsaliye ve fatura EIR',
-    shipmentRule: 'Sevk varsa EIR irsaliye, sevk yoksa EIR doğrudan fatura oluşur.',
+    targetSerial: 'Seçilen irsaliye ve fatura belge serileri',
+    shipmentRule: 'Önce DISTIC24 irsaliyesi, ardından bu irsaliyeden DISTIC24 faturası oluşturulur.',
     taxRule: 'SIRKET24 KDV %0; hedef belge KDV’si dış ticaret senaryosuna göre uygulanır.',
     warehouseRule: 'Varsayılan depo kodu 100 olmalı.',
-    transferNote: 'Önce DISTIC24 belgesi oluşur; başarılıysa sevkte irsaliyeden, sevksizde doğrudan SIRKET24 faturası oluşur.',
-    officialNote: 'DISTIC24 ve SIRKET24 belge numaraları kendi şirketlerinden ayrı ayrı alınır.',
+    transferNote: 'DISTIC24 faturası başarılı olursa kaynak SIRKET24 irsaliyesi de seçilen fatura serisiyle faturalaştırılır.',
+    officialNote: 'DISTIC24 ve SIRKET24 belge numaraları seçilen serilerle kendi şirketlerinden ayrı ayrı alınır.',
     bulkNote: 'İrsaliye birleştirme ve toplu aktarım desteklenebilir.',
   },
   {
@@ -288,21 +285,21 @@ const transferRules: NdiTransferRule[] = [
     sourceNetsisCompany: 'SIRKET24',
     targetCompany: 'ŞİRKET24',
     targetNetsisCompany: 'SIRKET24',
-    targetSerial: 'SIP serili, SIP2026 belge numarası',
-    shipmentRule: 'Sevk var/yok fark etmez.',
+    targetSerial: 'Seçilen fatura belge serisi',
+    shipmentRule: 'Mevcut SIRKET24 irsaliyesi doğrudan faturalaştırılır.',
     taxRule: 'KDV 0; resmi evrak oluşmayacak.',
     warehouseRule: 'Depo kuralı yok.',
-    transferNote: 'Yalnız SIRKET24 şirketinde SIP serili doğrudan fatura oluşur; irsaliye oluşturulmaz.',
+    transferNote: 'SIRKET24 irsaliyesi seçilen fatura serisiyle IrsToFat üzerinden faturalaştırılır.',
     officialNote: 'Resmi evrak oluşmayacak.',
     bulkNote: 'Aynı ilk 3 karakter grubundaki SIP belgeleri toplu seçilebilir.',
   },
 ];
 
 const SERIES_CONFIG: Record<NdiBusinessSeries, NdiSeriesConfig> = {
-  NUR: { label: 'NURAY', netsisCompany: 'NURAY24', eFatura: 'NRY', eArsiv: 'NEA' },
-  VIN: { label: 'WINDOFORM KAPI', netsisCompany: 'WIN24', eFatura: 'VDF', eArsiv: 'EAR' },
-  DIS: { label: 'DIŞ TİCARET', netsisCompany: 'DISTIC24', eFatura: 'EIR', eArsiv: 'EIR' },
-  SIP: { label: 'ŞİRKET24', netsisCompany: 'SIRKET24', fatura: 'SIP' },
+  NUR: { label: 'NURAY', netsisCompany: 'NURAY24' },
+  VIN: { label: 'WINDOFORM KAPI', netsisCompany: 'WIN24' },
+  DIS: { label: 'DIŞ TİCARET', netsisCompany: 'DISTIC24' },
+  SIP: { label: 'ŞİRKET24', netsisCompany: 'SIRKET24' },
 };
 
 const COMPANY_WAREHOUSE_CONFIG: Record<NdiTransferRule['id'], NdiWarehouseConfig> = {
@@ -435,16 +432,8 @@ function getActionLabel(action: NdiBatchAction): string {
 function resolvePrimaryAction(order: NdiOrder): NdiBatchAction {
   const series = getBusinessSeries(order);
 
-  if (series === 'SIP' || order.documentType === 'fatura') {
+  if (series === 'SIP') {
     return 'FATURALASTIR';
-  }
-
-  if ((series === 'NUR' || series === 'DIS') && !order.hasShipment) {
-    return 'FATURALASTIR';
-  }
-
-  if (series === 'VIN') {
-    return 'IRSALIYELISTIR';
   }
 
   return 'IRSALIYELISTIR';
@@ -1229,8 +1218,10 @@ export function NdiOrderTransferPage(): ReactElement {
 
       const createdDocuments: NdiPreparedDocument[] = selectedOrdersForTransfer.map((order) => {
         const outcome = outcomeByOrderNo.get(order.orderNo);
-        const targetSeries = outcome?.targetSeries ?? getBusinessSeries(order);
-        const documentType: NdiPreparedDocument['documentType'] = outcome?.action === 'FATURALASTIR' ? 'Fatura' : 'İrsaliye';
+        const action = outcome?.action ?? resolvePrimaryAction(order);
+        const documentType: NdiPreparedDocument['documentType'] = action === 'FATURALASTIR' ? 'Fatura' : 'İrsaliye';
+        const targetSeries = outcome?.targetSeries
+          ?? resolveEffectiveTargetSeries(action, dispatchSeries, invoiceSeries);
 
         return {
           sourceDocumentNo: order.orderNo,
