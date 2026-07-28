@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import {
   Activity,
   BadgeCheck,
@@ -7,17 +7,34 @@ import {
   ContactRound,
   FileCheck2,
   FileText,
+  Minus,
   ShoppingCart,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import type { Salesmen360PerformanceTotalsDto } from '../../types/salesmen360.types';
+import type {
+  Salesmen360PerformanceTotalsDto,
+  Salesmen360PerformanceTrendItemDto,
+} from '../../types/salesmen360.types';
+import { KPI_TONE_ICON_CLASSNAME, KPI_TONE_SOLID_CLASSNAME, type KpiTone } from '../../utils/kpiTones';
+import { computeTrendDelta, Sparkline } from './Sparkline';
 
 interface PerformanceKpiOverviewProps {
   totals: Salesmen360PerformanceTotalsDto;
   locale: string;
+  trend?: Salesmen360PerformanceTrendItemDto[];
 }
+
+const TONE_SPARKLINE_CLASSNAME: Record<KpiTone, string> = {
+  primary: 'text-primary',
+  secondary: 'text-violet-500',
+  success: 'text-emerald-500',
+  warning: 'text-amber-500',
+  neutral: 'text-slate-400 dark:text-slate-500',
+};
 
 function formatRate(value: number, locale: string): string {
   return new Intl.NumberFormat(locale, {
@@ -26,55 +43,80 @@ function formatRate(value: number, locale: string): string {
   }).format(value ?? 0);
 }
 
+function TrendDeltaBadge({ delta, locale }: { delta: number | null; locale: string }): ReactElement | null {
+  if (delta == null || Number.isNaN(delta)) return null;
+  const isFlat = Math.abs(delta) < 0.5;
+  const Icon = isFlat ? Minus : delta > 0 ? TrendingUp : TrendingDown;
+  const toneClassName = isFlat
+    ? 'bg-slate-100 text-slate-500 dark:bg-white/8 dark:text-slate-400'
+    : delta > 0
+      ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+      : 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400';
+
+  return (
+    <span className={cn('inline-flex shrink-0 items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-black tabular-nums', toneClassName)}>
+      <Icon className="size-2.5" />
+      {isFlat ? '0%' : `${delta > 0 ? '+' : ''}${formatRate(delta, locale)}%`}
+    </span>
+  );
+}
+
 function PerformanceKpiCard({
   title,
   value,
   detail,
   icon: Icon,
   tone,
+  trendValues,
+  locale,
 }: {
   title: string;
   value: number;
   detail: string;
   icon: typeof ShoppingCart;
-  tone: 'pink' | 'amber' | 'emerald' | 'indigo' | 'sky' | 'violet';
+  tone: KpiTone;
+  trendValues?: number[];
+  locale: string;
 }): ReactElement {
-  const tones = {
-    pink: 'border-pink-200/80 bg-pink-50 text-pink-600 dark:border-pink-400/20 dark:bg-pink-500/10 dark:text-pink-300',
-    amber: 'border-amber-200/80 bg-amber-50 text-amber-600 dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-300',
-    emerald:
-      'border-emerald-200/80 bg-emerald-50 text-emerald-600 dark:border-emerald-400/20 dark:bg-emerald-500/10 dark:text-emerald-300',
-    indigo:
-      'border-indigo-200/80 bg-indigo-50 text-indigo-600 dark:border-indigo-400/20 dark:bg-indigo-500/10 dark:text-indigo-300',
-    sky: 'border-sky-200/80 bg-sky-50 text-sky-600 dark:border-sky-400/20 dark:bg-sky-500/10 dark:text-sky-300',
-    violet:
-      'border-violet-200/80 bg-violet-50 text-violet-600 dark:border-violet-400/20 dark:bg-violet-500/10 dark:text-violet-300',
-  };
+  const delta = trendValues ? computeTrendDelta(trendValues) : null;
+  const hasSparkline = (trendValues?.length ?? 0) >= 2;
 
   return (
-    <Card className="overflow-hidden rounded-2xl border-slate-200/90 bg-white/90 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/3">
-      <CardContent className="p-4">
+    <Card className="group relative overflow-hidden rounded-2xl border-slate-200/90 bg-white/90 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/3">
+      <div className={cn('absolute inset-x-0 top-0 h-1 opacity-80', KPI_TONE_SOLID_CLASSNAME[tone])} />
+      <CardContent className="p-4 pt-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate text-[10px] font-black uppercase tracking-[0.17em] text-slate-500 dark:text-slate-400">
               {title}
             </p>
-            <p className="mt-2 text-3xl font-black tabular-nums text-slate-950 dark:text-white">
-              {value}
-            </p>
+            <div className="mt-2 flex items-center gap-2">
+              <p className="text-3xl font-black tabular-nums text-slate-950 dark:text-white">{value}</p>
+              <TrendDeltaBadge delta={delta} locale={locale} />
+            </div>
           </div>
           <div
             className={cn(
-              'flex size-10 shrink-0 items-center justify-center rounded-xl border',
-              tones[tone]
+              'flex size-10 shrink-0 items-center justify-center rounded-xl border shadow-sm transition-transform group-hover:scale-105',
+              KPI_TONE_ICON_CLASSNAME[tone]
             )}
           >
             <Icon className="size-5" aria-hidden />
           </div>
         </div>
-        <p className="mt-3 min-h-8 text-xs font-semibold leading-4 text-slate-500 dark:text-slate-400">
-          {detail}
-        </p>
+        <div className="mt-3 flex items-end justify-between gap-3">
+          <p className="min-h-8 text-xs font-semibold leading-4 text-slate-500 dark:text-slate-400">
+            {detail}
+          </p>
+          {hasSparkline ? (
+            <Sparkline
+              values={trendValues as number[]}
+              className={cn('-mb-1 shrink-0', TONE_SPARKLINE_CLASSNAME[tone])}
+              strokeClassName={TONE_SPARKLINE_CLASSNAME[tone]}
+              fillClassName={TONE_SPARKLINE_CLASSNAME[tone]}
+            />
+          ) : null}
+        </div>
       </CardContent>
     </Card>
   );
@@ -87,25 +129,25 @@ function ConversionRail({ totals, locale }: PerformanceKpiOverviewProps): ReactE
       label: t('salesman360.performance.pipeline.quotations'),
       value: totals.totalQuotations,
       icon: FileText,
-      color: 'bg-sky-500',
+      color: KPI_TONE_SOLID_CLASSNAME.neutral,
     },
     {
       label: t('salesman360.performance.pipeline.converted'),
       value: totals.convertedQuotations,
       icon: FileCheck2,
-      color: 'bg-indigo-500',
+      color: KPI_TONE_SOLID_CLASSNAME.secondary,
     },
     {
       label: t('salesman360.performance.pipeline.orders'),
       value: totals.totalOrders,
       icon: ShoppingCart,
-      color: 'bg-violet-500',
+      color: KPI_TONE_SOLID_CLASSNAME.primary,
     },
     {
       label: t('salesman360.performance.pipeline.erp'),
       value: totals.erpIntegratedOrders,
       icon: BadgeCheck,
-      color: 'bg-emerald-500',
+      color: KPI_TONE_SOLID_CLASSNAME.success,
     },
   ];
 
@@ -166,8 +208,20 @@ function ConversionRail({ totals, locale }: PerformanceKpiOverviewProps): ReactE
 export function PerformanceKpiOverview({
   totals,
   locale,
+  trend = [],
 }: PerformanceKpiOverviewProps): ReactElement {
   const { t } = useTranslation();
+
+  const trendSeries = useMemo(
+    () => ({
+      orderCount: trend.map((item) => item.orderCount),
+      erpOrderCount: trend.map((item) => item.erpOrderCount),
+      quotationCount: trend.map((item) => item.quotationCount),
+      activityCount: trend.map((item) => item.activityCount),
+      customerCount: trend.map((item) => item.customerCount),
+    }),
+    [trend]
+  );
 
   return (
     <>
@@ -180,7 +234,9 @@ export function PerformanceKpiOverview({
             rejected: totals.rejectedOrClosedOrders,
           })}
           icon={ShoppingCart}
-          tone="pink"
+          tone="primary"
+          trendValues={trendSeries.orderCount}
+          locale={locale}
         />
         <PerformanceKpiCard
           title={t('salesman360.performance.kpi.pending')}
@@ -189,7 +245,8 @@ export function PerformanceKpiOverview({
             draft: totals.draftOrders,
           })}
           icon={CircleDashed}
-          tone="amber"
+          tone="warning"
+          locale={locale}
         />
         <PerformanceKpiCard
           title={t('salesman360.performance.kpi.erpOrders')}
@@ -198,7 +255,9 @@ export function PerformanceKpiOverview({
             rate: formatRate(totals.erpIntegrationRate, locale),
           })}
           icon={BadgeCheck}
-          tone="emerald"
+          tone="success"
+          trendValues={trendSeries.erpOrderCount}
+          locale={locale}
         />
         <PerformanceKpiCard
           title={t('salesman360.performance.kpi.quotations')}
@@ -208,7 +267,9 @@ export function PerformanceKpiOverview({
             rate: formatRate(totals.quotationConversionRate, locale),
           })}
           icon={FileText}
-          tone="indigo"
+          tone="secondary"
+          trendValues={trendSeries.quotationCount}
+          locale={locale}
         />
         <PerformanceKpiCard
           title={t('salesman360.performance.kpi.activities')}
@@ -218,7 +279,9 @@ export function PerformanceKpiOverview({
             planned: totals.plannedActivities,
           })}
           icon={Activity}
-          tone="sky"
+          tone="neutral"
+          trendValues={trendSeries.activityCount}
+          locale={locale}
         />
         <PerformanceKpiCard
           title={t('salesman360.performance.kpi.customers')}
@@ -228,7 +291,9 @@ export function PerformanceKpiOverview({
             card: totals.businessCardCustomers,
           })}
           icon={ContactRound}
-          tone="violet"
+          tone="neutral"
+          trendValues={trendSeries.customerCount}
+          locale={locale}
         />
       </div>
       <ConversionRail totals={totals} locale={locale} />

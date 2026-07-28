@@ -140,7 +140,7 @@ export function SalesmenPerformanceDashboard({
         ) : null}
       </div>
 
-      <PerformanceKpiOverview totals={totals} locale={locale} />
+      <PerformanceKpiOverview totals={totals} locale={locale} trend={data.trend} />
 
       <div className="grid gap-5 xl:grid-cols-5">
         <Card className="rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3 xl:col-span-2">
