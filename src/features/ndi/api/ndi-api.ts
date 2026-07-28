@@ -15,6 +15,7 @@ export interface NetsisCustomerDispatchDto {
   teslimCariIsim?: string | null;
   ozelKod1?: string | null;
   ozelKod2?: string | null;
+  projectCode?: string | null;
 }
 
 export interface NetsisCustomerDispatchLineDto {
@@ -85,6 +86,8 @@ export interface NdiTransferCreateLineRequest {
   unit?: string | null;
   sourceWarehouse?: string | null;
   targetWarehouse?: string | null;
+  projectCode?: string | null;
+  quantityPrecision?: number | null;
   vatRate?: number | null;
   ekalan?: string | null;
   ekalan1?: string | null;
@@ -106,11 +109,13 @@ export interface NdiTransferCreateDocumentRequest {
   customerCode: string;
   customerName?: string | null;
   description?: string | null;
+  projectCode?: string | null;
   date?: string | null;
   lines: NdiTransferCreateLineRequest[];
 }
 
 export interface NdiTransferCreateRequest {
+  mode: 'automatic' | 'manual';
   dispatchSeries: string;
   invoiceSeries: string;
   quantityMode: 'auto' | 'full' | 'quarter';
@@ -142,6 +147,24 @@ export interface NdiTransferFailedDocumentDto {
 export interface NdiTransferCreateResponseDto {
   createdDocuments: NdiTransferCreatedDocumentDto[];
   failedDocuments: NdiTransferFailedDocumentDto[];
+  warnings: string[];
+}
+
+export interface NdiTransferPreviewDocumentDto {
+  sourceDocumentNo: string;
+  targetNetsisCompany: string;
+  targetSeries: string;
+  documentType: string;
+  vatRate: number;
+  usesFullSourceQuantity: boolean;
+  isSirket24SourceInvoice: boolean;
+}
+
+export interface NdiTransferPreviewResponseDto {
+  mode: 'automatic' | 'manual';
+  targetDocumentGroupCount: number;
+  sirket24InvoiceGroupCount: number;
+  documents: NdiTransferPreviewDocumentDto[];
   warnings: string[];
 }
 
@@ -313,6 +336,18 @@ export const ndiApi = {
       { params: { company, customerCode } }
     );
     return ensureSuccess(response, 'Cari belge serileri yüklenemedi.');
+  },
+
+  previewNdiTransfer: async (request: NdiTransferCreateRequest): Promise<NdiTransferPreviewResponseDto> => {
+    try {
+      const response = await api.post<ApiResponse<NdiTransferPreviewResponseDto>>(
+        '/api/NetsisNdiTransfer/preview',
+        request
+      );
+      return ensureSuccess(response, 'NDI aktarım önizlemesi hazırlanamadı.');
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, 'NDI aktarım önizlemesi hazırlanamadı.'));
+    }
   },
 
   createNdiTransfer: async (request: NdiTransferCreateRequest): Promise<NdiTransferCreateResponseDto> => {
