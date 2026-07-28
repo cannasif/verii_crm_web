@@ -1,8 +1,9 @@
 import { type ReactElement } from 'react';
-import { ChevronRight, Coins, Target, Users, Zap } from 'lucide-react';
+import { Activity, ChevronRight, Coins, FileText, Target, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import {
   Table,
   TableBody,
@@ -25,6 +26,12 @@ import {
   RevenueQualityPanel,
 } from '../analytics/SalesmenAnalyticsPanels';
 import { SalesmenPerformanceDashboard } from '../SalesmenPerformanceDashboard';
+import {
+  KPI_TONE_BORDER_LEFT_CLASSNAME,
+  KPI_TONE_ICON_CLASSNAME,
+  KPI_TONE_SOLID_CLASSNAME,
+  type KpiTone,
+} from '../../utils/kpiTones';
 
 interface SalesmenOverviewTabProps {
   userId: number;
@@ -63,13 +70,13 @@ function NavigableKpiCard({
   label,
   value,
   icon: Icon,
-  iconClassName,
+  tone,
   onNavigate,
 }: {
   label: string;
   value: number;
   icon: typeof Target;
-  iconClassName: string;
+  tone: KpiTone;
   onNavigate: () => void;
 }): ReactElement {
   return (
@@ -83,22 +90,27 @@ function NavigableKpiCard({
           onNavigate();
         }
       }}
-      className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white/80 shadow-sm transition-all hover:shadow-md dark:border-white/10 dark:bg-white/3"
+      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white/80 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/3"
     >
-      <CardContent className="px-4 pb-3 pt-4">
-        <div className="flex items-center gap-2.5">
-          <div
-            className={`flex h-8 w-8 items-center justify-center rounded-lg border shadow-sm ${iconClassName}`}
-          >
-            <Icon className="size-4" />
-          </div>
+      <div className={cn('absolute inset-x-0 top-0 h-1 opacity-80', KPI_TONE_SOLID_CLASSNAME[tone])} />
+      <CardContent className="px-4 pb-3 pt-5">
+        <div className="flex items-center justify-between gap-2.5">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
             {label}
           </p>
+          <div
+            className={cn(
+              'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border shadow-sm transition-transform group-hover:scale-105',
+              KPI_TONE_ICON_CLASSNAME[tone]
+            )}
+          >
+            <Icon className="size-4" />
+          </div>
         </div>
-        <p className="mt-2.5 pl-10.5 text-2xl font-black tabular-nums text-slate-900 dark:text-white">
-          {value}
-        </p>
+        <div className="mt-2.5 flex items-end justify-between gap-2">
+          <p className="text-2xl font-black tabular-nums text-slate-900 dark:text-white">{value}</p>
+          <ChevronRight className="mb-0.5 size-4 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-400 dark:text-slate-600" />
+        </div>
       </CardContent>
     </Card>
   );
@@ -146,29 +158,29 @@ export function SalesmenOverviewTab({
         <NavigableKpiCard
           label={t('salesman360.kpi.totalDemands')}
           value={kpis.totalDemands ?? 0}
-          icon={ChevronRight}
-          iconClassName="bg-accent dark:bg-primary/10 border-primary/20 dark:border-primary/20 text-red-600 dark:text-red-400"
+          icon={FileText}
+          tone="neutral"
           onNavigate={onNavigateDemands}
         />
         <NavigableKpiCard
           label={t('salesman360.kpi.totalQuotations')}
           value={kpis.totalQuotations ?? 0}
           icon={Zap}
-          iconClassName="bg-orange-100 dark:bg-orange-500/10 border-orange-200 dark:border-orange-500/20 text-orange-600 dark:text-orange-400"
+          tone="secondary"
           onNavigate={onNavigateQuotations}
         />
         <NavigableKpiCard
           label={t('salesman360.kpi.totalOrders')}
           value={kpis.totalOrders ?? 0}
           icon={Target}
-          iconClassName="bg-emerald-100 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+          tone="primary"
           onNavigate={onNavigateOrders}
         />
         <NavigableKpiCard
           label={t('salesman360.kpi.totalActivities')}
           value={kpis.totalActivities ?? 0}
-          icon={Users}
-          iconClassName="bg-indigo-100 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400"
+          icon={Activity}
+          tone="success"
           onNavigate={onNavigateActivities}
         />
       </div>
@@ -235,13 +247,13 @@ export function SalesmenOverviewTab({
       {!isAllCurrencies ? (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
           {[
-            ['salesman360.kpi.totalDemandAmount', kpis.totalDemandAmount, 'border-l-primary'],
+            ['salesman360.kpi.totalDemandAmount', kpis.totalDemandAmount, KPI_TONE_BORDER_LEFT_CLASSNAME.neutral],
             [
               'salesman360.kpi.totalQuotationAmount',
               kpis.totalQuotationAmount,
-              'border-l-orange-500',
+              KPI_TONE_BORDER_LEFT_CLASSNAME.secondary,
             ],
-            ['salesman360.kpi.totalOrderAmount', kpis.totalOrderAmount, 'border-l-emerald-500'],
+            ['salesman360.kpi.totalOrderAmount', kpis.totalOrderAmount, KPI_TONE_BORDER_LEFT_CLASSNAME.primary],
           ].map(([labelKey, value, borderClass]) => (
             <Card
               key={String(labelKey)}

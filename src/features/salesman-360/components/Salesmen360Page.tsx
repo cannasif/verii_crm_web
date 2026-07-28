@@ -2,9 +2,13 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
+  Activity,
+  CalendarClock,
   LineChart,
   RefreshCw,
+  ShoppingCart,
   Target,
+  Users,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,6 +42,14 @@ import type {
   Salesmen360VisibleUserDto,
 } from '../types/salesmen360.types';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
+
+function getInitials(name?: string | null): string {
+  const trimmed = name?.trim();
+  if (!trimmed) return '?';
+  const parts = trimmed.split(/\s+/).filter(Boolean);
+  const initials = parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? '').join('');
+  return initials || '?';
+}
 
 function KpiCardSkeleton(): ReactElement {
   return (
@@ -286,7 +298,6 @@ export function Salesmen360Page(): ReactElement {
     );
   }
 
-  const subtitle = [overview.fullName ?? '', overview.email ?? ''].filter(Boolean).join(' · ') || '';
   const navigateWithRepresentativeNameQuery = (basePath: string): void => {
     if (isAllSalesmen) {
       navigate(basePath);
@@ -324,17 +335,62 @@ export function Salesmen360Page(): ReactElement {
     <TooltipProvider delayDuration={300} skipDelayDuration={0}>
       <div className="w-full px-1.5 pt-0 pb-8 space-y-6 animate-in fade-in duration-500">
         <div className="flex flex-col gap-5 pt-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-accent shadow-inner dark:border-primary/30 dark:bg-primary/10">
-              <LineChart className="h-8 w-8 text-primary" />
-            </div>
-            <div className="space-y-1">
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white transition-colors">
-                {t('salesman360.title')}
-              </h1>
-              <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 text-sm font-medium">
-                <span>{subtitle || t('salesman360.subtitle')}</span>
+          <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm dark:border-white/10 dark:bg-slate-950/60">
+            <div className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-70 dark:opacity-40" />
+            <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+              <div className="flex min-w-0 items-center gap-4">
+                {isAllSalesmen ? (
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-accent shadow-inner dark:border-primary/30 dark:bg-primary/10">
+                    <Users className="h-8 w-8 text-primary" />
+                  </div>
+                ) : (
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[image:var(--crm-brand-gradient)] text-xl font-black text-white shadow-lg shadow-primary/25">
+                    {getInitials(overview.fullName)}
+                  </div>
+                )}
+                <div className="min-w-0 space-y-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h1 className="truncate text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+                      {isAllSalesmen ? t('salesman360.title') : overview.fullName || t('salesman360.title')}
+                    </h1>
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[image:var(--crm-brand-gradient)] px-2.5 py-1 text-[10px] font-black tracking-wider text-white shadow-sm">
+                      <LineChart className="size-3" />
+                      360
+                    </span>
+                  </div>
+                  <p className="truncate text-sm font-semibold text-slate-500 dark:text-slate-400">
+                    {isAllSalesmen ? t('salesman360.subtitle') : overview.email || t('salesman360.subtitle')}
+                  </p>
+                </div>
               </div>
+
+              {!isAllSalesmen ? (
+                <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
+                  <div className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-white/5">
+                    <ShoppingCart className="size-4 text-primary" />
+                    <div className="leading-tight">
+                      <p className="text-sm font-black tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalOrders ?? 0}</p>
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.kpi.totalOrders')}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-white/5">
+                    <Activity className="size-4 text-emerald-600 dark:text-emerald-400" />
+                    <div className="leading-tight">
+                      <p className="text-sm font-black tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalActivities ?? 0}</p>
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.kpi.totalActivities')}</p>
+                    </div>
+                  </div>
+                  {lastActivityDateFormatted !== '-' ? (
+                    <div className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-white/5">
+                      <CalendarClock className="size-4 text-slate-400" />
+                      <div className="leading-tight">
+                        <p className="text-sm font-black tabular-nums text-slate-900 dark:text-white">{lastActivityDateFormatted}</p>
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.analytics.lastActivityDate')}</p>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
           </div>
 
