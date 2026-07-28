@@ -2,11 +2,8 @@ import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Activity,
-  CalendarClock,
   LineChart,
   RefreshCw,
-  ShoppingCart,
   Target,
   Users,
 } from 'lucide-react';
@@ -340,53 +337,46 @@ export function Salesmen360Page(): ReactElement {
             <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
               <div className="flex min-w-0 items-center gap-4">
                 {isAllSalesmen ? (
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-accent shadow-inner dark:border-primary/30 dark:bg-primary/10">
+                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-accent shadow-inner dark:border-primary/30 dark:bg-primary/10">
                     <Users className="h-8 w-8 text-primary" />
                   </div>
                 ) : (
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[image:var(--crm-brand-gradient)] text-xl font-black text-white shadow-lg shadow-primary/25">
-                    {getInitials(overview.fullName)}
+                  <div className="shrink-0 rounded-full bg-[image:var(--crm-brand-gradient)] p-[2px] shadow-lg shadow-primary/20">
+                    <div className="flex h-[62px] w-[62px] items-center justify-center rounded-full bg-white font-serif text-xl font-semibold text-primary dark:bg-slate-950">
+                      {getInitials(overview.fullName)}
+                    </div>
                   </div>
                 )}
                 <div className="min-w-0 space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="truncate text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
+                  <div className="flex flex-wrap items-baseline gap-2.5">
+                    <h1 className="truncate font-serif text-[1.7rem] font-semibold tracking-tight text-slate-900 dark:text-white sm:text-[1.9rem]">
                       {isAllSalesmen ? t('salesman360.title') : overview.fullName || t('salesman360.title')}
                     </h1>
-                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[image:var(--crm-brand-gradient)] px-2.5 py-1 text-[10px] font-black tracking-wider text-white shadow-sm">
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-primary/60 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-primary">
                       <LineChart className="size-3" />
-                      360
+                      360°
                     </span>
                   </div>
-                  <p className="truncate text-sm font-semibold text-slate-500 dark:text-slate-400">
+                  <p className="truncate text-[13px] font-medium italic text-slate-500 dark:text-slate-400">
                     {isAllSalesmen ? t('salesman360.subtitle') : overview.email || t('salesman360.subtitle')}
                   </p>
                 </div>
               </div>
 
               {!isAllSalesmen ? (
-                <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
-                  <div className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-white/5">
-                    <ShoppingCart className="size-4 text-primary" />
-                    <div className="leading-tight">
-                      <p className="text-sm font-black tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalOrders ?? 0}</p>
-                      <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.kpi.totalOrders')}</p>
-                    </div>
+                <div className="flex w-full flex-wrap items-stretch justify-between gap-y-3 divide-x divide-slate-200 sm:w-auto sm:flex-nowrap sm:justify-end dark:divide-white/10">
+                  <div className="flex flex-col justify-center pr-3 text-right sm:px-4 sm:first:pl-0 sm:last:pr-0">
+                    <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalOrders ?? 0}</p>
+                    <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.kpi.totalOrders')}</p>
                   </div>
-                  <div className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-white/5">
-                    <Activity className="size-4 text-emerald-600 dark:text-emerald-400" />
-                    <div className="leading-tight">
-                      <p className="text-sm font-black tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalActivities ?? 0}</p>
-                      <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.kpi.totalActivities')}</p>
-                    </div>
+                  <div className="flex flex-col justify-center px-3 text-right sm:px-4 sm:first:pl-0 sm:last:pr-0">
+                    <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalActivities ?? 0}</p>
+                    <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.kpi.totalActivities')}</p>
                   </div>
                   {lastActivityDateFormatted !== '-' ? (
-                    <div className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 shadow-sm dark:border-white/10 dark:bg-white/5">
-                      <CalendarClock className="size-4 text-slate-400" />
-                      <div className="leading-tight">
-                        <p className="text-sm font-black tabular-nums text-slate-900 dark:text-white">{lastActivityDateFormatted}</p>
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.analytics.lastActivityDate')}</p>
-                      </div>
+                    <div className="flex flex-col justify-center pl-3 text-right sm:px-4 sm:first:pl-0 sm:last:pr-0">
+                      <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{lastActivityDateFormatted}</p>
+                      <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.analytics.lastActivityDate')}</p>
                     </div>
                   ) : null}
                 </div>

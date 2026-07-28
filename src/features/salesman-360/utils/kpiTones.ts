@@ -32,3 +32,21 @@ export const KPI_TONE_BORDER_LEFT_CLASSNAME: Record<KpiTone, string> = {
   warning: 'border-l-amber-500',
   neutral: 'border-l-slate-400 dark:border-l-slate-500',
 };
+
+/** Soft corner glow behind a KPI card's icon — replaces a flat accent bar. */
+export const KPI_TONE_GLOW_CLASSNAME: Record<KpiTone, string> = {
+  primary: 'from-primary/25',
+  secondary: 'from-violet-500/25',
+  success: 'from-emerald-500/25',
+  warning: 'from-amber-500/25',
+  neutral: 'from-slate-400/15 dark:from-slate-500/15',
+};
+
+/** Only the headline metric earns a colored value — everything else stays neutral ink. */
+export const KPI_TONE_VALUE_CLASSNAME: Record<KpiTone, string> = {
+  primary: 'text-primary',
+  secondary: 'text-slate-950 dark:text-white',
+  success: 'text-slate-950 dark:text-white',
+  warning: 'text-slate-950 dark:text-white',
+  neutral: 'text-slate-950 dark:text-white',
+};

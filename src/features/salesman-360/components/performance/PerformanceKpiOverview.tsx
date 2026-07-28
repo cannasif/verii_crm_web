@@ -19,7 +19,13 @@ import type {
   Salesmen360PerformanceTotalsDto,
   Salesmen360PerformanceTrendItemDto,
 } from '../../types/salesmen360.types';
-import { KPI_TONE_ICON_CLASSNAME, KPI_TONE_SOLID_CLASSNAME, type KpiTone } from '../../utils/kpiTones';
+import {
+  KPI_TONE_GLOW_CLASSNAME,
+  KPI_TONE_ICON_CLASSNAME,
+  KPI_TONE_SOLID_CLASSNAME,
+  KPI_TONE_VALUE_CLASSNAME,
+  type KpiTone,
+} from '../../utils/kpiTones';
 import { computeTrendDelta, Sparkline } from './Sparkline';
 
 interface PerformanceKpiOverviewProps {
@@ -83,15 +89,20 @@ function PerformanceKpiCard({
 
   return (
     <Card className="group relative overflow-hidden rounded-2xl border-slate-200/90 bg-white/90 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/3">
-      <div className={cn('absolute inset-x-0 top-0 h-1 opacity-80', KPI_TONE_SOLID_CLASSNAME[tone])} />
-      <CardContent className="p-4 pt-5">
+      <div
+        className={cn(
+          'pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-radial to-transparent opacity-60',
+          KPI_TONE_GLOW_CLASSNAME[tone]
+        )}
+      />
+      <CardContent className="relative p-4 pt-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="truncate text-[10px] font-black uppercase tracking-[0.17em] text-slate-500 dark:text-slate-400">
               {title}
             </p>
             <div className="mt-2 flex items-center gap-2">
-              <p className="text-3xl font-black tabular-nums text-slate-950 dark:text-white">{value}</p>
+              <p className={cn('text-3xl font-black tabular-nums', KPI_TONE_VALUE_CLASSNAME[tone])}>{value}</p>
               <TrendDeltaBadge delta={delta} locale={locale} />
             </div>
           </div>

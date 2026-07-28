@@ -28,8 +28,9 @@ import {
 import { SalesmenPerformanceDashboard } from '../SalesmenPerformanceDashboard';
 import {
   KPI_TONE_BORDER_LEFT_CLASSNAME,
+  KPI_TONE_GLOW_CLASSNAME,
   KPI_TONE_ICON_CLASSNAME,
-  KPI_TONE_SOLID_CLASSNAME,
+  KPI_TONE_VALUE_CLASSNAME,
   type KpiTone,
 } from '../../utils/kpiTones';
 
@@ -92,8 +93,13 @@ function NavigableKpiCard({
       }}
       className="group relative cursor-pointer overflow-hidden rounded-2xl border border-slate-200 bg-white/80 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/3"
     >
-      <div className={cn('absolute inset-x-0 top-0 h-1 opacity-80', KPI_TONE_SOLID_CLASSNAME[tone])} />
-      <CardContent className="px-4 pb-3 pt-5">
+      <div
+        className={cn(
+          'pointer-events-none absolute -right-6 -top-8 size-24 rounded-full bg-radial to-transparent opacity-60',
+          KPI_TONE_GLOW_CLASSNAME[tone]
+        )}
+      />
+      <CardContent className="relative px-4 pb-3 pt-5">
         <div className="flex items-center justify-between gap-2.5">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
             {label}
@@ -108,7 +114,7 @@ function NavigableKpiCard({
           </div>
         </div>
         <div className="mt-2.5 flex items-end justify-between gap-2">
-          <p className="text-2xl font-black tabular-nums text-slate-900 dark:text-white">{value}</p>
+          <p className={cn('text-2xl font-black tabular-nums', KPI_TONE_VALUE_CLASSNAME[tone])}>{value}</p>
           <ChevronRight className="mb-0.5 size-4 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-400 dark:text-slate-600" />
         </div>
       </CardContent>
