@@ -986,6 +986,10 @@
       "activeWidgetPreviewDescription": "يمكنك رؤية النتيجة المباشرة للأداة المختارة هنا.",
       "primaryWidgetPreview": "معاينة الأداة الأساسية",
       "additionalWidgetPreview": "معاينة الأداة الإضافية",
+      "viewModeLabel": "وضع العرض",
+      "viewModeTable": "جدول",
+      "viewModeChart": "رسم بياني",
+      "viewModeKpi": "KPI",
       "preview": "معاينة",
       "previewEmptyTitle": "المعاينة ليست جاهزة بعد",
       "readiness": {

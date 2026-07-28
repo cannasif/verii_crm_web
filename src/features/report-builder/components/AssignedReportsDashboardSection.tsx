@@ -645,6 +645,8 @@ function CompactWidgetPreview({
       chartPresentationVariant="dashboard"
       suppressTopAccent={corporateAccentIndex != null || hideChrome}
       hideHeader={hideChrome}
+      allowViewModeToggle={!hideChrome}
+      viewModeStorageKey={`crm-report-widget-view-mode:${report.id}:${widget?.id ?? '__report__'}`}
     />
   );
 

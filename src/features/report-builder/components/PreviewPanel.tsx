@@ -1,9 +1,9 @@
 import { lazy, Suspense, type ReactElement, type ReactNode } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import type { ChartType, ReportWidgetAppearance } from '../types';
-import { BarChart3, DatabaseZap, Loader2, Maximize2, X } from 'lucide-react';
+import { BarChart3, DatabaseZap, Gauge, Loader2, Maximize2, Table2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,6 +11,88 @@ import { Skeleton } from '@/components/ui/skeleton';
 const ReportChart = lazy(() =>
   import('./ReportChart').then((module) => ({ default: module.ReportChart }))
 );
+
+type WidgetViewMode = 'table' | 'chart' | 'kpi';
+
+function isChartCapableType(type: ChartType): boolean {
+  return type === 'bar' || type === 'stackedBar' || type === 'line' || type === 'pie' || type === 'donut';
+}
+
+function defaultViewModeFor(type: ChartType): WidgetViewMode {
+  if (type === 'kpi') return 'kpi';
+  if (isChartCapableType(type)) return 'chart';
+  return 'table';
+}
+
+function loadWidgetViewMode(storageKey?: string): WidgetViewMode | null {
+  if (!storageKey) return null;
+  try {
+    const raw = localStorage.getItem(storageKey);
+    return raw === 'table' || raw === 'chart' || raw === 'kpi' ? raw : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveWidgetViewMode(storageKey: string | undefined, mode: WidgetViewMode): void {
+  if (!storageKey) return;
+  try {
+    localStorage.setItem(storageKey, mode);
+  } catch {
+    // ignore
+  }
+}
+
+function ViewModeSwitch({
+  value,
+  onChange,
+  bold,
+}: {
+  value: WidgetViewMode;
+  onChange: (mode: WidgetViewMode) => void;
+  bold: boolean;
+}): ReactElement {
+  const { t } = useTranslation('common');
+  const options: Array<{ key: WidgetViewMode; label: string; icon: typeof Table2 }> = [
+    { key: 'table', label: t('common.reportBuilder.viewModeTable', { defaultValue: 'Table' }), icon: Table2 },
+    { key: 'chart', label: t('common.reportBuilder.viewModeChart', { defaultValue: 'Chart' }), icon: BarChart3 },
+    { key: 'kpi', label: t('common.reportBuilder.viewModeKpi', { defaultValue: 'KPI' }), icon: Gauge },
+  ];
+
+  return (
+    <div
+      role="group"
+      aria-label={t('common.reportBuilder.viewModeLabel', { defaultValue: 'View mode' }) as string}
+      className={cn(
+        'flex shrink-0 items-center gap-0.5 rounded-lg border p-0.5',
+        bold ? 'border-white/15 bg-white/10' : 'border-slate-200 bg-white/90 dark:border-white/10 dark:bg-white/5',
+      )}
+    >
+      {options.map(({ key, label, icon: Icon }) => {
+        const isActive = value === key;
+        return (
+          <button
+            key={key}
+            type="button"
+            title={label}
+            aria-pressed={isActive}
+            onClick={() => onChange(key)}
+            className={cn(
+              'flex h-7 items-center justify-center rounded-md px-2 transition-all',
+              isActive
+                ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm'
+                : bold
+                  ? 'text-white/60 hover:bg-white/10 hover:text-white'
+                  : 'text-slate-500 hover:bg-slate-100 hover:text-indigo-600 dark:text-slate-400 dark:hover:bg-white/10',
+            )}
+          >
+            <Icon className="size-3.5" />
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 interface PreviewPanelProps {
   columns: string[];
@@ -31,6 +113,10 @@ interface PreviewPanelProps {
   suppressTopAccent?: boolean;
   hideHeader?: boolean;
   onTableColumnWidthPxCommit?: (columnKey: string, widthPx: number) => void;
+  /** Lets the viewer flip this widget's presentation between Table / Chart / KPI without touching the saved config. */
+  allowViewModeToggle?: boolean;
+  /** localStorage key used to remember the chosen view mode for this widget across visits. */
+  viewModeStorageKey?: string;
 }
 
 export function PreviewPanel({
@@ -52,9 +138,36 @@ export function PreviewPanel({
   suppressTopAccent = false,
   hideHeader = false,
   onTableColumnWidthPxCommit,
+  allowViewModeToggle = false,
+  viewModeStorageKey,
 }: PreviewPanelProps): ReactElement {
   const { t } = useTranslation('common');
   const [expanded, setExpanded] = useState(false);
+  const [viewMode, setViewMode] = useState<WidgetViewMode>(
+    () => loadWidgetViewMode(viewModeStorageKey) ?? defaultViewModeFor(chartType)
+  );
+
+  useEffect(() => {
+    if (!loadWidgetViewMode(viewModeStorageKey)) {
+      setViewMode(defaultViewModeFor(chartType));
+    }
+  }, [chartType, viewModeStorageKey]);
+
+  const handleViewModeChange = (mode: WidgetViewMode): void => {
+    setViewMode(mode);
+    saveWidgetViewMode(viewModeStorageKey, mode);
+  };
+
+  const effectiveChartType: ChartType = !allowViewModeToggle
+    ? chartType
+    : viewMode === 'table'
+      ? 'table'
+      : viewMode === 'kpi'
+        ? 'kpi'
+        : isChartCapableType(chartType)
+          ? chartType
+          : 'bar';
+
   const resolvedTitle = title ?? t('common.reportBuilder.preview');
   const isDashboardPresentation = presentationVariant === 'dashboard';
   const resolvedChartPresentation =
@@ -134,8 +247,11 @@ export function PreviewPanel({
           <h3 className={cn('text-sm font-semibold tracking-tight', titleClassName, titleAlign === 'center' && 'text-center')}>{resolvedTitle}</h3>
           {subtitle && <p className={cn('mt-1 text-xs', subtitleClassName)}>{subtitle}</p>}
         </div>
-        {(showMetricPills && !loading && !error && !empty) || (!loading && !error && !empty && isDashboardPresentation) || headerActions ? (
+        {(showMetricPills && !loading && !error && !empty) || (!loading && !error && !empty && isDashboardPresentation) || headerActions || (allowViewModeToggle && !loading && !error && !empty) ? (
           <div className="flex max-w-full flex-wrap items-center justify-end gap-2">
+            {allowViewModeToggle && !loading && !error && !empty ? (
+              <ViewModeSwitch value={viewMode} onChange={handleViewModeChange} bold={tone === 'bold'} />
+            ) : null}
             {showMetricPills && !loading && !error && !empty ? (
               <>
                 <span className={metricClassName}>
@@ -211,7 +327,7 @@ export function PreviewPanel({
             <ReportChart
               columns={columns}
               rows={rows}
-              chartType={chartType}
+              chartType={effectiveChartType}
               appearance={appearance}
               labelOverrides={labelOverrides}
               presentationVariant={resolvedChartPresentation}
@@ -235,6 +351,9 @@ export function PreviewPanel({
                 </div>
               </div>
               <div className="flex items-center gap-3">
+                {allowViewModeToggle ? (
+                  <ViewModeSwitch value={viewMode} onChange={handleViewModeChange} bold={false} />
+                ) : null}
                 <Button variant="ghost" size="icon" onClick={() => setExpanded(false)} className="rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-500">
                   <X className="size-6" />
                 </Button>
@@ -247,7 +366,7 @@ export function PreviewPanel({
                   <ReportChart
                     columns={columns}
                     rows={rows}
-                    chartType={chartType}
+                    chartType={effectiveChartType}
                     appearance={appearance}
                     labelOverrides={labelOverrides}
                     isExpanded

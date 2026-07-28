@@ -986,6 +986,10 @@
       "activeWidgetPreviewDescription": "Sie können das Live-Ergebnis des ausgewählten Widgets hier sehen.",
       "primaryWidgetPreview": "Vorschau Haupt-Widget",
       "additionalWidgetPreview": "Vorschau Zusatz-Widget",
+      "viewModeLabel": "Ansichtsmodus",
+      "viewModeTable": "Tabelle",
+      "viewModeChart": "Diagramm",
+      "viewModeKpi": "KPI",
       "preview": "Vorschau",
       "previewEmptyTitle": "Vorschau ist noch nicht fertig",
       "readiness": {

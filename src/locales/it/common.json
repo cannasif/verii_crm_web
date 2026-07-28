@@ -986,6 +986,10 @@
       "activeWidgetPreviewDescription": "You can see the live result of the selected widget here.",
       "primaryWidgetPreview": "Anteprima widget principale",
       "additionalWidgetPreview": "Anteprima widget aggiuntivo",
+      "viewModeLabel": "Modalità di visualizzazione",
+      "viewModeTable": "Tabella",
+      "viewModeChart": "Grafico",
+      "viewModeKpi": "KPI",
       "preview": "Preview",
       "previewEmptyTitle": "Preview is not ready yet",
       "readiness": {

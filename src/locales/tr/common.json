@@ -990,6 +990,10 @@
       "activeWidgetPreviewDescription": "Seçili widget canlı sonucunu burada görebilirsiniz.",
       "primaryWidgetPreview": "Birincil widget önizlemesi",
       "additionalWidgetPreview": "Ek widget önizlemesi",
+      "viewModeLabel": "Görünüm modu",
+      "viewModeTable": "Tablo",
+      "viewModeChart": "Grafik",
+      "viewModeKpi": "KPI",
       "preview": "Önizleme",
       "previewEmptyTitle": "Önizleme hazır değil",
       "readiness": {

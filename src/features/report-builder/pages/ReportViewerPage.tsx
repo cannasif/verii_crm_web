@@ -1390,6 +1390,8 @@ export function ReportViewerPage(): ReactElement {
                                 className="h-full w-full !min-h-0"
                                 minHeightClassName=""
                                 chartPresentationVariant="dashboard"
+                                allowViewModeToggle
+                                viewModeStorageKey={`crm-report-widget-view-mode:${reportId}:${widget.id}`}
                                 headerActions={
                                   <WidgetSizePopover
                                     layout={layoutItem}
