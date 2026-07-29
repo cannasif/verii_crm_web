@@ -80,6 +80,9 @@
       "copyCell": "Hücre değerini kopyala",
       "cellCopied": "Hücre değeri kopyalandı.",
       "cellCopyFailed": "Hücre değeri kopyalanamadı.",
+      "copyRow": "Satırın tamamını kopyala",
+      "rowCopied": "Satır başlıklarıyla birlikte kopyalandı.",
+      "rowCopyFailed": "Satır kopyalanamadı.",
       "rowActions": "Satır işlemleri"
     },
     "processing": "İşleniyor...",

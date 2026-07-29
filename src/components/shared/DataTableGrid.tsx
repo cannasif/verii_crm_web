@@ -1,6 +1,6 @@
 import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, Copy, GripVertical, Loader2 } from 'lucide-react';
+import { ChevronDown, Copy, GripVertical, Loader2, Rows3 } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, horizontalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -511,6 +511,28 @@ export function DataTableGrid<TRow, TKey extends string>({
     }
   };
 
+  const copyRowValue = async (row: TRow): Promise<void> => {
+    const headerText = localVisibleColumnKeys
+      .map((key) => columns.find((column) => column.key === key)?.label ?? key)
+      .join('\t');
+    const rowText = localVisibleColumnKeys
+      .map((key) => {
+        const explicitValue = getCellContextValue?.(row, key);
+        const rawValue = (row as Record<string, unknown>)[key];
+        return (toContextText(explicitValue) ?? toContextText(rawValue) ?? '')
+          .replace(/\t/g, ' ')
+          .replace(/\r?\n/g, ' ');
+      })
+      .join('\t');
+
+    try {
+      await copyTextToClipboard(`${headerText}\n${rowText}`);
+      toast.success(t('dataGrid.rowCopied'));
+    } catch {
+      toast.error(t('dataGrid.rowCopyFailed'));
+    }
+  };
+
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 10 } }),
     useSensor(TouchSensor, { activationConstraint: { delay: 1, tolerance: 5 } }),
@@ -790,6 +812,21 @@ export function DataTableGrid<TRow, TKey extends string>({
                               {t('dataGrid.copyCell')}
                             </button>
                           )}
+                          <button
+                            type="button"
+                            role="menuitem"
+                            className="mt-1 flex min-h-10 w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-start text-sm outline-hidden hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+                            onClick={() => {
+                              const selectedRow = cellContext.row;
+                              setCellContext(null);
+                              setContextMenuVersion((current) => current + 1);
+                              void copyRowValue(selectedRow);
+                            }}
+                            data-grid-context-copy-row="true"
+                          >
+                            <Rows3 className="size-4 shrink-0 text-[var(--crm-brand-text)]" />
+                            {t('dataGrid.copyRow')}
+                          </button>
                           {contextActions && (
                             <>
                               <ContextMenuSeparator />

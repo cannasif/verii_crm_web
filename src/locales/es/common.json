@@ -80,6 +80,9 @@
       "copyCell": "Copiar valor de la celda",
       "cellCopied": "Valor de la celda copiado.",
       "cellCopyFailed": "No se pudo copiar el valor de la celda.",
+      "copyRow": "Copiar toda la fila",
+      "rowCopied": "Fila copiada con sus encabezados.",
+      "rowCopyFailed": "No se pudo copiar la fila.",
       "rowActions": "Acciones de fila"
     },
     "processing": "Procesando...",

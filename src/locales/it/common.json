@@ -80,6 +80,9 @@
       "copyCell": "Copia valore della cella",
       "cellCopied": "Valore della cella copiato.",
       "cellCopyFailed": "Impossibile copiare il valore della cella.",
+      "copyRow": "Copia l'intera riga",
+      "rowCopied": "Riga copiata con le intestazioni.",
+      "rowCopyFailed": "Impossibile copiare la riga.",
       "rowActions": "Azioni riga"
     },
     "processing": "Elaborazione...",

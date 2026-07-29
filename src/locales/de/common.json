@@ -80,6 +80,9 @@
       "copyCell": "Zellenwert kopieren",
       "cellCopied": "Zellenwert kopiert.",
       "cellCopyFailed": "Zellenwert konnte nicht kopiert werden.",
+      "copyRow": "Gesamte Zeile kopieren",
+      "rowCopied": "Zeile mit Überschriften kopiert.",
+      "rowCopyFailed": "Zeile konnte nicht kopiert werden.",
       "rowActions": "Zeilenaktionen"
     },
     "processing": "Processing...",

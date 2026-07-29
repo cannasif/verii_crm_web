@@ -80,6 +80,9 @@
       "copyCell": "Copy cell value",
       "cellCopied": "Cell value copied.",
       "cellCopyFailed": "Cell value could not be copied.",
+      "copyRow": "Copy entire row",
+      "rowCopied": "Row copied with its headers.",
+      "rowCopyFailed": "Row could not be copied.",
       "rowActions": "Row actions"
     },
     "processing": "Processing...",
