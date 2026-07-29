@@ -418,8 +418,23 @@ function getOrderPrefix(order: NdiOrder): string {
 }
 
 function getKnownSeries(value: string): NdiBusinessSeries | null {
-  const prefix = value.slice(0, 3).toLocaleUpperCase('tr-TR');
-  return prefix === 'NUR' || prefix === 'VIN' || prefix === 'DIS' || prefix === 'SIP' ? prefix : null;
+  const normalized = value.trim().toLocaleUpperCase('tr-TR');
+  const sourceSeries = normalized.match(/^[A-ZÇĞİÖŞÜ]+/u)?.[0] ?? '';
+
+  if (sourceSeries.startsWith('NUR') || sourceSeries === 'N') {
+    return 'NUR';
+  }
+  if (sourceSeries.startsWith('VIN') || sourceSeries === 'WIN' || sourceSeries === 'V') {
+    return 'VIN';
+  }
+  if (sourceSeries.startsWith('DIS') || sourceSeries === 'D') {
+    return 'DIS';
+  }
+  if (sourceSeries.startsWith('SIP') || sourceSeries === 'S') {
+    return 'SIP';
+  }
+
+  return null;
 }
 
 function getRule(order: NdiOrder): NdiTransferRule {
@@ -3036,10 +3051,10 @@ function SeriesGuide({
   selectedRules: NdiTransferRule[];
 }): ReactElement {
   const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
-    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR)', items: ['Otomatikte sevk var -> yalnız NURAY24 irsaliyesi; sevk yok -> yalnız NURAY24 faturası', 'NURAY24 KDV -> %20', '1/4 -> hedef miktar 1/4; SIRKET24 tam miktar ve KDV %5', 'Normal/TAM -> miktar tam; SIRKET24 KDV %20', 'Hedef irsaliye ayrıca hedefte faturalaştırılmaz'] },
-    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN)', items: ['Özel Kod K -> yalnız WIN24 irsaliyesi ve KDV %0', 'K değilse sevk var -> irsaliye; sevk yok -> fatura', 'Özel Kod 1 ve Özel Kod 2 hedef belgeye aktarılır', 'Normal WIN24 KDV -> %20', 'SIRKET24 KDV -> K %0 / diğer %20'] },
-    { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS)', items: ['Her koşulda yalnız DIŞTİC24 irsaliyesi', 'Hedef irsaliye ayrıca faturalaştırılmaz', 'Ardından SIRKET24 bağlantılı faturası -> KDV %0', 'Depo boşsa -> 100', 'Belge tarihindeki kur alınır'] },
-    { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP)', items: ['Mevcut SIRKET24 irsaliyesi seçilen seriyle faturalaştırılır', 'Yeni irsaliye oluşturulmaz', 'KDV -> %0', 'Fatura kaynak irsaliye bağlantısını korur'] },
+    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR / N)', items: ['Otomatikte sevk var -> yalnız NURAY24 irsaliyesi; sevk yok -> yalnız NURAY24 faturası', 'NURAY24 KDV -> %20', '1/4 -> hedef miktar 1/4; SIRKET24 tam miktar ve KDV %5', 'Normal/TAM -> miktar tam; SIRKET24 KDV %20', 'Hedef irsaliye ayrıca hedefte faturalaştırılmaz'] },
+    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN / WIN / V)', items: ['Özel Kod K -> yalnız WIN24 irsaliyesi ve KDV %0', 'K değilse sevk var -> irsaliye; sevk yok -> fatura', 'Özel Kod 1 ve Özel Kod 2 hedef belgeye aktarılır', 'Normal WIN24 KDV -> %20', 'SIRKET24 KDV -> K %0 / diğer %20'] },
+    { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS / D)', items: ['Her koşulda yalnız DIŞTİC24 irsaliyesi', 'Hedef irsaliye ayrıca faturalaştırılmaz', 'Ardından SIRKET24 bağlantılı faturası -> KDV %0', 'Depo boşsa -> 100', 'Belge tarihindeki kur alınır'] },
+    { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP / S)', items: ['Mevcut SIRKET24 irsaliyesi seçilen seriyle faturalaştırılır', 'Yeni irsaliye oluşturulmaz', 'KDV -> %0', 'Fatura kaynak irsaliye bağlantısını korur'] },
   ];
   const hasActiveRule = activeRuleIds.size > 0;
   const isOpen = revealedRuleId !== null;
