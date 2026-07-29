@@ -1,4 +1,5 @@
 import type { PagedFilter } from '@/types/api';
+import { parseClientDateValue } from '@/lib/client-date-value';
 
 export type FilterRow = {
   id: string;
@@ -74,9 +75,9 @@ export function applyFilterRowClient<T extends object>(
   const isNumeric = config?.type === 'number' || config?.type === 'date';
 
   if (isNumeric && config?.type !== 'string') {
-    const cellNum = config.type === 'date' ? (raw ? new Date(String(raw)).getTime() : NaN) : Number(raw);
-    const filterNum = config.type === 'date' ? new Date(value).getTime() : Number(value);
-    if (Number.isNaN(cellNum) || Number.isNaN(filterNum)) return false;
+    const cellNum = config.type === 'date' ? parseClientDateValue(raw) : Number(raw);
+    const filterNum = config.type === 'date' ? parseClientDateValue(value) : Number(value);
+    if (cellNum == null || filterNum == null || Number.isNaN(cellNum) || Number.isNaN(filterNum)) return false;
     switch (row.operator) {
       case 'Equals':
         return config.type === 'date' ? cellNum === filterNum : cellNum === filterNum;

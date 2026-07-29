@@ -16,6 +16,7 @@ import {
 } from '@/lib/management-list-layout';
 import { arraysEqual, cn } from '@/lib/utils';
 import { matchesSearchTerm } from '@/lib/search';
+import { parseClientDateValue } from '@/lib/client-date-value';
 import { DataTableActionBar, DataTableGrid, ManagementDataTableChrome, type DataTableGridColumn } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -41,8 +42,8 @@ const ERP_ORDER_COLUMNS: Array<{
   { key: 'fatirsNo', labelKey: 'erpOrder.table.orderNo', fallbackLabel: 'Sipariş No', filterType: 'string', className: 'font-semibold whitespace-nowrap' },
   { key: 'cariKodu', labelKey: 'erpOrder.table.customerCode', fallbackLabel: 'Cari Kodu', filterType: 'string', className: 'whitespace-nowrap' },
   { key: 'cariIsim', labelKey: 'erpOrder.table.customerName', fallbackLabel: 'Cari Adı', filterType: 'string', className: 'min-w-[220px] font-medium' },
-  { key: 'tarih', labelKey: 'erpOrder.table.date', fallbackLabel: 'Tarih', filterType: 'string', className: 'whitespace-nowrap' },
-  { key: 'teslimTarihi', labelKey: 'erpOrder.table.deliveryDate', fallbackLabel: 'Teslim Tarihi', filterType: 'string', className: 'whitespace-nowrap' },
+  { key: 'tarih', labelKey: 'erpOrder.table.date', fallbackLabel: 'Tarih', filterType: 'date', className: 'whitespace-nowrap' },
+  { key: 'teslimTarihi', labelKey: 'erpOrder.table.deliveryDate', fallbackLabel: 'Teslim Tarihi', filterType: 'date', className: 'whitespace-nowrap' },
   { key: 'brutTutar', labelKey: 'erpOrder.table.grossTotal', fallbackLabel: 'Brüt Tutar', filterType: 'number', className: 'text-right font-medium' },
   { key: 'kdv', labelKey: 'erpOrder.table.vat', fallbackLabel: 'KDV', filterType: 'number', className: 'text-right font-medium' },
   { key: 'genelToplam', labelKey: 'erpOrder.table.grandTotal', fallbackLabel: 'Genel Toplam', filterType: 'number', className: 'text-right font-semibold' },
@@ -65,21 +66,70 @@ function formatNumber(value: number | null | undefined, locale: string, fraction
   }).format(Number(value));
 }
 
-function normalize(value: unknown): string | number {
-  if (typeof value === 'number') return value;
-  if (value == null) return '';
-  return String(value).toLocaleLowerCase('tr-TR');
+const textCollator = new Intl.Collator('tr-TR', {
+  numeric: true,
+  sensitivity: 'base',
+});
+
+function parseNumericValue(value: unknown): number | null {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+  if (value == null) {
+    return null;
+  }
+
+  const normalized = String(value).trim();
+  if (!normalized) {
+    return null;
+  }
+
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function compareNullableValues(
+  left: number | string | null,
+  right: number | string | null,
+  direction: SortDirection
+): number {
+  if (left == null && right == null) return 0;
+  if (left == null) return 1;
+  if (right == null) return -1;
+
+  const comparison = typeof left === 'number' && typeof right === 'number'
+    ? left - right
+    : textCollator.compare(String(left), String(right));
+  return direction === 'asc' ? comparison : -comparison;
 }
 
 function sortRows(rows: NetsisOrderHeader[], sortBy: ErpOrderColumnKey, sortDirection: SortDirection): NetsisOrderHeader[] {
-  return [...rows].sort((a, b) => {
-    const left = normalize(a[sortBy]);
-    const right = normalize(b[sortBy]);
-    const compare = typeof left === 'number' && typeof right === 'number'
-      ? left - right
-      : String(left).localeCompare(String(right), 'tr-TR');
-    return sortDirection === 'asc' ? compare : -compare;
-  });
+  const column = ERP_ORDER_COLUMNS.find((item) => item.key === sortBy);
+  const sortType = column?.filterType ?? 'string';
+
+  return rows
+    .map((row, originalIndex) => ({ row, originalIndex }))
+    .sort((leftEntry, rightEntry) => {
+      const leftRaw = leftEntry.row[sortBy];
+      const rightRaw = rightEntry.row[sortBy];
+      const left = sortType === 'date'
+        ? parseClientDateValue(leftRaw)
+        : sortType === 'number'
+          ? parseNumericValue(leftRaw)
+          : leftRaw == null || String(leftRaw).trim() === ''
+            ? null
+            : String(leftRaw).trim();
+      const right = sortType === 'date'
+        ? parseClientDateValue(rightRaw)
+        : sortType === 'number'
+          ? parseNumericValue(rightRaw)
+          : rightRaw == null || String(rightRaw).trim() === ''
+            ? null
+            : String(rightRaw).trim();
+      const comparison = compareNullableValues(left, right, sortDirection);
+      return comparison === 0 ? leftEntry.originalIndex - rightEntry.originalIndex : comparison;
+    })
+    .map((entry) => entry.row);
 }
 
 function DetailLineTable({
