@@ -47,6 +47,9 @@ export interface NetsisCustomerDispatchOrderCheckDto {
   irsaliyeTarihi?: string | null;
   irsaliyeTeslimTarihi?: string | null;
   fatirsNo: string;
+  exportRefNo?: string | null;
+  exportType?: number | null;
+  tipi?: number | null;
 }
 
 export interface NetsisNdiTransferRuleDto {
@@ -106,6 +109,9 @@ export interface NdiTransferCreateDocumentRequest {
   specialCode1?: string | null;
   specialCode2?: string | null;
   specialCode?: string | null;
+  exportRefNo?: string | null;
+  exportType?: number | null;
+  tipi?: number | null;
   customerCode: string;
   customerName?: string | null;
   description?: string | null;

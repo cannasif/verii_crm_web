@@ -9,6 +9,9 @@ export interface NetsisOrderHeader {
   kdv: number;
   genelToplam: number;
   plasiyerKodu: string;
+  exportRefNo?: string | null;
+  exportType?: number | null;
+  tipi?: number | null;
 }
 
 export interface NetsisOrderLine {
