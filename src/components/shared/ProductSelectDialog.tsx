@@ -599,6 +599,7 @@ export function ProductSelectDialog({
 
   const stocksDropdown = useDropdownInfiniteSearch<StockGetWithMainImageDto>({
     entityKey: 'stocks-with-images',
+    inputSearchTerm: searchQuery,
     searchTerm: debouncedSearch,
     enabled: open,
     minChars: DROPDOWN_MIN_CHARS,
@@ -727,6 +728,21 @@ export function ProductSelectDialog({
           <div className="text-muted-foreground">
             {t('productSelectDialog.loading')}
           </div>
+        </div>
+      );
+    }
+
+    if (stocksDropdown.isError) {
+      return (
+        <div className="flex flex-col items-center justify-center gap-3 py-12 text-rose-600 dark:text-rose-400">
+          <div>{t('common.UnexpectedError')}</div>
+          <button
+            type="button"
+            className="rounded-lg border border-rose-300/70 px-3 py-1.5 text-sm font-semibold hover:bg-rose-50 dark:border-rose-700 dark:hover:bg-rose-950/30"
+            onClick={() => void stocksDropdown.refetch()}
+          >
+            {t('common.retry')}
+          </button>
         </div>
       );
     }

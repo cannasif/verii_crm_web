@@ -67,6 +67,7 @@ export function LineFormStockSearchField({
 
   const stocksDropdown = useDropdownInfiniteSearch<StockGetDto>({
     entityKey: ['line-form-inline-stock'] as const,
+    inputSearchTerm: draftQuery,
     searchTerm: debouncedSearch,
     enabled: stockPopoverOpen && !disabled,
     minChars: DROPDOWN_MIN_CHARS,
@@ -264,7 +265,20 @@ export function LineFormStockSearchField({
                       {t('productSelectDialog.loading')}
                     </div>
                   ) : null}
-                  {!stocksDropdown.isLoading && visibleStocks.length === 0 ? (
+                  {!stocksDropdown.isLoading && stocksDropdown.isError && visibleStocks.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center gap-3 py-10 text-center text-sm text-rose-600 dark:text-rose-400">
+                      <SearchX className="h-5 w-5" />
+                      <span>{t('common.UnexpectedError')}</span>
+                      <button
+                        type="button"
+                        className="rounded-lg border border-rose-300/70 px-3 py-1.5 text-xs font-semibold hover:bg-rose-50 dark:border-rose-700 dark:hover:bg-rose-950/30"
+                        onClick={() => void stocksDropdown.refetch()}
+                      >
+                        {t('common.retry')}
+                      </button>
+                    </div>
+                  ) : null}
+                  {!stocksDropdown.isLoading && !stocksDropdown.isError && visibleStocks.length === 0 ? (
                     <CommandEmpty className="flex flex-col items-center justify-center gap-2 py-10 text-center text-sm text-slate-500 dark:text-slate-400">
                       <SearchX className="h-5 w-5 text-slate-400" />
                       <span>{draftQuery.trim() ? t('productSelectDialog.noResults') : t('productSelectDialog.noProducts')}</span>

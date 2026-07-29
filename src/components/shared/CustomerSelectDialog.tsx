@@ -319,11 +319,14 @@ export function CustomerSelectDialog({
   const {
     items: customers,
     isLoading: isCustomersLoading,
+    isError: isCustomersError,
+    refetch: refetchCustomers,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
   } = useDropdownInfiniteSearch<CustomerDto>({
     entityKey: 'customers',
+    inputSearchTerm: searchQuery,
     searchTerm: debouncedSearch,
     enabled: open,
     minChars: DROPDOWN_MIN_CHARS,
@@ -398,6 +401,21 @@ export function CustomerSelectDialog({
           <div className="text-slate-600 dark:text-zinc-500">
             {t('customerSelectDialog.loading')}
           </div>
+        </div>
+      );
+    }
+
+    if (isCustomersError) {
+      return (
+        <div className="flex flex-col items-center justify-center gap-3 py-12 text-rose-600 dark:text-rose-400">
+          <div>{t('common.UnexpectedError')}</div>
+          <button
+            type="button"
+            className="rounded-lg border border-rose-300/70 px-3 py-1.5 text-sm font-semibold hover:bg-rose-50 dark:border-rose-700 dark:hover:bg-rose-950/30"
+            onClick={() => void refetchCustomers()}
+          >
+            {t('common.retry')}
+          </button>
         </div>
       );
     }
