@@ -1577,9 +1577,14 @@
     "subtitle": "Müşteri özeti ve aktiviteler",
     "button": "Müşteri 360",
     "tabs": {
-      "overview": "Genel Bakış",
-      "analytics": "Analitik",
-      "erpMovements": "ERP Hareket"
+      "overview": "Komuta Merkezi",
+      "overviewDescription": "Öncelikler ve hızlı sonuçlar",
+      "performanceDescription": "Huni, dönüşüm ve aktivite",
+      "teamPerformanceDescription": "Kişi bazlı karşılaştırma",
+      "analytics": "Finans ve Trendler",
+      "analyticsDescription": "Tutar, dağılım ve dönem trendi",
+      "erpMovements": "ERP Hareketleri",
+      "erpMovementsDescription": "ERP kayıt ve hareket detayı"
     },
     "erpMovements": {
       "title": "ERP Hareketleri",
@@ -1705,8 +1710,8 @@
     }
   },
   "salesman360": {
-    "title": "Satış Temsilcisi 360",
-    "subtitle": "Satış temsilcisi özeti",
+    "title": "Satışçı 360 Rapor Merkezi",
+    "subtitle": "Satış performansı, iş akışı ve müşteri görünümü",
     "notFound": "Kullanıcı bulunamadı",
     "error": "Özet yüklenirken bir hata oluştu",
     "retry": "Tekrar Dene",

@@ -1578,9 +1578,14 @@
     "subtitle": "Customer overview and activity",
     "button": "Customer 360",
     "tabs": {
-      "overview": "Overview",
-      "analytics": "Analytics",
-      "erpMovements": "ERP Movements"
+      "overview": "Command Center",
+      "overviewDescription": "Priorities and quick outcomes",
+      "performanceDescription": "Funnel, conversion and activity",
+      "teamPerformanceDescription": "Salesperson comparison",
+      "analytics": "Finance & Trends",
+      "analyticsDescription": "Amounts, distribution and trends",
+      "erpMovements": "ERP Movements",
+      "erpMovementsDescription": "ERP records and movement detail"
     },
     "erpMovements": {
       "title": "ERP Movements",
@@ -1706,8 +1711,8 @@
     }
   },
   "salesman360": {
-    "title": "Sales Representative 360",
-    "subtitle": "Sales representative overview",
+    "title": "Salesperson 360 Report Center",
+    "subtitle": "Sales performance, workflow and customer view",
     "notFound": "User not found",
     "error": "An error occurred while loading the overview",
     "retry": "Retry",
