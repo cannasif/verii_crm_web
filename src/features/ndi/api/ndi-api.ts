@@ -141,6 +141,7 @@ export interface NdiTransferFailedDocumentDto {
   targetNetsisCompany: string;
   targetSeries: string;
   documentType: string;
+  errorCode?: string | null;
   errorMessage: string;
 }
 

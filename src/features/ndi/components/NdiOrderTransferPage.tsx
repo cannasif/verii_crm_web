@@ -2837,7 +2837,14 @@ function FailedTransferDocumentCard({ document }: { document: NdiTransferFailedD
         targetSeries={document.targetSeries}
       />
       <div className="mt-2 rounded-md border border-[#fecaca] bg-white px-3 py-2">
-        <div className="text-[10px] font-black uppercase text-[#b91c1c]">Netsis hata detayı</div>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="text-[10px] font-black uppercase text-[#b91c1c]">Netsis hata detayı</div>
+          {document.errorCode ? (
+            <span className="rounded-full border border-[#fecaca] bg-[#fff1f2] px-2 py-0.5 font-mono text-[9px] font-black text-[#b91c1c]">
+              {document.errorCode}
+            </span>
+          ) : null}
+        </div>
         <div className="mt-1 break-words text-xs font-bold text-[#7f1d1d]">{document.errorMessage}</div>
       </div>
     </div>
