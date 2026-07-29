@@ -87,6 +87,9 @@ interface NdiPreparedDocument {
   shippingCustomerCode?: string | null;
   specialCode1?: string | null;
   specialCode2?: string | null;
+  exportRefNo?: string | null;
+  orderExportType?: number | null;
+  orderTipi?: number | null;
   projectCode?: string | null;
   followUpNote?: string;
   customerCode: string;
@@ -133,6 +136,9 @@ function buildNdiTransferRequest(transfer: NdiPreparedTransfer): NdiTransferCrea
       shippingCustomerCode: document.shippingCustomerCode,
       specialCode1: document.specialCode1,
       specialCode2: document.specialCode2,
+      exportRefNo: document.exportRefNo,
+      exportType: document.orderExportType,
+      tipi: document.orderTipi,
       projectCode: document.projectCode,
       customerCode: document.customerCode,
       customerName: document.customerName,
@@ -183,6 +189,9 @@ interface NdiOrder {
   shippingCustomerName?: string | null;
   specialCode1?: string | null;
   specialCode2?: string | null;
+  exportRefNo?: string | null;
+  orderExportType?: number | null;
+  orderTipi?: number | null;
   projectCode?: string | null;
   description: string;
   tip: string;
@@ -920,6 +929,10 @@ export function NdiOrderTransferPage(): ReactElement {
     enabled: selectedIrsNoList.length > 0,
     staleTime: 30_000,
   });
+  const orderChecksByDocumentNo = useMemo(
+    () => new Map((orderChecksQuery.data ?? []).map((check) => [check.fatirsNo, check])),
+    [orderChecksQuery.data]
+  );
 
   const transferredQuery = useQuery({
     queryKey: ['ndi', 'transferred'],
@@ -928,10 +941,8 @@ export function NdiOrderTransferPage(): ReactElement {
   });
 
   const selectedOrdersForTransfer = useMemo(() => {
-    const checks = new Map((orderChecksQuery.data ?? []).map((check) => [check.fatirsNo, check]));
-
     return selectedOrders.map((order) => {
-      const check = checks.get(order.orderNo);
+      const check = orderChecksByDocumentNo.get(order.orderNo);
       const sourceOrderNo = check?.siparisNo?.trim() || null;
       const shippingCustomerCode = check?.teslimCariKodu?.trim() || order.shippingCustomerCode || null;
       const series = getKnownSeries(sourceOrderNo || order.orderNo);
@@ -952,9 +963,12 @@ export function NdiOrderTransferPage(): ReactElement {
         hasShipment: hasSeparateShippingCustomer(order.customerCode, shippingCustomerCode),
         shippingCustomerCode,
         description: check?.aciklama?.trim() || order.description,
+        exportRefNo: check?.exportRefNo?.trim() || null,
+        orderExportType: check?.exportType ?? null,
+        orderTipi: check?.tipi ?? null,
       };
     });
-  }, [orderChecksQuery.data, selectedOrders]);
+  }, [orderChecksByDocumentNo, selectedOrders]);
   const linesQuery = useQuery({
     queryKey: ['ndi', 'customer-dispatch-lines', selectedIrsNoList],
     queryFn: () => ndiApi.getCustomerDispatchLines(selectedIrsNoList),
@@ -1041,6 +1055,21 @@ export function NdiOrderTransferPage(): ReactElement {
     selectedOrdersForTransfer
       .map((order) => order.specialCode1?.trim())
       .filter((value): value is string => Boolean(value))
+  ));
+  const selectedExportRefNos = Array.from(new Set(
+    selectedOrdersForTransfer
+      .map((order) => order.exportRefNo?.trim())
+      .filter((value): value is string => Boolean(value))
+  ));
+  const selectedOrderExportTypes = Array.from(new Set(
+    selectedOrdersForTransfer
+      .map((order) => order.orderExportType)
+      .filter((value): value is number => value != null)
+  ));
+  const selectedOrderTypes = Array.from(new Set(
+    selectedOrdersForTransfer
+      .map((order) => order.orderTipi)
+      .filter((value): value is number => value != null)
   ));
   const selectedProjects = Array.from(new Set(
     selectedOrdersForTransfer
@@ -1436,6 +1465,9 @@ export function NdiOrderTransferPage(): ReactElement {
           shippingCustomerCode: order.shippingCustomerCode,
           specialCode1: order.specialCode1,
           specialCode2: order.specialCode2,
+          exportRefNo: order.exportRefNo,
+          orderExportType: order.orderExportType,
+          orderTipi: order.orderTipi,
           projectCode: order.projectCode,
           followUpNote: outcome?.targetNetsisCompany === 'SIRKET24'
             ? 'Kaynak irsaliyeler yalnız ŞİRKET24 bağlantılı faturasında birleştirilecek.'
@@ -1627,6 +1659,7 @@ export function NdiOrderTransferPage(): ReactElement {
               filteredOrders.map((order) => {
                 const isSelected = selectedOrderIds.has(order.id);
                 const lineCount = lineCountByOrderNo.get(order.orderNo);
+                const orderCheck = orderChecksByDocumentNo.get(order.orderNo);
 
                 return (
                   <button
@@ -1669,6 +1702,11 @@ export function NdiOrderTransferPage(): ReactElement {
                         <span className="text-right">
                           {order.shipmentType} · Özel Kod 1: {order.specialCode1 || '-'}
                         </span>
+                        {isSelected && orderCheck ? (
+                          <span className="col-span-2">
+                            Sipariş üst bilgisi: EXPORTREFNO {orderCheck.exportRefNo || '-'} · EXPORTTYPE {orderCheck.exportType ?? '-'} · TIPI {orderCheck.tipi ?? '-'}
+                          </span>
+                        ) : null}
                       </div>
                       <p className="mt-3 rounded-md bg-[var(--crm-app-panel-muted)] px-2 py-1 text-[11px] font-bold text-[var(--crm-app-text-muted)]">
                         {transferMode === 'manual'
@@ -1728,6 +1766,9 @@ export function NdiOrderTransferPage(): ReactElement {
               <InfoChip icon={<Truck size={15} />} label="Sevkiyat tipi" value={selectedShipmentTypes.join(', ') || '-'} />
               <InfoChip icon={<FileText size={15} />} label="Sorumlu" value={selectedRepresentatives.join(', ') || '-'} />
               <InfoChip icon={<ShieldCheck size={15} />} label="Özel Kod 1" value={selectedSpecialCodes1.join(', ') || '-'} />
+              <InfoChip icon={<FileText size={15} />} label="EXPORTREFNO" value={selectedExportRefNos.join(', ') || '-'} />
+              <InfoChip icon={<FileText size={15} />} label="EXPORTTYPE" value={selectedOrderExportTypes.join(', ') || '-'} />
+              <InfoChip icon={<FileText size={15} />} label="TIPI" value={selectedOrderTypes.join(', ') || '-'} />
               <InfoChip icon={<FileText size={15} />} label="Proje" value={selectedProjects.join(', ') || '-'} />
               <InfoChip
                 icon={<PackageCheck size={15} />}
