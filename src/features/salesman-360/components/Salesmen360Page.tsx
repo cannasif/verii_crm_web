@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { useAuthStore } from '@/stores/auth-store';
 import {
   useSalesmenOverviewQuery,
@@ -34,6 +34,11 @@ import {
   DistributionAndTrendCharts,
 } from './analytics/SalesmenAnalyticsPanels';
 import { SalesmenOverviewTab } from './tabs/SalesmenOverviewTab';
+import { SalesmenPerformanceTab } from './tabs/SalesmenPerformanceTab';
+import {
+  SalesmenReportTabs,
+  type Salesmen360TabKey,
+} from './navigation/SalesmenReportTabs';
 import type {
   Salesmen360PeriodKey,
   Salesmen360VisibleUserDto,
@@ -62,8 +67,6 @@ function KpiCardSkeleton(): ReactElement {
 const ALL_SALESMEN_ROUTE_VALUE = 'all';
 const ALL_SALESMEN_ID = 0;
 
-type Salesmen360TabKey = 'overview' | 'analytics' | 'erpMovements';
-
 export function Salesmen360Page(): ReactElement {
   const params = useParams<{ userId: string }>();
   const navigate = useNavigate();
@@ -89,7 +92,7 @@ export function Salesmen360Page(): ReactElement {
     userId,
     currencyParam,
     periodParams,
-    activeTab === 'overview' && (isAllSalesmen || userId > 0)
+    activeTab === 'performance' && (isAllSalesmen || userId > 0)
   );
   const showErpMovementsTab = !isAllSalesmen && userId > 0;
   const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } = useSalesmenAnalyticsSummaryQuery(userId, currencyParam, periodParams, activeTab === 'analytics');
@@ -99,7 +102,11 @@ export function Salesmen360Page(): ReactElement {
     isLoading: isErpMovementsLoading,
     isError: isErpMovementsError,
   } = useSalesmenErpMovementsQuery(userId, activeTab === 'erpMovements' && showErpMovementsTab);
-  const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(userId, 12);
+  const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(
+    userId,
+    12,
+    activeTab === 'overview'
+  );
   const executeActionMutation = useExecuteSalesmenActionMutation(userId);
   const visibleSalesmen = useMemo(
     () => visibleSalesmenQuery.data ?? [],
@@ -140,7 +147,7 @@ export function Salesmen360Page(): ReactElement {
   }, [isAllSalesmen, navigate, userId, visibleSalesmen]);
 
   useEffect(() => {
-    if (isAllSalesmen && activeTab !== 'overview') {
+    if (isAllSalesmen && activeTab !== 'overview' && activeTab !== 'performance') {
       setActiveTab('overview');
     }
   }, [activeTab, isAllSalesmen]);
@@ -402,43 +409,13 @@ export function Salesmen360Page(): ReactElement {
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Salesmen360TabKey)} className="space-y-6">
-          <div className="flex justify-center sm:justify-start">
-            <TabsList className="h-11 p-1 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl shadow-inner">
-              <TabsTrigger
-                value="overview"
-                className="rounded-xl px-6 font-bold text-muted-foreground transition-all data-[state=active]:bg-accent data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-primary/12 dark:data-[state=active]:text-primary"
-              >
-                {t('salesman360.tabs.overview')}
-              </TabsTrigger>
-              {!isAllSalesmen && (
-                <TabsTrigger
-                  value="analytics"
-                  className="rounded-xl px-6 font-bold text-muted-foreground transition-all data-[state=active]:bg-accent data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-primary/12 dark:data-[state=active]:text-primary"
-                >
-                  {t('salesman360.tabs.analytics')}
-                </TabsTrigger>
-              )}
-              {showErpMovementsTab && (
-                <TabsTrigger
-                  value="erpMovements"
-                  className="rounded-xl px-6 font-bold text-muted-foreground transition-all data-[state=active]:bg-accent data-[state=active]:text-primary data-[state=active]:shadow-sm dark:data-[state=active]:bg-primary/12 dark:data-[state=active]:text-primary"
-                >
-                  {t('salesman360.tabs.erpMovements')}
-                </TabsTrigger>
-              )}
-            </TabsList>
-          </div>
+          <SalesmenReportTabs
+            isTeamView={isAllSalesmen}
+            showErpMovements={showErpMovementsTab}
+          />
 
           <SalesmenOverviewTab
-            userId={userId}
             overview={overview}
-            performance={performance}
-            isPerformanceLoading={isPerformanceLoading}
-            isPerformanceError={isPerformanceError}
-            onRetryPerformance={() => void refetchPerformance()}
-            locale={i18n.resolvedLanguage ?? i18n.language}
-            currency={currencyParam}
-            periodParams={periodParams}
             cohortData={cohortData}
             isCohortLoading={isCohortLoading}
             isActionPending={executeActionMutation.isPending}
@@ -457,6 +434,17 @@ export function Salesmen360Page(): ReactElement {
             onNavigateQuotations={navigateToQuotations}
             onNavigateOrders={navigateToOrders}
             onNavigateActivities={navigateToActivities}
+          />
+
+          <SalesmenPerformanceTab
+            userId={userId}
+            performance={performance}
+            isLoading={isPerformanceLoading}
+            isError={isPerformanceError}
+            onRetry={() => void refetchPerformance()}
+            locale={i18n.resolvedLanguage ?? i18n.language}
+            currency={currencyParam}
+            periodParams={periodParams}
           />
 
           <TabsContent value="analytics" className="space-y-6 outline-none">

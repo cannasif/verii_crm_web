@@ -17,15 +17,12 @@ import type {
   CohortRetentionDto,
   RecommendedActionDto,
   Salesmen360OverviewDto,
-  Salesmen360PerformanceDto,
-  Salesmen360PeriodParams,
 } from '../../types/salesmen360.types';
 import {
   CohortRetentionPanel,
   RecommendedActionsPanel,
   RevenueQualityPanel,
 } from '../analytics/SalesmenAnalyticsPanels';
-import { SalesmenPerformanceDashboard } from '../SalesmenPerformanceDashboard';
 import {
   KPI_TONE_BORDER_LEFT_CLASSNAME,
   KPI_TONE_GLOW_CLASSNAME,
@@ -35,15 +32,7 @@ import {
 } from '../../utils/kpiTones';
 
 interface SalesmenOverviewTabProps {
-  userId: number;
   overview: Salesmen360OverviewDto;
-  performance?: Salesmen360PerformanceDto;
-  isPerformanceLoading: boolean;
-  isPerformanceError: boolean;
-  onRetryPerformance: () => void;
-  locale: string;
-  currency?: string;
-  periodParams: Salesmen360PeriodParams;
   cohortData?: CohortRetentionDto[];
   isCohortLoading: boolean;
   isActionPending: boolean;
@@ -123,15 +112,7 @@ function NavigableKpiCard({
 }
 
 export function SalesmenOverviewTab({
-  userId,
   overview,
-  performance,
-  isPerformanceLoading,
-  isPerformanceError,
-  onRetryPerformance,
-  locale,
-  currency,
-  periodParams,
   cohortData,
   isCohortLoading,
   isActionPending,
@@ -149,17 +130,6 @@ export function SalesmenOverviewTab({
 
   return (
     <TabsContent value="overview" className="space-y-6 outline-none">
-      <SalesmenPerformanceDashboard
-        userId={userId}
-        data={performance}
-        isLoading={isPerformanceLoading}
-        isError={isPerformanceError}
-        onRetry={onRetryPerformance}
-        locale={locale}
-        currency={currency}
-        periodParams={periodParams}
-      />
-
       <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
         <NavigableKpiCard
           label={t('salesman360.kpi.totalDemands')}

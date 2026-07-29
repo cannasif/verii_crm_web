@@ -159,12 +159,12 @@ export function useSalesmenPerformanceWorkFeedQuery(params: {
   });
 }
 
-export function useSalesmenCohortQuery(userId: number, months = 12) {
+export function useSalesmenCohortQuery(userId: number, months = 12, enabled = true) {
   return useQuery({
     queryKey: ['salesmen360', 'cohort', userId, months],
     queryFn: ({ signal }) => getSalesmenCohort({ userId, months, signal }),
     staleTime: COHORT_STALE_MS,
-    enabled: userId > 0,
+    enabled: userId > 0 && enabled,
   });
 }
 
