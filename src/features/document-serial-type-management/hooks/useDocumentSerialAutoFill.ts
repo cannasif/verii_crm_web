@@ -7,10 +7,7 @@ import type {
   DocumentSerialTypeGetDto,
 } from '../types/document-serial-type-types';
 import { formatSuggestedDocumentNumber } from '../utils/format-suggested-document-number';
-import {
-  getLastDocumentSerialTypeId,
-  saveLastDocumentSerialTypeId,
-} from '../utils/document-serial-preference-store';
+import { saveLastDocumentSerialTypeId } from '../utils/document-serial-preference-store';
 import { useCustomerDocumentSerialSuggestion } from './useCustomerDocumentSerialSuggestion';
 
 export type SalesDocumentSerialRootKey = 'demand' | 'quotation' | 'order';
@@ -127,53 +124,6 @@ export function useDocumentSerialAutoFill({
     if (!customerSuggestedSerialType) return;
     handleDocumentSerialTypeSelect(customerSuggestedSerialType.id);
   }, [customerSuggestedSerialType, handleDocumentSerialTypeSelect]);
-
-  useEffect(() => {
-    if (readOnly || !isCreateMode) return;
-    if (!watchedRepresentativeId || watchedRepresentativeId <= 0) return;
-    if (availableDocumentSerialTypes.length === 0) return;
-
-    const currentSerialTypeId = form.getValues(serialTypeField) as number | null | undefined;
-    if (currentSerialTypeId != null && currentSerialTypeId > 0) {
-      const existingSerialType = availableDocumentSerialTypes.find((item) => item.id === currentSerialTypeId);
-      const currentOfferNo = String(form.getValues(offerNoField) ?? '').trim();
-      if (existingSerialType && !currentOfferNo) {
-        lastAppliedSerialTypeIdRef.current = currentSerialTypeId;
-        applySuggestedOfferNo(existingSerialType);
-      }
-      return;
-    }
-
-    const preferredId = getLastDocumentSerialTypeId(
-      ruleType,
-      userId,
-      branchCode,
-      watchedRepresentativeId,
-    );
-    const preferredSerialType = preferredId
-      ? availableDocumentSerialTypes.find((item) => item.id === preferredId)
-      : undefined;
-    const fallbackSerialType =
-      preferredSerialType
-      ?? (availableDocumentSerialTypes.length === 1 ? availableDocumentSerialTypes[0] : undefined);
-
-    if (fallbackSerialType) {
-      handleDocumentSerialTypeSelect(fallbackSerialType.id);
-    }
-  }, [
-    applySuggestedOfferNo,
-    availableDocumentSerialTypes,
-    branchCode,
-    form,
-    handleDocumentSerialTypeSelect,
-    isCreateMode,
-    offerNoField,
-    readOnly,
-    ruleType,
-    serialTypeField,
-    userId,
-    watchedRepresentativeId,
-  ]);
 
   useEffect(() => {
     if (!watchedDocumentSerialTypeId || watchedDocumentSerialTypeId <= 0) return;
