@@ -437,6 +437,21 @@ function getKnownSeries(value: string): NdiBusinessSeries | null {
   return null;
 }
 
+function getSeriesFromCompanyCode(value?: string | null): NdiBusinessSeries | null {
+  switch (value?.trim().toLocaleUpperCase('tr-TR')) {
+    case 'V':
+      return 'VIN';
+    case 'S':
+      return 'SIP';
+    case 'N':
+      return 'NUR';
+    case 'D':
+      return 'DIS';
+    default:
+      return null;
+  }
+}
+
 function getRule(order: NdiOrder): NdiTransferRule {
   return transferRules.find((rule) => rule.id === order.operationProfile) ?? transferRules[0];
 }
@@ -477,7 +492,10 @@ function formatDate(value?: string | null): string {
 }
 
 function resolveOperationProfile(dispatch: NetsisCustomerDispatchDto): NdiOrder['operationProfile'] {
-  const series = getKnownSeries(dispatch.irsaliyeNo);
+  // Keep explicit legacy document series authoritative; KOD1=N is also used
+  // by existing WIN documents as a normal-operation marker.
+  const series = getKnownSeries(dispatch.irsaliyeNo)
+    ?? getSeriesFromCompanyCode(dispatch.ozelKod1);
   if (series === 'NUR') {
     return 'nuray';
   }
