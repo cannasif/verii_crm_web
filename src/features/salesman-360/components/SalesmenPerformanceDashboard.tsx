@@ -30,6 +30,7 @@ import { formatSalesmen360PeriodLabel } from '../utils/localizedDisplay';
 import { PerformanceChartFrame } from './performance/PerformanceChartFrame';
 import { PerformanceKpiOverview } from './performance/PerformanceKpiOverview';
 import { SalesPerformanceDetailPanels } from './performance/SalesPerformanceDetailPanels';
+import { TeamSalesValuePanel } from './performance/TeamSalesValuePanel';
 
 const STATUS_COLORS: Record<string, string> = {
   draft: '#94a3b8',
@@ -260,6 +261,7 @@ export function SalesmenPerformanceDashboard({
                       <Recharts.YAxis allowDecimals={false} axisLine={false} tickLine={false} />
                       <Recharts.Tooltip />
                       <Recharts.Legend iconType="circle" wrapperStyle={{ fontSize: 11, fontWeight: 600 }} />
+                      <Recharts.Bar dataKey="totalQuotations" name={t('salesman360.performance.kpi.quotations')} fill="#6366f1" radius={[6, 6, 0, 0]} />
                       <Recharts.Bar dataKey="totalOrders" name={t('salesman360.performance.kpi.orders')} fill="#ec4899" radius={[6, 6, 0, 0]} />
                       <Recharts.Bar dataKey="erpIntegratedOrders" name={t('salesman360.performance.kpi.erpOrders')} fill="#10b981" radius={[6, 6, 0, 0]} />
                       <Recharts.Bar dataKey="totalActivities" name={t('salesman360.performance.kpi.activities')} fill="#0ea5e9" radius={[6, 6, 0, 0]} />
@@ -271,6 +273,10 @@ export function SalesmenPerformanceDashboard({
           </Card>
         ) : null}
       </div>
+
+      {data.isTeamView ? (
+        <TeamSalesValuePanel salesmen={data.salesmen} locale={locale} />
+      ) : null}
 
       {data.isTeamView ? (
         <Card className="overflow-hidden rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3">
