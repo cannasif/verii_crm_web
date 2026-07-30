@@ -287,6 +287,8 @@ export interface Salesmen360SalesmanPerformanceDto extends Salesmen360Performanc
   userId: number;
   fullName: string;
   email?: string | null;
+  financialsByCurrency: Salesmen360FinancialSummaryDto[];
+  erpConvertedQuotations: number;
   overdueActivities: number;
   activityCompletionRate: number;
   customerEngagementRate: number;
