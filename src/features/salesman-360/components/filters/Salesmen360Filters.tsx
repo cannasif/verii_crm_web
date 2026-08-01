@@ -42,9 +42,13 @@ interface Salesmen360FiltersProps {
   onSelectCurrency: (currency: string) => void;
   selectedPeriod: Salesmen360PeriodKey;
   onSelectPeriod: (period: Salesmen360PeriodKey) => void;
+  customStartDate: string;
+  customEndDate: string;
+  onCustomStartDateChange: (value: string) => void;
+  onCustomEndDateChange: (value: string) => void;
 }
 
-const PERIOD_OPTIONS: Salesmen360PeriodKey[] = ['today', 'week', 'month', 'year'];
+const PERIOD_OPTIONS: Salesmen360PeriodKey[] = ['today', 'week', 'month', 'year', 'custom'];
 const ALL_SALESMEN_ID = 0;
 
 const FILTER_OUTER =
@@ -181,6 +185,10 @@ export function Salesmen360Filters({
   onSelectCurrency,
   selectedPeriod,
   onSelectPeriod,
+  customStartDate,
+  customEndDate,
+  onCustomStartDateChange,
+  onCustomEndDateChange,
 }: Salesmen360FiltersProps): ReactElement {
   const { t } = useTranslation();
 
@@ -253,6 +261,13 @@ export function Salesmen360Filters({
           </SelectContent>
         </Select>
       </div>
+      {selectedPeriod === 'custom' ? (
+        <div className="flex min-w-0 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-1.5 shadow-sm dark:border-white/10 dark:bg-[#160d20]">
+          <input aria-label="Başlangıç tarihi" type="date" value={customStartDate} max={customEndDate} onChange={(event) => onCustomStartDateChange(event.target.value)} className="h-8 min-w-0 rounded-lg border border-slate-200 bg-transparent px-2 text-xs font-semibold dark:border-white/10" />
+          <span className="text-slate-400">–</span>
+          <input aria-label="Bitiş tarihi" type="date" value={customEndDate} min={customStartDate} onChange={(event) => onCustomEndDateChange(event.target.value)} className="h-8 min-w-0 rounded-lg border border-slate-200 bg-transparent px-2 text-xs font-semibold dark:border-white/10" />
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -31,6 +31,7 @@ import { PerformanceChartFrame } from './performance/PerformanceChartFrame';
 import { PerformanceKpiOverview } from './performance/PerformanceKpiOverview';
 import { SalesPerformanceDetailPanels } from './performance/SalesPerformanceDetailPanels';
 import { TeamSalesValuePanel } from './performance/TeamSalesValuePanel';
+import { SalesmenPerformancePivotReport } from './performance/SalesmenPerformancePivotReport';
 
 const STATUS_COLORS: Record<string, string> = {
   draft: '#94a3b8',
@@ -277,6 +278,8 @@ export function SalesmenPerformanceDashboard({
       {data.isTeamView ? (
         <TeamSalesValuePanel salesmen={data.salesmen} locale={locale} />
       ) : null}
+
+      <SalesmenPerformancePivotReport data={data} locale={locale} />
 
       {data.isTeamView ? (
         <Card className="overflow-hidden rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3">

@@ -67,6 +67,11 @@ function KpiCardSkeleton(): ReactElement {
 const ALL_SALESMEN_ROUTE_VALUE = 'all';
 const ALL_SALESMEN_ID = 0;
 
+function toLocalDateInput(date: Date): string {
+  const offset = date.getTimezoneOffset() * 60_000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 10);
+}
+
 export function Salesmen360Page(): ReactElement {
   const params = useParams<{ userId: string }>();
   const navigate = useNavigate();
@@ -77,11 +82,18 @@ export function Salesmen360Page(): ReactElement {
   const userId = isAllSalesmen ? ALL_SALESMEN_ID : rawUserId === 'me' ? (authUser?.id ?? 0) : Number(rawUserId || 0);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('ALL');
   const [selectedPeriod, setSelectedPeriod] = useState<Salesmen360PeriodKey>('month');
+  const [customStartDate, setCustomStartDate] = useState(() => toLocalDateInput(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
+  const [customEndDate, setCustomEndDate] = useState(() => toLocalDateInput(new Date()));
   const [activeTab, setActiveTab] = useState<Salesmen360TabKey>('overview');
   const visibleSalesmenQuery = useVisibleSalesmenQuery();
   const { currencyOptions: erpCurrencyOptions, isLoading: isCurrencyOptionsLoading } = useCurrencyOptions();
   const currencyParam = selectedCurrency === 'ALL' ? undefined : selectedCurrency;
-  const periodParams = useMemo(() => ({ period: selectedPeriod }), [selectedPeriod]);
+  const periodParams = useMemo(
+    () => selectedPeriod === 'custom'
+      ? { period: selectedPeriod, startDate: customStartDate, endDate: customEndDate }
+      : { period: selectedPeriod },
+    [customEndDate, customStartDate, selectedPeriod]
+  );
   const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam, periodParams, isAllSalesmen || userId > 0);
   const {
     data: performance,
@@ -405,6 +417,10 @@ export function Salesmen360Page(): ReactElement {
             onSelectCurrency={setSelectedCurrency}
             selectedPeriod={selectedPeriod}
             onSelectPeriod={setSelectedPeriod}
+            customStartDate={customStartDate}
+            customEndDate={customEndDate}
+            onCustomStartDateChange={setCustomStartDate}
+            onCustomEndDateChange={setCustomEndDate}
           />
         </div>
 
