@@ -31,3 +31,14 @@ export function resolveDocumentCancellationReason(record: DocumentApprovalStatus
   const text = String(raw).trim();
   return text.length > 0 ? text : null;
 }
+
+/**
+ * Customer cancellation is a business transition for active CRM documents only.
+ * Rejected/closed/cancelled/revision-terminal documents must remain immutable.
+ */
+export function canCustomerCancelDocument(
+  status: number | null,
+  isErpIntegrated: boolean,
+): boolean {
+  return !isErpIntegrated && status != null && [0, 1, 2].includes(status);
+}
