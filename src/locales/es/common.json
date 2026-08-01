@@ -1676,8 +1676,17 @@
       "label": "Vendedor",
       "all": "Todos",
       "me": "Yo",
+      "scope": "Alcance del informe",
+      "selectedCount": "{{count}} vendedores seleccionados",
       "searchPlaceholder": "Buscar por nombre o correo…",
       "noResults": "Sin resultados."
+    },
+    "reportTabs": {
+      "sales": "Rendimiento de ventas",
+      "demand": "Rendimiento de solicitudes",
+      "quotation": "Rendimiento de ofertas",
+      "order": "Rendimiento de pedidos",
+      "activity": "Rendimiento de actividades"
     },
     "currencyFilter": {
       "label": "Moneda",

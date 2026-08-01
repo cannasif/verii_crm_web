@@ -1676,8 +1676,17 @@
       "label": "Verkäufer",
       "all": "Alle",
       "me": "Ich",
+      "scope": "Berichtsumfang",
+      "selectedCount": "{{count}} Vertriebsmitarbeiter ausgewählt",
       "searchPlaceholder": "Nach Name oder E-Mail suchen…",
       "noResults": "Keine Treffer."
+    },
+    "reportTabs": {
+      "sales": "Verkaufsleistung",
+      "demand": "Anfrageleistung",
+      "quotation": "Angebotsleistung",
+      "order": "Auftragsleistung",
+      "activity": "Aktivitätsleistung"
     },
     "currencyFilter": {
       "label": "Währung",

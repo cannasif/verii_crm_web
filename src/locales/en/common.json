@@ -1724,8 +1724,17 @@
       "label": "Salesperson",
       "all": "All",
       "me": "Me",
+      "scope": "Report scope",
+      "selectedCount": "{{count}} salespeople selected",
       "searchPlaceholder": "Search by name or email…",
       "noResults": "No matches."
+    },
+    "reportTabs": {
+      "sales": "Sales performance",
+      "demand": "Demand performance",
+      "quotation": "Quotation performance",
+      "order": "Order performance",
+      "activity": "Activity performance"
     },
     "currencyFilter": {
       "label": "Currency",

@@ -1676,8 +1676,17 @@
       "label": "Commercial",
       "all": "Tous",
       "me": "Moi",
+      "scope": "Périmètre du rapport",
+      "selectedCount": "{{count}} commerciaux sélectionnés",
       "searchPlaceholder": "Rechercher par nom ou e-mail…",
       "noResults": "Aucun résultat."
+    },
+    "reportTabs": {
+      "sales": "Performance commerciale",
+      "demand": "Performance des demandes",
+      "quotation": "Performance des devis",
+      "order": "Performance des commandes",
+      "activity": "Performance des activités"
     },
     "currencyFilter": {
       "label": "Devise",

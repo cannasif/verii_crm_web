@@ -1676,8 +1676,17 @@
       "label": "مندوب المبيعات",
       "all": "الكل",
       "me": "أنا",
+      "scope": "نطاق التقرير",
+      "selectedCount": "تم اختيار {{count}} مندوبي مبيعات",
       "searchPlaceholder": "ابحث بالاسم أو البريد…",
       "noResults": "لا توجد نتائج."
+    },
+    "reportTabs": {
+      "sales": "أداء المبيعات",
+      "demand": "أداء الطلبات",
+      "quotation": "أداء عروض الأسعار",
+      "order": "أداء أوامر البيع",
+      "activity": "أداء الأنشطة"
     },
     "currencyFilter": {
       "label": "العملة",

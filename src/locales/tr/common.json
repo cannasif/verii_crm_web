@@ -1723,8 +1723,17 @@
       "label": "Satışçı",
       "all": "Tümü",
       "me": "Ben",
+      "scope": "Rapor kapsamı",
+      "selectedCount": "{{count}} satışçı seçili",
       "searchPlaceholder": "İsim veya e-posta ile ara…",
       "noResults": "Eşleşen satış temsilcisi yok."
+    },
+    "reportTabs": {
+      "sales": "Satış performansı",
+      "demand": "Talep performansı",
+      "quotation": "Teklif performansı",
+      "order": "Sipariş performansı",
+      "activity": "Aktivite performansı"
     },
     "currencyFilter": {
       "label": "Para birimi",

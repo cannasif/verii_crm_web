@@ -1676,8 +1676,17 @@
       "label": "Venditore",
       "all": "Tutti",
       "me": "Io",
+      "scope": "Ambito del report",
+      "selectedCount": "{{count}} venditori selezionati",
       "searchPlaceholder": "Cerca per nome o email…",
       "noResults": "Nessun risultato."
+    },
+    "reportTabs": {
+      "sales": "Prestazioni di vendita",
+      "demand": "Prestazioni delle richieste",
+      "quotation": "Prestazioni delle offerte",
+      "order": "Prestazioni degli ordini",
+      "activity": "Prestazioni delle attività"
     },
     "currencyFilter": {
       "label": "Valuta",
