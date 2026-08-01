@@ -1,55 +1,36 @@
 import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  LineChart,
-  RefreshCw,
-  Target,
-  Users,
-} from 'lucide-react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { LineChart, RefreshCw, Target, Users } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
+import { Tabs } from '@/components/ui/tabs';
 import { useAuthStore } from '@/stores/auth-store';
 import {
   useSalesmenOverviewQuery,
-  useSalesmenAnalyticsSummaryQuery,
-  useSalesmenAnalyticsChartsQuery,
   useSalesmenPerformanceQuery,
   useSalesmenCohortQuery,
-  useSalesmenErpMovementsQuery,
   useExecuteSalesmenActionMutation,
   useVisibleSalesmenQuery,
 } from '../hooks/useSalesmen360';
-import { SalesmenCurrencySummaryCards } from './SalesmenCurrencySummaryCards';
-import { SalesmenAmountComparisonByCurrencyTable } from './SalesmenAmountComparisonByCurrencyTable';
-import { SalesmenErpMovementsTabContent } from './SalesmenErpMovementsTabContent';
-import {
-  Salesmen360Filters,
-  type Salesmen360CurrencyFilterOption,
-} from './filters/Salesmen360Filters';
-import {
-  DistributionAndTrendCharts,
-} from './analytics/SalesmenAnalyticsPanels';
+import { Salesmen360Filters, type Salesmen360CurrencyFilterOption } from './filters/Salesmen360Filters';
 import { SalesmenOverviewTab } from './tabs/SalesmenOverviewTab';
 import { SalesmenPerformanceTab } from './tabs/SalesmenPerformanceTab';
-import {
-  SalesmenReportTabs,
-  type Salesmen360TabKey,
-} from './navigation/SalesmenReportTabs';
-import type {
-  Salesmen360PeriodKey,
-  Salesmen360VisibleUserDto,
-} from '../types/salesmen360.types';
+import { SalesWorkFeedTab } from './performance/tabs/SalesWorkFeedTab';
+import { SalesmenReportTabs, type Salesmen360TabKey } from './navigation/SalesmenReportTabs';
+import type { Salesmen360PeriodKey } from '../types/salesmen360.types';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 
 function getInitials(name?: string | null): string {
   const trimmed = name?.trim();
   if (!trimmed) return '?';
   const parts = trimmed.split(/\s+/).filter(Boolean);
-  const initials = parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? '').join('');
+  const initials = parts
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('');
   return initials || '?';
 }
 
@@ -82,62 +63,62 @@ export function Salesmen360Page(): ReactElement {
   const userId = isAllSalesmen ? ALL_SALESMEN_ID : rawUserId === 'me' ? (authUser?.id ?? 0) : Number(rawUserId || 0);
   const [selectedCurrency, setSelectedCurrency] = useState<string>('ALL');
   const [selectedPeriod, setSelectedPeriod] = useState<Salesmen360PeriodKey>('month');
-  const [customStartDate, setCustomStartDate] = useState(() => toLocalDateInput(new Date(new Date().getFullYear(), new Date().getMonth(), 1)));
+  const [customStartDate, setCustomStartDate] = useState(() =>
+    toLocalDateInput(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
+  );
   const [customEndDate, setCustomEndDate] = useState(() => toLocalDateInput(new Date()));
-  const [activeTab, setActiveTab] = useState<Salesmen360TabKey>('overview');
+  const [activeTab, setActiveTab] = useState<Salesmen360TabKey>('sales');
+  const [selectedUserIds, setSelectedUserIds] = useState<number[]>(isAllSalesmen || userId <= 0 ? [] : [userId]);
   const visibleSalesmenQuery = useVisibleSalesmenQuery();
   const { currencyOptions: erpCurrencyOptions, isLoading: isCurrencyOptionsLoading } = useCurrencyOptions();
   const currencyParam = selectedCurrency === 'ALL' ? undefined : selectedCurrency;
   const periodParams = useMemo(
-    () => selectedPeriod === 'custom'
-      ? { period: selectedPeriod, startDate: customStartDate, endDate: customEndDate }
-      : { period: selectedPeriod },
-    [customEndDate, customStartDate, selectedPeriod]
+    () =>
+      selectedPeriod === 'custom'
+        ? {
+            period: selectedPeriod,
+            startDate: customStartDate,
+            endDate: customEndDate,
+          }
+        : { period: selectedPeriod },
+    [customEndDate, customStartDate, selectedPeriod],
   );
-  const { data: overview, isLoading, isError, error, refetch } = useSalesmenOverviewQuery(userId, currencyParam, periodParams, isAllSalesmen || userId > 0);
+  const scopedUserId = selectedUserIds.length === 1 ? selectedUserIds[0] : ALL_SALESMEN_ID;
+  const selectedUserIdsParam = selectedUserIds.length > 1 ? selectedUserIds : undefined;
+  const isTeamScope = selectedUserIds.length !== 1;
+  const {
+    data: overview,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useSalesmenOverviewQuery(scopedUserId, currencyParam, periodParams, scopedUserId >= 0);
   const {
     data: performance,
     isLoading: isPerformanceLoading,
     isError: isPerformanceError,
     refetch: refetchPerformance,
-  } = useSalesmenPerformanceQuery(
-    userId,
-    currencyParam,
-    periodParams,
-    activeTab === 'performance' && (isAllSalesmen || userId > 0)
-  );
-  const showErpMovementsTab = !isAllSalesmen && userId > 0;
-  const { data: summary, isLoading: isSummaryLoading, isError: isSummaryError } = useSalesmenAnalyticsSummaryQuery(userId, currencyParam, periodParams, activeTab === 'analytics');
-  const { data: charts, isLoading: isChartsLoading, isError: isChartsError } = useSalesmenAnalyticsChartsQuery(userId, 12, currencyParam, periodParams, activeTab === 'analytics');
-  const {
-    data: erpMovements = [],
-    isLoading: isErpMovementsLoading,
-    isError: isErpMovementsError,
-  } = useSalesmenErpMovementsQuery(userId, activeTab === 'erpMovements' && showErpMovementsTab);
-  const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(
-    userId,
-    12,
-    activeTab === 'overview'
-  );
-  const executeActionMutation = useExecuteSalesmenActionMutation(userId);
-  const visibleSalesmen = useMemo(
-    () => visibleSalesmenQuery.data ?? [],
-    [visibleSalesmenQuery.data]
-  );
-  const allSalesmenOption = useMemo<Salesmen360VisibleUserDto>(
-    () => ({
-      userId: ALL_SALESMEN_ID,
-      fullName: t('salesman360.salesmanFilter.all'),
-      email: null,
-      isSelf: false,
-    }),
-    [t]
-  );
-  const salespersonOptions = useMemo(
-    () => (visibleSalesmen.length > 1 ? [allSalesmenOption, ...visibleSalesmen] : visibleSalesmen),
-    [allSalesmenOption, visibleSalesmen]
-  );
-  const selectedSalesmanValue = isAllSalesmen || userId > 0 ? String(userId) : undefined;
+  } = useSalesmenPerformanceQuery(scopedUserId, selectedUserIdsParam, currencyParam, periodParams, scopedUserId >= 0);
+  const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(scopedUserId, 12, activeTab === 'sales' && !isTeamScope);
+  const executeActionMutation = useExecuteSalesmenActionMutation(scopedUserId);
+  const visibleSalesmen = useMemo(() => visibleSalesmenQuery.data ?? [], [visibleSalesmenQuery.data]);
+  const salespersonOptions = visibleSalesmen;
+
+  useEffect(() => {
+    setSelectedUserIds(isAllSalesmen || userId <= 0 ? [] : [userId]);
+  }, [isAllSalesmen, userId]);
+
+  useEffect(() => {
+    if (selectedUserIds.length === 0 || visibleSalesmen.length === 0) {
+      return;
+    }
+
+    const visibleIds = new Set(visibleSalesmen.map((item) => item.userId));
+    const validSelection = selectedUserIds.filter((id) => visibleIds.has(id));
+    if (validSelection.length !== selectedUserIds.length) {
+      setSelectedUserIds(validSelection);
+    }
+  }, [selectedUserIds, visibleSalesmen]);
 
   useEffect(() => {
     if (visibleSalesmen.length === 0) {
@@ -158,17 +139,9 @@ export function Salesmen360Page(): ReactElement {
     }
   }, [isAllSalesmen, navigate, userId, visibleSalesmen]);
 
-  useEffect(() => {
-    if (isAllSalesmen && activeTab !== 'overview' && activeTab !== 'performance') {
-      setActiveTab('overview');
-    }
-  }, [activeTab, isAllSalesmen]);
-
   const currencyOptions = useMemo<Salesmen360CurrencyFilterOption[]>(() => {
     const seen = new Set<string>();
-    const options: Salesmen360CurrencyFilterOption[] = [
-      { value: 'ALL', label: t('salesman360.currencyFilter.all') },
-    ];
+    const options: Salesmen360CurrencyFilterOption[] = [{ value: 'ALL', label: t('salesman360.currencyFilter.all') }];
 
     for (const rate of erpCurrencyOptions) {
       const value = String(rate.dovizTipi);
@@ -190,7 +163,7 @@ export function Salesmen360Page(): ReactElement {
   }, [erpCurrencyOptions, t]);
   const selectedCurrencyOption = useMemo(
     () => currencyOptions.find((option) => option.value === selectedCurrency),
-    [currencyOptions, selectedCurrency]
+    [currencyOptions, selectedCurrency],
   );
 
   const currencyFormatter = useMemo(
@@ -199,12 +172,9 @@ export function Salesmen360Page(): ReactElement {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       }),
-    [i18n.resolvedLanguage, i18n.language]
+    [i18n.resolvedLanguage, i18n.language],
   );
-  const currencyOptionValueSignature = useMemo(
-    () => currencyOptions.map((option) => option.value).join('|'),
-    [currencyOptions]
-  );
+  const currencyOptionValueSignature = useMemo(() => currencyOptions.map((option) => option.value).join('|'), [currencyOptions]);
   const hasSelectedCurrencyOption = useMemo(() => {
     if (selectedCurrency === 'ALL') {
       return true;
@@ -223,31 +193,8 @@ export function Salesmen360Page(): ReactElement {
     }
   }, [hasSelectedCurrencyOption, isCurrencyOptionsLoading, selectedCurrency]);
 
-  const selectedSalesmanLabel = useMemo(() => {
-    if (isAllSalesmen) {
-      return t('salesman360.salesmanFilter.all');
-    }
-
-    const selected = visibleSalesmen.find((item) => item.userId === userId);
-    if (!selected) {
-      return undefined;
-    }
-
-    const fullName = selected.fullName?.trim();
-    if (fullName && selected.email) {
-      return `${fullName} (${selected.email})`;
-    }
-
-    return fullName || selected.email || String(selected.userId);
-  }, [isAllSalesmen, t, userId, visibleSalesmen]);
-
   const isAllCurrencies = selectedCurrency === 'ALL';
-  const overviewTotalsByCurrency = overview?.kpis?.totalsByCurrency ?? [];
-  const chartsAmountComparisonByCurrency = charts?.amountComparisonByCurrency ?? [];
-
-  const lastActivityDateFormatted = summary?.lastActivityDate
-    ? new Date(summary.lastActivityDate).toLocaleDateString(i18n.language)
-    : '-';
+  const lastActivityDateFormatted = '-';
 
   if (userId <= 0 && !isAllSalesmen) {
     return (
@@ -289,7 +236,9 @@ export function Salesmen360Page(): ReactElement {
             <div className="flex h-20 w-20 mx-auto items-center justify-center rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20">
               <RefreshCw className="h-10 w-10 text-red-400" />
             </div>
-            <p className="text-slate-600 dark:text-slate-400 font-bold text-xl">{is404 ? t('salesman360.notFound') : t('salesman360.error')}</p>
+            <p className="text-slate-600 dark:text-slate-400 font-bold text-xl">
+              {is404 ? t('salesman360.notFound') : t('salesman360.error')}
+            </p>
             {!is404 && (
               <Button
                 variant="outline"
@@ -315,7 +264,7 @@ export function Salesmen360Page(): ReactElement {
   }
 
   const navigateWithRepresentativeNameQuery = (basePath: string): void => {
-    if (isAllSalesmen) {
+    if (isTeamScope) {
       navigate(basePath);
       return;
     }
@@ -355,7 +304,7 @@ export function Salesmen360Page(): ReactElement {
             <div className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-70 dark:opacity-40" />
             <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
               <div className="flex min-w-0 items-center gap-4">
-                {isAllSalesmen ? (
+                {isTeamScope ? (
                   <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-accent shadow-inner dark:border-primary/30 dark:bg-primary/10">
                     <Users className="h-8 w-8 text-primary" />
                   </div>
@@ -369,7 +318,7 @@ export function Salesmen360Page(): ReactElement {
                 <div className="min-w-0 space-y-1">
                   <div className="flex flex-wrap items-baseline gap-2.5">
                     <h1 className="truncate font-serif text-[1.7rem] font-semibold tracking-tight text-slate-900 dark:text-white sm:text-[1.9rem]">
-                      {isAllSalesmen ? t('salesman360.title') : overview.fullName || t('salesman360.title')}
+                      {isTeamScope ? t('salesman360.title') : overview.fullName || t('salesman360.title')}
                     </h1>
                     <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-primary/60 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-primary">
                       <LineChart className="size-3" />
@@ -377,25 +326,31 @@ export function Salesmen360Page(): ReactElement {
                     </span>
                   </div>
                   <p className="truncate text-[13px] font-medium italic text-slate-500 dark:text-slate-400">
-                    {isAllSalesmen ? t('salesman360.subtitle') : overview.email || t('salesman360.subtitle')}
+                    {isTeamScope ? t('salesman360.subtitle') : overview.email || t('salesman360.subtitle')}
                   </p>
                 </div>
               </div>
 
-              {!isAllSalesmen ? (
+              {!isTeamScope ? (
                 <div className="flex w-full flex-wrap items-stretch justify-between gap-y-3 divide-x divide-slate-200 sm:w-auto sm:flex-nowrap sm:justify-end dark:divide-white/10">
                   <div className="flex flex-col justify-center pr-3 text-right sm:px-4 sm:first:pl-0 sm:last:pr-0">
                     <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalOrders ?? 0}</p>
-                    <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.kpi.totalOrders')}</p>
+                    <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                      {t('salesman360.kpi.totalOrders')}
+                    </p>
                   </div>
                   <div className="flex flex-col justify-center px-3 text-right sm:px-4 sm:first:pl-0 sm:last:pr-0">
                     <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalActivities ?? 0}</p>
-                    <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.kpi.totalActivities')}</p>
+                    <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                      {t('salesman360.kpi.totalActivities')}
+                    </p>
                   </div>
                   {lastActivityDateFormatted !== '-' ? (
                     <div className="flex flex-col justify-center pl-3 text-right sm:px-4 sm:first:pl-0 sm:last:pr-0">
                       <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{lastActivityDateFormatted}</p>
-                      <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('salesman360.analytics.lastActivityDate')}</p>
+                      <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                        {t('salesman360.analytics.lastActivityDate')}
+                      </p>
                     </div>
                   ) : null}
                 </div>
@@ -405,12 +360,9 @@ export function Salesmen360Page(): ReactElement {
 
           <Salesmen360Filters
             salesmen={salespersonOptions}
-            selectedUserId={userId}
-            selectedSalesmanLabel={selectedSalesmanLabel}
-            showSalesmanFilter={visibleSalesmen.length > 1 && Boolean(selectedSalesmanValue)}
-            onSelectUserId={(id) =>
-              navigate(id === ALL_SALESMEN_ID ? '/salesmen-360/all' : `/salesmen-360/${id}`)
-            }
+            selectedUserIds={selectedUserIds}
+            showSalesmanFilter={visibleSalesmen.length > 1}
+            onSelectedUserIdsChange={setSelectedUserIds}
             currencyOptions={currencyOptions}
             selectedCurrency={selectedCurrency}
             selectedCurrencyLabel={selectedCurrencyOption?.label}
@@ -425,35 +377,35 @@ export function Salesmen360Page(): ReactElement {
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Salesmen360TabKey)} className="space-y-6">
-          <SalesmenReportTabs
-            isTeamView={isAllSalesmen}
-            showErpMovements={showErpMovementsTab}
-          />
+          <SalesmenReportTabs />
 
-          <SalesmenOverviewTab
-            overview={overview}
-            cohortData={cohortData}
-            isCohortLoading={isCohortLoading}
-            isActionPending={executeActionMutation.isPending}
-            onExecuteAction={(action) =>
-              executeActionMutation.mutate({
-                actionCode: action.actionCode,
-                title: action.title,
-                reason: action.reason ?? undefined,
-                dueInDays: 1,
-                priority: "High",
-              })
-            }
-            currencyFormatter={currencyFormatter}
-            isAllCurrencies={isAllCurrencies}
-            onNavigateDemands={navigateToDemands}
-            onNavigateQuotations={navigateToQuotations}
-            onNavigateOrders={navigateToOrders}
-            onNavigateActivities={navigateToActivities}
-          />
+          {!isTeamScope ? (
+            <SalesmenOverviewTab
+              overview={overview}
+              cohortData={cohortData}
+              isCohortLoading={isCohortLoading}
+              isActionPending={executeActionMutation.isPending}
+              onExecuteAction={(action) =>
+                executeActionMutation.mutate({
+                  actionCode: action.actionCode,
+                  title: action.title,
+                  reason: action.reason ?? undefined,
+                  dueInDays: 1,
+                  priority: 'High',
+                })
+              }
+              currencyFormatter={currencyFormatter}
+              isAllCurrencies={isAllCurrencies}
+              onNavigateDemands={navigateToDemands}
+              onNavigateQuotations={navigateToQuotations}
+              onNavigateOrders={navigateToOrders}
+              onNavigateActivities={navigateToActivities}
+            />
+          ) : null}
 
           <SalesmenPerformanceTab
-            userId={userId}
+            userId={scopedUserId}
+            userIds={selectedUserIdsParam}
             performance={performance}
             isLoading={isPerformanceLoading}
             isError={isPerformanceError}
@@ -462,74 +414,20 @@ export function Salesmen360Page(): ReactElement {
             currency={currencyParam}
             periodParams={periodParams}
           />
-
-          <TabsContent value="analytics" className="space-y-6 outline-none">
-            {isSummaryError ? (
-              <Card className="rounded-2xl border border-dashed border-red-200 bg-red-50/30 dark:border-red-500/20 dark:bg-red-500/5">
-                <CardContent className="p-10 text-center text-sm font-medium text-red-500">{t('salesman360.analytics.error')}</CardContent>
-              </Card>
-            ) : (
-              <>
-                <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-                  <div className="lg:col-span-7">
-                    <SalesmenCurrencySummaryCards
-                      isAllCurrencies={isAllCurrencies}
-                      summary={summary ?? null}
-                      totalsByCurrency={isAllCurrencies ? (summary?.totalsByCurrency ?? overviewTotalsByCurrency) : []}
-                      isLoading={isSummaryLoading}
-                      lastActivityDateFormatted={lastActivityDateFormatted}
-                    />
-                  </div>
-                  <div className="lg:col-span-5">
-                    <SalesmenAmountComparisonByCurrencyTable
-                      rows={chartsAmountComparisonByCurrency}
-                      isLoading={isChartsLoading}
-                      userId={userId}
-                    />
-                  </div>
-                </div>
-
-                {isChartsError ? (
-                  <Card className="rounded-2xl border border-dashed border-red-200 bg-red-50/30 dark:border-red-500/20 dark:bg-red-500/5">
-                    <CardContent className="p-10 text-center text-sm font-medium text-red-500">{t('salesman360.analytics.error')}</CardContent>
-                  </Card>
-                ) : isChartsLoading ? (
-                  <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {[1, 2, 3].map((i) => (
-                      <Card key={i} className="rounded-2xl border border-slate-200 bg-white/50 dark:border-white/10 dark:bg-white/2">
-                        <CardHeader><Skeleton className="h-6 w-40 rounded-lg" /></CardHeader>
-                        <CardContent><Skeleton className="h-64 w-full rounded-xl" /></CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                ) : charts ? (
-                  <DistributionAndTrendCharts
-                    distribution={charts.distribution}
-                    monthlyTrend={charts.monthlyTrend}
-                    amountComparison={charts.amountComparison}
-                    isSingleCurrency={!isAllCurrencies}
-                    currencyFormatter={currencyFormatter}
-                    t={t}
-                    locale={i18n.language}
-                    noDataKey="common.noData"
-                    chartsEnabled={activeTab === 'analytics'}
-                  />
-                ) : null}
-              </>
-            )}
-          </TabsContent>
-          {showErpMovementsTab && (
-            <TabsContent value="erpMovements" className="space-y-6 outline-none">
-              <SalesmenErpMovementsTabContent
-                movements={erpMovements}
-                isLoading={isErpMovementsLoading}
-                isError={isErpMovementsError}
-                numberFormatter={currencyFormatter}
-                selectedUserId={userId}
-                locale={i18n.language}
-              />
-            </TabsContent>
-          )}
+          {(['demand', 'quotation', 'order', 'activity'] as const).map((kind) => (
+            <SalesWorkFeedTab
+              key={kind}
+              tabValue={kind}
+              fixedKind={kind}
+              userId={scopedUserId}
+              userIds={selectedUserIdsParam}
+              locale={i18n.resolvedLanguage ?? i18n.language}
+              currency={currencyParam}
+              periodParams={periodParams}
+              attentionItems={performance?.attentionItems ?? []}
+              enabled={activeTab === kind}
+            />
+          ))}
         </Tabs>
       </div>
     </TooltipProvider>

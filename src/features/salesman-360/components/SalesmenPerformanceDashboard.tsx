@@ -1,31 +1,13 @@
 import { type ReactElement } from 'react';
-import {
-  Activity,
-  BadgeCheck,
-  ChartNoAxesCombined,
-  CheckCircle2,
-  RefreshCw,
-  ScanLine,
-  Users,
-} from 'lucide-react';
+import { Activity, BadgeCheck, ChartNoAxesCombined, CheckCircle2, RefreshCw, ScanLine, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import { cn } from '@/lib/utils';
-import type {
-  Salesmen360PerformanceDto,
-  Salesmen360PeriodParams,
-} from '../types/salesmen360.types';
+import type { Salesmen360PerformanceDto, Salesmen360PeriodParams } from '../types/salesmen360.types';
 import { formatSalesmen360PeriodLabel } from '../utils/localizedDisplay';
 import { PerformanceChartFrame } from './performance/PerformanceChartFrame';
 import { PerformanceKpiOverview } from './performance/PerformanceKpiOverview';
@@ -49,6 +31,7 @@ function formatRate(value: number, locale: string): string {
 
 export function SalesmenPerformanceDashboard({
   userId,
+  userIds,
   data,
   isLoading,
   isError,
@@ -58,6 +41,7 @@ export function SalesmenPerformanceDashboard({
   periodParams,
 }: {
   userId: number;
+  userIds?: number[];
   data?: Salesmen360PerformanceDto;
   isLoading: boolean;
   isError: boolean;
@@ -107,12 +91,7 @@ export function SalesmenPerformanceDashboard({
   const activityTypeData = data.activityTypes.slice(0, 8);
   const teamChartData = data.salesmen.slice(0, 12);
   const trendHasData = data.trend.some(
-    (item) =>
-      item.quotationCount > 0 ||
-      item.orderCount > 0 ||
-      item.erpOrderCount > 0 ||
-      item.activityCount > 0 ||
-      item.customerCount > 0
+    (item) => item.quotationCount > 0 || item.orderCount > 0 || item.erpOrderCount > 0 || item.activityCount > 0 || item.customerCount > 0,
   );
   const activityHasData = activityTypeData.some((item) => item.count > 0);
   const orderHasData = orderStatusData.some((item) => item.count > 0);
@@ -131,7 +110,9 @@ export function SalesmenPerformanceDashboard({
           </div>
           <p className="mt-1 pl-11 text-sm font-medium text-slate-500 dark:text-slate-400">
             {data.isTeamView
-              ? t('salesman360.performance.teamDescription', { count: data.salesmanCount })
+              ? t('salesman360.performance.teamDescription', {
+                  count: data.salesmanCount,
+                })
               : t('salesman360.performance.personalDescription')}
           </p>
         </div>
@@ -157,7 +138,13 @@ export function SalesmenPerformanceDashboard({
             ) : (
               <PerformanceChartFrame>
                 {({ width, height }) => (
-                  <Recharts.BarChart width={width} height={height} data={orderStatusData} layout="vertical" margin={{ top: 6, right: 16, left: 34, bottom: 0 }}>
+                  <Recharts.BarChart
+                    width={width}
+                    height={height}
+                    data={orderStatusData}
+                    layout="vertical"
+                    margin={{ top: 6, right: 16, left: 34, bottom: 0 }}
+                  >
                     <Recharts.CartesianGrid strokeDasharray="3 3" horizontal={false} className="stroke-slate-100 dark:stroke-white/5" />
                     <Recharts.XAxis type="number" allowDecimals={false} axisLine={false} tickLine={false} />
                     <Recharts.YAxis type="category" dataKey="label" width={105} axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
@@ -198,11 +185,46 @@ export function SalesmenPerformanceDashboard({
                     <Recharts.YAxis allowDecimals={false} axisLine={false} tickLine={false} />
                     <Recharts.Tooltip labelFormatter={(value) => formatSalesmen360PeriodLabel(String(value), locale)} />
                     <Recharts.Legend iconType="circle" wrapperStyle={{ fontSize: 11, fontWeight: 600 }} />
-                    <Recharts.Line type="monotone" dataKey="quotationCount" name={t('salesman360.performance.pipeline.quotations')} stroke="#6366f1" strokeWidth={2.5} dot={false} />
-                    <Recharts.Line type="monotone" dataKey="orderCount" name={t('salesman360.performance.pipeline.orders')} stroke="#ec4899" strokeWidth={2.5} dot={false} />
-                    <Recharts.Line type="monotone" dataKey="erpOrderCount" name={t('salesman360.performance.pipeline.erp')} stroke="#10b981" strokeWidth={2.5} dot={false} />
-                    <Recharts.Line type="monotone" dataKey="activityCount" name={t('salesman360.performance.kpi.activities')} stroke="#0ea5e9" strokeWidth={2} dot={false} />
-                    <Recharts.Line type="monotone" dataKey="customerCount" name={t('salesman360.performance.kpi.customers')} stroke="#8b5cf6" strokeWidth={2} dot={false} />
+                    <Recharts.Line
+                      type="monotone"
+                      dataKey="quotationCount"
+                      name={t('salesman360.performance.pipeline.quotations')}
+                      stroke="#6366f1"
+                      strokeWidth={2.5}
+                      dot={false}
+                    />
+                    <Recharts.Line
+                      type="monotone"
+                      dataKey="orderCount"
+                      name={t('salesman360.performance.pipeline.orders')}
+                      stroke="#ec4899"
+                      strokeWidth={2.5}
+                      dot={false}
+                    />
+                    <Recharts.Line
+                      type="monotone"
+                      dataKey="erpOrderCount"
+                      name={t('salesman360.performance.pipeline.erp')}
+                      stroke="#10b981"
+                      strokeWidth={2.5}
+                      dot={false}
+                    />
+                    <Recharts.Line
+                      type="monotone"
+                      dataKey="activityCount"
+                      name={t('salesman360.performance.kpi.activities')}
+                      stroke="#0ea5e9"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                    <Recharts.Line
+                      type="monotone"
+                      dataKey="customerCount"
+                      name={t('salesman360.performance.kpi.customers')}
+                      stroke="#8b5cf6"
+                      strokeWidth={2}
+                      dot={false}
+                    />
                   </Recharts.LineChart>
                 )}
               </PerformanceChartFrame>
@@ -212,7 +234,12 @@ export function SalesmenPerformanceDashboard({
       </div>
 
       <div className={cn('grid gap-5', data.isTeamView ? 'xl:grid-cols-5' : 'xl:grid-cols-1')}>
-        <Card className={cn('rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3', data.isTeamView ? 'xl:col-span-2' : '')}>
+        <Card
+          className={cn(
+            'rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3',
+            data.isTeamView ? 'xl:col-span-2' : '',
+          )}
+        >
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-base">
               <Activity className="size-5 text-sky-500" />
@@ -227,14 +254,39 @@ export function SalesmenPerformanceDashboard({
             ) : (
               <PerformanceChartFrame>
                 {({ width, height }) => (
-                  <Recharts.BarChart width={width} height={height} data={activityTypeData} layout="vertical" margin={{ top: 6, right: 16, left: 44, bottom: 0 }}>
+                  <Recharts.BarChart
+                    width={width}
+                    height={height}
+                    data={activityTypeData}
+                    layout="vertical"
+                    margin={{ top: 6, right: 16, left: 44, bottom: 0 }}
+                  >
                     <Recharts.CartesianGrid strokeDasharray="3 3" horizontal={false} className="stroke-slate-100 dark:stroke-white/5" />
                     <Recharts.XAxis type="number" allowDecimals={false} axisLine={false} tickLine={false} />
-                    <Recharts.YAxis type="category" dataKey="activityTypeName" width={115} axisLine={false} tickLine={false} tick={{ fontSize: 11 }} />
+                    <Recharts.YAxis
+                      type="category"
+                      dataKey="activityTypeName"
+                      width={115}
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 11 }}
+                    />
                     <Recharts.Tooltip cursor={{ fill: 'transparent' }} />
                     <Recharts.Legend iconType="circle" wrapperStyle={{ fontSize: 11, fontWeight: 600 }} />
-                    <Recharts.Bar dataKey="count" name={t('salesman360.performance.activityTotal')} fill="#0ea5e9" radius={[0, 7, 7, 0]} barSize={22} />
-                    <Recharts.Bar dataKey="completedCount" name={t('salesman360.performance.activityCompleted')} fill="#10b981" radius={[0, 7, 7, 0]} barSize={22} />
+                    <Recharts.Bar
+                      dataKey="count"
+                      name={t('salesman360.performance.activityTotal')}
+                      fill="#0ea5e9"
+                      radius={[0, 7, 7, 0]}
+                      barSize={22}
+                    />
+                    <Recharts.Bar
+                      dataKey="completedCount"
+                      name={t('salesman360.performance.activityCompleted')}
+                      fill="#10b981"
+                      radius={[0, 7, 7, 0]}
+                      barSize={22}
+                    />
                   </Recharts.BarChart>
                 )}
               </PerformanceChartFrame>
@@ -256,16 +308,50 @@ export function SalesmenPerformanceDashboard({
               ) : (
                 <PerformanceChartFrame>
                   {({ width, height }) => (
-                    <Recharts.BarChart width={width} height={height} data={teamChartData} margin={{ top: 6, right: 8, left: -20, bottom: 38 }}>
+                    <Recharts.BarChart
+                      width={width}
+                      height={height}
+                      data={teamChartData}
+                      margin={{ top: 6, right: 8, left: -20, bottom: 38 }}
+                    >
                       <Recharts.CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-slate-100 dark:stroke-white/5" />
-                      <Recharts.XAxis dataKey="fullName" axisLine={false} tickLine={false} interval={0} angle={-28} textAnchor="end" height={58} tick={{ fontSize: 10 }} />
+                      <Recharts.XAxis
+                        dataKey="fullName"
+                        axisLine={false}
+                        tickLine={false}
+                        interval={0}
+                        angle={-28}
+                        textAnchor="end"
+                        height={58}
+                        tick={{ fontSize: 10 }}
+                      />
                       <Recharts.YAxis allowDecimals={false} axisLine={false} tickLine={false} />
                       <Recharts.Tooltip />
                       <Recharts.Legend iconType="circle" wrapperStyle={{ fontSize: 11, fontWeight: 600 }} />
-                      <Recharts.Bar dataKey="totalQuotations" name={t('salesman360.performance.kpi.quotations')} fill="#6366f1" radius={[6, 6, 0, 0]} />
-                      <Recharts.Bar dataKey="totalOrders" name={t('salesman360.performance.kpi.orders')} fill="#ec4899" radius={[6, 6, 0, 0]} />
-                      <Recharts.Bar dataKey="erpIntegratedOrders" name={t('salesman360.performance.kpi.erpOrders')} fill="#10b981" radius={[6, 6, 0, 0]} />
-                      <Recharts.Bar dataKey="totalActivities" name={t('salesman360.performance.kpi.activities')} fill="#0ea5e9" radius={[6, 6, 0, 0]} />
+                      <Recharts.Bar
+                        dataKey="totalQuotations"
+                        name={t('salesman360.performance.kpi.quotations')}
+                        fill="#6366f1"
+                        radius={[6, 6, 0, 0]}
+                      />
+                      <Recharts.Bar
+                        dataKey="totalOrders"
+                        name={t('salesman360.performance.kpi.orders')}
+                        fill="#ec4899"
+                        radius={[6, 6, 0, 0]}
+                      />
+                      <Recharts.Bar
+                        dataKey="erpIntegratedOrders"
+                        name={t('salesman360.performance.kpi.erpOrders')}
+                        fill="#10b981"
+                        radius={[6, 6, 0, 0]}
+                      />
+                      <Recharts.Bar
+                        dataKey="totalActivities"
+                        name={t('salesman360.performance.kpi.activities')}
+                        fill="#0ea5e9"
+                        radius={[6, 6, 0, 0]}
+                      />
                     </Recharts.BarChart>
                   )}
                 </PerformanceChartFrame>
@@ -275,9 +361,7 @@ export function SalesmenPerformanceDashboard({
         ) : null}
       </div>
 
-      {data.isTeamView ? (
-        <TeamSalesValuePanel salesmen={data.salesmen} locale={locale} />
-      ) : null}
+      {data.isTeamView ? <TeamSalesValuePanel salesmen={data.salesmen} locale={locale} /> : null}
 
       <SalesmenPerformancePivotReport data={data} locale={locale} />
 
@@ -319,7 +403,9 @@ export function SalesmenPerformanceDashboard({
                       </TableCell>
                       <TableCell className="text-right font-semibold tabular-nums">{row.totalDemands}</TableCell>
                       <TableCell className="text-right font-semibold tabular-nums">{row.totalQuotations}</TableCell>
-                      <TableCell className="text-right font-semibold tabular-nums">%{formatRate(row.quotationConversionRate, locale)}</TableCell>
+                      <TableCell className="text-right font-semibold tabular-nums">
+                        %{formatRate(row.quotationConversionRate, locale)}
+                      </TableCell>
                       <TableCell className="text-right font-bold tabular-nums">{row.totalOrders}</TableCell>
                       <TableCell className="text-right font-bold tabular-nums text-emerald-600">{row.erpIntegratedOrders}</TableCell>
                       <TableCell className="text-right font-semibold tabular-nums">{row.totalActivities}</TableCell>
@@ -366,6 +452,7 @@ export function SalesmenPerformanceDashboard({
 
       <SalesPerformanceDetailPanels
         userId={userId}
+        userIds={userIds}
         data={data}
         locale={locale}
         currency={currency}

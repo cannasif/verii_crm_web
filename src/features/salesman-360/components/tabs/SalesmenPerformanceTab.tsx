@@ -1,13 +1,11 @@
 import { type ReactElement } from 'react';
 import { TabsContent } from '@/components/ui/tabs';
-import type {
-  Salesmen360PerformanceDto,
-  Salesmen360PeriodParams,
-} from '../../types/salesmen360.types';
+import type { Salesmen360PerformanceDto, Salesmen360PeriodParams } from '../../types/salesmen360.types';
 import { SalesmenPerformanceDashboard } from '../SalesmenPerformanceDashboard';
 
 export function SalesmenPerformanceTab({
   userId,
+  userIds,
   performance,
   isLoading,
   isError,
@@ -17,6 +15,7 @@ export function SalesmenPerformanceTab({
   periodParams,
 }: {
   userId: number;
+  userIds?: number[];
   performance?: Salesmen360PerformanceDto;
   isLoading: boolean;
   isError: boolean;
@@ -26,9 +25,10 @@ export function SalesmenPerformanceTab({
   periodParams: Salesmen360PeriodParams;
 }): ReactElement {
   return (
-    <TabsContent value="performance" className="outline-none">
+    <TabsContent value="sales" className="outline-none">
       <SalesmenPerformanceDashboard
         userId={userId}
+        userIds={userIds}
         data={performance}
         isLoading={isLoading}
         isError={isError}
