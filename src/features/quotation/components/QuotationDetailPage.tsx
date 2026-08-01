@@ -93,6 +93,7 @@ import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-type
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { useCanEditQuotation } from '../hooks/useCanEditQuotation';
 import { useCancelQuotationByCustomer } from '../hooks/useCancelQuotationByCustomer';
+import { canCustomerCancelDocument } from '@/features/approval/utils/resolve-document-status';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
 
 function addDaysToDateOnly(dateValue: string, days: number): string {
@@ -193,7 +194,7 @@ export function QuotationDetailPage(): ReactElement {
   const isReadOnlyByStatus = [2, 3, 4, 5, 6, 7].includes(quotationStatus);
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
   const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
-  const canCancelByCustomer = canUpdate && !quotation?.isERPIntegrated && ![4, 5, 6, 7].includes(quotationStatus);
+  const canCancelByCustomer = canUpdate && canCustomerCancelDocument(quotationStatus, Boolean(quotation?.isERPIntegrated));
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
   const form = useForm<CreateQuotationSchema>({

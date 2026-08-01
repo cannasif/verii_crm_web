@@ -69,6 +69,7 @@ import { PricingRuleType } from '@/features/pricing-rule/types/pricing-rule-type
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { useCanEditOrder } from '../hooks/useCanEditOrder';
 import { useCancelOrderByCustomer } from '../hooks/useCancelOrderByCustomer';
+import { canCustomerCancelDocument } from '@/features/approval/utils/resolve-document-status';
 
 function parsePersistedId(formId: string | number | undefined, prefix: string): number | null {
   if (formId == null) return null;
@@ -149,7 +150,7 @@ export function OrderDetailPage(): ReactElement {
   const isReadOnlyByStatus = [2, 3, 4, 5, 6, 7].includes(orderStatus);
   const isApprovalLockedForCurrentUser = isApprovalWaiting && !canEditWhileWaiting;
   const isReadOnly = isReadOnlyByStatus || isApprovalLockedForCurrentUser;
-  const canCancelByCustomer = canUpdate && !order?.isERPIntegrated && ![4, 5, 6, 7].includes(orderStatus);
+  const canCancelByCustomer = canUpdate && canCustomerCancelDocument(orderStatus, Boolean(order?.isERPIntegrated));
   const editEnabled = canUpdate && !isReadOnly;
   const linesEnabled = editEnabled;
 

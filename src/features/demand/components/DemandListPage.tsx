@@ -51,6 +51,7 @@ import { formatCurrency } from '../utils/format-currency';
 import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
 import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
 import {
+  canCustomerCancelDocument,
   resolveDocumentApprovalStatus,
   resolveDocumentCancellationReason,
 } from '@/features/approval/utils/resolve-document-status';
@@ -573,7 +574,7 @@ export function DemandListPage(): ReactElement {
       isErpCleanupPending={cleanupErpMutation.isPending}
       showRevise={resolvedStatus === 0 || resolvedStatus === 3}
       showErpCleanup={demand.isERPIntegrated === true && Boolean(demand.erpIntegrationNumber)}
-      showCustomerCancel={canUpdate && !demand.isERPIntegrated && ![4, 5, 6, 7].includes(resolvedStatus ?? -1)}
+      showCustomerCancel={canUpdate && canCustomerCancelDocument(resolvedStatus, Boolean(demand.isERPIntegrated))}
       isCustomerCancelPending={cancelByCustomerMutation.isPending}
     />
     );
@@ -584,19 +585,19 @@ export function DemandListPage(): ReactElement {
   }, [navigate]);
 
   return (
-    <div className="relative space-y-6 overflow-hidden">
+    <div className="relative space-y-3 overflow-hidden">
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
-      <div className="relative z-10 space-y-8">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-4">
+      <div className="relative z-10 space-y-4">
+        <div className="flex flex-col justify-between gap-3 md:flex-row md:items-center">
           <div className="flex min-w-0 flex-1 items-start gap-3">
             <DocumentBackButton
               onBack={handleBack}
               backLabel={t('common.back', { ns: 'common', defaultValue: 'Geri' })}
             />
             <div className="min-w-0 space-y-1">
-              <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white transition-colors">
+              <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 transition-colors sm:text-3xl dark:text-white">
                 {t('list.title')}
               </h1>
               <p className="text-zinc-500 dark:text-muted-foreground text-sm flex items-center gap-2 font-medium">
@@ -607,7 +608,7 @@ export function DemandListPage(): ReactElement {
           </div>
           <Button
             onClick={() => navigate('/demands/create')}
-            className="h-12 px-8 bg-[image:var(--crm-brand-gradient)] rounded-2xl text-white text-sm font-black shadow-xl shadow-primary/20 transition-all duration-300 hover:scale-[1.05] hover:shadow-primary/30 active:scale-[0.98] border-0 opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="h-10 rounded-xl border-0 bg-[image:var(--crm-brand-gradient)] px-5 text-sm font-black text-white opacity-90 shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.03] hover:shadow-primary/30 active:scale-[0.98] dark:opacity-100"
           >
             <Plus size={20} className="mr-2 stroke-[3px]" />
             {t('list.createNew')}
@@ -668,7 +669,7 @@ export function DemandListPage(): ReactElement {
               <DocumentApprovalStatusFilter
                 value={approvalStatusFilter}
                 onValueChange={setApprovalStatusFilter}
-                className="mt-2 border-t border-slate-200/60 pt-2 dark:border-white/5 sm:mt-3 sm:pt-3"
+                className="border-t border-slate-200/60 pt-1 dark:border-white/5"
               />
             </CardHeader>
             <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>

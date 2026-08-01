@@ -51,6 +51,7 @@ import { formatCurrency } from '../utils/format-currency';
 import { ApprovalStatusBadge } from '@/features/approval/components/ApprovalStatusBadge';
 import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
 import {
+  canCustomerCancelDocument,
   resolveDocumentApprovalStatus,
   resolveDocumentCancellationReason,
 } from '@/features/approval/utils/resolve-document-status';
@@ -583,7 +584,7 @@ export function QuotationListPage(): ReactElement {
       isErpCleanupPending={cleanupErpMutation.isPending}
       showRevise={resolvedStatus === 0 || resolvedStatus === 3}
       showErpCleanup={quotation.isERPIntegrated === true && Boolean(quotation.erpIntegrationNumber)}
-      showCustomerCancel={canUpdate && !quotation.isERPIntegrated && ![4, 5, 6, 7].includes(resolvedStatus ?? -1)}
+      showCustomerCancel={canUpdate && canCustomerCancelDocument(resolvedStatus, Boolean(quotation.isERPIntegrated))}
       isCustomerCancelPending={cancelByCustomerMutation.isPending}
     />
     );
@@ -594,19 +595,19 @@ export function QuotationListPage(): ReactElement {
   }, [navigate]);
 
   return (
-    <div className="relative space-y-6 overflow-hidden">
+    <div className="relative space-y-3 overflow-hidden">
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 blur-[120px] pointer-events-none dark:block hidden" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 blur-[120px] pointer-events-none dark:block hidden" />
 
-      <div className="relative z-10 space-y-8">
-        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6 pb-2">
+      <div className="relative z-10 space-y-4">
+        <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-center">
           <div className="flex min-w-0 flex-1 items-start gap-3">
             <DocumentBackButton
               onBack={handleBack}
               backLabel={t('common.back', { ns: 'common', defaultValue: 'Geri' })}
             />
             <div className="min-w-0 space-y-1">
-              <h1 className="text-3xl font-extrabold tracking-tight text-zinc-900 dark:text-white">
+              <h1 className="text-2xl font-extrabold tracking-tight text-zinc-900 sm:text-3xl dark:text-white">
                 {t('list.title')}
               </h1>
               <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
@@ -617,7 +618,7 @@ export function QuotationListPage(): ReactElement {
           </div>
           <Button
             onClick={() => navigate('/quotations/create')}
-            className="h-11 px-6 rounded-xl bg-[image:var(--crm-brand-gradient)] text-white font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all duration-300 border-0 hover:text-white group opacity-90 grayscale-[0] dark:opacity-100 dark:grayscale-0"
+            className="group h-10 rounded-xl border-0 bg-[image:var(--crm-brand-gradient)] px-5 font-bold text-white opacity-90 shadow-lg shadow-primary/20 transition-all duration-300 hover:scale-[1.03] hover:text-white active:scale-95 dark:opacity-100"
           >
             <Plus className="h-5 w-5 mr-2 group-hover:rotate-90 transition-transform duration-300" />
             {t('list.createNew')}
@@ -679,7 +680,7 @@ export function QuotationListPage(): ReactElement {
               <DocumentApprovalStatusFilter
                 value={approvalStatusFilter}
                 onValueChange={setApprovalStatusFilter}
-                className="mt-2 border-t border-slate-200/60 pt-2 dark:border-white/5 sm:mt-3 sm:pt-3"
+                className="border-t border-slate-200/60 pt-1 dark:border-white/5"
               />
             </CardHeader>
             <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
