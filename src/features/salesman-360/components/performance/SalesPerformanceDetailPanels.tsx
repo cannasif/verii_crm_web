@@ -1,4 +1,4 @@
-import { type ReactElement, useState } from 'react';
+import { type ReactElement } from 'react';
 import {
   AlertTriangle,
   ArrowRight,
@@ -16,20 +16,18 @@ import {
   Target,
   TrendingUp,
   UserRound,
-  Users,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { useRechartsModule } from '@/lib/useRechartsModule';
 import { cn } from '@/lib/utils';
 import type { Salesmen360PerformanceDto, Salesmen360PeriodParams } from '../../types/salesmen360.types';
 import { PerformanceAttentionTable } from './PerformanceAttentionTable';
 import { PerformanceChartFrame } from './PerformanceChartFrame';
 import { formatPerformanceAmount } from './performanceFormatters';
-import { SalesWorkFeedTab } from './tabs/SalesWorkFeedTab';
 
 const STATUS_SERIES = [
   { key: 'draft', color: '#94a3b8' },
@@ -99,12 +97,9 @@ function RateRow({ label, value, countLabel, tone }: { label: string; value: num
 }
 
 export function SalesPerformanceDetailPanels({
-  userId,
-  userIds,
   data,
   locale,
-  currency,
-  periodParams,
+  section,
 }: {
   userId: number;
   userIds?: number[];
@@ -112,10 +107,10 @@ export function SalesPerformanceDetailPanels({
   locale: string;
   currency?: string;
   periodParams?: Salesmen360PeriodParams;
+  section: 'flow' | 'activity' | 'customer';
 }): ReactElement {
   const { t } = useTranslation();
   const Recharts = useRechartsModule(true);
-  const [activeDetailTab, setActiveDetailTab] = useState('flow');
 
   const statusChartData = data.documentStatuses.map((item) => ({
     ...item,
@@ -159,7 +154,7 @@ export function SalesPerformanceDetailPanels({
 
   return (
     <div className="space-y-5">
-      <Card className="overflow-hidden rounded-2xl border-amber-200/80 bg-linear-to-r from-amber-50/80 via-white to-rose-50/60 shadow-sm dark:border-amber-400/15 dark:from-amber-500/8 dark:via-white/3 dark:to-rose-500/5">
+      {section === 'flow' ? <Card className="overflow-hidden rounded-2xl border-amber-200/80 bg-linear-to-r from-amber-50/80 via-white to-rose-50/60 shadow-sm dark:border-amber-400/15 dark:from-amber-500/8 dark:via-white/3 dark:to-rose-500/5">
         <CardContent className="p-4 sm:p-5">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -202,29 +197,9 @@ export function SalesPerformanceDetailPanels({
             />
           </div>
         </CardContent>
-      </Card>
+      </Card> : null}
 
-      <Tabs value={activeDetailTab} onValueChange={setActiveDetailTab} className="space-y-5">
-        <div className="overflow-x-auto pb-1">
-          <TabsList className="h-auto min-w-max rounded-2xl border border-slate-200 bg-slate-100/80 p-1 dark:border-white/10 dark:bg-white/5">
-            <TabsTrigger value="flow" className="rounded-xl px-4 py-2.5 font-bold">
-              <TrendingUp className="mr-2 size-4" />
-              {t('salesman360.performance.detail.tabs.flow')}
-            </TabsTrigger>
-            <TabsTrigger value="activity" className="rounded-xl px-4 py-2.5 font-bold">
-              <ListChecks className="mr-2 size-4" />
-              {t('salesman360.performance.detail.tabs.activity')}
-            </TabsTrigger>
-            <TabsTrigger value="customer" className="rounded-xl px-4 py-2.5 font-bold">
-              <ContactRound className="mr-2 size-4" />
-              {t('salesman360.performance.detail.tabs.customer')}
-            </TabsTrigger>
-            <TabsTrigger value="work" className="rounded-xl px-4 py-2.5 font-bold">
-              <Users className="mr-2 size-4" />
-              {t('salesman360.performance.detail.tabs.work')}
-            </TabsTrigger>
-          </TabsList>
-        </div>
+      <Tabs value={section} className="space-y-5">
 
         <TabsContent value="flow" className="space-y-5 outline-none">
           <Card className="rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3">
@@ -529,15 +504,6 @@ export function SalesPerformanceDetailPanels({
           ) : null}
         </TabsContent>
 
-        <SalesWorkFeedTab
-          userId={userId}
-          userIds={userIds}
-          locale={locale}
-          currency={currency}
-          periodParams={periodParams}
-          attentionItems={data.attentionItems}
-          enabled={activeDetailTab === 'work'}
-        />
       </Tabs>
     </div>
   );

@@ -14,6 +14,7 @@ import { PerformanceKpiOverview } from './performance/PerformanceKpiOverview';
 import { SalesPerformanceDetailPanels } from './performance/SalesPerformanceDetailPanels';
 import { TeamSalesValuePanel } from './performance/TeamSalesValuePanel';
 import { SalesmenPerformancePivotReport } from './performance/SalesmenPerformancePivotReport';
+import type { Salesmen360TabKey } from './navigation/SalesmenReportTabs';
 
 const STATUS_COLORS: Record<string, string> = {
   draft: '#94a3b8',
@@ -39,6 +40,7 @@ export function SalesmenPerformanceDashboard({
   locale,
   currency,
   periodParams,
+  section,
 }: {
   userId: number;
   userIds?: number[];
@@ -49,6 +51,7 @@ export function SalesmenPerformanceDashboard({
   locale: string;
   currency?: string;
   periodParams?: Salesmen360PeriodParams;
+  section: Salesmen360TabKey;
 }): ReactElement {
   const { t } = useTranslation();
   const Recharts = useRechartsModule(Boolean(data) && !isLoading && !isError);
@@ -95,6 +98,32 @@ export function SalesmenPerformanceDashboard({
   );
   const activityHasData = activityTypeData.some((item) => item.count > 0);
   const orderHasData = orderStatusData.some((item) => item.count > 0);
+  const sectionTitle = t(`salesman360.reportSections.${section}.title`, {
+    defaultValue: {
+      overview: 'Genel performans özeti',
+      sales: 'Satış performansı',
+      demand: 'Talep performansı',
+      quotation: 'Teklif performansı',
+      order: 'Sipariş performansı',
+      activity: 'Aktivite performansı',
+      customer: 'Cari analizi',
+      stock: 'Stok analizi',
+      movement: 'Dönem içi satış hareketleri',
+    }[section],
+  });
+  const sectionDescription = t(`salesman360.reportSections.${section}.description`, {
+    defaultValue: {
+      overview: 'Seçili dönemin temel sonuçları ve gelişim eğilimi.',
+      sales: 'Satışçı, dönüşüm ve ERP değerlerinin karşılaştırmalı görünümü.',
+      demand: 'Taleplerin durumu, dönüşümü ve işlem detayları.',
+      quotation: 'Teklif durumları, siparişe ve ERP kaydına dönüşüm detayları.',
+      order: 'Sipariş durumları, onay süreci ve ERP aktarım sonuçları.',
+      activity: 'Aktivite türleri, tamamlanma ve gecikme performansı.',
+      customer: 'Cari bazında talep, teklif, sipariş ve ERP değerleri.',
+      stock: 'Stok bazında belge, miktar ve tutar kırılımları.',
+      movement: 'Cari ve stok alanları sürüklenerek düzenlenebilen hareket pivotu.',
+    }[section],
+  });
 
   return (
     <section className="space-y-5" aria-labelledby="sales-performance-title">
@@ -105,15 +134,11 @@ export function SalesmenPerformanceDashboard({
               <ChartNoAxesCombined className="size-5" />
             </span>
             <h2 id="sales-performance-title" className="text-xl font-black tracking-tight text-slate-950 dark:text-white">
-              {t('salesman360.performance.title')}
+              {sectionTitle}
             </h2>
           </div>
           <p className="mt-1 pl-11 text-sm font-medium text-slate-500 dark:text-slate-400">
-            {data.isTeamView
-              ? t('salesman360.performance.teamDescription', {
-                  count: data.salesmanCount,
-                })
-              : t('salesman360.performance.personalDescription')}
+            {sectionDescription}
           </p>
         </div>
         {data.currency ? (
@@ -123,9 +148,11 @@ export function SalesmenPerformanceDashboard({
         ) : null}
       </div>
 
-      <PerformanceKpiOverview totals={totals} locale={locale} trend={data.trend} />
+      {section === 'overview' ? <PerformanceKpiOverview totals={totals} locale={locale} trend={data.trend} /> : null}
 
+      {section === 'overview' || section === 'sales' || section === 'order' ? (
       <div className="grid gap-5 xl:grid-cols-5">
+        {section === 'order' ? (
         <Card className="rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3 xl:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">{t('salesman360.performance.orderStatusTitle')}</CardTitle>
@@ -160,7 +187,9 @@ export function SalesmenPerformanceDashboard({
             )}
           </CardContent>
         </Card>
+        ) : null}
 
+        {section === 'overview' || section === 'sales' ? (
         <Card className="rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3 xl:col-span-3">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">{t('salesman360.performance.trendTitle')}</CardTitle>
@@ -231,9 +260,13 @@ export function SalesmenPerformanceDashboard({
             )}
           </CardContent>
         </Card>
+        ) : null}
       </div>
+      ) : null}
 
+      {section === 'activity' || section === 'sales' ? (
       <div className={cn('grid gap-5', data.isTeamView ? 'xl:grid-cols-5' : 'xl:grid-cols-1')}>
+        {section === 'activity' ? (
         <Card
           className={cn(
             'rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3',
@@ -293,8 +326,9 @@ export function SalesmenPerformanceDashboard({
             )}
           </CardContent>
         </Card>
+        ) : null}
 
-        {data.isTeamView ? (
+        {section === 'sales' && data.isTeamView ? (
           <Card className="rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3 xl:col-span-3">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base">
@@ -360,12 +394,33 @@ export function SalesmenPerformanceDashboard({
           </Card>
         ) : null}
       </div>
+      ) : null}
 
-      {data.isTeamView ? <TeamSalesValuePanel salesmen={data.salesmen} locale={locale} /> : null}
+      {section === 'sales' && data.isTeamView ? <TeamSalesValuePanel salesmen={data.salesmen} locale={locale} /> : null}
 
-      <SalesmenPerformancePivotReport data={data} locale={locale} />
+      {(['sales', 'demand', 'quotation', 'order', 'activity', 'customer', 'stock', 'movement'] as const).includes(
+        section as 'sales' | 'demand' | 'quotation' | 'order' | 'activity' | 'customer' | 'stock' | 'movement',
+      ) ? (
+        <SalesmenPerformancePivotReport
+          data={data}
+          locale={locale}
+          report={section as 'sales' | 'demand' | 'quotation' | 'order' | 'activity' | 'customer' | 'stock' | 'movement'}
+        />
+      ) : null}
 
-      {data.isTeamView ? (
+      {section === 'sales' || section === 'activity' || section === 'customer' ? (
+        <SalesPerformanceDetailPanels
+          userId={userId}
+          userIds={userIds}
+          data={data}
+          locale={locale}
+          currency={currency}
+          periodParams={periodParams}
+          section={section === 'sales' ? 'flow' : section}
+        />
+      ) : null}
+
+      {section === 'sales' && data.isTeamView ? (
         <Card className="overflow-hidden rounded-2xl border-slate-200/90 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/3">
           <CardHeader className="pb-2">
             <CardTitle className="text-base">{t('salesman360.performance.leaderboardTitle')}</CardTitle>
@@ -424,7 +479,7 @@ export function SalesmenPerformanceDashboard({
             </div>
           </CardContent>
         </Card>
-      ) : (
+      ) : section === 'overview' && !data.isTeamView ? (
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="flex items-center gap-3 rounded-2xl border border-emerald-200/70 bg-emerald-50/70 p-4 dark:border-emerald-400/15 dark:bg-emerald-500/8">
             <CheckCircle2 className="size-6 text-emerald-500" />
@@ -448,16 +503,8 @@ export function SalesmenPerformanceDashboard({
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
-      <SalesPerformanceDetailPanels
-        userId={userId}
-        userIds={userIds}
-        data={data}
-        locale={locale}
-        currency={currency}
-        periodParams={periodParams}
-      />
     </section>
   );
 }

@@ -67,7 +67,7 @@ export function Salesmen360Page(): ReactElement {
     toLocalDateInput(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
   );
   const [customEndDate, setCustomEndDate] = useState(() => toLocalDateInput(new Date()));
-  const [activeTab, setActiveTab] = useState<Salesmen360TabKey>('sales');
+  const [activeTab, setActiveTab] = useState<Salesmen360TabKey>('overview');
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>(isAllSalesmen || userId <= 0 ? [] : [userId]);
   const visibleSalesmenQuery = useVisibleSalesmenQuery();
   const { currencyOptions: erpCurrencyOptions, isLoading: isCurrencyOptionsLoading } = useCurrencyOptions();
@@ -99,7 +99,7 @@ export function Salesmen360Page(): ReactElement {
     isError: isPerformanceError,
     refetch: refetchPerformance,
   } = useSalesmenPerformanceQuery(scopedUserId, selectedUserIdsParam, currencyParam, periodParams, scopedUserId >= 0);
-  const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(scopedUserId, 12, activeTab === 'sales' && !isTeamScope);
+  const { data: cohortData, isLoading: isCohortLoading } = useSalesmenCohortQuery(scopedUserId, 12, activeTab === 'overview' && !isTeamScope);
   const executeActionMutation = useExecuteSalesmenActionMutation(scopedUserId);
   const visibleSalesmen = useMemo(() => visibleSalesmenQuery.data ?? [], [visibleSalesmenQuery.data]);
   const salespersonOptions = visibleSalesmen;
@@ -403,17 +403,24 @@ export function Salesmen360Page(): ReactElement {
             />
           ) : null}
 
-          <SalesmenPerformanceTab
-            userId={scopedUserId}
-            userIds={selectedUserIdsParam}
-            performance={performance}
-            isLoading={isPerformanceLoading}
-            isError={isPerformanceError}
-            onRetry={() => void refetchPerformance()}
-            locale={i18n.resolvedLanguage ?? i18n.language}
-            currency={currencyParam}
-            periodParams={periodParams}
-          />
+          {(isTeamScope
+            ? (['overview', 'sales', 'demand', 'quotation', 'order', 'activity', 'customer', 'stock', 'movement'] as const)
+            : (['sales', 'demand', 'quotation', 'order', 'activity', 'customer', 'stock', 'movement'] as const)
+          ).map((section) => (
+            <SalesmenPerformanceTab
+              key={section}
+              section={section}
+              userId={scopedUserId}
+              userIds={selectedUserIdsParam}
+              performance={performance}
+              isLoading={isPerformanceLoading}
+              isError={isPerformanceError}
+              onRetry={() => void refetchPerformance()}
+              locale={i18n.resolvedLanguage ?? i18n.language}
+              currency={currencyParam}
+              periodParams={periodParams}
+            />
+          ))}
           {(['demand', 'quotation', 'order', 'activity'] as const).map((kind) => (
             <SalesWorkFeedTab
               key={kind}

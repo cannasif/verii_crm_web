@@ -112,7 +112,7 @@ export function SalesmenOverviewTab({
   const totalsByCurrency = kpis.totalsByCurrency ?? [];
 
   return (
-    <TabsContent value="sales" className="space-y-6 outline-none">
+    <TabsContent value="overview" className="space-y-6 outline-none">
       <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
         <NavigableKpiCard
           label={t('salesman360.kpi.totalDemands')}

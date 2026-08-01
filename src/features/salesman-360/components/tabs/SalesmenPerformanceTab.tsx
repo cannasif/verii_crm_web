@@ -2,6 +2,7 @@ import { type ReactElement } from 'react';
 import { TabsContent } from '@/components/ui/tabs';
 import type { Salesmen360PerformanceDto, Salesmen360PeriodParams } from '../../types/salesmen360.types';
 import { SalesmenPerformanceDashboard } from '../SalesmenPerformanceDashboard';
+import type { Salesmen360TabKey } from '../navigation/SalesmenReportTabs';
 
 export function SalesmenPerformanceTab({
   userId,
@@ -13,6 +14,7 @@ export function SalesmenPerformanceTab({
   locale,
   currency,
   periodParams,
+  section,
 }: {
   userId: number;
   userIds?: number[];
@@ -23,9 +25,10 @@ export function SalesmenPerformanceTab({
   locale: string;
   currency?: string;
   periodParams: Salesmen360PeriodParams;
+  section: Salesmen360TabKey;
 }): ReactElement {
   return (
-    <TabsContent value="sales" className="outline-none">
+    <TabsContent value={section} className="outline-none">
       <SalesmenPerformanceDashboard
         userId={userId}
         userIds={userIds}
@@ -36,6 +39,7 @@ export function SalesmenPerformanceTab({
         locale={locale}
         currency={currency}
         periodParams={periodParams}
+        section={section}
       />
     </TabsContent>
   );
