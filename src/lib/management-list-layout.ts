@@ -5,12 +5,12 @@ export const MANAGEMENT_LIST_CARD_CLASSNAME =
   'gap-0 overflow-hidden border-slate-300/80 bg-stone-50/95 p-0 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0';
 
 export const MANAGEMENT_LIST_CARD_HEADER_CLASSNAME =
-  'space-y-3 rounded-t-xl border-b-2 border-slate-300/80 bg-slate-100/90 px-4 pb-4 pt-4 sm:space-y-4 sm:px-6 sm:pb-6 sm:pt-6 dark:border-white/10 dark:bg-white/[0.04]';
+  'gap-2 rounded-t-xl border-b-2 border-slate-300/80 bg-slate-100/90 px-3 py-3 sm:px-4 sm:py-3 dark:border-white/10 dark:bg-white/[0.04]';
 
 export const MANAGEMENT_LIST_CARD_TITLE_CLASSNAME = 'text-slate-900 dark:text-white';
 
 export const MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME =
-  'bg-stone-50/80 px-4 pb-8 pt-3 sm:px-6 sm:pb-10 sm:pt-4 dark:bg-transparent';
+  'min-h-0 bg-stone-50/80 px-3 pb-3 pt-2 sm:px-4 sm:pb-4 dark:bg-transparent';
 
 /** Tablo alanının iç çerçevesi (toolbar ile grid arası). */
 export const MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME =

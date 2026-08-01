@@ -91,6 +91,12 @@ const ACTIONS_COL_WIDTH = 84;
 const MIN_TABLE_VIEWPORT_HEIGHT = 180;
 const DEFAULT_TABLE_VIEWPORT_MAX_HEIGHT = 'min(65dvh, 720px)';
 const TABLE_VIEWPORT_BOTTOM_GAP = 12;
+const CONTEXT_MENU_WIDTH = 320;
+const CONTEXT_MENU_PREFERRED_HEIGHT = 360;
+const CONTEXT_MENU_VIEWPORT_GAP = 12;
+
+type ContextMenuHorizontalPlacement = 'left' | 'right';
+type ContextMenuVerticalPlacement = 'above' | 'below';
 
 function findScrollableAncestor(element: HTMLElement | null): HTMLElement | null {
   let current = element?.parentElement ?? null;
@@ -112,6 +118,9 @@ interface DataTableCellContext<TRow, TKey extends string> {
   columnLabel: string;
   value: string | null;
   copyDisabled: boolean;
+  horizontalPlacement: ContextMenuHorizontalPlacement;
+  verticalPlacement: ContextMenuVerticalPlacement;
+  availableHeight: number;
 }
 
 function toContextText(value: unknown): string | null {
@@ -551,9 +560,26 @@ export function DataTableGrid<TRow, TKey extends string>({
     columnKey: TKey | null,
     columnLabel: string,
     cell: HTMLTableCellElement,
-    copyDisabled: boolean
+    copyDisabled: boolean,
+    pointerX: number,
+    pointerY: number
   ): void => {
     if (!enableCellContextMenu) return;
+
+    const cellRect = cell.getBoundingClientRect();
+    const anchorX = pointerX > 0 ? pointerX : cellRect.left + cellRect.width / 2;
+    const anchorY = pointerY > 0 ? pointerY : cellRect.top + cellRect.height / 2;
+    const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+    const spaceLeft = anchorX - CONTEXT_MENU_VIEWPORT_GAP;
+    const spaceRight = viewportWidth - anchorX - CONTEXT_MENU_VIEWPORT_GAP;
+    const spaceAbove = anchorY - CONTEXT_MENU_VIEWPORT_GAP;
+    const spaceBelow = viewportHeight - anchorY - CONTEXT_MENU_VIEWPORT_GAP;
+    const horizontalPlacement: ContextMenuHorizontalPlacement =
+      spaceRight < CONTEXT_MENU_WIDTH && spaceLeft > spaceRight ? 'left' : 'right';
+    const verticalPlacement: ContextMenuVerticalPlacement =
+      spaceBelow < CONTEXT_MENU_PREFERRED_HEIGHT && spaceAbove > spaceBelow ? 'above' : 'below';
+    const availableHeight = verticalPlacement === 'above' ? spaceAbove : spaceBelow;
 
     const explicitValue = columnKey == null ? undefined : getCellContextValue?.(row, columnKey);
     const visibleValue = toContextText(cell.innerText);
@@ -568,6 +594,9 @@ export function DataTableGrid<TRow, TKey extends string>({
       columnLabel,
       value: toContextText(explicitValue) ?? visibleValue ?? toContextText(rawValue),
       copyDisabled,
+      horizontalPlacement,
+      verticalPlacement,
+      availableHeight: Math.max(96, Math.floor(availableHeight)),
     });
   };
 
@@ -809,7 +838,9 @@ export function DataTableGrid<TRow, TKey extends string>({
                                     key,
                                     column?.label ?? key,
                                     event.currentTarget,
-                                    copyDisabled
+                                    copyDisabled,
+                                    event.clientX,
+                                    event.clientY
                                   );
                                 }}
                                 data-grid-context-cell={key}
@@ -838,7 +869,9 @@ export function DataTableGrid<TRow, TKey extends string>({
                                   null,
                                   resolvedActionsHeaderLabel || t('dataGrid.rowActions'),
                                   event.currentTarget,
-                                  true
+                                  true,
+                                  event.clientX,
+                                  event.clientY
                                 );
                               }}
                               data-grid-context-cell="actions"
@@ -854,6 +887,20 @@ export function DataTableGrid<TRow, TKey extends string>({
                         <ContextMenuContent
                           className="z-[4000] w-80 max-w-[calc(100vw-1rem)] p-2"
                           data-grid-context-menu="true"
+                          data-grid-context-placement={`${cellContext.verticalPlacement}-${cellContext.horizontalPlacement}`}
+                          avoidCollisions={false}
+                          style={{
+                            maxHeight: `${cellContext.availableHeight}px`,
+                            translate: `${
+                              cellContext.horizontalPlacement === 'left'
+                                ? 'calc(-100% - 0.25rem)'
+                                : '0px'
+                            } ${
+                              cellContext.verticalPlacement === 'above'
+                                ? 'calc(-100% - 0.5rem)'
+                                : '0px'
+                            }`,
+                          }}
                         >
                           <ContextMenuLabel className="rounded-md bg-muted/70 px-3 py-2.5 normal-case">
                             <span className="block text-[0.65rem] font-semibold uppercase text-muted-foreground">

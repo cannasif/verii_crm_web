@@ -144,7 +144,7 @@ export function DocumentApprovalStatusFilter({
         type="button"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex w-full items-center justify-between gap-2 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-slate-50/80 dark:hover:bg-white/5"
+        className="flex min-h-8 w-full items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-slate-50/80 dark:hover:bg-white/5"
       >
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <span className="shrink-0 text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -172,7 +172,7 @@ export function DocumentApprovalStatusFilter({
       </button>
 
       {isOpen && (
-        <div className="min-w-0 px-2.5 pt-1 pb-2">
+        <div className="min-w-0 px-2 pb-1.5 pt-1">
           <div className="overflow-x-auto overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex w-max min-w-full flex-nowrap items-center gap-2 pb-0.5">
               {STATUS_FILTER_OPTIONS.map((option) => {

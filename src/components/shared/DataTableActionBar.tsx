@@ -457,7 +457,7 @@ export function DataTableActionBar({
   );
 
   return (
-    <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
+    <div className="flex flex-col gap-2 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between">
       <div ref={toolbarRowRef} className="relative flex w-full min-w-0 items-center gap-2">
         <div className="pointer-events-none invisible absolute h-0 overflow-hidden" aria-hidden>
           {shouldRenderSearch ? (
