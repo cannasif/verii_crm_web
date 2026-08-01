@@ -7,8 +7,7 @@ import type { CustomerDuplicateCandidateDto } from '../types/customerDedupe.type
 import type { ConflictFiltersState } from './ConflictFilters';
 import { MATCH_TYPES } from './ConflictFilters';
 import { MergePreviewDialog } from './MergePreviewDialog';
-import { useMergeCustomersMutation } from '../hooks/useMergeCustomersMutation';
-import { Eye, Merge } from 'lucide-react';
+import { GitCompareArrows } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { matchesSearchTerm } from '@/lib/search';
 
@@ -58,7 +57,6 @@ export function ConflictInboxTable({
 }: ConflictInboxTableProps): ReactElement {
   const { t } = useTranslation(['customerDedupe']);
   const [previewRow, setPreviewRow] = useState<CustomerDuplicateCandidateDto | null>(null);
-  const mergeMutation = useMergeCustomersMutation();
 
   const allRows = useMemo(() => filterAndSort(candidates, filters), [candidates, filters]);
   const [pageNumber, setPageNumber] = useState(1);
@@ -82,17 +80,29 @@ export function ConflictInboxTable({
   const renderCell = (row: CustomerDuplicateCandidateDto, key: ConflictInboxColumnKey): React.ReactNode => {
     if (key === 'masterCustomer') {
       return (
-        <div>
+        <div className="space-y-1">
           <div className="font-medium">{row.masterCustomerName}</div>
           <div className="text-xs text-muted-foreground">ID: {row.masterCustomerId}</div>
+          <div className="flex flex-wrap gap-1">
+            <Badge variant={row.masterIsErpRegistered ? 'default' : 'outline'}>
+              {row.masterIsErpRegistered ? t('erpRegistered') : t('potential')}
+            </Badge>
+            <Badge variant="secondary">{t('completeness')} %{row.masterCompletenessScore}</Badge>
+          </div>
         </div>
       );
     }
     if (key === 'duplicateCustomer') {
       return (
-        <div>
+        <div className="space-y-1">
           <div className="font-medium">{row.duplicateCustomerName}</div>
           <div className="text-xs text-muted-foreground">ID: {row.duplicateCustomerId}</div>
+          <div className="flex flex-wrap gap-1">
+            <Badge variant={row.duplicateIsErpRegistered ? 'default' : 'outline'}>
+              {row.duplicateIsErpRegistered ? t('erpRegistered') : t('potential')}
+            </Badge>
+            <Badge variant="secondary">{t('completeness')} %{row.duplicateCompletenessScore}</Badge>
+          </div>
         </div>
       );
     }
@@ -120,34 +130,16 @@ export function ConflictInboxTable({
   };
 
   const renderActionsCell = (row: CustomerDuplicateCandidateDto): ReactElement => (
-    <div className="flex gap-2">
+    <div className="flex flex-col items-start gap-1.5">
       <Button
-        variant="outline"
         size="sm"
         onClick={() => setPreviewRow(row)}
-        className="h-9 rounded-xl border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 font-semibold gap-1.5 transition-all"
+        className="h-9 rounded-xl font-semibold gap-1.5"
       >
-        <Eye className="h-4 w-4" />
-        {t('previewMerge')}
+        <GitCompareArrows className="h-4 w-4" />
+        {t('compareAndDecide')}
       </Button>
-      <Button
-        size="sm"
-        disabled={mergeMutation.isPending}
-        onClick={() => {
-          mergeMutation.mutate(
-            {
-              masterCustomerId: row.masterCustomerId,
-              duplicateCustomerId: row.duplicateCustomerId,
-              preferMasterValues: true,
-            },
-            { onSuccess: onMergeSuccess }
-          );
-        }}
-        className="h-9 rounded-xl bg-linear-to-r from-emerald-500 to-green-600 text-white font-bold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_4px_12px_-4px_rgba(16,185,129,0.5)] disabled:opacity-50 disabled:hover:scale-100 gap-1.5"
-      >
-        <Merge className="h-4 w-4" />
-        {t('merge')}
-      </Button>
+      <span className="max-w-56 text-xs text-muted-foreground">{row.recommendationReason}</span>
     </div>
   );
 
