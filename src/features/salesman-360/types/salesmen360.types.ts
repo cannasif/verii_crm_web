@@ -272,6 +272,43 @@ export interface Salesmen360ActivityTypeItemDto {
   completedCount: number;
 }
 
+export interface Salesmen360CustomerPerformanceDto {
+  salesmanId: number;
+  salesmanName: string;
+  customerId?: number | null;
+  customerCode: string;
+  customerName: string;
+  currency: string;
+  demandCount: number;
+  demandAmount: number;
+  quotationCount: number;
+  quotationAmount: number;
+  orderCount: number;
+  orderAmount: number;
+  erpOrderCount: number;
+  erpOrderAmount: number;
+}
+
+export interface Salesmen360StockPerformanceDto {
+  salesmanId: number;
+  salesmanName: string;
+  stockCode: string;
+  stockName: string;
+  currency: string;
+  demandDocumentCount: number;
+  demandQuantity: number;
+  demandAmount: number;
+  quotationDocumentCount: number;
+  quotationQuantity: number;
+  quotationAmount: number;
+  orderDocumentCount: number;
+  orderQuantity: number;
+  orderAmount: number;
+  erpOrderDocumentCount: number;
+  erpOrderQuantity: number;
+  erpOrderAmount: number;
+}
+
 export interface Salesmen360PerformanceTrendItemDto {
   periodKey: string;
   demandCount: number;
@@ -288,6 +325,8 @@ export interface Salesmen360SalesmanPerformanceDto extends Salesmen360Performanc
   fullName: string;
   email?: string | null;
   financialsByCurrency: Salesmen360FinancialSummaryDto[];
+  documentStatuses: Salesmen360DocumentStatusDto[];
+  activityTypes: Salesmen360ActivityTypeItemDto[];
   erpConvertedQuotations: number;
   overdueActivities: number;
   activityCompletionRate: number;
@@ -344,6 +383,8 @@ export interface Salesmen360PerformanceDto {
   documentStatuses: Salesmen360DocumentStatusDto[];
   financialsByCurrency: Salesmen360FinancialSummaryDto[];
   activityTypes: Salesmen360ActivityTypeItemDto[];
+  customerBreakdown: Salesmen360CustomerPerformanceDto[];
+  stockBreakdown: Salesmen360StockPerformanceDto[];
   trend: Salesmen360PerformanceTrendItemDto[];
   salesmen: Salesmen360SalesmanPerformanceDto[];
   recentWork: Salesmen360WorkItemDto[];
