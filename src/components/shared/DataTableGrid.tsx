@@ -81,11 +81,29 @@ interface DataTableGridProps<TRow, TKey extends string> {
   enableColumnDragAndDrop?: boolean;
   onColumnOrderChange?: (newOrder: TKey[]) => void;
   enableColumnResize?: boolean;
+  /** Grid'i bulunduğu scroll viewport'una sığdırır; tablo kendi içinde yatay/dikey kayar. */
+  fitViewport?: boolean;
 }
 
 const MIN_COL_WIDTH = 60;
 const DEFAULT_COL_WIDTH = 150;
 const ACTIONS_COL_WIDTH = 84;
+const MIN_TABLE_VIEWPORT_HEIGHT = 180;
+const DEFAULT_TABLE_VIEWPORT_MAX_HEIGHT = 'min(65dvh, 720px)';
+const TABLE_VIEWPORT_BOTTOM_GAP = 12;
+
+function findScrollableAncestor(element: HTMLElement | null): HTMLElement | null {
+  let current = element?.parentElement ?? null;
+  while (current) {
+    const style = window.getComputedStyle(current);
+    const overflowY = style.overflowY;
+    if (overflowY === 'auto' || overflowY === 'scroll') {
+      return current;
+    }
+    current = current.parentElement;
+  }
+  return null;
+}
 
 interface DataTableCellContext<TRow, TKey extends string> {
   row: TRow;
@@ -157,8 +175,9 @@ function SortableTableHead<TKey extends string>({
     transform: CSS.Translate.toString(transform),
     transition,
     opacity: isDragging ? 0.8 : 1,
-    zIndex: isDragging ? 10 : (isResizing ? 5 : 'auto'),
-    position: 'relative' as const,
+    zIndex: isDragging ? 15 : (isResizing ? 14 : 11),
+    position: 'sticky' as const,
+    top: 0,
     width: width !== undefined ? `${width}px` : undefined,
     minWidth: width !== undefined ? `${width}px` : undefined,
     maxWidth: width !== undefined ? `${width}px` : undefined,
@@ -300,6 +319,7 @@ export function DataTableGrid<TRow, TKey extends string>({
   enableColumnDragAndDrop = true,
   onColumnOrderChange,
   enableColumnResize = true,
+  fitViewport = true,
 }: DataTableGridProps<TRow, TKey>): ReactElement {
   const { t } = useTranslation('common');
   const MISSING_TRANSLATION = 'Çeviri eksik';
@@ -405,6 +425,9 @@ export function DataTableGrid<TRow, TKey extends string>({
   const lastRowClickRef = useRef<{ key: string | number; timestamp: number } | null>(null);
   const suppressNativeDoubleClickUntilRef = useRef(0);
   const tableScrollRef = useRef<HTMLDivElement | null>(null);
+  const paginationRef = useRef<HTMLDivElement | null>(null);
+  const gridRootRef = useRef<HTMLDivElement | null>(null);
+  const [tableViewportMaxHeight, setTableViewportMaxHeight] = useState<number | null>(null);
   const dragStateRef = useRef({
     isDragging: false,
     startX: 0,
@@ -412,6 +435,52 @@ export function DataTableGrid<TRow, TKey extends string>({
     moved: false,
     pointerId: -1,
   });
+
+  useEffect(() => {
+    if (!fitViewport) {
+      setTableViewportMaxHeight(null);
+      return;
+    }
+
+    const tableViewport = tableScrollRef.current;
+    const pagination = paginationRef.current;
+    const gridRoot = gridRootRef.current;
+    if (!tableViewport || !pagination || !gridRoot) return;
+
+    const scrollParent = findScrollableAncestor(gridRoot);
+    let frameId = 0;
+    const measure = (): void => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        const tableTop = tableViewport.getBoundingClientRect().top;
+        const scrollBoundaryBottom = scrollParent
+          ? scrollParent.getBoundingClientRect().bottom
+          : window.innerHeight;
+        const viewportBottom = Math.min(window.innerHeight, scrollBoundaryBottom);
+        const paginationHeight = pagination.getBoundingClientRect().height;
+        const availableHeight = Math.floor(
+          viewportBottom - tableTop - paginationHeight - TABLE_VIEWPORT_BOTTOM_GAP
+        );
+        const nextHeight = Math.max(MIN_TABLE_VIEWPORT_HEIGHT, availableHeight);
+        setTableViewportMaxHeight((current) => current === nextHeight ? current : nextHeight);
+      });
+    };
+
+    const resizeObserver = new ResizeObserver(measure);
+    resizeObserver.observe(gridRoot);
+    resizeObserver.observe(pagination);
+    if (scrollParent) resizeObserver.observe(scrollParent);
+    window.addEventListener('resize', measure, { passive: true });
+    window.visualViewport?.addEventListener('resize', measure, { passive: true });
+    measure();
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', measure);
+      window.visualViewport?.removeEventListener('resize', measure);
+    };
+  }, [fitViewport, rows.length, pageSize]);
 
   const handleDragStart = (event: ReactPointerEvent<HTMLDivElement>): void => {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
@@ -557,9 +626,9 @@ export function DataTableGrid<TRow, TKey extends string>({
   const hasAnyWidth = enableColumnResize && localVisibleColumnKeys.some(k => columnWidths[k] !== undefined);
 
   return (
-    <div className="flex min-w-0 w-full flex-col gap-2">
+    <div ref={gridRootRef} className="flex min-h-0 min-w-0 w-full flex-col gap-2" data-grid-fit-viewport={fitViewport}>
       {actionBar ? <DataTableActionBar {...actionBar} /> : toolbar}
-      <div className="relative w-full min-w-0 flex-1">
+      <div className="relative min-h-0 w-full min-w-0 flex-1">
         {isLoading && (
           <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-md bg-white/20 backdrop-blur-[1px] dark:bg-slate-950/20">
             <div className="inline-flex items-center gap-3 rounded-2xl border border-white/60 bg-white/90 p-4 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-slate-900/90">
@@ -571,13 +640,18 @@ export function DataTableGrid<TRow, TKey extends string>({
         <div
           ref={tableScrollRef}
           className={cn(
-            'relative rounded-md border overflow-x-auto w-full min-w-0 *:data-[slot=table-container]:overflow-visible',
+            'crm-data-grid-viewport custom-scrollbar relative w-full min-w-0 overflow-auto overscroll-contain rounded-md border *:data-[slot=table-container]:overflow-visible',
             resizingKey
               ? 'cursor-col-resize select-none'
               : isDragging
                 ? 'cursor-grabbing select-none'
                 : 'cursor-grab'
           )}
+          style={{
+            maxHeight: fitViewport
+              ? (tableViewportMaxHeight == null ? DEFAULT_TABLE_VIEWPORT_MAX_HEIGHT : `${tableViewportMaxHeight}px`)
+              : undefined,
+          }}
           onPointerDown={handleDragStart}
           onPointerMove={handleDragMove}
           onPointerUp={handleDragEnd}
@@ -611,7 +685,7 @@ export function DataTableGrid<TRow, TKey extends string>({
               </colgroup>
             )}
 
-            <TableHeader>
+            <TableHeader className="bg-background shadow-[0_1px_0_0_hsl(var(--border))]">
 
               <TableRow ref={theadRowRef}>
                 <SortableContext
@@ -643,6 +717,7 @@ export function DataTableGrid<TRow, TKey extends string>({
                   <TableHead
                     data-col-actions="true"
                     className={cn(
+                      'sticky top-0 z-[11] bg-background',
                       iconOnlyActions ? 'w-[84px]' : 'min-w-[280px]',
                       centerColumnHeaders ? 'text-center' : (iconOnlyActions ? 'text-center' : 'crm-text-end')
                     )}
@@ -860,7 +935,7 @@ export function DataTableGrid<TRow, TKey extends string>({
       </div>
     </div>
 
-      <div className="mt-1 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/90 px-3 pb-6 pt-3 sm:px-4 dark:border-white/10">
+      <div ref={paginationRef} className="mt-1 flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-200/90 px-3 pb-4 pt-3 sm:px-4 dark:border-white/10">
         <div className="flex min-w-0 flex-wrap items-center gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
