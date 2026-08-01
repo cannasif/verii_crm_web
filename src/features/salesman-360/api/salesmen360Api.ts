@@ -42,28 +42,21 @@ export async function getSalesmenOverview(params: {
   if (currency != null && currency !== '') {
     search.set('currency', currency);
   }
-  const url = userId === 0
-    ? `/api/salesmen/overview?${search.toString()}`
-    : `/api/salesmen/${userId}/overview?${search.toString()}`;
+  const url = userId === 0 ? `/api/salesmen/overview?${search.toString()}` : `/api/salesmen/${userId}/overview?${search.toString()}`;
   const response = await api.get<ApiResponse<Salesmen360OverviewDto | null>>(url, {
     signal,
   });
   return ensureData(response, 'Overview could not be loaded');
 }
 
-export async function getVisibleSalesmen(params?: {
-  signal?: AbortSignal;
-}): Promise<Salesmen360VisibleUserDto[]> {
+export async function getVisibleSalesmen(params?: { signal?: AbortSignal }): Promise<Salesmen360VisibleUserDto[]> {
   const response = await api.get<ApiResponse<Salesmen360VisibleUserDto[] | null>>('/api/salesmen/visible-users', {
     signal: params?.signal,
   });
   return ensureData(response, 'Visible salesmen could not be loaded');
 }
 
-export async function getSalesmenErpMovements(params: {
-  userId: number;
-  signal?: AbortSignal;
-}): Promise<Salesmen360ErpMovementDto[]> {
+export async function getSalesmenErpMovements(params: { userId: number; signal?: AbortSignal }): Promise<Salesmen360ErpMovementDto[]> {
   const { userId, signal } = params;
   const response = await api.get<ApiResponse<Salesmen360ErpMovementDto[] | null>>(`/api/salesmen/${userId}/erp-movements`, {
     signal,
@@ -112,25 +105,28 @@ export async function getSalesmenAnalyticsCharts(params: {
 
 export async function getSalesmenPerformance(params: {
   userId: number;
+  userIds?: number[];
   currency?: string;
   periodParams?: Salesmen360PeriodParams;
   signal?: AbortSignal;
 }): Promise<Salesmen360PerformanceDto> {
-  const { userId, currency, periodParams, signal } = params;
+  const { userId, userIds, currency, periodParams, signal } = params;
   const search = new URLSearchParams();
   appendPeriodParams(search, periodParams);
   if (currency != null && currency !== '') {
     search.set('currency', currency);
   }
+  userIds?.forEach((selectedUserId) => search.append('userIds', String(selectedUserId)));
   const response = await api.get<ApiResponse<Salesmen360PerformanceDto | null>>(
     `/api/salesmen/${userId}/performance?${search.toString()}`,
-    { signal }
+    { signal },
   );
   return ensureData(response, 'Sales performance could not be loaded');
 }
 
 export async function getSalesmenPerformanceWorkFeed(params: {
   userId: number;
+  userIds?: number[];
   page?: number;
   pageSize?: number;
   kind?: string;
@@ -139,16 +135,7 @@ export async function getSalesmenPerformanceWorkFeed(params: {
   periodParams?: Salesmen360PeriodParams;
   signal?: AbortSignal;
 }): Promise<Salesmen360WorkFeedDto> {
-  const {
-    userId,
-    page = 1,
-    pageSize = 20,
-    kind,
-    search: searchTerm,
-    currency,
-    periodParams,
-    signal,
-  } = params;
+  const { userId, userIds, page = 1, pageSize = 20, kind, search: searchTerm, currency, periodParams, signal } = params;
   const search = new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize),
@@ -157,19 +144,16 @@ export async function getSalesmenPerformanceWorkFeed(params: {
   if (kind) search.set('kind', kind);
   if (searchTerm?.trim()) search.set('search', searchTerm.trim());
   if (currency) search.set('currency', currency);
+  userIds?.forEach((selectedUserId) => search.append('userIds', String(selectedUserId)));
 
   const response = await api.get<ApiResponse<Salesmen360WorkFeedDto | null>>(
     `/api/salesmen/${userId}/performance/work-items?${search.toString()}`,
-    { signal }
+    { signal },
   );
   return ensureData(response, 'Sales performance work items could not be loaded');
 }
 
-export async function getSalesmenCohort(params: {
-  userId: number;
-  months?: number;
-  signal?: AbortSignal;
-}): Promise<CohortRetentionDto[]> {
+export async function getSalesmenCohort(params: { userId: number; months?: number; signal?: AbortSignal }): Promise<CohortRetentionDto[]> {
   const { userId, months = 12, signal } = params;
   const url = `/api/salesmen/${userId}/analytics/cohort?months=${encodeURIComponent(String(months))}`;
   const response = await api.get<ApiResponse<CohortRetentionDto[] | null>>(url, { signal });

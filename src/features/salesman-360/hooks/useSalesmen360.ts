@@ -36,24 +36,30 @@ export function useVisibleSalesmenQuery() {
 }
 
 function getPeriodQueryKey(periodParams?: Salesmen360PeriodParams) {
-  return [
-    periodParams?.period ?? 'month',
-    periodParams?.startDate ?? '',
-    periodParams?.endDate ?? '',
-  ];
+  return [periodParams?.period ?? 'month', periodParams?.startDate ?? '', periodParams?.endDate ?? ''];
 }
 
 export function useSalesmenOverviewQuery(userId: number, currency?: string, periodParams?: Salesmen360PeriodParams, enabled = true) {
   return useQuery({
     queryKey: ['salesmen360', 'overview', userId, currency ?? 'ALL', ...getPeriodQueryKey(periodParams)],
     queryFn: ({ signal }) =>
-      getSalesmenOverview({ userId, currency: currency && currency !== 'ALL' ? currency : undefined, periodParams, signal }),
+      getSalesmenOverview({
+        userId,
+        currency: currency && currency !== 'ALL' ? currency : undefined,
+        periodParams,
+        signal,
+      }),
     staleTime: OVERVIEW_STALE_MS,
     enabled: enabled && userId >= 0,
   });
 }
 
-export function useSalesmenAnalyticsSummaryQuery(userId: number, currency?: string, periodParams?: Salesmen360PeriodParams, enabled = true) {
+export function useSalesmenAnalyticsSummaryQuery(
+  userId: number,
+  currency?: string,
+  periodParams?: Salesmen360PeriodParams,
+  enabled = true,
+) {
   return useQuery({
     queryKey: ['salesmen360', 'summary', userId, currency ?? 'ALL', ...getPeriodQueryKey(periodParams)],
     queryFn: ({ signal }) =>
@@ -73,7 +79,7 @@ export function useSalesmenAnalyticsChartsQuery(
   months = 12,
   currency?: string,
   periodParams?: Salesmen360PeriodParams,
-  enabled = true
+  enabled = true,
 ) {
   return useQuery({
     queryKey: ['salesmen360', 'charts', userId, months, currency ?? 'ALL', ...getPeriodQueryKey(periodParams)],
@@ -92,15 +98,24 @@ export function useSalesmenAnalyticsChartsQuery(
 
 export function useSalesmenPerformanceQuery(
   userId: number,
+  userIds?: number[],
   currency?: string,
   periodParams?: Salesmen360PeriodParams,
-  enabled = true
+  enabled = true,
 ) {
   return useQuery({
-    queryKey: ['salesmen360', 'performance', userId, currency ?? 'ALL', ...getPeriodQueryKey(periodParams)],
+    queryKey: [
+      'salesmen360',
+      'performance',
+      userId,
+      userIds?.join(',') ?? 'ALL_VISIBLE',
+      currency ?? 'ALL',
+      ...getPeriodQueryKey(periodParams),
+    ],
     queryFn: ({ signal }) =>
       getSalesmenPerformance({
         userId,
+        userIds,
         currency: currency && currency !== 'ALL' ? currency : undefined,
         periodParams,
         signal,
@@ -112,6 +127,7 @@ export function useSalesmenPerformanceQuery(
 
 export function useSalesmenPerformanceWorkFeedQuery(params: {
   userId: number;
+  userIds?: number[];
   page: number;
   pageSize?: number;
   kind?: string;
@@ -120,22 +136,14 @@ export function useSalesmenPerformanceWorkFeedQuery(params: {
   periodParams?: Salesmen360PeriodParams;
   enabled?: boolean;
 }) {
-  const {
-    userId,
-    page,
-    pageSize = 20,
-    kind,
-    search,
-    currency,
-    periodParams,
-    enabled = true,
-  } = params;
+  const { userId, userIds, page, pageSize = 20, kind, search, currency, periodParams, enabled = true } = params;
   return useQuery({
     queryKey: [
       'salesmen360',
       'performance',
       'work-items',
       userId,
+      userIds?.join(',') ?? 'ALL_VISIBLE',
       page,
       pageSize,
       kind ?? 'all',
@@ -146,6 +154,7 @@ export function useSalesmenPerformanceWorkFeedQuery(params: {
     queryFn: ({ signal }) =>
       getSalesmenPerformanceWorkFeed({
         userId,
+        userIds,
         page,
         pageSize,
         kind,
@@ -182,12 +191,15 @@ export function useExecuteSalesmenActionMutation(userId: number) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: ExecuteRecommendedActionDto) =>
-      executeSalesmenRecommendedAction({ userId, payload }),
+    mutationFn: (payload: ExecuteRecommendedActionDto) => executeSalesmenRecommendedAction({ userId, payload }),
     onSuccess: () => {
       toast.success(t('common.actionExecuted'));
-      queryClient.invalidateQueries({ queryKey: ['salesmen360', 'overview', userId] });
-      queryClient.invalidateQueries({ queryKey: ['salesmen360', 'cohort', userId] });
+      queryClient.invalidateQueries({
+        queryKey: ['salesmen360', 'overview', userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['salesmen360', 'cohort', userId],
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message || t('common.actionExecutionFailed'));
