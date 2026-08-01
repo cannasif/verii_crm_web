@@ -58,6 +58,9 @@ import { filterDocumentsByApprovalStatus } from '@/features/approval/utils/filte
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
 import { useCleanupQuotationErpAndCreateCopy } from '../hooks/useCleanupQuotationErpAndCreateCopy';
+import { useCancelQuotationByCustomer } from '../hooks/useCancelQuotationByCustomer';
+import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 const GoogleCustomerMailDialog = lazy(() =>
   import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
 );
@@ -134,6 +137,8 @@ export function QuotationListPage(): ReactElement {
   const { user } = useAuthStore();
   const createRevisionMutation = useCreateRevisionOfQuotation();
   const cleanupErpMutation = useCleanupQuotationErpAndCreateCopy();
+  const cancelByCustomerMutation = useCancelQuotationByCustomer();
+  const { canUpdate } = useCrudPermissions('sales.quotations.update');
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -163,6 +168,7 @@ export function QuotationListPage(): ReactElement {
   const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState<QuotationGetDto | null>(null);
   const [erpCleanupQuotation, setErpCleanupQuotation] = useState<QuotationGetDto | null>(null);
+  const [customerCancelQuotation, setCustomerCancelQuotation] = useState<QuotationGetDto | null>(null);
   const [erpCleanupReason, setErpCleanupReason] = useState('');
   const [erpCleanupNote, setErpCleanupNote] = useState('');
 
@@ -572,9 +578,13 @@ export function QuotationListPage(): ReactElement {
       }}
       isRevisePending={createRevisionMutation.isPending}
       onErpCleanup={(event) => handleOpenErpCleanupDialog(event, quotation)}
+      customerCancelLabel={t('customerCancel.button', { defaultValue: 'Müşteri İptali' })}
+      onCustomerCancel={(event) => { event.stopPropagation(); setCustomerCancelQuotation(quotation); }}
       isErpCleanupPending={cleanupErpMutation.isPending}
       showRevise={resolvedStatus === 0 || resolvedStatus === 3}
       showErpCleanup={quotation.isERPIntegrated === true && Boolean(quotation.erpIntegrationNumber)}
+      showCustomerCancel={canUpdate && !quotation.isERPIntegrated && ![4, 5, 6, 7].includes(resolvedStatus ?? -1)}
+      isCustomerCancelPending={cancelByCustomerMutation.isPending}
     />
     );
   };
@@ -766,6 +776,11 @@ export function QuotationListPage(): ReactElement {
             />
           ) : null}
         </Suspense>
+        <CustomerCancellationDialog open={Boolean(customerCancelQuotation)} onOpenChange={(open) => { if (!open && !cancelByCustomerMutation.isPending) setCustomerCancelQuotation(null); }} isPending={cancelByCustomerMutation.isPending}
+          title={t('customerCancel.title', { defaultValue: 'Müşteri iptali' })} description={t('customerCancel.description', { defaultValue: 'Bu teklifi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.' })}
+          reasonLabel={t('customerCancel.reasonLabel', { defaultValue: 'İptal nedeni' })} reasonPlaceholder={t('customerCancel.reasonPlaceholder', { defaultValue: 'Müşterinin iptal nedenini yazın...' })}
+          cancelLabel={t('common.cancel', { ns: 'common', defaultValue: 'İptal' })} confirmLabel={t('customerCancel.confirmButton', { defaultValue: 'İptal Et' })}
+          onConfirm={async (reason) => { if (!customerCancelQuotation) return; await cancelByCustomerMutation.mutateAsync({ id: customerCancelQuotation.id, reason: reason || null }); setCustomerCancelQuotation(null); }} />
         <Dialog
           open={Boolean(erpCleanupQuotation)}
           onOpenChange={(open) => {

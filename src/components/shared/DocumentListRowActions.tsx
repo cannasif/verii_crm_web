@@ -1,5 +1,5 @@
 import { type MouseEvent, type ReactElement } from 'react';
-import { Edit2, GitBranchPlus, Mail, RotateCcw, ShoppingCart } from 'lucide-react';
+import { Edit2, GitBranchPlus, Mail, RotateCcw, ShoppingCart, UserX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -18,18 +18,22 @@ export interface DocumentListRowActionsProps {
   reviseLabel: string;
   convertToOrderLabel?: string;
   erpCleanupLabel?: string;
+  customerCancelLabel?: string;
   onDetail: () => void;
   onGmail: (event: MouseEvent<HTMLButtonElement>) => void;
   onOutlook: (event: MouseEvent<HTMLButtonElement>) => void;
   onRevise?: (event: MouseEvent<HTMLButtonElement>) => void;
   onConvertToOrder?: (event: MouseEvent<HTMLButtonElement>) => void;
   onErpCleanup?: (event: MouseEvent<HTMLButtonElement>) => void;
+  onCustomerCancel?: (event: MouseEvent<HTMLButtonElement>) => void;
   isRevisePending?: boolean;
   isConvertToOrderPending?: boolean;
   isErpCleanupPending?: boolean;
+  isCustomerCancelPending?: boolean;
   showRevise?: boolean;
   showConvertToOrder?: boolean;
   showErpCleanup?: boolean;
+  showCustomerCancel?: boolean;
   convertToOrderDisabled?: boolean;
   className?: string;
 }
@@ -78,18 +82,22 @@ export function DocumentListRowActions({
   reviseLabel,
   convertToOrderLabel,
   erpCleanupLabel,
+  customerCancelLabel,
   onDetail,
   onGmail,
   onOutlook,
   onRevise,
   onConvertToOrder,
   onErpCleanup,
+  onCustomerCancel,
   isRevisePending = false,
   isConvertToOrderPending = false,
   isErpCleanupPending = false,
+  isCustomerCancelPending = false,
   showRevise = false,
   showConvertToOrder = false,
   showErpCleanup = false,
+  showCustomerCancel = false,
   convertToOrderDisabled = false,
   className,
 }: DocumentListRowActionsProps): ReactElement {
@@ -177,6 +185,17 @@ export function DocumentListRowActions({
           className="text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-500/10"
         >
           <RotateCcw className={cn('h-4 w-4', isErpCleanupPending && 'animate-spin')} />
+        </ActionIconButton>
+      ) : null}
+
+      {showCustomerCancel && onCustomerCancel && customerCancelLabel ? (
+        <ActionIconButton
+          label={customerCancelLabel}
+          onClick={onCustomerCancel}
+          disabled={isCustomerCancelPending}
+          className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:text-rose-400 dark:hover:bg-rose-500/10"
+        >
+          <UserX className={cn('h-4 w-4', isCustomerCancelPending && 'animate-pulse')} />
         </ActionIconButton>
       ) : null}
     </div>

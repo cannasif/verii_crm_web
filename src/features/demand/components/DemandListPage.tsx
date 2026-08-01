@@ -58,6 +58,9 @@ import { filterDocumentsByApprovalStatus } from '@/features/approval/utils/filte
 import type { ApprovalStatus } from '@/features/approval/types/approval-types';
 import { useCreateRevisionOfDemand } from '../hooks/useCreateRevisionOfDemand';
 import { useCleanupDemandErpAndCreateCopy } from '../hooks/useCleanupDemandErpAndCreateCopy';
+import { useCancelDemandByCustomer } from '../hooks/useCancelDemandByCustomer';
+import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 const GoogleCustomerMailDialog = lazy(() =>
   import('@/features/google-integration/components/GoogleCustomerMailDialog').then((module) => ({ default: module.GoogleCustomerMailDialog }))
 );
@@ -134,6 +137,8 @@ export function DemandListPage(): ReactElement {
   const { user } = useAuthStore();
   const createRevisionMutation = useCreateRevisionOfDemand();
   const cleanupErpMutation = useCleanupDemandErpAndCreateCopy();
+  const cancelByCustomerMutation = useCancelDemandByCustomer();
+  const { canUpdate } = useCrudPermissions('sales.demands.update');
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -163,6 +168,7 @@ export function DemandListPage(): ReactElement {
   const [outlookMailDialogOpen, setOutlookMailDialogOpen] = useState(false);
   const [selectedDemand, setSelectedDemand] = useState<DemandGetDto | null>(null);
   const [erpCleanupDemand, setErpCleanupDemand] = useState<DemandGetDto | null>(null);
+  const [customerCancelDemand, setCustomerCancelDemand] = useState<DemandGetDto | null>(null);
   const [erpCleanupReason, setErpCleanupReason] = useState('');
   const [erpCleanupNote, setErpCleanupNote] = useState('');
 
@@ -562,9 +568,13 @@ export function DemandListPage(): ReactElement {
       }}
       isRevisePending={createRevisionMutation.isPending}
       onErpCleanup={(event) => handleOpenErpCleanupDialog(event, demand)}
+      customerCancelLabel={t('customerCancel.button', { defaultValue: 'Müşteri İptali' })}
+      onCustomerCancel={(event) => { event.stopPropagation(); setCustomerCancelDemand(demand); }}
       isErpCleanupPending={cleanupErpMutation.isPending}
       showRevise={resolvedStatus === 0 || resolvedStatus === 3}
       showErpCleanup={demand.isERPIntegrated === true && Boolean(demand.erpIntegrationNumber)}
+      showCustomerCancel={canUpdate && !demand.isERPIntegrated && ![4, 5, 6, 7].includes(resolvedStatus ?? -1)}
+      isCustomerCancelPending={cancelByCustomerMutation.isPending}
     />
     );
   };
@@ -756,6 +766,18 @@ export function DemandListPage(): ReactElement {
           />
         ) : null}
       </Suspense>
+      <CustomerCancellationDialog
+        open={Boolean(customerCancelDemand)}
+        onOpenChange={(open) => { if (!open && !cancelByCustomerMutation.isPending) setCustomerCancelDemand(null); }}
+        isPending={cancelByCustomerMutation.isPending}
+        title={t('customerCancel.title', { defaultValue: 'Müşteri iptali' })}
+        description={t('customerCancel.description', { defaultValue: 'Bu talebi müşteri tarafından iptal edildi olarak işaretlemek üzeresiniz.' })}
+        reasonLabel={t('customerCancel.reasonLabel', { defaultValue: 'İptal nedeni' })}
+        reasonPlaceholder={t('customerCancel.reasonPlaceholder', { defaultValue: 'Müşterinin iptal nedenini yazın...' })}
+        cancelLabel={t('common.cancel', { ns: 'common', defaultValue: 'İptal' })}
+        confirmLabel={t('customerCancel.confirmButton', { defaultValue: 'İptal Et' })}
+        onConfirm={async (reason) => { if (!customerCancelDemand) return; await cancelByCustomerMutation.mutateAsync({ id: customerCancelDemand.id, reason: reason || null }); setCustomerCancelDemand(null); }}
+      />
       <Dialog
         open={Boolean(erpCleanupDemand)}
         onOpenChange={(open) => {
