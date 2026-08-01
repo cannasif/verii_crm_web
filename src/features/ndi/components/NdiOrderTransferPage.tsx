@@ -1198,8 +1198,15 @@ export function NdiOrderTransferPage(): ReactElement {
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
   const selectedLinesWithoutPrice = selectedLines.filter((line) => line.unitPrice <= 0);
   const needsDispatchSeries = ruleOutcomes.some((outcome) => outcome.action === 'IRSALIYELISTIR');
-  const hasValidDocumentSeries = (!needsDispatchSeries || isValidNdiSeries(dispatchSeries))
-    && isValidNdiSeries(invoiceSeries);
+  const hasSelectedDispatchSeries = !needsDispatchSeries || dispatchSeriesOptions.some(
+    (option) => normalizeNdiSeriesInput(option.value) === dispatchSeries
+  );
+  const hasSelectedInvoiceSeries = invoiceSeriesOptions.some(
+    (option) => normalizeNdiSeriesInput(option.value) === invoiceSeries
+  );
+  const hasValidDocumentSeries = (!needsDispatchSeries || (isValidNdiSeries(dispatchSeries) && hasSelectedDispatchSeries))
+    && isValidNdiSeries(invoiceSeries)
+    && hasSelectedInvoiceSeries;
   const canPrepareSelectedLines = selectedLines.length > 0
     && blockedRuleCount === 0
     && selectedLinesWithoutPrice.length === 0
@@ -1819,7 +1826,7 @@ export function NdiOrderTransferPage(): ReactElement {
             </div>
 
             <div className="mt-3 grid gap-3 md:grid-cols-2">
-              <div className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && needsDispatchSeries && !isValidNdiSeries(dispatchSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
+              <div className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && needsDispatchSeries && (!isValidNdiSeries(dispatchSeries) || !hasSelectedDispatchSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
                 <span className="flex items-center gap-2 text-xs font-black uppercase text-[var(--crm-app-text-muted)]">
                   <Truck size={15} /> İrsaliye Belge Serisi
                 </span>
@@ -1852,7 +1859,7 @@ export function NdiOrderTransferPage(): ReactElement {
                 </span>
               </div>
 
-              <div className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && !isValidNdiSeries(invoiceSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
+              <div className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && (!isValidNdiSeries(invoiceSeries) || !hasSelectedInvoiceSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
                 <span className="flex items-center gap-2 text-xs font-black uppercase text-[var(--crm-app-text-muted)]">
                   <FileText size={15} /> Fatura Belge Serisi
                 </span>
@@ -1953,8 +1960,14 @@ export function NdiOrderTransferPage(): ReactElement {
                     {needsDispatchSeries && !isValidNdiSeries(dispatchSeries) ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">İrsaliye belge serisi tam 3 harf veya rakam olmalıdır.</div>
                     ) : null}
+                    {needsDispatchSeries && isValidNdiSeries(dispatchSeries) && !hasSelectedDispatchSeries ? (
+                      <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">İrsaliye serisi cari belge serileri fonksiyonundan gelen seçeneklerden seçilmelidir.</div>
+                    ) : null}
                     {!isValidNdiSeries(invoiceSeries) ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">Fatura belge serisi tam 3 harf veya rakam olmalıdır.</div>
+                    ) : null}
+                    {isValidNdiSeries(invoiceSeries) && !hasSelectedInvoiceSeries ? (
+                      <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">Fatura serisi cari belge serileri fonksiyonundan gelen seçeneklerden seçilmelidir.</div>
                     ) : null}
                     {selectedLinesWithoutPrice.map((line) => (
                       <div key={`price-${line.id}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
