@@ -1,6 +1,10 @@
 import { api } from '@/lib/axios';
 import type { ApiResponse } from '@/types/api';
-import type { CustomerDuplicateCandidateDto, CustomerMergeRequestDto } from '../types/customerDedupe.types';
+import type {
+  CustomerDuplicateCandidateDto,
+  CustomerMergePreviewDto,
+  CustomerMergeRequestDto,
+} from '../types/customerDedupe.types';
 import type { CustomerDto } from '@/features/customer-management/types/customer-types';
 
 function extractData<T>(response: ApiResponse<T>): T {
@@ -17,6 +21,14 @@ export const customerDedupeApi = {
     );
     const data = extractData(response as ApiResponse<CustomerDuplicateCandidateDto[]>);
     return Array.isArray(data) ? data : [];
+  },
+
+  getMergePreview: async (firstCustomerId: number, secondCustomerId: number): Promise<CustomerMergePreviewDto> => {
+    const response = await api.get<ApiResponse<CustomerMergePreviewDto>>(
+      '/api/customer/dedupe/preview',
+      { params: { firstCustomerId, secondCustomerId } }
+    );
+    return extractData(response as ApiResponse<CustomerMergePreviewDto>);
   },
 
   mergeCustomers: async (payload: CustomerMergeRequestDto): Promise<CustomerDto> => {
