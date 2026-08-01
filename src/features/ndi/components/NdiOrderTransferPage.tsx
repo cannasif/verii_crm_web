@@ -159,7 +159,6 @@ function buildNdiTransferRequest(transfer: NdiPreparedTransfer): NdiTransferCrea
           unit: line.unit,
           sourceWarehouse: line.sourceWarehouse,
           targetWarehouse: line.targetWarehouse,
-          quantityPrecision: resolveQuantityPrecision(line.unit),
           vatRate: line.targetVat,
           ekalan: line.ekalan,
           ekalan1: line.ekalan1,
@@ -477,16 +476,6 @@ function normalizeText(value: unknown): string {
   return String(value ?? '').trim().toLocaleLowerCase('tr-TR');
 }
 
-function resolveQuantityPrecision(unit: string): number {
-  const normalized = unit.trim().toLocaleUpperCase('tr-TR').replace(/[.\s]/g, '');
-  return ['ADET', 'AD', 'PCS', 'PARÇA', 'PARCA'].includes(normalized) ? 0 : 8;
-}
-
-function hasSupportedPrecision(quantity: number, precision: number): boolean {
-  const factor = 10 ** precision;
-  return Math.abs(quantity * factor - Math.trunc(quantity * factor)) < 0.000001;
-}
-
 function formatDate(value?: string | null): string {
   if (!value) {
     return '-';
@@ -746,19 +735,6 @@ function buildRuleOutcome(
   }
   if (quantityRule.block) {
     blocks.push(quantityRule.block);
-  }
-  if (quantityRule.label === '1/4' && quantityRule.requestedQuantity > 0) {
-    const ratio = quantityRule.transferQuantity / quantityRule.requestedQuantity;
-    const invalidPrecisionLine = lines.find((line) => {
-      const precision = resolveQuantityPrecision(line.unit);
-      return !hasSupportedPrecision(line.remainingQuantity * ratio, precision);
-    });
-    if (invalidPrecisionLine) {
-      blocks.push(
-        `${invalidPrecisionLine.stockCode}: ${invalidPrecisionLine.unit} birimi 1/4 sonucundaki `
-        + `${priceFormatter.format(invalidPrecisionLine.remainingQuantity * ratio)} miktarı desteklemiyor. Otomatik yuvarlama yapılmayacak.`
-      );
-    }
   }
   if (series === 'VIN' && order.specialCode1?.trim().toLocaleUpperCase('tr-TR') === 'K' && action !== 'IRSALIYELISTIR') {
     blocks.push('WINDOFORM Özel Kod K ihraç kayıtlı işlemde irsaliye zorunludur; fatura akışı tek başına hazırlanmamalıdır.');
