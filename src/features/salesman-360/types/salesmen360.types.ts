@@ -309,6 +309,25 @@ export interface Salesmen360StockPerformanceDto {
   erpOrderAmount: number;
 }
 
+export interface Salesmen360SalesMovementDto {
+  documentType: 'demand' | 'quotation' | 'order' | string;
+  documentId: number;
+  documentNumber: string;
+  date: string;
+  status: string;
+  salesmanId: number;
+  salesmanName: string;
+  customerId?: number | null;
+  customerCode: string;
+  customerName: string;
+  stockCode: string;
+  stockName: string;
+  currency: string;
+  quantity: number;
+  amount: number;
+  isErpIntegrated: boolean;
+}
+
 export interface Salesmen360PerformanceTrendItemDto {
   periodKey: string;
   demandCount: number;
@@ -385,6 +404,7 @@ export interface Salesmen360PerformanceDto {
   activityTypes: Salesmen360ActivityTypeItemDto[];
   customerBreakdown: Salesmen360CustomerPerformanceDto[];
   stockBreakdown: Salesmen360StockPerformanceDto[];
+  salesMovements: Salesmen360SalesMovementDto[];
   trend: Salesmen360PerformanceTrendItemDto[];
   salesmen: Salesmen360SalesmanPerformanceDto[];
   recentWork: Salesmen360WorkItemDto[];
