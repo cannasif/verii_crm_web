@@ -122,6 +122,7 @@ interface NdiPreparedTransfer {
 }
 
 function buildNdiTransferRequest(transfer: NdiPreparedTransfer): NdiTransferCreateRequest {
+  assertPreparedSeriesIntegrity(transfer);
   return {
     mode: transfer.mode,
     dispatchSeries: transfer.dispatchSeries,
@@ -169,6 +170,43 @@ function buildNdiTransferRequest(transfer: NdiPreparedTransfer): NdiTransferCrea
         })),
     })),
   };
+}
+
+function assertPreparedSeriesIntegrity(transfer: NdiPreparedTransfer): void {
+  if (transfer.mode === 'automatic') {
+    if (!isValidNdiSeries(transfer.invoiceSeries)) {
+      throw new Error('NDI fatura serisi seçimi kayboldu. Belge gönderilmedi; seriyi yeniden seçin.');
+    }
+
+    transfer.createdDocuments.forEach((document) => {
+      const selectedSeries = document.documentType === 'İrsaliye'
+        ? transfer.dispatchSeries
+        : transfer.invoiceSeries;
+      if (!isValidNdiSeries(selectedSeries)
+        || normalizeNdiSeriesInput(document.targetSeries) !== normalizeNdiSeriesInput(selectedSeries)) {
+        throw new Error(
+          `${document.sourceDocumentNo}: önizlemedeki ${document.targetSeries || 'boş'} serisi, ekranda seçilen ${selectedSeries || 'boş'} serisiyle aynı değil. Belge gönderilmedi.`
+        );
+      }
+    });
+    return;
+  }
+
+  const manualSeries = new Map(transfer.manualDocuments.map((selection) => [
+    `${selection.targetNetsisCompany.trim().toUpperCase()}|${selection.documentType}`,
+    normalizeNdiSeriesInput(selection.targetSeries),
+  ]));
+  transfer.createdDocuments.forEach((document) => {
+    const key = `${document.targetNetsisCompany.trim().toUpperCase()}|${document.documentType}`;
+    const selectedSeries = manualSeries.get(key);
+    if (!selectedSeries
+      || !isValidNdiSeries(selectedSeries)
+      || normalizeNdiSeriesInput(document.targetSeries) !== selectedSeries) {
+      throw new Error(
+        `${document.sourceDocumentNo}: manuel seçilen belge serisi önizleme ile aynı değil. Belge gönderilmedi; seriyi yeniden seçin.`
+      );
+    }
+  });
 }
 
 interface NdiOrder {
