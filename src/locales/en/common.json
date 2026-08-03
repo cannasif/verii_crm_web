@@ -5957,6 +5957,8 @@
     "updateError": "An error occurred while updating the discount limit"
   },
   "exportPdf": "Download PDF",
+  "exportCsv": "Download CSV",
+  "exportFailed": "The export could not be created. Please try again.",
   "table": {
     "id": "ID",
     "ruleType": "Kural Tipi",

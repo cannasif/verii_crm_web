@@ -66,6 +66,26 @@ const downloadBlob = (blob: Blob, fileName: string): void => {
   URL.revokeObjectURL(url);
 };
 
+const escapeCsvCell = (value: unknown): string => {
+  const normalized = String(normalizeCellValue(value));
+  return /[",\r\n]/.test(normalized)
+    ? `"${normalized.replace(/"/g, '""')}"`
+    : normalized;
+};
+
+export function exportGridToCsv(params: GridExportParams): void {
+  const header = params.columns.map((column) => escapeCsvCell(column.label)).join(',');
+  const body = params.rows.map((row) =>
+    params.columns.map((column) => escapeCsvCell(row[column.key])).join(',')
+  );
+  const csv = `\uFEFF${[header, ...body].join('\r\n')}`;
+  const normalizedFileName = params.fileName.toLowerCase().endsWith('.csv')
+    ? params.fileName
+    : `${params.fileName}.csv`;
+
+  downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), normalizedFileName);
+}
+
 const escapeHtml = (value: string): string => {
   return value
     .replace(/&/g, '&amp;')

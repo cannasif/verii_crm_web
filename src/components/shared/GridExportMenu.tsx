@@ -1,5 +1,6 @@
 import { type ReactElement, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -7,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { FileDown, FileSpreadsheet, FileType, Loader2 } from 'lucide-react';
+import { FileDown, FileSpreadsheet, FileText, FileType, Loader2 } from 'lucide-react';
 import type { GridExportColumn } from '@/lib/grid-export';
 import { cn } from '@/lib/utils';
 
@@ -24,18 +25,22 @@ interface GridExportMenuProps extends GridExportConfig {
   triggerClassName?: string;
 }
 
+interface GridExportController {
+  isExporting: boolean;
+  handleExcelExport: () => Promise<void>;
+  handleCsvExport: () => Promise<void>;
+  handlePdfExport: () => Promise<void>;
+}
+
 function useGridExport({
   fileName,
   columns,
   rows,
   getExportData,
   pdfRightAlignedColumnKeys,
-}: GridExportConfig): {
-  isExporting: boolean;
-  handleExcelExport: () => Promise<void>;
-  handlePdfExport: () => Promise<void>;
-} {
+}: GridExportConfig): GridExportController {
   const [isExporting, setIsExporting] = useState(false);
+  const { t } = useTranslation('common');
 
   const resolveExportData = async (): Promise<{ columns: GridExportColumn[]; rows: Record<string, unknown>[] }> => {
     if (getExportData) {
@@ -45,36 +50,93 @@ function useGridExport({
     return { columns, rows };
   };
 
-  const handleExcelExport = async (): Promise<void> => {
+  const runExport = async (exportAction: () => Promise<void> | void): Promise<void> => {
     if (isExporting) return;
     setIsExporting(true);
     try {
-      const { columns: resolvedColumns, rows: resolvedRows } = await resolveExportData();
-      const { exportGridToExcel } = await import('@/lib/grid-export');
-      await exportGridToExcel({ fileName, columns: resolvedColumns, rows: resolvedRows });
+      await exportAction();
+    } catch {
+      toast.error(t('exportFailed', { defaultValue: 'Çıktı oluşturulamadı. Lütfen tekrar deneyin.' }));
     } finally {
       setIsExporting(false);
     }
   };
 
-  const handlePdfExport = async (): Promise<void> => {
-    if (isExporting) return;
-    setIsExporting(true);
-    try {
-      const { columns: resolvedColumns, rows: resolvedRows } = await resolveExportData();
-      const { exportGridToPdf } = await import('@/lib/grid-export');
-      await exportGridToPdf({
-        fileName,
-        columns: resolvedColumns,
-        rows: resolvedRows,
-        pdfRightAlignedColumnKeys,
-      });
-    } finally {
-      setIsExporting(false);
-    }
+  const handleExcelExport = (): Promise<void> => runExport(async () => {
+    const { columns: resolvedColumns, rows: resolvedRows } = await resolveExportData();
+    const { exportGridToExcel } = await import('@/lib/grid-export');
+    await exportGridToExcel({ fileName, columns: resolvedColumns, rows: resolvedRows });
+  });
+
+  const handleCsvExport = (): Promise<void> => runExport(async () => {
+    const { columns: resolvedColumns, rows: resolvedRows } = await resolveExportData();
+    const { exportGridToCsv } = await import('@/lib/grid-export');
+    exportGridToCsv({ fileName, columns: resolvedColumns, rows: resolvedRows });
+  });
+
+  const handlePdfExport = (): Promise<void> => runExport(async () => {
+    const { columns: resolvedColumns, rows: resolvedRows } = await resolveExportData();
+    const { exportGridToPdf } = await import('@/lib/grid-export');
+    await exportGridToPdf({
+      fileName,
+      columns: resolvedColumns,
+      rows: resolvedRows,
+      pdfRightAlignedColumnKeys,
+    });
+  });
+
+  return { isExporting, handleExcelExport, handleCsvExport, handlePdfExport };
+}
+
+function GridExportActionItems({
+  controller,
+  hasExportSource,
+  translationNamespace,
+  onActionComplete,
+}: {
+  controller: GridExportController;
+  hasExportSource: boolean;
+  translationNamespace?: string;
+  onActionComplete?: () => void;
+}): ReactElement {
+  const { t } = useTranslation(translationNamespace ? [translationNamespace, 'common'] : 'common');
+  const { isExporting, handleExcelExport, handleCsvExport, handlePdfExport } = controller;
+  const run = (action: () => Promise<void>): void => {
+    void action().finally(() => onActionComplete?.());
   };
 
-  return { isExporting, handleExcelExport, handlePdfExport };
+  return (
+    <>
+      <DropdownMenuItem
+        onClick={() => run(handleExcelExport)}
+        disabled={isExporting || !hasExportSource}
+        className="cursor-pointer"
+      >
+        {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileSpreadsheet className="mr-2 h-4 w-4" />}
+        {isExporting
+          ? t('exportPreparing', { ns: 'common', defaultValue: 'Hazırlanıyor...' })
+          : t('exportExcel', { ns: 'common', defaultValue: 'Excel Çıktısı' })}
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={() => run(handleCsvExport)}
+        disabled={isExporting || !hasExportSource}
+        className="cursor-pointer"
+      >
+        <FileText className="mr-2 h-4 w-4" />
+        {t('exportCsv', { ns: 'common', defaultValue: 'CSV Çıktısı' })}
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={() => run(handlePdfExport)}
+        disabled={isExporting || !hasExportSource}
+        className="cursor-pointer"
+      >
+        {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileType className="mr-2 h-4 w-4" />}
+        {isExporting
+          ? t('exportPreparing', { ns: 'common', defaultValue: 'Hazırlanıyor...' })
+          : t('exportPdf', { ns: 'common', defaultValue: 'PDF Çıktısı' })}
+      </DropdownMenuItem>
+    </>
+  );
 }
 
 export function GridExportMenuItems({
@@ -89,8 +151,7 @@ export function GridExportMenuItems({
   translationNamespace?: string;
   onActionComplete?: () => void;
 }): ReactElement {
-  const { t } = useTranslation(translationNamespace ? [translationNamespace, 'common'] : 'common');
-  const { isExporting, handleExcelExport, handlePdfExport } = useGridExport({
+  const controller = useGridExport({
     fileName,
     columns,
     rows,
@@ -98,41 +159,13 @@ export function GridExportMenuItems({
     pdfRightAlignedColumnKeys,
   });
 
-  const runExcelExport = (): void => {
-    void handleExcelExport().finally(() => {
-      onActionComplete?.();
-    });
-  };
-
-  const runPdfExport = (): void => {
-    void handlePdfExport().finally(() => {
-      onActionComplete?.();
-    });
-  };
-
   return (
-    <>
-      <DropdownMenuItem
-        onClick={runExcelExport}
-        disabled={isExporting || rows.length === 0}
-        className="cursor-pointer"
-      >
-        {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileSpreadsheet className="mr-2 h-4 w-4" />}
-        {isExporting
-          ? t('exportPreparing', { ns: 'common', defaultValue: 'Hazırlanıyor...' })
-          : t('exportExcel', { ns: 'common', defaultValue: 'Excel Çıktısı' })}
-      </DropdownMenuItem>
-      <DropdownMenuItem
-        onClick={runPdfExport}
-        disabled={isExporting || rows.length === 0}
-        className="cursor-pointer"
-      >
-        {isExporting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <FileType className="mr-2 h-4 w-4" />}
-        {isExporting
-          ? t('exportPreparing', { ns: 'common', defaultValue: 'Hazırlanıyor...' })
-          : t('exportPdf', { ns: 'common', defaultValue: 'PDF Çıktısı' })}
-      </DropdownMenuItem>
-    </>
+    <GridExportActionItems
+      controller={controller}
+      hasExportSource={Boolean(getExportData) || rows.length > 0}
+      translationNamespace={translationNamespace}
+      onActionComplete={onActionComplete}
+    />
   );
 }
 
@@ -146,7 +179,8 @@ export function GridExportMenu({
   triggerClassName,
 }: GridExportMenuProps): ReactElement {
   const { t } = useTranslation(translationNamespace ? [translationNamespace, 'common'] : 'common');
-  const { isExporting } = useGridExport({ fileName, columns, rows, getExportData, pdfRightAlignedColumnKeys });
+  const controller = useGridExport({ fileName, columns, rows, getExportData, pdfRightAlignedColumnKeys });
+  const { isExporting } = controller;
 
   return (
     <DropdownMenu>
@@ -171,12 +205,9 @@ export function GridExportMenu({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
-        <GridExportMenuItems
-          fileName={fileName}
-          columns={columns}
-          rows={rows}
-          getExportData={getExportData}
-          pdfRightAlignedColumnKeys={pdfRightAlignedColumnKeys}
+        <GridExportActionItems
+          controller={controller}
+          hasExportSource={Boolean(getExportData) || rows.length > 0}
           translationNamespace={translationNamespace}
         />
       </DropdownMenuContent>

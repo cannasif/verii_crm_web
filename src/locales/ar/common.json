@@ -5760,6 +5760,8 @@
     "updateError": "تعذر تحديث حد الخصم"
   },
   "exportPdf": "تحميل PDF",
+  "exportCsv": "تحميل CSV",
+  "exportFailed": "تعذر إنشاء ملف التصدير. يرجى المحاولة مرة أخرى.",
   "table": {
     "id": "ID",
     "ruleType": "Kural Tipi",

@@ -5956,6 +5956,8 @@
     "updateError": "İskonto limiti güncellenirken bir hata oluştu"
   },
   "exportPdf": "PDF İndir",
+  "exportCsv": "CSV Çıktısı",
+  "exportFailed": "Çıktı oluşturulamadı. Lütfen tekrar deneyin.",
   "table": {
     "id": "ID",
     "ruleType": "Kural Tipi",

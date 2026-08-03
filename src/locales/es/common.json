@@ -5754,6 +5754,8 @@
     "updateError": "No se pudo actualizar el límite de descuento"
   },
   "exportPdf": "Descargar PDF",
+  "exportCsv": "Descargar CSV",
+  "exportFailed": "No se pudo crear la exportación. Inténtelo de nuevo.",
   "table": {
     "id": "ID",
     "ruleType": "Kural Tipi",

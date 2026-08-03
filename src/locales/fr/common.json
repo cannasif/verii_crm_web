@@ -5708,6 +5708,8 @@
     "updateError": "Erreur lors de la mise à jour de la limite de remise"
   },
   "exportPdf": "Télécharger le PDF",
+  "exportCsv": "Télécharger le CSV",
+  "exportFailed": "L’exportation n’a pas pu être créée. Veuillez réessayer.",
   "table": {
     "id": "ID",
     "ruleType": "Kural Tipi",

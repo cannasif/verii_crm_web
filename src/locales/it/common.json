@@ -5782,6 +5782,8 @@
     "updateError": "Impossibile aggiornare il limite di sconto"
   },
   "exportPdf": "Scarica PDF",
+  "exportCsv": "Scarica CSV",
+  "exportFailed": "Impossibile creare l’esportazione. Riprova.",
   "table": {
     "id": "ID",
     "ruleType": "Kural Tipi",

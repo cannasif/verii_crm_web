@@ -5717,6 +5717,8 @@
     "updateError": "Beim Aktualisieren des Rabattlimits ist ein Fehler aufgetreten"
   },
   "exportPdf": "PDF herunterladen",
+  "exportCsv": "CSV herunterladen",
+  "exportFailed": "Der Export konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
   "table": {
     "id": "ID",
     "ruleType": "Kural Tipi",
