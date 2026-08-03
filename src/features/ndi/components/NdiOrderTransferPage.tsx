@@ -1,5 +1,5 @@
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
 import {
   AlertCircle,
   ArrowRight,
@@ -23,12 +23,14 @@ import { Combobox, type ComboboxOption } from '@/components/ui/combobox';
 import {
   ndiApi,
   type NdiTransferCreateRequest,
+  type NdiManualDocumentRequest,
   type NdiTransferCreateResponseDto,
   type NdiTransferCreatedDocumentDto,
   type NdiTransferFailedDocumentDto,
   type NdiTransferredRecordDto,
   type NetsisCustomerDispatchDto,
   type NetsisCustomerDispatchLineDto,
+  type NetsisCustomerDocumentSeriesDto,
 } from '../api/ndi-api';
 import { NdiConnectionTestDialog } from './NdiConnectionTestDialog';
 
@@ -105,6 +107,7 @@ interface NdiPreparedTransfer {
   dispatchSeries: string;
   invoiceSeries: string;
   quantityMode: NdiQuantityMode;
+  manualDocuments: NdiManualDocumentRequest[];
   sourceNetsisCompanies: string[];
   targetNetsisCompanies: string[];
   documentNos: string[];
@@ -124,6 +127,7 @@ function buildNdiTransferRequest(transfer: NdiPreparedTransfer): NdiTransferCrea
     dispatchSeries: transfer.dispatchSeries,
     invoiceSeries: transfer.invoiceSeries,
     quantityMode: transfer.quantityMode,
+    manualDocuments: transfer.manualDocuments,
     documents: transfer.createdDocuments.map((document) => ({
       sourceDocumentNo: document.sourceDocumentNo,
       sourceOrderNo: document.sourceOrderNo,
@@ -220,6 +224,7 @@ type NdiQuantityMode = 'auto' | 'full' | 'quarter';
 type NdiTransferMode = 'automatic' | 'manual';
 type NdiManualTarget = 'NURAY24' | 'WIN24' | 'DISTIC24' | 'SIRKET24';
 type NdiManualDocumentType = 'İrsaliye' | 'Fatura';
+const MANUAL_TARGETS: NdiManualTarget[] = ['NURAY24', 'WIN24', 'DISTIC24', 'SIRKET24'];
 
 interface NdiDecisionContext {
   mode: NdiTransferMode;
@@ -231,6 +236,28 @@ const normalizeNdiSeriesInput = (value: string): string =>
   value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 3);
 
 const isValidNdiSeries = (value: string): boolean => /^[A-Z0-9]{3}$/.test(value);
+
+function getDocumentSeriesOptions(
+  rows: NetsisCustomerDocumentSeriesDto[],
+  documentType: NdiManualDocumentType
+): ComboboxOption[] {
+  const seen = new Set<string>();
+  return rows.flatMap((row) => {
+    const rawValue = documentType === 'İrsaliye' ? row.dispatchSeries : row.invoiceSeries;
+    const value = normalizeNdiSeriesInput(rawValue?.trim() ?? '');
+    if (!value || seen.has(value)) {
+      return [];
+    }
+
+    seen.add(value);
+    return [{
+      value,
+      label: documentType === 'İrsaliye'
+        ? `${row.dispatchDocumentType || 'İrsaliye'} — ${value}`
+        : `E-Fatura: ${row.eInvoiceActive || '-'} — ${row.invoiceDocumentType || 'Fatura'} — ${value}`,
+    }];
+  });
+}
 
 const hasSeparateShippingCustomer = (customerCode: string, shippingCustomerCode?: string | null): boolean => {
   const normalizedCustomerCode = customerCode.trim().toLocaleUpperCase('tr-TR');
@@ -340,12 +367,12 @@ const transferRules: NdiTransferRule[] = [
     targetCompany: 'WIN DIS',
     targetNetsisCompany: 'DISTIC24',
     targetSerial: 'Seçilen irsaliye ve fatura belge serileri',
-    shipmentRule: 'DIŞTİC24 tarafında sevk carisinden bağımsız olarak yalnız irsaliye oluşturulur.',
-    taxRule: 'DIŞTİC24 irsaliyesi ve SIRKET24 bağlantılı faturası %0 KDV ile oluşur.',
-    warehouseRule: 'Varsayılan depo kodu 100 olmalı.',
-    transferNote: 'DIŞTİC24 irsaliyesi başarılı olursa kaynak SIRKET24 irsaliyeleri bağlantılı faturalaştırılır.',
-    officialNote: 'DISTIC24 ve SIRKET24 belge numaraları seçilen serilerle kendi şirketlerinden ayrı ayrı alınır.',
-    bulkNote: 'İrsaliye birleştirme ve toplu aktarım desteklenebilir.',
+    shipmentRule: 'DIŞTİC24 hedefli veya sipariş numarası D ile başlayan kayıtlarda hedef şirkete belge aktarılmaz.',
+    taxRule: 'Yalnız kaynak SIRKET24 irsaliyelerine bağlı %0 KDV’li fatura oluşturulur.',
+    warehouseRule: 'Hedef şirket aktarımı olmadığı için DIŞTİC24 depo kuralı uygulanmaz.',
+    transferNote: 'Seçili kaynak SIRKET24 irsaliyeleri, seçilen fatura serisiyle bağlantılı faturalaştırılır.',
+    officialNote: 'DIŞTİC24 tarafından belge numarası alınmaz ve bu şirkete REST kaydı gönderilmez.',
+    bulkNote: 'Uyumlu kaynak irsaliyeler SIRKET24 tarafında tek bağlantılı faturada birleştirilir.',
   },
   {
     id: 'sirket24',
@@ -472,6 +499,11 @@ function getDecisionRule(order: NdiOrder, context: NdiDecisionContext): NdiTrans
   return context.mode === 'manual' ? getRuleByTarget(context.manualTarget) : getRule(order);
 }
 
+function shouldCreateOnlySirket24Invoice(order: NdiOrder, rule: NdiTransferRule): boolean {
+  return rule.id === 'disTicaret'
+    || order.sourceOrderNo?.trim().toLocaleUpperCase('tr-TR').startsWith('D') === true;
+}
+
 function normalizeText(value: unknown): string {
   return String(value ?? '').trim().toLocaleLowerCase('tr-TR');
 }
@@ -544,10 +576,11 @@ function resolvePrimaryAction(order: NdiOrder, context: NdiDecisionContext): Ndi
   const rule = getDecisionRule(order, context);
   const series = rule.sourceSerial as NdiBusinessSeries;
 
+  if (context.mode === 'automatic' && shouldCreateOnlySirket24Invoice(order, rule)) {
+    return 'FATURALASTIR';
+  }
+
   if (context.mode === 'manual') {
-    if (series === 'DIS') {
-      return 'IRSALIYELISTIR';
-    }
     if (series === 'SIP') {
       return 'FATURALASTIR';
     }
@@ -556,9 +589,6 @@ function resolvePrimaryAction(order: NdiOrder, context: NdiDecisionContext): Ndi
 
   if (series === 'SIP') {
     return 'FATURALASTIR';
-  }
-  if (series === 'DIS') {
-    return 'IRSALIYELISTIR';
   }
 
   const dispatchIsMandatory = order.hasShipment
@@ -696,6 +726,22 @@ function resolveQuantityRule(order: NdiOrder, lines: NdiOrderLine[], rule: NdiTr
   };
 }
 
+function resolveManualQuantityRule(
+  lines: NdiOrderLine[],
+  quantityMode: NdiQuantityMode
+): { label: string; requestedQuantity: number; transferQuantity: number; note: string; block?: string } {
+  const requestedQuantity = lines.reduce((total, line) => total + Math.max(line.remainingQuantity, 0), 0);
+  const isQuarter = quantityMode === 'quarter';
+  return {
+    label: isQuarter ? '1/4' : 'Tam',
+    requestedQuantity,
+    transferQuantity: isQuarter ? requestedQuantity / 4 : requestedQuantity,
+    note: isQuarter
+      ? `Manuel 1/4 seçimi: ${numberFormatter.format(requestedQuantity)} miktarın ${numberFormatter.format(requestedQuantity / 4)} kadarı aktarılır.`
+      : 'Manuel seçimde kalan miktarın tamamı aktarılır.',
+  };
+}
+
 function buildRuleOutcome(
   order: NdiOrder,
   lines: NdiOrderLine[],
@@ -703,26 +749,42 @@ function buildRuleOutcome(
   context: NdiDecisionContext
 ): NdiRuleOutcome {
   const rule = getDecisionRule(order, context);
-  const series = rule.sourceSerial as NdiBusinessSeries;
+  const onlySirket24Invoice = context.mode === 'automatic'
+    && shouldCreateOnlySirket24Invoice(order, rule);
+  const effectiveRule = onlySirket24Invoice ? getRuleByTarget('DISTIC24') : rule;
+  const series = effectiveRule.sourceSerial as NdiBusinessSeries;
   const sourcePrefix = getOrderPrefix(order);
   const action = resolvePrimaryAction(order, context);
   const targetSeries = resolveTargetSeries(order);
-  const warehouse = resolveWarehouse(rule);
-  const vat = resolveVat(order, rule, quantityMode);
-  const quantityRule = resolveQuantityRule(order, lines, rule, quantityMode);
+  const warehouse = resolveWarehouse(effectiveRule);
+  const vat = resolveVat(order, effectiveRule, quantityMode);
+  const quantityRule = context.mode === 'manual'
+    ? resolveManualQuantityRule(lines, quantityMode)
+    : resolveQuantityRule(order, lines, effectiveRule, quantityMode);
   const zeroBalanceCount = lines.filter((line) => line.quantity > 0 && line.remainingQuantity <= 0).length;
   const warnings: string[] = [];
   const blocks: string[] = [];
-  const systemNotes: string[] = [
-    targetSeries.note,
-    warehouse.note,
-    quantityRule.note,
-    vat.note,
-    rule.officialNote,
-    rule.bulkNote,
-    'Ek alan 1 ve satır bilgileri aktarım payloadında korunmalıdır.',
-  ];
+  const systemNotes: string[] = context.mode === 'manual'
+    ? [
+        'Manuel mod: hedef şirket ve belge türü kullanıcı seçiminden alınır; otomatik yönlendirme ve takip faturası uygulanmaz.',
+        targetSeries.note,
+        quantityRule.note,
+        'Ek alan 1 ve satır bilgileri aktarım payloadında korunmalıdır.',
+      ]
+    : [
+        targetSeries.note,
+        warehouse.note,
+        quantityRule.note,
+        vat.note,
+        effectiveRule.officialNote,
+        effectiveRule.bulkNote,
+        'Ek alan 1 ve satır bilgileri aktarım payloadında korunmalıdır.',
+      ];
   const userNotes: string[] = [];
+
+  if (onlySirket24Invoice) {
+    userNotes.push('DIŞTİC24 hedefi / D sipariş kuralı: hedef şirkete kayıt aktarılmayacak; yalnız SIRKET24 bağlantılı faturası oluşturulacak.');
+  }
 
   if (targetSeries.warning) {
     warnings.push(targetSeries.warning);
@@ -736,13 +798,13 @@ function buildRuleOutcome(
   if (quantityRule.block) {
     blocks.push(quantityRule.block);
   }
-  if (series === 'VIN' && order.specialCode1?.trim().toLocaleUpperCase('tr-TR') === 'K' && action !== 'IRSALIYELISTIR') {
+  if (context.mode === 'automatic' && series === 'VIN' && order.specialCode1?.trim().toLocaleUpperCase('tr-TR') === 'K' && action !== 'IRSALIYELISTIR') {
     blocks.push('WINDOFORM Özel Kod K ihraç kayıtlı işlemde irsaliye zorunludur; fatura akışı tek başına hazırlanmamalıdır.');
   }
   if (series === 'VIN' && order.specialCode1?.trim().toLocaleUpperCase('tr-TR') === 'K') {
     userNotes.push('Özel Kod K: WIN24 irsaliyesi zorunlu; WIN24 ve SIRKET24 KDV %0.');
   }
-  if (series === 'NUR' && order.description.trim()) {
+  if (context.mode === 'automatic' && series === 'NUR' && order.description.trim()) {
     userNotes.push(quantityRule.label === '1/4'
       ? '1/4 açıklaması algılandı: miktar 1/4, NURAY24 KDV %20, SIRKET24 KDV %5.'
       : 'TAM satış açıklaması algılandı: miktar tam, NURAY24 ve SIRKET24 KDV %20.');
@@ -758,9 +820,9 @@ function buildRuleOutcome(
     sourcePrefix,
     action,
     actionLabel: getActionLabel(action),
-    companyLabel: rule.title,
-    sourceNetsisCompany: rule.sourceNetsisCompany,
-    targetNetsisCompany: rule.targetNetsisCompany,
+    companyLabel: onlySirket24Invoice ? 'DIŞ TİCARET → ŞİRKET24 Fatura' : rule.title,
+    sourceNetsisCompany: effectiveRule.sourceNetsisCompany,
+    targetNetsisCompany: onlySirket24Invoice ? 'SIRKET24' : rule.targetNetsisCompany,
     targetSeries: targetSeries.value,
     seriesNote: targetSeries.note,
     targetWarehouse: warehouse.value,
@@ -865,8 +927,9 @@ export function NdiOrderTransferPage(): ReactElement {
   const [activeTab, setActiveTab] = useState<'pending' | 'transferred'>('pending');
   const [search, setSearch] = useState('');
   const [transferMode, setTransferMode] = useState<NdiTransferMode>('automatic');
-  const [manualTarget, setManualTarget] = useState<NdiManualTarget>('NURAY24');
-  const [manualDocumentType, setManualDocumentType] = useState<NdiManualDocumentType>('İrsaliye');
+  const [manualDocuments, setManualDocuments] = useState<NdiManualDocumentRequest[]>([]);
+  const manualTarget = (manualDocuments[0]?.targetNetsisCompany as NdiManualTarget | undefined) ?? 'NURAY24';
+  const manualDocumentType = manualDocuments[0]?.documentType ?? 'İrsaliye';
   const [quantityMode, setQuantityMode] = useState<NdiQuantityMode>('auto');
   const [dispatchSeries, setDispatchSeries] = useState('');
   const [invoiceSeries, setInvoiceSeries] = useState('');
@@ -1069,7 +1132,9 @@ export function NdiOrderTransferPage(): ReactElement {
     () => selectedRules.map((rule) => rule.id).sort().join(','),
     [selectedRules]
   );
-  const quarterModeAvailable = selectedRules.length > 0 && selectedRules.every((rule) => rule.id === 'nuray');
+  const quarterModeAvailable = transferMode === 'manual'
+    ? manualDocuments.length > 0
+    : selectedRules.length > 0 && selectedRules.every((rule) => rule.id === 'nuray');
 
   useEffect(() => {
     if (!quarterModeAvailable && quantityMode === 'quarter') {
@@ -1138,9 +1203,24 @@ export function NdiOrderTransferPage(): ReactElement {
   const customerDocumentSeriesQuery = useQuery({
     queryKey: ['ndi', 'customer-document-series', selectedSeriesCompany, selectedCustomerCode],
     queryFn: () => ndiApi.getCustomerDocumentSeries(selectedSeriesCompany, selectedCustomerCode),
-    enabled: selectedSeriesCompany.length > 0 && selectedCustomerCode.length > 0,
+    enabled: transferMode === 'automatic' && selectedSeriesCompany.length > 0 && selectedCustomerCode.length > 0,
     staleTime: 60_000,
   });
+  const manualDocumentSeriesQueries = useQueries({
+    queries: MANUAL_TARGETS.map((target) => ({
+      queryKey: ['ndi', 'customer-document-series', target, selectedCustomerCode],
+      queryFn: () => ndiApi.getCustomerDocumentSeries(target, selectedCustomerCode),
+      enabled: transferMode === 'manual' && selectedCustomerCode.length > 0,
+      staleTime: 60_000,
+    })),
+  });
+  const manualDocumentSeriesByTarget = useMemo(
+    () => new Map(MANUAL_TARGETS.map((target, index) => [
+      target,
+      manualDocumentSeriesQueries[index]?.data ?? [],
+    ])),
+    [manualDocumentSeriesQueries]
+  );
   const customerDocumentSeries = useMemo(
     () => customerDocumentSeriesQuery.data ?? [],
     [customerDocumentSeriesQuery.data]
@@ -1197,16 +1277,31 @@ export function NdiOrderTransferPage(): ReactElement {
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
   const selectedLinesWithoutPrice = selectedLines.filter((line) => line.unitPrice <= 0);
-  const needsDispatchSeries = ruleOutcomes.some((outcome) => outcome.action === 'IRSALIYELISTIR');
+  const needsDispatchSeries = transferMode === 'manual'
+    ? manualDocuments.some((selection) => selection.documentType === 'İrsaliye')
+    : ruleOutcomes.some((outcome) => outcome.action === 'IRSALIYELISTIR');
+  const needsInvoiceSeries = transferMode === 'manual'
+    ? manualDocuments.some((selection) => selection.documentType === 'Fatura')
+    : true;
   const hasSelectedDispatchSeries = !needsDispatchSeries || dispatchSeriesOptions.some(
     (option) => normalizeNdiSeriesInput(option.value) === dispatchSeries
   );
-  const hasSelectedInvoiceSeries = invoiceSeriesOptions.some(
+  const hasSelectedInvoiceSeries = !needsInvoiceSeries || invoiceSeriesOptions.some(
     (option) => normalizeNdiSeriesInput(option.value) === invoiceSeries
   );
-  const hasValidDocumentSeries = (!needsDispatchSeries || (isValidNdiSeries(dispatchSeries) && hasSelectedDispatchSeries))
-    && isValidNdiSeries(invoiceSeries)
-    && hasSelectedInvoiceSeries;
+  const hasValidManualDocuments = manualDocuments.length > 0 && manualDocuments.every((selection) => {
+    const target = selection.targetNetsisCompany as NdiManualTarget;
+    const options = getDocumentSeriesOptions(
+      manualDocumentSeriesByTarget.get(target) ?? [],
+      selection.documentType
+    );
+    return isValidNdiSeries(selection.targetSeries)
+      && options.some((option) => option.value === selection.targetSeries);
+  });
+  const hasValidDocumentSeries = transferMode === 'manual'
+    ? hasValidManualDocuments
+    : (!needsDispatchSeries || (isValidNdiSeries(dispatchSeries) && hasSelectedDispatchSeries))
+      && (!needsInvoiceSeries || (isValidNdiSeries(invoiceSeries) && hasSelectedInvoiceSeries));
   const canPrepareSelectedLines = selectedLines.length > 0
     && blockedRuleCount === 0
     && selectedLinesWithoutPrice.length === 0
@@ -1296,8 +1391,7 @@ export function NdiOrderTransferPage(): ReactElement {
   const resetSelection = () => {
     setSearch('');
     setTransferMode('automatic');
-    setManualTarget('NURAY24');
-    setManualDocumentType('İrsaliye');
+    setManualDocuments([]);
     setQuantityMode('auto');
     setSelectedOrderIds(new Set());
     setSelectedLineIds(new Set());
@@ -1331,13 +1425,17 @@ export function NdiOrderTransferPage(): ReactElement {
     setPrepareError(null);
   };
 
-  const changeManualTarget = (target: NdiManualTarget) => {
-    setManualTarget(target);
-    if (target === 'DISTIC24') {
-      setManualDocumentType('İrsaliye');
-    } else if (target === 'SIRKET24') {
-      setManualDocumentType('Fatura');
-    }
+  const toggleManualDocument = (target: NdiManualTarget, documentType: NdiManualDocumentType) => {
+    setManualDocuments((current) => {
+      const exists = current.some((selection) =>
+        selection.targetNetsisCompany === target && selection.documentType === documentType);
+      if (exists) {
+        return current.filter((selection) =>
+          selection.targetNetsisCompany !== target || selection.documentType !== documentType);
+      }
+
+      return [...current, { targetNetsisCompany: target, documentType, targetSeries: '' }];
+    });
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
     setTransferResult(null);
@@ -1346,8 +1444,16 @@ export function NdiOrderTransferPage(): ReactElement {
     setPrepareError(null);
   };
 
-  const changeManualDocumentType = (documentType: NdiManualDocumentType) => {
-    setManualDocumentType(documentType);
+  const changeManualDocumentSeries = (
+    target: NdiManualTarget,
+    documentType: NdiManualDocumentType,
+    value: string
+  ) => {
+    const normalizedValue = normalizeNdiSeriesInput(value);
+    setManualDocuments((current) => current.map((selection) =>
+      selection.targetNetsisCompany === target && selection.documentType === documentType
+        ? { ...selection, targetSeries: normalizedValue }
+        : selection));
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
     setTransferResult(null);
@@ -1431,16 +1537,24 @@ export function NdiOrderTransferPage(): ReactElement {
 
       const createdDocuments: NdiPreparedDocument[] = selectedOrdersForTransfer.map((order) => {
         const outcome = outcomeByOrderNo.get(order.orderNo);
-        const action = outcome?.action ?? resolvePrimaryAction(order, decisionContext);
-        const documentType: NdiPreparedDocument['documentType'] = action === 'FATURALASTIR' ? 'Fatura' : 'İrsaliye';
-        const targetSeries = outcome?.targetSeries
-          ?? resolveEffectiveTargetSeries(action, dispatchSeries, invoiceSeries);
+        const firstManualDocument = manualDocuments[0];
+        const action = transferMode === 'manual' && firstManualDocument
+          ? firstManualDocument.documentType === 'Fatura' ? 'FATURALASTIR' : 'IRSALIYELISTIR'
+          : outcome?.action ?? resolvePrimaryAction(order, decisionContext);
+        const documentType: NdiPreparedDocument['documentType'] = transferMode === 'manual' && firstManualDocument
+          ? firstManualDocument.documentType
+          : action === 'FATURALASTIR' ? 'Fatura' : 'İrsaliye';
+        const targetSeries = transferMode === 'manual' && firstManualDocument
+          ? firstManualDocument.targetSeries
+          : outcome?.targetSeries ?? resolveEffectiveTargetSeries(action, dispatchSeries, invoiceSeries);
 
         return {
           sourceDocumentNo: order.orderNo,
           sourceOrderNo: order.sourceOrderNo,
           sourceNetsisCompany: outcome?.sourceNetsisCompany ?? 'SIRKET24',
-          targetNetsisCompany: outcome?.targetNetsisCompany ?? SERIES_CONFIG[getBusinessSeries(order)].netsisCompany,
+          targetNetsisCompany: transferMode === 'manual' && firstManualDocument
+            ? firstManualDocument.targetNetsisCompany
+            : outcome?.targetNetsisCompany ?? SERIES_CONFIG[getBusinessSeries(order)].netsisCompany,
           targetSeries,
           documentType,
           sourceType: order.tip,
@@ -1452,9 +1566,11 @@ export function NdiOrderTransferPage(): ReactElement {
           orderExportType: order.orderExportType,
           orderTipi: order.orderTipi,
           projectCode: order.projectCode,
-          followUpNote: outcome?.targetNetsisCompany === 'SIRKET24'
-            ? 'Kaynak irsaliyeler yalnız ŞİRKET24 bağlantılı faturasında birleştirilecek.'
-            : 'Hedef belge ayrıca faturalaştırılmayacak; kaynak ŞİRKET24 irsaliyeleri bağlantılı tek faturada birleştirilecek.',
+          followUpNote: transferMode === 'manual'
+            ? 'Manuel seçimde yalnız seçilen hedef belge oluşturulacak; otomatik takip faturası oluşturulmayacak.'
+            : outcome?.targetNetsisCompany === 'SIRKET24'
+              ? 'Kaynak irsaliyeler yalnız ŞİRKET24 bağlantılı faturasında birleştirilecek.'
+              : 'Hedef belge ayrıca faturalaştırılmayacak; kaynak ŞİRKET24 irsaliyeleri bağlantılı tek faturada birleştirilecek.',
           customerCode: order.customerCode,
           customerName: order.customer,
           description: order.description,
@@ -1464,13 +1580,18 @@ export function NdiOrderTransferPage(): ReactElement {
       });
 
       const transfer: NdiPreparedTransfer = {
-        actionLabel: batchAction.action ? getActionLabel(batchAction.action) : 'Uyumluluk gruplarına göre oluştur',
+        actionLabel: transferMode === 'manual'
+          ? `${manualDocuments.length} manuel hedef belge oluştur`
+          : batchAction.action ? getActionLabel(batchAction.action) : 'Uyumluluk gruplarına göre oluştur',
         mode: transferMode,
         dispatchSeries,
         invoiceSeries,
         quantityMode,
+        manualDocuments: transferMode === 'manual' ? manualDocuments : [],
         sourceNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.sourceNetsisCompany))),
-        targetNetsisCompanies: Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))),
+        targetNetsisCompanies: transferMode === 'manual'
+          ? Array.from(new Set(manualDocuments.map((selection) => selection.targetNetsisCompany)))
+          : Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))),
         documentNos: selectedOrdersForTransfer.map((order) => order.orderNo),
         createdDocuments,
         lineCount: preparedLines.length,
@@ -1743,7 +1864,7 @@ export function NdiOrderTransferPage(): ReactElement {
               <InfoChip
                 icon={<ShieldCheck size={15} />}
                 label="Seçim Kuralı"
-                value={transferMode === 'manual' ? `Manuel: ${manualTarget} / ${manualDocumentType}` : `Otomatik prefix: ${selectedPrefix}`}
+                value={transferMode === 'manual' ? `Manuel: ${manualDocuments.length} hedef belge` : `Otomatik prefix: ${selectedPrefix}`}
               />
               <InfoChip icon={<Warehouse size={15} />} label="Depolar" value={selectedWarehouses.join(', ') || '-'} />
               <InfoChip icon={<Truck size={15} />} label="Sevkiyat tipi" value={selectedShipmentTypes.join(', ') || '-'} />
@@ -1757,7 +1878,9 @@ export function NdiOrderTransferPage(): ReactElement {
                 icon={<PackageCheck size={15} />}
                 label="Netsis Şirketi"
                 value={
-                  ruleOutcomes.length > 0
+                  transferMode === 'manual' && manualDocuments.length > 0
+                    ? `SIRKET24 -> ${Array.from(new Set(manualDocuments.map((selection) => selection.targetNetsisCompany))).join(', ')}`
+                    : ruleOutcomes.length > 0
                     ? `${Array.from(new Set(ruleOutcomes.map((outcome) => outcome.sourceNetsisCompany))).join(', ')} -> ${Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))).join(', ')}`
                     : '-'
                 }
@@ -1784,47 +1907,72 @@ export function NdiOrderTransferPage(): ReactElement {
                 </div>
               </div>
 
-              <label className={transferMode === 'manual' ? '' : 'opacity-50'}>
-                <span className="text-xs font-black uppercase text-[var(--crm-app-text-muted)]">Manuel hedef şirket</span>
-                <select
-                  value={manualTarget}
-                  onChange={(event) => changeManualTarget(event.target.value as NdiManualTarget)}
-                  disabled={transferMode !== 'manual'}
-                  className="mt-2 h-11 w-full rounded-md border border-slate-300 bg-[var(--crm-app-panel)] px-3 text-sm font-black text-foreground outline-none focus:border-primary disabled:cursor-not-allowed dark:border-white/20"
-                >
-                  <option value="NURAY24">NURAY24</option>
-                  <option value="WIN24">WIN24</option>
-                  <option value="DISTIC24">DIŞTİC24</option>
-                  <option value="SIRKET24">ŞİRKET24</option>
-                </select>
-              </label>
-
-              <div className={transferMode === 'manual' ? '' : 'opacity-50'}>
-                <div className="text-xs font-black uppercase text-[var(--crm-app-text-muted)]">Manuel belge türü</div>
-                <div className="mt-2 inline-flex w-full rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] p-1 dark:border-white/20">
-                  {(['İrsaliye', 'Fatura'] as const).map((documentType) => {
-                    const disabled = transferMode !== 'manual'
-                      || (manualTarget === 'DISTIC24' && documentType === 'Fatura')
-                      || (manualTarget === 'SIRKET24' && documentType === 'İrsaliye');
-                    return (
-                      <button
-                        key={documentType}
-                        type="button"
-                        disabled={disabled}
-                        onClick={() => changeManualDocumentType(documentType)}
-                        className={`flex-1 rounded px-3 py-2 text-xs font-black transition disabled:cursor-not-allowed disabled:opacity-35 ${manualDocumentType === documentType ? 'bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-                      >
-                        {documentType}
-                      </button>
-                    );
-                  })}
+              <div className="lg:col-span-2">
+                <div className="text-xs font-black uppercase text-[var(--crm-app-text-muted)]">
+                  {transferMode === 'manual' ? 'Manuel hedef planı' : 'Otomatik karar motoru'}
                 </div>
-                <p className="mt-1 text-[11px] font-semibold text-[var(--crm-app-text-muted)]">
-                  DIŞTİC24 yalnız irsaliye; ŞİRKET24 yalnız kaynak irsaliyelere bağlı fatura kabul eder.
+                <p className="mt-2 text-sm font-bold text-foreground">
+                  {transferMode === 'manual'
+                    ? 'Aşağıdaki firma kartlarından oluşturulacak irsaliye ve faturaları ayrı ayrı işaretleyin.'
+                    : 'Hedef şirket ve belge türü kaynak sipariş kuralına göre otomatik belirlenir.'}
                 </p>
               </div>
             </div>
 
+            {transferMode === 'manual' ? (
+              <div className="mt-3 grid gap-3 xl:grid-cols-2 2xl:grid-cols-4">
+                {MANUAL_TARGETS.map((target, targetIndex) => {
+                  const query = manualDocumentSeriesQueries[targetIndex];
+                  const rows = manualDocumentSeriesByTarget.get(target) ?? [];
+                  return (
+                    <div key={target} className="rounded-lg border border-slate-300 bg-[var(--crm-app-panel)] p-3 dark:border-white/20">
+                      <div className="flex items-center gap-2 text-sm font-black text-foreground">
+                        <Building2 size={16} className="text-primary" /> {target === 'DISTIC24' ? 'DIŞTİC24' : target}
+                      </div>
+                      <div className="mt-3 space-y-3">
+                        {(['İrsaliye', 'Fatura'] as const).map((documentType) => {
+                          const selection = manualDocuments.find((item) =>
+                            item.targetNetsisCompany === target && item.documentType === documentType);
+                          const options = getDocumentSeriesOptions(rows, documentType);
+                          const selected = Boolean(selection);
+                          return (
+                            <div key={documentType} className={`rounded-md border p-2 ${selected ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-white/10'}`}>
+                              <button
+                                type="button"
+                                onClick={() => toggleManualDocument(target, documentType)}
+                                className="flex w-full items-center justify-between gap-2 text-left"
+                              >
+                                <span className="flex items-center gap-2 text-xs font-black">
+                                  {documentType === 'İrsaliye' ? <Truck size={15} /> : <FileText size={15} />}
+                                  {documentType}
+                                </span>
+                                {selected ? <CheckCircle2 size={18} className="text-primary" /> : <Circle size={18} className="text-muted-foreground" />}
+                              </button>
+                              {selected ? (
+                                <div className="mt-2">
+                                  <Combobox
+                                    options={options}
+                                    value={selection?.targetSeries ?? ''}
+                                    onValueChange={(value) => changeManualDocumentSeries(target, documentType, value)}
+                                    placeholder={`${documentType} serisi seçin`}
+                                    emptyText={query?.isError ? 'Seriler alınamadı.' : 'Uygun seri bulunamadı.'}
+                                    disabled={!selectedCustomerCode}
+                                    isLoading={query?.isFetching ?? false}
+                                    loadingText="Seriler yükleniyor..."
+                                    searchable={false}
+                                    className="h-10 text-xs font-black"
+                                  />
+                                </div>
+                              ) : null}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
             <div className="mt-3 grid gap-3 md:grid-cols-2">
               <div className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && needsDispatchSeries && (!isValidNdiSeries(dispatchSeries) || !hasSelectedDispatchSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
                 <span className="flex items-center gap-2 text-xs font-black uppercase text-[var(--crm-app-text-muted)]">
@@ -1859,7 +2007,7 @@ export function NdiOrderTransferPage(): ReactElement {
                 </span>
               </div>
 
-              <div className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && (!isValidNdiSeries(invoiceSeries) || !hasSelectedInvoiceSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
+              <div className={`rounded-lg border bg-[var(--crm-app-panel)] p-3 ${prepareAttempted && needsInvoiceSeries && (!isValidNdiSeries(invoiceSeries) || !hasSelectedInvoiceSeries) ? 'border-red-400' : 'border-slate-300 dark:border-white/20'}`}>
                 <span className="flex items-center gap-2 text-xs font-black uppercase text-[var(--crm-app-text-muted)]">
                   <FileText size={15} /> Fatura Belge Serisi
                 </span>
@@ -1876,7 +2024,7 @@ export function NdiOrderTransferPage(): ReactElement {
                           ? 'Fatura serisi bulunamadı.'
                           : 'Önce bir irsaliye seçin.'
                     }
-                    disabled={!selectedCustomerCode}
+                    disabled={!selectedCustomerCode || !needsInvoiceSeries}
                     isLoading={customerDocumentSeriesQuery.isFetching}
                     loadingText="Seriler yükleniyor..."
                     searchable={false}
@@ -1884,12 +2032,15 @@ export function NdiOrderTransferPage(): ReactElement {
                   />
                 </div>
                 <span className="mt-2 block text-xs font-semibold text-[var(--crm-app-text-muted)]">
-                  {customerDocumentSeriesQuery.isError
+                  {!needsInvoiceSeries
+                    ? 'Seçilen manuel akış yalnız irsaliye oluşturduğu için fatura serisi kullanılmayacak.'
+                    : customerDocumentSeriesQuery.isError
                     ? 'Cari belge serileri alınamadı. Tekrar deneyin.'
                     : 'Fonksiyondan gelen e-fatura durumu, belge tipi ve seri gösterilir.'}
                 </span>
               </div>
             </div>
+            )}
 
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-300 bg-[var(--crm-app-panel)] p-3 dark:border-white/20">
               <div>
@@ -1920,14 +2071,18 @@ export function NdiOrderTransferPage(): ReactElement {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--crm-app-text-muted)]">
-                    <SlidersHorizontal size={15} /> Uygulanan İşlem Kuralları
+                    <SlidersHorizontal size={15} /> {transferMode === 'manual' ? 'Manuel Belge Planı' : 'Uygulanan İşlem Kuralları'}
                   </div>
                   <p className="mt-1 text-sm font-bold text-foreground">
-                    {selectedRuleTitles ? `${selectedRuleTitles} · ${batchAction.hint}` : 'İrsaliye seçildiğinde çalışacak aktarım kuralı burada gösterilir.'}
+                    {transferMode === 'manual'
+                      ? `${manualDocuments.length} hedef belge işaretlendi.`
+                      : selectedRuleTitles ? `${selectedRuleTitles} · ${batchAction.hint}` : 'İrsaliye seçildiğinde çalışacak aktarım kuralı burada gösterilir.'}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {batchAction.mixed ? (
+                  {transferMode === 'manual' ? (
+                    <RuleBadge tone="info" label={`${manualDocuments.length} manuel belge`} />
+                  ) : batchAction.mixed ? (
                     <RuleBadge tone="info" label="Ayrı belge grupları" />
                   ) : batchAction.action ? (
                     <RuleBadge tone="info" label={getActionLabel(batchAction.action)} />
@@ -1939,15 +2094,27 @@ export function NdiOrderTransferPage(): ReactElement {
                   <RuleBadge tone="success" label="Ek alan aktarılır" />
                 </div>
               </div>
-              <SeriesGuide
-                activeRuleIds={selectedRuleIds}
-                revealedRuleId={revealedGuideRuleId}
-                onToggleReveal={(ruleId) => {
-                  setRevealedGuideRuleId((current) => (current === ruleId ? null : ruleId));
-                }}
-                ruleOutcomes={visibleRuleOutcomes}
-                selectedRules={visibleSelectedRules}
-              />
+              {transferMode === 'automatic' ? (
+                <SeriesGuide
+                  activeRuleIds={selectedRuleIds}
+                  revealedRuleId={revealedGuideRuleId}
+                  onToggleReveal={(ruleId) => {
+                    setRevealedGuideRuleId((current) => (current === ruleId ? null : ruleId));
+                  }}
+                  ruleOutcomes={visibleRuleOutcomes}
+                  selectedRules={visibleSelectedRules}
+                />
+              ) : (
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-950 dark:border-blue-400/30 dark:bg-blue-500/10 dark:text-blue-100">
+                  <div className="text-xs font-black uppercase tracking-[0.14em]">Manuel aktarım</div>
+                  <p className="mt-2 text-sm font-bold">
+                    {manualDocuments.length > 0
+                      ? `İşaretlenen belgeler: ${manualDocuments.map((selection) => `${selection.targetNetsisCompany} ${selection.documentType}`).join(', ')}.`
+                      : 'En az bir firma ve belge türü işaretleyin.'}
+                    {' '}Otomatik şirket yönlendirmesi ve takip faturası çalışmaz.
+                  </p>
+                </div>
+              )}
               {prepareAttempted && !canPrepareSelectedLines ? (
                 <div className="mt-3 rounded-lg border border-[#fecaca] bg-[#fff8f8] p-3">
                   <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
@@ -1957,16 +2124,28 @@ export function NdiOrderTransferPage(): ReactElement {
                     {selectedLines.length === 0 ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">En az bir satır seçilmelidir.</div>
                     ) : null}
-                    {needsDispatchSeries && !isValidNdiSeries(dispatchSeries) ? (
+                    {transferMode === 'manual' && manualDocuments.length === 0 ? (
+                      <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">En az bir hedef firma ve belge türü işaretlenmelidir.</div>
+                    ) : null}
+                    {transferMode === 'manual' && manualDocuments.some((selection) => !isValidNdiSeries(selection.targetSeries)) ? (
+                      <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">İşaretlenen her belge için fonksiyondan bir seri seçilmelidir.</div>
+                    ) : null}
+                    {transferMode === 'manual'
+                      && manualDocuments.length > 0
+                      && manualDocuments.every((selection) => isValidNdiSeries(selection.targetSeries))
+                      && !hasValidManualDocuments ? (
+                        <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">Seçilen seriler ilgili firmanın cari belge serileri seçeneklerinden gelmelidir.</div>
+                      ) : null}
+                    {transferMode === 'automatic' && needsDispatchSeries && !isValidNdiSeries(dispatchSeries) ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">İrsaliye belge serisi tam 3 harf veya rakam olmalıdır.</div>
                     ) : null}
-                    {needsDispatchSeries && isValidNdiSeries(dispatchSeries) && !hasSelectedDispatchSeries ? (
+                    {transferMode === 'automatic' && needsDispatchSeries && isValidNdiSeries(dispatchSeries) && !hasSelectedDispatchSeries ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">İrsaliye serisi cari belge serileri fonksiyonundan gelen seçeneklerden seçilmelidir.</div>
                     ) : null}
-                    {!isValidNdiSeries(invoiceSeries) ? (
+                    {transferMode === 'automatic' && needsInvoiceSeries && !isValidNdiSeries(invoiceSeries) ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">Fatura belge serisi tam 3 harf veya rakam olmalıdır.</div>
                     ) : null}
-                    {isValidNdiSeries(invoiceSeries) && !hasSelectedInvoiceSeries ? (
+                    {transferMode === 'automatic' && needsInvoiceSeries && isValidNdiSeries(invoiceSeries) && !hasSelectedInvoiceSeries ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">Fatura serisi cari belge serileri fonksiyonundan gelen seçeneklerden seçilmelidir.</div>
                     ) : null}
                     {selectedLinesWithoutPrice.map((line) => (
@@ -3101,7 +3280,7 @@ function SeriesGuide({
   const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
     { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR / N)', items: ['Otomatikte sevk var -> yalnız NURAY24 irsaliyesi; sevk yok -> yalnız NURAY24 faturası', 'NURAY24 KDV -> %20', '1/4 -> hedef miktar 1/4; SIRKET24 tam miktar ve KDV %5', 'Normal/TAM -> miktar tam; SIRKET24 KDV %20', 'Hedef irsaliye ayrıca hedefte faturalaştırılmaz'] },
     { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN / WIN / V)', items: ['Özel Kod K -> yalnız WIN24 irsaliyesi ve KDV %0', 'K değilse sevk var -> irsaliye; sevk yok -> fatura', 'Özel Kod 1 ve Özel Kod 2 hedef belgeye aktarılır', 'Normal WIN24 KDV -> %20', 'SIRKET24 KDV -> K %0 / diğer %20'] },
-    { id: 'disTicaret', title: 'DISTIC24 Netsis Şirketi (DIS / D)', items: ['Her koşulda yalnız DIŞTİC24 irsaliyesi', 'Hedef irsaliye ayrıca faturalaştırılmaz', 'Ardından SIRKET24 bağlantılı faturası -> KDV %0', 'Depo boşsa -> 100', 'Belge tarihindeki kur alınır'] },
+    { id: 'disTicaret', title: 'DISTIC24 Kuralı (DIS / D)', items: ['DIŞTİC24 hedefli veya sipariş numarası D ile başlayan kayıtta hedef şirkete aktarım yapılmaz', 'Yalnız SIRKET24 bağlantılı faturası oluşturulur', 'KDV -> %0', 'Seçili kaynak irsaliyelerin bağlantısı korunur', 'Fatura serisi kullanıcı seçiminden alınır'] },
     { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP / S)', items: ['Mevcut SIRKET24 irsaliyesi seçilen seriyle faturalaştırılır', 'Yeni irsaliye oluşturulmaz', 'KDV -> %0', 'Fatura kaynak irsaliye bağlantısını korur'] },
   ];
   const hasActiveRule = activeRuleIds.size > 0;

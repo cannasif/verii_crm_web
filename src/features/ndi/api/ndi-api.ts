@@ -120,11 +120,18 @@ export interface NdiTransferCreateDocumentRequest {
   lines: NdiTransferCreateLineRequest[];
 }
 
+export interface NdiManualDocumentRequest {
+  targetNetsisCompany: string;
+  documentType: 'İrsaliye' | 'Fatura';
+  targetSeries: string;
+}
+
 export interface NdiTransferCreateRequest {
   mode: 'automatic' | 'manual';
   dispatchSeries: string;
   invoiceSeries: string;
   quantityMode: 'auto' | 'full' | 'quarter';
+  manualDocuments: NdiManualDocumentRequest[];
   documents: NdiTransferCreateDocumentRequest[];
 }
 
