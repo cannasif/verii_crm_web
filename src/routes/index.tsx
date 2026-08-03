@@ -233,6 +233,7 @@ export function createAppRouter() {
     {
       path: '/auth',
       element: <AuthLayout />,
+      errorElement: <RouteErrorFallback />,
       children: [
         { path: 'login', element: <LoginPage /> },
         { path: 'reset-password', element: <ResetPasswordPage /> },
@@ -242,6 +243,7 @@ export function createAppRouter() {
     {
       path: '/reset-password',
       element: <AuthLayout />,
+      errorElement: <RouteErrorFallback />,
       children: [{ index: true, element: <ResetPasswordPage /> }],
     },
   ], {

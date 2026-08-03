@@ -8,10 +8,15 @@ export function RouteErrorFallback(): ReactElement {
   const { t } = useTranslation('common');
   const error = useRouteError();
   const navigate = useNavigate();
+  const errorMessage = error instanceof Error ? error.message : '';
+  const normalizedErrorMessage = errorMessage.toLocaleLowerCase('en-US');
   const isChunkError =
     error instanceof Error &&
-    (error.message.includes('Failed to fetch dynamically imported module') ||
-      error.message.includes('Importing a module script failed'));
+    (error.name === 'ChunkLoadError' ||
+      normalizedErrorMessage.includes('failed to fetch dynamically imported module') ||
+      normalizedErrorMessage.includes('importing a module script failed') ||
+      normalizedErrorMessage.includes('loading chunk') ||
+      normalizedErrorMessage.includes('load failed'));
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 p-6 text-center">
@@ -20,8 +25,8 @@ export function RouteErrorFallback(): ReactElement {
       <p className="text-muted-foreground max-w-md">
         {isChunkError
           ? t('common.routeError.chunkError')
-          : error instanceof Error
-            ? error.message
+          : errorMessage
+            ? errorMessage
             : t('common.routeError.unexpected') }
       </p>
       <div className="flex gap-2">
