@@ -322,6 +322,12 @@ export interface Salesmen360SalesMovementDto {
   customerName: string;
   stockCode: string;
   stockName: string;
+  activityType: string;
+  activityPriority: string;
+  dueDate?: string | null;
+  conversionStatus: string;
+  customerSource: string;
+  hasContactInfo: boolean;
   currency: string;
   quantity: number;
   amount: number;
