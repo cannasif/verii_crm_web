@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { matchesSearchTerm } from '@/lib/search';
 import { cn } from '@/lib/utils';
 import type { Salesmen360PeriodKey, Salesmen360VisibleUserDto } from '../../types/salesmen360.types';
@@ -29,6 +30,8 @@ interface Salesmen360FiltersProps {
   customEndDate: string;
   onCustomStartDateChange: (value: string) => void;
   onCustomEndDateChange: (value: string) => void;
+  isCustomDateRangeDirty: boolean;
+  onApplyCustomDateRange: () => void;
 }
 
 const PERIOD_OPTIONS: Salesmen360PeriodKey[] = ['today', 'week', 'month', 'year', 'custom'];
@@ -202,6 +205,8 @@ export function Salesmen360Filters({
   customEndDate,
   onCustomStartDateChange,
   onCustomEndDateChange,
+  isCustomDateRangeDirty,
+  onApplyCustomDateRange,
 }: Salesmen360FiltersProps): ReactElement {
   const { t } = useTranslation();
 
@@ -277,6 +282,16 @@ export function Salesmen360Filters({
               onChange={(event) => onCustomEndDateChange(event.target.value)}
               className="h-8 min-w-0 rounded-lg border border-slate-200 bg-transparent px-2 text-xs font-semibold dark:border-white/10"
             />
+            <Button
+              type="button"
+              size="sm"
+              onClick={onApplyCustomDateRange}
+              disabled={!customStartDate || !customEndDate || customStartDate > customEndDate || !isCustomDateRangeDirty}
+              className="h-8 rounded-lg px-3 text-xs font-bold"
+            >
+              <Check className="size-3.5" aria-hidden />
+              Uygula
+            </Button>
           </div>
         ) : null}
       </div>

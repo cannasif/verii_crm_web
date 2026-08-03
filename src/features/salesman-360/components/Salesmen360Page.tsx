@@ -67,6 +67,10 @@ export function Salesmen360Page(): ReactElement {
     toLocalDateInput(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
   );
   const [customEndDate, setCustomEndDate] = useState(() => toLocalDateInput(new Date()));
+  const [appliedCustomStartDate, setAppliedCustomStartDate] = useState(() =>
+    toLocalDateInput(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
+  );
+  const [appliedCustomEndDate, setAppliedCustomEndDate] = useState(() => toLocalDateInput(new Date()));
   const [activeTab, setActiveTab] = useState<Salesmen360TabKey>('overview');
   const [selectedUserIds, setSelectedUserIds] = useState<number[]>(isAllSalesmen || userId <= 0 ? [] : [userId]);
   const visibleSalesmenQuery = useVisibleSalesmenQuery();
@@ -77,11 +81,11 @@ export function Salesmen360Page(): ReactElement {
       selectedPeriod === 'custom'
         ? {
             period: selectedPeriod,
-            startDate: customStartDate,
-            endDate: customEndDate,
+            startDate: appliedCustomStartDate,
+            endDate: appliedCustomEndDate,
           }
         : { period: selectedPeriod },
-    [customEndDate, customStartDate, selectedPeriod],
+    [appliedCustomEndDate, appliedCustomStartDate, selectedPeriod],
   );
   const scopedUserId = selectedUserIds.length === 1 ? selectedUserIds[0] : ALL_SALESMEN_ID;
   const selectedUserIdsParam = selectedUserIds.length > 1 ? selectedUserIds : undefined;
@@ -373,6 +377,13 @@ export function Salesmen360Page(): ReactElement {
             customEndDate={customEndDate}
             onCustomStartDateChange={setCustomStartDate}
             onCustomEndDateChange={setCustomEndDate}
+            isCustomDateRangeDirty={
+              customStartDate !== appliedCustomStartDate || customEndDate !== appliedCustomEndDate
+            }
+            onApplyCustomDateRange={() => {
+              setAppliedCustomStartDate(customStartDate);
+              setAppliedCustomEndDate(customEndDate);
+            }}
           />
         </div>
 
