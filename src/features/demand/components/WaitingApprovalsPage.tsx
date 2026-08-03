@@ -406,7 +406,7 @@ export function WaitingApprovalsPage(): ReactElement {
                       void waitingApprovalsQuery.refetch();
                     },
                     isLoading: waitingApprovalsQuery.isFetching,
-                    cooldownSeconds: 60,
+                    cooldownSeconds: 30,
                     label: t('list.refresh', { defaultValue: 'Yenile' }),
                   }}
                 />

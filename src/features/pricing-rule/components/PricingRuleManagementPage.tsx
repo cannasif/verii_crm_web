@@ -292,7 +292,7 @@ export function PricingRuleManagementPage(): ReactElement {
                 void handleRefresh();
               },
               isLoading,
-              cooldownSeconds: 60,
+              cooldownSeconds: 30,
               label: resolveLabel(t, 'common.refresh', 'Yenile'),
             }}
             leftSlot={({ compactLevel, isMobile }) => {

@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
+import { useRefreshCooldown } from '@/hooks/useRefreshCooldown';
 import { useToolbarActionOverflow, type ToolbarOverflowLayoutRefs } from '@/hooks/useToolbarActionOverflow';
 import {
   getToolbarSearchMaxWidthClass,
@@ -147,8 +148,6 @@ export function DataTableActionBar({
   const [isMobileSearchActive, setIsMobileSearchActive] = useState(() => {
     return compactSearchOnMobile && Boolean(searchValue || search?.defaultValue || search?.value);
   });
-  const [refreshCooldownUntil, setRefreshCooldownUntil] = useState<number | null>(null);
-  const [refreshNow, setRefreshNow] = useState(() => Date.now());
   const lastEmittedLegacyRef = useRef(searchValue ?? '');
   const toolbarRowRef = useRef<HTMLDivElement>(null);
   const leftSlotRef = useRef<HTMLDivElement>(null);
@@ -191,20 +190,6 @@ export function DataTableActionBar({
     setInternalSearchValue(search.defaultValue ?? '');
   }, [search?.resetKey, search?.defaultValue, isSearchControlled]);
 
-  useEffect(() => {
-    if (!refreshCooldownUntil) return;
-    if (refreshCooldownUntil <= Date.now()) {
-      setRefreshCooldownUntil(null);
-      return;
-    }
-
-    const interval = window.setInterval(() => {
-      setRefreshNow(Date.now());
-    }, 1000);
-
-    return () => window.clearInterval(interval);
-  }, [refreshCooldownUntil]);
-
   const currentSearchValue = search
     ? (isSearchControlled ? (search.value ?? '') : internalSearchValue)
     : legacyDisplayValue;
@@ -242,20 +227,17 @@ export function DataTableActionBar({
     : resolvedSearchPlaceholderProp ?? t('search', { ns: 'common' });
   const resolvedSearchClassName = search?.className ?? searchClassName;
   const shouldRenderSearch = Boolean(search || onSearchChange);
-  const refreshCooldownSeconds = Math.max(refresh?.cooldownSeconds ?? 60, 0);
-  const refreshRemainingSeconds = refreshCooldownUntil == null
-    ? 0
-    : Math.max(0, Math.ceil((refreshCooldownUntil - refreshNow) / 1000));
-  const isRefreshDisabled = Boolean(refresh?.disabled || refresh?.isLoading || refreshRemainingSeconds > 0);
+  const refreshCooldown = useRefreshCooldown({
+    onRefresh: () => refresh?.onRefresh(),
+    cooldownSeconds: refresh?.cooldownSeconds ?? 30,
+    disabled: !refresh || Boolean(refresh.disabled || refresh.isLoading),
+  });
+  const refreshRemainingSeconds = refreshCooldown.remainingSeconds;
+  const isRefreshDisabled = refreshCooldown.isDisabled;
   const refreshLabel = refresh?.label && refresh.label === MISSING_TRANSLATION ? t('refresh', { ns: 'common' }) : refresh?.label ?? t('refresh', { ns: 'common' });
 
   const handleRefresh = (): void => {
-    if (!refresh || isRefreshDisabled) return;
-    refresh.onRefresh();
-    if (refreshCooldownSeconds > 0) {
-      setRefreshCooldownUntil(Date.now() + refreshCooldownSeconds * 1000);
-      setRefreshNow(Date.now());
-    }
+    void refreshCooldown.refresh().catch(() => undefined);
   };
 
   const handleFilterOpenChange = (next: boolean): void => {
@@ -602,7 +584,7 @@ export function DataTableActionBar({
               <RefreshCw className={cn(
                 'h-4 w-4',
                 !useDesktopCompactRefresh && (compactSearchOnMobile ? 'max-sm:[margin-inline-end:0] crm-me-2' : 'crm-me-2'),
-                refresh?.isLoading && 'animate-spin'
+                (refresh?.isLoading || refreshCooldown.isRefreshing) && 'animate-spin'
               )} />
               {!useDesktopCompactRefresh ? (
                 <span className={cn(compactSearchOnMobile && 'hidden sm:inline')}>

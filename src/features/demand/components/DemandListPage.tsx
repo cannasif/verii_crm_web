@@ -662,7 +662,7 @@ export function DemandListPage(): ReactElement {
                     void handleGridRefresh();
                   },
                   isLoading: demandQuery.isFetching,
-                  cooldownSeconds: 60,
+                  cooldownSeconds: 30,
                   label: t('list.refresh', { defaultValue: 'Yenile' }),
                 }}
               />

@@ -789,7 +789,7 @@ export function ActivityManagementPage(): ReactElement {
                 void handleGridRefresh();
               },
               isLoading: activitiesLoading,
-              cooldownSeconds: 60,
+              cooldownSeconds: 30,
               label: t('refresh', { ns: 'common' }),
             }}
           />

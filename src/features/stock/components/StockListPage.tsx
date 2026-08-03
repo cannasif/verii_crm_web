@@ -567,7 +567,7 @@ export function StockListPage(): ReactElement {
                 void handleGridRefresh();
               },
               isLoading: stockQuery.isFetching,
-              cooldownSeconds: 60,
+              cooldownSeconds: 30,
               label: resolveLabel(t, 'list.refresh', 'Yenile'),
             }}
             leftSlot={

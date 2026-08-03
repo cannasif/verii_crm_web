@@ -479,7 +479,7 @@ export function WaitingApprovalsPage(): ReactElement {
                       void handleGridRefresh();
                     },
                     isLoading: waitingApprovalsQuery.isFetching,
-                    cooldownSeconds: 60,
+                    cooldownSeconds: 30,
                     label: t('list.refresh', { defaultValue: 'Yenile' }),
                   }}
                 />

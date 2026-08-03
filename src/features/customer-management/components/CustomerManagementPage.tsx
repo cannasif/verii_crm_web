@@ -10,7 +10,7 @@ import { DataTableActionBar, type DataTableGridColumn } from '@/components/share
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import { loadTableSortPreference, saveTableSortPreference } from '@/lib/table-sort-preferences';
-import { arraysEqual, cn } from '@/lib/utils';
+import { arraysEqual } from '@/lib/utils';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
   MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME,
@@ -474,22 +474,14 @@ export function CustomerManagementPage(): ReactElement {
             searchPlaceholder={t('search', { ns: 'common' })}
             onSearchChange={setSearchTerm}
             compactSearchOnMobile
+            refresh={{
+              onRefresh: handleRefresh,
+              isLoading,
+              cooldownSeconds: 30,
+              label: t('refresh', { ns: 'common' }),
+            }}
             leftSlot={
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={cn(MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME, "max-sm:w-9 max-sm:px-0")}
-                  onClick={() => handleRefresh()}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin sm:mr-2" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4 sm:mr-2" />
-                  )}
-                  <span className="hidden sm:inline">{t('refresh', { ns: 'common' })}</span>
-                </Button>
                 <Button
                   variant="outline"
                   size="sm"

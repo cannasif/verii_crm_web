@@ -396,7 +396,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
                 void handleGridRefresh();
               },
               isLoading: isLoading || isFetching,
-              cooldownSeconds: 60,
+              cooldownSeconds: 30,
               label: resolveLabel(t, 'common.refresh', 'Yenile', { ns: 'common' }),
             }}
             additionalFilterActions={

@@ -1,8 +1,7 @@
-import { type ReactElement, useState, useCallback } from 'react';
+import { type ReactElement } from 'react';
 import { Search, RefreshCw, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-
-const REFRESH_COOLDOWN_MS = 45000;
+import { useRefreshCooldown } from '@/hooks/useRefreshCooldown';
 
 interface PageToolbarProps {
   searchPlaceholder: string;
@@ -19,20 +18,7 @@ export function PageToolbar({
   onRefresh,
   rightSlot,
 }: PageToolbarProps): ReactElement {
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  const [refreshCooldownUntil, setRefreshCooldownUntil] = useState(0);
-
-  const handleRefresh = useCallback(async (): Promise<void> => {
-    const now = Date.now();
-    if (now < refreshCooldownUntil) return;
-    setIsRefreshing(true);
-    await onRefresh();
-    setTimeout(() => setIsRefreshing(false), 500);
-    setRefreshCooldownUntil(now + REFRESH_COOLDOWN_MS);
-    setTimeout(() => setRefreshCooldownUntil(0), REFRESH_COOLDOWN_MS);
-  }, [onRefresh, refreshCooldownUntil]);
-
-  const isRefreshDisabled = Date.now() < refreshCooldownUntil;
+  const refreshCooldown = useRefreshCooldown({ onRefresh, cooldownSeconds: 30 });
 
   return (
     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -55,18 +41,18 @@ export function PageToolbar({
       </div>
       <div
         className={`h-10 w-10 flex items-center justify-center rounded-xl shrink-0 transition-all ${
-          isRefreshDisabled
+          refreshCooldown.isDisabled
             ? 'cursor-not-allowed opacity-50 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10'
             : 'cursor-pointer bg-white/50 dark:bg-card/50 border border-slate-200 dark:border-white/10 hover:border-primary/30 hover:bg-accent/50 dark:hover:bg-primary/10 group'
         }`}
-        onClick={handleRefresh}
+        onClick={() => void refreshCooldown.refresh().catch(() => undefined)}
         role="button"
-        aria-disabled={isRefreshDisabled}
-        tabIndex={isRefreshDisabled ? -1 : 0}
+        aria-disabled={refreshCooldown.isDisabled}
+        tabIndex={refreshCooldown.isDisabled ? -1 : 0}
       >
         <RefreshCw
           size={18}
-          className={`text-slate-500 dark:text-slate-400 transition-colors ${isRefreshing ? 'animate-spin' : ''} ${!isRefreshDisabled ? 'group-hover:text-primary dark:group-hover:text-primary' : ''}`}
+          className={`text-slate-500 dark:text-slate-400 transition-colors ${refreshCooldown.isRefreshing ? 'animate-spin' : ''} ${!refreshCooldown.isDisabled ? 'group-hover:text-primary dark:group-hover:text-primary' : ''}`}
         />
       </div>
       {rightSlot}

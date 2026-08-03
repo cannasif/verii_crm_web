@@ -372,7 +372,7 @@ export function ProductPricingManagementPage(): ReactElement {
                 void handleGridRefresh();
               },
               isLoading,
-              cooldownSeconds: 60,
+              cooldownSeconds: 30,
               label: resolveLabel(t, 'common.refresh', 'Yenile'),
             }}
             leftSlot={

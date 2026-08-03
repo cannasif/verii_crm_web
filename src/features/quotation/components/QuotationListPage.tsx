@@ -673,7 +673,7 @@ export function QuotationListPage(): ReactElement {
                     void handleGridRefresh();
                   },
                   isLoading: quotationQuery.isFetching,
-                  cooldownSeconds: 60,
+                  cooldownSeconds: 30,
                   label: t('list.refresh', { defaultValue: 'Yenile' }),
                 }}
               />

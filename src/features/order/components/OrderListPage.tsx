@@ -663,7 +663,7 @@ export function OrderListPage(): ReactElement {
                     void handleGridRefresh();
                   },
                   isLoading: orderQuery.isFetching,
-                  cooldownSeconds: 60,
+                  cooldownSeconds: 30,
                   label: t('list.refresh', { defaultValue: 'Yenile' }),
                 }}
               />

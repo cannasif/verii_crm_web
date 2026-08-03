@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
-import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, ManagementListPageHeader, type DataTableGridColumn } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,6 @@ import {
   MANAGEMENT_LIST_CARD_HEADER_CLASSNAME,
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
-  MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
   ADD_BUTTON_CLASS,
 } from '@/lib/management-list-layout';
 
@@ -35,11 +34,6 @@ const PAGE_KEY = 'approval-user-role-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
 type ApprovalUserRoleColumnKey = keyof ApprovalUserRoleDto;
-
-function resolveLabel(t: (key: string) => string, key: string, fallback: string): string {
-  const translated = t(key);
-  return translated && translated !== key ? translated : fallback;
-}
 
 export function ApprovalUserRoleManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['approval-user-role-management', 'common']);
@@ -259,24 +253,11 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('approvalUserRole.searchPlaceholder')}
             onSearchChange={setSearchTerm}
-            leftSlot={
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME}
-                  onClick={() => handleRefresh()}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <RefreshCw className="h-4 w-4 mr-2" />
-                  )}
-                  {resolveLabel(t, 'common.refresh', 'Yenile')}
-                </Button>
-              </>
-            }
+            refresh={{
+              onRefresh: handleRefresh,
+              isLoading,
+              cooldownSeconds: 30,
+            }}
           />
         </CardHeader>
         <CardContent className={MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME}>
