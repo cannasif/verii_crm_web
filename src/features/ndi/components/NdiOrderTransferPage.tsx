@@ -80,6 +80,7 @@ interface NdiPreparedLine {
 interface NdiPreparedDocument {
   sourceDocumentNo: string;
   sourceOrderNo?: string | null;
+  businessRule?: NdiBusinessSeries | null;
   sourceNetsisCompany: string;
   targetNetsisCompany: string;
   targetSeries: string;
@@ -132,6 +133,7 @@ function buildNdiTransferRequest(transfer: NdiPreparedTransfer): NdiTransferCrea
     documents: transfer.createdDocuments.map((document) => ({
       sourceDocumentNo: document.sourceDocumentNo,
       sourceOrderNo: document.sourceOrderNo,
+      businessRule: document.businessRule,
       sourceNetsisCompany: document.sourceNetsisCompany,
       targetNetsisCompany: document.targetNetsisCompany,
       targetSeries: document.targetSeries,
@@ -1589,6 +1591,9 @@ export function NdiOrderTransferPage(): ReactElement {
         return {
           sourceDocumentNo: order.orderNo,
           sourceOrderNo: order.sourceOrderNo,
+          businessRule: transferMode === 'automatic'
+            ? outcome?.series ?? getBusinessSeries(order)
+            : null,
           sourceNetsisCompany: outcome?.sourceNetsisCompany ?? 'SIRKET24',
           targetNetsisCompany: transferMode === 'manual' && firstManualDocument
             ? firstManualDocument.targetNetsisCompany

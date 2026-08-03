@@ -99,6 +99,7 @@ export interface NdiTransferCreateLineRequest {
 export interface NdiTransferCreateDocumentRequest {
   sourceDocumentNo: string;
   sourceOrderNo?: string | null;
+  businessRule?: 'NUR' | 'VIN' | 'DIS' | 'SIP' | null;
   sourceNetsisCompany: string;
   targetNetsisCompany: string;
   targetSeries: string;
