@@ -1,4 +1,4 @@
-import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState, useEffect, useCallback } from 'react';
+import { type MouseEvent as ReactMouseEvent, type PointerEvent as ReactPointerEvent, type ReactElement, type ReactNode, useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Copy, GripVertical, Loader2, Rows3 } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, MouseSensor, TouchSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
@@ -340,6 +340,19 @@ export function DataTableGrid<TRow, TKey extends string>({
   const [localVisibleColumnKeys, setLocalVisibleColumnKeys] = useState<TKey[]>(visibleColumnKeys);
   const lastPropRef = useRef(visibleColumnKeys);
 
+  const columnsByKey = useMemo(
+    () => new Map<TKey, DataTableGridColumn<TKey>>(columns.map((column) => [column.key, column])),
+    [columns]
+  );
+  const visibleColumns = useMemo(
+    () => localVisibleColumnKeys.map((key) => ({ key, column: columnsByKey.get(key) })),
+    [columnsByKey, localVisibleColumnKeys]
+  );
+  const draggableColumnKeys = useMemo(
+    () => localVisibleColumnKeys.filter((key) => String(key).toLowerCase() !== 'id'),
+    [localVisibleColumnKeys]
+  );
+
   useEffect(() => {
     const isSame = visibleColumnKeys.length === lastPropRef.current.length &&
       visibleColumnKeys.every((key, i) => key === lastPropRef.current[i]);
@@ -610,8 +623,8 @@ export function DataTableGrid<TRow, TKey extends string>({
   };
 
   const copyRowValue = async (row: TRow): Promise<void> => {
-    const headerText = localVisibleColumnKeys
-      .map((key) => columns.find((column) => column.key === key)?.label ?? key)
+    const headerText = visibleColumns
+      .map(({ key, column }) => column?.label ?? key)
       .join('\t');
     const rowText = localVisibleColumnKeys
       .map((key) => {
@@ -653,6 +666,16 @@ export function DataTableGrid<TRow, TKey extends string>({
 
   const colSpan = localVisibleColumnKeys.length + (showActionsColumn ? 1 : 0) || 1;
   const hasAnyWidth = enableColumnResize && localVisibleColumnKeys.some(k => columnWidths[k] !== undefined);
+  const preparedRows = useMemo(
+    () => rows.map((row) => ({
+      row,
+      key: rowKey(row),
+      className: typeof rowClassName === 'function' ? rowClassName(row) : rowClassName,
+    })),
+    [rowClassName, rowKey, rows]
+  );
+  const contextActions = renderContextActions
+    ?? (showActionsColumn ? renderActionsCell : undefined);
 
   return (
     <div ref={gridRootRef} className="flex min-h-0 min-w-0 w-full flex-col gap-2" data-grid-fit-viewport={fitViewport}>
@@ -696,7 +719,7 @@ export function DataTableGrid<TRow, TKey extends string>({
           <Table className={cn(minTableWidthClassName, hasAnyWidth && 'table-fixed')}>
             {hasAnyWidth && (
               <colgroup>
-                {localVisibleColumnKeys.map((key) => (
+                {visibleColumns.map(({ key }) => (
                   <col
                     key={key}
                     style={{
@@ -718,11 +741,10 @@ export function DataTableGrid<TRow, TKey extends string>({
 
               <TableRow ref={theadRowRef}>
                 <SortableContext
-                  items={localVisibleColumnKeys.filter((k) => String(k).toLowerCase() !== 'id')}
+                  items={draggableColumnKeys}
                   strategy={horizontalListSortingStrategy}
                 >
-                  {localVisibleColumnKeys.map((key) => {
-                    const column = columns.find((item) => item.key === key);
+                  {visibleColumns.map(({ key, column }) => {
                     const sortable = Boolean(onSort && column?.sortable !== false);
                     return (
                       <SortableTableHead
@@ -761,7 +783,7 @@ export function DataTableGrid<TRow, TKey extends string>({
               {isLoading &&
                 Array.from({ length: Math.min(pageSize, 10) }).map((_, i) => (
                   <TableRow key={`skeleton-${i}`}>
-                    {localVisibleColumnKeys.map((key) => (
+                    {visibleColumns.map(({ key }) => (
                       <TableCell key={key}>
                         <Skeleton className="h-5 w-full max-w-[120px] bg-slate-200/60 dark:bg-white/10" />
                       </TableCell>
@@ -792,12 +814,7 @@ export function DataTableGrid<TRow, TKey extends string>({
 
               {!isLoading &&
                 !isError &&
-                rows.map((row) => {
-                  const currentRowKey = rowKey(row);
-                  const customRowClass =
-                    typeof rowClassName === 'function' ? rowClassName(row) : rowClassName;
-                  const contextActions = renderContextActions
-                    ?? (showActionsColumn ? renderActionsCell : undefined);
+                preparedRows.map(({ row, key: currentRowKey, className: customRowClass }) => {
                   return (
                     <ContextMenu
                       key={`${currentRowKey}:${contextMenuVersion}`}
@@ -817,8 +834,7 @@ export function DataTableGrid<TRow, TKey extends string>({
                           }
                           onDoubleClick={onRowDoubleClick ? () => handleRowDoubleClick(row) : undefined}
                         >
-                          {localVisibleColumnKeys.map((key) => {
-                            const column = columns.find((item) => item.key === key);
+                          {visibleColumns.map(({ key, column }) => {
                             const colWidth = columnWidths[key];
                             const copyDisabled = Boolean(
                               column?.contextCopyDisabled || isCellContextCopyDisabled?.(row, key)
