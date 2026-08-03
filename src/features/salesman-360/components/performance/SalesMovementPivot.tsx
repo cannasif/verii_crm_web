@@ -326,6 +326,7 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [isExporting, setIsExporting] = useState(false);
   const [fieldSearch, setFieldSearch] = useState('');
+  const [movementSearch, setMovementSearch] = useState('');
   const [showDecimals, setShowDecimals] = useState(true);
   const [sort, setSort] = useState<PivotSort>({ kind: 'label', direction: 'asc' });
   const hasAppliedDesign = appliedLayout.rows.length > 0 && appliedLayout.measures.length > 0;
@@ -345,10 +346,25 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
     Array.from(new Set(movements.map(field.value))).sort(compareText),
   ])) as Record<DimensionKey, string[]>, [movements]);
 
-  const filteredMovements = useMemo(() => !hasAppliedDesign ? [] : movements.filter((movement) => appliedLayout.filters.every((fieldKey) => {
-    const selected = appliedLayout.filterValues[fieldKey];
-    return !selected || selected.length === 0 || selected.includes(dimensionMap.get(fieldKey)!.value(movement));
-  })), [appliedLayout, hasAppliedDesign, movements]);
+  const filteredMovements = useMemo(() => {
+    if (!hasAppliedDesign) return [];
+    const search = movementSearch.trim().toLocaleLowerCase('tr-TR');
+    return movements.filter((movement) => {
+      const matchesFilters = appliedLayout.filters.every((fieldKey) => {
+        const selected = appliedLayout.filterValues[fieldKey];
+        return !selected || selected.length === 0 || selected.includes(dimensionMap.get(fieldKey)!.value(movement));
+      });
+      if (!matchesFilters || !search) return matchesFilters;
+
+      const searchableText = [
+        ...DIMENSIONS.map((field) => field.value(movement)),
+        movement.documentId,
+        movement.quantity,
+        movement.amount,
+      ].join(' ').toLocaleLowerCase('tr-TR');
+      return searchableText.includes(search);
+    });
+  }, [appliedLayout, hasAppliedDesign, movementSearch, movements]);
 
   const pivot = useMemo(() => {
     const rootNodes = new Map<string, PivotTreeNode>();
@@ -417,13 +433,14 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
 
   const visibleRows = useMemo(() => {
     const result: PivotTreeNode[] = [];
+    const revealSearchResults = movementSearch.trim().length > 0;
     const visit = (node: PivotTreeNode): void => {
       result.push(node);
-      if (expandedNodes.has(node.key)) node.children.forEach(visit);
+      if (revealSearchResults || expandedNodes.has(node.key)) node.children.forEach(visit);
     };
     pivot.roots.forEach(visit);
     return result;
-  }, [expandedNodes, pivot.roots]);
+  }, [expandedNodes, movementSearch, pivot.roots]);
 
   const pivotColumns = appliedLayout.columns.length > 0 ? pivot.columns : [[buildKey([]), []] as [string, string[]]];
   const format = (value: number, measure: MeasureKey): string => new Intl.NumberFormat(locale, {
@@ -579,7 +596,20 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
       ) : (
         <div className="p-4">
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-xs font-semibold text-slate-500">{filteredMovements.length} hareket · {pivot.roots.length} ana grup · Satırlar `+ / −` ile açılır</p>
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+              <p className="shrink-0 text-xs font-semibold text-slate-500">{filteredMovements.length} hareket · {pivot.roots.length} ana grup · Satırlar `+ / −` ile açılır</p>
+              <label className="flex h-9 min-w-60 max-w-md flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 shadow-sm dark:border-white/10 dark:bg-white/3">
+                <Search className="size-4 shrink-0 text-slate-400" />
+                <input
+                  value={movementSearch}
+                  onChange={(event) => setMovementSearch(event.target.value)}
+                  placeholder="Satışçı, cari, stok, belge veya durum ara..."
+                  aria-label="Pivot hareketlerinde ara"
+                  className="min-w-0 flex-1 bg-transparent text-xs outline-none placeholder:text-slate-400"
+                />
+                {movementSearch ? <button type="button" onClick={() => setMovementSearch('')} className="rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10" aria-label="Aramayı temizle"><X className="size-3.5" /></button> : null}
+              </label>
+            </div>
             <div className="flex items-center gap-2"><Button variant="outline" size="sm" onClick={() => setShowDecimals((current) => !current)}>Ondalık: {showDecimals ? 'Açık' : 'Kapalı'}</Button><Button variant="outline" size="sm" disabled={isExporting || pivot.roots.length === 0} onClick={() => void exportPivot()}><FileDown className="mr-1.5 size-4" />Excel'e aktar</Button></div>
           </div>
           <div className="max-h-[42rem] overflow-auto rounded-xl border border-slate-200 dark:border-white/10">
