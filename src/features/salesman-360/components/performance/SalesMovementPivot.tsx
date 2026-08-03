@@ -1,19 +1,71 @@
-import { type DragEvent, type ReactElement, useEffect, useMemo, useState } from 'react';
-import { Columns3, FileDown, Filter, GripVertical, RotateCcw, Rows3, Sigma, X } from 'lucide-react';
+import { type DragEvent, type ReactElement, useMemo, useState } from 'react';
+import {
+  ChevronDown,
+  ChevronRight,
+  Columns3,
+  FileDown,
+  Filter,
+  GripVertical,
+  Play,
+  Rows3,
+  Save,
+  Search,
+  Sigma,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useAuthStore } from '@/stores/auth-store';
 import { exportSheetsToXlsx, type ExcelRow } from '@/lib/xlsx-export';
 import { cn } from '@/lib/utils';
 import type { Salesmen360SalesMovementDto } from '../../types/salesmen360.types';
 
-type DimensionKey = 'salesman' | 'customer' | 'stock' | 'documentType' | 'status' | 'month' | 'currency' | 'erpStatus';
-type MeasureKey = 'documentCount' | 'quantity' | 'amount';
+type DimensionKey =
+  | 'salesman'
+  | 'customer'
+  | 'customerCode'
+  | 'customerName'
+  | 'customerSource'
+  | 'contactStatus'
+  | 'stock'
+  | 'stockCode'
+  | 'stockName'
+  | 'documentType'
+  | 'documentNumber'
+  | 'status'
+  | 'documentStatus'
+  | 'conversionStatus'
+  | 'activityType'
+  | 'activityStatus'
+  | 'activityPriority'
+  | 'activityDueState'
+  | 'day'
+  | 'week'
+  | 'month'
+  | 'quarter'
+  | 'year'
+  | 'currency'
+  | 'erpStatus';
+type MeasureKey =
+  | 'documentCount'
+  | 'demandCount'
+  | 'quotationCount'
+  | 'orderCount'
+  | 'erpOrderCount'
+  | 'activityCount'
+  | 'completedActivityCount'
+  | 'customerCount'
+  | 'quantity'
+  | 'amount';
 type DropZone = 'rows' | 'columns' | 'filters';
 
 interface DimensionDefinition {
   key: DimensionKey;
   label: string;
+  group: 'Genel' | 'Cari' | 'Belge' | 'Aktivite' | 'Tarih';
   value: (row: Salesmen360SalesMovementDto) => string;
 }
 
@@ -21,60 +73,170 @@ interface PivotAggregate {
   amount: number;
   quantity: number;
   documentIds: Set<string>;
+  demandIds: Set<number>;
+  quotationIds: Set<number>;
+  orderIds: Set<number>;
+  erpOrderIds: Set<number>;
+  activityIds: Set<number>;
+  completedActivityIds: Set<number>;
+  customerIds: Set<number>;
+}
+
+interface PivotLayout {
+  rows: DimensionKey[];
+  columns: DimensionKey[];
+  filters: DimensionKey[];
+  filterValues: Partial<Record<DimensionKey, string[]>>;
+  measures: MeasureKey[];
+}
+
+interface PivotTreeNode {
+  key: string;
+  label: string;
+  values: string[];
+  depth: number;
+  children: PivotTreeNode[];
+}
+
+function weekLabel(value: string): string {
+  if (!value) return '-';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '-';
+  const utc = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+  const day = utc.getUTCDay() || 7;
+  utc.setUTCDate(utc.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
+  const week = Math.ceil((((utc.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  return `${utc.getUTCFullYear()} · ${String(week).padStart(2, '0')}. hafta`;
+}
+
+function dueState(row: Salesmen360SalesMovementDto): string {
+  if (row.documentType !== 'activity') return 'Aktivite dışı';
+  if (row.status.toLowerCase() === 'completed') return 'Tamamlandı';
+  if (row.status.toLowerCase() === 'cancelled') return 'İptal';
+  if (!row.dueDate) return 'Vade yok';
+  const due = new Date(row.dueDate);
+  if (Number.isNaN(due.getTime())) return 'Vade yok';
+  return due.getTime() < Date.now() ? 'Gecikmiş' : 'Planlı';
 }
 
 const DIMENSIONS: readonly DimensionDefinition[] = [
-  { key: 'salesman', label: 'Satışçı', value: (row) => row.salesmanName || '-' },
-  { key: 'customer', label: 'Cari', value: (row) => [row.customerCode, row.customerName].filter(Boolean).join(' · ') || 'Tanımsız cari' },
-  { key: 'stock', label: 'Stok', value: (row) => [row.stockCode, row.stockName].filter(Boolean).join(' · ') || 'Tanımsız stok' },
-  { key: 'documentType', label: 'Belge türü', value: (row) => ({ demand: 'Talep', quotation: 'Teklif', order: 'Sipariş' }[row.documentType] ?? row.documentType) },
-  { key: 'status', label: 'Durum', value: (row) => row.status || '-' },
-  { key: 'month', label: 'Ay', value: (row) => row.date ? row.date.slice(0, 7) : '-' },
-  { key: 'currency', label: 'Döviz', value: (row) => row.currency || '-' },
-  { key: 'erpStatus', label: 'ERP durumu', value: (row) => row.isErpIntegrated ? 'ERP kaydı var' : 'Yalnız CRM' },
+  { key: 'salesman', label: 'Satışçı', group: 'Genel', value: (row) => row.salesmanName || '-' },
+  { key: 'documentType', label: 'Hareket türü', group: 'Genel', value: (row) => ({ demand: 'Talep', quotation: 'Teklif', order: 'Sipariş', activity: 'Aktivite', customer: 'Cari açılışı' }[row.documentType] ?? row.documentType) },
+  { key: 'erpStatus', label: 'ERP durumu', group: 'Genel', value: (row) => row.isErpIntegrated ? 'ERP kaydı var' : 'Yalnız CRM' },
+  { key: 'customer', label: 'Cari (kod + unvan)', group: 'Cari', value: (row) => [row.customerCode, row.customerName].filter(Boolean).join(' · ') || 'Tanımsız cari' },
+  { key: 'customerCode', label: 'Cari kodu', group: 'Cari', value: (row) => row.customerCode || 'Cari kodu yok' },
+  { key: 'customerName', label: 'Cari unvanı', group: 'Cari', value: (row) => row.customerName || 'Tanımsız cari' },
+  { key: 'customerSource', label: 'Cari kayıt kaynağı', group: 'Cari', value: (row) => row.documentType === 'customer' ? (row.customerSource || 'Manuel kayıt') : 'Cari açılışı dışı' },
+  { key: 'contactStatus', label: 'Cari iletişim durumu', group: 'Cari', value: (row) => row.documentType === 'customer' ? (row.hasContactInfo ? 'İletişim bilgisi var' : 'İletişim bilgisi yok') : 'Cari açılışı dışı' },
+  { key: 'stock', label: 'Stok (kod + ad)', group: 'Belge', value: (row) => [row.stockCode, row.stockName].filter(Boolean).join(' · ') || 'Stoksuz hareket' },
+  { key: 'stockCode', label: 'Stok kodu', group: 'Belge', value: (row) => row.stockCode || 'Stok kodu yok' },
+  { key: 'stockName', label: 'Stok adı', group: 'Belge', value: (row) => row.stockName || 'Stoksuz hareket' },
+  { key: 'documentNumber', label: 'Belge no / konu', group: 'Belge', value: (row) => row.documentNumber || `#${row.documentId}` },
+  { key: 'status', label: 'Genel durum', group: 'Belge', value: (row) => row.status || '-' },
+  { key: 'documentStatus', label: 'Belge durumu', group: 'Belge', value: (row) => ['demand', 'quotation', 'order'].includes(row.documentType) ? (row.status || '-') : 'Belge dışı' },
+  { key: 'conversionStatus', label: 'Dönüşüm durumu', group: 'Belge', value: (row) => row.conversionStatus || 'Dönüşüm dışı' },
+  { key: 'currency', label: 'Döviz', group: 'Belge', value: (row) => row.currency || 'Para birimi yok' },
+  { key: 'activityType', label: 'Aktivite türü', group: 'Aktivite', value: (row) => row.activityType || 'Aktivite dışı' },
+  { key: 'activityStatus', label: 'Aktivite durumu', group: 'Aktivite', value: (row) => row.documentType === 'activity' ? (row.status || '-') : 'Aktivite dışı' },
+  { key: 'activityPriority', label: 'Aktivite önceliği', group: 'Aktivite', value: (row) => row.documentType === 'activity' ? (row.activityPriority || 'Öncelik yok') : 'Aktivite dışı' },
+  { key: 'activityDueState', label: 'Aktivite vade durumu', group: 'Aktivite', value: dueState },
+  { key: 'day', label: 'Gün', group: 'Tarih', value: (row) => row.date ? row.date.slice(0, 10) : '-' },
+  { key: 'week', label: 'Hafta', group: 'Tarih', value: (row) => weekLabel(row.date) },
+  { key: 'month', label: 'Ay', group: 'Tarih', value: (row) => row.date ? row.date.slice(0, 7) : '-' },
+  { key: 'quarter', label: 'Çeyrek', group: 'Tarih', value: (row) => row.date ? `${row.date.slice(0, 4)} · Q${Math.floor((Number(row.date.slice(5, 7)) - 1) / 3) + 1}` : '-' },
+  { key: 'year', label: 'Yıl', group: 'Tarih', value: (row) => row.date ? row.date.slice(0, 4) : '-' },
 ];
 
 const MEASURES: readonly { key: MeasureKey; label: string }[] = [
-  { key: 'documentCount', label: 'Belge adedi' },
+  { key: 'demandCount', label: 'Talep' },
+  { key: 'quotationCount', label: 'Teklif' },
+  { key: 'orderCount', label: 'Sipariş' },
+  { key: 'erpOrderCount', label: 'ERP sipariş' },
+  { key: 'activityCount', label: 'Aktivite' },
+  { key: 'completedActivityCount', label: 'Tamamlanan aktivite' },
+  { key: 'customerCount', label: 'Açılan cari' },
+  { key: 'documentCount', label: 'Toplam hareket' },
   { key: 'quantity', label: 'Miktar' },
   { key: 'amount', label: 'Tutar' },
 ];
 
-const DEFAULT_ROWS: DimensionKey[] = ['customer', 'stock'];
-const DEFAULT_COLUMNS: DimensionKey[] = ['documentType', 'currency'];
-const DEFAULT_MEASURES: MeasureKey[] = ['documentCount', 'quantity', 'amount'];
-const PIVOT_LAYOUT_STORAGE_KEY = 'salesmen360:sales-movement-pivot:v1';
+const EMPTY_LAYOUT: PivotLayout = { rows: [], columns: [], filters: [], filterValues: {}, measures: [] };
+const PIVOT_LAYOUT_STORAGE_PREFIX = 'salesmen360:sales-movement-pivot:v2';
 const dimensionMap = new Map(DIMENSIONS.map((field) => [field.key, field]));
+const measureMap = new Map(MEASURES.map((field) => [field.key, field]));
 
-interface StoredPivotLayout {
-  rows: DimensionKey[];
-  columns: DimensionKey[];
-  filters: DimensionKey[];
-  measures: MeasureKey[];
+function cloneLayout(layout: PivotLayout): PivotLayout {
+  return {
+    rows: [...layout.rows],
+    columns: [...layout.columns],
+    filters: [...layout.filters],
+    filterValues: Object.fromEntries(Object.entries(layout.filterValues).map(([key, values]) => [key, [...(values ?? [])]])),
+    measures: [...layout.measures],
+  };
 }
 
-function loadStoredLayout(): StoredPivotLayout {
-  const fallback: StoredPivotLayout = { rows: DEFAULT_ROWS, columns: DEFAULT_COLUMNS, filters: [], measures: DEFAULT_MEASURES };
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(PIVOT_LAYOUT_STORAGE_KEY) ?? '') as Partial<StoredPivotLayout>;
-    const validDimensions = new Set(DIMENSIONS.map((field) => field.key));
-    const validMeasures = new Set(MEASURES.map((field) => field.key));
-    const sanitizeDimensions = (values: DimensionKey[] | undefined): DimensionKey[] => Array.from(new Set((values ?? []).filter((value) => validDimensions.has(value))));
-    const sanitizedMeasures = Array.from(new Set((parsed.measures ?? []).filter((value) => validMeasures.has(value))));
-    return {
-      rows: sanitizeDimensions(parsed.rows),
-      columns: sanitizeDimensions(parsed.columns),
-      filters: sanitizeDimensions(parsed.filters),
-      measures: sanitizedMeasures.length > 0 ? sanitizedMeasures : DEFAULT_MEASURES,
-    };
-  } catch {
-    return fallback;
+function sanitizeLayout(value: unknown): PivotLayout {
+  if (!value || typeof value !== 'object') return cloneLayout(EMPTY_LAYOUT);
+  const parsed = value as Partial<PivotLayout>;
+  const validDimensions = new Set(DIMENSIONS.map((field) => field.key));
+  const validMeasures = new Set(MEASURES.map((field) => field.key));
+  const dimensions = (items: DimensionKey[] | undefined): DimensionKey[] => Array.from(new Set((items ?? []).filter((item) => validDimensions.has(item))));
+  const rows = dimensions(parsed.rows);
+  const columns = dimensions(parsed.columns).filter((item) => !rows.includes(item));
+  const filters = dimensions(parsed.filters).filter((item) => !rows.includes(item) && !columns.includes(item));
+  const filterValues = Object.fromEntries(filters.map((field) => [field, Array.from(new Set(parsed.filterValues?.[field] ?? []))]));
+  return {
+    rows,
+    columns,
+    filters,
+    filterValues,
+    measures: Array.from(new Set((parsed.measures ?? []).filter((item) => validMeasures.has(item)))),
+  };
+}
+
+function createAggregate(): PivotAggregate {
+  return {
+    amount: 0,
+    quantity: 0,
+    documentIds: new Set(),
+    demandIds: new Set(),
+    quotationIds: new Set(),
+    orderIds: new Set(),
+    erpOrderIds: new Set(),
+    activityIds: new Set(),
+    completedActivityIds: new Set(),
+    customerIds: new Set(),
+  };
+}
+
+function addMovement(target: PivotAggregate, movement: Salesmen360SalesMovementDto): void {
+  target.amount += movement.amount ?? 0;
+  target.quantity += movement.quantity ?? 0;
+  target.documentIds.add(`${movement.documentType}:${movement.documentId}`);
+  if (movement.documentType === 'demand') target.demandIds.add(movement.documentId);
+  if (movement.documentType === 'quotation') target.quotationIds.add(movement.documentId);
+  if (movement.documentType === 'order') {
+    target.orderIds.add(movement.documentId);
+    if (movement.isErpIntegrated) target.erpOrderIds.add(movement.documentId);
   }
+  if (movement.documentType === 'activity') {
+    target.activityIds.add(movement.documentId);
+    if (movement.status.toLowerCase() === 'completed') target.completedActivityIds.add(movement.documentId);
+  }
+  if (movement.documentType === 'customer') target.customerIds.add(movement.documentId);
 }
 
 function aggregateValue(aggregate: PivotAggregate | undefined, measure: MeasureKey): number {
   if (!aggregate) return 0;
   if (measure === 'documentCount') return aggregate.documentIds.size;
+  if (measure === 'demandCount') return aggregate.demandIds.size;
+  if (measure === 'quotationCount') return aggregate.quotationIds.size;
+  if (measure === 'orderCount') return aggregate.orderIds.size;
+  if (measure === 'erpOrderCount') return aggregate.erpOrderIds.size;
+  if (measure === 'activityCount') return aggregate.activityIds.size;
+  if (measure === 'completedActivityCount') return aggregate.completedActivityIds.size;
+  if (measure === 'customerCount') return aggregate.customerIds.size;
   return aggregate[measure];
 }
 
@@ -82,124 +244,136 @@ function buildKey(values: string[]): string {
   return JSON.stringify(values);
 }
 
-function compareValues(left: string[], right: string[]): number {
-  return left.join('\u0000').localeCompare(right.join('\u0000'), 'tr', { numeric: true, sensitivity: 'base' });
+function compareText(left: string, right: string): number {
+  return left.localeCompare(right, 'tr', { numeric: true, sensitivity: 'base' });
 }
 
-function FieldChip({ label, onRemove, draggable = true }: { label: string; onRemove?: () => void; draggable?: boolean }): ReactElement {
+function FieldChip({ label, onRemove }: { label: string; onRemove?: () => void }): ReactElement {
   return (
-    <span
-      className="inline-flex cursor-grab items-center gap-1.5 rounded-lg border border-primary/25 bg-primary/8 px-2.5 py-1.5 text-xs font-bold text-slate-700 active:cursor-grabbing dark:text-slate-200"
-      draggable={draggable}
-    >
-      {draggable ? <GripVertical className="size-3.5 text-primary" /> : null}
-      {label}
-      {onRemove ? (
-        <button type="button" onClick={onRemove} className="rounded p-0.5 hover:bg-primary/15" aria-label={`${label} alanını kaldır`}>
-          <X className="size-3" />
-        </button>
-      ) : null}
+    <span className="inline-flex cursor-grab items-center gap-1 rounded-md border border-primary/25 bg-primary/8 px-2 py-1 text-[11px] font-bold text-slate-700 active:cursor-grabbing dark:text-slate-200">
+      <GripVertical className="size-3 text-primary" />{label}
+      {onRemove ? <button type="button" onClick={onRemove} className="rounded p-0.5 hover:bg-primary/15" aria-label={`${label} alanını kaldır`}><X className="size-3" /></button> : null}
     </span>
   );
 }
 
 export function SalesMovementPivot({ movements, locale }: { movements: Salesmen360SalesMovementDto[]; locale: string }): ReactElement {
-  const [initialLayout] = useState(loadStoredLayout);
-  const [rowFields, setRowFields] = useState<DimensionKey[]>(initialLayout.rows);
-  const [columnFields, setColumnFields] = useState<DimensionKey[]>(initialLayout.columns);
-  const [filterFields, setFilterFields] = useState<DimensionKey[]>(initialLayout.filters);
-  const [filterValues, setFilterValues] = useState<Partial<Record<DimensionKey, string[]>>>({});
-  const [measures, setMeasures] = useState<MeasureKey[]>(initialLayout.measures);
+  const userId = useAuthStore((state) => state.user?.id ?? 0);
+  const storageKey = `${PIVOT_LAYOUT_STORAGE_PREFIX}:${userId || 'anonymous'}`;
+  const [initialLayout] = useState<PivotLayout>(() => {
+    try {
+      return sanitizeLayout(JSON.parse(window.localStorage.getItem(storageKey) ?? 'null'));
+    } catch {
+      return cloneLayout(EMPTY_LAYOUT);
+    }
+  });
+  const [draftLayout, setDraftLayout] = useState<PivotLayout>(() => cloneLayout(initialLayout));
+  const [appliedLayout, setAppliedLayout] = useState<PivotLayout>(() => cloneLayout(initialLayout));
+  const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
   const [isExporting, setIsExporting] = useState(false);
-
-  useEffect(() => {
-    window.localStorage.setItem(PIVOT_LAYOUT_STORAGE_KEY, JSON.stringify({
-      rows: rowFields,
-      columns: columnFields,
-      filters: filterFields,
-      measures,
-    } satisfies StoredPivotLayout));
-  }, [columnFields, filterFields, measures, rowFields]);
+  const [fieldSearch, setFieldSearch] = useState('');
+  const hasAppliedDesign = appliedLayout.rows.length > 0 && appliedLayout.measures.length > 0;
+  const isDirty = JSON.stringify(draftLayout) !== JSON.stringify(appliedLayout);
+  const visibleDimensions = useMemo(() => {
+    const search = fieldSearch.trim().toLocaleLowerCase('tr');
+    return search ? DIMENSIONS.filter((field) => `${field.label} ${field.group}`.toLocaleLowerCase('tr').includes(search)) : DIMENSIONS;
+  }, [fieldSearch]);
 
   const valuesByDimension = useMemo(() => Object.fromEntries(DIMENSIONS.map((field) => [
     field.key,
-    Array.from(new Set(movements.map(field.value))).sort((a, b) => a.localeCompare(b, 'tr', { numeric: true })),
+    Array.from(new Set(movements.map(field.value))).sort(compareText),
   ])) as Record<DimensionKey, string[]>, [movements]);
 
-  const filteredMovements = useMemo(() => movements.filter((movement) => filterFields.every((fieldKey) => {
-    const selected = filterValues[fieldKey];
-    if (!selected || selected.length === 0) return true;
-    return selected.includes(dimensionMap.get(fieldKey)!.value(movement));
-  })), [filterFields, filterValues, movements]);
-
-  const currencies = useMemo(() => new Set(filteredMovements.map((row) => row.currency || '-')), [filteredMovements]);
-  const stocks = useMemo(() => new Set(filteredMovements.map((row) => row.stockCode || row.stockName)), [filteredMovements]);
-  const effectiveColumnFields = useMemo(() => {
-    if (!measures.includes('amount') || currencies.size <= 1 || rowFields.includes('currency') || columnFields.includes('currency')) return columnFields;
-    return [...columnFields, 'currency' as const];
-  }, [columnFields, currencies.size, measures, rowFields]);
-  const effectiveRowFields = useMemo(() => {
-    if (!measures.includes('quantity') || stocks.size <= 1 || rowFields.includes('stock') || effectiveColumnFields.includes('stock')) return rowFields;
-    return [...rowFields, 'stock' as const];
-  }, [effectiveColumnFields, measures, rowFields, stocks.size]);
+  const filteredMovements = useMemo(() => !hasAppliedDesign ? [] : movements.filter((movement) => appliedLayout.filters.every((fieldKey) => {
+    const selected = appliedLayout.filterValues[fieldKey];
+    return !selected || selected.length === 0 || selected.includes(dimensionMap.get(fieldKey)!.value(movement));
+  })), [appliedLayout, hasAppliedDesign, movements]);
 
   const pivot = useMemo(() => {
-    const rows = new Map<string, string[]>();
+    const rootNodes = new Map<string, PivotTreeNode>();
+    const nodes = new Map<string, PivotTreeNode>();
     const columns = new Map<string, string[]>();
     const cells = new Map<string, PivotAggregate>();
     const rowTotals = new Map<string, PivotAggregate>();
     const columnTotals = new Map<string, PivotAggregate>();
-    const grandTotal: PivotAggregate = { amount: 0, quantity: 0, documentIds: new Set() };
+    const grandTotal = createAggregate();
 
     for (const movement of filteredMovements) {
-      const rowValues = effectiveRowFields.map((field) => dimensionMap.get(field)!.value(movement));
-      const columnValues = effectiveColumnFields.map((field) => dimensionMap.get(field)!.value(movement));
-      const rowKey = buildKey(rowValues);
+      const columnValues = appliedLayout.columns.map((field) => dimensionMap.get(field)!.value(movement));
       const columnKey = buildKey(columnValues);
-      rows.set(rowKey, rowValues);
       columns.set(columnKey, columnValues);
-      const documentKey = `${movement.documentType}:${movement.documentId}`;
-      const add = (target: PivotAggregate): void => {
-        target.amount += movement.amount ?? 0;
-        target.quantity += movement.quantity ?? 0;
-        target.documentIds.add(documentKey);
-      };
-      const cellKey = `${rowKey}\u0001${columnKey}`;
-      const cell = cells.get(cellKey) ?? { amount: 0, quantity: 0, documentIds: new Set<string>() };
-      add(cell);
-      cells.set(cellKey, cell);
-      const rowTotal = rowTotals.get(rowKey) ?? { amount: 0, quantity: 0, documentIds: new Set<string>() };
-      add(rowTotal);
-      rowTotals.set(rowKey, rowTotal);
-      const columnTotal = columnTotals.get(columnKey) ?? { amount: 0, quantity: 0, documentIds: new Set<string>() };
-      add(columnTotal);
+      const path: string[] = [];
+      let parent: PivotTreeNode | undefined;
+
+      for (let depth = 0; depth < appliedLayout.rows.length; depth += 1) {
+        path.push(dimensionMap.get(appliedLayout.rows[depth])!.value(movement));
+        const nodeKey = buildKey(path);
+        let node = nodes.get(nodeKey);
+        if (!node) {
+          node = { key: nodeKey, label: path[path.length - 1], values: [...path], depth, children: [] };
+          nodes.set(nodeKey, node);
+          if (parent) parent.children.push(node); else rootNodes.set(nodeKey, node);
+        }
+        const cellKey = `${nodeKey}\u0001${columnKey}`;
+        const cell = cells.get(cellKey) ?? createAggregate();
+        addMovement(cell, movement);
+        cells.set(cellKey, cell);
+        const total = rowTotals.get(nodeKey) ?? createAggregate();
+        addMovement(total, movement);
+        rowTotals.set(nodeKey, total);
+        parent = node;
+      }
+
+      const columnTotal = columnTotals.get(columnKey) ?? createAggregate();
+      addMovement(columnTotal, movement);
       columnTotals.set(columnKey, columnTotal);
-      add(grandTotal);
+      addMovement(grandTotal, movement);
     }
 
+    const sortNodes = (items: PivotTreeNode[]): PivotTreeNode[] => items
+      .sort((left, right) => compareText(left.label, right.label))
+      .map((item) => ({ ...item, children: sortNodes(item.children) }));
     return {
-      rows: Array.from(rows.entries()).sort((a, b) => compareValues(a[1], b[1])),
-      columns: Array.from(columns.entries()).sort((a, b) => compareValues(a[1], b[1])),
+      roots: sortNodes(Array.from(rootNodes.values())),
+      columns: Array.from(columns.entries()).sort((left, right) => compareText(left[1].join(' / '), right[1].join(' / '))),
       cells,
       rowTotals,
       columnTotals,
       grandTotal,
     };
-  }, [effectiveColumnFields, effectiveRowFields, filteredMovements]);
-  const visiblePivotColumns = effectiveColumnFields.length > 0 ? pivot.columns : [];
-  const hasRowDimensions = effectiveRowFields.length > 0;
+  }, [appliedLayout.columns, appliedLayout.rows, filteredMovements]);
 
+  const visibleRows = useMemo(() => {
+    const result: PivotTreeNode[] = [];
+    const visit = (node: PivotTreeNode): void => {
+      result.push(node);
+      if (expandedNodes.has(node.key)) node.children.forEach(visit);
+    };
+    pivot.roots.forEach(visit);
+    return result;
+  }, [expandedNodes, pivot.roots]);
+
+  const pivotColumns = appliedLayout.columns.length > 0 ? pivot.columns : [[buildKey([]), []] as [string, string[]]];
   const format = (value: number, measure: MeasureKey): string => new Intl.NumberFormat(locale, {
-    maximumFractionDigits: measure === 'documentCount' ? 0 : 2,
+    maximumFractionDigits: ['documentCount', 'demandCount', 'quotationCount', 'orderCount', 'erpOrderCount', 'activityCount', 'completedActivityCount', 'customerCount'].includes(measure) ? 0 : 2,
   }).format(value);
 
-  const moveField = (field: DimensionKey, zone: DropZone): void => {
-    setRowFields((current) => current.filter((item) => item !== field));
-    setColumnFields((current) => current.filter((item) => item !== field));
-    setFilterFields((current) => current.filter((item) => item !== field));
-    const setter = zone === 'rows' ? setRowFields : zone === 'columns' ? setColumnFields : setFilterFields;
-    setter((current) => current.includes(field) ? current : [...current, field]);
-  };
+  const moveField = (field: DimensionKey, zone: DropZone): void => setDraftLayout((current) => {
+    const next = cloneLayout(current);
+    next.rows = next.rows.filter((item) => item !== field);
+    next.columns = next.columns.filter((item) => item !== field);
+    next.filters = next.filters.filter((item) => item !== field);
+    next[zone].push(field);
+    return next;
+  });
+
+  const removeField = (field: DimensionKey): void => setDraftLayout((current) => ({
+    ...current,
+    rows: current.rows.filter((item) => item !== field),
+    columns: current.columns.filter((item) => item !== field),
+    filters: current.filters.filter((item) => item !== field),
+    filterValues: { ...current.filterValues, [field]: undefined },
+  }));
 
   const handleDragStart = (event: DragEvent, field: DimensionKey): void => {
     event.dataTransfer.effectAllowed = 'move';
@@ -212,33 +386,46 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
     if (dimensionMap.has(field)) moveField(field, zone);
   };
 
-  const removeField = (field: DimensionKey): void => {
-    setRowFields((current) => current.filter((item) => item !== field));
-    setColumnFields((current) => current.filter((item) => item !== field));
-    setFilterFields((current) => current.filter((item) => item !== field));
-    setFilterValues((current) => ({ ...current, [field]: undefined }));
+  const run = (layout = draftLayout): void => {
+    if (layout.rows.length === 0 || layout.measures.length === 0) {
+      toast.error('Çalıştırmak için en az bir satır kırılımı ve bir değer kolonu seçin.');
+      return;
+    }
+    setAppliedLayout(cloneLayout(layout));
+    setExpandedNodes(new Set());
   };
 
-  const reset = (): void => {
-    setRowFields(DEFAULT_ROWS);
-    setColumnFields(DEFAULT_COLUMNS);
-    setFilterFields([]);
-    setFilterValues({});
-    setMeasures(DEFAULT_MEASURES);
+  const save = (): void => {
+    if (draftLayout.rows.length === 0 || draftLayout.measures.length === 0) {
+      toast.error('Kaydetmek için en az bir satır kırılımı ve bir değer kolonu seçin.');
+      return;
+    }
+    window.localStorage.setItem(storageKey, JSON.stringify(draftLayout));
+    run(draftLayout);
+    toast.success('Pivot görünümü kullanıcı hesabınız için kaydedildi.');
+  };
+
+  const clear = (): void => {
+    const empty = cloneLayout(EMPTY_LAYOUT);
+    setDraftLayout(empty);
+    setAppliedLayout(cloneLayout(empty));
+    setExpandedNodes(new Set());
+    window.localStorage.removeItem(storageKey);
   };
 
   const exportPivot = async (): Promise<void> => {
     setIsExporting(true);
     try {
       const header: ExcelRow = [
-        ...(hasRowDimensions ? effectiveRowFields.map((field) => dimensionMap.get(field)!.label) : ['Kırılım']),
-        ...visiblePivotColumns.flatMap(([, values]) => measures.map((measure) => `${values.join(' / ')} · ${MEASURES.find((item) => item.key === measure)!.label}`)),
-        ...measures.map((measure) => `Genel toplam · ${MEASURES.find((item) => item.key === measure)!.label}`),
+        ...appliedLayout.rows.map((field) => dimensionMap.get(field)!.label),
+        ...pivotColumns.flatMap(([, values]) => appliedLayout.measures.map((measure) => `${values.length ? `${values.join(' / ')} · ` : ''}${measureMap.get(measure)!.label}`)),
+        ...appliedLayout.measures.map((measure) => `Genel toplam · ${measureMap.get(measure)!.label}`),
       ];
-      const rows: ExcelRow[] = pivot.rows.map(([rowKey, values]) => [
-        ...(hasRowDimensions ? values : ['Tümü']),
-        ...visiblePivotColumns.flatMap(([columnKey]) => measures.map((measure) => aggregateValue(pivot.cells.get(`${rowKey}\u0001${columnKey}`), measure))),
-        ...measures.map((measure) => aggregateValue(pivot.rowTotals.get(rowKey), measure)),
+      const leaves = (nodes: PivotTreeNode[]): PivotTreeNode[] => nodes.flatMap((node) => node.children.length ? leaves(node.children) : [node]);
+      const rows: ExcelRow[] = leaves(pivot.roots).map((node) => [
+        ...node.values,
+        ...pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => aggregateValue(pivot.cells.get(`${node.key}\u0001${columnKey}`), measure))),
+        ...appliedLayout.measures.map((measure) => aggregateValue(pivot.rowTotals.get(node.key), measure)),
       ]);
       await exportSheetsToXlsx('donem-ici-satis-hareketleri-pivot', [{ name: 'Satış Hareketleri Pivot', rows: [header, ...rows] }]);
     } finally {
@@ -246,106 +433,116 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
     }
   };
 
-  const renderZone = (zone: DropZone, title: string, Icon: typeof Rows3, fields: DimensionKey[]): ReactElement => (
-    <div
-      className="min-h-20 rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-3 dark:border-white/15 dark:bg-white/3"
-      onDragOver={(event) => event.preventDefault()}
-      onDrop={(event) => handleDrop(event, zone)}
-    >
-      <p className="mb-2 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-500"><Icon className="size-3.5" />{title}</p>
-      <div className="flex flex-wrap gap-2">
-        {fields.map((field) => zone === 'filters' ? (
-          <Popover key={field}>
-            <PopoverTrigger asChild>
-              <button type="button" draggable onDragStart={(event) => handleDragStart(event, field)} className="inline-flex items-center gap-1.5 rounded-lg border border-primary/25 bg-primary/8 px-2.5 py-1.5 text-xs font-bold">
-                <GripVertical className="size-3.5 text-primary" />{dimensionMap.get(field)!.label}
-                {(filterValues[field]?.length ?? 0) > 0 ? <span className="rounded-full bg-primary px-1.5 text-[9px] text-white">{filterValues[field]!.length}</span> : null}
-              </button>
-            </PopoverTrigger>
-            <PopoverContent className="w-72 p-2" align="start">
-              <div className="mb-2 flex items-center justify-between"><b className="text-sm">{dimensionMap.get(field)!.label}</b><Button variant="ghost" size="sm" onClick={() => setFilterValues((current) => ({ ...current, [field]: [] }))}>Temizle</Button></div>
-              <div className="max-h-64 space-y-1 overflow-y-auto">
-                {valuesByDimension[field].map((value) => {
-                  const selected = filterValues[field]?.includes(value) ?? false;
-                  return <label key={value} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-white/5"><Checkbox checked={selected} onCheckedChange={() => setFilterValues((current) => ({ ...current, [field]: selected ? (current[field] ?? []).filter((item) => item !== value) : [...(current[field] ?? []), value] }))} /><span className="truncate text-xs">{value}</span></label>;
-                })}
-              </div>
-              <Button variant="ghost" size="sm" className="mt-2 w-full" onClick={() => removeField(field)}>Filtre alanını kaldır</Button>
-            </PopoverContent>
-          </Popover>
-        ) : (
-          <span key={field} draggable onDragStart={(event) => handleDragStart(event, field)}><FieldChip label={dimensionMap.get(field)!.label} onRemove={() => removeField(field)} /></span>
-        ))}
-        {fields.length === 0 ? <span className="text-xs text-slate-400">Alanı buraya sürükleyin</span> : null}
+  const renderZone = (zone: DropZone, title: string, Icon: typeof Rows3): ReactElement => {
+    const fields = draftLayout[zone];
+    return (
+      <div className="min-h-14 rounded-lg border border-dashed border-slate-300 bg-slate-50/80 p-2 dark:border-white/15 dark:bg-white/3" onDragOver={(event) => event.preventDefault()} onDrop={(event) => handleDrop(event, zone)}>
+        <p className="mb-1 flex items-center gap-1 text-[9px] font-black uppercase tracking-wider text-slate-500"><Icon className="size-3" />{title}</p>
+        <div className="flex min-h-6 flex-wrap gap-1.5">
+          {fields.map((field) => zone === 'filters' ? (
+            <Popover key={field}>
+              <PopoverTrigger asChild>
+                <button type="button" draggable onDragStart={(event) => handleDragStart(event, field)} className="inline-flex items-center gap-1 rounded-md border border-primary/25 bg-primary/8 px-2 py-1 text-[11px] font-bold">
+                  <GripVertical className="size-3 text-primary" />{dimensionMap.get(field)!.label}
+                  {(draftLayout.filterValues[field]?.length ?? 0) > 0 ? <span className="rounded-full bg-primary px-1.5 text-[9px] text-white">{draftLayout.filterValues[field]!.length}</span> : null}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-72 p-2" align="start">
+                <div className="mb-2 flex items-center justify-between"><b className="text-sm">{dimensionMap.get(field)!.label}</b><Button variant="ghost" size="sm" onClick={() => setDraftLayout((current) => ({ ...current, filterValues: { ...current.filterValues, [field]: [] } }))}>Temizle</Button></div>
+                <div className="max-h-64 space-y-1 overflow-y-auto">
+                  {valuesByDimension[field].map((value) => {
+                    const selected = draftLayout.filterValues[field]?.includes(value) ?? false;
+                    return <label key={value} className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-slate-100 dark:hover:bg-white/5"><Checkbox checked={selected} onCheckedChange={() => setDraftLayout((current) => ({ ...current, filterValues: { ...current.filterValues, [field]: selected ? (current.filterValues[field] ?? []).filter((item) => item !== value) : [...(current.filterValues[field] ?? []), value] } }))} /><span className="truncate text-xs">{value}</span></label>;
+                  })}
+                </div>
+                <Button variant="ghost" size="sm" className="mt-2 w-full" onClick={() => removeField(field)}>Filtre alanını kaldır</Button>
+              </PopoverContent>
+            </Popover>
+          ) : <span key={field} draggable onDragStart={(event) => handleDragStart(event, field)}><FieldChip label={dimensionMap.get(field)!.label} onRemove={() => removeField(field)} /></span>)}
+          {fields.length === 0 ? <span className="text-[11px] text-slate-400">Alan sürükleyin</span> : null}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className="space-y-3 p-4">
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-        <div>
-          <h4 className="font-black text-slate-900 dark:text-white">Dönem içi satış hareketleri pivotu</h4>
-          <p className="text-xs text-slate-500">Cari, stok, satışçı ve belge alanlarını satır/sütun bölgelerine sürükleyerek analizi yeniden kurun.</p>
+    <div className="relative">
+      <div className="sticky top-0 z-40 border-b border-slate-200 bg-white/97 p-3 shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#160d20]/97">
+        <div className="mb-2 flex flex-wrap items-center gap-2">
+          <div className="min-w-48 flex-1"><h4 className="text-sm font-black">Pivot tasarımı</h4><p className="text-[11px] text-slate-500">Satır sırası iç içe açılım sırasıdır. Tasarımı kurup çalıştırın.</p></div>
+          {isDirty ? <span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-700">Uygulanmamış değişiklik</span> : null}
+          <Button variant="outline" size="sm" className="h-8" onClick={clear}><Trash2 className="mr-1 size-3.5" />Temizle</Button>
+          <Button variant="outline" size="sm" className="h-8" onClick={() => run()}><Play className="mr-1 size-3.5" />Çalıştır</Button>
+          <Button size="sm" className="h-8" onClick={save}><Save className="mr-1 size-3.5" />Kaydet ve çalıştır</Button>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={reset}><RotateCcw className="mr-1.5 size-4" />Varsayılana dön</Button>
-          <Button variant="outline" size="sm" disabled={isExporting || pivot.rows.length === 0} onClick={() => void exportPivot()}><FileDown className="mr-1.5 size-4" />Excel'e aktar</Button>
+
+        <div className="mb-2 flex items-center gap-1.5 overflow-x-auto pb-1">
+          <span className="mr-1 shrink-0 text-[9px] font-black uppercase text-slate-400">Alanlar</span>
+          <label className="sticky left-0 z-10 flex h-7 w-44 shrink-0 items-center gap-1 rounded-md border border-slate-200 bg-white px-2 dark:border-white/10 dark:bg-[#160d20]"><Search className="size-3 text-slate-400" /><input value={fieldSearch} onChange={(event) => setFieldSearch(event.target.value)} placeholder="Alan ara..." className="min-w-0 flex-1 bg-transparent text-[11px] outline-none" /></label>
+          {visibleDimensions.map((field, index) => <span key={field.key} className="flex shrink-0 items-center gap-1" draggable onDragStart={(event) => handleDragStart(event, field.key)}>{index === 0 || visibleDimensions[index - 1].group !== field.group ? <span className="ml-1 text-[9px] font-black uppercase text-primary/70">{field.group}</span> : null}<FieldChip label={field.label} /></span>)}
         </div>
-      </div>
-
-      <div className="rounded-xl border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#160d20]">
-        <p className="mb-2 text-[10px] font-black uppercase tracking-wider text-slate-500">Kullanılabilir alanlar</p>
-        <div className="flex flex-wrap gap-2">
-          {DIMENSIONS.map((field) => <span key={field.key} draggable onDragStart={(event) => handleDragStart(event, field.key)}><FieldChip label={field.label} /></span>)}
+        <div className="grid gap-2 lg:grid-cols-3">
+          {renderZone('rows', 'Satırlar / açılım sırası', Rows3)}
+          {renderZone('columns', 'Kolon kırılımı', Columns3)}
+          {renderZone('filters', 'Filtreler', Filter)}
         </div>
-      </div>
-
-      <div className="grid gap-3 xl:grid-cols-3">
-        {renderZone('rows', 'Satırlar', Rows3, rowFields)}
-        {renderZone('columns', 'Sütunlar', Columns3, columnFields)}
-        {renderZone('filters', 'Filtreler', Filter, filterFields)}
-      </div>
-
-      <div className="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 sm:flex-row sm:items-center dark:border-white/10 dark:bg-[#160d20]">
-        <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-slate-500"><Sigma className="size-3.5" />Değerler</span>
-        <div className="flex flex-wrap gap-2">
+        <div className="mt-2 flex flex-wrap items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50/80 p-2 dark:border-white/10 dark:bg-white/3">
+          <span className="mr-1 flex items-center gap-1 text-[9px] font-black uppercase text-slate-500"><Sigma className="size-3" />Değer kolonları</span>
           {MEASURES.map((measure) => {
-            const selected = measures.includes(measure.key);
-            return <button key={measure.key} type="button" onClick={() => setMeasures((current) => selected ? (current.length > 1 ? current.filter((item) => item !== measure.key) : current) : [...current, measure.key])} className={cn('rounded-lg border px-2.5 py-1.5 text-xs font-bold', selected ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-white/3 dark:text-slate-300')}>{measure.label}</button>;
+            const selected = draftLayout.measures.includes(measure.key);
+            return <button key={measure.key} type="button" onClick={() => setDraftLayout((current) => ({ ...current, measures: selected ? current.measures.filter((item) => item !== measure.key) : [...current.measures, measure.key] }))} className={cn('rounded-md border px-2 py-1 text-[11px] font-bold', selected ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-white/3 dark:text-slate-300')}>{measure.label}</button>;
           })}
         </div>
-        <span className="sm:ml-auto text-xs font-semibold text-slate-500">{filteredMovements.length} hareket · {pivot.rows.length} satır grubu</span>
       </div>
 
-      {effectiveColumnFields.length !== columnFields.length ? <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">Farklı para birimleri birbirine eklenmesin diye Döviz alanı otomatik olarak sütunlara uygulandı.</p> : null}
-      {effectiveRowFields.length !== rowFields.length ? <p className="rounded-lg bg-blue-50 px-3 py-2 text-xs font-semibold text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">Farklı stok miktarları anlamsız biçimde toplanmasın diye Stok alanı otomatik olarak satırlara uygulandı.</p> : null}
-
-      <div className="max-h-[38rem] overflow-auto rounded-xl border border-slate-200 dark:border-white/10">
-        <table className="min-w-max w-full border-collapse text-xs">
-          <thead className="sticky top-0 z-30 bg-slate-100 dark:bg-[#20152d]">
-            <tr>
-              {hasRowDimensions ? effectiveRowFields.map((field, index) => <th key={field} rowSpan={2} className={cn('sticky z-40 min-w-44 border-b border-r border-slate-200 px-3 py-2 text-left font-black dark:border-white/10 dark:bg-[#20152d]', index === 0 ? 'left-0' : '')}>{dimensionMap.get(field)!.label}</th>) : <th rowSpan={2} className="sticky left-0 z-40 min-w-44 border-b border-r border-slate-200 px-3 py-2 text-left font-black dark:border-white/10 dark:bg-[#20152d]">Kırılım</th>}
-              {visiblePivotColumns.map(([columnKey, values]) => <th key={columnKey} colSpan={measures.length} className="border-b border-r border-slate-200 px-3 py-2 text-center font-black dark:border-white/10">{values.join(' / ')}</th>)}
-              <th colSpan={measures.length} className="border-b border-r border-slate-200 px-3 py-2 text-center font-black text-primary dark:border-white/10">Genel toplam</th>
-            </tr>
-            <tr>{[...visiblePivotColumns, ['__total__', []] as [string, string[]]].flatMap(([columnKey]) => measures.map((measure) => <th key={`${columnKey}-${measure}`} className="min-w-28 border-b border-r border-slate-200 px-3 py-2 text-right text-[10px] font-black uppercase dark:border-white/10">{MEASURES.find((item) => item.key === measure)!.label}</th>))}</tr>
-          </thead>
-          <tbody>
-            {pivot.rows.map(([rowKey, values]) => <tr key={rowKey} className="hover:bg-primary/5">
-              {hasRowDimensions ? values.map((value, index) => <td key={effectiveRowFields[index]} className={cn('border-b border-r border-slate-200 bg-white px-3 py-2 font-semibold dark:border-white/10 dark:bg-[#160d20]', index === 0 ? 'sticky left-0 z-10' : '')}>{value}</td>) : <td className="sticky left-0 z-10 border-b border-r border-slate-200 bg-white px-3 py-2 font-semibold dark:border-white/10 dark:bg-[#160d20]">Tümü</td>}
-              {visiblePivotColumns.flatMap(([columnKey]) => measures.map((measure) => <td key={`${columnKey}-${measure}`} className="border-b border-r border-slate-200 px-3 py-2 text-right tabular-nums dark:border-white/10">{format(aggregateValue(pivot.cells.get(`${rowKey}\u0001${columnKey}`), measure), measure)}</td>))}
-              {measures.map((measure) => <td key={`total-${measure}`} className="border-b border-r border-slate-200 bg-primary/5 px-3 py-2 text-right font-black tabular-nums dark:border-white/10">{format(aggregateValue(pivot.rowTotals.get(rowKey), measure), measure)}</td>)}
-            </tr>)}
-            {pivot.rows.length > 0 ? <tr className="sticky bottom-0 z-20 bg-slate-100 font-black dark:bg-[#20152d]">
-              <td colSpan={Math.max(effectiveRowFields.length, 1)} className="sticky left-0 border-r border-t border-slate-200 px-3 py-2 dark:border-white/10">Genel toplam</td>
-              {visiblePivotColumns.flatMap(([columnKey]) => measures.map((measure) => <td key={`${columnKey}-${measure}`} className="border-r border-t border-slate-200 px-3 py-2 text-right tabular-nums dark:border-white/10">{format(aggregateValue(pivot.columnTotals.get(columnKey), measure), measure)}</td>))}
-              {measures.map((measure) => <td key={measure} className="border-r border-t border-slate-200 px-3 py-2 text-right text-primary tabular-nums dark:border-white/10">{format(aggregateValue(pivot.grandTotal, measure), measure)}</td>)}
-            </tr> : null}
-          </tbody>
-        </table>
-        {pivot.rows.length === 0 ? <div className="p-10 text-center text-sm text-slate-500">Seçilen kırılım ve filtrelerde hareket bulunamadı.</div> : null}
-      </div>
+      {!hasAppliedDesign ? (
+        <div className="m-4 rounded-xl border border-dashed border-slate-300 p-12 text-center dark:border-white/15">
+          <Sigma className="mx-auto mb-3 size-8 text-slate-300" />
+          <h5 className="font-black">Pivot henüz oluşturulmadı</h5>
+          <p className="mx-auto mt-1 max-w-xl text-xs text-slate-500">Örneğin Satışçı, Cari ve Stok alanlarını bu sırayla Satırlara; Talep, Teklif, Sipariş ve Aktiviteyi Değer kolonlarına ekleyip Çalıştırın.</p>
+        </div>
+      ) : (
+        <div className="p-4">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs font-semibold text-slate-500">{filteredMovements.length} hareket · {pivot.roots.length} ana grup · Satırlar `+ / −` ile açılır</p>
+            <Button variant="outline" size="sm" disabled={isExporting || pivot.roots.length === 0} onClick={() => void exportPivot()}><FileDown className="mr-1.5 size-4" />Excel'e aktar</Button>
+          </div>
+          <div className="max-h-[42rem] overflow-auto rounded-xl border border-slate-200 dark:border-white/10">
+            <table className="min-w-max w-full border-collapse text-xs">
+              <thead className="sticky top-0 z-30 bg-slate-100 dark:bg-[#20152d]">
+                <tr>
+                  <th rowSpan={2} className="sticky left-0 z-40 min-w-72 border-b border-r border-slate-200 px-3 py-2 text-left font-black dark:border-white/10 dark:bg-[#20152d]">{appliedLayout.rows.map((field) => dimensionMap.get(field)!.label).join(' → ')}</th>
+                  {pivotColumns.map(([columnKey, values]) => <th key={columnKey} colSpan={appliedLayout.measures.length} className="border-b border-r border-slate-200 px-3 py-2 text-center font-black dark:border-white/10">{values.length ? values.join(' / ') : 'Değerler'}</th>)}
+                  <th colSpan={appliedLayout.measures.length} className="border-b border-r border-slate-200 px-3 py-2 text-center font-black text-primary dark:border-white/10">Genel toplam</th>
+                </tr>
+                <tr>{[...pivotColumns, ['__total__', []] as [string, string[]]].flatMap(([columnKey]) => appliedLayout.measures.map((measure) => <th key={`${columnKey}-${measure}`} className="min-w-28 border-b border-r border-slate-200 px-3 py-2 text-right text-[10px] font-black uppercase dark:border-white/10">{measureMap.get(measure)!.label}</th>))}</tr>
+              </thead>
+              <tbody>
+                {visibleRows.map((node) => {
+                  const expanded = expandedNodes.has(node.key);
+                  return <tr key={node.key} className={cn('hover:bg-primary/5', node.children.length > 0 && 'font-bold')}>
+                    <td className="sticky left-0 z-10 border-b border-r border-slate-200 bg-white px-3 py-2 dark:border-white/10 dark:bg-[#160d20]">
+                      <div className="flex items-center" style={{ paddingLeft: `${node.depth * 18}px` }}>
+                        {node.children.length ? <button type="button" className="mr-1 rounded p-0.5 hover:bg-primary/10" onClick={() => setExpandedNodes((current) => { const next = new Set(current); if (expanded) next.delete(node.key); else next.add(node.key); return next; })} aria-label={expanded ? 'Grubu daralt' : 'Grubu genişlet'}>{expanded ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}</button> : <span className="mr-1 w-5" />}
+                        <span className="max-w-80 truncate" title={node.label}>{node.label}</span>
+                        <span className="ml-2 text-[9px] font-semibold uppercase text-slate-400">{dimensionMap.get(appliedLayout.rows[node.depth])!.label}</span>
+                      </div>
+                    </td>
+                    {pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => <td key={`${columnKey}-${measure}`} className="border-b border-r border-slate-200 px-3 py-2 text-right tabular-nums dark:border-white/10">{format(aggregateValue(pivot.cells.get(`${node.key}\u0001${columnKey}`), measure), measure)}</td>))}
+                    {appliedLayout.measures.map((measure) => <td key={`total-${measure}`} className="border-b border-r border-slate-200 bg-primary/5 px-3 py-2 text-right font-black tabular-nums dark:border-white/10">{format(aggregateValue(pivot.rowTotals.get(node.key), measure), measure)}</td>)}
+                  </tr>;
+                })}
+                {pivot.roots.length > 0 ? <tr className="sticky bottom-0 z-20 bg-slate-100 font-black dark:bg-[#20152d]">
+                  <td className="sticky left-0 border-r border-t border-slate-200 px-3 py-2 dark:border-white/10 dark:bg-[#20152d]">Genel toplam</td>
+                  {pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => <td key={`${columnKey}-${measure}`} className="border-r border-t border-slate-200 px-3 py-2 text-right tabular-nums dark:border-white/10">{format(aggregateValue(pivot.columnTotals.get(columnKey), measure), measure)}</td>))}
+                  {appliedLayout.measures.map((measure) => <td key={measure} className="border-r border-t border-slate-200 px-3 py-2 text-right text-primary tabular-nums dark:border-white/10">{format(aggregateValue(pivot.grandTotal, measure), measure)}</td>)}
+                </tr> : null}
+              </tbody>
+            </table>
+            {pivot.roots.length === 0 ? <div className="p-10 text-center text-sm text-slate-500">Seçilen kırılım ve filtrelerde hareket bulunamadı.</div> : null}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
