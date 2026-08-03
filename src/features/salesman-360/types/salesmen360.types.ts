@@ -320,6 +320,8 @@ export interface Salesmen360SalesMovementDto {
   customerId?: number | null;
   customerCode: string;
   customerName: string;
+  customerSalesmanCode: string;
+  customerSalesmanName: string;
   stockCode: string;
   stockName: string;
   activityType: string;
