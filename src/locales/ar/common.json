@@ -5838,6 +5838,8 @@
   "searchFieldsHelp": "اختر الحقول التي سيتم البحث فيها. يجب أن يبقى حقل واحد على الأقل محددًا.",
   "searchFieldsCount": "حقول محددة",
   "searchFieldsFilterPlaceholder": "ابحث عن حقل...",
+  "searchFieldsSelectAll": "تحديد الكل",
+  "searchFieldsClear": "مسح",
   "searchFieldsNoMatch": "لا توجد حقول مطابقة",
   "erpCleanup": {
     "status": {

@@ -5786,6 +5786,8 @@
   "searchFieldsHelp": "Choisissez les champs dans lesquels effectuer la recherche. Au moins un champ doit rester sélectionné.",
   "searchFieldsCount": "champs sélectionnés",
   "searchFieldsFilterPlaceholder": "Rechercher un champ...",
+  "searchFieldsSelectAll": "Tout sélectionner",
+  "searchFieldsClear": "Effacer",
   "searchFieldsNoMatch": "Aucun champ correspondant",
   "erpCleanup": {
     "status": {

@@ -5832,6 +5832,8 @@
   "searchFieldsHelp": "Elija en qué campos buscar. Debe quedar al menos un campo seleccionado.",
   "searchFieldsCount": "campos seleccionados",
   "searchFieldsFilterPlaceholder": "Buscar campos...",
+  "searchFieldsSelectAll": "Seleccionar todo",
+  "searchFieldsClear": "Limpiar",
   "searchFieldsNoMatch": "No se encontraron campos",
   "erpCleanup": {
     "status": {

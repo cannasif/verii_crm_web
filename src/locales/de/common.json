@@ -5795,6 +5795,8 @@
   "searchFieldsHelp": "Wählen Sie aus, in welchen Feldern gesucht werden soll. Mindestens ein Feld muss ausgewählt bleiben.",
   "searchFieldsCount": "Felder ausgewählt",
   "searchFieldsFilterPlaceholder": "Feld suchen...",
+  "searchFieldsSelectAll": "Alle auswählen",
+  "searchFieldsClear": "Zurücksetzen",
   "searchFieldsNoMatch": "Kein passendes Feld gefunden",
   "erpCleanup": {
     "status": {

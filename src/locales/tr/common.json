@@ -6034,6 +6034,8 @@
   "searchFieldsHelp": "Aramanın uygulanacağı alanları seçin. En az bir alan seçili kalmalıdır.",
   "searchFieldsCount": "alan seçili",
   "searchFieldsFilterPlaceholder": "Alan ara...",
+  "searchFieldsSelectAll": "Tümünü seç",
+  "searchFieldsClear": "Temizle",
   "searchFieldsNoMatch": "Eşleşen alan bulunamadı",
   "erpCleanup": {
     "status": {

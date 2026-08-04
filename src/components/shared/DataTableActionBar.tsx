@@ -33,8 +33,6 @@ import type { GridExportColumn } from '@/lib/grid-export';
 import { matchesSearchTerm } from '@/lib/search';
 import { cn } from '@/lib/utils';
 
-const SEARCH_FIELD_FILTER_THRESHOLD = 6;
-
 export interface DataTableSearchConfig {
   value?: string;
   defaultValue?: string;
@@ -313,6 +311,20 @@ export function DataTableActionBar({
         : searchFieldOptions,
     [searchFieldOptions, searchFieldsFilter]
   );
+
+  const selectAllSearchFields = (): void => {
+    if (!changeSearchFields) return;
+    const allKeys = searchFieldOptions.map((field) => field.key);
+    changeSearchFields(allKeys);
+    persistSearchFields(allKeys);
+  };
+
+  const clearSearchFields = (): void => {
+    if (!changeSearchFields || searchFieldOptions.length === 0) return;
+    const onlyFirst = [searchFieldOptions[0].key];
+    changeSearchFields(onlyFirst);
+    persistSearchFields(onlyFirst);
+  };
   const refreshCooldown = useRefreshCooldown({
     onRefresh: () => refresh?.onRefresh(),
     cooldownSeconds: refresh?.cooldownSeconds ?? 30,
@@ -698,20 +710,18 @@ export function DataTableActionBar({
                         </div>
                       </div>
 
-                      {searchFieldOptions.length > SEARCH_FIELD_FILTER_THRESHOLD ? (
-                        <div className="border-b border-slate-100 px-2.5 py-2 dark:border-white/5">
-                          <div className="relative">
-                            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
-                            <input
-                              type="text"
-                              value={searchFieldsFilter}
-                              onChange={(event) => setSearchFieldsFilter(event.target.value)}
-                              placeholder={t('searchFieldsFilterPlaceholder', { ns: 'common', defaultValue: 'Alan ara...' })}
-                              className="h-8 w-full rounded-lg border border-slate-200 bg-white pl-8 pr-2.5 text-xs text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-primary/60 focus:ring-2 focus:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:placeholder:text-slate-500"
-                            />
-                          </div>
+                      <div className="border-b border-slate-100 px-2.5 py-2 dark:border-white/5">
+                        <div className="relative">
+                          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
+                          <input
+                            type="text"
+                            value={searchFieldsFilter}
+                            onChange={(event) => setSearchFieldsFilter(event.target.value)}
+                            placeholder={t('searchFieldsFilterPlaceholder', { ns: 'common', defaultValue: 'Alan ara...' })}
+                            className="h-8 w-full rounded-lg border border-slate-200 bg-white pl-8 pr-2.5 text-xs text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-primary/60 focus:ring-2 focus:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:placeholder:text-slate-500"
+                          />
                         </div>
-                      ) : null}
+                      </div>
 
                       <div className="max-h-72 overflow-y-auto p-2">
                         {visibleSearchFieldOptions.length > 0 ? (
@@ -755,11 +765,31 @@ export function DataTableActionBar({
                         )}
                       </div>
 
-                      <div className="border-t border-slate-100 px-3.5 py-2 dark:border-white/5">
+                      <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-3.5 py-2 dark:border-white/5">
                         <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
                           {selectedSearchFields.length}/{searchFieldOptions.length}{' '}
                           {t('searchFieldsCount', { ns: 'common', defaultValue: 'alan seçili' })}
                         </span>
+                        <div className="flex items-center gap-1">
+                          {selectedSearchFields.length > 1 ? (
+                            <button
+                              type="button"
+                              onClick={clearSearchFields}
+                              className="rounded-lg px-2 py-1 text-[11px] font-bold text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10"
+                            >
+                              {t('searchFieldsClear', { ns: 'common', defaultValue: 'Temizle' })}
+                            </button>
+                          ) : null}
+                          {selectedSearchFields.length < searchFieldOptions.length ? (
+                            <button
+                              type="button"
+                              onClick={selectAllSearchFields}
+                              className="rounded-lg px-2 py-1 text-[11px] font-bold text-primary transition-colors hover:bg-primary/10"
+                            >
+                              {t('searchFieldsSelectAll', { ns: 'common', defaultValue: 'Tümünü seç' })}
+                            </button>
+                          ) : null}
+                        </div>
                       </div>
                     </PopoverContent>
                   </Popover>

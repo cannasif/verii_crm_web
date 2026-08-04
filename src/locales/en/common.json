@@ -6035,6 +6035,8 @@
   "searchFieldsHelp": "Choose which fields to search in. At least one field must stay selected.",
   "searchFieldsCount": "fields selected",
   "searchFieldsFilterPlaceholder": "Search fields...",
+  "searchFieldsSelectAll": "Select all",
+  "searchFieldsClear": "Clear",
   "searchFieldsNoMatch": "No matching fields",
   "erpCleanup": {
     "status": {
