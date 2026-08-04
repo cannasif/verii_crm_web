@@ -1,6 +1,6 @@
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Filter, FileDown, MoreVertical, RefreshCw, Search, X, Columns3 } from 'lucide-react';
+import { Check, Filter, FileDown, MoreVertical, RefreshCw, Search, X, Columns3, ListFilter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -37,12 +37,23 @@ export interface DataTableSearchConfig {
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   onSearchChange?: (value: string) => void;
+  searchFields?: readonly string[];
+  onSearchFieldsChange?: (fields: string[]) => void;
+  searchFieldOptions?: readonly DataTableSearchFieldOption[];
   placeholder?: string;
   className?: string;
   wrapperClassName?: string;
   debounceMs?: number;
   minLength?: number;
   resetKey?: string | number;
+  fields?: readonly DataTableSearchFieldOption[];
+  selectedFields?: readonly string[];
+  onSelectedFieldsChange?: (fields: string[]) => void;
+}
+
+export interface DataTableSearchFieldOption {
+  key: string;
+  label: string;
 }
 
 export interface DataTableRefreshConfig {
@@ -84,6 +95,9 @@ export interface DataTableActionBarProps {
   searchValue?: string;
   searchPlaceholder?: string;
   onSearchChange?: (value: string) => void;
+  searchFields?: readonly string[];
+  onSearchFieldsChange?: (fields: string[]) => void;
+  searchFieldOptions?: readonly DataTableSearchFieldOption[];
   searchClassName?: string;
   search?: DataTableSearchConfig;
   refresh?: DataTableRefreshConfig;
@@ -122,6 +136,9 @@ export function DataTableActionBar({
   searchValue,
   searchPlaceholder,
   onSearchChange,
+  searchFields: legacySearchFields,
+  onSearchFieldsChange,
+  searchFieldOptions: legacySearchFieldOptions,
   searchClassName = 'h-9 w-[200px]',
   search,
   refresh,
@@ -140,6 +157,7 @@ export function DataTableActionBar({
   };
   const [showFilters, setShowFilters] = useState(false);
   const [columnsOpen, setColumnsOpen] = useState(false);
+  const [searchFieldsOpen, setSearchFieldsOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopOverflowOpen, setDesktopOverflowOpen] = useState(false);
   const [isDesktopCompactSearchOpen, setIsDesktopCompactSearchOpen] = useState(false);
@@ -227,6 +245,58 @@ export function DataTableActionBar({
     : resolvedSearchPlaceholderProp ?? t('search', { ns: 'common' });
   const resolvedSearchClassName = search?.className ?? searchClassName;
   const shouldRenderSearch = Boolean(search || onSearchChange);
+  const inferredSearchFieldOptions = useMemo<DataTableSearchFieldOption[]>(() => {
+    if (search?.fields?.length) return [...search.fields];
+    if (legacySearchFieldOptions?.length) return [...legacySearchFieldOptions];
+    return (filterColumns ?? [])
+      .filter((column) => column.type === 'string')
+      .map((column) => ({
+        key: column.value,
+        label: t(column.labelKey, { ns: translationNamespace, defaultValue: column.value }),
+      }));
+  }, [filterColumns, legacySearchFieldOptions, search?.fields, t, translationNamespace]);
+  const searchFieldOptions = inferredSearchFieldOptions;
+  const selectedSearchFields = search?.selectedFields ?? legacySearchFields ?? [];
+  const changeSearchFields = search?.onSelectedFieldsChange ?? onSearchFieldsChange;
+  const shouldRenderSearchFields = Boolean(
+    searchFieldOptions.length > 0 && changeSearchFields
+  );
+  useEffect(() => {
+    if (!changeSearchFields || searchFieldOptions.length === 0 || selectedSearchFields.length > 0) return;
+    const storageKey = `paged-search-fields:${pageKey}:${userId ?? 'anonymous'}`;
+    try {
+      const stored = JSON.parse(localStorage.getItem(storageKey) ?? '[]') as unknown;
+      if (Array.isArray(stored)) {
+        const allowed = new Set(searchFieldOptions.map((field) => field.key));
+        const restored = stored.filter((field): field is string => typeof field === 'string' && allowed.has(field));
+        if (restored.length > 0) {
+          changeSearchFields([...new Set(restored)]);
+          return;
+        }
+      }
+    } catch {
+      // Corrupt/private storage falls back to all visible searchable fields.
+    }
+    changeSearchFields(searchFieldOptions.map((field) => field.key));
+  }, [changeSearchFields, pageKey, searchFieldOptions, selectedSearchFields.length, userId]);
+  const toggleSearchField = (fieldKey: string): void => {
+    if (!changeSearchFields) return;
+    const isSelected = selectedSearchFields.includes(fieldKey);
+    if (isSelected && selectedSearchFields.length === 1) return;
+    const nextFields =
+      isSelected
+        ? selectedSearchFields.filter((key) => key !== fieldKey)
+        : [...selectedSearchFields, fieldKey];
+    changeSearchFields(nextFields);
+    try {
+      localStorage.setItem(
+        `paged-search-fields:${pageKey}:${userId ?? 'anonymous'}`,
+        JSON.stringify(nextFields)
+      );
+    } catch {
+      // Storage failures must not block searching.
+    }
+  };
   const refreshCooldown = useRefreshCooldown({
     onRefresh: () => refresh?.onRefresh(),
     cooldownSeconds: refresh?.cooldownSeconds ?? 30,
@@ -562,6 +632,63 @@ export function DataTableActionBar({
               </Button>
             ) : null}
           </div>
+        ) : null}
+
+        {shouldRenderSearchFields ? (
+          <Popover open={searchFieldsOpen} onOpenChange={setSearchFieldsOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 shrink-0 gap-1.5 border-slate-300 bg-white px-2.5 shadow-sm dark:border-white/15 dark:bg-transparent"
+                aria-label={t('searchFields', { ns: 'common', defaultValue: 'Arama alanları' })}
+                title={t('searchFields', { ns: 'common', defaultValue: 'Arama alanları' })}
+              >
+                <ListFilter className="h-4 w-4" />
+                <span className="hidden lg:inline">
+                  {t('searchFields', { ns: 'common', defaultValue: 'Arama alanları' })}
+                </span>
+                <span className="rounded-full bg-primary/10 px-1.5 text-[11px] font-semibold text-primary">
+                  {selectedSearchFields.length}
+                </span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-72 p-2">
+              <div className="px-2 pb-2 text-xs text-slate-500 dark:text-slate-400">
+                {t('searchFieldsHelp', {
+                  ns: 'common',
+                  defaultValue: 'Aramanın uygulanacağı alanları seçin. En az bir alan seçili kalmalıdır.',
+                })}
+              </div>
+              <div className="max-h-72 space-y-1 overflow-y-auto">
+                {searchFieldOptions.map((field) => {
+                  const checked = selectedSearchFields.includes(field.key);
+                  const locked = checked && selectedSearchFields.length === 1;
+                  return (
+                    <button
+                      key={field.key}
+                      type="button"
+                      disabled={locked}
+                      onClick={() => toggleSearchField(field.key)}
+                      className={cn(
+                        'flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-white/10',
+                        locked && 'cursor-not-allowed opacity-60'
+                      )}
+                    >
+                      <span className={cn(
+                        'flex h-4 w-4 items-center justify-center rounded border',
+                        checked ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-300 dark:border-white/20'
+                      )}>
+                        {checked ? <Check className="h-3 w-3" /> : null}
+                      </span>
+                      <span>{field.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
         ) : null}
 
         <div

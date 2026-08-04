@@ -74,6 +74,7 @@ export function LineFormStockSearchField({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'desc',
+    searchFields: ['ErpStockCode', 'StockName'],
     buildFilters: () => undefined,
     fetchPage: dropdownApi.getStockPage,
   });

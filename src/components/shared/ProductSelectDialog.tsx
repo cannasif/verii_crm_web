@@ -606,6 +606,7 @@ export function ProductSelectDialog({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'desc',
+    searchFields: ['ErpStockCode', 'StockName'],
     extraQueryKey: [JSON.stringify(rawAppliedAdvancedFilters), appliedFilterLogic],
     buildFilters: () => (hasAdvancedFilters ? rawAppliedAdvancedFilters : undefined),
     filterLogic: appliedFilterLogic,

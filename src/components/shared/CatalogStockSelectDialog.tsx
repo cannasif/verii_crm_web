@@ -564,6 +564,7 @@ export function CatalogStockSelectDialog({
         pageNumber,
         pageSize: PAGE_SIZE,
         search: catalogStockApiSearch,
+        searchFields: catalogStockApiSearch ? ['ErpStockCode', 'StockName'] : undefined,
         includeDescendants,
       }),
     enabled:
@@ -644,6 +645,7 @@ export function CatalogStockSelectDialog({
         pageNumber,
         pageSize: PAGE_SIZE,
         search: catalogStockApiSearch,
+        searchFields: catalogStockApiSearch ? ['Stock.ErpStockCode', 'Stock.StockName'] : undefined,
       });
       const rawItems = response.data ?? [];
 
@@ -734,6 +736,7 @@ export function CatalogStockSelectDialog({
         pageNumber,
         pageSize: PAGE_SIZE,
         search: catalogStockApiSearch ?? '',
+        searchFields: catalogStockApiSearch ? ['ErpStockCode', 'StockName'] : undefined,
         sortBy: 'Id',
         sortDirection: 'desc',
         filterLogic: 'and',

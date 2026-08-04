@@ -333,6 +333,9 @@ export function CustomerSelectDialog({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Name',
     sortDirection: 'asc',
+    searchFields: [
+      'CustomerCode', 'CustomerName', 'Phone1', 'Email', 'Address', 'City.Name', 'District.Name',
+    ],
     extraQueryKey: [advancedFiltersKey, filterLogic],
     contextUserId: contextUserId ?? undefined,
     filterLogic,
