@@ -51,6 +51,41 @@ const PAGE_KEY = 'stock-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 const LAYOUT_STORAGE_KEY = 'stock-list-layout';
 const STOCK_CARD_CREATE_ENABLED = false;
+const STOCK_SEARCH_FIELDS_STORAGE_PREFIX = 'page-search-fields:stock-list';
+const DEFAULT_STOCK_SEARCH_FIELDS = ['ErpStockCode', 'StockName'] as const;
+const STOCK_SEARCH_FIELD_DEFINITIONS = [
+  ['ErpStockCode', 'ERP stok kodu'], ['StockName', 'Stok adı'],
+  ['EnglishStockName', 'İngilizce stok adı'], ['Unit', 'Birim'],
+  ['UreticiKodu', 'Üretici kodu'], ['GrupKodu', 'Grup kodu'], ['GrupAdi', 'Grup adı'],
+  ['Kod1', 'Kod 1'], ['Kod1Adi', 'Kod 1 adı'], ['Kod2', 'Kod 2'], ['Kod2Adi', 'Kod 2 adı'],
+  ['Kod3', 'Kod 3'], ['Kod3Adi', 'Kod 3 adı'], ['Kod4', 'Kod 4'], ['Kod4Adi', 'Kod 4 adı'],
+  ['Kod5', 'Kod 5'], ['Kod5Adi', 'Kod 5 adı'],
+] as const;
+
+function readStoredStockSearchFields(userId?: number): string[] {
+  try {
+    const raw = localStorage.getItem(`${STOCK_SEARCH_FIELDS_STORAGE_PREFIX}:${userId ?? 'anonymous'}`);
+    if (!raw) return [...DEFAULT_STOCK_SEARCH_FIELDS];
+    const allowed = new Set(STOCK_SEARCH_FIELD_DEFINITIONS.map(([key]) => key));
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [...DEFAULT_STOCK_SEARCH_FIELDS];
+    const fields = parsed.filter((field): field is string => typeof field === 'string' && allowed.has(field as typeof STOCK_SEARCH_FIELD_DEFINITIONS[number][0]));
+    return fields.length > 0 ? [...new Set(fields)] : [...DEFAULT_STOCK_SEARCH_FIELDS];
+  } catch {
+    return [...DEFAULT_STOCK_SEARCH_FIELDS];
+  }
+}
+
+function persistStockSearchFields(fields: readonly string[], userId?: number): void {
+  try {
+    localStorage.setItem(
+      `${STOCK_SEARCH_FIELDS_STORAGE_PREFIX}:${userId ?? 'anonymous'}`,
+      JSON.stringify(fields)
+    );
+  } catch {
+    // Private mode/quota failures must not block searching.
+  }
+}
 
 function readStoredListLayout(): 'table' | 'grid' {
   try {
@@ -102,6 +137,7 @@ export function StockListPage(): ReactElement {
   const [sortBy, setSortBy] = useState<StockColumnKey>('Id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = useState<string[]>([...DEFAULT_STOCK_SEARCH_FIELDS]);
   const [searchResetKey, setSearchResetKey] = useState(0);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
@@ -177,6 +213,10 @@ export function StockListPage(): ReactElement {
   }, [setPageTitle, t]);
 
   useEffect(() => {
+    setSearchFields(readStoredStockSearchFields(user?.id));
+  }, [user?.id]);
+
+  useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'Id');
     const mergedVisibleKeys = [
       ...prefs.visibleKeys,
@@ -201,11 +241,12 @@ export function StockListPage(): ReactElement {
       pageNumber,
       pageSize,
       search: searchTerm || undefined,
+      searchFields: searchTerm ? searchFields : undefined,
       sortBy,
       sortDirection,
       ...filtersParam,
     }),
-    [pageNumber, pageSize, searchTerm, sortBy, sortDirection, filtersParam]
+    [pageNumber, pageSize, searchTerm, searchFields, sortBy, sortDirection, filtersParam]
   );
 
   const stockTableQuery = useStockList(listQueryParams, {
@@ -223,6 +264,7 @@ export function StockListPage(): ReactElement {
       pageNumber,
       pageSize,
       searchTerm,
+      searchFields,
       sortBy,
       sortDirection,
       appliedSpecialCodeSelections,
@@ -234,6 +276,7 @@ export function StockListPage(): ReactElement {
         pageNumber,
         pageSize,
         search: searchTerm || undefined,
+        searchFields: searchTerm ? searchFields : undefined,
         sortBy,
         sortDirection,
         filterLogic,
@@ -336,6 +379,7 @@ export function StockListPage(): ReactElement {
             pageNumber: exportPageNumber,
             pageSize: exportPageSize,
             search: searchTerm || undefined,
+            searchFields: searchTerm ? searchFields : undefined,
             sortBy,
             sortDirection,
             filterLogic,
@@ -349,6 +393,7 @@ export function StockListPage(): ReactElement {
             pageNumber: exportPageNumber,
             pageSize: exportPageSize,
             search: searchTerm || undefined,
+            searchFields: searchTerm ? searchFields : undefined,
             sortBy,
             sortDirection,
             ...filtersParam,
@@ -366,6 +411,7 @@ export function StockListPage(): ReactElement {
   }, [
     exportColumns,
     searchTerm,
+    searchFields,
     sortBy,
     sortDirection,
     filtersParam,
@@ -561,6 +607,13 @@ export function StockListPage(): ReactElement {
               resetKey: searchResetKey,
               className: 'max-w-[110px] sm:max-w-none',
               wrapperClassName: 'max-sm:flex-none',
+              fields: STOCK_SEARCH_FIELD_DEFINITIONS.map(([key, label]) => ({ key, label })),
+              selectedFields: searchFields,
+              onSelectedFieldsChange: (fields) => {
+                setPageNumber(1);
+                setSearchFields(fields);
+                persistStockSearchFields(fields, user?.id);
+              },
             }}
             refresh={{
               onRefresh: () => {
