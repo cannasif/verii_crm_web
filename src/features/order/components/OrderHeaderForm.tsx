@@ -147,6 +147,7 @@ export function OrderHeaderForm({
   const [paymentTypeSearchTerm, setPaymentTypeSearchTerm] = useState('');
   const [deliveryMethodSearchTerm, setDeliveryMethodSearchTerm] = useState('');
   const [activitySearchTerm, setActivitySearchTerm] = useState('');
+  const [activityDropdownOpen, setActivityDropdownOpen] = useState(false);
   const isInitialLoadRef = useRef(true);
 
   const handleRemoveNote = (key: keyof QuotationNotesDto): void => {
@@ -244,7 +245,11 @@ export function OrderHeaderForm({
   const shouldFetchCustomer = Boolean(watchedCustomerId && watchedCustomerId > 0);
   const { data: customer } = useCustomer(watchedCustomerId ?? 0, shouldFetchCustomer);
   const projectDropdown = useErpProjectCodesInfinite(projectSearchTerm);
-  const customerActivitiesQuery = useCustomerActivities(watchedCustomerId, activitySearchTerm);
+  const customerActivitiesQuery = useCustomerActivities(
+    watchedCustomerId,
+    activitySearchTerm,
+    activityDropdownOpen || Boolean(watchedActivityId)
+  );
   const activityOptions = useMemo(
     () =>
       (customerActivitiesQuery.data ?? []).map((activity) => ({
@@ -298,12 +303,12 @@ export function OrderHeaderForm({
 
     if (
       watchedActivityId &&
-      !customerActivitiesQuery.isLoading &&
+      customerActivitiesQuery.isFetched &&
       !activityOptions.some((option) => option.value === String(watchedActivityId))
     ) {
       form.setValue('order.activityId', null, { shouldDirty: true, shouldValidate: true });
     }
-  }, [activityOptions, customerActivitiesQuery.isLoading, form, watchedActivityId, watchedCustomerId]);
+  }, [activityOptions, customerActivitiesQuery.isFetched, form, watchedActivityId, watchedCustomerId]);
 
   const customerDisplayValue = useMemo(
     () =>
@@ -727,6 +732,7 @@ export function OrderHeaderForm({
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
                             onDebouncedSearchChange={setActivitySearchTerm}
+                            onOpenChange={setActivityDropdownOpen}
                             isLoading={customerActivitiesQuery.isLoading}
                             placeholder={t('order:header.selectActivity', { defaultValue: 'Aktivite seçin' })}
                             className={cn(styles.selectTrigger, "min-w-0 px-4 hover:border-cyan-400 dark:hover:border-cyan-600 shadow-sm focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500")}

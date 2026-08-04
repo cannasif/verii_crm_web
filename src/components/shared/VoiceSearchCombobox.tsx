@@ -69,6 +69,7 @@ interface VoiceSearchComboboxProps
   value?: string | null;
   onSelect: (value: string | null) => void;
   onDebouncedSearchChange?: (value: string) => void;
+  onOpenChange?: (open: boolean) => void;
   onFetchNextPage?: () => void;
   hasNextPage?: boolean;
   isLoading?: boolean;
@@ -88,6 +89,7 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
   value,
   onSelect,
   onDebouncedSearchChange,
+  onOpenChange,
   onFetchNextPage,
   hasNextPage = false,
   isLoading = false,
@@ -117,6 +119,15 @@ export const VoiceSearchCombobox = forwardRef<HTMLButtonElement, VoiceSearchComb
   const contentRef = useRef<HTMLDivElement | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const contentDomId = useId().replace(/:/g, '');
+  const onOpenChangeRef = useRef(onOpenChange);
+
+  useEffect(() => {
+    onOpenChangeRef.current = onOpenChange;
+  }, [onOpenChange]);
+
+  useEffect(() => {
+    onOpenChangeRef.current?.(open);
+  }, [open]);
 
   useImperativeHandle(ref, () => triggerButtonRef.current as HTMLButtonElement, []);
 
