@@ -2,6 +2,7 @@ import { type ReactElement, useState, useEffect, useMemo, useCallback } from 're
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -44,6 +45,7 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
   const [editingUserRole, setEditingUserRole] = useState<ApprovalUserRoleDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, APPROVAL_USER_ROLE_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<ApprovalUserRoleColumnKey>('userFullName');
@@ -83,6 +85,7 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
   });
@@ -170,7 +173,7 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingUserRole(null);
@@ -253,6 +256,8 @@ export function ApprovalUserRoleManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('approvalUserRole.searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             refresh={{
               onRefresh: handleRefresh,
               isLoading,

@@ -28,6 +28,7 @@ import { useCreateApprovalRole } from '../hooks/useCreateApprovalRole';
 import { useUpdateApprovalRole } from '../hooks/useUpdateApprovalRole';
 import { approvalRoleRowsToBackendFilters, APPROVAL_ROLE_FILTER_COLUMNS } from '../types/approval-role-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 
 const SORT_MAP: Record<string, string> = {
   id: 'Id',
@@ -56,6 +57,7 @@ export function ApprovalRoleManagementPage(): ReactElement {
   const [editingRole, setEditingRole] = useState<ApprovalRoleDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, APPROVAL_ROLE_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState('Id');
@@ -98,12 +100,13 @@ export function ApprovalRoleManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows]);
 
   const { data: apiResponse, isLoading, isFetching } = useApprovalRoleList({
     pageNumber,
     pageSize,
     search: searchTerm.trim() || undefined,
+    searchFields: searchTerm.trim() ? searchFields : undefined,
     sortBy,
     sortDirection,
     filters: apiFilters.length > 0 ? apiFilters : undefined,
@@ -267,6 +270,8 @@ export function ApprovalRoleManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('approvalRole.searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             refresh={{
               onRefresh: handleRefresh,
               isLoading: isLoading || isFetching,
