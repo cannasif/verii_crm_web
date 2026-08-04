@@ -405,6 +405,7 @@ export function DemandDetailPage(): ReactElement {
     detailShareFileName: pdfShareFileName,
     emptyLinesToastTitle: t('update.error'),
     asDraft: isDraftDocument,
+    asDraftTitle: false,
   });
 
   useEffect(() => {
@@ -916,6 +917,7 @@ export function DemandDetailPage(): ReactElement {
                       buildExportPdfBlob={pdfExport.buildExportPdfBlob}
                       exportPdfFileName={pdfShareFileName}
                       exportPdfAsDraft={isDraftDocument}
+                      exportPdfAsDraftTitle={false}
                     />
                     </div>
                   </section>

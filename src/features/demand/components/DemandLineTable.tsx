@@ -23,6 +23,7 @@ import { DocumentLineFormDialog } from '@/components/shared/DocumentLineFormDial
 import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { useSalesTypeOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
+import type { PreviewPdfExportOptions } from '@/features/quotation/utils/build-quotation-preview-pdf';
 import { DescriptionCell } from '@/components/shared';
 import { LineTableImageThumbnail } from '@/components/shared/LineTableImageThumbnail';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -228,9 +229,10 @@ interface DemandLineTableProps {
   demandId?: number | null;
   enabled?: boolean;
   offerType?: string | null;
-  buildExportPdfBlob?: (options: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }) => Promise<Blob>;
+  buildExportPdfBlob?: (options: PreviewPdfExportOptions) => Promise<Blob>;
   exportPdfFileName?: string;
   exportPdfAsDraft?: boolean;
+  exportPdfAsDraftTitle?: boolean;
 }
 
 export function DemandLineTable({
@@ -249,6 +251,7 @@ export function DemandLineTable({
   buildExportPdfBlob,
   exportPdfFileName,
   exportPdfAsDraft = false,
+  exportPdfAsDraftTitle,
 }: DemandLineTableProps): ReactElement {
   const queryClient = useQueryClient();
   const form = useFormContext();
@@ -744,7 +747,10 @@ export function DemandLineTable({
       }
 
       try {
-        const blob = await buildExportPdfBlob({ draft: exportPdfAsDraft });
+        const blob = await buildExportPdfBlob({
+          draft: exportPdfAsDraft,
+          draftTitle: exportPdfAsDraftTitle ?? exportPdfAsDraft,
+        });
         const fileName = exportPdfFileName ?? 'talep-kalemleri.pdf';
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement('a');

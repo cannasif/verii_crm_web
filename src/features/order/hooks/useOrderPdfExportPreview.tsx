@@ -31,7 +31,9 @@ import { usePaymentTypes } from '@/features/quotation/hooks/usePaymentTypes';
 import { useShippingAddresses } from '../hooks/useShippingAddresses';
 import type { CreateOrderSchema } from '../schemas/order-schema';
 import type { OrderGetDto, OrderLineFormState } from '../types/order-types';
+import type { PreviewPdfExportOptions } from '@/features/quotation/utils/build-quotation-preview-pdf';
 import type { QuotationNotesDto } from '@/features/quotation/types/quotation-types';
+
 interface OrderPdfExportCustomer {
   name?: string | null;
   phone?: string | null;
@@ -51,14 +53,15 @@ interface UseOrderPdfExportPreviewParams {
   detailShareFileName?: string;
   emptyLinesToastTitle?: string;
   asDraft?: boolean;
+  asDraftTitle?: boolean;
 }
 
 interface UseOrderPdfExportPreviewReturn {
   pdfExportOpen: boolean;
   setPdfExportOpen: (open: boolean) => void;
   openPdfExportPreview: () => void;
-  buildExportPdfBlob: (options: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }) => Promise<Blob>;
-  buildPreviewPdfBlob: (options?: { draft?: boolean; showDiscount?: boolean; hideVat?: boolean }) => Promise<Blob>;
+  buildExportPdfBlob: (options: PreviewPdfExportOptions) => Promise<Blob>;
+  buildPreviewPdfBlob: (options?: Partial<PreviewPdfExportOptions>) => Promise<Blob>;
   hasLineDiscounts: boolean;
   shareFileName: string;
   handleModalShareWhatsapp: (pdfBlob: Blob) => void;
@@ -84,7 +87,9 @@ export function useOrderPdfExportPreview({
   detailShareFileName,
   emptyLinesToastTitle,
   asDraft = false,
+  asDraftTitle,
 }: UseOrderPdfExportPreviewParams): UseOrderPdfExportPreviewReturn {
+  const resolvedDraftTitle = asDraftTitle ?? asDraft;
   const { t, i18n } = useTranslation('order');
   const branch = useAuthStore((state) => state.branch);
   const { profilMap, demirMap, vidaMap, baskiMap, koliBaskiMap } = useWindoDefinitionOptions();
@@ -142,7 +147,9 @@ export function useOrderPdfExportPreview({
   const defaultShowDiscountDetails = hasLineDiscounts || hasGeneralDiscount;
 
   const buildPreviewPdfBlob = useCallback(
-    async (options?: { draft?: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> => {
+    async (options?: Partial<PreviewPdfExportOptions>): Promise<Blob> => {
+      const draft = options?.draft ?? false;
+      const draftTitle = options?.draftTitle ?? draft;
       const oc = orderFormSlice;
       const customerLabel =
         (await resolveQuotationCustomerLabelForPdf({
@@ -199,7 +206,8 @@ export function useOrderPdfExportPreview({
         lineDetailMaps: { profilMap, demirMap, vidaMap, baskiMap },
         lineDiscountLabels,
         showDiscount,
-        draft: options?.draft ?? false,
+        draft,
+        draftTitle,
         hideVat: options?.hideVat ?? false,
       });
     },
@@ -226,8 +234,13 @@ export function useOrderPdfExportPreview({
   );
 
   const buildExportPdfBlob = useCallback(
-    async ({ draft, showDiscount, hideVat }: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> =>
-      buildPreviewPdfBlob({ draft, showDiscount, hideVat }),
+    async ({ draft, draftTitle, showDiscount, hideVat }: PreviewPdfExportOptions): Promise<Blob> =>
+      buildPreviewPdfBlob({
+        draft,
+        draftTitle: draftTitle ?? draft,
+        showDiscount,
+        hideVat,
+      }),
     [buildPreviewPdfBlob],
   );
 
@@ -239,11 +252,12 @@ export function useOrderPdfExportPreview({
         isDefault: true,
         generate: () => buildPreviewPdfBlob({
           draft: asDraft,
+          draftTitle: resolvedDraftTitle,
           showDiscount: defaultShowDiscountDetails,
         }),
       },
     ],
-    [asDraft, buildPreviewPdfBlob, defaultShowDiscountDetails, t],
+    [asDraft, buildPreviewPdfBlob, defaultShowDiscountDetails, resolvedDraftTitle, t],
   );
 
   const openPdfExportPreview = useCallback((): void => {
@@ -408,6 +422,7 @@ export function useOrderPdfExportPreview({
           onOpenChange={setPdfExportOpen}
           buildPdfBlob={buildExportPdfBlob}
           asDraft={asDraft}
+          asDraftTitle={resolvedDraftTitle}
           hasLineDiscounts={defaultShowDiscountDetails}
           fileName={orderId > 0 ? shareFileName : defaultShareFileName}
           labels={{
@@ -459,6 +474,7 @@ export function useOrderPdfExportPreview({
     pdfExportOpen,
     buildExportPdfBlob,
     asDraft,
+    resolvedDraftTitle,
     defaultShowDiscountDetails,
     orderId,
     shareFileName,

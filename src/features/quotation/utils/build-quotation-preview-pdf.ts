@@ -100,6 +100,14 @@ export interface BuildQuotationPreviewPdfParams {
   lineDiscountLabels?: PreviewPdfLineDiscountLabels;
   showDiscount?: boolean;
   draft?: boolean;
+  draftTitle?: boolean;
+  hideVat?: boolean;
+}
+
+export interface PreviewPdfExportOptions {
+  draft: boolean;
+  draftTitle?: boolean;
+  showDiscount?: boolean;
   hideVat?: boolean;
 }
 
@@ -344,7 +352,8 @@ function drawHeader(
 ): number {
   drawHorizontalGradient(doc, 0, 0, PAGE_W, 3.2, GRAD_FROM, GRAD_TO);
 
-  const headerTitle = params.draft ? params.labels.draftWatermark : params.labels.documentTitle;
+  const useDraftTitle = params.draftTitle ?? params.draft ?? false;
+  const headerTitle = useDraftTitle ? params.labels.draftWatermark : params.labels.documentTitle;
   doc.setFontSize(23);
   drawStrongText(doc, bodyFont, headerTitle, PAGE_W / 2, 18, NAVY, 0.5, {
     align: 'center',

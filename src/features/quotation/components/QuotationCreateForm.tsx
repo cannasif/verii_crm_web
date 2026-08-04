@@ -47,6 +47,7 @@ import { findExchangeRateByDovizTipi } from '../utils/price-conversion';
 import type { QuotationGetDto, QuotationLineGetDto } from '../types/quotation-types';
 import {
   buildQuotationPreviewPdfBlob,
+  type PreviewPdfExportOptions,
   type QuotationPreviewPdfLabels,
 } from '../utils/build-quotation-preview-pdf';
 import {
@@ -537,7 +538,7 @@ export function QuotationCreateForm(): ReactElement {
 
   const defaultShowDiscountDetails = hasLineDiscounts || hasGeneralDiscount;
 
-  const buildExportPdfBlob = useCallback(async ({ draft, showDiscount, hideVat }: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> => {
+  const buildExportPdfBlob = useCallback(async ({ draft, draftTitle, showDiscount, hideVat }: PreviewPdfExportOptions): Promise<Blob> => {
     const qc = quotationFormSlice;
     const customerLabel =
       (await resolveQuotationCustomerLabelForPdf({
@@ -617,6 +618,7 @@ export function QuotationCreateForm(): ReactElement {
       lineDiscountLabels,
       showDiscount: showDiscount ?? defaultShowDiscountDetails,
       draft,
+      draftTitle: draftTitle ?? draft,
       hideVat: hideVat ?? false,
     });
   }, [
