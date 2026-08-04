@@ -5785,6 +5785,8 @@
     "terminalHint": "Kompaktes Seitenleistenlayout und bestehender CRM-Arbeitsbereich",
     "premiumHint": "Breiter Glas-Arbeitsbereich mit oberer Navigation",
     "mainNavigation": "Hauptnavigation",
+  "collapseNav": "Menü einklappen",
+  "expandNav": "Menü ausklappen",
     "noNavigationResult": "Kein passendes Menü gefunden"
   },
   "erpCleanup": {

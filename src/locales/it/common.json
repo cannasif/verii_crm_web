@@ -5850,6 +5850,8 @@
     "terminalHint": "Layout compatto con barra laterale e area CRM esistente",
     "premiumHint": "Ampia area vetrata con navigazione superiore",
     "mainNavigation": "Navigazione principale",
+  "collapseNav": "Comprimi il menu",
+  "expandNav": "Espandi il menu",
     "noNavigationResult": "Nessun menu corrispondente"
   },
   "erpCleanup": {

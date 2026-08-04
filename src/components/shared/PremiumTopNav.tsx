@@ -10,12 +10,22 @@ import {
 } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronsLeftRight, ChevronsRightLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { NavItem } from './nav-items';
 
 interface PremiumTopNavProps {
   items: NavItem[];
+}
+
+const COLLAPSE_STORAGE_KEY = 'crm:premiumTopNav:collapsed';
+
+function readStoredCollapsed(): boolean {
+  try {
+    return localStorage.getItem(COLLAPSE_STORAGE_KEY) === '1';
+  } catch {
+    return false;
+  }
 }
 
 function itemContainsPath(item: NavItem, pathname: string): boolean {
@@ -47,6 +57,7 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
   const [gliderStyle, setGliderStyle] = useState<CSSProperties | null>(null);
+  const [collapsed, setCollapsed] = useState<boolean>(readStoredCollapsed);
   const tabRefs = useRef<(HTMLElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -78,11 +89,30 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
 
   useLayoutEffect(() => {
     updateGlider();
-  }, [updateGlider, items, i18n.resolvedLanguage]);
+  }, [updateGlider, items, i18n.resolvedLanguage, collapsed]);
 
   useEffect(() => {
     window.addEventListener('resize', updateGlider);
     return () => window.removeEventListener('resize', updateGlider);
+  }, [updateGlider]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLLAPSE_STORAGE_KEY, collapsed ? '1' : '0');
+    } catch {
+      // ignore storage errors (private mode, quota, etc.)
+    }
+  }, [collapsed]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const handleTransitionEnd = (event: TransitionEvent): void => {
+      if (event.propertyName !== 'width' && event.propertyName !== 'max-width') return;
+      updateGlider();
+    };
+    container.addEventListener('transitionend', handleTransitionEnd);
+    return () => container.removeEventListener('transitionend', handleTransitionEnd);
   }, [updateGlider]);
 
   useEffect(() => {
@@ -217,58 +247,73 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
   const openItem = openIndex !== null ? items[openIndex] : null;
 
   return (
-    <nav ref={navRef} className="crm-premium-nav" aria-label={t('shell.mainNavigation')}>
-      <div ref={containerRef} className="crm-premium-nav__tabs">
-        {gliderStyle ? <span className="crm-premium-nav__glider" style={gliderStyle} aria-hidden /> : null}
-        {items.map((item, index) => {
-          const isActive = index === activeIndex;
-          const isOpen = index === openIndex;
+    <nav ref={navRef} className={cn('crm-premium-nav', collapsed && 'crm-premium-nav--collapsed')} aria-label={t('shell.mainNavigation')}>
+      <div className="crm-premium-nav__row">
+        <div ref={containerRef} className="crm-premium-nav__tabs">
+          {gliderStyle ? <span className="crm-premium-nav__glider" style={gliderStyle} aria-hidden /> : null}
+          {items.map((item, index) => {
+            const isActive = index === activeIndex;
+            const isOpen = index === openIndex;
 
-          if (!item.children?.length && item.href) {
+            if (!item.children?.length && item.href) {
+              return (
+                <Link
+                  key={getItemKey(item, index)}
+                  ref={(element) => {
+                    tabRefs.current[index] = element;
+                  }}
+                  to={item.href}
+                  title={collapsed ? item.title : undefined}
+                  className={cn('crm-premium-nav__tab', isActive && 'crm-premium-nav__tab--active')}
+                  onClick={() => setOpenIndex(null)}
+                >
+                  {item.icon ? <span className="crm-premium-nav__tab-icon">{item.icon}</span> : null}
+                  <span className={cn('crm-premium-nav__tab-label', collapsed && 'crm-premium-nav__tab-label--collapsed')}>{item.title}</span>
+                </Link>
+              );
+            }
+
             return (
-              <Link
+              <button
                 key={getItemKey(item, index)}
                 ref={(element) => {
                   tabRefs.current[index] = element;
                 }}
-                to={item.href}
-                className={cn('crm-premium-nav__tab', isActive && 'crm-premium-nav__tab--active')}
-                onClick={() => setOpenIndex(null)}
+                type="button"
+                aria-expanded={isOpen}
+                title={collapsed ? item.title : undefined}
+                className={cn(
+                  'crm-premium-nav__tab',
+                  isActive && 'crm-premium-nav__tab--active',
+                  isOpen && 'crm-premium-nav__tab--open',
+                )}
+                onClick={() => setOpenIndex((current) => (current === index ? null : index))}
               >
                 {item.icon ? <span className="crm-premium-nav__tab-icon">{item.icon}</span> : null}
-                <span>{item.title}</span>
-              </Link>
+                <span className={cn('crm-premium-nav__tab-label', collapsed && 'crm-premium-nav__tab-label--collapsed')}>{item.title}</span>
+                <ChevronDown
+                  className={cn(
+                    'crm-premium-nav__tab-chevron',
+                    collapsed && 'crm-premium-nav__tab-chevron--collapsed',
+                    isOpen && 'crm-premium-nav__tab-chevron--open',
+                  )}
+                  strokeWidth={2.25}
+                  aria-hidden
+                />
+              </button>
             );
-          }
+          })}
+        </div>
 
-          return (
-            <button
-              key={getItemKey(item, index)}
-              ref={(element) => {
-                tabRefs.current[index] = element;
-              }}
-              type="button"
-              aria-expanded={isOpen}
-              className={cn(
-                'crm-premium-nav__tab',
-                isActive && 'crm-premium-nav__tab--active',
-                isOpen && 'crm-premium-nav__tab--open',
-              )}
-              onClick={() => setOpenIndex((current) => (current === index ? null : index))}
-            >
-              {item.icon ? <span className="crm-premium-nav__tab-icon">{item.icon}</span> : null}
-              <span>{item.title}</span>
-              <ChevronDown
-                className={cn(
-                  'crm-premium-nav__tab-chevron',
-                  isOpen && 'crm-premium-nav__tab-chevron--open',
-                )}
-                strokeWidth={2.25}
-                aria-hidden
-              />
-            </button>
-          );
-        })}
+        <button
+          type="button"
+          className="crm-premium-nav__collapse-toggle"
+          onClick={() => setCollapsed((current) => !current)}
+          aria-label={collapsed ? t('shell.expandNav') : t('shell.collapseNav')}
+          title={collapsed ? t('shell.expandNav') : t('shell.collapseNav')}
+        >
+          {collapsed ? <ChevronsLeftRight size={15} strokeWidth={2.25} /> : <ChevronsRightLeft size={15} strokeWidth={2.25} />}
+        </button>
       </div>
 
       {openItem?.children?.length ? (

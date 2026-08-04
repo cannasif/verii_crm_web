@@ -181,11 +181,18 @@ html.skin-premium .crm-premium-navbar-search__input:focus {
   padding: 0.4rem 0 0.3rem;
 }
 
+.crm-premium-nav__row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.4rem;
+}
+
 .crm-premium-nav__tabs {
   position: relative;
   isolation: isolate;
   display: flex;
-  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
   align-items: stretch;
   gap: 0.2rem;
   overflow-x: auto;
@@ -199,10 +206,42 @@ html.skin-premium .crm-premium-navbar-search__input:focus {
   scrollbar-width: none;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  transition: padding 320ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .crm-premium-nav__tabs::-webkit-scrollbar {
   display: none;
+}
+
+.crm-premium-nav__collapse-toggle {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  border: 1px solid color-mix(in oklab, var(--crm-brand-primary) 15%, var(--crm-app-border));
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--crm-app-panel-strong) 38%, transparent);
+  color: var(--crm-app-text-muted);
+  cursor: pointer;
+  transition: color 200ms ease, background-color 200ms ease, border-color 200ms ease, transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.crm-premium-nav__collapse-toggle:hover {
+  color: var(--crm-brand-primary);
+  border-color: color-mix(in oklab, var(--crm-brand-primary) 38%, var(--crm-app-border));
+  transform: scale(1.06);
+}
+
+.crm-premium-nav__collapse-toggle:focus-visible {
+  outline: 2px solid color-mix(in oklab, var(--crm-brand-primary) 52%, transparent);
+  outline-offset: 1px;
+}
+
+.crm-premium-nav__collapse-toggle:active {
+  transform: scale(0.94);
 }
 
 .crm-premium-nav__glider {
@@ -266,7 +305,27 @@ html.skin-premium .crm-premium-navbar-search__input:focus {
   text-transform: uppercase;
   white-space: nowrap;
   cursor: pointer;
-  transition: color 220ms ease, text-shadow 220ms ease, transform 180ms ease;
+  transition: color 220ms ease, text-shadow 220ms ease, transform 180ms ease, padding 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.crm-premium-nav--collapsed .crm-premium-nav__tab {
+  gap: 0;
+  padding: 0.68rem 0.72rem;
+}
+
+.crm-premium-nav__tab-label {
+  display: inline-block;
+  max-width: 12rem;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-width 320ms cubic-bezier(0.4, 0, 0.2, 1), opacity 180ms ease, margin-inline-start 320ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.crm-premium-nav__tab-label--collapsed {
+  max-width: 0;
+  margin-inline-start: -0.42rem;
+  opacity: 0;
+  transition: max-width 320ms cubic-bezier(0.4, 0, 0.2, 1), opacity 120ms ease, margin-inline-start 320ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .crm-premium-nav__tab:hover {
@@ -310,7 +369,13 @@ html.skin-premium.dark .crm-premium-nav__tab--open {
   width: 0.8rem;
   height: 0.8rem;
   opacity: 0.65;
-  transition: transform 220ms ease;
+  transition: transform 220ms ease, width 260ms cubic-bezier(0.4, 0, 0.2, 1), opacity 180ms ease, margin-inline-start 260ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.crm-premium-nav__tab-chevron--collapsed {
+  width: 0;
+  margin-inline-start: -0.8rem;
+  opacity: 0;
 }
 
 .crm-premium-nav__tab-chevron--open,

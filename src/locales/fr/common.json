@@ -5776,6 +5776,8 @@
     "terminalHint": "Disposition compacte avec barre latérale et espace CRM actuel",
     "premiumHint": "Grand espace vitré avec navigation supérieure",
     "mainNavigation": "Navigation principale",
+  "collapseNav": "Réduire le menu",
+  "expandNav": "Développer le menu",
     "noNavigationResult": "Aucun menu correspondant"
   },
   "erpCleanup": {

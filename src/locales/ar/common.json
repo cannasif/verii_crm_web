@@ -5828,6 +5828,8 @@
     "terminalHint": "تخطيط مضغوط بشريط جانبي ومساحة CRM الحالية",
     "premiumHint": "مساحة عمل زجاجية واسعة مع تنقل علوي",
     "mainNavigation": "التنقل الرئيسي",
+  "collapseNav": "طي القائمة",
+  "expandNav": "توسيع القائمة",
     "noNavigationResult": "لم يتم العثور على قائمة مطابقة"
   },
   "erpCleanup": {

@@ -5822,6 +5822,8 @@
     "terminalHint": "Diseño compacto con barra lateral y espacio CRM actual",
     "premiumHint": "Espacio amplio acristalado con navegación superior",
     "mainNavigation": "Navegación principal",
+  "collapseNav": "Contraer menú",
+  "expandNav": "Expandir menú",
     "noNavigationResult": "No se encontró un menú coincidente"
   },
   "erpCleanup": {

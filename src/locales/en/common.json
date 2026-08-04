@@ -6025,6 +6025,8 @@
     "terminalHint": "Compact sidebar layout and the existing CRM workspace",
     "premiumHint": "Wide glass workspace with top navigation",
     "mainNavigation": "Main navigation",
+  "collapseNav": "Collapse menu",
+  "expandNav": "Expand menu",
     "noNavigationResult": "No matching menu found"
   },
   "erpCleanup": {

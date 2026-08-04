@@ -6024,6 +6024,8 @@
     "terminalHint": "Kompakt sidebar düzeni ve mevcut CRM çalışma alanı",
     "premiumHint": "Üst navigasyonlu geniş ve cam yüzeyli çalışma alanı",
     "mainNavigation": "Ana menü",
+  "collapseNav": "Menüyü daralt",
+  "expandNav": "Menüyü genişlet",
     "noNavigationResult": "Eşleşen menü bulunamadı"
   },
   "erpCleanup": {
