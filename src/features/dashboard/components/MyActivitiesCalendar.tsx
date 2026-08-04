@@ -45,11 +45,17 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { useAuthStore } from '@/stores/auth-store';
 import { useMyActivitiesCalendar } from '@/features/activity-management/hooks/useMyActivitiesCalendar';
+import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
+import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
+import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
+import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
 import {
   ActivityPriority,
   ActivityStatus,
   type ActivityDto,
+  type ActivityFormSchema,
 } from '@/features/activity-management/types/activity-types';
 
 type CalendarView = 'month' | 'week' | 'agenda';
@@ -122,9 +128,12 @@ function ActivityChip({ activity, compact = false, onSelect }: ActivityChipProps
 export function MyActivitiesCalendar(): ReactElement {
   const { t, i18n } = useTranslation('dashboard');
   const navigate = useNavigate();
+  const { user } = useAuthStore();
   const [view, setView] = useState<CalendarView>('week');
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState<ActivityDto | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const createActivity = useCreateActivity();
 
   const weekStartsOn = 1 as const;
   const visibleRange = useMemo(() => {
@@ -174,6 +183,23 @@ export function MyActivitiesCalendar(): ReactElement {
   };
   const viewIcons: Record<CalendarView, LucideIcon> = { month: LayoutGrid, week: CalendarRange, agenda: List };
 
+  const handleCreateActivity = async (
+    data: ActivityFormSchema,
+    pendingImages?: { file: File; description: string }[],
+  ): Promise<void> => {
+    const createdActivity = await createActivity.mutateAsync(
+      buildCreateActivityPayload(data, { assignedUserIdFallback: user?.id }),
+    );
+    if (createdActivity && pendingImages && pendingImages.length > 0) {
+      await activityImageApi.upload(createdActivity.id, {
+        files: pendingImages.map((image) => image.file),
+        resimAciklamalar: pendingImages.some((image) => image.description) ? pendingImages.map((image) => image.description) : undefined,
+      });
+    }
+    setFormOpen(false);
+    void refetch();
+  };
+
   const move = (direction: -1 | 1) => {
     setCursor((current) => view === 'week'
       ? (direction < 0 ? subWeeks(current, 1) : addWeeks(current, 1))
@@ -216,7 +242,7 @@ export function MyActivitiesCalendar(): ReactElement {
                 );
               })}
             </div>
-            <Button size="sm" className="bg-[image:var(--crm-brand-gradient)] text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] transition-all" onClick={() => navigate('/activity-management')}>
+            <Button size="sm" className="bg-[image:var(--crm-brand-gradient)] text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] transition-all" onClick={() => setFormOpen(true)}>
               <Plus size={15} className="mr-1.5" />{t('calendar.newActivity')}
             </Button>
           </div>
@@ -320,6 +346,13 @@ export function MyActivitiesCalendar(): ReactElement {
           {selected && <><DialogHeader><DialogTitle className="pr-8 text-xl">{selected.subject}</DialogTitle><DialogDescription>{selected.activityType?.name || t('calendar.activity')}</DialogDescription></DialogHeader><div className="grid gap-3 py-2 sm:grid-cols-2"><Detail icon={Clock3} label={t('calendar.detail.date')} value={formatActivityRange(selected, locale)} /><Detail icon={CheckCircle2} label={t('calendar.detail.status')} value={statusLabel(selected)} />{customerName(selected) && <Detail icon={UserRound} label={t('calendar.detail.customer')} value={customerName(selected)!} />}{selected.erpCustomerCode && <Detail icon={MapPin} label={t('calendar.detail.customerCode')} value={selected.erpCustomerCode} />}</div>{selected.description && <div className="rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-white/5 dark:text-slate-200"><div className="mb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">{t('calendar.detail.description')}</div>{selected.description}</div>}<div className="mt-2 flex justify-end"><Button onClick={() => navigate('/activity-management')}>{t('calendar.openActivities')}</Button></div></>}
         </DialogContent>
       </Dialog>
+
+      <ActivityForm
+        open={formOpen}
+        onOpenChange={setFormOpen}
+        onSubmit={handleCreateActivity}
+        isLoading={createActivity.isPending}
+      />
     </section>
   );
 }

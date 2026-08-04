@@ -1,5 +1,5 @@
 const ROUTE_NAMESPACE_ENTRIES: Array<{ match: (pathname: string) => boolean; namespaces: string[] }> = [
-  { match: (pathname) => pathname === '/', namespaces: ['dashboard'] },
+  { match: (pathname) => pathname === '/', namespaces: ['dashboard', 'activity-management'] },
   { match: (pathname) => pathname.startsWith('/ai-assistant'), namespaces: ['ai-assistant'] },
   { match: (pathname) => pathname.startsWith('/auth') || pathname.startsWith('/reset-password'), namespaces: ['auth'] },
   { match: (pathname) => pathname.startsWith('/customer-management'), namespaces: ['customer-management', 'activity-management', 'google-integration', 'outlook-integration'] },
