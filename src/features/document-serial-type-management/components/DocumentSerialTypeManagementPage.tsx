@@ -2,6 +2,7 @@ import { type ReactElement, type ReactNode, useState, useEffect, useMemo, useCal
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -91,6 +92,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
   const [selectedDocumentSerialType, setSelectedDocumentSerialType] = useState<DocumentSerialTypeDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, DOCUMENT_SERIAL_TYPE_FILTER_COLUMNS);
   const [searchResetKey, setSearchResetKey] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -139,6 +141,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy: apiSortBy,
     sortDirection,
     ...filtersParam,
@@ -211,6 +214,7 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
           pageNumber: exportPageNumber,
           pageSize: exportPageSize,
           search: searchTerm || undefined,
+          searchFields: searchTerm ? searchFields : undefined,
           sortBy: apiSortBy,
           sortDirection,
           ...filtersParam,
@@ -220,13 +224,13 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
       columns: exportColumns,
       rows: list.map(mapDocumentSerialTypeRow),
     };
-  }, [exportColumns, mapDocumentSerialTypeRow, searchTerm, apiSortBy, sortDirection, filtersParam]);
+  }, [exportColumns, mapDocumentSerialTypeRow, searchTerm, searchFields, apiSortBy, sortDirection, filtersParam]);
 
   const appliedFilterCount = useMemo(() => appliedAdvancedFilters.length, [appliedAdvancedFilters]);
 
   useEffect(() => {
     setPageNumber(1);
-  }, [searchTerm, appliedAdvancedFilters, pageSize]);
+  }, [searchTerm, searchFields, appliedAdvancedFilters, pageSize]);
 
   const handleAddClick = (): void => {
     setEditingDocumentSerialType(null);
@@ -387,6 +391,8 @@ export function DocumentSerialTypeManagementPage(): ReactElement {
             appliedFilterCount={appliedFilterCount}
             search={{
               onSearchChange: setSearchTerm,
+              selectedFields: searchFields,
+              onSelectedFieldsChange: setSearchFields,
               placeholder: t('search'),
               minLength: 1,
               resetKey: searchResetKey,

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -68,6 +69,7 @@ interface DefinitionSectionConfig {
     pageNumber: number;
     pageSize: number;
     search?: string;
+    searchFields?: string[];
     sortBy: string;
     sortDirection: 'asc' | 'desc';
   }) => Promise<{
@@ -83,6 +85,7 @@ interface DefinitionSectionConfig {
 }
 
 const PAGE_KEY = 'windo-profil-demir-vida-management';
+const WINDO_DEFINITION_SEARCH_FIELDS = ['name'] as const;
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 const EMPTY_DEFINITION_ROWS: WindoDefinitionGetDto[] = [];
 const SORT_MAP: Record<SortKey, string> = {
@@ -106,6 +109,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   const { user } = useAuthStore();
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('definitions.category-definitions.view');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(`${PAGE_KEY}-${config.kind}`, user?.id, WINDO_DEFINITION_SEARCH_FIELDS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<SortKey>('name');
@@ -146,12 +150,13 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
   }, [appliedFilterRows, searchTerm]);
 
   const { data: apiResponse, isLoading, isFetching } = useQuery({
-    queryKey: ['windo-definition-management', config.queryKey, pageNumber, pageSize, serverSearchTerm, sortBy, sortDirection],
+    queryKey: ['windo-definition-management', config.queryKey, pageNumber, pageSize, serverSearchTerm, searchFields, sortBy, sortDirection],
     queryFn: () =>
       config.getList({
         pageNumber,
         pageSize,
         search: serverSearchTerm || undefined,
+        searchFields: serverSearchTerm ? searchFields : undefined,
         sortBy: SORT_MAP[sortBy],
         sortDirection,
       }),
@@ -454,6 +459,8 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
             searchValue={searchTerm}
             searchPlaceholder={t('table.searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             leftSlot={
               <Button
                 variant="outline"
@@ -742,4 +749,3 @@ export function WindoProfilDemirVidaTanimlamaPage(): ReactElement {
     </div>
   );
 }
-

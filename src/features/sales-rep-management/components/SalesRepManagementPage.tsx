@@ -18,6 +18,7 @@ import {
   MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME,
 } from '@/lib/management-list-layout';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { useUIStore } from '@/stores/ui-store';
 import { SalesRepForm } from './SalesRepForm';
 import { SalesRepTable } from './SalesRepTable';
@@ -56,6 +57,7 @@ export function SalesRepManagementPage(): ReactElement {
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<SalesRepGetDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, SALES_REP_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<SalesRepColumnKey>('salesRepCode');
@@ -83,7 +85,7 @@ export function SalesRepManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection]);
 
   const apiFilters = useMemo(
     () => rowsToBackendFilters(appliedFilterRows),
@@ -94,6 +96,7 @@ export function SalesRepManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm.trim() || undefined,
+    searchFields: searchTerm.trim() ? searchFields : undefined,
     sortBy,
     sortDirection,
     filters: apiFilters.length > 0 ? apiFilters : undefined,
@@ -220,6 +223,7 @@ export function SalesRepManagementPage(): ReactElement {
         pageNumber,
         pageSize,
         search: searchTerm.trim() || undefined,
+        searchFields: searchTerm.trim() ? searchFields : undefined,
         sortBy,
         sortDirection,
         filters: apiFilters,
@@ -276,6 +280,8 @@ export function SalesRepManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             additionalFilterActions={
               <DefinitionExcelActions
                 definitionKey="sales-rep-definition"

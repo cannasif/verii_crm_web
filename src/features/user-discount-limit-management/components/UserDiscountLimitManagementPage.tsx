@@ -2,6 +2,7 @@ import { type ReactElement, useState, useEffect, useMemo, useCallback } from 're
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -54,6 +55,7 @@ export function UserDiscountLimitManagementPage(): ReactElement {
   const [editingItem, setEditingItem] = useState<UserDiscountLimitDto | null>(null);
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, USER_DISCOUNT_LIMIT_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<UserDiscountLimitColumnKey>('salespersonName');
@@ -98,6 +100,7 @@ export function UserDiscountLimitManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchQuery,
+    searchFields: searchQuery ? searchFields : undefined,
     sortBy,
     sortDirection,
     filters: apiFilters,
@@ -162,7 +165,7 @@ export function UserDiscountLimitManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [searchQuery, appliedFilterRows, pageSize]);
+  }, [searchQuery, searchFields, appliedFilterRows, pageSize]);
 
   const handleAddClick = (): void => {
     setEditingItem(null);
@@ -269,6 +272,8 @@ export function UserDiscountLimitManagementPage(): ReactElement {
             searchValue={searchQuery}
             searchPlaceholder={t('common.search', { ns: 'common' })}
             onSearchChange={setSearchQuery}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             additionalFilterActions={
               <DefinitionExcelActions
                 definitionKey="user-discount-limit-definition"

@@ -29,6 +29,7 @@ import { applySalesTypeFilters, SALES_TYPE_FILTER_COLUMNS } from '../types/sales
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { OfferType } from '@/types/offer-type';
 import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 
 const EMPTY_SALES_TYPES: SalesTypeGetDto[] = [];
 const PAGE_KEY = 'sales-type-management';
@@ -54,6 +55,7 @@ export function SalesTypeManagementPage(): ReactElement {
   const [editingItem, setEditingItem] = useState<SalesTypeGetDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, SALES_TYPE_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<SalesTypeColumnKey>('name');
@@ -99,6 +101,7 @@ export function SalesTypeManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
   });
@@ -209,7 +212,7 @@ export function SalesTypeManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingItem(null);
@@ -304,6 +307,8 @@ export function SalesTypeManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             additionalFilterActions={
               <DefinitionExcelActions
                 definitionKey="sales-type-definition"
