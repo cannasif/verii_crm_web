@@ -73,7 +73,7 @@
     "views": { "month": "Month", "week": "Week", "agenda": "Agenda" },
     "summary": { "total": "Total activities", "scheduled": "Scheduled", "completed": "Completed", "overdue": "Overdue" },
     "status": { "scheduled": "Scheduled", "completed": "Completed", "cancelled": "Cancelled", "overdue": "Overdue" },
-    "detail": { "date": "Date and time", "status": "Status", "customer": "Customer / contact", "customerCode": "Customer code", "description": "Description" },
+    "detail": { "date": "Date and time", "status": "Status", "customer": "Customer / contact", "customerCode": "Customer code", "description": "Description", "clickHint": "Click for details" },
     "today": "Today", "previous": "Previous period", "next": "Next period", "newActivity": "Add activity", "activity": "Activity", "more": "more", "empty": "You have no activities in this period", "loadError": "Calendar activities could not be loaded.", "openActivities": "Open activity management"
   },
   "sidebar": {

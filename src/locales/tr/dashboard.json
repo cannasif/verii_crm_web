@@ -73,7 +73,7 @@
     "views": { "month": "Ay", "week": "Hafta", "agenda": "Ajanda" },
     "summary": { "total": "Toplam aktivite", "scheduled": "Planlanan", "completed": "Tamamlanan", "overdue": "Geciken" },
     "status": { "scheduled": "Planlandı", "completed": "Tamamlandı", "cancelled": "İptal edildi", "overdue": "Gecikti" },
-    "detail": { "date": "Tarih ve saat", "status": "Durum", "customer": "Müşteri / kişi", "customerCode": "Cari kodu", "description": "Açıklama" },
+    "detail": { "date": "Tarih ve saat", "status": "Durum", "customer": "Müşteri / kişi", "customerCode": "Cari kodu", "description": "Açıklama", "clickHint": "Detaylar için tıklayın" },
     "today": "Bugün", "previous": "Önceki dönem", "next": "Sonraki dönem", "newActivity": "Aktivite ekle", "activity": "Aktivite", "more": "daha", "empty": "Bu dönemde aktiviteniz yok", "loadError": "Takvim aktiviteleri yüklenemedi.", "openActivities": "Aktivite yönetimini aç"
   },
   "sidebar": {

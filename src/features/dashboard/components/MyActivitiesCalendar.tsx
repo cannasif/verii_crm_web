@@ -30,9 +30,11 @@ import {
   List,
   Loader2,
   MapPin,
+  MousePointerClick,
   Plus,
   RotateCw,
   Sparkles,
+  Tag,
   UserRound,
   type LucideIcon,
 } from 'lucide-react';
@@ -44,6 +46,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useMyActivitiesCalendar } from '@/features/activity-management/hooks/useMyActivitiesCalendar';
@@ -97,6 +100,41 @@ function eventTone(activity: ActivityDto): string {
   return 'border-l-blue-400 bg-blue-50/80 text-blue-800 dark:border-l-blue-400/60 dark:bg-blue-500/10 dark:text-blue-200';
 }
 
+type EventStatusKind = 'completed' | 'cancelled' | 'overdue' | 'high' | 'scheduled';
+
+function eventStatusKind(activity: ActivityDto): EventStatusKind {
+  const status = numericValue(activity.status);
+  if (status === ActivityStatus.Completed) return 'completed';
+  if (status === ActivityStatus.Cancelled) return 'cancelled';
+  if (isBefore(new Date(activity.endDateTime || activity.startDateTime), new Date())) return 'overdue';
+  if (numericValue(activity.priority) === ActivityPriority.High) return 'high';
+  return 'scheduled';
+}
+
+const STATUS_BADGE_CLASSES: Record<EventStatusKind, string> = {
+  completed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
+  cancelled: 'bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-400',
+  overdue: 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300',
+  high: 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300',
+  scheduled: 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300',
+};
+
+const STATUS_DOT_CLASSES: Record<EventStatusKind, string> = {
+  completed: 'bg-emerald-500',
+  cancelled: 'bg-slate-400',
+  overdue: 'bg-rose-500',
+  high: 'bg-amber-500',
+  scheduled: 'bg-blue-500',
+};
+
+function statusLabel(activity: ActivityDto, t: (key: string) => string): string {
+  const kind = eventStatusKind(activity);
+  if (kind === 'completed') return t('calendar.status.completed');
+  if (kind === 'cancelled') return t('calendar.status.cancelled');
+  if (kind === 'overdue') return t('calendar.status.overdue');
+  return t('calendar.status.scheduled');
+}
+
 interface ActivityChipProps {
   activity: ActivityDto;
   compact?: boolean;
@@ -104,24 +142,76 @@ interface ActivityChipProps {
 }
 
 function ActivityChip({ activity, compact = false, onSelect }: ActivityChipProps): ReactElement {
+  const { t, i18n } = useTranslation('dashboard');
+  const locale = i18n.language || 'tr-TR';
   const time = activity.isAllDay ? '' : format(new Date(activity.startDateTime), 'HH:mm');
   const customer = customerName(activity);
+  const statusKind = eventStatusKind(activity);
+
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(activity)}
-      title={[time, activity.subject, customer].filter(Boolean).join(' · ')}
-      className={cn(
-        'w-full rounded-lg border-l-4 px-2.5 py-1.5 text-left shadow-xs transition hover:-translate-y-px hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-        eventTone(activity),
-      )}
-    >
-      <span className="flex min-w-0 items-center gap-1.5">
-        {time && <span className="shrink-0 text-[10px] font-black tabular-nums opacity-70">{time}</span>}
-        <span className="truncate text-[11px] font-bold">{activity.subject}</span>
-      </span>
-      {!compact && customer && <span className="mt-0.5 block truncate text-[10px] opacity-70">{customer}</span>}
-    </button>
+    <HoverCard openDelay={250} closeDelay={80}>
+      <HoverCardTrigger asChild>
+        <button
+          type="button"
+          onClick={() => onSelect(activity)}
+          className={cn(
+            'w-full rounded-lg border-l-4 px-2.5 py-1.5 text-left shadow-xs transition hover:-translate-y-px hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+            eventTone(activity),
+          )}
+        >
+          <span className="flex min-w-0 items-center gap-1.5">
+            {time && <span className="shrink-0 text-[10px] font-black tabular-nums opacity-70">{time}</span>}
+            <span className="truncate text-[11px] font-bold">{activity.subject}</span>
+          </span>
+          {!compact && customer && <span className="mt-0.5 block truncate text-[10px] opacity-70">{customer}</span>}
+        </button>
+      </HoverCardTrigger>
+      <HoverCardContent side="right" align="start">
+        <div className="flex items-start gap-2.5 border-b border-slate-100 p-3.5 dark:border-white/5">
+          <span className={cn('mt-1.5 h-2 w-2 shrink-0 rounded-full', STATUS_DOT_CLASSES[statusKind])} aria-hidden />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-black leading-snug text-slate-900 dark:text-white">{activity.subject}</p>
+            {activity.activityType?.name && (
+              <p className="mt-0.5 flex items-center gap-1 text-[11px] font-medium text-slate-400 dark:text-slate-500">
+                <Tag size={11} />{activity.activityType.name}
+              </p>
+            )}
+          </div>
+          <span className={cn('shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold', STATUS_BADGE_CLASSES[statusKind])}>
+            {statusLabel(activity, t)}
+          </span>
+        </div>
+
+        <div className="space-y-2 p-3.5">
+          <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+            <Clock3 size={13} className="shrink-0 text-primary" />
+            <span className="font-semibold">{formatActivityRange(activity, locale)}</span>
+          </div>
+          {customer && (
+            <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+              <UserRound size={13} className="shrink-0 text-primary" />
+              <span className="truncate font-semibold">{customer}</span>
+            </div>
+          )}
+          {activity.erpCustomerCode && (
+            <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+              <MapPin size={13} className="shrink-0 text-primary" />
+              <span className="truncate font-semibold">{activity.erpCustomerCode}</span>
+            </div>
+          )}
+          {activity.description && (
+            <p className="line-clamp-2 rounded-lg bg-slate-50 px-2.5 py-2 text-[11px] leading-relaxed text-slate-500 dark:bg-white/5 dark:text-slate-400">
+              {activity.description}
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1.5 border-t border-slate-100 px-3.5 py-2 text-[10px] font-semibold text-slate-400 dark:border-white/5 dark:text-slate-500">
+          <MousePointerClick size={11} />
+          {t('calendar.detail.clickHint')}
+        </div>
+      </HoverCardContent>
+    </HoverCard>
   );
 }
 
@@ -204,14 +294,6 @@ export function MyActivitiesCalendar(): ReactElement {
     setCursor((current) => view === 'week'
       ? (direction < 0 ? subWeeks(current, 1) : addWeeks(current, 1))
       : (direction < 0 ? subMonths(current, 1) : addMonths(current, 1)));
-  };
-
-  const statusLabel = (activity: ActivityDto): string => {
-    const status = numericValue(activity.status);
-    if (status === ActivityStatus.Completed) return t('calendar.status.completed');
-    if (status === ActivityStatus.Cancelled) return t('calendar.status.cancelled');
-    if (isBefore(new Date(activity.endDateTime || activity.startDateTime), new Date())) return t('calendar.status.overdue');
-    return t('calendar.status.scheduled');
   };
 
   return (
@@ -343,7 +425,7 @@ export function MyActivitiesCalendar(): ReactElement {
 
       <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
-          {selected && <><DialogHeader><DialogTitle className="pr-8 text-xl">{selected.subject}</DialogTitle><DialogDescription>{selected.activityType?.name || t('calendar.activity')}</DialogDescription></DialogHeader><div className="grid gap-3 py-2 sm:grid-cols-2"><Detail icon={Clock3} label={t('calendar.detail.date')} value={formatActivityRange(selected, locale)} /><Detail icon={CheckCircle2} label={t('calendar.detail.status')} value={statusLabel(selected)} />{customerName(selected) && <Detail icon={UserRound} label={t('calendar.detail.customer')} value={customerName(selected)!} />}{selected.erpCustomerCode && <Detail icon={MapPin} label={t('calendar.detail.customerCode')} value={selected.erpCustomerCode} />}</div>{selected.description && <div className="rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-white/5 dark:text-slate-200"><div className="mb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">{t('calendar.detail.description')}</div>{selected.description}</div>}<div className="mt-2 flex justify-end"><Button onClick={() => navigate('/activity-management')}>{t('calendar.openActivities')}</Button></div></>}
+          {selected && <><DialogHeader><DialogTitle className="pr-8 text-xl">{selected.subject}</DialogTitle><DialogDescription>{selected.activityType?.name || t('calendar.activity')}</DialogDescription></DialogHeader><div className="grid gap-3 py-2 sm:grid-cols-2"><Detail icon={Clock3} label={t('calendar.detail.date')} value={formatActivityRange(selected, locale)} /><Detail icon={CheckCircle2} label={t('calendar.detail.status')} value={statusLabel(selected, t)} />{customerName(selected) && <Detail icon={UserRound} label={t('calendar.detail.customer')} value={customerName(selected)!} />}{selected.erpCustomerCode && <Detail icon={MapPin} label={t('calendar.detail.customerCode')} value={selected.erpCustomerCode} />}</div>{selected.description && <div className="rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-white/5 dark:text-slate-200"><div className="mb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">{t('calendar.detail.description')}</div>{selected.description}</div>}<div className="mt-2 flex justify-end"><Button onClick={() => navigate('/activity-management')}>{t('calendar.openActivities')}</Button></div></>}
         </DialogContent>
       </Dialog>
 
