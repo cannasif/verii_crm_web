@@ -4,7 +4,7 @@ import { categoryDefinitionsApi } from '../api/category-definitions-api';
 export const useCatalogCategoryStocks = (
   catalogId?: number | null,
   catalogCategoryId?: number | null,
-  params?: { pageNumber?: number; pageSize?: number; search?: string }
+  params?: { pageNumber?: number; pageSize?: number; search?: string; searchFields?: string[] }
 ) =>
   useQuery({
     queryKey: [
@@ -15,6 +15,7 @@ export const useCatalogCategoryStocks = (
       params?.pageNumber ?? 1,
       params?.pageSize ?? 20,
       params?.search ?? '',
+      params?.searchFields ?? [],
     ],
     queryFn: () => categoryDefinitionsApi.getCatalogCategoryStocks(catalogId!, catalogCategoryId!, params),
     enabled: Boolean(catalogId && catalogCategoryId),

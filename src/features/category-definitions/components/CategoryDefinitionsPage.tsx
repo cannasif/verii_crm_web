@@ -174,12 +174,22 @@ export function CategoryDefinitionsPage(): ReactElement {
   const stocksQuery = useCatalogCategoryStocks(
     selectedCatalogId,
     selectedLeaf?.catalogCategoryId ?? null,
-    { pageNumber: 1, pageSize: 10, search: stockSearch || undefined }
+    {
+      pageNumber: 1,
+      pageSize: 10,
+      search: stockSearch || undefined,
+      searchFields: stockSearch ? ['ErpStockCode', 'StockName'] : undefined,
+    }
   );
   const favoritesQuery = useCatalogFavorites(
     selectedCatalogId,
     selectedLeaf?.catalogCategoryId ?? null,
-    { pageNumber: 1, pageSize: 10, search: stockSearch || undefined }
+    {
+      pageNumber: 1,
+      pageSize: 10,
+      search: stockSearch || undefined,
+      searchFields: stockSearch ? ['Stock.ErpStockCode', 'Stock.StockName'] : undefined,
+    }
   );
 
   const currentPath = useMemo(
@@ -1619,4 +1629,3 @@ function getRulePreviewActionLabel(value: number): string {
     default: return 'skip';
   }
 }
-

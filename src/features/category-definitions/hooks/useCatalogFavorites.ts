@@ -4,7 +4,7 @@ import { categoryDefinitionsApi } from '../api/category-definitions-api';
 export const useCatalogFavorites = (
   catalogId?: number | null,
   catalogCategoryId?: number | null,
-  params?: { pageNumber?: number; pageSize?: number; search?: string }
+  params?: { pageNumber?: number; pageSize?: number; search?: string; searchFields?: string[] }
 ) =>
   useQuery({
     queryKey: [
@@ -15,6 +15,7 @@ export const useCatalogFavorites = (
       params?.pageNumber ?? 1,
       params?.pageSize ?? 20,
       params?.search ?? '',
+      params?.searchFields ?? [],
     ],
     queryFn: () => categoryDefinitionsApi.getCatalogFavorites(catalogId!, { ...params, catalogCategoryId }),
     enabled: Boolean(catalogId && catalogCategoryId),

@@ -269,12 +269,13 @@ export const categoryDefinitionsApi = {
   getCatalogCategoryStocks: async (
     catalogId: number,
     catalogCategoryId: number,
-    params?: { pageNumber?: number; pageSize?: number; search?: string; includeDescendants?: boolean }
+    params?: { pageNumber?: number; pageSize?: number; search?: string; searchFields?: string[]; includeDescendants?: boolean }
   ): Promise<PagedResponse<CatalogStockItemDto>> => {
     const queryParams = new URLSearchParams();
     if (params?.pageNumber) queryParams.append('pageNumber', String(params.pageNumber));
     if (params?.pageSize) queryParams.append('pageSize', String(params.pageSize));
     if (params?.search) queryParams.append('search', params.search);
+    params?.searchFields?.forEach((field) => queryParams.append('searchFields', field));
     if (params?.includeDescendants) queryParams.append('includeDescendants', 'true');
 
     const suffix = queryParams.toString() ? `?${queryParams.toString()}` : '';
@@ -301,12 +302,13 @@ export const categoryDefinitionsApi = {
 
   getCatalogFavorites: async (
     catalogId: number,
-    params?: { pageNumber?: number; pageSize?: number; search?: string; catalogCategoryId?: number | null }
+    params?: { pageNumber?: number; pageSize?: number; search?: string; searchFields?: string[]; catalogCategoryId?: number | null }
   ): Promise<PagedResponse<CatalogStockItemDto>> => {
     const queryParams = new URLSearchParams();
     if (params?.pageNumber) queryParams.append('pageNumber', String(params.pageNumber));
     if (params?.pageSize) queryParams.append('pageSize', String(params.pageSize));
     if (params?.search) queryParams.append('search', params.search);
+    params?.searchFields?.forEach((field) => queryParams.append('searchFields', field));
     if (params?.catalogCategoryId) queryParams.append('catalogCategoryId', String(params.catalogCategoryId));
 
     const suffix = queryParams.toString() ? `?${queryParams.toString()}` : '';
