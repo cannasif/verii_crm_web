@@ -9,6 +9,7 @@ interface UseWaitingApprovalsParams {
   pageNumber: number;
   pageSize: number;
   search?: string;
+  searchFields?: string[];
   sortBy?: string;
   sortDirection?: DataTableSortDirection;
   filters?: PagedFilter[];

@@ -25,7 +25,8 @@ export const erpDocumentCleanupLogApi = {
       {
         pageNumber: request.pageNumber ?? 1,
         pageSize: request.pageSize ?? 20,
-        search: request.search ?? '',
+      search: request.search ?? '',
+      searchFields: request.search ? request.searchFields : undefined,
         sortBy: request.sortBy ?? 'createdDate',
         sortDirection: request.sortDirection ?? 'desc',
         filterLogic: request.filterLogic ?? 'and',

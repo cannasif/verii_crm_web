@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { createDocumentReturnNavigationState } from '@/lib/document-return-navigation';
 import { ArrowDown, ArrowUp, ArrowUpDown, Clock } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { useUIStore } from '@/stores/ui-store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -97,6 +98,11 @@ export function WaitingApprovalsPage(): ReactElement {
   const [sortBy, setSortBy] = useState<WaitingApprovalColumnKey>('ActionDate');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const searchableColumns = useMemo(
+    () => WAITING_APPROVAL_COLUMN_CONFIG.filter((column) => column.filterType === 'string').map((column) => column.key),
+    []
+  );
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, searchableColumns);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
@@ -171,6 +177,7 @@ export function WaitingApprovalsPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
     filters: appliedFilters.length > 0 ? appliedFilters : undefined,
@@ -228,6 +235,7 @@ export function WaitingApprovalsPage(): ReactElement {
           pageNumber: exportPageNumber,
           pageSize: exportPageSize,
           search: searchTerm || undefined,
+          searchFields: searchTerm ? searchFields : undefined,
           sortBy,
           sortDirection,
           filters: appliedFilters.length > 0 ? appliedFilters : undefined,
@@ -251,7 +259,7 @@ export function WaitingApprovalsPage(): ReactElement {
         Status: getStatusLabel(approval.status, approval.statusName),
       })),
     };
-  }, [appliedFilters, exportColumns, formatDate, getStatusLabel, searchTerm, sortBy, sortDirection]);
+  }, [appliedFilters, exportColumns, formatDate, getStatusLabel, searchTerm, searchFields, sortBy, sortDirection]);
 
   const handleSort = (column: WaitingApprovalColumnKey): void => {
     if (sortBy === column) {
@@ -399,6 +407,8 @@ export function WaitingApprovalsPage(): ReactElement {
                   searchValue={searchTerm}
                   searchPlaceholder={t('common.search', { ns: 'common' })}
                   onSearchChange={setSearchTerm}
+                  searchFields={searchFields}
+                  onSearchFieldsChange={setSearchFields}
                   refresh={{
                     onRefresh: () => {
                       void waitingApprovalsQuery.refetch();

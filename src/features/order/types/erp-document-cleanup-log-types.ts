@@ -28,6 +28,7 @@ export interface ErpDocumentCleanupLogPagedRequest {
   pageNumber?: number;
   pageSize?: number;
   search?: string;
+  searchFields?: string[];
   sortBy?: string;
   sortDirection?: 'asc' | 'desc';
   filters?: Array<{ column: string; operator: string; value: string }>;

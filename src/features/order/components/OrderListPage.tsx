@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
@@ -117,6 +118,19 @@ const ORDER_COLUMN_CONFIG: readonly OrderColumnConfig[] = [
   { key: 'Status', labelKey: 'order.list.status', fallbackLabel: 'Durum', filterType: 'number' },
 ];
 
+const ORDER_SEARCH_FIELD_CONFIG = [
+  { key: 'OfferNo', labelKey: 'order.list.offerNo', fallbackLabel: 'Teklif No' },
+  { key: 'RevisionNo', labelKey: 'order.list.revisionNo', fallbackLabel: 'Revize No' },
+  { key: 'PotentialCustomer.CustomerName', labelKey: 'order.list.customer', fallbackLabel: 'Müşteri' },
+  { key: 'PotentialCustomer.CustomerCode', labelKey: 'order.list.customerCode', fallbackLabel: 'Cari Kodu' },
+  { key: 'ErpCustomerCode', labelKey: 'order.list.customerCode', fallbackLabel: 'ERP Cari Kodu' },
+  { key: 'Representative.FirstName', labelKey: 'order.list.representative', fallbackLabel: 'Temsilci adı' },
+  { key: 'Representative.LastName', labelKey: 'order.list.representative', fallbackLabel: 'Temsilci soyadı' },
+  { key: 'KoliBaskiDefinition.Name', labelKey: 'order.list.koliBaski', fallbackLabel: 'Koli Baskı' },
+  { key: 'Currency', labelKey: 'order.list.currency', fallbackLabel: 'Para Birimi' },
+  { key: 'ERPIntegrationNumber', labelKey: 'order.list.erpIntegrationNumber', fallbackLabel: 'Netsis No' },
+] as const;
+
 function resolveLabel(
   t: (key: string, options?: Record<string, unknown>) => string,
   key: string,
@@ -146,6 +160,15 @@ export function OrderListPage(): ReactElement {
   const [sortBy, setSortBy] = useState<OrderColumnKey>('Id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const searchableColumns = useMemo(() => ORDER_SEARCH_FIELD_CONFIG.map((field) => field.key), []);
+  const searchFieldOptions = useMemo(
+    () => ORDER_SEARCH_FIELD_CONFIG.map((field) => ({
+      key: field.key,
+      label: resolveLabel(t, field.labelKey, field.fallbackLabel),
+    })),
+    [t]
+  );
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, searchableColumns);
   const [searchResetKey, setSearchResetKey] = useState(0);
   const [approvalStatusFilter, setApprovalStatusFilter] = useState<string>('all');
   const initialFilterRows = useMemo<FilterRow[]>(() => {
@@ -242,6 +265,7 @@ export function OrderListPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
     approvalStatusFilter,
@@ -361,6 +385,7 @@ export function OrderListPage(): ReactElement {
             pageNumber: exportPageNumber,
             pageSize: exportPageSize,
             search: searchTerm || undefined,
+            searchFields: searchTerm ? searchFields : undefined,
             sortBy,
             sortDirection,
             ...filtersParam,
@@ -389,7 +414,7 @@ export function OrderListPage(): ReactElement {
         Status: getApprovalStatusLabel(resolveDocumentApprovalStatus(order as unknown as Record<string, unknown>)),
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, approvalStatusFilter, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getErpDocumentNumber, getApprovalStatusLabel, i18n.language]);
+  }, [exportColumns, searchTerm, searchFields, sortBy, sortDirection, filtersParam, approvalStatusFilter, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getErpDocumentNumber, getApprovalStatusLabel, i18n.language]);
 
   useEffect(() => {
     setPageNumber((current) => current === 1 ? current : 1);
@@ -654,6 +679,9 @@ export function OrderListPage(): ReactElement {
                 appliedFilterCount={appliedFilterRows.length}
                 search={{
                   onSearchChange: setSearchTerm,
+                  fields: searchFieldOptions,
+                  selectedFields: searchFields,
+                  onSelectedFieldsChange: setSearchFields,
                   placeholder: t('common.search'),
                   minLength: 1,
                   resetKey: searchResetKey,

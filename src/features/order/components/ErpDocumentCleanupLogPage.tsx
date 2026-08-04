@@ -24,6 +24,7 @@ import {
 } from '@/lib/management-list-layout';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { erpDocumentCleanupLogApi } from '../api/erp-document-cleanup-log-api';
 import { useErpDocumentCleanupLogs } from '../hooks/useErpDocumentCleanupLogs';
 import type { ErpCleanupDocumentType, ErpCleanupOperationStatus, ErpDocumentCleanupLog } from '../types/erp-document-cleanup-log-types';
@@ -102,6 +103,7 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, CLEANUP_LOG_FILTER_COLUMNS);
   const [sortBy, setSortBy] = useState<CleanupLogColumnKey>('createdDate');
   const [sortDirection, setSortDirection] = useState<CleanupLogSortDirection>('desc');
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
@@ -120,12 +122,13 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
       pageNumber,
       pageSize,
       search: searchTerm || undefined,
+      searchFields: searchTerm ? searchFields : undefined,
       sortBy,
       sortDirection,
       filters: appliedFilters,
       filterLogic,
     }),
-    [appliedFilters, filterLogic, pageNumber, pageSize, searchTerm, sortBy, sortDirection]
+    [appliedFilters, filterLogic, pageNumber, pageSize, searchTerm, searchFields, sortBy, sortDirection]
   );
 
   const logsQuery = useErpDocumentCleanupLogs(request);
@@ -365,6 +368,8 @@ export function ErpDocumentCleanupLogPage(): ReactElement {
             appliedFilterCount={appliedFilterCount}
             search={{
               onSearchChange: setSearchTerm,
+              selectedFields: searchFields,
+              onSelectedFieldsChange: setSearchFields,
               placeholder: t('erpCleanupLogs.searchPlaceholder', { defaultValue: 'Belge no, ERP no veya neden ara...' }),
               minLength: 1,
             }}

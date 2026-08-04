@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ArrowDown, ArrowUp, ArrowUpDown, Plus } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import {
   MANAGEMENT_LIST_CARD_CLASSNAME,
@@ -117,6 +118,19 @@ const DEMAND_COLUMN_CONFIG: readonly DemandColumnConfig[] = [
   { key: 'Status', labelKey: 'demand.list.status', fallbackLabel: 'Durum', filterType: 'number' },
 ];
 
+const DEMAND_SEARCH_FIELD_CONFIG = [
+  { key: 'OfferNo', labelKey: 'demand.list.offerNo', fallbackLabel: 'Talep No' },
+  { key: 'RevisionNo', labelKey: 'demand.list.revisionNo', fallbackLabel: 'Revize No' },
+  { key: 'PotentialCustomer.CustomerName', labelKey: 'demand.list.customer', fallbackLabel: 'Müşteri' },
+  { key: 'PotentialCustomer.CustomerCode', labelKey: 'demand.list.customerCode', fallbackLabel: 'Cari Kodu' },
+  { key: 'ErpCustomerCode', labelKey: 'demand.list.customerCode', fallbackLabel: 'ERP Cari Kodu' },
+  { key: 'Representative.FirstName', labelKey: 'demand.list.representative', fallbackLabel: 'Temsilci adı' },
+  { key: 'Representative.LastName', labelKey: 'demand.list.representative', fallbackLabel: 'Temsilci soyadı' },
+  { key: 'KoliBaskiDefinition.Name', labelKey: 'demand.list.koliBaski', fallbackLabel: 'Koli Baskı' },
+  { key: 'Currency', labelKey: 'demand.list.currency', fallbackLabel: 'Para Birimi' },
+  { key: 'ERPIntegrationNumber', labelKey: 'demand.list.erpIntegrationNumber', fallbackLabel: 'Netsis No' },
+] as const;
+
 function resolveLabel(
   t: (key: string, options?: Record<string, unknown>) => string,
   key: string,
@@ -146,6 +160,15 @@ export function DemandListPage(): ReactElement {
   const [sortBy, setSortBy] = useState<DemandColumnKey>('Id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const searchableColumns = useMemo(() => DEMAND_SEARCH_FIELD_CONFIG.map((field) => field.key), []);
+  const searchFieldOptions = useMemo(
+    () => DEMAND_SEARCH_FIELD_CONFIG.map((field) => ({
+      key: field.key,
+      label: resolveLabel(t, field.labelKey, field.fallbackLabel),
+    })),
+    [t]
+  );
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, searchableColumns);
   const [searchResetKey, setSearchResetKey] = useState(0);
   const [approvalStatusFilter, setApprovalStatusFilter] = useState<string>('all');
   const initialFilterRows = useMemo<FilterRow[]>(() => {
@@ -242,6 +265,7 @@ export function DemandListPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
     approvalStatusFilter,
@@ -356,6 +380,7 @@ export function DemandListPage(): ReactElement {
             pageNumber: exportPageNumber,
             pageSize: exportPageSize,
             search: searchTerm || undefined,
+            searchFields: searchTerm ? searchFields : undefined,
             sortBy,
             sortDirection,
             ...filtersParam,
@@ -384,7 +409,7 @@ export function DemandListPage(): ReactElement {
         Status: getApprovalStatusLabel(resolveDocumentApprovalStatus(demand as unknown as Record<string, unknown>)),
       })),
     };
-  }, [exportColumns, searchTerm, sortBy, sortDirection, filtersParam, approvalStatusFilter, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getErpDocumentNumber, getApprovalStatusLabel, i18n.language]);
+  }, [exportColumns, searchTerm, searchFields, sortBy, sortDirection, filtersParam, approvalStatusFilter, getCurrencyLabel, getGrandTotalLabel, getErpIntegrationLabel, getErpDocumentNumber, getApprovalStatusLabel, i18n.language]);
 
   useEffect(() => {
     setPageNumber((current) => current === 1 ? current : 1);
@@ -653,6 +678,9 @@ export function DemandListPage(): ReactElement {
                 appliedFilterCount={appliedFilterRows.length}
                 search={{
                   onSearchChange: setSearchTerm,
+                  fields: searchFieldOptions,
+                  selectedFields: searchFields,
+                  onSelectedFieldsChange: setSearchFields,
                   placeholder: t('common.search'),
                   minLength: 1,
                   resetKey: searchResetKey,
