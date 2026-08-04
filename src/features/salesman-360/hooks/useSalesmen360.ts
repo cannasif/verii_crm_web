@@ -132,11 +132,12 @@ export function useSalesmenPerformanceWorkFeedQuery(params: {
   pageSize?: number;
   kind?: string;
   search?: string;
+  searchFields?: string[];
   currency?: string;
   periodParams?: Salesmen360PeriodParams;
   enabled?: boolean;
 }) {
-  const { userId, userIds, page, pageSize = 20, kind, search, currency, periodParams, enabled = true } = params;
+  const { userId, userIds, page, pageSize = 20, kind, search, searchFields, currency, periodParams, enabled = true } = params;
   return useQuery({
     queryKey: [
       'salesmen360',
@@ -148,6 +149,7 @@ export function useSalesmenPerformanceWorkFeedQuery(params: {
       pageSize,
       kind ?? 'all',
       search ?? '',
+      searchFields?.join(',') ?? '',
       currency ?? 'ALL',
       ...getPeriodQueryKey(periodParams),
     ],
@@ -159,6 +161,7 @@ export function useSalesmenPerformanceWorkFeedQuery(params: {
         pageSize,
         kind,
         search,
+        searchFields,
         currency: currency && currency !== 'ALL' ? currency : undefined,
         periodParams,
         signal,

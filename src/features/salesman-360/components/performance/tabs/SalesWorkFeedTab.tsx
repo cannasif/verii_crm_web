@@ -68,6 +68,7 @@ export function SalesWorkFeedTab({
     pageSize: 20,
     kind: fixedKind ?? (kind === 'all' ? undefined : kind),
     search: deferredSearch || undefined,
+    searchFields: deferredSearch ? ['Title', 'SalesmanName', 'CustomerName', 'TypeName'] : undefined,
     currency,
     periodParams,
     enabled,

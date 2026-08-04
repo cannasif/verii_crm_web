@@ -131,11 +131,12 @@ export async function getSalesmenPerformanceWorkFeed(params: {
   pageSize?: number;
   kind?: string;
   search?: string;
+  searchFields?: string[];
   currency?: string;
   periodParams?: Salesmen360PeriodParams;
   signal?: AbortSignal;
 }): Promise<Salesmen360WorkFeedDto> {
-  const { userId, userIds, page = 1, pageSize = 20, kind, search: searchTerm, currency, periodParams, signal } = params;
+  const { userId, userIds, page = 1, pageSize = 20, kind, search: searchTerm, searchFields, currency, periodParams, signal } = params;
   const search = new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize),
@@ -143,6 +144,7 @@ export async function getSalesmenPerformanceWorkFeed(params: {
   appendPeriodParams(search, periodParams);
   if (kind) search.set('kind', kind);
   if (searchTerm?.trim()) search.set('search', searchTerm.trim());
+  if (searchTerm?.trim()) searchFields?.forEach((field) => search.append('searchFields', field));
   if (currency) search.set('currency', currency);
   userIds?.forEach((selectedUserId) => search.append('userIds', String(selectedUserId)));
 
