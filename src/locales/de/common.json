@@ -5787,6 +5787,8 @@
     "mainNavigation": "Hauptnavigation",
   "collapseNav": "Menü einklappen",
   "expandNav": "Menü ausklappen",
+  "scrollNavBack": "Menü nach hinten scrollen",
+  "scrollNavForward": "Menü nach vorne scrollen",
     "noNavigationResult": "Kein passendes Menü gefunden"
   },
   "searchFields": "Suchfelder",

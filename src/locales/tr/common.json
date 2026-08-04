@@ -6026,6 +6026,8 @@
     "mainNavigation": "Ana menü",
   "collapseNav": "Menüyü daralt",
   "expandNav": "Menüyü genişlet",
+  "scrollNavBack": "Menüde geri kaydır",
+  "scrollNavForward": "Menüde ileri kaydır",
     "noNavigationResult": "Eşleşen menü bulunamadı"
   },
   "searchFields": "Arama alanları",

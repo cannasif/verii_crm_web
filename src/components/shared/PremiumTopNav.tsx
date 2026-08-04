@@ -10,7 +10,7 @@ import {
 } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { NavItem } from './nav-items';
 
@@ -58,6 +58,8 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(() => new Set());
   const [gliderStyle, setGliderStyle] = useState<CSSProperties | null>(null);
   const [collapsed, setCollapsed] = useState<boolean>(readStoredCollapsed);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
   const tabRefs = useRef<(HTMLElement | null)[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
@@ -95,6 +97,36 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
     window.addEventListener('resize', updateGlider);
     return () => window.removeEventListener('resize', updateGlider);
   }, [updateGlider]);
+
+  const updateScrollState = useCallback((): void => {
+    const container = containerRef.current;
+    if (!container) return;
+    const maxScrollLeft = container.scrollWidth - container.clientWidth;
+    setCanScrollLeft(container.scrollLeft > 1);
+    setCanScrollRight(container.scrollLeft < maxScrollLeft - 1);
+  }, []);
+
+  useLayoutEffect(() => {
+    updateScrollState();
+  }, [updateScrollState, items, collapsed, i18n.resolvedLanguage]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    container.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', updateScrollState);
+    const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(updateScrollState) : null;
+    resizeObserver?.observe(container);
+    return () => {
+      container.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+      resizeObserver?.disconnect();
+    };
+  }, [updateScrollState]);
+
+  const scrollTabsBy = (direction: -1 | 1): void => {
+    containerRef.current?.scrollBy({ left: direction * 220, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     try {
@@ -238,9 +270,24 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
   return (
     <nav ref={navRef} className={cn('crm-premium-nav', collapsed && 'crm-premium-nav--collapsed')} aria-label={t('shell.mainNavigation')}>
       <div className="crm-premium-nav__collapsible" aria-hidden={collapsed}>
-        <div ref={containerRef} className="crm-premium-nav__tabs" inert={collapsed}>
-          {gliderStyle ? <span className="crm-premium-nav__glider" style={gliderStyle} aria-hidden /> : null}
-          {items.map((item, index) => {
+        <div className="crm-premium-nav__tabs-wrap">
+          {canScrollLeft ? (
+            <>
+              <span className="crm-premium-nav__tabs-fade crm-premium-nav__tabs-fade--start" aria-hidden />
+              <button
+                type="button"
+                className="crm-premium-nav__scroll-btn crm-premium-nav__scroll-btn--start"
+                onClick={() => scrollTabsBy(-1)}
+                aria-label={t('shell.scrollNavBack', { defaultValue: 'Menüde geri kaydır' })}
+                tabIndex={-1}
+              >
+                <ChevronLeft size={15} strokeWidth={2.5} />
+              </button>
+            </>
+          ) : null}
+          <div ref={containerRef} className="crm-premium-nav__tabs" inert={collapsed}>
+            {gliderStyle ? <span className="crm-premium-nav__glider" style={gliderStyle} aria-hidden /> : null}
+            {items.map((item, index) => {
             const isActive = index === activeIndex;
             const isOpen = index === openIndex;
 
@@ -288,7 +335,22 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
                 />
               </button>
             );
-          })}
+            })}
+          </div>
+          {canScrollRight ? (
+            <>
+              <span className="crm-premium-nav__tabs-fade crm-premium-nav__tabs-fade--end" aria-hidden />
+              <button
+                type="button"
+                className="crm-premium-nav__scroll-btn crm-premium-nav__scroll-btn--end"
+                onClick={() => scrollTabsBy(1)}
+                aria-label={t('shell.scrollNavForward', { defaultValue: 'Menüde ileri kaydır' })}
+                tabIndex={-1}
+              >
+                <ChevronRight size={15} strokeWidth={2.5} />
+              </button>
+            </>
+          ) : null}
         </div>
       </div>
 

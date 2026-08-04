@@ -6027,6 +6027,8 @@
     "mainNavigation": "Main navigation",
   "collapseNav": "Collapse menu",
   "expandNav": "Expand menu",
+  "scrollNavBack": "Scroll menu back",
+  "scrollNavForward": "Scroll menu forward",
     "noNavigationResult": "No matching menu found"
   },
   "searchFields": "Search fields",

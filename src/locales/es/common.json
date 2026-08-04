@@ -5824,6 +5824,8 @@
     "mainNavigation": "Navegación principal",
   "collapseNav": "Contraer menú",
   "expandNav": "Expandir menú",
+  "scrollNavBack": "Desplazar menú hacia atrás",
+  "scrollNavForward": "Desplazar menú hacia adelante",
     "noNavigationResult": "No se encontró un menú coincidente"
   },
   "searchFields": "Campos de búsqueda",

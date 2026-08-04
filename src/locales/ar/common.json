@@ -5830,6 +5830,8 @@
     "mainNavigation": "التنقل الرئيسي",
   "collapseNav": "طي القائمة",
   "expandNav": "توسيع القائمة",
+  "scrollNavBack": "تمرير القائمة للخلف",
+  "scrollNavForward": "تمرير القائمة للأمام",
     "noNavigationResult": "لم يتم العثور على قائمة مطابقة"
   },
   "searchFields": "حقول البحث",
