@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,6 +36,11 @@ import { arraysEqual, cn } from '@/lib/utils';
 import { useCrudPermissions } from '../hooks/useCrudPermissions';
 
 const PAGE_KEY = 'visibility-policies';
+const VISIBILITY_POLICY_FILTER_COLUMNS = [
+  { value: 'Code', type: 'string' as const, labelKey: 'visibilityPolicies.table.code' },
+  { value: 'Name', type: 'string' as const, labelKey: 'visibilityPolicies.table.name' },
+  { value: 'EntityType', type: 'string' as const, labelKey: 'visibilityPolicies.table.entityType' },
+];
 const EMPTY_ITEMS: VisibilityPolicyDto[] = [];
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
@@ -48,6 +54,7 @@ export function VisibilityPoliciesPage(): ReactElement {
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.visibility-policies.view');
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, VISIBILITY_POLICY_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [formOpen, setFormOpen] = useState(false);
@@ -73,10 +80,11 @@ export function VisibilityPoliciesPage(): ReactElement {
       pageNumber,
       pageSize,
       search: searchTerm || undefined,
+      searchFields: searchTerm ? searchFields : undefined,
       sortBy: 'updatedDate',
       sortDirection: 'desc',
     }),
-    [pageNumber, pageSize, searchTerm]
+    [pageNumber, pageSize, searchTerm, searchFields]
   );
 
   const { data, isLoading } = useQuery({
@@ -253,8 +261,8 @@ export function VisibilityPoliciesPage(): ReactElement {
             exportColumns={exportColumns}
             exportRows={exportRows}
             getExportData={async () => ({ columns: exportColumns, rows: exportRows })}
-            filterColumns={[]}
-            defaultFilterColumn=""
+            filterColumns={VISIBILITY_POLICY_FILTER_COLUMNS}
+            defaultFilterColumn="Name"
             draftFilterRows={draftFilterRows}
             onDraftFilterRowsChange={setDraftFilterRows}
             onApplyFilters={() => undefined}
@@ -263,6 +271,8 @@ export function VisibilityPoliciesPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('visibilityPolicies.search')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             leftSlot={
               <Button
                 variant="outline"

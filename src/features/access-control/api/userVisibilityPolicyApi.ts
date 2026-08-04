@@ -16,7 +16,8 @@ export const userVisibilityPolicyApi = {
       {
         pageNumber: params.pageNumber ?? 1,
         pageSize: params.pageSize ?? 10,
-        search: params.search ?? '',
+      search: params.search ?? '',
+      searchFields: params.search ? params.searchFields : undefined,
         sortBy: params.sortBy ?? 'id',
         sortDirection: params.sortDirection ?? 'asc',
         filterLogic: params.filterLogic ?? 'and',

@@ -2,6 +2,7 @@ import { type ReactElement, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { KeyRound, Loader2, Plus, RefreshCw, ShieldCheck } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -48,6 +49,10 @@ import {
 
 const EMPTY_PERMISSION_DEFINITIONS: PermissionDefinitionDto[] = [];
 const PAGE_KEY = 'permission-definitions';
+const PERMISSION_DEFINITION_FILTER_COLUMNS = [
+  { value: 'code', type: 'string' as const, labelKey: 'permissionDefinitions.table.code' },
+  { value: 'name', type: 'string' as const, labelKey: 'permissionDefinitions.table.name' },
+];
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
 type PermissionDefinitionColumnKey = keyof PermissionDefinitionDto | 'platform';
@@ -66,6 +71,7 @@ export function PermissionDefinitionsPage(): ReactElement {
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<PermissionDefinitionDto | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, PERMISSION_DEFINITION_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -77,6 +83,7 @@ export function PermissionDefinitionsPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy: 'updatedDate',
     sortDirection: 'desc',
   });
@@ -164,7 +171,7 @@ export function PermissionDefinitionsPage(): ReactElement {
     { key: 'updatedDate', label: t('permissionDefinitions.table.updatedDate') },
   ];
 
-  const filterColumns = useMemo(() => [], []);
+  const filterColumns = PERMISSION_DEFINITION_FILTER_COLUMNS;
   const exportColumns = baseColumns;
   const exportRows = useMemo<Record<string, unknown>[]>(
     () =>
@@ -331,6 +338,8 @@ export function PermissionDefinitionsPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             leftSlot={
               <>
                 {canUpdate && (

@@ -2,6 +2,7 @@ import { type ReactElement, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { KeyRound, Loader2, Plus, RefreshCw, Settings, ShieldCheck, Users2, Edit2, Trash2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -53,6 +54,7 @@ import { arraysEqual, cn } from '@/lib/utils';
 
 const EMPTY_ITEMS: PermissionGroupDto[] = [];
 const PAGE_KEY = 'permission-groups';
+const PERMISSION_GROUP_SEARCH_FIELDS = ['name'] as const;
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
 type PermissionGroupColumnKey = keyof PermissionGroupDto | 'permissionCount';
@@ -73,6 +75,7 @@ export function PermissionGroupsPage(): ReactElement {
   const [permissionsPanelOpen, setPermissionsPanelOpen] = useState(false);
   const [permissionsPanelGroupId, setPermissionsPanelGroupId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, PERMISSION_GROUP_SEARCH_FIELDS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -98,6 +101,7 @@ export function PermissionGroupsPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy: 'updatedDate',
     sortDirection: 'desc',
     filters: backendFilters.length > 0 ? backendFilters : undefined,
@@ -386,6 +390,8 @@ export function PermissionGroupsPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             leftSlot={
               <>
                 <Button

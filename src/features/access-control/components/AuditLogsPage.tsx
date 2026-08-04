@@ -21,6 +21,7 @@ import {
 } from '@/lib/management-list-layout';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { auditLogApi } from '../api/auditLogApi';
 import type { AuditLogDto, PagedRequest } from '../types/access-control.types';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
@@ -131,6 +132,7 @@ export function AuditLogsPage(): ReactElement {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [selectedAuditLogId, setSelectedAuditLogId] = useState<number | null>(null);
@@ -197,6 +199,7 @@ export function AuditLogsPage(): ReactElement {
       pageNumber,
       pageSize,
       search: searchTerm || undefined,
+      searchFields: searchTerm ? searchFields : undefined,
       sortBy: 'createdDate',
       sortDirection: 'desc',
       ...(appliedFilterRows.length > 0
@@ -206,7 +209,7 @@ export function AuditLogsPage(): ReactElement {
         }
         : {}),
     }),
-    [appliedFilterRows, pageNumber, pageSize, searchTerm]
+    [appliedFilterRows, pageNumber, pageSize, searchTerm, searchFields]
   );
 
   const listQuery = useQuery({
@@ -461,6 +464,8 @@ export function AuditLogsPage(): ReactElement {
               setSearchTerm(value);
               setPageNumber(1);
             }}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             leftSlot={
               <div className="flex flex-wrap items-center gap-2">
                 <Select value={entityLookupType} onValueChange={setEntityLookupType}>
