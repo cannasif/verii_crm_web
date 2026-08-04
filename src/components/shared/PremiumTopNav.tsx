@@ -10,7 +10,7 @@ import {
 } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronsLeftRight, ChevronsRightLeft } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { NavItem } from './nav-items';
 
@@ -103,17 +103,6 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
       // ignore storage errors (private mode, quota, etc.)
     }
   }, [collapsed]);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    const handleTransitionEnd = (event: TransitionEvent): void => {
-      if (event.propertyName !== 'width' && event.propertyName !== 'max-width') return;
-      updateGlider();
-    };
-    container.addEventListener('transitionend', handleTransitionEnd);
-    return () => container.removeEventListener('transitionend', handleTransitionEnd);
-  }, [updateGlider]);
 
   useEffect(() => {
     setOpenIndex(null);
@@ -248,8 +237,8 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
 
   return (
     <nav ref={navRef} className={cn('crm-premium-nav', collapsed && 'crm-premium-nav--collapsed')} aria-label={t('shell.mainNavigation')}>
-      <div className="crm-premium-nav__row">
-        <div ref={containerRef} className="crm-premium-nav__tabs">
+      <div className="crm-premium-nav__collapsible" aria-hidden={collapsed}>
+        <div ref={containerRef} className="crm-premium-nav__tabs" inert={collapsed}>
           {gliderStyle ? <span className="crm-premium-nav__glider" style={gliderStyle} aria-hidden /> : null}
           {items.map((item, index) => {
             const isActive = index === activeIndex;
@@ -263,12 +252,11 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
                     tabRefs.current[index] = element;
                   }}
                   to={item.href}
-                  title={collapsed ? item.title : undefined}
                   className={cn('crm-premium-nav__tab', isActive && 'crm-premium-nav__tab--active')}
                   onClick={() => setOpenIndex(null)}
                 >
                   {item.icon ? <span className="crm-premium-nav__tab-icon">{item.icon}</span> : null}
-                  <span className={cn('crm-premium-nav__tab-label', collapsed && 'crm-premium-nav__tab-label--collapsed')}>{item.title}</span>
+                  <span className="crm-premium-nav__tab-label">{item.title}</span>
                 </Link>
               );
             }
@@ -281,7 +269,6 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
                 }}
                 type="button"
                 aria-expanded={isOpen}
-                title={collapsed ? item.title : undefined}
                 className={cn(
                   'crm-premium-nav__tab',
                   isActive && 'crm-premium-nav__tab--active',
@@ -290,11 +277,10 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
                 onClick={() => setOpenIndex((current) => (current === index ? null : index))}
               >
                 {item.icon ? <span className="crm-premium-nav__tab-icon">{item.icon}</span> : null}
-                <span className={cn('crm-premium-nav__tab-label', collapsed && 'crm-premium-nav__tab-label--collapsed')}>{item.title}</span>
+                <span className="crm-premium-nav__tab-label">{item.title}</span>
                 <ChevronDown
                   className={cn(
                     'crm-premium-nav__tab-chevron',
-                    collapsed && 'crm-premium-nav__tab-chevron--collapsed',
                     isOpen && 'crm-premium-nav__tab-chevron--open',
                   )}
                   strokeWidth={2.25}
@@ -304,17 +290,23 @@ export function PremiumTopNav({ items }: PremiumTopNavProps): ReactElement {
             );
           })}
         </div>
-
-        <button
-          type="button"
-          className="crm-premium-nav__collapse-toggle"
-          onClick={() => setCollapsed((current) => !current)}
-          aria-label={collapsed ? t('shell.expandNav') : t('shell.collapseNav')}
-          title={collapsed ? t('shell.expandNav') : t('shell.collapseNav')}
-        >
-          {collapsed ? <ChevronsLeftRight size={15} strokeWidth={2.25} /> : <ChevronsRightLeft size={15} strokeWidth={2.25} />}
-        </button>
       </div>
+
+      <button
+        type="button"
+        className="crm-premium-nav__reveal"
+        onClick={() => setCollapsed((current) => !current)}
+        aria-expanded={!collapsed}
+        aria-label={collapsed ? t('shell.expandNav') : t('shell.collapseNav')}
+        title={collapsed ? t('shell.expandNav') : t('shell.collapseNav')}
+      >
+        <ChevronDown
+          className={cn('crm-premium-nav__reveal-icon', !collapsed && 'crm-premium-nav__reveal-icon--open')}
+          size={14}
+          strokeWidth={2.5}
+          aria-hidden
+        />
+      </button>
 
       {openItem?.children?.length ? (
         <div className="crm-premium-nav__panel" role="menu">
