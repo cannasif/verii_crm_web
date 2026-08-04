@@ -627,7 +627,7 @@ function AnalyticsChartsSection({
                       <Recharts.Cell key={index} fill={CHART_COLORS[index % CHART_COLORS.length]} />
                     ))}
                   </Recharts.Pie>
-                  <Recharts.Tooltip formatter={(value: number | undefined) => [value ?? 0, '']} />
+                  <Recharts.Tooltip formatter={(value) => [Number(Array.isArray(value) ? (value[0] ?? 0) : (value ?? 0)), '']} />
                 </Recharts.PieChart>
               </Recharts.ResponsiveContainer>
             </div>
@@ -680,7 +680,7 @@ function AnalyticsChartsSection({
                     <Recharts.CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <Recharts.XAxis type="number" tickFormatter={(v) => currencyFormatter.format(v)} tick={{ fontSize: 11 }} />
                     <Recharts.YAxis type="category" dataKey="name" width={75} tick={{ fontSize: 11 }} />
-                    <Recharts.Tooltip formatter={(value: number | undefined) => [currencyFormatter.format(value ?? 0), '']} />
+                    <Recharts.Tooltip formatter={(value) => [currencyFormatter.format(Number(Array.isArray(value) ? (value[0] ?? 0) : (value ?? 0))), '']} />
                     <Recharts.Bar dataKey="value" fill={CHART_COLORS[0]} radius={[0, 4, 4, 0]} />
                   </Recharts.BarChart>
                 </Recharts.ResponsiveContainer>

@@ -31,6 +31,7 @@ import {
   Plus,
   RotateCw,
   UserRound,
+  type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -151,6 +152,17 @@ export function MyActivitiesCalendar(): ReactElement {
   const completed = activities.filter((item) => numericValue(item.status) === ActivityStatus.Completed).length;
   const overdue = activities.filter((item) => numericValue(item.status) === ActivityStatus.Scheduled
     && isBefore(new Date(item.endDateTime || item.startDateTime), new Date())).length;
+  const summaryCards: Array<{
+    label: string;
+    value: number;
+    icon: LucideIcon;
+    tone: string;
+  }> = [
+    { label: t('calendar.summary.total'), value: activities.length, icon: CalendarDays, tone: 'text-blue-600' },
+    { label: t('calendar.summary.scheduled'), value: scheduled, icon: Clock3, tone: 'text-amber-600' },
+    { label: t('calendar.summary.completed'), value: completed, icon: CheckCircle2, tone: 'text-emerald-600' },
+    { label: t('calendar.summary.overdue'), value: overdue, icon: CircleAlert, tone: 'text-rose-600' },
+  ];
 
   const move = (direction: -1 | 1) => {
     setCursor((current) => view === 'week'
@@ -192,15 +204,10 @@ export function MyActivitiesCalendar(): ReactElement {
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-4">
-          {[
-            [t('calendar.summary.total'), activities.length, CalendarDays, 'text-blue-600'],
-            [t('calendar.summary.scheduled'), scheduled, Clock3, 'text-amber-600'],
-            [t('calendar.summary.completed'), completed, CheckCircle2, 'text-emerald-600'],
-            [t('calendar.summary.overdue'), overdue, CircleAlert, 'text-rose-600'],
-          ].map(([label, value, Icon, tone]) => (
-            <div key={String(label)} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-white/5">
-              <Icon size={18} className={String(tone)} />
-              <div><div className="text-lg font-black text-slate-900 dark:text-white">{String(value)}</div><div className="text-[11px] font-semibold text-slate-500">{String(label)}</div></div>
+          {summaryCards.map(({ label, value, icon: Icon, tone }) => (
+            <div key={label} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3 dark:border-white/10 dark:bg-white/5">
+              <Icon size={18} className={tone} />
+              <div><div className="text-lg font-black text-slate-900 dark:text-white">{value}</div><div className="text-[11px] font-semibold text-slate-500">{label}</div></div>
             </div>
           ))}
         </div>

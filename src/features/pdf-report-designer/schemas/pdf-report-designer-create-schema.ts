@@ -4,17 +4,16 @@ import { PDF_LAYOUT_PRESET } from '../constants/layout-presets';
 import { TemplateDesignerRuleType } from '@/features/pdf-report';
 
 export const pdfReportDesignerCreateSchema = z.object({
-  ruleType: z
-    .number()
-    .refine(
-      (value) =>
-        value === TemplateDesignerRuleType.Demand ||
-        value === TemplateDesignerRuleType.Quotation ||
-        value === TemplateDesignerRuleType.Order ||
-        value === TemplateDesignerRuleType.FastQuotation ||
-        value === TemplateDesignerRuleType.Activity,
-      { message: i18n.t('reportDesigner.form.requiredDocumentType') }
-    ),
+  ruleType: z.union(
+    [
+      z.literal(TemplateDesignerRuleType.Demand),
+      z.literal(TemplateDesignerRuleType.Quotation),
+      z.literal(TemplateDesignerRuleType.Order),
+      z.literal(TemplateDesignerRuleType.FastQuotation),
+      z.literal(TemplateDesignerRuleType.Activity),
+    ],
+    { error: i18n.t('reportDesigner.form.requiredDocumentType') }
+  ),
   title: z.string().min(1, i18n.t('reportDesigner.form.requiredTitle')),
   default: z.boolean(),
   pageCount: z.number().int().min(1).max(20),

@@ -415,7 +415,7 @@ export function DistributionAndTrendCharts({
                       />
                     ))}
                   </Recharts.Pie>
-                  <Recharts.Tooltip formatter={(value: number | undefined) => [value ?? 0, '']} />
+                  <Recharts.Tooltip formatter={(value) => [Number(Array.isArray(value) ? (value[0] ?? 0) : (value ?? 0)), '']} />
                 </Recharts.PieChart>
               </Recharts.ResponsiveContainer>
             </div>
@@ -534,8 +534,8 @@ export function DistributionAndTrendCharts({
                     <Recharts.YAxis type="category" dataKey="name" axisLine={false} tickLine={false} />
                     <Recharts.Tooltip
                       cursor={{ fill: 'transparent' }}
-                      formatter={(value: number | undefined) => [
-                        currencyFormatter.format(value ?? 0),
+                      formatter={(value) => [
+                        currencyFormatter.format(Number(Array.isArray(value) ? (value[0] ?? 0) : (value ?? 0))),
                         '',
                       ]}
                     />
