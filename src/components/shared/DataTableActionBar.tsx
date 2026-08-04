@@ -248,14 +248,23 @@ export function DataTableActionBar({
   const resolvedSearchClassName = search?.className ?? searchClassName;
   const shouldRenderSearch = Boolean(search || onSearchChange);
   const inferredSearchFieldOptions = useMemo<DataTableSearchFieldOption[]>(() => {
-    if (search?.fields?.length) return [...search.fields];
-    if (legacySearchFieldOptions?.length) return [...legacySearchFieldOptions];
-    return (filterColumns ?? [])
-      .filter((column) => column.type === 'string')
+    const configuredOptions = search?.fields?.length
+      ? [...search.fields]
+      : legacySearchFieldOptions?.length
+        ? [...legacySearchFieldOptions]
+        : (filterColumns ?? [])
+      .filter((column) => column.type === 'string' || (column.type === 'number' && column.value.toLocaleLowerCase('en-US') === 'id'))
       .map((column) => ({
         key: column.value,
         label: t(column.labelKey, { ns: translationNamespace, defaultValue: column.value }),
       }));
+
+    return configuredOptions.some((field) => field.key.toLocaleLowerCase('en-US') === 'id')
+      ? configuredOptions
+      : [
+          { key: 'Id', label: t('recordId', { ns: 'common', defaultValue: 'Kayıt ID' }) },
+          ...configuredOptions,
+        ];
   }, [filterColumns, legacySearchFieldOptions, search?.fields, t, translationNamespace]);
   const searchFieldOptions = inferredSearchFieldOptions;
   const selectedSearchFields = search?.selectedFields ?? legacySearchFields ?? [];

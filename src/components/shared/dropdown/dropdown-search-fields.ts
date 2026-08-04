@@ -2,6 +2,7 @@ import type { DropdownSearchFieldOption } from './DropdownSearchFieldSelector';
 
 export const STOCK_DROPDOWN_DEFAULT_SEARCH_FIELDS = ['ErpStockCode', 'StockName'] as const;
 export const STOCK_DROPDOWN_SEARCH_FIELD_OPTIONS: readonly DropdownSearchFieldOption[] = [
+  { key: 'Id', label: 'Kayıt ID' },
   { key: 'ErpStockCode', label: 'Stok kodu' }, { key: 'StockName', label: 'Stok adı' },
   { key: 'EnglishStockName', label: 'İngilizce stok adı' }, { key: 'UreticiKodu', label: 'Üretici kodu' },
   { key: 'Unit', label: 'Birim' },
@@ -16,6 +17,7 @@ export const STOCK_DROPDOWN_AVAILABLE_SEARCH_FIELDS = STOCK_DROPDOWN_SEARCH_FIEL
 
 export const CUSTOMER_DROPDOWN_DEFAULT_SEARCH_FIELDS = ['CustomerCode', 'CustomerName'] as const;
 export const CUSTOMER_DROPDOWN_SEARCH_FIELD_OPTIONS: readonly DropdownSearchFieldOption[] = [
+  { key: 'Id', label: 'Kayıt ID' },
   { key: 'CustomerCode', label: 'Müşteri kodu' }, { key: 'CustomerName', label: 'Müşteri adı' },
   { key: 'Email', label: 'E-posta' }, { key: 'Phone1', label: 'Telefon' },
   { key: 'Phone2', label: 'Telefon 2' }, { key: 'TaxNumber', label: 'Vergi no' },

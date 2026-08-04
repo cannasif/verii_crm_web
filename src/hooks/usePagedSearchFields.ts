@@ -5,11 +5,19 @@ const STORAGE_PREFIX = 'paged-search-fields';
 
 type SearchField = string | Pick<FilterColumnConfig, 'value' | 'type'>;
 
+function isRecordIdField(field: Pick<FilterColumnConfig, 'value' | 'type'>): boolean {
+  return field.type === 'number' && field.value.toLocaleLowerCase('en-US') === 'id';
+}
+
 function resolveAllowedFields(fields: readonly SearchField[]): string[] {
-  return fields
-    .filter((field) => typeof field === 'string' || field.type === 'string')
+  const resolved = fields
+    .filter((field) => typeof field === 'string' || field.type === 'string' || isRecordIdField(field))
     .map((field) => (typeof field === 'string' ? field : field.value))
     .filter((field, index, all) => field.length > 0 && all.indexOf(field) === index);
+
+  return resolved.some((field) => field.toLocaleLowerCase('en-US') === 'id')
+    ? resolved
+    : ['Id', ...resolved];
 }
 
 function normalizeDefaultFields(
