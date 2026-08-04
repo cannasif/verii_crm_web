@@ -87,9 +87,12 @@ export function DropdownSearchFieldSelector({
             );
           })}
         </div>
-        <div className="flex items-center justify-between border-t border-slate-100 px-3.5 py-2 dark:border-white/5">
+        <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-3.5 py-2 dark:border-white/5">
           <span className="text-[11px] font-semibold text-slate-400">{selectedFields.length}/{options.length} {t('searchFieldsCount', { defaultValue: 'alan seçili' })}</span>
-          {selectedFields.length < options.length ? <button type="button" onClick={() => onChange(options.map((option) => option.key))} className="rounded-lg px-2 py-1 text-[11px] font-bold text-primary hover:bg-primary/10">{t('searchFieldsSelectAll', { defaultValue: 'Tümünü seç' })}</button> : null}
+          <div className="flex items-center gap-1">
+            {selectedFields.length > 1 ? <button type="button" onClick={() => onChange([options[0].key])} className="rounded-lg px-2 py-1 text-[11px] font-bold text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10">{t('searchFieldsClear', { defaultValue: 'Temizle' })}</button> : null}
+            {selectedFields.length < options.length ? <button type="button" onClick={() => onChange(options.map((option) => option.key))} className="rounded-lg px-2 py-1 text-[11px] font-bold text-primary hover:bg-primary/10">{t('searchFieldsSelectAll', { defaultValue: 'Tümünü seç' })}</button> : null}
+          </div>
         </div>
       </PopoverContent>
     </Popover>

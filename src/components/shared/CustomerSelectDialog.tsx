@@ -527,7 +527,7 @@ export function CustomerSelectDialog({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('customerSelectDialog.searchPlaceholder')}
-                  className={cn(INPUT_STYLE, "crm-ps-9 crm-pe-20")}
+                  className={cn(INPUT_STYLE, "crm-ps-9 crm-pe-28")}
                 />
                 {isThresholdInput ? (
                   <Tooltip>
@@ -535,7 +535,7 @@ export function CustomerSelectDialog({
                       <button
                         type="button"
                         aria-label={minCharsHint}
-                        className="absolute crm-end-10 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                        className="absolute crm-end-16 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
                       >
                         <AlertCircle size={16} />
                       </button>
@@ -550,22 +550,22 @@ export function CustomerSelectDialog({
                     variant="ghost"
                     onClick={handleVoiceSearch}
                     className={cn(
-                      "absolute crm-end-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg",
+                      "absolute crm-end-9 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg",
                       isListening ? 'text-primary' : 'text-zinc-500'
                     )}
                   >
                     <Mic size={16} />
                   </Button>
                 )}
+                <DropdownSearchFieldSelector
+                  options={CUSTOMER_DROPDOWN_SEARCH_FIELD_OPTIONS}
+                  selectedFields={customerSearchFields}
+                  onChange={setCustomerSearchFields}
+                  className="absolute crm-end-1 top-1/2 h-8 w-8 -translate-y-1/2 border-0 bg-transparent shadow-none dark:bg-transparent"
+                />
               </div>
 
               <div className="flex shrink-0 items-center justify-end gap-2 sm:justify-start">
-              <DropdownSearchFieldSelector
-                options={CUSTOMER_DROPDOWN_SEARCH_FIELD_OPTIONS}
-                selectedFields={customerSearchFields}
-                onChange={setCustomerSearchFields}
-                className="h-11 w-11 sm:h-12 sm:w-12"
-              />
               <Button
                 type="button"
                 variant="outline"

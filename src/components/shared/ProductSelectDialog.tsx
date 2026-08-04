@@ -872,7 +872,7 @@ export function ProductSelectDialog({
                   placeholder={t('productSelectDialog.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="crm-ps-10 crm-pe-20 h-10 sm:h-11 bg-white dark:bg-[#0c0516] border-slate-300 dark:border-white/15 focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 dark:focus-visible:ring-primary/35 rounded-xl transition-all shadow-sm"
+                  className="crm-ps-10 crm-pe-28 h-10 sm:h-11 bg-white dark:bg-[#0c0516] border-slate-300 dark:border-white/15 focus-visible:border-primary dark:focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30 dark:focus-visible:ring-primary/35 rounded-xl transition-all shadow-sm"
                 />
               </div>
               {isThresholdInput ? (
@@ -881,7 +881,7 @@ export function ProductSelectDialog({
                     <button
                       type="button"
                       aria-label={minCharsHint}
-                      className="absolute crm-end-12 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                      className="absolute crm-end-16 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
                     >
                       <AlertCircle className="h-4 w-4" />
                     </button>
@@ -896,7 +896,7 @@ export function ProductSelectDialog({
                   size="icon"
                   onClick={handleVoiceSearch}
                   className={cn(
-                    'shrink-0 h-10 w-10 sm:h-11 sm:w-11 rounded-xl transition-all',
+                    'absolute crm-end-9 top-1/2 z-10 h-8 w-8 -translate-y-1/2 rounded-lg border-0 bg-transparent shadow-none transition-all',
                     isListening
                       ? 'animate-pulse bg-red-500 hover:bg-red-600 border-red-500 shadow-lg shadow-red-500/30'
                       : 'bg-white dark:bg-[#0c0516] border-slate-200 dark:border-white/10 hover:border-primary/50 hover:bg-accent dark:hover:bg-primary/10 text-slate-500 dark:text-slate-400 hover:text-primary dark:hover:text-primary'
@@ -943,7 +943,7 @@ export function ProductSelectDialog({
                 options={STOCK_DROPDOWN_SEARCH_FIELD_OPTIONS}
                 selectedFields={stockSearchFields}
                 onChange={setStockSearchFields}
-                className="h-10 w-10 sm:h-11 sm:w-11"
+                className="absolute crm-end-1 top-1/2 h-8 w-8 -translate-y-1/2 border-0 bg-transparent shadow-none dark:bg-transparent"
               />
             </div>
 
