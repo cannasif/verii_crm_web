@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -55,6 +56,7 @@ export function ActivityTypeManagementPage(): ReactElement {
   const [editingActivityType, setEditingActivityType] = useState<ActivityTypeDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, ACTIVITY_TYPE_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<ActivityTypeColumnKey>('name');
@@ -102,6 +104,7 @@ export function ActivityTypeManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
   });
@@ -199,7 +202,7 @@ export function ActivityTypeManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingActivityType(null);
@@ -293,6 +296,8 @@ export function ActivityTypeManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             leftSlot={
               <>
                 <Button

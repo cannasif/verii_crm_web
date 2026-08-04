@@ -9,7 +9,8 @@ export const activityTypeApi = {
       {
         pageNumber: params.pageNumber ?? 1,
         pageSize: params.pageSize ?? 10,
-        search: params.search ?? '',
+      search: params.search ?? '',
+      searchFields: params.search ? params.searchFields : undefined,
         sortBy: params.sortBy ?? 'Id',
         sortDirection: params.sortDirection ?? 'asc',
         filterLogic: params.filterLogic ?? 'and',

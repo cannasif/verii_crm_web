@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -76,6 +77,12 @@ const OutlookCustomerMailDialog = lazy(() =>
 );
 
 const PAGE_KEY = 'activity-management';
+const ACTIVITY_SEARCH_FIELDS = [
+  'Subject',
+  'Description',
+  'AssignedUser.FirstName',
+  'AssignedUser.LastName',
+] as const;
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 const AM_NS = 'activity-management' as const;
 
@@ -144,6 +151,7 @@ export function ActivityManagementPage(): ReactElement {
   const [sortBy, setSortBy] = useState('Id');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, ACTIVITY_SEARCH_FIELDS);
   const [searchResetKey, setSearchResetKey] = useState(0);
   const initialRepresentativeFilterRows = useMemo<FilterRow[]>(() => {
     const representativeName = searchParams.get('representativeName')?.trim();
@@ -227,6 +235,7 @@ export function ActivityManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
     filters: appliedAdvancedFilters,
@@ -305,6 +314,7 @@ export function ActivityManagementPage(): ReactElement {
           pageNumber: exportPageNumber,
           pageSize: exportPageSize,
           search: searchTerm || undefined,
+          searchFields: searchTerm ? searchFields : undefined,
           sortBy,
           sortDirection,
           filters: appliedAdvancedFilters,
@@ -329,7 +339,7 @@ export function ActivityManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, searchTerm, sortBy, sortDirection, appliedAdvancedFilters, appliedFilterLogic]);
+  }, [exportColumns, orderedVisibleColumns, searchTerm, searchFields, sortBy, sortDirection, appliedAdvancedFilters, appliedFilterLogic]);
 
   const appliedFilterCount = useMemo(
     () => draftFilterRows.filter((r) => r.value.trim()).length,
@@ -780,6 +790,14 @@ export function ActivityManagementPage(): ReactElement {
             appliedFilterCount={appliedFilterCount}
             search={{
               onSearchChange: setSearchTerm,
+              fields: [
+                { key: 'Subject', label: t('fields.subject') },
+                { key: 'Description', label: t('fields.description') },
+                { key: 'AssignedUser.FirstName', label: t('fields.assignedUser') },
+                { key: 'AssignedUser.LastName', label: t('fields.assignedUser') },
+              ],
+              selectedFields: searchFields,
+              onSelectedFieldsChange: setSearchFields,
               placeholder: t('search', { ns: 'common' }),
               minLength: 1,
               resetKey: searchResetKey,
