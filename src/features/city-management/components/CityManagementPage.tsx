@@ -27,6 +27,7 @@ import { useCityList } from '../hooks/useCityList';
 import { applyCityFilters, CITY_FILTER_COLUMNS } from '../types/city-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 
 const EMPTY_CITIES: CityDto[] = [];
 const PAGE_KEY = 'city-management';
@@ -52,6 +53,7 @@ export function CityManagementPage(): ReactElement {
   const [editingCity, setEditingCity] = useState<CityDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, CITY_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<CityColumnKey>('name');
@@ -89,6 +91,7 @@ export function CityManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
   });
@@ -185,7 +188,7 @@ export function CityManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingCity(null);
@@ -260,6 +263,8 @@ export function CityManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('searchPlaceholder')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             additionalFilterActions={
               <DefinitionExcelActions
                 definitionKey="city-definition"

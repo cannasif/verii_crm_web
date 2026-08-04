@@ -7,6 +7,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Eye, EyeOff, Loader2, Plus, RefreshCw 
 import { useQueryClient } from '@tanstack/react-query';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { loadColumnPreferences, saveColumnPreferences } from '@/lib/column-preferences';
 import { arraysEqual } from '@/lib/utils';
@@ -59,6 +60,7 @@ export function CustomerTypeManagementPage(): ReactElement {
   });
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, CUSTOMER_TYPE_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<CustomerTypeColumnKey>('name');
@@ -104,6 +106,7 @@ export function CustomerTypeManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
   });
@@ -201,7 +204,7 @@ export function CustomerTypeManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingCustomerType(null);
@@ -320,6 +323,8 @@ export function CustomerTypeManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             leftSlot={
               <>
                 <Button

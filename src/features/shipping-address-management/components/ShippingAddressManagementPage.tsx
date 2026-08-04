@@ -2,6 +2,7 @@ import { type ReactElement, useState, useEffect, useMemo, useCallback } from 're
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -33,6 +34,15 @@ import { DefinitionExcelActions } from '@/features/definition-excel/components/D
 const EMPTY_SHIPPING_ADDRESSES: ShippingAddressDto[] = [];
 const PAGE_KEY = 'shipping-address-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+const SHIPPING_ADDRESS_SEARCH_FIELDS = [
+  'ErpShippingCode',
+  'ErpMainCustomerCode',
+  'Name',
+  'PostalCode',
+  'Phone',
+  'City.Name',
+  'District.Name',
+] as const;
 
 type ShippingAddressColumnKey = keyof ShippingAddressDto | 'location';
 
@@ -54,6 +64,7 @@ export function ShippingAddressManagementPage(): ReactElement {
   const [selectedShippingAddress, setSelectedShippingAddress] = useState<ShippingAddressDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, SHIPPING_ADDRESS_SEARCH_FIELDS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<ShippingAddressColumnKey>('name');
@@ -66,6 +77,18 @@ export function ShippingAddressManagementPage(): ReactElement {
   const updateShippingAddress = useUpdateShippingAddress();
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
+  const searchFieldOptions = useMemo(
+    () => [
+      { key: 'ErpShippingCode', label: resolveLabel(t, 'table.erpShippingCode', 'ERP sevk kodu') },
+      { key: 'ErpMainCustomerCode', label: resolveLabel(t, 'table.erpMainCustomerCode', 'ERP ana cari kodu') },
+      { key: 'Name', label: resolveLabel(t, 'table.name', 'Ad') },
+      { key: 'PostalCode', label: resolveLabel(t, 'table.postalCode', 'Posta kodu') },
+      { key: 'Phone', label: resolveLabel(t, 'table.phone', 'Telefon') },
+      { key: 'City.Name', label: resolveLabel(t, 'table.cityName', 'Şehir') },
+      { key: 'District.Name', label: resolveLabel(t, 'table.districtName', 'İlçe') },
+    ],
+    [t]
+  );
   const defaultColumnKeys = useMemo(
     () => tableColumns.filter((c) => c.visible).map((c) => c.key),
     [tableColumns]
@@ -96,6 +119,7 @@ export function ShippingAddressManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
   });
@@ -215,7 +239,7 @@ export function ShippingAddressManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection]);
 
   const handleCreateClick = (): void => {
     setSelectedShippingAddress(null);
@@ -371,6 +395,9 @@ export function ShippingAddressManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('search')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            searchFieldOptions={searchFieldOptions}
+            onSearchFieldsChange={setSearchFields}
             additionalFilterActions={
               <DefinitionExcelActions
                 definitionKey="shipping-address-definition"

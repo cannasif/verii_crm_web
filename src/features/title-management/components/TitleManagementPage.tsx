@@ -33,6 +33,7 @@ import { applyTitleFilters, TITLE_FILTER_COLUMNS } from '../types/title-filter.t
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { queryKeys, TITLE_MANAGEMENT_QUERY_KEYS } from '../utils/query-keys';
 import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 
 const EMPTY_TITLES: TitleDto[] = [];
 const PAGE_KEY = 'title-management';
@@ -59,6 +60,7 @@ export function TitleManagementPage(): ReactElement {
   const [showStats, setShowStats] = useManagementShowStats(PAGE_KEY, user?.id);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, TITLE_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<TitleColumnKey>('titleName');
@@ -99,6 +101,7 @@ export function TitleManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
   });
@@ -195,7 +198,7 @@ export function TitleManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingTitle(null);
@@ -343,6 +346,8 @@ export function TitleManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('search')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             additionalFilterActions={
               <DefinitionExcelActions
                 definitionKey="title-definition"

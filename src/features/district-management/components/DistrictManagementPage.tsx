@@ -32,6 +32,7 @@ import { useDistrictList } from '../hooks/useDistrictList';
 import { applyDistrictFilters, DISTRICT_FILTER_COLUMNS } from '../types/district-filter.types';
 import type { FilterRow } from '@/lib/advanced-filter-types';
 import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 
 const EMPTY_DISTRICTS: DistrictDto[] = [];
 const PAGE_KEY = 'district-management';
@@ -58,6 +59,7 @@ export function DistrictManagementPage(): ReactElement {
   const [showStats, setShowStats] = useManagementShowStats(PAGE_KEY, user?.id);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, DISTRICT_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<DistrictColumnKey>('name');
@@ -97,6 +99,7 @@ export function DistrictManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
   });
@@ -194,7 +197,7 @@ export function DistrictManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection]);
 
   const handleAddClick = (): void => {
     setEditingDistrict(null);
@@ -314,6 +317,8 @@ export function DistrictManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             additionalFilterActions={
               <DefinitionExcelActions
                 definitionKey="district-definition"

@@ -2,6 +2,7 @@ import { type ReactElement, useState, useEffect, useMemo, useCallback } from 're
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye, EyeOff, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -39,6 +40,16 @@ import { contactApi } from '../api/contact-api';
 const EMPTY_CONTACTS: ContactDto[] = [];
 const PAGE_KEY = 'contact-management';
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+const CONTACT_SEARCH_FIELDS = [
+  'FullName',
+  'FirstName',
+  'LastName',
+  'Email',
+  'Phone',
+  'Mobile',
+  'Customer.CustomerName',
+  'Title.TitleName',
+] as const;
 
 type ContactColumnKey = keyof ContactDto;
 
@@ -87,6 +98,7 @@ export function ContactManagementPage(): ReactElement {
   });
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, CONTACT_SEARCH_FIELDS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<ContactColumnKey>('fullName');
@@ -101,6 +113,19 @@ export function ContactManagementPage(): ReactElement {
   const quickActivityWindow = useMemo(() => getQuickActivityWindow(), []);
 
   const tableColumns = useMemo(() => getColumnsConfig(t), [t]);
+  const searchFieldOptions = useMemo(
+    () => [
+      { key: 'FullName', label: resolveLabel(t, 'table.fullName', 'Ad soyad') },
+      { key: 'FirstName', label: resolveLabel(t, 'form.firstName', 'Ad') },
+      { key: 'LastName', label: resolveLabel(t, 'form.lastName', 'Soyad') },
+      { key: 'Email', label: resolveLabel(t, 'table.email', 'E-posta') },
+      { key: 'Phone', label: resolveLabel(t, 'table.phone', 'Telefon') },
+      { key: 'Mobile', label: resolveLabel(t, 'table.mobile', 'Mobil') },
+      { key: 'Customer.CustomerName', label: resolveLabel(t, 'table.customerName', 'Müşteri') },
+      { key: 'Title.TitleName', label: resolveLabel(t, 'table.titleName', 'Ünvan') },
+    ],
+    [t]
+  );
   const baseColumns = useMemo(
     () =>
       tableColumns.map((c) => ({
@@ -138,9 +163,10 @@ export function ContactManagementPage(): ReactElement {
       sortBy,
       sortDirection,
       ...(searchTerm ? { search: searchTerm } : {}),
+      ...(searchTerm ? { searchFields } : {}),
       ...(apiFilters.length > 0 ? { filters: apiFilters, filterLogic: 'and' as const } : {}),
     };
-  }, [pageNumber, pageSize, sortBy, sortDirection, searchTerm, appliedFilterRows]);
+  }, [pageNumber, pageSize, sortBy, sortDirection, searchTerm, searchFields, appliedFilterRows]);
 
   const { data: apiResponse, isLoading } = useContactList(listQueryParams);
 
@@ -229,7 +255,7 @@ export function ContactManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection]);
 
   useEffect(() => {
     if (totalCount === 0) {
@@ -380,6 +406,9 @@ export function ContactManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            searchFieldOptions={searchFieldOptions}
+            onSearchFieldsChange={setSearchFields}
             leftSlot={
               <>
                 <Button

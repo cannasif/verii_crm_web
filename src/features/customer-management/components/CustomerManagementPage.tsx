@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Eye, EyeOff, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -109,6 +110,22 @@ export function CustomerManagementPage(): ReactElement {
     }
     return loadTablePaginationState(PAGE_KEY, userId, { pageNumber: 1, pageSize: 10, searchTerm: '' }).searchTerm ?? '';
   });
+  const customerSearchFieldOptions = useMemo(
+    () => [
+      { key: 'CustomerName', label: t('advancedFilter.columnName') },
+      { key: 'CustomerCode', label: t('advancedFilter.columnCustomerCode') },
+      { key: 'Email', label: t('advancedFilter.columnEmail') },
+      { key: 'Phone1', label: t('advancedFilter.columnPhone') },
+      { key: 'TaxNumber', label: t('advancedFilter.columnTaxNumber') },
+      { key: 'City.Name', label: t('advancedFilter.columnCityName') },
+    ],
+    [t]
+  );
+  const customerSearchFields = useMemo(
+    () => customerSearchFieldOptions.map((field) => field.key),
+    [customerSearchFieldOptions]
+  );
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, customerSearchFields);
   const tableColumns = useMemo(
     () => getColumnsConfig(t),
     [t]
@@ -213,9 +230,10 @@ export function CustomerManagementPage(): ReactElement {
       sortBy,
       sortDirection,
       ...(search ? { search } : {}),
+      ...(search ? { searchFields } : {}),
       ...(apiFilters.length > 0 ? { filters: apiFilters, filterLogic: 'and' as const } : {}),
     };
-  }, [pageNumber, pageSize, sortBy, sortDirection, searchTerm, appliedFilterRows]);
+  }, [pageNumber, pageSize, sortBy, sortDirection, searchTerm, searchFields, appliedFilterRows]);
 
   const { data: apiResponse, isLoading } = useCustomerList(listQueryParams);
 
@@ -473,6 +491,9 @@ export function CustomerManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('search', { ns: 'common' })}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
+            searchFieldOptions={customerSearchFieldOptions}
             compactSearchOnMobile
             refresh={{
               onRefresh: handleRefresh,
