@@ -29,6 +29,14 @@
   "viewAll": "Tümünü Gör",
   "reportDownload": "Rapor İndir",
   "quickAction": "Hızlı İşlem",
+  "quickActionMenu": {
+    "customerManagement": "Yeni müşteri kaydı oluştur",
+    "demandCreateWizard": "Hızlıca yeni talep başlat",
+    "quotationCreateWizard": "Müşteriye özel teklif hazırla",
+    "orderCreateWizard": "Yeni sipariş kaydı oluştur",
+    "erpOrderList": "ERP siparişlerini görüntüle",
+    "activityManagement": "Görüşme veya görev planla"
+  },
   "activityType": {
     "meeting": "Toplantı",
     "call": "Arama",

@@ -13,6 +13,13 @@
   "viewAll": "Visualizza Tutto",
   "reportDownload": "Scarica Report",
   "quickAction": "Azione Rapida",
+  "quickActionMenu": {
+    "customerManagement": "Crea una nuova scheda cliente",
+    "demandCreateWizard": "Avvia rapidamente una nuova richiesta",
+    "quotationCreateWizard": "Prepara un preventivo personalizzato",
+    "orderCreateWizard": "Crea un nuovo ordine",
+    "activityManagement": "Pianifica una chiamata o attività"
+  },
   "activityType": {
     "meeting": "Riunione",
     "call": "Chiamata",

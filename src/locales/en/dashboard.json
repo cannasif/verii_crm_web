@@ -29,6 +29,14 @@
   "viewAll": "View All",
   "reportDownload": "Download Report",
   "quickAction": "Quick Action",
+  "quickActionMenu": {
+    "customerManagement": "Create a new customer record",
+    "demandCreateWizard": "Start a new demand quickly",
+    "quotationCreateWizard": "Prepare a customer-specific quotation",
+    "orderCreateWizard": "Create a new order record",
+    "erpOrderList": "View ERP orders",
+    "activityManagement": "Schedule a call or task"
+  },
   "activityType": {
     "meeting": "Meeting",
     "call": "Call",

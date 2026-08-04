@@ -31,11 +31,55 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from '@/lib/utils';
-import {
-  CRM_DROPDOWN_MENU_ITEM_CLASS,
-  CRM_DROPDOWN_MENU_ITEM_ICON_CLASS,
-  CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS,
-} from '@/lib/menu-interactive-styles';
+import { CRM_MENU_ITEM_INTERACTIVE_CLASS } from '@/lib/menu-interactive-styles';
+import type { LucideIcon } from 'lucide-react';
+
+type QuickActionTone = 'blue' | 'amber' | 'violet';
+
+const QUICK_ACTION_ICON_TONE: Record<QuickActionTone, string> = {
+  blue: 'bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300',
+  amber: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
+  violet: 'bg-violet-50 text-violet-600 dark:bg-violet-500/15 dark:text-violet-300',
+};
+
+const QUICK_ACTION_DOT_TONE: Record<QuickActionTone, string> = {
+  blue: 'bg-blue-400',
+  amber: 'bg-amber-400',
+  violet: 'bg-violet-400',
+};
+
+function QuickActionSectionLabel({ tone, children }: { tone: QuickActionTone; children: ReactElement | string }) {
+  return (
+    <DropdownMenuLabel className="flex items-center gap-1.5 px-2 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-400 opacity-90 dark:text-slate-500">
+      <span className={cn('h-1.5 w-1.5 rounded-full', QUICK_ACTION_DOT_TONE[tone])} />
+      {children}
+    </DropdownMenuLabel>
+  );
+}
+
+function QuickActionItem({ icon: Icon, tone, label, description, onClick }: {
+  icon: LucideIcon;
+  tone: QuickActionTone;
+  label: string;
+  description?: string;
+  onClick: () => void;
+}) {
+  return (
+    <DropdownMenuItem onClick={onClick} className={cn(CRM_MENU_ITEM_INTERACTIVE_CLASS, 'group mb-0.5 rounded-xl p-2.5 last:mb-0')}>
+      <div className="flex items-center gap-3">
+        <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-transform duration-200 group-hover:scale-110 group-focus:scale-110', QUICK_ACTION_ICON_TONE[tone])}>
+          <Icon size={16} />
+        </div>
+        <div className="min-w-0">
+          <div className="text-sm font-bold text-slate-800 transition-colors dark:text-slate-100 group-focus:text-[var(--crm-brand-primary)] group-data-[highlighted]:text-[var(--crm-brand-primary)]">
+            {label}
+          </div>
+          {description && <div className="truncate text-[11px] font-medium text-slate-400 dark:text-slate-500">{description}</div>}
+        </div>
+      </div>
+    </DropdownMenuItem>
+  );
+}
 
 export function DashboardPage(): ReactElement {
   const { t } = useTranslation('dashboard');
@@ -45,7 +89,7 @@ export function DashboardPage(): ReactElement {
 
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [dashboardMode, setDashboardMode] = useState<'view' | 'edit'>('view');
-  const [activeTab, setActiveTab] = useState<'reports' | 'calendar'>('reports');
+  const [activeTab, setActiveTab] = useState<'reports' | 'calendar'>('calendar');
   const tCommon = useTranslation('common').t;
 
   useEffect(() => {
@@ -127,131 +171,83 @@ export function DashboardPage(): ReactElement {
                 {t('quickAction')}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 bg-stone-50/95 dark:bg-[#120c18] border border-slate-300/70 dark:border-white/10 shadow-xl shadow-slate-900/8 rounded-xl p-1.5 pt-[env(safe-area-inset-top)]">
+            <DropdownMenuContent align="end" className="w-80 overflow-hidden rounded-2xl border border-slate-300/70 bg-stone-50/95 p-1.5 pt-[env(safe-area-inset-top)] shadow-xl shadow-slate-900/10 dark:border-white/10 dark:bg-[#120c18]">
+              <div className="pointer-events-none -mx-1.5 -mt-1.5 mb-1.5 h-1 bg-[image:var(--crm-brand-gradient)]" aria-hidden />
 
-              <DropdownMenuLabel className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 opacity-70">
-                {t('sidebar.customers')}
-              </DropdownMenuLabel>
-
-              <DropdownMenuItem
+              <QuickActionSectionLabel tone="blue">{t('sidebar.customers')}</QuickActionSectionLabel>
+              <QuickActionItem
+                icon={UserPlus}
+                tone="blue"
+                label={t('sidebar.customerManagement')}
+                description={t('quickActionMenu.customerManagement')}
                 onClick={() => navigate('/customer-management')}
-                className={cn(CRM_DROPDOWN_MENU_ITEM_CLASS, 'mb-1')}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
-                    <UserPlus size={16} />
-                  </div>
-                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
-                    {t('sidebar.customerManagement')}
-                  </span>
-                </div>
-              </DropdownMenuItem>
+              />
 
-              <DropdownMenuSeparator className="bg-slate-100 dark:bg-white/5 my-1" />
+              <DropdownMenuSeparator className="my-1.5 bg-slate-100 dark:bg-white/5" />
 
-              <DropdownMenuLabel className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 opacity-70">
-                {t('sidebar.salesManagement')}
-              </DropdownMenuLabel>
-
-              <DropdownMenuItem
+              <QuickActionSectionLabel tone="amber">{t('sidebar.salesManagement')}</QuickActionSectionLabel>
+              <QuickActionItem
+                icon={PlusCircle}
+                tone="amber"
+                label={t('sidebar.demandCreateWizard')}
+                description={t('quickActionMenu.demandCreateWizard')}
                 onClick={() => navigate('/demands/create')}
-                className={cn(CRM_DROPDOWN_MENU_ITEM_CLASS, 'mb-1')}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
-                    <PlusCircle size={16} />
-                  </div>
-                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
-                    {t('sidebar.demandCreateWizard')}
-                  </span>
-                </div>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
+              />
+              <QuickActionItem
+                icon={FilePlus}
+                tone="amber"
+                label={t('sidebar.quotationCreateWizard')}
+                description={t('quickActionMenu.quotationCreateWizard')}
                 onClick={() => navigate('/quotations/create')}
-                className={cn(CRM_DROPDOWN_MENU_ITEM_CLASS, 'mb-1')}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
-                    <FilePlus size={16} />
-                  </div>
-                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
-                    {t('sidebar.quotationCreateWizard')}
-                  </span>
-                </div>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
+              />
+              <QuickActionItem
+                icon={ShoppingBag}
+                tone="amber"
+                label={t('sidebar.orderCreateWizard')}
+                description={t('quickActionMenu.orderCreateWizard')}
                 onClick={() => navigate('/orders/create')}
-                className={cn(CRM_DROPDOWN_MENU_ITEM_CLASS, 'mb-1')}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
-                    <ShoppingBag size={16} />
-                  </div>
-                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
-                    {t('sidebar.orderCreateWizard')}
-                  </span>
-                </div>
-              </DropdownMenuItem>
-
-              <DropdownMenuItem
+              />
+              <QuickActionItem
+                icon={Database}
+                tone="amber"
+                label={t('sidebar.erpOrderList')}
+                description={t('quickActionMenu.erpOrderList')}
                 onClick={() => navigate('/orders/erp')}
-                className={CRM_DROPDOWN_MENU_ITEM_CLASS}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
-                    <Database size={16} />
-                  </div>
-                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
-                    {t('sidebar.erpOrderList')}
-                  </span>
-                </div>
-              </DropdownMenuItem>
+              />
 
-              <DropdownMenuSeparator className="bg-slate-100 dark:bg-white/5 my-1" />
+              <DropdownMenuSeparator className="my-1.5 bg-slate-100 dark:bg-white/5" />
 
-              <DropdownMenuLabel className="text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider px-2 py-1.5 opacity-70">
-                {t('sidebar.activities')}
-              </DropdownMenuLabel>
-
-              <DropdownMenuItem
+              <QuickActionSectionLabel tone="violet">{t('sidebar.activities')}</QuickActionSectionLabel>
+              <QuickActionItem
+                icon={CalendarPlus}
+                tone="violet"
+                label={t('sidebar.activityManagement')}
+                description={t('quickActionMenu.activityManagement')}
                 onClick={() => navigate('/activity-management')}
-                className={CRM_DROPDOWN_MENU_ITEM_CLASS}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={CRM_DROPDOWN_MENU_ITEM_ICON_CLASS}>
-                    <CalendarPlus size={16} />
-                  </div>
-                  <span className={CRM_DROPDOWN_MENU_ITEM_LABEL_CLASS}>
-                    {t('sidebar.activityManagement')}
-                  </span>
-                </div>
-              </DropdownMenuItem>
-
+              />
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>
 
-      <div className="flex w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm dark:border-white/10 dark:bg-[#130d1b]" role="tablist" aria-label={t('tabs.label')}>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'reports'}
-          onClick={() => setActiveTab('reports')}
-          className={cn('flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition', activeTab === 'reports' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
-        >
-          <BarChart3 size={17} />{t('tabs.reports')}
-        </button>
+      <div className="flex w-full max-w-xl rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-white/10 dark:bg-[#130d1b]" role="tablist" aria-label={t('tabs.label')}>
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === 'calendar'}
           onClick={() => setActiveTab('calendar')}
-          className={cn('flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition', activeTab === 'calendar' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
+          className={cn('flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition', activeTab === 'calendar' ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
         >
-          <CalendarDays size={17} />{t('tabs.calendar')}
+          <CalendarDays size={15} />{t('tabs.calendar')}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'reports'}
+          onClick={() => setActiveTab('reports')}
+          className={cn('flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition', activeTab === 'reports' ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
+        >
+          <BarChart3 size={15} />{t('tabs.reports')}
         </button>
       </div>
 

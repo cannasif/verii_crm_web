@@ -25,6 +25,13 @@
   "viewAll": "عرض الكل",
   "reportDownload": "تحميل التقرير",
   "quickAction": "إجراء سريع",
+  "quickActionMenu": {
+    "customerManagement": "إنشاء سجل عميل جديد",
+    "demandCreateWizard": "بدء طلب جديد بسرعة",
+    "quotationCreateWizard": "إعداد عرض سعر مخصص",
+    "orderCreateWizard": "إنشاء طلبية جديدة",
+    "activityManagement": "جدولة مكالمة أو مهمة"
+  },
   "activityType": {
     "meeting": "اجتماع",
     "call": "مكالمة",

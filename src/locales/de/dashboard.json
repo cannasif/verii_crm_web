@@ -13,6 +13,13 @@
   "viewAll": "Alle anzeigen",
   "reportDownload": "Bericht herunterladen",
   "quickAction": "Schnellaktion",
+  "quickActionMenu": {
+    "customerManagement": "Neuen Kundendatensatz anlegen",
+    "demandCreateWizard": "Schnell eine neue Anfrage starten",
+    "quotationCreateWizard": "Individuelles Angebot erstellen",
+    "orderCreateWizard": "Neue Bestellung anlegen",
+    "activityManagement": "Anruf oder Aufgabe planen"
+  },
   "activityType": {
     "meeting": "Treffen",
     "call": "Anruf",
