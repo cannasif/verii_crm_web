@@ -6029,6 +6029,11 @@
   "expandNav": "Expand menu",
     "noNavigationResult": "No matching menu found"
   },
+  "searchFields": "Search fields",
+  "searchFieldsHelp": "Choose which fields to search in. At least one field must stay selected.",
+  "searchFieldsCount": "fields selected",
+  "searchFieldsFilterPlaceholder": "Search fields...",
+  "searchFieldsNoMatch": "No matching fields",
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "ERP record closed by salesperson for revision",

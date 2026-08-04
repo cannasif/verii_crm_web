@@ -5832,6 +5832,11 @@
   "expandNav": "توسيع القائمة",
     "noNavigationResult": "لم يتم العثور على قائمة مطابقة"
   },
+  "searchFields": "حقول البحث",
+  "searchFieldsHelp": "اختر الحقول التي سيتم البحث فيها. يجب أن يبقى حقل واحد على الأقل محددًا.",
+  "searchFieldsCount": "حقول محددة",
+  "searchFieldsFilterPlaceholder": "ابحث عن حقل...",
+  "searchFieldsNoMatch": "لا توجد حقول مطابقة",
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "تم إغلاق سجل ERP بواسطة مندوب المبيعات للمراجعة",

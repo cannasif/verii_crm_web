@@ -6028,6 +6028,11 @@
   "expandNav": "Menüyü genişlet",
     "noNavigationResult": "Eşleşen menü bulunamadı"
   },
+  "searchFields": "Arama alanları",
+  "searchFieldsHelp": "Aramanın uygulanacağı alanları seçin. En az bir alan seçili kalmalıdır.",
+  "searchFieldsCount": "alan seçili",
+  "searchFieldsFilterPlaceholder": "Alan ara...",
+  "searchFieldsNoMatch": "Eşleşen alan bulunamadı",
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "ERP kaydı revizyon için plasiyer tarafından kapatıldı",

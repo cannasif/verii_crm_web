@@ -5854,6 +5854,11 @@
   "expandNav": "Espandi il menu",
     "noNavigationResult": "Nessun menu corrispondente"
   },
+  "searchFields": "Campi di ricerca",
+  "searchFieldsHelp": "Scegli in quali campi cercare. Deve rimanere selezionato almeno un campo.",
+  "searchFieldsCount": "campi selezionati",
+  "searchFieldsFilterPlaceholder": "Cerca campo...",
+  "searchFieldsNoMatch": "Nessun campo corrispondente",
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "Record ERP pulito per revisione",

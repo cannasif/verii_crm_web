@@ -30,7 +30,10 @@ import { ColumnPreferencesPanel, type ColumnDef } from './ColumnPreferencesPopov
 import { GridExportMenu, GridExportMenuItems } from './GridExportMenu';
 import type { FilterColumnConfig, FilterRow } from '@/lib/advanced-filter-types';
 import type { GridExportColumn } from '@/lib/grid-export';
+import { matchesSearchTerm } from '@/lib/search';
 import { cn } from '@/lib/utils';
+
+const SEARCH_FIELD_FILTER_THRESHOLD = 6;
 
 export interface DataTableSearchConfig {
   value?: string;
@@ -158,6 +161,7 @@ export function DataTableActionBar({
   const [showFilters, setShowFilters] = useState(false);
   const [columnsOpen, setColumnsOpen] = useState(false);
   const [searchFieldsOpen, setSearchFieldsOpen] = useState(false);
+  const [searchFieldsFilter, setSearchFieldsFilter] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopOverflowOpen, setDesktopOverflowOpen] = useState(false);
   const [isDesktopCompactSearchOpen, setIsDesktopCompactSearchOpen] = useState(false);
@@ -279,6 +283,17 @@ export function DataTableActionBar({
     }
     changeSearchFields(searchFieldOptions.map((field) => field.key));
   }, [changeSearchFields, pageKey, searchFieldOptions, selectedSearchFields.length, userId]);
+  const persistSearchFields = (fields: string[]): void => {
+    try {
+      localStorage.setItem(
+        `paged-search-fields:${pageKey}:${userId ?? 'anonymous'}`,
+        JSON.stringify(fields)
+      );
+    } catch {
+      // Storage failures must not block searching.
+    }
+  };
+
   const toggleSearchField = (fieldKey: string): void => {
     if (!changeSearchFields) return;
     const isSelected = selectedSearchFields.includes(fieldKey);
@@ -288,15 +303,16 @@ export function DataTableActionBar({
         ? selectedSearchFields.filter((key) => key !== fieldKey)
         : [...selectedSearchFields, fieldKey];
     changeSearchFields(nextFields);
-    try {
-      localStorage.setItem(
-        `paged-search-fields:${pageKey}:${userId ?? 'anonymous'}`,
-        JSON.stringify(nextFields)
-      );
-    } catch {
-      // Storage failures must not block searching.
-    }
+    persistSearchFields(nextFields);
   };
+
+  const visibleSearchFieldOptions = useMemo(
+    () =>
+      searchFieldsFilter.trim()
+        ? searchFieldOptions.filter((field) => matchesSearchTerm(searchFieldsFilter, [field.label]))
+        : searchFieldOptions,
+    [searchFieldOptions, searchFieldsFilter]
+  );
   const refreshCooldown = useRefreshCooldown({
     onRefresh: () => refresh?.onRefresh(),
     cooldownSeconds: refresh?.cooldownSeconds ?? 30,
@@ -639,7 +655,13 @@ export function DataTableActionBar({
                   </button>
                 ) : null}
                 {shouldRenderSearchFields ? (
-                  <Popover open={searchFieldsOpen} onOpenChange={setSearchFieldsOpen}>
+                  <Popover
+                    open={searchFieldsOpen}
+                    onOpenChange={(next) => {
+                      setSearchFieldsOpen(next);
+                      if (!next) setSearchFieldsFilter('');
+                    }}
+                  >
                     <PopoverTrigger asChild>
                       <button
                         type="button"
@@ -658,38 +680,86 @@ export function DataTableActionBar({
                         ) : null}
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent align="end" className="w-72 p-2">
-                      <div className="px-2 pb-2 text-xs text-slate-500 dark:text-slate-400">
-                        {t('searchFieldsHelp', {
-                          ns: 'common',
-                          defaultValue: 'Aramanın uygulanacağı alanları seçin. En az bir alan seçili kalmalıdır.',
-                        })}
+                    <PopoverContent align="end" className="w-80 overflow-hidden rounded-2xl border-slate-200 p-0 shadow-xl shadow-slate-900/10 dark:border-white/10 dark:shadow-black/40">
+                      <div className="flex items-start gap-2.5 border-b border-slate-100 bg-slate-50/70 px-3.5 py-3 dark:border-white/5 dark:bg-white/[0.03]">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                          <ListFilter className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0 flex-1 pt-0.5">
+                          <p className="text-sm font-bold text-slate-900 dark:text-white">
+                            {t('searchFields', { ns: 'common', defaultValue: 'Arama alanları' })}
+                          </p>
+                          <p className="mt-0.5 text-[11px] leading-snug text-slate-500 dark:text-slate-400">
+                            {t('searchFieldsHelp', {
+                              ns: 'common',
+                              defaultValue: 'Aramanın uygulanacağı alanları seçin. En az bir alan seçili kalmalıdır.',
+                            })}
+                          </p>
+                        </div>
                       </div>
-                      <div className="max-h-72 space-y-1 overflow-y-auto">
-                        {searchFieldOptions.map((field) => {
-                          const checked = selectedSearchFields.includes(field.key);
-                          const locked = checked && selectedSearchFields.length === 1;
-                          return (
-                            <button
-                              key={field.key}
-                              type="button"
-                              disabled={locked}
-                              onClick={() => toggleSearchField(field.key)}
-                              className={cn(
-                                'flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-white/10',
-                                locked && 'cursor-not-allowed opacity-60'
-                              )}
-                            >
-                              <span className={cn(
-                                'flex h-4 w-4 items-center justify-center rounded border',
-                                checked ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-300 dark:border-white/20'
-                              )}>
-                                {checked ? <Check className="h-3 w-3" /> : null}
-                              </span>
-                              <span>{field.label}</span>
-                            </button>
-                          );
-                        })}
+
+                      {searchFieldOptions.length > SEARCH_FIELD_FILTER_THRESHOLD ? (
+                        <div className="border-b border-slate-100 px-2.5 py-2 dark:border-white/5">
+                          <div className="relative">
+                            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
+                            <input
+                              type="text"
+                              value={searchFieldsFilter}
+                              onChange={(event) => setSearchFieldsFilter(event.target.value)}
+                              placeholder={t('searchFieldsFilterPlaceholder', { ns: 'common', defaultValue: 'Alan ara...' })}
+                              className="h-8 w-full rounded-lg border border-slate-200 bg-white pl-8 pr-2.5 text-xs text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-primary/60 focus:ring-2 focus:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:placeholder:text-slate-500"
+                            />
+                          </div>
+                        </div>
+                      ) : null}
+
+                      <div className="max-h-72 overflow-y-auto p-2">
+                        {visibleSearchFieldOptions.length > 0 ? (
+                          <div className="grid grid-cols-2 gap-1">
+                            {visibleSearchFieldOptions.map((field) => {
+                              const checked = selectedSearchFields.includes(field.key);
+                              const locked = checked && selectedSearchFields.length === 1;
+                              return (
+                                <button
+                                  key={field.key}
+                                  type="button"
+                                  disabled={locked}
+                                  onClick={() => toggleSearchField(field.key)}
+                                  className={cn(
+                                    'group flex items-center gap-2 rounded-xl px-2.5 py-2 text-left text-sm transition-colors',
+                                    checked
+                                      ? 'bg-primary/8 text-slate-900 dark:bg-primary/15 dark:text-white'
+                                      : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/5',
+                                    locked && 'cursor-not-allowed opacity-60'
+                                  )}
+                                >
+                                  <span
+                                    className={cn(
+                                      'flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-md border transition-all duration-150',
+                                      checked
+                                        ? 'border-primary bg-primary text-white'
+                                        : 'border-slate-300 group-hover:border-primary/50 dark:border-white/20'
+                                    )}
+                                  >
+                                    {checked ? <Check className="h-3 w-3" strokeWidth={3} /> : null}
+                                  </span>
+                                  <span className="truncate font-medium">{field.label}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        ) : (
+                          <p className="px-2 py-6 text-center text-xs text-slate-400 dark:text-slate-500">
+                            {t('searchFieldsNoMatch', { ns: 'common', defaultValue: 'Eşleşen alan bulunamadı' })}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="border-t border-slate-100 px-3.5 py-2 dark:border-white/5">
+                        <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
+                          {selectedSearchFields.length}/{searchFieldOptions.length}{' '}
+                          {t('searchFieldsCount', { ns: 'common', defaultValue: 'alan seçili' })}
+                        </span>
                       </div>
                     </PopoverContent>
                   </Popover>

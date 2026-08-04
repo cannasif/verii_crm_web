@@ -5826,6 +5826,11 @@
   "expandNav": "Expandir menú",
     "noNavigationResult": "No se encontró un menú coincidente"
   },
+  "searchFields": "Campos de búsqueda",
+  "searchFieldsHelp": "Elija en qué campos buscar. Debe quedar al menos un campo seleccionado.",
+  "searchFieldsCount": "campos seleccionados",
+  "searchFieldsFilterPlaceholder": "Buscar campos...",
+  "searchFieldsNoMatch": "No se encontraron campos",
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "Registro ERP limpiado para revisión",
