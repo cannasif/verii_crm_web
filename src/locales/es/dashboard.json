@@ -59,6 +59,8 @@
   "reportPreparing": "El informe se está preparando...",
   "reportDownloaded": "El informe ha sido descargado.",
   "reportError": "No se pudo recibir el informe.",
+  "tabs": { "label": "Vistas del panel", "reports": "Mis informes", "calendar": "Mi calendario" },
+  "calendar": { "title": "Mi calendario de actividades", "description": "Gestione sus planes, reuniones y tareas asignadas.", "views": { "month": "Mes", "week": "Semana", "agenda": "Agenda" }, "summary": { "total": "Actividades", "scheduled": "Planificadas", "completed": "Completadas", "overdue": "Atrasadas" }, "status": { "scheduled": "Planificada", "completed": "Completada", "cancelled": "Cancelada", "overdue": "Atrasada" }, "detail": { "date": "Fecha y hora", "status": "Estado", "customer": "Cliente / contacto", "customerCode": "Código cliente", "description": "Descripción" }, "today": "Hoy", "previous": "Período anterior", "next": "Período siguiente", "newActivity": "Añadir actividad", "activity": "Actividad", "more": "más", "empty": "No hay actividades en este período", "loadError": "No se pudo cargar el calendario.", "openActivities": "Abrir gestión de actividades" },
   "sidebar": {
     "customers": "Clientes",
     "customerManagement": "Gestión de Clientes",

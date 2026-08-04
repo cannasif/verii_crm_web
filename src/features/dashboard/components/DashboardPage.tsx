@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { formatSystemDate } from '@/lib/system-settings';
 import { clearPerfMarks, perfMark, perfMeasureOnNextPaint } from '@/lib/perf-metrics';
 import { AssignedReportsDashboardSection } from '@/features/report-builder/components/AssignedReportsDashboardSection';
+import { MyActivitiesCalendar } from './MyActivitiesCalendar';
 import {
   Zap,
   CalendarDays,
@@ -18,6 +19,7 @@ import {
   Pencil,
   Eye,
   Database,
+  BarChart3,
 } from 'lucide-react';
 
 import {
@@ -43,6 +45,7 @@ export function DashboardPage(): ReactElement {
 
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [dashboardMode, setDashboardMode] = useState<'view' | 'edit'>('view');
+  const [activeTab, setActiveTab] = useState<'reports' | 'calendar'>('reports');
   const tCommon = useTranslation('common').t;
 
   useEffect(() => {
@@ -97,7 +100,7 @@ export function DashboardPage(): ReactElement {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button
+          {activeTab === 'reports' && <Button
             type="button"
             variant="outline"
             onClick={() => setDashboardMode((current) => (current === 'view' ? 'edit' : 'view'))}
@@ -114,7 +117,7 @@ export function DashboardPage(): ReactElement {
                 {tCommon('common.reportBuilder.dashboardTabView')}
               </>
             )}
-          </Button>
+          </Button>}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -231,7 +234,30 @@ export function DashboardPage(): ReactElement {
         </div>
       </div>
 
-      <AssignedReportsDashboardSection mode={dashboardMode} onModeChange={setDashboardMode} />
+      <div className="flex w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-1.5 shadow-sm dark:border-white/10 dark:bg-[#130d1b]" role="tablist" aria-label={t('tabs.label')}>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'reports'}
+          onClick={() => setActiveTab('reports')}
+          className={cn('flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition', activeTab === 'reports' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
+        >
+          <BarChart3 size={17} />{t('tabs.reports')}
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === 'calendar'}
+          onClick={() => setActiveTab('calendar')}
+          className={cn('flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold transition', activeTab === 'calendar' ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
+        >
+          <CalendarDays size={17} />{t('tabs.calendar')}
+        </button>
+      </div>
+
+      {activeTab === 'reports'
+        ? <AssignedReportsDashboardSection mode={dashboardMode} onModeChange={setDashboardMode} />
+        : <MyActivitiesCalendar />}
 
     </div>
   );

@@ -59,6 +59,15 @@
     "criticalStock": "Critical Stock",
     "stockStatus": "See stock status"
   },
+  "tabs": { "label": "Dashboard views", "reports": "My Reports", "calendar": "My Calendar" },
+  "calendar": {
+    "title": "My activity calendar", "description": "Manage your assigned plans, meetings and tasks in one calendar.",
+    "views": { "month": "Month", "week": "Week", "agenda": "Agenda" },
+    "summary": { "total": "Total activities", "scheduled": "Scheduled", "completed": "Completed", "overdue": "Overdue" },
+    "status": { "scheduled": "Scheduled", "completed": "Completed", "cancelled": "Cancelled", "overdue": "Overdue" },
+    "detail": { "date": "Date and time", "status": "Status", "customer": "Customer / contact", "customerCode": "Customer code", "description": "Description" },
+    "today": "Today", "previous": "Previous period", "next": "Next period", "newActivity": "Add activity", "activity": "Activity", "more": "more", "empty": "You have no activities in this period", "loadError": "Calendar activities could not be loaded.", "openActivities": "Open activity management"
+  },
   "sidebar": {
     "customers": "Customers",
     "customerManagement": "Customer Management",

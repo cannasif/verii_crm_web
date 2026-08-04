@@ -59,6 +59,8 @@
   "reportPreparing": "Il rapporto è in preparazione...",
   "reportDownloaded": "Il rapporto è stato scaricato.",
   "reportError": "Non è stato possibile ricevere il rapporto.",
+  "tabs": { "label": "Viste dashboard", "reports": "I miei report", "calendar": "Il mio calendario" },
+  "calendar": { "title": "Il mio calendario attività", "description": "Gestisci piani, riunioni e attività assegnate.", "views": { "month": "Mese", "week": "Settimana", "agenda": "Agenda" }, "summary": { "total": "Attività", "scheduled": "Pianificate", "completed": "Completate", "overdue": "In ritardo" }, "status": { "scheduled": "Pianificata", "completed": "Completata", "cancelled": "Annullata", "overdue": "In ritardo" }, "detail": { "date": "Data e ora", "status": "Stato", "customer": "Cliente / contatto", "customerCode": "Codice cliente", "description": "Descrizione" }, "today": "Oggi", "previous": "Periodo precedente", "next": "Periodo successivo", "newActivity": "Aggiungi attività", "activity": "Attività", "more": "altre", "empty": "Nessuna attività in questo periodo", "loadError": "Impossibile caricare il calendario.", "openActivities": "Apri gestione attività" },
   "sidebar": {
     "customers": "Clienti",
     "customerManagement": "Gestione Clienti",
