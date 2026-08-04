@@ -6,12 +6,12 @@ const STALE_TIME_MS = 2 * 60 * 1000;
 
 export function usePdfTablePresetList(
   params?: PdfTablePresetListParams
-): UseQueryResult<{ items: PdfTablePresetDto[]; totalCount: number }, Error> {
+): UseQueryResult<{ items: PdfTablePresetDto[]; totalCount: number; totalPages: number }, Error> {
   return useQuery({
     queryKey: pdfReportTemplateQueryKeys.presetList(params),
     queryFn: async () => {
       const result = await pdfReportTemplateApi.getPresetList(params);
-      return { items: result.items, totalCount: result.totalCount };
+      return { items: result.items, totalCount: result.totalCount, totalPages: result.totalPages };
     },
     staleTime: STALE_TIME_MS,
   });

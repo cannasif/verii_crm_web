@@ -26,7 +26,6 @@ import {
   MANAGEMENT_LIST_CARD_TITLE_CLASSNAME,
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
-import { matchesSearchTerm } from '@/lib/search';
 import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -37,6 +36,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DocumentRuleType, type PdfTablePresetCreateDto, type PdfTablePresetDto } from '@/features/pdf-report';
 import { usePdfTablePresetList } from '../hooks/usePdfTablePresetList';
+import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { useCreatePdfTablePreset } from '../hooks/useCreatePdfTablePreset';
 import { useUpdatePdfTablePreset } from '../hooks/useUpdatePdfTablePreset';
 import { useDeletePdfTablePreset } from '../hooks/useDeletePdfTablePreset';
@@ -111,8 +112,7 @@ function toFormState(preset?: PdfTablePresetDto | null): PresetFormState {
 
 export function PdfTablePresetManagementPage(): ReactElement {
   const { t } = useTranslation(['report-designer', 'common']);
-  const { data, isLoading } = usePdfTablePresetList();
-  const presets = useMemo(() => data?.items ?? [], [data?.items]);
+  const { user } = useAuthStore();
   const createMutation = useCreatePdfTablePreset();
   const updateMutation = useUpdatePdfTablePreset();
   const deleteMutation = useDeletePdfTablePreset();
@@ -126,12 +126,25 @@ export function PdfTablePresetManagementPage(): ReactElement {
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [searchFields, setSearchFields] = usePagedSearchFields(
+    'pdf-table-preset-management',
+    user?.id,
+    ['Name', 'Key']
+  );
   const [visibleColumns, setVisibleColumns] = useState<string[]>(() => TABLE_COLUMNS.map(c => c.key));
   const [columnOrder, setColumnOrder] = useState<string[]>(() => TABLE_COLUMNS.map(c => c.key));
 
+  const { data, isLoading } = usePdfTablePresetList({
+    pageNumber,
+    pageSize,
+    search: searchTerm.trim() || undefined,
+    searchFields: searchTerm.trim() ? searchFields : undefined,
+  });
+  const presets = useMemo(() => data?.items ?? [], [data?.items]);
+
   useEffect(() => {
     setPageNumber(1);
-  }, [searchTerm]);
+  }, [searchTerm, searchFields, pageSize]);
 
   const columns = useMemo<DataTableGridColumn<PdfTablePresetColumnKey>[]>(
     () =>
@@ -145,14 +158,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
   );
 
   const filteredPresets = useMemo(() => {
-    if (!searchTerm.trim()) return presets;
-    return presets.filter(
-      (preset) => matchesSearchTerm(searchTerm, [
-        preset.name,
-        preset.key,
-        RULE_TYPE_LABEL_KEYS[preset.ruleType] ? t(RULE_TYPE_LABEL_KEYS[preset.ruleType]) : '',
-      ])
-    ).sort((a, b) => {
+    return [...presets].sort((a, b) => {
       const getVal = (item: PdfTablePresetDto, key: PdfTablePresetColumnKey) => {
         if (key === 'columnCount') return item.columns.length;
         return item[key as keyof PdfTablePresetDto];
@@ -163,7 +169,11 @@ export function PdfTablePresetManagementPage(): ReactElement {
       const factor = sortDirection === 'asc' ? 1 : -1;
       return (aVal ?? '') < (bVal ?? '') ? -1 * factor : 1 * factor;
     });
-  }, [presets, searchTerm, t, sortBy, sortDirection]);
+  }, [presets, sortBy, sortDirection]);
+  const totalCount = data?.totalCount ?? 0;
+  const totalPages = Math.max(1, data?.totalPages ?? Math.ceil(totalCount / pageSize));
+  const startRow = totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1;
+  const endRow = totalCount === 0 ? 0 : Math.min(pageNumber * pageSize, totalCount);
 
   const renderSortIcon = (key: PdfTablePresetColumnKey) => {
     if (sortBy !== key) return <ArrowUpDown className="ml-1 h-4 w-4 opacity-60" />;
@@ -267,6 +277,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
           </div>
           <DataTableActionBar
             pageKey="pdf-table-presets"
+            userId={user?.id}
             columns={columns.map(c => ({ key: c.key as string, label: c.label }))}
             visibleColumns={visibleColumns}
             columnOrder={columnOrder}
@@ -274,15 +285,20 @@ export function PdfTablePresetManagementPage(): ReactElement {
             onColumnOrderChange={setColumnOrder}
             searchValue={searchTerm}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             searchPlaceholder={t('reportDesigner.list.searchPlaceholder')}
             translationNamespace="report-designer"
             exportFileName="pdf-table-presets"
             exportColumns={columns.map(c => ({ key: c.key as string, label: c.label }))}
             exportRows={filteredPresets as unknown as Record<string, unknown>[]}
-            filterColumns={[]}
+            filterColumns={[
+              { value: 'Name', type: 'string', labelKey: 'pdfReportDesigner.tablePresetManagement.name' },
+              { value: 'Key', type: 'string', labelKey: 'pdfReportDesigner.tablePresetManagement.key' },
+            ]}
             onFilterLogicChange={() => { }}
             onClearFilters={() => { }}
-            defaultFilterColumn="name"
+            defaultFilterColumn="Name"
             draftFilterRows={[]}
             onDraftFilterRowsChange={() => { }}
             onApplyFilters={() => { }}
@@ -295,7 +311,7 @@ export function PdfTablePresetManagementPage(): ReactElement {
                 centerColumnHeaders
                 columns={columns}
                 visibleColumnKeys={columnOrder.filter(k => visibleColumns.includes(k)) as PdfTablePresetColumnKey[]}
-                rows={filteredPresets.slice((pageNumber - 1) * pageSize, pageNumber * pageSize)}
+                rows={filteredPresets}
                 rowKey={(row) => row.id}
                 sortBy={sortBy}
                 sortDirection={sortDirection}
@@ -368,17 +384,17 @@ export function PdfTablePresetManagementPage(): ReactElement {
                 pageSizeOptions={[10, 20, 50]}
                 onPageSizeChange={setPageSize}
                 pageNumber={pageNumber}
-                totalPages={Math.ceil(filteredPresets.length / pageSize) || 1}
+                totalPages={totalPages}
                 hasPreviousPage={pageNumber > 1}
-                hasNextPage={pageNumber < Math.ceil(filteredPresets.length / pageSize)}
+                hasNextPage={pageNumber < totalPages}
                 onPreviousPage={() => setPageNumber(prev => Math.max(1, prev - 1))}
                 onNextPage={() => setPageNumber(prev => prev + 1)}
                 previousLabel={t('common.previous')}
                 nextLabel={t('common.next')}
                 paginationInfoText={t('common.paginationInfo', {
-                  start: Math.min(filteredPresets.length, (pageNumber - 1) * pageSize + 1),
-                  end: Math.min(filteredPresets.length, pageNumber * pageSize),
-                  total: filteredPresets.length,
+                  start: startRow,
+                  end: endRow,
+                  total: totalCount,
                 })}
               />
             </ManagementDataTableChrome>

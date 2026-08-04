@@ -239,6 +239,7 @@ export interface PdfReportTemplateListParams {
   pageNumber?: number;
   pageSize?: number;
   search?: string;
+  searchFields?: string[];
   sortBy?: string;
   sortDirection?: 'asc' | 'desc';
   ruleType?: DocumentRuleType;
@@ -282,6 +283,7 @@ export interface PdfTablePresetListParams {
   pageNumber?: number;
   pageSize?: number;
   search?: string;
+  searchFields?: string[];
   ruleType?: DocumentRuleType;
   isActive?: boolean;
 }

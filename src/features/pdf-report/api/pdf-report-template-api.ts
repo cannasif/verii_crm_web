@@ -197,6 +197,7 @@ export const pdfReportTemplateApi = {
                 pageNumber: params.pageNumber,
                 pageSize: params.pageSize,
                 search: params.search,
+                searchFields: params.searchFields,
                 sortBy: params.sortBy,
                 sortDirection: params.sortDirection,
                 ruleType: params.ruleType,

@@ -54,6 +54,7 @@ import {
   MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME,
 } from '@/lib/management-list-layout';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { useUIStore } from '@/stores/ui-store';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { usePdfReportTemplateList } from '../hooks/usePdfReportTemplateList';
@@ -68,6 +69,7 @@ import {
 
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 const PAGE_KEY = 'pdf-report-designer-list';
+const PDF_REPORT_SEARCH_FIELDS = ['Title'] as const;
 
 const RULE_TYPE_LABEL_KEYS: Record<DocumentRuleType, string> = {
   [DocumentRuleType.Demand]: 'reportDesigner.ruleType.demand',
@@ -137,6 +139,7 @@ export function PdfReportDesignerListPage(): ReactElement {
   const { user } = useAuthStore();
   const { setPageTitle } = useUIStore();
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, PDF_REPORT_SEARCH_FIELDS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState<number>(10);
   const [selectedRuleType, setSelectedRuleType] = useState<string>('all');
@@ -175,6 +178,7 @@ export function PdfReportDesignerListPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm.trim() || undefined,
+    searchFields: searchTerm.trim() ? searchFields : undefined,
     sortBy,
     sortDirection,
     ruleType: effectiveRuleType,
@@ -273,13 +277,14 @@ export function PdfReportDesignerListPage(): ReactElement {
         pageNumber,
         pageSize,
         search: searchTerm.trim() || undefined,
+        searchFields: searchTerm.trim() ? searchFields : undefined,
         sortBy,
         sortDirection,
         ruleType: effectiveRuleType,
         isActive: effectiveStatus,
       }),
     });
-  }, [effectiveRuleType, effectiveStatus, pageNumber, pageSize, queryClient, searchTerm, sortBy, sortDirection]);
+  }, [effectiveRuleType, effectiveStatus, pageNumber, pageSize, queryClient, searchTerm, searchFields, sortBy, sortDirection]);
 
   const getExportData = useCallback(async () => {
     return {
@@ -445,9 +450,14 @@ export function PdfReportDesignerListPage(): ReactElement {
             }}
             translationNamespace="report-designer"
             appliedFilterCount={appliedFilterCount}
-            searchValue={searchTerm}
-            searchPlaceholder={t('pdfReportDesigner.searchPlaceholder')}
-            onSearchChange={setSearchTerm}
+            search={{
+              defaultValue: searchTerm,
+              onSearchChange: setSearchTerm,
+              placeholder: t('pdfReportDesigner.searchPlaceholder'),
+              fields: [{ key: 'Title', label: t('pdfReportDesigner.title') }],
+              selectedFields: searchFields,
+              onSelectedFieldsChange: setSearchFields,
+            }}
             refresh={{
               isLoading: isLoading || isFetching,
               onRefresh: () => void handleRefresh(),
