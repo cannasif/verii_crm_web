@@ -122,12 +122,15 @@ export function useDropdownInfiniteSearch<TItem>({
   });
 
   const items = useMemo(() => {
-    if (!query.data) {
+    // A new search key is loading while React Query still holds the previous
+    // browse/search page as placeholder data. Never present those unrelated
+    // rows as if they matched the text currently visible in the input.
+    if (!query.data || (query.isPlaceholderData && query.isFetching)) {
       return [] as TItem[];
     }
 
     return query.data.pages.flatMap((page) => page.data);
-  }, [query.data]);
+  }, [query.data, query.isFetching, query.isPlaceholderData]);
 
   return {
     items,
