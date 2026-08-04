@@ -61,7 +61,28 @@ function checkFile(file, content) {
         'direct axios instance usage is only allowed in src/lib/axios.ts; route HTTP through feature api files and the shared client.'
       );
     }
+
+    if (/search:\s*(?:params|request)\.search/.test(line)) {
+      const requestObjectTail = lines.slice(index, index + 8).join('\n');
+      const requestContext = lines.slice(Math.max(0, index - 5), index + 8).join('\n');
+      const isNonPagedFacetQuery = requestContext.includes('/code-filter-options/query');
+      if (!requestObjectTail.includes('searchFields') && !isNonPagedFacetQuery) {
+        addViolation(
+          file,
+          lineNumber,
+          'paged search serializer must forward searchFields together with search.'
+        );
+      }
+    }
   });
+
+  for (const match of content.matchAll(/interface\s+\w*(?:PagedParams|PagedRequest)\w*\s*(?:extends[^\{]+)?\{([\s\S]*?)\n\}/g)) {
+    const body = match[1];
+    if (body.includes('search?:') && !body.includes('searchFields?:')) {
+      const lineNumber = content.slice(0, match.index).split(/\r?\n/).length;
+      addViolation(file, lineNumber, 'paged request type has search but no searchFields.');
+    }
+  }
 }
 
 const files = await walk(srcDir);

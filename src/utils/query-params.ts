@@ -51,6 +51,7 @@ export const normalizeQueryParams = (
   pageNumber?: number;
   pageSize?: number;
   search?: string;
+  searchFields?: string[];
   sortBy?: string;
   sortDirection?: string;
   filtersKey?: string;
@@ -60,6 +61,7 @@ export const normalizeQueryParams = (
     pageNumber: params.pageNumber,
     pageSize: params.pageSize,
     search: params.search,
+    searchFields: params.searchFields,
     sortBy: params.sortBy,
     sortDirection: params.sortDirection,
     filterLogic: params.filterLogic,

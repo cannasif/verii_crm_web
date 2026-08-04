@@ -10,6 +10,7 @@ interface DropdownFetchPageParams {
   pageNumber: number;
   pageSize: number;
   search?: string;
+  searchFields?: string[];
   sortBy?: string;
   sortDirection?: string;
   filters?: PagedFilter[] | Record<string, unknown>;
@@ -31,6 +32,7 @@ interface UseDropdownInfiniteSearchOptions<TItem> {
   minChars: number;
   pageSize: number;
   sortBy?: string;
+  searchFields?: readonly string[];
   sortDirection?: string;
   extraQueryKey?: readonly unknown[];
   contextUserId?: number;
@@ -64,6 +66,7 @@ export function useDropdownInfiniteSearch<TItem>({
   minChars,
   pageSize,
   sortBy,
+  searchFields = [],
   sortDirection,
   extraQueryKey,
   contextUserId,
@@ -93,6 +96,7 @@ export function useDropdownInfiniteSearch<TItem>({
       'dropdown',
       modeForQuery,
       activeSearchTerm,
+      searchFields.join('|'),
       sortBy ?? null,
       sortDirection ?? null,
       pageSize,
@@ -107,6 +111,7 @@ export function useDropdownInfiniteSearch<TItem>({
         pageNumber: pageParam,
         pageSize,
         search: activeSearchTerm || undefined,
+        searchFields: activeSearchTerm ? [...searchFields] : undefined,
         sortBy,
         sortDirection,
         filters: filters ?? undefined,

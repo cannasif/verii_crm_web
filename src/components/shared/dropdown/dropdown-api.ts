@@ -18,6 +18,7 @@ interface DropdownPageRequest {
   pageNumber: number;
   pageSize: number;
   search?: string;
+  searchFields?: string[];
   sortBy?: string;
   sortDirection?: string;
   filters?: PagedFilter[] | Record<string, unknown>;
@@ -53,12 +54,16 @@ function toQueryEndpoint(endpoint: string): string {
 
 async function getDropdownPageByQuery<T>(
   endpoint: string,
-  request: DropdownPageRequest
+  request: DropdownPageRequest,
+  visibleSearchFields: readonly string[]
 ): Promise<PagedResponse<T>> {
   const payload = {
     pageNumber: request.pageNumber,
     pageSize: request.pageSize,
     search: request.search ?? '',
+    searchFields: request.search
+      ? (request.searchFields?.length ? request.searchFields : [...visibleSearchFields])
+      : undefined,
     sortBy: request.sortBy ?? 'Id',
     sortDirection: request.sortDirection ?? 'asc',
     filterLogic: request.filterLogic ?? 'or',
@@ -79,54 +84,56 @@ async function getDropdownPageByQuery<T>(
 
 export const dropdownApi = {
   getCustomerPage: (request: DropdownPageRequest): Promise<PagedResponse<CustomerDto>> => {
-    return getDropdownPageByQuery<CustomerDto>('/api/Customer', request);
+    return getDropdownPageByQuery<CustomerDto>('/api/Customer', request, [
+      'CustomerCode', 'CustomerName', 'Phone1', 'Email', 'Address', 'City.Name', 'District.Name',
+    ]);
   },
   getStockPage: (request: DropdownPageRequest): Promise<PagedResponse<StockGetDto>> => {
-    return getDropdownPageByQuery<StockGetDto>('/api/Stock', request);
+    return getDropdownPageByQuery<StockGetDto>('/api/Stock', request, ['ErpStockCode', 'StockName']);
   },
   getStockWithImagesPage: (request: DropdownPageRequest): Promise<PagedResponse<StockGetWithMainImageDto>> => {
-    return getDropdownPageByQuery<StockGetWithMainImageDto>('/api/Stock/withImages', request);
+    return getDropdownPageByQuery<StockGetWithMainImageDto>('/api/Stock/withImages', request, ['ErpStockCode', 'StockName']);
   },
   getCountryPage: (request: DropdownPageRequest): Promise<PagedResponse<CountryDto>> => {
-    return getDropdownPageByQuery<CountryDto>('/api/Country', request);
+    return getDropdownPageByQuery<CountryDto>('/api/Country', request, ['Code', 'Name', 'ERPCode']);
   },
   getCityPage: (request: DropdownPageRequest): Promise<PagedResponse<CityDto>> => {
-    return getDropdownPageByQuery<CityDto>('/api/City', request);
+    return getDropdownPageByQuery<CityDto>('/api/City', request, ['Name', 'ERPCode', 'Country.Name']);
   },
   getDistrictPage: (request: DropdownPageRequest): Promise<PagedResponse<DistrictDto>> => {
-    return getDropdownPageByQuery<DistrictDto>('/api/District', request);
+    return getDropdownPageByQuery<DistrictDto>('/api/District', request, ['Name', 'ERPCode', 'PostalCode', 'City.Name']);
   },
   getUserPage: (request: DropdownPageRequest): Promise<PagedResponse<UserDto>> => {
-    return getDropdownPageByQuery<UserDto>('/api/User', request);
+    return getDropdownPageByQuery<UserDto>('/api/User', request, ['Username', 'Email', 'FirstName', 'LastName']);
   },
   getApprovalRolePage: (request: DropdownPageRequest): Promise<PagedResponse<ApprovalRoleDto>> => {
-    return getDropdownPageByQuery<ApprovalRoleDto>('/api/ApprovalRole', request);
+    return getDropdownPageByQuery<ApprovalRoleDto>('/api/ApprovalRole', request, ['Code', 'Name']);
   },
   getApprovalRoleGroupPage: (request: DropdownPageRequest): Promise<PagedResponse<ApprovalRoleGroupDto>> => {
-    return getDropdownPageByQuery<ApprovalRoleGroupDto>('/api/ApprovalRoleGroup', request);
+    return getDropdownPageByQuery<ApprovalRoleGroupDto>('/api/ApprovalRoleGroup', request, ['Code', 'Name']);
   },
   getTitlePage: (request: DropdownPageRequest): Promise<PagedResponse<TitleDto>> => {
-    return getDropdownPageByQuery<TitleDto>('/api/Title', request);
+    return getDropdownPageByQuery<TitleDto>('/api/Title', request, ['TitleName']);
   },
   getCustomerTypePage: (request: DropdownPageRequest): Promise<PagedResponse<CustomerTypeDto>> => {
-    return getDropdownPageByQuery<CustomerTypeDto>('/api/CustomerType', request);
+    return getDropdownPageByQuery<CustomerTypeDto>('/api/CustomerType', request, ['Code', 'Name']);
   },
   getActivityTypePage: (request: DropdownPageRequest): Promise<PagedResponse<ActivityTypeDto>> => {
-    return getDropdownPageByQuery<ActivityTypeDto>('/api/ActivityType', request);
+    return getDropdownPageByQuery<ActivityTypeDto>('/api/ActivityType', request, ['Code', 'Name']);
   },
   getPaymentTypePage: (request: DropdownPageRequest): Promise<PagedResponse<PaymentTypeDto>> => {
-    return getDropdownPageByQuery<PaymentTypeDto>('/api/PaymentType', request);
+    return getDropdownPageByQuery<PaymentTypeDto>('/api/PaymentType', request, ['Code', 'Name']);
   },
   getActivityMeetingTypePage: (request: DropdownPageRequest): Promise<PagedResponse<ActivityTypeDto>> => {
-    return getDropdownPageByQuery<ActivityTypeDto>('/api/ActivityMeetingType', request);
+    return getDropdownPageByQuery<ActivityTypeDto>('/api/ActivityMeetingType', request, ['Code', 'Name']);
   },
   getActivityTopicPurposePage: (request: DropdownPageRequest): Promise<PagedResponse<ActivityTypeDto>> => {
-    return getDropdownPageByQuery<ActivityTypeDto>('/api/ActivityTopicPurpose', request);
+    return getDropdownPageByQuery<ActivityTypeDto>('/api/ActivityTopicPurpose', request, ['Code', 'Name']);
   },
   getActivityShippingPage: (request: DropdownPageRequest): Promise<PagedResponse<ActivityTypeDto>> => {
-    return getDropdownPageByQuery<ActivityTypeDto>('/api/ActivityShipping', request);
+    return getDropdownPageByQuery<ActivityTypeDto>('/api/ActivityShipping', request, ['Code', 'Name']);
   },
   getSalesTypePage: (request: DropdownPageRequest): Promise<PagedResponse<SalesTypeGetDto>> => {
-    return getDropdownPageByQuery<SalesTypeGetDto>('/api/SalesType', request);
+    return getDropdownPageByQuery<SalesTypeGetDto>('/api/SalesType', request, ['SalesType', 'Code', 'Name']);
   },
 };
