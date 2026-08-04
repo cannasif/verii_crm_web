@@ -12,6 +12,7 @@ export const useUserList = (
     pageNumber: params.pageNumber,
     pageSize: params.pageSize,
     search: params.search,
+    searchFields: params.searchFields,
     sortBy: params.sortBy,
     sortDirection: params.sortDirection,
     filters: params.filters,

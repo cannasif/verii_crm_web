@@ -2,6 +2,7 @@ import { type ReactElement, useState, useEffect, useMemo, useCallback } from 're
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Loader2, Plus, RefreshCw } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -60,6 +61,7 @@ export function UserManagementPage(): ReactElement {
   const [showStats, setShowStats] = useManagementShowStats(PAGE_KEY, user?.id);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, USER_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState('Id');
@@ -110,12 +112,13 @@ export function UserManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows]);
 
   const { data: apiResponse, isLoading } = useUserList({
     pageNumber,
     pageSize,
     search: searchTerm.trim() || undefined,
+    searchFields: searchTerm.trim() ? searchFields : undefined,
     sortBy,
     sortDirection,
     filters: filtersParam,
@@ -329,6 +332,8 @@ export function UserManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('searchPlaceholder', { defaultValue: t('common.search') })}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             leftSlot={
               <>
                 <Button
