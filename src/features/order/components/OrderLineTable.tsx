@@ -23,6 +23,7 @@ import { DocumentLineFormDialog } from '@/components/shared/DocumentLineFormDial
 import { LineDiscountedUnitPriceDisplay } from '@/components/shared/LineDiscountedUnitPriceDisplay';
 import { getLineUnitDiscountBreakdown, getUnitDiscountAmountForTierIndex, calculateLineTotalsAmounts } from '@/lib/line-discount-display';
 import { useSalesTypeOptionsInfinite } from '@/components/shared/dropdown/useDropdownEntityInfinite';
+import type { PreviewPdfExportOptions } from '@/features/quotation/utils/build-quotation-preview-pdf';
 import { DescriptionCell } from '@/components/shared';
 import { LineTableImageThumbnail } from '@/components/shared/LineTableImageThumbnail';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
@@ -234,9 +235,10 @@ interface OrderLineTableProps {
   representativeId?: number | null;
   orderId?: number | null;
   enabled?: boolean;
-  buildExportPdfBlob?: (options: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }) => Promise<Blob>;
+  buildExportPdfBlob?: (options: PreviewPdfExportOptions) => Promise<Blob>;
   exportPdfFileName?: string;
   exportPdfAsDraft?: boolean;
+  exportPdfAsDraftTitle?: boolean;
   offerType?: string | null;
 }
 
@@ -255,6 +257,7 @@ export function OrderLineTable({
   buildExportPdfBlob,
   exportPdfFileName,
   exportPdfAsDraft = false,
+  exportPdfAsDraftTitle,
   offerType,
 }: OrderLineTableProps): ReactElement {
   const queryClient = useQueryClient();
@@ -892,7 +895,10 @@ export function OrderLineTable({
       }
 
       try {
-        const blob = await buildExportPdfBlob({ draft: exportPdfAsDraft });
+        const blob = await buildExportPdfBlob({
+          draft: exportPdfAsDraft,
+          draftTitle: exportPdfAsDraftTitle ?? exportPdfAsDraft,
+        });
         const fileName = exportPdfFileName ?? 'siparis-kalemleri.pdf';
         const url = URL.createObjectURL(blob);
         const anchor = document.createElement('a');

@@ -48,6 +48,7 @@ import { blobToFile, resolveCustomerPhone } from '../utils/quotation-share-utils
 import { QuotationMailShareDialogs, type QuotationMailShareContext } from './QuotationMailShareDialogs';
 import {
   buildQuotationPreviewPdfBlob,
+  type PreviewPdfExportOptions,
   type QuotationPreviewPdfLabels,
 } from '../utils/build-quotation-preview-pdf';
 import {
@@ -487,7 +488,9 @@ export function QuotationDetailPage(): ReactElement {
 
   const defaultShowDiscountDetails = hasLineDiscounts || hasGeneralDiscount;
 
-  const buildPreviewPdfBlob = useCallback(async (options?: { draft?: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> => {
+  const buildPreviewPdfBlob = useCallback(async (options?: Partial<PreviewPdfExportOptions>): Promise<Blob> => {
+    const draft = options?.draft ?? false;
+    const draftTitle = options?.draftTitle ?? draft;
     const qc = quotationFormSlice;
     const customerLabel =
       (await resolveQuotationCustomerLabelForPdf({
@@ -572,7 +575,8 @@ export function QuotationDetailPage(): ReactElement {
       lineDetailMaps: { profilMap, demirMap, vidaMap, baskiMap },
       lineDiscountLabels,
       showDiscount: options?.showDiscount ?? defaultShowDiscountDetails,
-      draft: options?.draft ?? false,
+      draft,
+      draftTitle,
       hideVat: options?.hideVat ?? false,
     });
   }, [
@@ -606,6 +610,7 @@ export function QuotationDetailPage(): ReactElement {
         isDefault: true,
         generate: () => buildPreviewPdfBlob({
           draft: isDraftDocument,
+          draftTitle: false,
           showDiscount: defaultShowDiscountDetails,
         }),
       },
@@ -614,8 +619,13 @@ export function QuotationDetailPage(): ReactElement {
   );
 
   const buildExportPdfBlob = useCallback(
-    async ({ draft, showDiscount, hideVat }: { draft: boolean; showDiscount?: boolean; hideVat?: boolean }): Promise<Blob> =>
-      buildPreviewPdfBlob({ draft, showDiscount, hideVat }),
+    async ({ draft, draftTitle, showDiscount, hideVat }: PreviewPdfExportOptions): Promise<Blob> =>
+      buildPreviewPdfBlob({
+        draft,
+        draftTitle: draftTitle ?? draft,
+        showDiscount,
+        hideVat,
+      }),
     [buildPreviewPdfBlob],
   );
 
@@ -1262,6 +1272,7 @@ export function QuotationDetailPage(): ReactElement {
                       buildExportPdfBlob={buildPreviewPdfBlob}
                       exportPdfFileName={`teklif-${quotation?.offerNo || 'kalemler'}.pdf`}
                       exportPdfAsDraft={isDraftDocument}
+                      exportPdfAsDraftTitle={false}
                     />
                     </div>
                   </section>
@@ -1401,6 +1412,7 @@ export function QuotationDetailPage(): ReactElement {
         onOpenChange={setPdfExportOpen}
         buildPdfBlob={buildExportPdfBlob}
         asDraft={isDraftDocument}
+        asDraftTitle={false}
         hasLineDiscounts={defaultShowDiscountDetails}
         fileName={shareFileName}
         labels={{

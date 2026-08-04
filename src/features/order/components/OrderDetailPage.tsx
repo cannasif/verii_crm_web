@@ -406,6 +406,7 @@ export function OrderDetailPage(): ReactElement {
     detailShareFileName: pdfShareFileName,
     emptyLinesToastTitle: t('order.update.error'),
     asDraft: isDraftDocument,
+    asDraftTitle: false,
   });
 
   useEffect(() => {
@@ -920,6 +921,7 @@ export function OrderDetailPage(): ReactElement {
                       buildExportPdfBlob={pdfExport.buildExportPdfBlob}
                       exportPdfFileName={pdfShareFileName}
                       exportPdfAsDraft={isDraftDocument}
+                      exportPdfAsDraftTitle={false}
                     />
                     </div>
                   </section>

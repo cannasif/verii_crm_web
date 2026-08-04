@@ -43,10 +43,16 @@ export interface QuotationPdfExportPreviewDialogLabels {
 export interface QuotationPdfExportPreviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  buildPdfBlob: (options: { draft: boolean; showDiscount: boolean; hideVat: boolean }) => Promise<Blob>;
+  buildPdfBlob: (options: {
+    draft: boolean;
+    draftTitle?: boolean;
+    showDiscount: boolean;
+    hideVat: boolean;
+  }) => Promise<Blob>;
   fileName: string;
   labels: QuotationPdfExportPreviewDialogLabels;
   asDraft?: boolean;
+  asDraftTitle?: boolean;
   hasLineDiscounts?: boolean;
   onShareWhatsapp: (pdfBlob: Blob) => void | Promise<void>;
   onShareMail: (pdfBlob: Blob) => void | Promise<void>;
@@ -59,10 +65,13 @@ export function QuotationPdfExportPreviewDialog({
   fileName,
   labels,
   asDraft = false,
+  asDraftTitle,
   hasLineDiscounts = false,
   onShareWhatsapp,
   onShareMail,
 }: QuotationPdfExportPreviewDialogProps): ReactElement {
+  const resolvedDraftTitle = asDraftTitle ?? asDraft;
+
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -105,7 +114,12 @@ export function QuotationPdfExportPreviewDialog({
 
     void (async (): Promise<void> => {
       try {
-        const blob = await buildPdfBlob({ draft: asDraft, showDiscount, hideVat });
+        const blob = await buildPdfBlob({
+          draft: asDraft,
+          draftTitle: resolvedDraftTitle,
+          showDiscount,
+          hideVat,
+        });
         if (loadIdRef.current !== id) return;
         setBlobUrl(URL.createObjectURL(blob));
       } catch {
@@ -117,10 +131,15 @@ export function QuotationPdfExportPreviewDialog({
         }
       }
     })();
-  }, [open, buildPdfBlob, revokeBlobUrl, showDiscount, hideVat, asDraft]);
+  }, [open, buildPdfBlob, revokeBlobUrl, showDiscount, hideVat, asDraft, resolvedDraftTitle]);
 
   const handleDownload = async (): Promise<void> => {
-    const blob = await buildPdfBlob({ draft: asDraft, showDiscount, hideVat });
+    const blob = await buildPdfBlob({
+      draft: asDraft,
+      draftTitle: resolvedDraftTitle,
+      showDiscount,
+      hideVat,
+    });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
@@ -133,7 +152,12 @@ export function QuotationPdfExportPreviewDialog({
   const handleShareWhatsapp = async (): Promise<void> => {
     try {
       setSharing(true);
-      const blob = await buildPdfBlob({ draft: asDraft, showDiscount, hideVat });
+      const blob = await buildPdfBlob({
+        draft: asDraft,
+        draftTitle: resolvedDraftTitle,
+        showDiscount,
+        hideVat,
+      });
       await onShareWhatsapp(blob);
     } finally {
       setSharing(false);
@@ -143,7 +167,12 @@ export function QuotationPdfExportPreviewDialog({
   const handleShareMail = async (): Promise<void> => {
     try {
       setSharing(true);
-      const blob = await buildPdfBlob({ draft: asDraft, showDiscount, hideVat });
+      const blob = await buildPdfBlob({
+        draft: asDraft,
+        draftTitle: resolvedDraftTitle,
+        showDiscount,
+        hideVat,
+      });
       await onShareMail(blob);
     } finally {
       setSharing(false);
