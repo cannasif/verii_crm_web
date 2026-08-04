@@ -6,7 +6,7 @@ import type { StockImageDto } from '../types';
 export const useStockImages = (stockId: number): UseQueryResult<StockImageDto[], Error> => {
   return useQuery<StockImageDto[]>({
     queryKey: queryKeys.images(stockId),
-    queryFn: () => stockApi.getImages(stockId),
+    queryFn: ({ signal }) => stockApi.getImages(stockId, signal),
     enabled: !!stockId,
     staleTime: 5 * 60 * 1000,
   });

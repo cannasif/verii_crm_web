@@ -41,7 +41,10 @@ function normalizePagedResponse<T>(pagedData: PagedResponse<T>): PagedResponse<T
 }
 
 export const stockApi = {
-  getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<StockGetDto>> => {
+  getList: async (
+    params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> },
+    signal?: AbortSignal
+  ): Promise<PagedResponse<StockGetDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<StockGetDto>>>('/api/Stock/query', {
       pageNumber: params.pageNumber ?? 1,
       pageSize: params.pageSize ?? 10,
@@ -51,7 +54,7 @@ export const stockApi = {
       sortDirection: params.sortDirection ?? 'asc',
       filterLogic: params.filterLogic ?? 'and',
       filters: params.filters ?? [],
-    });
+    }, { signal });
     
     if (!response.success) {
       throw new Error(response.message || 'Stok listesi yüklenemedi');
@@ -64,7 +67,10 @@ export const stockApi = {
     return normalizePagedResponse(response.data);
   },
 
-  getListByErpStockCodes: async (erpStockCodes: string[]): Promise<StockGetDto[]> => {
+  getListByErpStockCodes: async (
+    erpStockCodes: string[],
+    signal?: AbortSignal
+  ): Promise<StockGetDto[]> => {
     const unique = [...new Set(erpStockCodes.map((c) => c.trim()).filter((c) => c.length > 0))];
     if (unique.length === 0) {
       return [];
@@ -86,7 +92,7 @@ export const stockApi = {
           operator: 'eq',
           value: code,
         })),
-      });
+      }, signal);
       for (const row of page.data) {
         if (!seenIds.has(row.id)) {
           seenIds.add(row.id);
@@ -97,7 +103,10 @@ export const stockApi = {
     return merged;
   },
 
-  getListByCodeFilters: async (params: StockCodeFilterListParams): Promise<PagedResponse<StockGetDto>> => {
+  getListByCodeFilters: async (
+    params: StockCodeFilterListParams,
+    signal?: AbortSignal
+  ): Promise<PagedResponse<StockGetDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<StockGetDto>>>('/api/Stock/query-by-code-filters', {
       pageNumber: params.pageNumber ?? 1,
       pageSize: params.pageSize ?? 10,
@@ -108,7 +117,7 @@ export const stockApi = {
       filterLogic: params.filterLogic ?? 'and',
       filters: params.filters ?? [],
       codeFilters: params.codeFilters,
-    });
+    }, { signal });
 
     if (!response.success) {
       throw new Error(response.message || 'Kod filtreli stok listesi yüklenemedi');
@@ -275,8 +284,8 @@ export const stockApi = {
     return response.data;
   },
 
-  getImages: async (stockId: number): Promise<StockImageDto[]> => {
-    const response = await api.get<ApiResponse<StockImageDto[]>>(`/api/StockImage/by-stock/${stockId}`);
+  getImages: async (stockId: number, signal?: AbortSignal): Promise<StockImageDto[]> => {
+    const response = await api.get<ApiResponse<StockImageDto[]>>(`/api/StockImage/by-stock/${stockId}`, { signal });
     
     if (!response.success) {
       throw new Error(response.message || 'Görseller yüklenemedi');
@@ -287,6 +296,25 @@ export const stockApi = {
     }
 
     return response.data;
+  },
+
+  getPrimaryImages: async (stockIds: number[], signal?: AbortSignal): Promise<StockImageDto[]> => {
+    const uniqueIds = [...new Set(stockIds.filter((id) => Number.isFinite(id) && id > 0))];
+    if (uniqueIds.length === 0) {
+      return [];
+    }
+
+    const response = await api.post<ApiResponse<StockImageDto[]>>(
+      '/api/StockImage/primary/query',
+      uniqueIds,
+      { signal }
+    );
+
+    if (!response.success) {
+      throw new Error(response.message || 'Ana stok görselleri yüklenemedi');
+    }
+
+    return response.data ?? [];
   },
 
   deleteImage: async (id: number): Promise<void> => {
@@ -375,7 +403,10 @@ export const stockApi = {
     return response.data;
   },
 
-  getListWithImages: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<StockGetWithMainImageDto>> => {
+  getListWithImages: async (
+    params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> },
+    signal?: AbortSignal
+  ): Promise<PagedResponse<StockGetWithMainImageDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<StockGetWithMainImageDto>>>('/api/Stock/withImages/query', {
       pageNumber: params.pageNumber ?? 1,
       pageSize: params.pageSize ?? 10,
@@ -385,7 +416,7 @@ export const stockApi = {
       sortDirection: params.sortDirection ?? 'asc',
       filterLogic: params.filterLogic ?? 'and',
       filters: params.filters ?? [],
-    });
+    }, { signal });
     
     if (!response.success) {
       throw new Error(response.message || 'Görselli stok listesi yüklenemedi');
@@ -398,7 +429,10 @@ export const stockApi = {
     return normalizePagedResponse(response.data);
   },
 
-  getListWithImagesByCodeFilters: async (params: StockCodeFilterListParams): Promise<PagedResponse<StockGetWithMainImageDto>> => {
+  getListWithImagesByCodeFilters: async (
+    params: StockCodeFilterListParams,
+    signal?: AbortSignal
+  ): Promise<PagedResponse<StockGetWithMainImageDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<StockGetWithMainImageDto>>>('/api/Stock/withImages/query-by-code-filters', {
       pageNumber: params.pageNumber ?? 1,
       pageSize: params.pageSize ?? 10,
@@ -409,7 +443,7 @@ export const stockApi = {
       filterLogic: params.filterLogic ?? 'and',
       filters: params.filters ?? [],
       codeFilters: params.codeFilters,
-    });
+    }, { signal });
 
     if (!response.success) {
       throw new Error(response.message || 'Kod filtreli görselli stok listesi yüklenemedi');

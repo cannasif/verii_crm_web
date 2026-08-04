@@ -38,6 +38,8 @@ import {
 } from '@/components/shared/dropdown/constants';
 import { getCatalogFieldLabel } from '@/lib/catalog-field-labels';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
+import { useQuery } from '@tanstack/react-query';
+import { stockApi } from '@/features/stock/api/stock-api';
 
 const POPUP_SEARCH_DEBOUNCE_MS = 700;
 
@@ -597,8 +599,8 @@ export function ProductSelectDialog({
   const draftSnapshotList = initialDraftSnapshotRef.current;
   const documentLinesList = documentLinesSnapshotRef.current;
 
-  const stocksDropdown = useDropdownInfiniteSearch<StockGetWithMainImageDto>({
-    entityKey: 'stocks-with-images',
+  const stocksDropdown = useDropdownInfiniteSearch<StockGetDto>({
+    entityKey: 'stocks',
     inputSearchTerm: searchQuery,
     searchTerm: debouncedSearch,
     enabled: open,
@@ -610,12 +612,33 @@ export function ProductSelectDialog({
     extraQueryKey: [JSON.stringify(rawAppliedAdvancedFilters), appliedFilterLogic],
     buildFilters: () => (hasAdvancedFilters ? rawAppliedAdvancedFilters : undefined),
     filterLogic: appliedFilterLogic,
-    fetchPage: dropdownApi.getStockWithImagesPage,
+    fetchPage: dropdownApi.getStockPage,
   });
 
-  const visibleStocks = useMemo(
+  const visibleStocksWithoutImages = useMemo(
     () => dedupeStocksByErpStockCode(stocksDropdown.items),
     [stocksDropdown.items],
+  );
+  const visibleStockIds = useMemo(
+    () => visibleStocksWithoutImages.map((stock) => stock.id).filter((id) => id > 0),
+    [visibleStocksWithoutImages],
+  );
+  const primaryImagesQuery = useQuery({
+    queryKey: ['stock.primary-images', visibleStockIds],
+    queryFn: ({ signal }) => stockApi.getPrimaryImages(visibleStockIds, signal),
+    enabled: open && visibleStockIds.length > 0,
+    staleTime: 5 * 60 * 1000,
+  });
+  const primaryImageByStockId = useMemo(
+    () => new Map((primaryImagesQuery.data ?? []).map((image) => [image.stockId, image])),
+    [primaryImagesQuery.data],
+  );
+  const visibleStocks = useMemo<StockGetWithMainImageDto[]>(
+    () => visibleStocksWithoutImages.map((stock) => ({
+      ...stock,
+      mainImage: primaryImageByStockId.get(stock.id),
+    })),
+    [primaryImageByStockId, visibleStocksWithoutImages],
   );
 
   const handleStockSelect = async (stock: StockGetDto | StockGetWithMainImageDto): Promise<void> => {

@@ -21,7 +21,7 @@ export const useStockList = (
   };
   return useQuery({
     queryKey: queryKeys.list(keyParams),
-    queryFn: () => stockApi.getList(params),
+    queryFn: ({ signal }) => stockApi.getList(params, signal),
     staleTime: 5 * 60 * 1000,
     enabled: options?.enabled ?? true,
   });

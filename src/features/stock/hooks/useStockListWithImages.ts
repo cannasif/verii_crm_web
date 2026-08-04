@@ -21,7 +21,7 @@ export const useStockListWithImages = (
   };
   return useQuery({
     queryKey: queryKeys.listWithImages(keyParams),
-    queryFn: () => stockApi.getListWithImages(params),
+    queryFn: ({ signal }) => stockApi.getListWithImages(params, signal),
     staleTime: 5 * 60 * 1000,
     enabled: options?.enabled ?? true,
   });

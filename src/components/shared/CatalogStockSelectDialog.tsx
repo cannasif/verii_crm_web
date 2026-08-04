@@ -731,7 +731,7 @@ export function CatalogStockSelectDialog({
       catalogStockApiSearch,
       specialCodeSelections,
     ] as const,
-    queryFn: async (): Promise<{ data: CatalogStockItemDto[]; totalCount: number }> => {
+    queryFn: async ({ signal }): Promise<{ data: CatalogStockItemDto[]; totalCount: number }> => {
       const result = await stockApi.getListWithImagesByCodeFilters({
         pageNumber,
         pageSize: PAGE_SIZE,
@@ -742,7 +742,7 @@ export function CatalogStockSelectDialog({
         filterLogic: 'and',
         filters: [],
         codeFilters: specialCodeSelections,
-      });
+      }, signal);
       return {
         data: result.data.map((row) => mapStockGetToCatalogItem(row)),
         totalCount: result.totalCount ?? result.data.length,

@@ -271,7 +271,7 @@ export function StockListPage(): ReactElement {
       appliedFilters,
       filterLogic,
     ] as const,
-    queryFn: async (): Promise<{ data: StockGetDto[]; totalCount: number; hasNextPage: boolean; hasPreviousPage: boolean; totalPages: number }> => {
+    queryFn: async ({ signal }): Promise<{ data: StockGetDto[]; totalCount: number; hasNextPage: boolean; hasPreviousPage: boolean; totalPages: number }> => {
       const request = {
         pageNumber,
         pageSize,
@@ -285,8 +285,8 @@ export function StockListPage(): ReactElement {
       };
       const result =
         listLayout === 'grid'
-          ? await stockApi.getListWithImagesByCodeFilters(request)
-          : await stockApi.getListByCodeFilters(request);
+          ? await stockApi.getListWithImagesByCodeFilters(request, signal)
+          : await stockApi.getListByCodeFilters(request, signal);
       const totalPages =
         result.totalPages ?? Math.max(1, Math.ceil((result.totalCount ?? 0) / pageSize));
       return {
