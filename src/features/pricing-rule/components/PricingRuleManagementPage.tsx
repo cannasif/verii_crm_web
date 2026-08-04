@@ -2,6 +2,7 @@ import { type ReactElement, useState, useEffect, useMemo, useCallback } from 're
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { ArrowDown, ArrowUp, ArrowUpDown, Plus, CheckCircle2, XCircle, Calendar, Building2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
@@ -29,6 +30,11 @@ import { getPricingRuleTypeIcon, getPricingRuleTypeLabelKey } from '../utils/pri
 
 const EMPTY_HEADERS: PricingRuleHeaderGetDto[] = [];
 const PAGE_KEY = 'pricing-rule-management';
+const PRICING_RULE_FILTER_COLUMNS = [
+  { value: 'ruleCode', type: 'string' as const, labelKey: 'table.ruleCode' },
+  { value: 'ruleName', type: 'string' as const, labelKey: 'table.ruleName' },
+  { value: 'erpCustomerCode', type: 'string' as const, labelKey: 'table.erpCustomerCode' },
+];
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
 type PricingRuleColumnKey = keyof PricingRuleHeaderGetDto | 'status';
@@ -56,6 +62,7 @@ export function PricingRuleManagementPage(): ReactElement {
 
   const [activeFilter, setActiveFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, PRICING_RULE_FILTER_COLUMNS);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<PricingRuleColumnKey>('ruleName');
@@ -91,6 +98,7 @@ export function PricingRuleManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm || undefined,
+    searchFields: searchTerm ? searchFields : undefined,
     sortBy,
     sortDirection,
   });
@@ -144,7 +152,7 @@ export function PricingRuleManagementPage(): ReactElement {
 
   const orderedVisibleColumns = columnOrder.filter((k) => visibleColumns.includes(k)) as PricingRuleColumnKey[];
 
-  const filterColumns = useMemo(() => [], []);
+  const filterColumns = PRICING_RULE_FILTER_COLUMNS;
   const exportColumns = useMemo(
     () =>
       orderedVisibleColumns
@@ -287,6 +295,8 @@ export function PricingRuleManagementPage(): ReactElement {
             searchValue={searchTerm}
             searchPlaceholder={t('common.search')}
             onSearchChange={setSearchTerm}
+            searchFields={searchFields}
+            onSearchFieldsChange={setSearchFields}
             refresh={{
               onRefresh: () => {
                 void handleRefresh();

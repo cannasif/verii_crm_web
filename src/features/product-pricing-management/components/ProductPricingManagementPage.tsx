@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
 import { DataTableActionBar, type DataTableGridColumn } from '@/components/shared';
 import { DefinitionExcelActions } from '@/features/definition-excel/components/DefinitionExcelActions';
@@ -58,6 +59,7 @@ export function ProductPricingManagementPage(): ReactElement {
   const [editingProductPricing, setEditingProductPricing] = useState<ProductPricingGetDto | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, PRODUCT_PRICING_FILTER_COLUMNS);
   const [searchResetKey, setSearchResetKey] = useState(0);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -111,6 +113,7 @@ export function ProductPricingManagementPage(): ReactElement {
     pageNumber,
     pageSize,
     search: searchTerm.trim() || undefined,
+    searchFields: searchTerm.trim() ? searchFields : undefined,
     sortBy,
     sortDirection,
     filters: apiFilters,
@@ -188,6 +191,7 @@ export function ProductPricingManagementPage(): ReactElement {
           pageNumber: exportPageNumber,
           pageSize: exportPageSize,
           search: searchTerm.trim() || undefined,
+          searchFields: searchTerm.trim() ? searchFields : undefined,
           sortBy: 'Id',
           sortDirection: 'desc',
           filters: apiFilters,
@@ -208,7 +212,7 @@ export function ProductPricingManagementPage(): ReactElement {
         return row;
       }),
     };
-  }, [exportColumns, orderedVisibleColumns, i18n.language, apiFilters, searchTerm]);
+  }, [exportColumns, orderedVisibleColumns, i18n.language, apiFilters, searchTerm, searchFields]);
 
   const appliedFilterCount = useMemo(
     () => appliedFilterRows.filter((r) => r.value.trim()).length,
@@ -226,7 +230,7 @@ export function ProductPricingManagementPage(): ReactElement {
 
   useEffect(() => {
     setPageNumber(1);
-  }, [pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection, activeFilter]);
+  }, [pageSize, searchTerm, searchFields, appliedFilterRows, sortBy, sortDirection, activeFilter]);
 
   const handleAddClick = (): void => {
     setEditingProductPricing(null);
@@ -363,6 +367,8 @@ export function ProductPricingManagementPage(): ReactElement {
             appliedFilterCount={appliedFilterCount}
             search={{
               onSearchChange: setSearchTerm,
+              selectedFields: searchFields,
+              onSelectedFieldsChange: setSearchFields,
               placeholder: t('searchPlaceholder'),
               minLength: 1,
               resetKey: searchResetKey,
