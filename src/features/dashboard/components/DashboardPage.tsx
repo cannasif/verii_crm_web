@@ -171,7 +171,15 @@ export function DashboardPage(): ReactElement {
                 {t('quickAction')}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80 overflow-hidden rounded-2xl border border-slate-300/70 bg-stone-50/95 p-1.5 pt-[env(safe-area-inset-top)] shadow-xl shadow-slate-900/10 dark:border-white/10 dark:bg-[#120c18]">
+            <DropdownMenuContent
+              align="end"
+              className={cn(
+                'w-80 overflow-hidden rounded-2xl border border-slate-300/70 bg-stone-50/95 p-1.5 pt-[env(safe-area-inset-top)] shadow-xl shadow-slate-900/10 dark:border-white/10 dark:bg-[#120c18]',
+                'data-[state=open]:duration-300 data-[state=open]:ease-[cubic-bezier(0.16,1,0.3,1)]',
+                'data-[state=closed]:duration-150 data-[state=closed]:ease-in',
+                'data-[state=open]:zoom-in-90 data-[state=open]:slide-in-from-top-3',
+              )}
+            >
               <div className="pointer-events-none -mx-1.5 -mt-1.5 mb-1.5 h-1 bg-[image:var(--crm-brand-gradient)]" aria-hidden />
 
               <QuickActionSectionLabel tone="blue">{t('sidebar.customers')}</QuickActionSectionLabel>
