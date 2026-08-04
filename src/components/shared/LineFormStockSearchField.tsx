@@ -31,6 +31,10 @@ import { getCatalogFieldLabel } from '@/lib/catalog-field-labels';
 import { DOCUMENT_LINE_FORM_FIELD_SURFACE_CLASS } from '@/lib/document-line-dialog-styles';
 import { cn } from '@/lib/utils';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
+import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
+import { DropdownSearchFieldSelector } from '@/components/shared/dropdown/DropdownSearchFieldSelector';
+import { STOCK_DROPDOWN_AVAILABLE_SEARCH_FIELDS, STOCK_DROPDOWN_DEFAULT_SEARCH_FIELDS, STOCK_DROPDOWN_SEARCH_FIELD_OPTIONS } from '@/components/shared/dropdown/dropdown-search-fields';
 
 const INLINE_STOCK_SEARCH_DEBOUNCE_MS = 400;
 
@@ -50,6 +54,10 @@ export function LineFormStockSearchField({
   inputClassName,
 }: LineFormStockSearchFieldProps): ReactElement {
   const { t, i18n } = useTranslation('common');
+  const userId = useAuthStore((state) => state.user?.id);
+  const [stockSearchFields, setStockSearchFields] = usePagedSearchFields(
+    'dropdown:inline-stock', userId, STOCK_DROPDOWN_AVAILABLE_SEARCH_FIELDS, STOCK_DROPDOWN_DEFAULT_SEARCH_FIELDS,
+  );
   const systemSettings = useSystemSettingsStore((state) => state.settings);
   const [draftQuery, setDraftQuery] = useState(productCode || '');
   const [stockPopoverOpen, setStockPopoverOpen] = useState(false);
@@ -74,7 +82,7 @@ export function LineFormStockSearchField({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'desc',
-    searchFields: ['ErpStockCode', 'StockName'],
+    searchFields: stockSearchFields,
     buildFilters: () => undefined,
     fetchPage: dropdownApi.getStockPage,
   });
@@ -229,10 +237,16 @@ export function LineFormStockSearchField({
           }}
           onKeyDown={stockKeyboard.onInputKeyDown}
           className={cn(
-            'h-11 rounded-xl font-mono text-sm shadow-sm',
+            'h-11 rounded-xl pe-12 font-mono text-sm shadow-sm',
             DOCUMENT_LINE_FORM_FIELD_SURFACE_CLASS,
             inputClassName,
           )}
+        />
+        <DropdownSearchFieldSelector
+          options={STOCK_DROPDOWN_SEARCH_FIELD_OPTIONS}
+          selectedFields={stockSearchFields}
+          onChange={setStockSearchFields}
+          className="absolute end-1 top-0.5 z-10 h-10 w-10 border-0 bg-transparent shadow-none dark:bg-transparent"
         />
         <Popover open={stockPopoverOpen} onOpenChange={setStockPopoverOpen}>
           <PopoverTrigger asChild>

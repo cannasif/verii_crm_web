@@ -37,6 +37,10 @@ import { AdvancedFilter } from '@/components/shared/AdvancedFilter';
 import { CUSTOMER_FILTER_COLUMNS } from '@/features/customer-management/types/customer-filter.types';
 import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
+import { DropdownSearchFieldSelector } from '@/components/shared/dropdown/DropdownSearchFieldSelector';
+import { CUSTOMER_DROPDOWN_AVAILABLE_SEARCH_FIELDS, CUSTOMER_DROPDOWN_DEFAULT_SEARCH_FIELDS, CUSTOMER_DROPDOWN_SEARCH_FIELD_OPTIONS } from '@/components/shared/dropdown/dropdown-search-fields';
 
 const POPUP_SEARCH_DEBOUNCE_MS = 700;
 
@@ -234,6 +238,10 @@ export function CustomerSelectDialog({
   className,
   contextUserId,
 }: CustomerSelectDialogProps): ReactElement {
+  const userId = useAuthStore((state) => state.user?.id);
+  const [customerSearchFields, setCustomerSearchFields] = usePagedSearchFields(
+    'dropdown:customer-select', userId, CUSTOMER_DROPDOWN_AVAILABLE_SEARCH_FIELDS, CUSTOMER_DROPDOWN_DEFAULT_SEARCH_FIELDS,
+  );
   const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState<'potential' | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -333,9 +341,7 @@ export function CustomerSelectDialog({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Name',
     sortDirection: 'asc',
-    searchFields: [
-      'CustomerCode', 'CustomerName', 'Phone1', 'Email', 'Address', 'City.Name', 'District.Name',
-    ],
+    searchFields: customerSearchFields,
     extraQueryKey: [advancedFiltersKey, filterLogic],
     contextUserId: contextUserId ?? undefined,
     filterLogic,
@@ -554,6 +560,12 @@ export function CustomerSelectDialog({
               </div>
 
               <div className="flex shrink-0 items-center justify-end gap-2 sm:justify-start">
+              <DropdownSearchFieldSelector
+                options={CUSTOMER_DROPDOWN_SEARCH_FIELD_OPTIONS}
+                selectedFields={customerSearchFields}
+                onChange={setCustomerSearchFields}
+                className="h-11 w-11 sm:h-12 sm:w-12"
+              />
               <Button
                 type="button"
                 variant="outline"

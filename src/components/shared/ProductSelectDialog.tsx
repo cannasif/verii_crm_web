@@ -40,6 +40,10 @@ import { getCatalogFieldLabel } from '@/lib/catalog-field-labels';
 import { useSystemSettingsStore } from '@/stores/system-settings-store';
 import { useQuery } from '@tanstack/react-query';
 import { stockApi } from '@/features/stock/api/stock-api';
+import { useAuthStore } from '@/stores/auth-store';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
+import { DropdownSearchFieldSelector } from '@/components/shared/dropdown/DropdownSearchFieldSelector';
+import { STOCK_DROPDOWN_AVAILABLE_SEARCH_FIELDS, STOCK_DROPDOWN_DEFAULT_SEARCH_FIELDS, STOCK_DROPDOWN_SEARCH_FIELD_OPTIONS } from '@/components/shared/dropdown/dropdown-search-fields';
 
 const POPUP_SEARCH_DEBOUNCE_MS = 700;
 
@@ -447,6 +451,10 @@ export function ProductSelectDialog({
   initialSelectedResults = [],
   existingLineStockMarkers = [],
 }: ProductSelectDialogProps): ReactElement {
+  const userId = useAuthStore((state) => state.user?.id);
+  const [stockSearchFields, setStockSearchFields] = usePagedSearchFields(
+    'dropdown:product-select', userId, STOCK_DROPDOWN_AVAILABLE_SEARCH_FIELDS, STOCK_DROPDOWN_DEFAULT_SEARCH_FIELDS,
+  );
   const { t, i18n } = useTranslation('common');
   const [viewMode, setViewMode] = useState<'card' | 'list'>('list');
   const [searchQuery, setSearchQuery] = useState('');
@@ -608,7 +616,7 @@ export function ProductSelectDialog({
     pageSize: DROPDOWN_PAGE_SIZE,
     sortBy: 'Id',
     sortDirection: 'desc',
-    searchFields: ['ErpStockCode', 'StockName'],
+    searchFields: stockSearchFields,
     extraQueryKey: [JSON.stringify(rawAppliedAdvancedFilters), appliedFilterLogic],
     buildFilters: () => (hasAdvancedFilters ? rawAppliedAdvancedFilters : undefined),
     filterLogic: appliedFilterLogic,
@@ -931,6 +939,12 @@ export function ProductSelectDialog({
                   )}
                 </Button>
               )}
+              <DropdownSearchFieldSelector
+                options={STOCK_DROPDOWN_SEARCH_FIELD_OPTIONS}
+                selectedFields={stockSearchFields}
+                onChange={setStockSearchFields}
+                className="h-10 w-10 sm:h-11 sm:w-11"
+              />
             </div>
 
             <div className="flex items-center gap-2 self-end lg:self-auto shrink-0">

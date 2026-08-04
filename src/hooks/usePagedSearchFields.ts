@@ -12,8 +12,23 @@ function resolveAllowedFields(fields: readonly SearchField[]): string[] {
     .filter((field, index, all) => field.length > 0 && all.indexOf(field) === index);
 }
 
-function loadSelectedFields(storageKey: string, allowedFields: readonly string[]): string[] {
-  if (typeof window === 'undefined') return [...allowedFields];
+function normalizeDefaultFields(
+  defaultFields: readonly string[] | undefined,
+  allowedFields: readonly string[]
+): string[] {
+  if (!defaultFields?.length) return [...allowedFields];
+  const allowed = new Set(allowedFields);
+  const normalized = [...new Set(defaultFields.filter((field) => allowed.has(field)))];
+  return normalized.length > 0 ? normalized : [...allowedFields];
+}
+
+function loadSelectedFields(
+  storageKey: string,
+  allowedFields: readonly string[],
+  defaultFields?: readonly string[]
+): string[] {
+  const fallbackFields = normalizeDefaultFields(defaultFields, allowedFields);
+  if (typeof window === 'undefined') return fallbackFields;
 
   try {
     const stored = JSON.parse(window.localStorage.getItem(storageKey) ?? '[]') as unknown;
@@ -28,32 +43,35 @@ function loadSelectedFields(storageKey: string, allowedFields: readonly string[]
     // Corrupt/private storage falls back to every allowed text field.
   }
 
-  return [...allowedFields];
+  return fallbackFields;
 }
 
 export function usePagedSearchFields(
   pageKey: string,
   userId: number | undefined,
-  fields: readonly SearchField[]
+  fields: readonly SearchField[],
+  defaultFields?: readonly string[]
 ): readonly [string[], (fields: string[]) => void] {
   const allowedFields = useMemo(() => resolveAllowedFields(fields), [fields]);
   const storageKey = `${STORAGE_PREFIX}:${pageKey}:${userId ?? 'anonymous'}`;
   const [selectedFields, setSelectedFields] = useState<string[]>(() =>
-    loadSelectedFields(storageKey, allowedFields)
+    loadSelectedFields(storageKey, allowedFields, defaultFields)
   );
   const previousStorageKey = useRef(storageKey);
 
   useEffect(() => {
     if (previousStorageKey.current === storageKey) return;
     previousStorageKey.current = storageKey;
-    setSelectedFields(loadSelectedFields(storageKey, allowedFields));
-  }, [allowedFields, storageKey]);
+    setSelectedFields(loadSelectedFields(storageKey, allowedFields, defaultFields));
+  }, [allowedFields, defaultFields, storageKey]);
 
   const changeSelectedFields = useCallback(
     (nextFields: string[]): void => {
       const allowed = new Set(allowedFields);
       const normalized = [...new Set(nextFields.filter((field) => allowed.has(field)))];
-      const safeFields = normalized.length > 0 ? normalized : [...allowedFields];
+      const safeFields = normalized.length > 0
+        ? normalized
+        : normalizeDefaultFields(defaultFields, allowedFields);
       setSelectedFields(safeFields);
       try {
         window.localStorage.setItem(storageKey, JSON.stringify(safeFields));
@@ -61,7 +79,7 @@ export function usePagedSearchFields(
         // Storage failures must not block searching.
       }
     },
-    [allowedFields, storageKey]
+    [allowedFields, defaultFields, storageKey]
   );
 
   return [selectedFields, changeSelectedFields] as const;
