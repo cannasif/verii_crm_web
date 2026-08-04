@@ -8,7 +8,9 @@ import { Button } from '@/components/ui/button';
 import { formatSystemCurrency, formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
 import { TrendingUp } from 'lucide-react';
 import { DescriptionCell } from '@/components/shared/DescriptionCell';
-import type { TooltipContentProps, TooltipValueType } from 'recharts';
+import type { TooltipContentProps } from 'recharts';
+
+type RechartsTooltipValue = number | string | ReadonlyArray<number | string>;
 
 type ColumnItem = string | { name: string; sqlType?: string; dotNetType?: string; isNullable?: boolean };
 
@@ -574,7 +576,7 @@ export function ReportChart({
   }, [chartType, columnLabels, tableData]);
 
   const renderSeriesTooltip = (
-    tooltipProps: TooltipContentProps<TooltipValueType, string | number>
+    tooltipProps: TooltipContentProps<RechartsTooltipValue, string | number>
   ): ReactElement | null => {
     if (!tooltipProps.active || !tooltipProps.payload?.length) return null;
 
