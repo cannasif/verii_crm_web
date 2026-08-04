@@ -522,6 +522,9 @@ export function DailyTasksPage(): ReactElement {
         sortBy: 'StartDateTime',
         sortDirection: 'asc',
         search: debouncedSearchTerm.trim() || undefined,
+        searchFields: debouncedSearchTerm.trim()
+          ? ['Subject', 'Description', 'AssignedUserName']
+          : undefined,
         filters: filters.length > 0 ? filters : undefined,
       }),
     staleTime: 60 * 1000,
