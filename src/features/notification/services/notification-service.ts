@@ -34,15 +34,34 @@ class NotificationService {
   private connectPromise: Promise<void> | null = null;
   private activeToken: string | null = null;
   private manualDisconnect = false;
+  private reconnectTimer: ReturnType<typeof globalThis.setTimeout> | null = null;
 
   private getToken(): string | null {
     return localStorage.getItem('access_token') || sessionStorage.getItem('access_token');
   }
 
-  private buildHubConnection(apiUrl: string): signalR.HubConnection {
+  private scheduleReconnect(delayMilliseconds: number): void {
+    if (this.manualDisconnect || !this.getToken() || this.reconnectTimer) return;
+
+    this.reconnectTimer = globalThis.setTimeout(() => {
+      this.reconnectTimer = null;
+      void this.connect().catch(() => undefined);
+    }, delayMilliseconds);
+  }
+
+  private buildHubConnection(
+    apiUrl: string,
+    transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling
+  ): signalR.HubConnection {
+    const useDirectWebSocket = transport === signalR.HttpTransportType.WebSockets;
     const hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${apiUrl}/notificationHub`, {
         accessTokenFactory: () => this.getToken() ?? '',
+        transport,
+        // Negotiate ve WebSocket isteklerinin farklı IIS worker/sunucularına düşmesi
+        // "connection ID is not present" hatası üretir. Doğrudan WebSocket bağlantısı
+        // bu iki aşamalı bağımlılığı kaldırır. LongPolling fallback'i negotiate kullanır.
+        skipNegotiation: useDirectWebSocket,
       })
       .withAutomaticReconnect({
         nextRetryDelayInMilliseconds: (retryContext) => {
@@ -72,10 +91,12 @@ class NotificationService {
     });
 
     hubConnection.onreconnecting(() => {
+      if (this.hubConnection !== hubConnection) return;
       useNotificationStore.getState().setConnectionState('reconnecting');
     });
 
     hubConnection.onreconnected(() => {
+      if (this.hubConnection !== hubConnection) return;
       useNotificationStore.getState().setConnectionState('connected');
       void this.handleAccessControlChanged({
         forceBootstrapRefresh: true,
@@ -84,6 +105,7 @@ class NotificationService {
     });
 
     hubConnection.onclose((error) => {
+      if (this.hubConnection !== hubConnection) return;
       if (error) {
         console.error('🔌 SignalR connection closed with error:', error);
       }
@@ -92,31 +114,44 @@ class NotificationService {
       this.connectPromise = null;
 
       if (!this.manualDisconnect && this.getToken()) {
-        globalThis.setTimeout(() => {
-          void this.connect().catch(() => undefined);
-        }, 5_000);
+        this.scheduleReconnect(5_000);
       }
     });
 
     return hubConnection;
   }
 
-  private async startConnectionWithRetry(connection: signalR.HubConnection): Promise<boolean> {
-    let attempt = 0;
+  private async createStartedConnection(apiUrl: string): Promise<signalR.HubConnection | null> {
+    const transports = [
+      signalR.HttpTransportType.WebSockets,
+      signalR.HttpTransportType.LongPolling,
+    ] as const;
 
-    while (!this.manualDisconnect) {
+    for (const transport of transports) {
+      if (this.manualDisconnect) return null;
+
+      const connection = this.buildHubConnection(apiUrl, transport);
+      this.hubConnection = connection;
       try {
         await connection.start();
-        return true;
+        return connection;
       } catch (error) {
-        attempt += 1;
-        console.error('[NotificationService] SignalR start attempt failed:', error);
-        const delayMs = Math.min(30_000, 1_000 * 2 ** Math.min(attempt, 5));
-        await new Promise((resolve) => globalThis.setTimeout(resolve, delayMs));
+        const transportName = transport === signalR.HttpTransportType.WebSockets
+          ? 'WebSockets'
+          : 'LongPolling';
+        console.warn(`[NotificationService] ${transportName} bağlantısı başlatılamadı.`, error);
+        if (this.hubConnection === connection) {
+          this.hubConnection = null;
+        }
+        try {
+          await connection.stop();
+        } catch {
+          // Başlamamış bağlantının kapatılması ek hata üretmemeli.
+        }
       }
     }
 
-    return false;
+    return null;
   }
 
   async connect(): Promise<void> {
@@ -147,14 +182,13 @@ class NotificationService {
     this.connectPromise = (async () => {
       try {
         const apiUrl = await getApiUrl();
-        const hubConnection = this.buildHubConnection(apiUrl);
-        this.hubConnection = hubConnection;
         this.activeToken = token;
 
-        const started = await this.startConnectionWithRetry(hubConnection);
-        if (!started) {
-          return;
+        const hubConnection = await this.createStartedConnection(apiUrl);
+        if (!hubConnection) {
+          throw new Error('SignalR bağlantısı desteklenen transportlarla başlatılamadı.');
         }
+        this.hubConnection = hubConnection;
         useNotificationStore.getState().setConnectionState('connected');
 
         await requestNotificationPermission();
@@ -162,6 +196,7 @@ class NotificationService {
         console.error('[NotificationService] SignalR connection error:', error);
         useNotificationStore.getState().setConnectionState('disconnected');
         this.hubConnection = null;
+        this.scheduleReconnect(30_000);
         throw error;
       } finally {
         this.connectPromise = null;
@@ -174,6 +209,11 @@ class NotificationService {
   async disconnect(): Promise<void> {
     this.manualDisconnect = true;
     this.activeToken = null;
+
+    if (this.reconnectTimer) {
+      globalThis.clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
 
     const connection = this.hubConnection;
     this.hubConnection = null;
