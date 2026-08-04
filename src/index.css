@@ -729,8 +729,16 @@
     padding-inline-end: 2rem;
   }
 
+  .crm-pe-9 {
+    padding-inline-end: 2.25rem;
+  }
+
   .crm-pe-10 {
     padding-inline-end: 2.5rem;
+  }
+
+  .crm-pe-16 {
+    padding-inline-end: 4rem;
   }
 
   .crm-pe-20 {

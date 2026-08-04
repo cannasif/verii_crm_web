@@ -409,6 +409,12 @@ export function DataTableActionBar({
     : 'sm:max-w-xs';
   const resolvedLeftSlot = typeof leftSlot === 'function' ? leftSlot({ compactLevel, isMobile }) : leftSlot;
 
+  const hasSearchCollapseButton =
+    (compactSearchOnMobile && isMobileSearchActive) || (useDesktopSearchIcon && isDesktopCompactSearchOpen);
+  const searchTrailingIconCount = (hasSearchCollapseButton ? 1 : 0) + (shouldRenderSearchFields ? 1 : 0);
+  const searchTrailingPaddingClass =
+    searchTrailingIconCount >= 2 ? 'crm-pe-16' : searchTrailingIconCount === 1 ? 'crm-pe-9' : undefined;
+
   useEffect(() => {
     if (compactLevel < TOOLBAR_SEARCH_ICON_COMPACT_LEVEL) {
       setIsDesktopCompactSearchOpen(false);
@@ -521,7 +527,8 @@ export function DataTableActionBar({
                 placeholder={resolvedSearchPlaceholder}
                 className={cn(
                   resolvedSearchClassName,
-                  'w-full border-slate-300 bg-white text-sm crm-ps-9 shadow-sm dark:border-white/15 dark:bg-transparent dark:shadow-none'
+                  'w-full border-slate-300 bg-white text-sm crm-ps-9 shadow-sm dark:border-white/15 dark:bg-transparent dark:shadow-none',
+                  searchTrailingPaddingClass
                 )}
               />
             </div>
@@ -600,95 +607,96 @@ export function DataTableActionBar({
               className={cn(
                 resolvedSearchClassName,
                 'w-full border-slate-300 bg-white text-sm crm-ps-9 shadow-sm transition-all dark:border-white/15 dark:bg-transparent dark:shadow-none',
-                (compactSearchOnMobile && isMobileSearchActive) || (useDesktopSearchIcon && isDesktopCompactSearchOpen) ? 'crm-pe-8' : undefined,
+                searchTrailingPaddingClass,
                 'focus:border-primary focus:ring-[3px] focus:ring-primary/20',
                 'focus-visible:border-primary focus-visible:ring-[3px] focus-visible:ring-primary/20',
                 'dark:focus:border-primary/60 dark:focus:ring-primary/10',
                 'dark:focus-visible:border-primary/60 dark:focus-visible:ring-primary/10'
               )}
             />
-            {compactSearchOnMobile && isMobileSearchActive ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute crm-end-0 top-0 h-full w-8 px-0 hover:bg-transparent sm:hidden"
-                onClick={() => {
-                  handleSearchInputChange('');
-                  setIsMobileSearchActive(false);
-                }}
-              >
-                <X className="h-4 w-4 text-slate-400" />
-              </Button>
-            ) : null}
-            {useDesktopSearchIcon && isDesktopCompactSearchOpen ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute crm-end-0 top-0 hidden h-full w-8 px-0 hover:bg-transparent sm:inline-flex"
-                onClick={() => setIsDesktopCompactSearchOpen(false)}
-                aria-label={t('common.close')}
-              >
-                <X className="h-4 w-4 text-slate-400" />
-              </Button>
+            {searchTrailingIconCount > 0 ? (
+              <div className="absolute crm-end-1-5 top-0 flex h-full items-center gap-0.5">
+                {compactSearchOnMobile && isMobileSearchActive ? (
+                  <button
+                    type="button"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-white sm:hidden"
+                    onClick={() => {
+                      handleSearchInputChange('');
+                      setIsMobileSearchActive(false);
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                ) : null}
+                {useDesktopSearchIcon && isDesktopCompactSearchOpen ? (
+                  <button
+                    type="button"
+                    className="hidden h-7 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/10 dark:hover:text-white sm:inline-flex"
+                    onClick={() => setIsDesktopCompactSearchOpen(false)}
+                    aria-label={t('common.close')}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                ) : null}
+                {shouldRenderSearchFields ? (
+                  <Popover open={searchFieldsOpen} onOpenChange={setSearchFieldsOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className={cn(
+                          'relative flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-white/10',
+                          searchFieldsOpen ? 'bg-primary/10 text-primary' : 'text-slate-400 hover:text-primary dark:hover:text-primary'
+                        )}
+                        aria-label={t('searchFields', { ns: 'common', defaultValue: 'Arama alanları' })}
+                        title={t('searchFields', { ns: 'common', defaultValue: 'Arama alanları' })}
+                      >
+                        <ListFilter className="h-4 w-4" />
+                        {selectedSearchFields.length > 0 && selectedSearchFields.length < searchFieldOptions.length ? (
+                          <span className="absolute -end-0.5 -top-0.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary px-0.5 text-[9px] font-bold leading-none text-white">
+                            {selectedSearchFields.length}
+                          </span>
+                        ) : null}
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-72 p-2">
+                      <div className="px-2 pb-2 text-xs text-slate-500 dark:text-slate-400">
+                        {t('searchFieldsHelp', {
+                          ns: 'common',
+                          defaultValue: 'Aramanın uygulanacağı alanları seçin. En az bir alan seçili kalmalıdır.',
+                        })}
+                      </div>
+                      <div className="max-h-72 space-y-1 overflow-y-auto">
+                        {searchFieldOptions.map((field) => {
+                          const checked = selectedSearchFields.includes(field.key);
+                          const locked = checked && selectedSearchFields.length === 1;
+                          return (
+                            <button
+                              key={field.key}
+                              type="button"
+                              disabled={locked}
+                              onClick={() => toggleSearchField(field.key)}
+                              className={cn(
+                                'flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-white/10',
+                                locked && 'cursor-not-allowed opacity-60'
+                              )}
+                            >
+                              <span className={cn(
+                                'flex h-4 w-4 items-center justify-center rounded border',
+                                checked ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-300 dark:border-white/20'
+                              )}>
+                                {checked ? <Check className="h-3 w-3" /> : null}
+                              </span>
+                              <span>{field.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                ) : null}
+              </div>
             ) : null}
           </div>
-        ) : null}
-
-        {shouldRenderSearchFields ? (
-          <Popover open={searchFieldsOpen} onOpenChange={setSearchFieldsOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="h-9 shrink-0 gap-1.5 border-slate-300 bg-white px-2.5 shadow-sm dark:border-white/15 dark:bg-transparent"
-                aria-label={t('searchFields', { ns: 'common', defaultValue: 'Arama alanları' })}
-                title={t('searchFields', { ns: 'common', defaultValue: 'Arama alanları' })}
-              >
-                <ListFilter className="h-4 w-4" />
-                <span className="hidden lg:inline">
-                  {t('searchFields', { ns: 'common', defaultValue: 'Arama alanları' })}
-                </span>
-                <span className="rounded-full bg-primary/10 px-1.5 text-[11px] font-semibold text-primary">
-                  {selectedSearchFields.length}
-                </span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="start" className="w-72 p-2">
-              <div className="px-2 pb-2 text-xs text-slate-500 dark:text-slate-400">
-                {t('searchFieldsHelp', {
-                  ns: 'common',
-                  defaultValue: 'Aramanın uygulanacağı alanları seçin. En az bir alan seçili kalmalıdır.',
-                })}
-              </div>
-              <div className="max-h-72 space-y-1 overflow-y-auto">
-                {searchFieldOptions.map((field) => {
-                  const checked = selectedSearchFields.includes(field.key);
-                  const locked = checked && selectedSearchFields.length === 1;
-                  return (
-                    <button
-                      key={field.key}
-                      type="button"
-                      disabled={locked}
-                      onClick={() => toggleSearchField(field.key)}
-                      className={cn(
-                        'flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-sm hover:bg-slate-100 dark:hover:bg-white/10',
-                        locked && 'cursor-not-allowed opacity-60'
-                      )}
-                    >
-                      <span className={cn(
-                        'flex h-4 w-4 items-center justify-center rounded border',
-                        checked ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-300 dark:border-white/20'
-                      )}>
-                        {checked ? <Check className="h-3 w-3" /> : null}
-                      </span>
-                      <span>{field.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </PopoverContent>
-          </Popover>
         ) : null}
 
         <div
