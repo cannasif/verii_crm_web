@@ -148,8 +148,8 @@ export function QuotationListPage(): ReactElement {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
-  const { setPageTitle } = useUIStore();
-  const { user } = useAuthStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
+  const user = useAuthStore((s) => s.user);
   const createRevisionMutation = useCreateRevisionOfQuotation();
   const cleanupErpMutation = useCleanupQuotationErpAndCreateCopy();
   const cancelByCustomerMutation = useCancelQuotationByCustomer();

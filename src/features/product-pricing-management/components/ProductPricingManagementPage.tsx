@@ -52,8 +52,8 @@ function resolveLabel(
 
 export function ProductPricingManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['product-pricing-management', 'common']);
-  const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const user = useAuthStore((s) => s.user);
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingProductPricing, setEditingProductPricing] = useState<ProductPricingGetDto | null>(null);

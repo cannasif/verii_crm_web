@@ -202,28 +202,26 @@ export function PropertiesPanel({ schema, slotError: _slotError, disabled, mode 
   const [calcLeftField, setCalcLeftField] = useState('');
   const [calcRightField, setCalcRightField] = useState('');
   const [calcOperation, setCalcOperation] = useState<CalculatedFieldOperation>('add');
-  const {
-    config,
-    meta,
-    setMeta,
-    setChartType,
-    setDateGrouping,
-    setSorting,
-    setAggregation,
-    setAxisLabel,
-    setLegendLabel,
-    setValueLabel,
-    removeFromSlot,
-    addCalculatedField,
-    removeCalculatedField,
-    rollbackToHistory,
-    setGovernanceMetadata,
-    setLifecycleReleaseNote,
-    updateFilter,
-    removeFilter,
-    addToSlot,
-    setWidgetAppearance,
-  } = useReportBuilderStore();
+  const config = useReportBuilderStore((state) => state.config);
+  const meta = useReportBuilderStore((state) => state.meta);
+  const setMeta = useReportBuilderStore((state) => state.setMeta);
+  const setChartType = useReportBuilderStore((state) => state.setChartType);
+  const setDateGrouping = useReportBuilderStore((state) => state.setDateGrouping);
+  const setSorting = useReportBuilderStore((state) => state.setSorting);
+  const setAggregation = useReportBuilderStore((state) => state.setAggregation);
+  const setAxisLabel = useReportBuilderStore((state) => state.setAxisLabel);
+  const setLegendLabel = useReportBuilderStore((state) => state.setLegendLabel);
+  const setValueLabel = useReportBuilderStore((state) => state.setValueLabel);
+  const removeFromSlot = useReportBuilderStore((state) => state.removeFromSlot);
+  const addCalculatedField = useReportBuilderStore((state) => state.addCalculatedField);
+  const removeCalculatedField = useReportBuilderStore((state) => state.removeCalculatedField);
+  const rollbackToHistory = useReportBuilderStore((state) => state.rollbackToHistory);
+  const setGovernanceMetadata = useReportBuilderStore((state) => state.setGovernanceMetadata);
+  const setLifecycleReleaseNote = useReportBuilderStore((state) => state.setLifecycleReleaseNote);
+  const updateFilter = useReportBuilderStore((state) => state.updateFilter);
+  const removeFilter = useReportBuilderStore((state) => state.removeFilter);
+  const addToSlot = useReportBuilderStore((state) => state.addToSlot);
+  const setWidgetAppearance = useReportBuilderStore((state) => state.setWidgetAppearance);
   const lifecycle = config.lifecycle ?? { status: 'draft' as const, version: 1 };
   const governance = config.governance ?? {
     audience: 'private' as const,

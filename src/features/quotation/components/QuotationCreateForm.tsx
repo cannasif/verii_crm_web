@@ -126,7 +126,7 @@ export function QuotationCreateForm(): ReactElement {
   const { t, i18n } = useTranslation(['quotation', 'common']);
   const navigate = useNavigate();
   const location = useLocation();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const user = useAuthStore((state) => state.user);
   const branch = useAuthStore((state) => state.branch);
 

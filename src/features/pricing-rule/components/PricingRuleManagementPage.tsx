@@ -54,8 +54,8 @@ function getRuleTypeConfig(t: (key: string) => string, type: number) {
 
 export function PricingRuleManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['pricing-rule', 'common']);
-  const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const user = useAuthStore((s) => s.user);
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingHeader, setEditingHeader] = useState<PricingRuleHeaderGetDto | null>(null);

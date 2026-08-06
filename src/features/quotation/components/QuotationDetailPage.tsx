@@ -138,7 +138,7 @@ export function QuotationDetailPage(): ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const quotationIdFromPath = parseQuotationIdFromPath(location.pathname);
   const quotationId = quotationIdFromPath > 0 ? quotationIdFromPath : (paramId ? parseInt(paramId, 10) : 0) || 0;
   const returnTo = getDocumentReturnTo(location.state);

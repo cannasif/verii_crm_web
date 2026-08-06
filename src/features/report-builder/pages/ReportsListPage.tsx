@@ -112,6 +112,8 @@ export function ReportsListPage(): ReactElement {
         configJson: report.configJson,
       });
       await refetch();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t('common.error'));
     } finally {
       setPendingId(null);
     }

@@ -48,8 +48,8 @@ function resolveLabel(
 
 export function ProductPricingGroupByManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['product-pricing-group-by-management', 'common']);
-  const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const user = useAuthStore((s) => s.user);
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ProductPricingGroupByDto | null>(null);

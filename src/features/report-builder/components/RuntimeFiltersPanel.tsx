@@ -53,7 +53,8 @@ export function RuntimeFiltersPanel({
   onReset,
 }: RuntimeFiltersPanelProps): ReactElement {
   const { t } = useTranslation('common');
-  const { config, updateFilter } = useReportBuilderStore();
+  const config = useReportBuilderStore((state) => state.config);
+  const updateFilter = useReportBuilderStore((state) => state.updateFilter);
   const hasRuntimeFilters = config.filters.length > 0;
 
   if (!hasRuntimeFilters) {
