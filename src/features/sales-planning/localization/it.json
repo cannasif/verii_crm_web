@@ -121,6 +121,21 @@
     "list": "Impossibile caricare i piani vendite. Controlla la connessione e riprova.",
     "detail": "Impossibile caricare il dettaglio del piano vendite."
   },
+  "context": {
+    "title": "Report obiettivi e previsioni",
+    "description": "Monitora il raggiungimento degli obiettivi e le vendite previste per l’ambito selezionato.",
+    "openFullReport": "Apri report completo",
+    "reportType": "Vista report",
+    "attainment": "Raggiungimento",
+    "forecast": "Previsione",
+    "error": "Impossibile caricare i dati di obiettivo e previsione.",
+    "noScopedTargetsTitle": "Nessun obiettivo per l’ambito selezionato",
+    "noScopedTargetsDescription": "Nessun obiettivo KPI è assegnato al venditore selezionato per questo piano e periodo.",
+    "onTrack": "In linea",
+    "noScopedForecastTitle": "Nessuna previsione per l’ambito selezionato",
+    "noScopedForecastDescription": "Non sono disponibili dati previsionali per la selezione corrente.",
+    "scopedPipelineCount": "{{count}} offerte aperte nell’ambito"
+  },
   "confirm": {
     "reason": "Nota operazione",
     "reasonPlaceholder": "Spiegazione facoltativa...",

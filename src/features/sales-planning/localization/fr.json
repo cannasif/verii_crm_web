@@ -121,6 +121,21 @@
     "list": "Impossible de charger les plans de vente. Vérifiez votre connexion et réessayez.",
     "detail": "Impossible de charger le détail du plan de vente."
   },
+  "context": {
+    "title": "Rapport objectifs et prévisions",
+    "description": "Suivez la réalisation des objectifs et les ventes prévues pour le périmètre sélectionné.",
+    "openFullReport": "Ouvrir le rapport complet",
+    "reportType": "Vue du rapport",
+    "attainment": "Réalisation",
+    "forecast": "Prévision",
+    "error": "Les données d’objectif et de prévision n’ont pas pu être chargées.",
+    "noScopedTargetsTitle": "Aucun objectif pour ce périmètre",
+    "noScopedTargetsDescription": "Aucun objectif KPI n’est attribué au commercial sélectionné pour ce plan et cette période.",
+    "onTrack": "Conforme au plan",
+    "noScopedForecastTitle": "Aucune prévision pour ce périmètre",
+    "noScopedForecastDescription": "Aucune prévision n’est disponible pour la sélection actuelle.",
+    "scopedPipelineCount": "{{count}} devis ouverts dans le périmètre"
+  },
   "confirm": {
     "reason": "Note d'opération",
     "reasonPlaceholder": "Explication facultative...",

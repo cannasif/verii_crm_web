@@ -17,10 +17,11 @@ export const salesPlanningQueryKeys = {
   targetUsers: ['sales-planning', 'target-users'] as const,
 };
 
-export function useSalesPlansQuery(year?: number, status?: SalesPlanStatus) {
+export function useSalesPlansQuery(year?: number, status?: SalesPlanStatus, enabled = true) {
   return useQuery({
     queryKey: salesPlanningQueryKeys.list(year, status),
     queryFn: () => salesPlanningApi.getAll({ year, status }),
+    enabled,
     staleTime: 30_000,
   });
 }

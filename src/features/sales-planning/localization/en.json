@@ -121,6 +121,21 @@
     "list": "Sales plans could not be loaded. Check your connection and try again.",
     "detail": "Sales plan details could not be loaded."
   },
+  "context": {
+    "title": "Target and forecast report",
+    "description": "Track target attainment and expected sales for the selected sales scope.",
+    "openFullReport": "Open full report",
+    "reportType": "Report view",
+    "attainment": "Attainment",
+    "forecast": "Forecast",
+    "error": "Target and forecast data could not be loaded.",
+    "noScopedTargetsTitle": "No targets for the selected scope",
+    "noScopedTargetsDescription": "No KPI target is assigned to the selected salesperson for this plan and period.",
+    "onTrack": "On track",
+    "noScopedForecastTitle": "No forecast for the selected scope",
+    "noScopedForecastDescription": "No forecast data exists for the selected salesperson, plan, period, and KPI.",
+    "scopedPipelineCount": "{{count}} open quotations in scope"
+  },
   "confirm": {
     "reason": "Action note",
     "reasonPlaceholder": "Optional explanation...",

@@ -121,6 +121,21 @@
     "list": "No se pudieron cargar los planes de ventas. Compruebe la conexión e inténtelo de nuevo.",
     "detail": "No se pudo cargar el detalle del plan de ventas."
   },
+  "context": {
+    "title": "Informe de objetivos y previsión",
+    "description": "Siga el cumplimiento de objetivos y las ventas previstas para el ámbito seleccionado.",
+    "openFullReport": "Abrir informe completo",
+    "reportType": "Vista del informe",
+    "attainment": "Cumplimiento",
+    "forecast": "Previsión",
+    "error": "No se pudieron cargar los datos de objetivos y previsión.",
+    "noScopedTargetsTitle": "No hay objetivos para el ámbito seleccionado",
+    "noScopedTargetsDescription": "No hay un objetivo KPI asignado al vendedor seleccionado para este plan y período.",
+    "onTrack": "En línea",
+    "noScopedForecastTitle": "No hay previsión para el ámbito seleccionado",
+    "noScopedForecastDescription": "No hay datos de previsión para la selección actual.",
+    "scopedPipelineCount": "{{count}} ofertas abiertas en el ámbito"
+  },
   "confirm": {
     "reason": "Nota de la acción",
     "reasonPlaceholder": "Explicación opcional...",

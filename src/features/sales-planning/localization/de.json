@@ -121,6 +121,21 @@
     "list": "Verkaufspläne konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
     "detail": "Verkaufsplandetails konnten nicht geladen werden."
   },
+  "context": {
+    "title": "Ziel- und Prognosebericht",
+    "description": "Verfolgen Sie Zielerreichung und erwartete Verkäufe für den ausgewählten Vertriebsbereich.",
+    "openFullReport": "Vollständigen Bericht öffnen",
+    "reportType": "Berichtsansicht",
+    "attainment": "Zielerreichung",
+    "forecast": "Prognose",
+    "error": "Ziel- und Prognosedaten konnten nicht geladen werden.",
+    "noScopedTargetsTitle": "Keine Ziele für den ausgewählten Bereich",
+    "noScopedTargetsDescription": "Für diesen Plan und Zeitraum ist dem ausgewählten Vertriebsmitarbeiter kein KPI-Ziel zugewiesen.",
+    "onTrack": "Im Plan",
+    "noScopedForecastTitle": "Keine Prognose für den ausgewählten Bereich",
+    "noScopedForecastDescription": "Für die ausgewählte Kombination sind keine Prognosedaten vorhanden.",
+    "scopedPipelineCount": "{{count}} offene Angebote im Bereich"
+  },
   "confirm": {
     "reason": "Vorgangsnotiz",
     "reasonPlaceholder": "Optionale Erklärung...",

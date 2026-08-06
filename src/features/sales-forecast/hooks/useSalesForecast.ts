@@ -15,11 +15,12 @@ export function useSalesForecastQuery(
   planId: number | null,
   periodStart: string,
   targetMetric: SalesTargetMetric,
+  enabled = true,
 ) {
   return useQuery({
     queryKey: salesForecastQueryKeys.detail(planId, periodStart, targetMetric),
     queryFn: ({ signal }) => salesForecastApi.get(planId!, periodStart, targetMetric, signal),
-    enabled: planId != null && planId > 0 && /^\d{4}-\d{2}-\d{2}$/.test(periodStart),
+    enabled: enabled && planId != null && planId > 0 && /^\d{4}-\d{2}-\d{2}$/.test(periodStart),
     staleTime: 60_000,
   });
 }

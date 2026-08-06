@@ -121,6 +121,21 @@
     "list": "Satış planları yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
     "detail": "Satış planı detayı yüklenemedi."
   },
+  "context": {
+    "title": "Hedef ve tahmin raporu",
+    "description": "Seçili satış kapsamının hedef gerçekleşmesini ve beklenen satış tahminini izleyin.",
+    "openFullReport": "Tam raporu aç",
+    "reportType": "Rapor görünümü",
+    "attainment": "Gerçekleşme",
+    "forecast": "Tahmin",
+    "error": "Hedef ve tahmin bilgileri yüklenemedi.",
+    "noScopedTargetsTitle": "Seçili kapsam için hedef yok",
+    "noScopedTargetsDescription": "Bu plan ve dönemde seçili satışçıya atanmış bir KPI hedefi bulunmuyor.",
+    "onTrack": "Planla uyumlu",
+    "noScopedForecastTitle": "Seçili kapsam için tahmin yok",
+    "noScopedForecastDescription": "Bu plan, dönem ve KPI için seçili satışçıya ait tahmin verisi bulunmuyor.",
+    "scopedPipelineCount": "Kapsamda {{count}} açık teklif"
+  },
   "confirm": {
     "reason": "İşlem notu",
     "reasonPlaceholder": "İsteğe bağlı açıklama...",
