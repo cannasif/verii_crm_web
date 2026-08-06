@@ -324,11 +324,6 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
 
   return (
     <div className="crm-app-shell relative flex min-h-dvh h-[100dvh] w-full overflow-hidden bg-[var(--crm-app-background)] font-['Outfit'] transition-colors duration-300">
-      <div className="crm-shell-ambient absolute inset-0 w-full h-full pointer-events-none z-0 overflow-hidden">
-         <div className="absolute top-[-10%] left-[-10%] w-[80vw] max-w-[800px] aspect-square rounded-full bg-[var(--crm-app-aura-start)] blur-[80px] md:blur-[120px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
-         <div className="absolute bottom-[-10%] right-[-10%] w-[60vw] max-w-[600px] aspect-square rounded-full bg-[var(--crm-app-aura-end)] blur-[60px] md:blur-[100px] mix-blend-multiply dark:mix-blend-normal transition-colors duration-500" />
-      </div>
-
       {/* Sidebar - Mobile handles itself with fixed position, Desktop uses sticky/relative */}
       {!isPremium && <Sidebar items={items} />}
 

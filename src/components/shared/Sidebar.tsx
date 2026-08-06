@@ -9,7 +9,7 @@ import type { NavItem } from './nav-items';
 const SIDEBAR_EASE = 'ease-[cubic-bezier(0.4,0,0.2,1)]';
 const SIDEBAR_TRANSITION = `duration-[260ms] ${SIDEBAR_EASE}`;
 const SIDEBAR_LABEL_TRANSITION = cn(
-  'min-w-0 overflow-hidden transition-[opacity,max-width,width] duration-[200ms] ease-[cubic-bezier(0.4,0,0.2,1)]',
+  'min-w-0 overflow-hidden transition-opacity duration-[160ms] ease-[cubic-bezier(0.4,0,0.2,1)]',
   'motion-reduce:transition-none'
 );
 const LOGO_URL = '/v3logo-sm.png';
@@ -51,6 +51,7 @@ function SubMenuComponent({ item, pathname, searchQuery }: { item: NavItem; path
     <div className="mt-1">
       <button
         type="button"
+        aria-label={item.title}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -75,8 +76,9 @@ function SubMenuComponent({ item, pathname, searchQuery }: { item: NavItem; path
              const isSubLinkActive = pathname === child.href;
              return (
                <Link
-                 key={child.href || child.title}
-                 to={child.href || '#'}
+                  key={child.href || child.title}
+                  to={child.href || '#'}
+                  aria-label={child.title}
                  className={cn(
                    "flex items-center justify-between px-3 py-2 rounded-lg transition-colors text-xs w-full relative",
                    isSubLinkActive
@@ -184,6 +186,7 @@ function NavItemComponent({
       <div className="mb-1">
         <button 
             type="button"
+            aria-label={item.title}
             className={cn(
                 "relative flex w-full items-center gap-3 rounded-xl px-3 py-2 transition-colors cursor-pointer select-none crm-text-start group",
                 visualActive ? 'bg-[var(--crm-brand-soft)]' : 'hover:bg-slate-100 dark:hover:bg-white/5',
@@ -237,6 +240,7 @@ function NavItemComponent({
                 : <Link
                     key={child.href}
                     to={child.href || '#'}
+                    aria-label={child.title}
                     className={cn(
                       "flex items-center justify-between px-3 py-2 rounded-lg transition-colors text-sm w-full relative",
                       location.pathname === child.href ? 'bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)] font-semibold' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5'
@@ -263,8 +267,9 @@ function NavItemComponent({
     <div className="mb-1">
         <Link 
           to={item.href || '#'} 
+          aria-label={item.title}
           className={cn(
-            "relative flex items-center gap-3 rounded-xl px-3 py-2 transition-all group",
+            "relative flex items-center gap-3 rounded-xl px-3 py-2 transition-colors group",
             isActive ? 'bg-[var(--crm-brand-soft)]' : 'hover:bg-slate-100 dark:hover:bg-white/5',
             !isSidebarOpen && "justify-center px-0 gap-0",
             SIDEBAR_TRANSITION
@@ -402,12 +407,12 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
       />
       
       <aside className={cn(
-        'app-sidebar-panel fixed lg:sticky top-0 min-h-dvh h-[100dvh] z-50 flex flex-col shrink-0 overflow-hidden will-change-[width,transform]',
-        'bg-[color-mix(in_srgb,var(--crm-app-panel)_82%,transparent)] backdrop-blur-xl',
+        'app-sidebar-panel fixed lg:sticky top-0 min-h-dvh h-[100dvh] z-50 flex flex-col shrink-0 overflow-hidden',
+        'bg-[var(--crm-app-panel)]',
         'border-r border-[var(--crm-app-border)]',
         'shadow-[2px_0_12px_-4px_rgba(15,23,42,0.08)] dark:shadow-[2px_0_16px_-4px_rgba(0,0,0,0.45)]',
         'pb-[env(safe-area-inset-bottom)]',
-        'transition-[width,transform] duration-[260ms] motion-reduce:transition-none',
+        'transition-transform duration-[260ms] motion-reduce:transition-none lg:transition-none',
         SIDEBAR_EASE,
         isSidebarOpen ? "w-72 translate-x-0" : "w-72 -translate-x-full lg:w-20 lg:translate-x-0"
       )}
@@ -416,7 +421,7 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
         
         <div className={cn(
           "h-24 flex items-center justify-center border-b border-slate-200 dark:border-white/5 shrink-0 relative overflow-hidden",
-          "pt-[env(safe-area-inset-top)] transition-[padding] duration-[260ms]",
+          "pt-[env(safe-area-inset-top)]",
           SIDEBAR_EASE,
           isSidebarOpen ? "px-4" : "px-0"
         )}>
@@ -433,9 +438,20 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
               onDoubleClick={handleLogoDoubleClick}
               className="flex justify-center flex-1 cursor-pointer select-none rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-[var(--crm-brand-ring)]"
             >
-              <img src={VERII_LOGO_URL} alt="Logo" className="h-32 object-contain pointer-events-none" />
+              <img
+                src={VERII_LOGO_URL}
+                alt="Logo"
+                width={320}
+                height={213}
+                className="h-32 object-contain pointer-events-none"
+              />
             </button>
-            <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-2 text-slate-500 hover:text-red-500 rounded-lg">
+            <button
+              type="button"
+              aria-label="Menüyü kapat"
+              onClick={() => setSidebarOpen(false)}
+              className="lg:hidden p-2 text-slate-500 hover:text-red-500 rounded-lg"
+            >
               <X size={24} />
             </button>
             <div className="w-8 hidden lg:block" />
@@ -449,7 +465,13 @@ export function Sidebar({ items }: SidebarProps): ReactElement {
               isSidebarOpen ? "opacity-0 pointer-events-none" : "opacity-100 pointer-events-auto"
             )}
           >
-            <img src={LOGO_URL} alt="V3" className="w-full h-full object-contain scale-150 pointer-events-none" />
+            <img
+              src={LOGO_URL}
+              alt="V3"
+              width={320}
+              height={213}
+              className="w-full h-full object-contain scale-150 pointer-events-none"
+            />
           </button>
         </div>
 

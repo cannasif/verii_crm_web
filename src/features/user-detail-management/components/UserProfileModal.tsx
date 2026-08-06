@@ -39,6 +39,7 @@ import { cn } from '@/lib/utils';
 import { CRM_SELECT_MENU_ITEM_CLASS } from '@/lib/menu-interactive-styles';
 import { useNavigate } from 'react-router-dom';
 import { DOCUMENT_DIALOG_CLOSE_BUTTON_BASE_CLASS } from '@/lib/document-line-dialog-styles';
+import { ProfileImageWithFallback } from '@/components/shared/ProfileImageWithFallback';
 
 interface UserProfileModalProps {
   open: boolean;
@@ -226,19 +227,18 @@ export function UserProfileModal({
                 "w-20 h-20 sm:w-24 sm:h-24 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border-4 rotate-2 transition-transform group-hover:rotate-0 duration-500 p-1 shadow-2xl",
                 "border-white bg-white dark:border-white/10 dark:bg-white/5"
               )}>
-                {userDetail?.profilePictureUrl ? (
-                  <img
-                    src={getImageUrl(userDetail.profilePictureUrl) || ''}
-                    alt={displayName}
-                    className="w-full h-full rounded-[1.3rem] md:rounded-[1.8rem] object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center rounded-[1.3rem] bg-[image:var(--crm-brand-gradient)] md:rounded-[1.8rem]">
-                    <span className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-lg">
-                      {displayInitials}
-                    </span>
-                  </div>
-                )}
+                <ProfileImageWithFallback
+                  src={getImageUrl(userDetail?.profilePictureUrl) || null}
+                  alt={displayName}
+                  className="h-full w-full rounded-[1.3rem] object-cover md:rounded-[1.8rem]"
+                  fallback={(
+                    <div className="flex h-full w-full items-center justify-center rounded-[1.3rem] bg-[image:var(--crm-brand-gradient)] md:rounded-[1.8rem]">
+                      <span className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-lg">
+                        {displayInitials}
+                      </span>
+                    </div>
+                  )}
+                />
               </div>
               <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-2xl border-4 border-white bg-emerald-500 shadow-lg md:h-9 md:w-9 dark:border-[var(--crm-app-panel)]">
                 <ShieldEnergyIcon size={14} className="text-white md:hidden" />

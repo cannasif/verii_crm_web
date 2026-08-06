@@ -13,6 +13,7 @@ import { useVoiceSearch } from '@/hooks/useVoiceSearch';
 import { useTheme } from '@/components/theme-provider';
 import { matchesSearchTerm } from '@/lib/search';
 import type { NavItem } from './nav-items';
+import { ProfileImageWithFallback } from './ProfileImageWithFallback';
 
 interface NavbarProps {
   navItems?: NavItem[];
@@ -95,8 +96,8 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
     <>
       <header className={cn(
         "app-navbar-panel",
-        "min-h-20 h-auto pt-[env(safe-area-inset-top)] px-4 sm:px-8 flex items-center justify-between border-b transition-all sticky top-0 z-40 backdrop-blur-xl",
-        "border-[var(--crm-app-border)] bg-[color-mix(in_srgb,var(--crm-app-panel)_82%,transparent)]"
+        "min-h-20 h-auto pt-[env(safe-area-inset-top)] px-4 sm:px-8 flex items-center justify-between border-b transition-colors sticky top-0 z-40",
+        "border-[var(--crm-app-border)] bg-[var(--crm-app-panel)]"
       )}>
         <div className="flex items-center gap-2 sm:gap-4 shrink-0 h-20">
           {isPremium ? (
@@ -113,6 +114,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
               type="button"
               onClick={toggleSidebar}
               aria-pressed={isSidebarOpen}
+              aria-label={t(isSidebarOpen ? 'collapseNav' : 'expandNav')}
               className="p-2 shrink-0 rounded-xl text-slate-500 dark:text-slate-400 hover:text-[var(--crm-brand-primary)] hover:bg-[var(--crm-brand-soft)] hover:shadow-[0_0_15px_var(--crm-brand-shadow)] transition-all duration-300 focus:outline-none"
             >
               <SidebarLeft01Icon size={24} />
@@ -123,7 +125,6 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
             "relative hidden md:block w-full max-md group",
             isPremium && "crm-premium-navbar-search",
           )}>
-            <div className="absolute inset-0 rounded-2xl bg-[image:var(--crm-brand-gradient-soft)] blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
             <div className="relative flex items-center">
               <SearchList01Icon className="absolute left-4 text-slate-400 w-5 h-5 group-focus-within:text-[var(--crm-brand-primary)] transition-colors duration-300" />
               <input
@@ -143,6 +144,8 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
               <div className="absolute right-3 flex items-center gap-2">
                 {isSupported && (
                   <button
+                    type="button"
+                    aria-label={t('common.voiceSearchTitle')}
                     onClick={(e) => { e.preventDefault(); startListening(); }}
                     className={cn(
                       "p-2 rounded-xl transition-all duration-300",
@@ -158,6 +161,8 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
 
                 {searchQuery && (
                   <button
+                    type="button"
+                    aria-label={t('common.clear')}
                     onClick={() => setSearchQuery('')}
                     className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/20 transition-colors"
                   >
@@ -192,6 +197,8 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
 
           {isSupported && (
             <button
+              type="button"
+              aria-label={t('common.voiceSearchTitle')}
               onClick={(e) => { e.preventDefault(); startListening(); }}
               className={cn(
                 "p-2 md:hidden rounded-xl transition-all duration-300 relative",
@@ -223,18 +230,19 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                 <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[var(--crm-brand-primary)] transition-colors truncate max-w-[150px]">
                   {displayName}
                 </p>
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">
+                <p className="text-[10px] text-slate-600 uppercase tracking-wider font-medium dark:text-slate-300">
                   {t('roles.admin')}
                 </p>
               </div>
               <div className="relative shrink-0">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full p-[2px] bg-[image:var(--crm-brand-gradient)] group-hover:shadow-[0_0_20px_var(--crm-brand-shadow)] transition-all duration-300">
                   <div className="w-full h-full rounded-full bg-white dark:bg-[var(--crm-app-background)] flex items-center justify-center overflow-hidden border-2 border-white dark:border-[var(--crm-app-background)]">
-                    {userDetail?.profilePictureUrl ? (
-                      <img src={getImageUrl(userDetail.profilePictureUrl) || ''} alt={displayName} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-xs font-bold text-[var(--crm-brand-primary)]">{displayInitials}</span>
-                    )}
+                    <ProfileImageWithFallback
+                      src={getImageUrl(userDetail?.profilePictureUrl) || null}
+                      alt={displayName}
+                      className="h-full w-full object-cover"
+                      fallback={<span className="text-xs font-bold text-[var(--crm-brand-primary)]">{displayInitials}</span>}
+                    />
                   </div>
                 </div>
               </div>

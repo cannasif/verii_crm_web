@@ -381,7 +381,7 @@ export function MyActivitiesCalendar(): ReactElement {
         <div className="overflow-x-auto">
           <div className="min-w-[900px] grid grid-cols-7">
             {days.slice(0, 7).map((day) => (
-              <div key={`header-${day.getDay()}`} className={cn('border-b border-r border-slate-200 bg-slate-50 px-2 py-2.5 text-center text-[11px] font-black uppercase tracking-wider text-slate-500 last:border-r-0 dark:border-white/10 dark:bg-white/5', (day.getDay() === 0 || day.getDay() === 6) && 'text-primary/70')}>
+              <div key={`header-${day.getDay()}`} className={cn('border-b border-r border-slate-200 bg-slate-50 px-2 py-2.5 text-center text-[11px] font-black uppercase tracking-wider text-slate-500 last:border-r-0 dark:border-white/10 dark:bg-white/5', (day.getDay() === 0 || day.getDay() === 6) && 'text-[var(--crm-brand-text)]')}>
                 {new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(day)}
               </div>
             ))}
