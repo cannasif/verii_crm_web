@@ -117,10 +117,13 @@ export function SalesTypeTable({
   };
 
   const handleDeleteConfirm = async (): Promise<void> => {
-    if (selectedItem) {
+    if (!selectedItem) return;
+    try {
       await deleteSalesType.mutateAsync(selectedItem.id);
       setDeleteDialogOpen(false);
       setSelectedItem(null);
+    } catch {
+      // Mutation hook shows the localized API error toast.
     }
   };
 

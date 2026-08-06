@@ -52,7 +52,7 @@ function resolveLabel(t: (key: string) => string, key: string, fallback: string)
 export function SalesRepMatchManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['sales-rep-match-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const queryClient = useQueryClient();
 
   const [formOpen, setFormOpen] = useState(false);

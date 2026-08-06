@@ -76,9 +76,13 @@ export function SalesRepMatchForm({
   }, [form, initialValues, open]);
 
   const handleSubmit = async (data: SalesRepMatchFormSchema): Promise<void> => {
-    await onSubmit(data);
-    form.reset({ salesRepCodeId: '0', userId: '0' });
-    onOpenChange(false);
+    try {
+      await onSubmit(data);
+      form.reset({ salesRepCodeId: '0', userId: '0' });
+      onOpenChange(false);
+    } catch {
+      // Parent mutation hook already shows the localized API error toast.
+    }
   };
 
   return (

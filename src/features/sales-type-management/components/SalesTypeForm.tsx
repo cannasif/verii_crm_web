@@ -95,10 +95,14 @@ export function SalesTypeForm({
   }, [salesType, form]);
 
   const handleSubmit = async (data: SalesTypeFormSchema): Promise<void> => {
-    await onSubmit(data);
-    if (!isLoading) {
-      form.reset();
-      onOpenChange(false);
+    try {
+      await onSubmit(data);
+      if (!isLoading) {
+        form.reset();
+        onOpenChange(false);
+      }
+    } catch {
+      // Parent mutation hook already shows the localized API error toast.
     }
   };
 

@@ -1,4 +1,4 @@
-import { type ReactElement, useDeferredValue, useEffect, useState } from 'react';
+import { type ReactElement, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, ExternalLink, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -80,6 +80,16 @@ export function SalesWorkFeedTab({
 
   const feed = workFeedQuery.data;
   const items = feed?.items ?? [];
+
+  const filteredAttentionItems = useMemo(() => {
+    if (!fixedKind) return attentionItems;
+    return attentionItems.filter((item) => {
+      if (fixedKind === 'activity') return item.kind === 'overdueActivity';
+      if (fixedKind === 'quotation') return item.kind === 'expiredQuotation';
+      if (fixedKind === 'order') return item.kind === 'stalePendingOrder';
+      return false;
+    });
+  }, [attentionItems, fixedKind]);
 
   return (
     <TabsContent value={tabValue} className="space-y-5 outline-none">
@@ -272,16 +282,7 @@ export function SalesWorkFeedTab({
         </CardHeader>
         <CardContent>
           <PerformanceAttentionTable
-            items={
-              fixedKind
-                ? attentionItems.filter((item) => {
-                    if (fixedKind === 'activity') return item.kind === 'overdueActivity';
-                    if (fixedKind === 'quotation') return item.kind === 'expiredQuotation';
-                    if (fixedKind === 'order') return item.kind === 'stalePendingOrder';
-                    return false;
-                  })
-                : attentionItems
-            }
+            items={filteredAttentionItems}
             locale={locale}
           />
         </CardContent>

@@ -49,7 +49,7 @@ function resolveLabel(
 export function SalesTypeManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['sales-type-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<SalesTypeGetDto | null>(null);

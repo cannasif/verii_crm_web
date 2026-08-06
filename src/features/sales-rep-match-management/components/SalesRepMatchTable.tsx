@@ -83,9 +83,13 @@ export function SalesRepMatchTable({
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (!selectedItem) return;
-    await deleteSalesRepMatch.mutateAsync(selectedItem.id);
-    setDeleteDialogOpen(false);
-    setSelectedItem(null);
+    try {
+      await deleteSalesRepMatch.mutateAsync(selectedItem.id);
+      setDeleteDialogOpen(false);
+      setSelectedItem(null);
+    } catch {
+      // Mutation hook shows the localized API error toast.
+    }
   };
 
   return (

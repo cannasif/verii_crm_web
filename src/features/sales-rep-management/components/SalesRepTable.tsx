@@ -83,9 +83,13 @@ export function SalesRepTable({
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (!selectedItem) return;
-    await deleteSalesRep.mutateAsync(selectedItem.id);
-    setDeleteDialogOpen(false);
-    setSelectedItem(null);
+    try {
+      await deleteSalesRep.mutateAsync(selectedItem.id);
+      setDeleteDialogOpen(false);
+      setSelectedItem(null);
+    } catch {
+      // Mutation hook shows the localized API error toast.
+    }
   };
 
   return (

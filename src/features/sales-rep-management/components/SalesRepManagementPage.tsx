@@ -51,7 +51,7 @@ function resolveLabel(t: (key: string) => string, key: string, fallback: string)
 export function SalesRepManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['sales-rep-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const queryClient = useQueryClient();
 
   const [formOpen, setFormOpen] = useState(false);
@@ -204,17 +204,21 @@ export function SalesRepManagementPage(): ReactElement {
   const handleSubmit = async (data: SalesRepFormSchema): Promise<void> => {
     const payload = mapFormData(data);
 
-    if (editingItem) {
-      await updateSalesRep.mutateAsync({
-        id: editingItem.id,
-        data: payload,
-      });
-    } else {
-      await createSalesRep.mutateAsync(payload);
-    }
+    try {
+      if (editingItem) {
+        await updateSalesRep.mutateAsync({
+          id: editingItem.id,
+          data: payload,
+        });
+      } else {
+        await createSalesRep.mutateAsync(payload);
+      }
 
-    setFormOpen(false);
-    setEditingItem(null);
+      setFormOpen(false);
+      setEditingItem(null);
+    } catch {
+      // Mutation hook shows the localized API error toast.
+    }
   };
 
   const handleRefresh = async (): Promise<void> => {
