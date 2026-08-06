@@ -1549,6 +1549,13 @@ export function Customer360Page(): ReactElement {
   }, [analytics?.totalsByCurrency, chartsData?.amountComparisonByCurrency]);
   const isAllCurrencies = currency === ALL_CURRENCY;
   const quickActivityWindow = useMemo(() => getQuickActivityWindow(), []);
+  const timelineSorted = useMemo(
+    () =>
+      [...(data?.timeline ?? [])].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      ),
+    [data?.timeline]
+  );
   const profile = data?.profile ?? { id: 0, name: '', customerCode: null };
   const customerErpCode = customerDetail?.customerCode ?? profile.customerCode;
   const customerDisplayName = customerDetail?.name ?? profile.name;
@@ -1728,9 +1735,6 @@ export function Customer360Page(): ReactElement {
     openQuotations: 0,
     openOrders: 0,
   };
-  const timelineSorted = [...(data.timeline ?? [])].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
   const analyticsSummary = analytics ?? {
     last12MonthsOrderAmount: 0,
     openQuotationAmount: 0,
