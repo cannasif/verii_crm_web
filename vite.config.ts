@@ -29,6 +29,7 @@ export default defineConfig({
         defaultHandler(warning)
       },
       output: {
+        onlyExplicitManualChunks: true,
         manualChunks(id) {
           const moduleId = id.replaceAll("\\", "/")
           if (!moduleId.includes("/node_modules/")) return
