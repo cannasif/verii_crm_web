@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { CopyPlus, Loader2, Plus, Target, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Combobox } from '@/components/ui/combobox';
 import {
   Dialog,
   DialogContent,
@@ -33,7 +34,7 @@ import {
   useSalesPlanTargetUsersQuery,
   useUpdateSalesPlanMutation,
 } from '../hooks/useSalesPlanning';
-import { SalesPlanStatus, SalesTargetMetric } from '../types/sales-planning.types';
+import { SalesPlanPeriodType, SalesPlanStatus, SalesTargetMetric } from '../types/sales-planning.types';
 import {
   COUNT_METRICS,
   getMetricKey,
@@ -45,7 +46,8 @@ import { SalesPlanStatusBadge } from './SalesPlanStatusBadge';
 const targetSchema = z.object({
   userId: z.number().int().positive(),
   month: z.number().int().min(1).max(12),
-  metric: z.number().int().min(0).max(6),
+  periodStart: z.string().min(10),
+  metric: z.number().int().min(1).max(7),
   targetValue: z.number().min(0).max(999_999_999_999),
   notes: z.string().max(500),
 });
@@ -53,6 +55,9 @@ const targetSchema = z.object({
 const formSchema = z.object({
   name: z.string().trim().min(3).max(150),
   planYear: z.number().int().min(2000).max(2100),
+  startDate: z.string().min(10),
+  endDate: z.string().min(10),
+  periodType: z.number().int().min(1).max(2),
   currency: z.string().trim().regex(/^\d{1,3}$/),
   description: z.string().max(1000),
   targets: z.array(targetSchema).max(10_000),
@@ -63,17 +68,39 @@ type SalesPlanFormValues = z.infer<typeof formSchema>;
 interface QuickTargetValues {
   userId: number;
   month: number;
+  periodStart: string;
   metric: SalesTargetMetric;
   targetValue: string;
 }
 
+const currentYear = new Date().getFullYear();
 const EMPTY_VALUES: SalesPlanFormValues = {
   name: '',
-  planYear: new Date().getFullYear(),
+  planYear: currentYear,
+  startDate: `${currentYear}-01-01`,
+  endDate: `${currentYear}-12-31`,
+  periodType: SalesPlanPeriodType.Monthly,
   currency: '0',
   description: '',
   targets: [],
 };
+
+function toDateInput(value: string): string {
+  return value.slice(0, 10);
+}
+
+function getMonthlyPeriods(startDate: string, endDate: string): string[] {
+  if (!startDate || !endDate || startDate > endDate) return [];
+  const start = new Date(`${startDate}T00:00:00Z`);
+  const end = new Date(`${endDate}T00:00:00Z`);
+  const cursor = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 1));
+  const result: string[] = [];
+  while (cursor <= end && result.length < 120) {
+    result.push(cursor.toISOString().slice(0, 10));
+    cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+  }
+  return result;
+}
 
 interface SalesPlanDialogProps {
   open: boolean;
@@ -101,6 +128,7 @@ export function SalesPlanDialog({
   const [quickTarget, setQuickTarget] = useState<QuickTargetValues>({
     userId: 0,
     month: new Date().getMonth() + 1,
+    periodStart: `${currentYear}-${String(new Date().getMonth() + 1).padStart(2, '0')}-01`,
     metric: SalesTargetMetric.NetOrderAmount,
     targetValue: '',
   });
@@ -122,11 +150,15 @@ export function SalesPlanDialog({
     form.reset({
       name: plan.name,
       planYear: plan.planYear,
+      startDate: toDateInput(plan.startDate),
+      endDate: toDateInput(plan.endDate),
+      periodType: plan.periodType,
       currency: plan.currency,
       description: plan.description ?? '',
       targets: plan.targets.map((target) => ({
         userId: target.userId,
         month: target.month,
+        periodStart: toDateInput(target.periodStart),
         metric: target.metric,
         targetValue: target.targetValue,
         notes: target.notes ?? '',
@@ -142,9 +174,13 @@ export function SalesPlanDialog({
   }, [editable, open, quickTarget.userId, targetUsersQuery.data]);
 
   const handleSubmit = async (values: SalesPlanFormValues): Promise<void> => {
+    if (values.endDate < values.startDate) {
+      toast.error(t('validation.dateRange'));
+      return;
+    }
     const duplicateKeys = new Set<string>();
     for (const target of values.targets) {
-      const key = `${target.userId}:${target.month}:${target.metric}`;
+      const key = `${target.userId}:${values.periodType === SalesPlanPeriodType.Yearly ? values.startDate : target.periodStart}:${target.metric}`;
       if (duplicateKeys.has(key)) {
         toast.error(t('validation.duplicateTarget'));
         return;
@@ -167,6 +203,9 @@ export function SalesPlanDialog({
         await createMutation.mutateAsync({
           name: values.name.trim(),
           planYear: values.planYear,
+          startDate: values.startDate,
+          endDate: values.endDate,
+          periodType: values.periodType as SalesPlanPeriodType,
           currency: values.currency.trim().toUpperCase(),
           description: values.description.trim() || null,
           targets: normalizedTargets,
@@ -176,6 +215,9 @@ export function SalesPlanDialog({
           id: plan.id,
           payload: {
             name: values.name.trim(),
+            startDate: values.startDate,
+            endDate: values.endDate,
+            periodType: values.periodType as SalesPlanPeriodType,
             currency: values.currency.trim().toUpperCase(),
             description: values.description.trim() || null,
             rowVersion: plan.rowVersion,
@@ -202,7 +244,7 @@ export function SalesPlanDialog({
 
     const duplicate = form.getValues('targets').some((target) =>
       target.userId === quickTarget.userId &&
-      target.month === quickTarget.month &&
+      target.periodStart === quickTarget.periodStart &&
       target.metric === quickTarget.metric,
     );
     if (duplicate) {
@@ -210,21 +252,24 @@ export function SalesPlanDialog({
       return;
     }
 
-    targets.append({ ...quickTarget, targetValue, notes: '' });
+    const periodType = form.getValues('periodType');
+    const periodStart = periodType === SalesPlanPeriodType.Yearly ? form.getValues('startDate') : quickTarget.periodStart;
+    targets.append({ ...quickTarget, periodStart, month: Number(periodStart.slice(5, 7)), targetValue, notes: '' });
     setQuickTarget((current) => ({ ...current, targetValue: '' }));
   };
 
   const copyTargetToRemainingMonths = (index: number): void => {
     const source = form.getValues(`targets.${index}`);
     if (!source) return;
+    const monthlyPeriods = getMonthlyPeriods(form.getValues('startDate'), form.getValues('endDate'));
     const existingMonths = new Set(
       form.getValues('targets')
         .filter((target) => target.userId === source.userId && target.metric === source.metric)
-        .map((target) => target.month),
+        .map((target) => target.periodStart),
     );
-    const additions = Array.from({ length: 12 }, (_, monthIndex) => monthIndex + 1)
-      .filter((month) => !existingMonths.has(month))
-      .map((month) => ({ ...source, month }));
+    const additions = monthlyPeriods
+      .filter((periodStart) => !existingMonths.has(periodStart))
+      .map((periodStart) => ({ ...source, periodStart, month: Number(periodStart.slice(5, 7)) }));
 
     if (additions.length === 0) {
       toast.info(t('messages.noMonthsToCopy'));
@@ -233,6 +278,23 @@ export function SalesPlanDialog({
     targets.append(additions, { shouldFocus: false });
     toast.success(t('messages.monthsCopied', { count: additions.length }));
   };
+
+  const periodType = form.watch('periodType') as SalesPlanPeriodType;
+  const startDate = form.watch('startDate');
+  const endDate = form.watch('endDate');
+  const monthlyPeriods = useMemo(() => getMonthlyPeriods(startDate, endDate), [endDate, startDate]);
+  const salespersonOptions = useMemo(() => (targetUsersQuery.data ?? []).map((user) => ({
+    value: String(user.id),
+    label: user.fullName || user.username,
+  })), [targetUsersQuery.data]);
+
+  useEffect(() => {
+    if (!open || periodType !== SalesPlanPeriodType.Monthly || monthlyPeriods.length === 0) return;
+    if (!monthlyPeriods.includes(quickTarget.periodStart)) {
+      const nextPeriod = monthlyPeriods[0];
+      setQuickTarget((current) => ({ ...current, periodStart: nextPeriod, month: Number(nextPeriod.slice(5, 7)) }));
+    }
+  }, [monthlyPeriods, open, periodType, quickTarget.periodStart]);
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !isSaving && onOpenChange(nextOpen)}>
@@ -262,23 +324,29 @@ export function SalesPlanDialog({
           </div>
         ) : (
           <form id="sales-plan-form" onSubmit={form.handleSubmit(handleSubmit)} className="min-h-0 w-full min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
-            <div className="grid gap-4 border-b p-5 sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
+            <div className="grid gap-4 border-b p-5 sm:grid-cols-2 lg:grid-cols-6 sm:p-6">
               <div className="space-y-1.5 lg:col-span-2">
                 <Label htmlFor="sales-plan-name">{t('form.name')}</Label>
                 <Input id="sales-plan-name" maxLength={150} disabled={!editable} {...form.register('name')} />
                 {form.formState.errors.name ? <p className="text-xs text-destructive">{t('validation.name')}</p> : null}
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="sales-plan-year">{t('form.year')}</Label>
-                <Input
-                  id="sales-plan-year"
-                  type="number"
-                  min={2000}
-                  max={2100}
-                  disabled={!isCreate || !editable}
-                  {...form.register('planYear', { valueAsNumber: true })}
-                />
-                {form.formState.errors.planYear ? <p className="text-xs text-destructive">{t('validation.year')}</p> : null}
+                <Label htmlFor="sales-plan-start-date">{t('form.startDate')}</Label>
+                <Input id="sales-plan-start-date" type="date" min="2000-01-01" max="2100-12-31" disabled={!editable} {...form.register('startDate', { onChange: (event) => form.setValue('planYear', Number(String(event.target.value).slice(0, 4))) })} />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="sales-plan-end-date">{t('form.endDate')}</Label>
+                <Input id="sales-plan-end-date" type="date" min={startDate || '2000-01-01'} max="2100-12-31" disabled={!editable} {...form.register('endDate')} />
+              </div>
+              <div className="space-y-1.5">
+                <Label>{t('form.periodType')}</Label>
+                <div className="grid h-9 grid-cols-2 rounded-md border bg-muted/40 p-0.5">
+                  {[SalesPlanPeriodType.Monthly, SalesPlanPeriodType.Yearly].map((value) => (
+                    <button key={value} type="button" disabled={!editable} className={`rounded-sm px-2 text-sm transition-colors ${periodType === value ? 'bg-background font-medium text-foreground shadow-sm' : 'text-muted-foreground'}`} onClick={() => form.setValue('periodType', value, { shouldDirty: true })}>
+                      {t(value === SalesPlanPeriodType.Monthly ? 'form.monthly' : 'form.yearly')}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="sales-plan-currency">{t('form.currency')}</Label>
@@ -300,7 +368,7 @@ export function SalesPlanDialog({
                 </Select>
                 {form.formState.errors.currency ? <p className="text-xs text-destructive">{t('validation.currency')}</p> : null}
               </div>
-              <div className="space-y-1.5 sm:col-span-2 lg:col-span-4">
+              <div className="space-y-1.5 sm:col-span-2 lg:col-span-6">
                 <Label htmlFor="sales-plan-description">{t('form.description')}</Label>
                 <Textarea id="sales-plan-description" maxLength={1000} rows={2} disabled={!editable} {...form.register('description')} />
               </div>
@@ -321,28 +389,25 @@ export function SalesPlanDialog({
                 <div className="mb-4 grid items-end gap-3 rounded-lg border bg-muted/30 p-3 sm:grid-cols-2 xl:grid-cols-[minmax(200px,1.2fr)_150px_minmax(210px,1fr)_150px_auto]">
                   <div className="space-y-1.5">
                     <Label>{t('targets.salesperson')}</Label>
-                    <Select
+                    <Combobox
+                      modal
+                      options={salespersonOptions}
                       value={quickTarget.userId > 0 ? String(quickTarget.userId) : ''}
                       onValueChange={(value) => setQuickTarget((current) => ({ ...current, userId: Number(value) }))}
                       disabled={targetUsersQuery.isLoading || (targetUsersQuery.data?.length ?? 0) === 0}
-                    >
-                      <SelectTrigger className="w-full" isLoading={targetUsersQuery.isLoading}>
-                        <SelectValue placeholder={t('targets.selectSalesperson')} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(targetUsersQuery.data ?? []).map((user) => (
-                          <SelectItem key={user.id} value={String(user.id)}>{user.fullName || user.username}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                      isLoading={targetUsersQuery.isLoading}
+                      placeholder={t('targets.selectSalesperson')}
+                      searchPlaceholder={t('targets.searchSalesperson')}
+                      emptyText={t('targets.noSalespeople')}
+                    />
                   </div>
-                  <div className="space-y-1.5">
+                  {periodType === SalesPlanPeriodType.Monthly ? <div className="space-y-1.5">
                     <Label>{t('targets.month')}</Label>
-                    <Select value={String(quickTarget.month)} onValueChange={(value) => setQuickTarget((current) => ({ ...current, month: Number(value) }))}>
+                    <Select value={quickTarget.periodStart} onValueChange={(value) => setQuickTarget((current) => ({ ...current, periodStart: value, month: Number(value.slice(5, 7)) }))}>
                       <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                      <SelectContent>{Array.from({ length: 12 }, (_, month) => month + 1).map((month) => <SelectItem key={month} value={String(month)}>{getMonthLabel(month, i18n.language)}</SelectItem>)}</SelectContent>
+                      <SelectContent>{monthlyPeriods.map((value) => <SelectItem key={value} value={value}>{getMonthLabel(Number(value.slice(5, 7)), i18n.language)} {value.slice(0, 4)}</SelectItem>)}</SelectContent>
                     </Select>
-                  </div>
+                  </div> : <div className="space-y-1.5"><Label>{t('targets.period')}</Label><div className="flex h-9 items-center rounded-md border bg-muted/30 px-3 text-sm text-muted-foreground">{t('targets.fullPlanRange')}</div></div>}
                   <div className="space-y-1.5">
                     <Label>{t('targets.metric')}</Label>
                     <Select value={String(quickTarget.metric)} onValueChange={(value) => setQuickTarget((current) => ({ ...current, metric: Number(value) as SalesTargetMetric }))}>
@@ -391,29 +456,31 @@ export function SalesPlanDialog({
                       return (
                         <div key={target.id} className="grid grid-cols-[220px_140px_220px_150px_minmax(180px,1fr)_88px] items-start gap-2 border-b px-3 py-3 last:border-b-0">
                           {editable ? (
-                            <Select
+                            <Combobox
+                              modal
+                              options={salespersonOptions}
                               value={String(form.watch(`targets.${index}.userId`) || '')}
                               onValueChange={(value) => form.setValue(`targets.${index}.userId`, Number(value), { shouldDirty: true })}
                               disabled={targetUsersQuery.isLoading}
-                            >
-                              <SelectTrigger className="w-full" isLoading={targetUsersQuery.isLoading}><SelectValue placeholder={t('targets.selectSalesperson')} /></SelectTrigger>
-                              <SelectContent>
-                                {(targetUsersQuery.data ?? []).map((user) => (
-                                  <SelectItem key={user.id} value={String(user.id)}>{user.fullName || user.username}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                              isLoading={targetUsersQuery.isLoading}
+                              placeholder={t('targets.selectSalesperson')}
+                              searchPlaceholder={t('targets.searchSalesperson')}
+                              emptyText={t('targets.noSalespeople')}
+                            />
                           ) : (
                             <div className="min-h-9 px-3 py-2 text-sm">{detailTarget?.userName || '-'}</div>
                           )}
-                          <Select
-                            value={String(form.watch(`targets.${index}.month`))}
-                            onValueChange={(value) => form.setValue(`targets.${index}.month`, Number(value), { shouldDirty: true })}
+                          {periodType === SalesPlanPeriodType.Monthly ? <Select
+                            value={form.watch(`targets.${index}.periodStart`)}
+                            onValueChange={(value) => {
+                              form.setValue(`targets.${index}.periodStart`, value, { shouldDirty: true });
+                              form.setValue(`targets.${index}.month`, Number(value.slice(5, 7)), { shouldDirty: true });
+                            }}
                             disabled={!editable}
                           >
                             <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-                            <SelectContent>{Array.from({ length: 12 }, (_, month) => month + 1).map((month) => <SelectItem key={month} value={String(month)}>{getMonthLabel(month, i18n.language)}</SelectItem>)}</SelectContent>
-                          </Select>
+                            <SelectContent>{monthlyPeriods.map((value) => <SelectItem key={value} value={value}>{getMonthLabel(Number(value.slice(5, 7)), i18n.language)} {value.slice(0, 4)}</SelectItem>)}</SelectContent>
+                          </Select> : <div className="min-h-9 px-3 py-2 text-sm text-muted-foreground">{t('targets.fullPlanRange')}</div>}
                           <Select
                             value={String(form.watch(`targets.${index}.metric`))}
                             onValueChange={(value) => form.setValue(`targets.${index}.metric`, Number(value), { shouldDirty: true })}

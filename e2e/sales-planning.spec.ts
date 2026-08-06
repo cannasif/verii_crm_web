@@ -72,6 +72,24 @@ test('satış planı oluşturulur, gerçekleşme ekranında okunur, güncellenir
   expect((await dialog.boundingBox())?.width).toBeGreaterThan(900);
   await dialog.locator('#sales-plan-name').fill(planName);
   await dialog.locator('#sales-plan-description').fill('Playwright uçtan uca doğrulama kaydı');
+
+  await dialog.getByRole('button', { name: /Yıllık|Yearly/i }).click();
+  await expect(dialog.getByText(/Plan tarih aralığı|Full plan date range/i).first()).toBeVisible();
+  await dialog.getByRole('button', { name: /Aylık|Monthly/i }).click();
+
+  const salespersonCombobox = dialog.getByRole('combobox').nth(1);
+  const dialogBox = await dialog.boundingBox();
+  await salespersonCombobox.click();
+  const salespersonSearch = page.getByPlaceholder(/Satışçı ara|Search salesperson/i).first();
+  await expect(salespersonSearch).toBeVisible();
+  const dropdownBox = await salespersonSearch.locator('xpath=../..').boundingBox();
+  expect(dialogBox).not.toBeNull();
+  expect(dropdownBox).not.toBeNull();
+  expect(dropdownBox!.x).toBeGreaterThanOrEqual(dialogBox!.x);
+  expect(dropdownBox!.x + dropdownBox!.width).toBeLessThanOrEqual(dialogBox!.x + dialogBox!.width);
+  await page.screenshot({ path: testInfo.outputPath('sales-plan-salesperson-dropdown.png'), fullPage: true });
+  await page.keyboard.press('Escape');
+
   await dialog.locator('#sales-plan-quick-target-value').fill('125000.50');
   await dialog.getByRole('button', { name: /Hedef Ekle|Add Target/i }).click();
 
@@ -95,6 +113,21 @@ test('satış planı oluşturulur, gerçekleşme ekranında okunur, güncellenir
   const row = page.getByRole('row').filter({ hasText: planName });
   await expect(row).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath('sales-planning-list.png'), fullPage: true });
+
+  await page.getByRole('button', { name: /Yeni Plan|New Plan/i }).click();
+  await dialog.locator('#sales-plan-name').fill(`${planName} OVERLAP`);
+  await dialog.locator('#sales-plan-quick-target-value').fill('100');
+  await dialog.getByRole('button', { name: /Hedef Ekle|Add Target/i }).click();
+  const overlapResponsePromise = page.waitForResponse((response) =>
+    response.url().endsWith('/api/sales-plans') && response.request().method() === 'POST',
+  );
+  await dialog.getByRole('button', { name: /Planı Oluştur|Create Plan/i }).click();
+  const overlapResponse = await overlapResponsePromise;
+  expect(overlapResponse.status()).toBe(409);
+  const overlapBody = await overlapResponse.json();
+  expect(overlapBody.errorCode ?? overlapBody.ErrorCode).toBe('sales_plan_target_overlap');
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: /Kapat|Close/i }).first().click();
 
   const attainmentStartedAt = Date.now();
   const attainmentResponsePromise = page.waitForResponse((response) =>

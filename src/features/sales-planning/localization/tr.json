@@ -68,6 +68,11 @@
     "detailDescription": "Plan hedeflerini ve güncel iş akışı durumunu inceleyin.",
     "name": "Plan adı",
     "year": "Plan yılı",
+    "startDate": "Başlangıç tarihi",
+    "endDate": "Bitiş tarihi",
+    "periodType": "Plan dönemi",
+    "monthly": "Aylık",
+    "yearly": "Yıllık",
     "currency": "Para birimi",
     "selectCurrency": "Para birimi seçin",
     "description": "Açıklama"
@@ -79,6 +84,9 @@
     "noSalespeople": "Görünürlük kapsamınızda hedef atanabilecek aktif satışçı bulunamadı.",
     "salesperson": "Satışçı",
     "selectSalesperson": "Satışçı seçin",
+    "searchSalesperson": "Satışçı ara...",
+    "period": "Hedef dönemi",
+    "fullPlanRange": "Plan tarih aralığı",
     "month": "Ay",
     "metric": "KPI",
     "value": "Hedef değer",
@@ -91,7 +99,9 @@
     "currency": "ERP para birimi seçeneklerinden geçerli bir değer seçin.",
     "duplicateTarget": "Aynı satışçı, ay ve KPI bir planda yalnızca bir kez bulunabilir.",
     "wholeNumber": "Adet hedefleri tam sayı olmalıdır.",
-    "targetValue": "Geçerli bir hedef değeri girin."
+    "targetValue": "Geçerli bir hedef değeri girin.",
+    "dateRange": "Bitiş tarihi başlangıç tarihinden önce olamaz.",
+    "overlappingTarget": "Bu satışçıya aynı KPI için kesişen tarihlerde başka bir hedef zaten tanımlı."
   },
   "messages": {
     "created": "Satış planı oluşturuldu.",

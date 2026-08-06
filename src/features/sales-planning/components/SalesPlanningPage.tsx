@@ -260,7 +260,10 @@ export function SalesPlanningPage(): ReactElement {
                           <span className="block truncate text-xs text-muted-foreground">{plan.description || t('table.noDescription')}</span>
                         </button>
                       </TableCell>
-                      <TableCell><span className="font-medium tabular-nums">{plan.planYear}</span><span className="ml-2 text-xs text-muted-foreground">{currencyLabels.get(plan.currency) ?? plan.currency} · v{plan.version}</span></TableCell>
+                      <TableCell>
+                        <span className="block whitespace-nowrap font-medium tabular-nums">{dateFormatter.format(new Date(plan.startDate))} - {dateFormatter.format(new Date(plan.endDate))}</span>
+                        <span className="text-xs text-muted-foreground">{t(plan.periodType === 2 ? 'form.yearly' : 'form.monthly')} · {currencyLabels.get(plan.currency) ?? plan.currency} · v{plan.version}</span>
+                      </TableCell>
                       <TableCell><SalesPlanStatusBadge status={plan.status} /></TableCell>
                       <TableCell className="text-right tabular-nums">{plan.salespersonCount}</TableCell>
                       <TableCell className="text-right tabular-nums">{plan.targetCount}</TableCell>

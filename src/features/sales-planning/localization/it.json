@@ -68,6 +68,11 @@
     "detailDescription": "Esamina gli obiettivi e lo stato corrente del flusso di lavoro.",
     "name": "Nome piano",
     "year": "Anno del piano",
+    "startDate": "Data di inizio",
+    "endDate": "Data di fine",
+    "periodType": "Periodo del piano",
+    "monthly": "Mensile",
+    "yearly": "Annuale",
     "currency": "Valuta",
     "selectCurrency": "Seleziona valuta",
     "description": "Descrizione"
@@ -79,6 +84,9 @@
     "noSalespeople": "Nel tuo ambito di visibilità non ci sono venditori attivi a cui assegnare obiettivi.",
     "salesperson": "Venditore",
     "selectSalesperson": "Seleziona venditore",
+    "searchSalesperson": "Cerca venditore...",
+    "period": "Periodo obiettivo",
+    "fullPlanRange": "Intervallo completo del piano",
     "month": "Mese",
     "metric": "KPI",
     "value": "Valore obiettivo",
@@ -91,7 +99,9 @@
     "currency": "Seleziona un valore valido dalle opzioni valuta ERP.",
     "duplicateTarget": "La stessa combinazione di venditore, mese e KPI può comparire una sola volta.",
     "wholeNumber": "Gli obiettivi di quantità devono essere numeri interi.",
-    "targetValue": "Inserisci un valore obiettivo valido."
+    "targetValue": "Inserisci un valore obiettivo valido.",
+    "dateRange": "La data di fine non può precedere la data di inizio.",
+    "overlappingTarget": "Questo venditore ha già lo stesso KPI in un periodo sovrapposto."
   },
   "messages": {
     "created": "Piano vendite creato.",

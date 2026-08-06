@@ -7,6 +7,13 @@ export const SalesPlanStatus = {
 
 export type SalesPlanStatus = (typeof SalesPlanStatus)[keyof typeof SalesPlanStatus];
 
+export const SalesPlanPeriodType = {
+  Monthly: 1,
+  Yearly: 2,
+} as const;
+
+export type SalesPlanPeriodType = (typeof SalesPlanPeriodType)[keyof typeof SalesPlanPeriodType];
+
 export const SalesTargetMetric = {
   NetOrderAmount: 1,
   ErpOrderAmount: 2,
@@ -42,6 +49,9 @@ export interface SalesPlanSummaryDto extends SalesPlanActionAvailability {
   id: number;
   name: string;
   planYear: number;
+  startDate: string;
+  endDate: string;
+  periodType: SalesPlanPeriodType;
   currency: string;
   description?: string | null;
   version: number;
@@ -58,6 +68,8 @@ export interface SalesPlanTargetDto {
   userId: number;
   userName: string;
   month: number;
+  periodStart: string;
+  periodEnd: string;
   metric: SalesTargetMetric;
   targetValue: number;
   notes?: string | null;
@@ -67,6 +79,9 @@ export interface SalesPlanDto extends SalesPlanActionAvailability {
   id: number;
   name: string;
   planYear: number;
+  startDate: string;
+  endDate: string;
+  periodType: SalesPlanPeriodType;
   currency: string;
   description?: string | null;
   version: number;
@@ -84,6 +99,7 @@ export interface SalesPlanDto extends SalesPlanActionAvailability {
 export interface SalesPlanTargetWriteDto {
   userId: number;
   month: number;
+  periodStart?: string | null;
   metric: SalesTargetMetric;
   targetValue: number;
   notes?: string | null;
@@ -92,6 +108,9 @@ export interface SalesPlanTargetWriteDto {
 export interface CreateSalesPlanDto {
   name: string;
   planYear: number;
+  startDate: string;
+  endDate: string;
+  periodType: SalesPlanPeriodType;
   currency: string;
   description?: string | null;
   targets: SalesPlanTargetWriteDto[];
@@ -99,6 +118,9 @@ export interface CreateSalesPlanDto {
 
 export interface UpdateSalesPlanDto {
   name: string;
+  startDate: string;
+  endDate: string;
+  periodType: SalesPlanPeriodType;
   currency: string;
   description?: string | null;
   rowVersion: string;

@@ -68,6 +68,11 @@
     "detailDescription": "Revise los objetivos y el estado actual del flujo.",
     "name": "Nombre del plan",
     "year": "Año del plan",
+    "startDate": "Fecha de inicio",
+    "endDate": "Fecha de fin",
+    "periodType": "Periodo del plan",
+    "monthly": "Mensual",
+    "yearly": "Anual",
     "currency": "Moneda",
     "selectCurrency": "Seleccione una moneda",
     "description": "Descripción"
@@ -79,6 +84,9 @@
     "noSalespeople": "No hay comerciales activos disponibles en su ámbito de visibilidad.",
     "salesperson": "Comercial",
     "selectSalesperson": "Seleccione un comercial",
+    "searchSalesperson": "Buscar comercial...",
+    "period": "Periodo objetivo",
+    "fullPlanRange": "Rango completo del plan",
     "month": "Mes",
     "metric": "KPI",
     "value": "Valor objetivo",
@@ -91,7 +99,9 @@
     "currency": "Seleccione un valor válido de las opciones de moneda ERP.",
     "duplicateTarget": "La misma combinación de comercial, mes y KPI solo puede aparecer una vez.",
     "wholeNumber": "Los objetivos de cantidad deben ser números enteros.",
-    "targetValue": "Introduzca un valor objetivo válido."
+    "targetValue": "Introduzca un valor objetivo válido.",
+    "dateRange": "La fecha de fin no puede ser anterior a la fecha de inicio.",
+    "overlappingTarget": "Este comercial ya tiene el mismo KPI en un periodo solapado."
   },
   "messages": {
     "created": "Plan de ventas creado.",

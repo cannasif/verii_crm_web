@@ -68,6 +68,11 @@
     "detailDescription": "Review plan targets and the current workflow status.",
     "name": "Plan name",
     "year": "Plan year",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "periodType": "Plan period",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
     "currency": "Currency",
     "selectCurrency": "Select currency",
     "description": "Description"
@@ -79,6 +84,9 @@
     "noSalespeople": "No active salesperson is available in your visibility scope.",
     "salesperson": "Salesperson",
     "selectSalesperson": "Select salesperson",
+    "searchSalesperson": "Search salesperson...",
+    "period": "Target period",
+    "fullPlanRange": "Full plan date range",
     "month": "Month",
     "metric": "KPI",
     "value": "Target value",
@@ -91,7 +99,9 @@
     "currency": "Select a valid value from the ERP currency options.",
     "duplicateTarget": "The same salesperson, month, and KPI can occur only once in a plan.",
     "wholeNumber": "Count targets must be whole numbers.",
-    "targetValue": "Enter a valid target value."
+    "targetValue": "Enter a valid target value.",
+    "dateRange": "End date cannot be before start date.",
+    "overlappingTarget": "This salesperson already has the same KPI in an overlapping date range."
   },
   "messages": {
     "created": "Sales plan created.",

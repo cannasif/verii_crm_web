@@ -68,6 +68,11 @@
     "detailDescription": "Ziele und aktuellen Workflow-Status des Plans prüfen.",
     "name": "Planname",
     "year": "Planjahr",
+    "startDate": "Startdatum",
+    "endDate": "Enddatum",
+    "periodType": "Planzeitraum",
+    "monthly": "Monatlich",
+    "yearly": "Jährlich",
     "currency": "Währung",
     "selectCurrency": "Währung auswählen",
     "description": "Beschreibung"
@@ -79,6 +84,9 @@
     "noSalespeople": "In Ihrem Sichtbarkeitsbereich gibt es keine aktiven Vertriebsmitarbeiter für eine Zielzuweisung.",
     "salesperson": "Vertriebsmitarbeiter",
     "selectSalesperson": "Vertriebsmitarbeiter auswählen",
+    "searchSalesperson": "Vertriebsmitarbeiter suchen...",
+    "period": "Zielzeitraum",
+    "fullPlanRange": "Gesamter Planzeitraum",
     "month": "Monat",
     "metric": "KPI",
     "value": "Zielwert",
@@ -91,7 +99,9 @@
     "currency": "Wählen Sie einen gültigen Wert aus den ERP-Währungsoptionen.",
     "duplicateTarget": "Dieselbe Kombination aus Vertriebsmitarbeiter, Monat und KPI darf nur einmal vorkommen.",
     "wholeNumber": "Anzahlziele müssen ganze Zahlen sein.",
-    "targetValue": "Geben Sie einen gültigen Zielwert ein."
+    "targetValue": "Geben Sie einen gültigen Zielwert ein.",
+    "dateRange": "Das Enddatum darf nicht vor dem Startdatum liegen.",
+    "overlappingTarget": "Für diesen Vertriebsmitarbeiter ist derselbe KPI in einem überlappenden Zeitraum bereits definiert."
   },
   "messages": {
     "created": "Verkaufsplan wurde erstellt.",

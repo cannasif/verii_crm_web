@@ -98,6 +98,7 @@ export function SalesForecastPage(): ReactElement {
 
   const plansQuery = useSalesPlansQuery(year);
   const plans = useMemo(() => plansQuery.data ?? [], [plansQuery.data]);
+  const selectedPlan = plans.find((plan) => plan.id === planId);
   const forecastQuery = useSalesForecastQuery(planId, month, targetMetric);
   const { currencyOptions } = useCurrencyOptions();
   const locale = i18n.resolvedLanguage ?? i18n.language;
@@ -117,6 +118,11 @@ export function SalesForecastPage(): ReactElement {
       setPlanId(plans[0].id);
     }
   }, [planId, plans, plansQuery.isLoading]);
+
+  useEffect(() => {
+    if (!selectedPlan) return;
+    setMonth(new Date(selectedPlan.startDate).getUTCMonth() + 1);
+  }, [selectedPlan]);
 
   const currencyLabels = useMemo(
     () => new Map(currencyOptions.map((option) => [String(option.dovizTipi), option.code])),
@@ -184,10 +190,10 @@ export function SalesForecastPage(): ReactElement {
           </div>
           <div className="space-y-1.5">
             <Label>{t('filters.month')}</Label>
-            <Select value={String(month)} onValueChange={(value) => setMonth(Number(value))}>
+            {selectedPlan?.periodType === 2 ? <div className="flex h-9 items-center rounded-md border bg-muted/30 px-3 text-sm text-muted-foreground">{t('sales-planning:targets.fullPlanRange')}</div> : <Select value={String(month)} onValueChange={(value) => setMonth(Number(value))}>
               <SelectTrigger aria-label={t('filters.month')}><SelectValue /></SelectTrigger>
               <SelectContent>{Array.from({ length: 12 }, (_, index) => index + 1).map((item) => <SelectItem key={item} value={String(item)}>{monthLabel(item, locale)}</SelectItem>)}</SelectContent>
-            </Select>
+            </Select>}
           </div>
           <div className="space-y-1.5">
             <Label>{t('filters.metric')}</Label>

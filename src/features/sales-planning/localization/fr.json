@@ -68,6 +68,11 @@
     "detailDescription": "Consultez les objectifs et l'état actuel du workflow.",
     "name": "Nom du plan",
     "year": "Année du plan",
+    "startDate": "Date de début",
+    "endDate": "Date de fin",
+    "periodType": "Période du plan",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
     "currency": "Devise",
     "selectCurrency": "Sélectionner une devise",
     "description": "Description"
@@ -79,6 +84,9 @@
     "noSalespeople": "Aucun commercial actif de votre périmètre de visibilité ne peut recevoir un objectif.",
     "salesperson": "Commercial",
     "selectSalesperson": "Sélectionner un commercial",
+    "searchSalesperson": "Rechercher un commercial...",
+    "period": "Période cible",
+    "fullPlanRange": "Période complète du plan",
     "month": "Mois",
     "metric": "KPI",
     "value": "Valeur cible",
@@ -91,7 +99,9 @@
     "currency": "Sélectionnez une valeur valide parmi les devises ERP.",
     "duplicateTarget": "La même combinaison commercial, mois et KPI ne peut apparaître qu'une seule fois.",
     "wholeNumber": "Les objectifs de quantité doivent être des nombres entiers.",
-    "targetValue": "Saisissez une valeur d'objectif valide."
+    "targetValue": "Saisissez une valeur d'objectif valide.",
+    "dateRange": "La date de fin ne peut pas précéder la date de début.",
+    "overlappingTarget": "Ce commercial possède déjà le même KPI sur une période chevauchante."
   },
   "messages": {
     "created": "Plan de vente créé.",
