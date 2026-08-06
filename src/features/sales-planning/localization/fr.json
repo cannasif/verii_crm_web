@@ -14,6 +14,7 @@
     "delete": "Supprimer",
     "addTarget": "Ajouter un objectif",
     "removeTarget": "Retirer l'objectif",
+    "copyToRemainingMonths": "Copier vers les mois restants",
     "close": "Fermer",
     "create": "Créer le plan",
     "save": "Enregistrer les modifications",
@@ -89,7 +90,8 @@
     "year": "L'année du plan doit être comprise entre 2000 et 2100.",
     "currency": "Sélectionnez une valeur valide parmi les devises ERP.",
     "duplicateTarget": "La même combinaison commercial, mois et KPI ne peut apparaître qu'une seule fois.",
-    "wholeNumber": "Les objectifs de quantité doivent être des nombres entiers."
+    "wholeNumber": "Les objectifs de quantité doivent être des nombres entiers.",
+    "targetValue": "Saisissez une valeur d'objectif valide."
   },
   "messages": {
     "created": "Plan de vente créé.",
@@ -99,6 +101,8 @@
     "deleted": "Plan de vente supprimé.",
     "deleteFailed": "Impossible de supprimer le plan de vente.",
     "statusUpdated": "Statut du plan de vente mis à jour.",
+    "monthsCopied": "Objectif copié vers {{count}} mois manquants.",
+    "noMonthsToCopy": "Tous les mois existent déjà pour ce commercial et ce type d'objectif.",
     "statusFailed": "Impossible de mettre à jour le statut du plan de vente."
   },
   "errors": {
@@ -140,7 +144,8 @@
       "selectPlan": "Sélectionner un plan commercial",
       "loadingPlans": "Chargement des plans...",
       "allMetrics": "Tous les KPI",
-      "search": "Rechercher un commercial, un KPI ou une note..."
+      "search": "Rechercher un commercial, un KPI ou une note...",
+      "searchLabel": "Rechercher"
     },
     "stats": {
       "targetRows": "Lignes d'objectif",

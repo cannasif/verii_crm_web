@@ -15,6 +15,7 @@ import { ManagementListPageHeader } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -52,6 +53,7 @@ import {
   SALES_TARGET_METRICS,
 } from '../utils/sales-planning-options';
 import { SalesPlanStatusBadge } from './SalesPlanStatusBadge';
+import { SalesPlanningWorkspaceNav } from './SalesPlanningWorkspaceNav';
 
 const PROGRESS_STYLES: Record<SalesTargetProgressStatus, string> = {
   [SalesTargetProgressStatus.NoTarget]: 'border-slate-300 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200',
@@ -147,31 +149,37 @@ export function SalesPlanningPerformancePage(): ReactElement {
         backLabel={t('actions.back')}
       />
 
+      <SalesPlanningWorkspaceNav />
+
       <section className="space-y-3">
-        <div className="grid gap-3 rounded-lg border bg-background p-3 md:grid-cols-2 xl:grid-cols-[140px_minmax(260px,1fr)_180px_minmax(220px,1fr)_40px]">
-          <Select value={String(year)} onValueChange={(value) => setYear(Number(value))}>
-            <SelectTrigger aria-label={t('performance.filters.year')}><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {years.map((item) => <SelectItem key={item} value={String(item)}>{item}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={planId == null ? '' : String(planId)} onValueChange={(value) => setPlanId(Number(value))} disabled={plansQuery.isLoading || plans.length === 0}>
-            <SelectTrigger aria-label={t('performance.filters.plan')}><SelectValue placeholder={plansQuery.isLoading ? t('performance.filters.loadingPlans') : t('performance.filters.selectPlan')} /></SelectTrigger>
-            <SelectContent>
-              {plans.map((plan) => <SelectItem key={plan.id} value={String(plan.id)}>{plan.name}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={String(month)} onValueChange={(value) => setMonth(Number(value))}>
-            <SelectTrigger aria-label={t('performance.filters.month')}><SelectValue /></SelectTrigger>
-            <SelectContent>
-              {Array.from({ length: 12 }, (_, index) => index + 1).map((item) => (
-                <SelectItem key={item} value={String(item)}>{getMonthLabel(item, locale)}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <div className="relative min-w-0">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('performance.filters.search')} className="pl-9" />
+        <div className="grid items-end gap-3 rounded-lg border bg-background p-3 md:grid-cols-2 xl:grid-cols-[140px_minmax(260px,1fr)_180px_minmax(220px,1fr)_40px]">
+          <div className="space-y-1.5">
+            <Label>{t('performance.filters.year')}</Label>
+            <Select value={String(year)} onValueChange={(value) => setYear(Number(value))}>
+              <SelectTrigger aria-label={t('performance.filters.year')}><SelectValue /></SelectTrigger>
+              <SelectContent>{years.map((item) => <SelectItem key={item} value={String(item)}>{item}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>{t('performance.filters.plan')}</Label>
+            <Select value={planId == null ? '' : String(planId)} onValueChange={(value) => setPlanId(Number(value))} disabled={plansQuery.isLoading || plans.length === 0}>
+              <SelectTrigger aria-label={t('performance.filters.plan')}><SelectValue placeholder={plansQuery.isLoading ? t('performance.filters.loadingPlans') : t('performance.filters.selectPlan')} /></SelectTrigger>
+              <SelectContent>{plans.map((plan) => <SelectItem key={plan.id} value={String(plan.id)}>{plan.name}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>{t('performance.filters.month')}</Label>
+            <Select value={String(month)} onValueChange={(value) => setMonth(Number(value))}>
+              <SelectTrigger aria-label={t('performance.filters.month')}><SelectValue /></SelectTrigger>
+              <SelectContent>{Array.from({ length: 12 }, (_, index) => index + 1).map((item) => <SelectItem key={item} value={String(item)}>{getMonthLabel(item, locale)}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="sales-plan-performance-search">{t('performance.filters.searchLabel')}</Label>
+            <div className="relative min-w-0">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input id="sales-plan-performance-search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('performance.filters.search')} className="pl-9" />
+            </div>
           </div>
           <Tooltip>
             <TooltipTrigger asChild>

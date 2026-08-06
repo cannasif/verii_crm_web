@@ -14,6 +14,7 @@
     "delete": "Sil",
     "addTarget": "Hedef Ekle",
     "removeTarget": "Hedefi Kaldır",
+    "copyToRemainingMonths": "Kalan Aylara Kopyala",
     "close": "Kapat",
     "create": "Planı Oluştur",
     "save": "Değişiklikleri Kaydet",
@@ -89,7 +90,8 @@
     "year": "Plan yılı 2000 ile 2100 arasında olmalıdır.",
     "currency": "ERP para birimi seçeneklerinden geçerli bir değer seçin.",
     "duplicateTarget": "Aynı satışçı, ay ve KPI bir planda yalnızca bir kez bulunabilir.",
-    "wholeNumber": "Adet hedefleri tam sayı olmalıdır."
+    "wholeNumber": "Adet hedefleri tam sayı olmalıdır.",
+    "targetValue": "Geçerli bir hedef değeri girin."
   },
   "messages": {
     "created": "Satış planı oluşturuldu.",
@@ -99,6 +101,8 @@
     "deleted": "Satış planı silindi.",
     "deleteFailed": "Satış planı silinemedi.",
     "statusUpdated": "Satış planı durumu güncellendi.",
+    "monthsCopied": "Hedef {{count}} eksik aya kopyalandı.",
+    "noMonthsToCopy": "Bu satışçı ve hedef türü için tüm aylar zaten mevcut.",
     "statusFailed": "Satış planı durumu güncellenemedi."
   },
   "errors": {
@@ -140,7 +144,8 @@
       "selectPlan": "Satış planı seçin",
       "loadingPlans": "Planlar yükleniyor...",
       "allMetrics": "Tüm KPI'lar",
-      "search": "Satışçı, KPI veya not ara..."
+      "search": "Satışçı, KPI veya not ara...",
+      "searchLabel": "Ara"
     },
     "stats": {
       "targetRows": "Hedef satırı",

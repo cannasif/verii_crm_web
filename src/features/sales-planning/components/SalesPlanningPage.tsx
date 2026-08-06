@@ -60,6 +60,7 @@ import { SalesPlanStatus, type SalesPlanSummaryDto } from '../types/sales-planni
 import { getStatusKey, SALES_PLAN_STATUSES } from '../utils/sales-planning-options';
 import { SalesPlanDialog } from './SalesPlanDialog';
 import { SalesPlanStatusBadge } from './SalesPlanStatusBadge';
+import { SalesPlanningWorkspaceNav } from './SalesPlanningWorkspaceNav';
 
 type ConfirmAction = 'submit' | 'approve' | 'lock' | 'delete';
 
@@ -171,6 +172,8 @@ export function SalesPlanningPage(): ReactElement {
         ) : null}
       />
 
+      <SalesPlanningWorkspaceNav />
+
       <div className="grid overflow-hidden rounded-lg border bg-background sm:grid-cols-2 lg:grid-cols-4">
         {[
           { label: t('stats.plans'), value: stats.plans, icon: Target },
@@ -245,7 +248,7 @@ export function SalesPlanningPage(): ReactElement {
                     <TableHead className="text-right">{t('table.salespeople')}</TableHead>
                     <TableHead className="text-right">{t('table.targets')}</TableHead>
                     <TableHead>{t('table.updated')}</TableHead>
-                    <TableHead className="w-48 text-right">{t('table.actions')}</TableHead>
+                    <TableHead className="min-w-[320px] text-right">{t('table.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -319,13 +322,15 @@ function ActionButton({
   destructive?: boolean;
 }): ReactElement {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button type="button" variant="ghost" size="icon" className={`size-8 ${destructive ? 'text-destructive hover:text-destructive' : ''}`} onClick={onClick} aria-label={label}>
-          <Icon className="size-4" />
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
-    </Tooltip>
+    <Button
+      type="button"
+      variant="ghost"
+      size="sm"
+      className={`h-8 gap-1.5 px-2.5 ${destructive ? 'text-destructive hover:text-destructive' : ''}`}
+      onClick={onClick}
+    >
+      <Icon className="size-4" />
+      {label}
+    </Button>
   );
 }

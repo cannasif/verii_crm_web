@@ -14,6 +14,7 @@
     "delete": "Löschen",
     "addTarget": "Ziel hinzufügen",
     "removeTarget": "Ziel entfernen",
+    "copyToRemainingMonths": "In verbleibende Monate kopieren",
     "close": "Schließen",
     "create": "Plan erstellen",
     "save": "Änderungen speichern",
@@ -89,7 +90,8 @@
     "year": "Das Planjahr muss zwischen 2000 und 2100 liegen.",
     "currency": "Wählen Sie einen gültigen Wert aus den ERP-Währungsoptionen.",
     "duplicateTarget": "Dieselbe Kombination aus Vertriebsmitarbeiter, Monat und KPI darf nur einmal vorkommen.",
-    "wholeNumber": "Anzahlziele müssen ganze Zahlen sein."
+    "wholeNumber": "Anzahlziele müssen ganze Zahlen sein.",
+    "targetValue": "Geben Sie einen gültigen Zielwert ein."
   },
   "messages": {
     "created": "Verkaufsplan wurde erstellt.",
@@ -99,6 +101,8 @@
     "deleted": "Verkaufsplan wurde gelöscht.",
     "deleteFailed": "Verkaufsplan konnte nicht gelöscht werden.",
     "statusUpdated": "Status des Verkaufsplans wurde aktualisiert.",
+    "monthsCopied": "Ziel wurde in {{count}} fehlende Monate kopiert.",
+    "noMonthsToCopy": "Für diesen Vertriebsmitarbeiter und Zieltyp sind bereits alle Monate vorhanden.",
     "statusFailed": "Status des Verkaufsplans konnte nicht aktualisiert werden."
   },
   "errors": {
@@ -140,7 +144,8 @@
       "selectPlan": "Vertriebsplan auswählen",
       "loadingPlans": "Pläne werden geladen...",
       "allMetrics": "Alle KPIs",
-      "search": "Verkäufer, KPI oder Notiz suchen..."
+      "search": "Verkäufer, KPI oder Notiz suchen...",
+      "searchLabel": "Suchen"
     },
     "stats": {
       "targetRows": "Zielzeilen",

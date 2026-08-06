@@ -14,6 +14,7 @@
     "delete": "Elimina",
     "addTarget": "Aggiungi obiettivo",
     "removeTarget": "Rimuovi obiettivo",
+    "copyToRemainingMonths": "Copia nei mesi rimanenti",
     "close": "Chiudi",
     "create": "Crea piano",
     "save": "Salva modifiche",
@@ -89,7 +90,8 @@
     "year": "L'anno del piano deve essere compreso tra 2000 e 2100.",
     "currency": "Seleziona un valore valido dalle opzioni valuta ERP.",
     "duplicateTarget": "La stessa combinazione di venditore, mese e KPI può comparire una sola volta.",
-    "wholeNumber": "Gli obiettivi di quantità devono essere numeri interi."
+    "wholeNumber": "Gli obiettivi di quantità devono essere numeri interi.",
+    "targetValue": "Inserisci un valore obiettivo valido."
   },
   "messages": {
     "created": "Piano vendite creato.",
@@ -99,6 +101,8 @@
     "deleted": "Piano vendite eliminato.",
     "deleteFailed": "Impossibile eliminare il piano vendite.",
     "statusUpdated": "Stato del piano vendite aggiornato.",
+    "monthsCopied": "Obiettivo copiato in {{count}} mesi mancanti.",
+    "noMonthsToCopy": "Tutti i mesi esistono già per questo venditore e tipo di obiettivo.",
     "statusFailed": "Impossibile aggiornare lo stato del piano vendite."
   },
   "errors": {
@@ -140,7 +144,8 @@
       "selectPlan": "Seleziona un piano vendite",
       "loadingPlans": "Caricamento piani...",
       "allMetrics": "Tutti i KPI",
-      "search": "Cerca venditore, KPI o nota..."
+      "search": "Cerca venditore, KPI o nota...",
+      "searchLabel": "Cerca"
     },
     "stats": {
       "targetRows": "Righe obiettivo",

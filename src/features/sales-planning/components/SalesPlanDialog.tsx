@@ -1,9 +1,9 @@
-import { useEffect, type ReactElement } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTranslation } from 'react-i18next';
-import { Loader2, Plus, Target, Trash2 } from 'lucide-react';
+import { CopyPlus, Loader2, Plus, Target, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -60,6 +60,13 @@ const formSchema = z.object({
 
 type SalesPlanFormValues = z.infer<typeof formSchema>;
 
+interface QuickTargetValues {
+  userId: number;
+  month: number;
+  metric: SalesTargetMetric;
+  targetValue: string;
+}
+
 const EMPTY_VALUES: SalesPlanFormValues = {
   name: '',
   planYear: new Date().getFullYear(),
@@ -91,6 +98,12 @@ export function SalesPlanDialog({
   const updateMutation = useUpdateSalesPlanMutation();
   const { currencyOptions, isLoading: isCurrencyLoading } = useCurrencyOptions();
   const isSaving = createMutation.isPending || updateMutation.isPending;
+  const [quickTarget, setQuickTarget] = useState<QuickTargetValues>({
+    userId: 0,
+    month: new Date().getMonth() + 1,
+    metric: SalesTargetMetric.NetOrderAmount,
+    targetValue: '',
+  });
 
   const form = useForm<SalesPlanFormValues>({
     resolver: zodResolver(formSchema),
@@ -120,6 +133,13 @@ export function SalesPlanDialog({
       })),
     });
   }, [form, isCreate, open, plan]);
+
+  useEffect(() => {
+    if (!open || !editable) return;
+    const users = targetUsersQuery.data ?? [];
+    if (users.length === 0 || users.some((user) => user.id === quickTarget.userId)) return;
+    setQuickTarget((current) => ({ ...current, userId: users[0].id }));
+  }, [editable, open, quickTarget.userId, targetUsersQuery.data]);
 
   const handleSubmit = async (values: SalesPlanFormValues): Promise<void> => {
     const duplicateKeys = new Set<string>();
@@ -170,18 +190,53 @@ export function SalesPlanDialog({
   };
 
   const addTarget = (): void => {
-    targets.append({
-      userId: targetUsersQuery.data?.[0]?.id ?? 0,
-      month: new Date().getMonth() + 1,
-      metric: SalesTargetMetric.NetOrderAmount,
-      targetValue: 0,
-      notes: '',
-    });
+    const targetValue = Number(quickTarget.targetValue);
+    if (quickTarget.userId <= 0 || quickTarget.targetValue.trim() === '' || !Number.isFinite(targetValue) || targetValue < 0) {
+      toast.error(t('validation.targetValue'));
+      return;
+    }
+    if (COUNT_METRICS.has(quickTarget.metric) && !Number.isInteger(targetValue)) {
+      toast.error(t('validation.wholeNumber'));
+      return;
+    }
+
+    const duplicate = form.getValues('targets').some((target) =>
+      target.userId === quickTarget.userId &&
+      target.month === quickTarget.month &&
+      target.metric === quickTarget.metric,
+    );
+    if (duplicate) {
+      toast.error(t('validation.duplicateTarget'));
+      return;
+    }
+
+    targets.append({ ...quickTarget, targetValue, notes: '' });
+    setQuickTarget((current) => ({ ...current, targetValue: '' }));
+  };
+
+  const copyTargetToRemainingMonths = (index: number): void => {
+    const source = form.getValues(`targets.${index}`);
+    if (!source) return;
+    const existingMonths = new Set(
+      form.getValues('targets')
+        .filter((target) => target.userId === source.userId && target.metric === source.metric)
+        .map((target) => target.month),
+    );
+    const additions = Array.from({ length: 12 }, (_, monthIndex) => monthIndex + 1)
+      .filter((month) => !existingMonths.has(month))
+      .map((month) => ({ ...source, month }));
+
+    if (additions.length === 0) {
+      toast.info(t('messages.noMonthsToCopy'));
+      return;
+    }
+    targets.append(additions, { shouldFocus: false });
+    toast.success(t('messages.monthsCopied', { count: additions.length }));
   };
 
   return (
     <Dialog open={open} onOpenChange={(nextOpen) => !isSaving && onOpenChange(nextOpen)}>
-      <DialogContent className="flex max-h-[92dvh] w-[calc(100vw-1rem)] !max-w-[1180px] grid-rows-[auto_minmax(0,1fr)_auto] gap-0 overflow-hidden p-0 sm:w-[calc(100vw-2rem)]">
+      <DialogContent className="flex max-h-[92dvh] w-[calc(100vw-1rem)] !max-w-[1180px] flex-col gap-0 overflow-hidden p-0 sm:w-[calc(100vw-2rem)]">
         <DialogHeader className="border-b px-5 py-4 pr-14 sm:px-6">
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
@@ -206,7 +261,7 @@ export function SalesPlanDialog({
             <Button type="button" variant="outline" onClick={() => void detailQuery.refetch()}>{t('actions.retry')}</Button>
           </div>
         ) : (
-          <form id="sales-plan-form" onSubmit={form.handleSubmit(handleSubmit)} className="min-h-0 overflow-y-auto">
+          <form id="sales-plan-form" onSubmit={form.handleSubmit(handleSubmit)} className="min-h-0 w-full min-w-0 flex-1 overflow-x-hidden overflow-y-auto">
             <div className="grid gap-4 border-b p-5 sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
               <div className="space-y-1.5 lg:col-span-2">
                 <Label htmlFor="sales-plan-name">{t('form.name')}</Label>
@@ -257,13 +312,62 @@ export function SalesPlanDialog({
                   <h3 className="text-sm font-semibold text-foreground">{t('targets.title')}</h3>
                   <p className="text-xs text-muted-foreground">{t('targets.description')}</p>
                 </div>
-                {editable ? (
-                  <Button type="button" variant="outline" size="sm" onClick={addTarget} disabled={targetUsersQuery.isLoading || (targetUsersQuery.data?.length ?? 0) === 0}>
-                    {targetUsersQuery.isLoading ? <Loader2 className="size-4 animate-spin" /> : <Plus className="size-4" />}
+                <span className="rounded-md border bg-background px-2.5 py-1 text-xs font-semibold tabular-nums">
+                  {targets.fields.length} {t('stats.targets').toLocaleLowerCase(i18n.language)}
+                </span>
+              </div>
+
+              {editable ? (
+                <div className="mb-4 grid items-end gap-3 rounded-lg border bg-muted/30 p-3 sm:grid-cols-2 xl:grid-cols-[minmax(200px,1.2fr)_150px_minmax(210px,1fr)_150px_auto]">
+                  <div className="space-y-1.5">
+                    <Label>{t('targets.salesperson')}</Label>
+                    <Select
+                      value={quickTarget.userId > 0 ? String(quickTarget.userId) : ''}
+                      onValueChange={(value) => setQuickTarget((current) => ({ ...current, userId: Number(value) }))}
+                      disabled={targetUsersQuery.isLoading || (targetUsersQuery.data?.length ?? 0) === 0}
+                    >
+                      <SelectTrigger className="w-full" isLoading={targetUsersQuery.isLoading}>
+                        <SelectValue placeholder={t('targets.selectSalesperson')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(targetUsersQuery.data ?? []).map((user) => (
+                          <SelectItem key={user.id} value={String(user.id)}>{user.fullName || user.username}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>{t('targets.month')}</Label>
+                    <Select value={String(quickTarget.month)} onValueChange={(value) => setQuickTarget((current) => ({ ...current, month: Number(value) }))}>
+                      <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent>{Array.from({ length: 12 }, (_, month) => month + 1).map((month) => <SelectItem key={month} value={String(month)}>{getMonthLabel(month, i18n.language)}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>{t('targets.metric')}</Label>
+                    <Select value={String(quickTarget.metric)} onValueChange={(value) => setQuickTarget((current) => ({ ...current, metric: Number(value) as SalesTargetMetric }))}>
+                      <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
+                      <SelectContent>{SALES_TARGET_METRICS.map((metric) => <SelectItem key={metric} value={String(metric)}>{t(`metric.${getMetricKey(metric)}`)}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="sales-plan-quick-target-value">{t('targets.value')}</Label>
+                    <Input
+                      id="sales-plan-quick-target-value"
+                      type="number"
+                      min={0}
+                      step={COUNT_METRICS.has(quickTarget.metric) ? 1 : 0.01}
+                      value={quickTarget.targetValue}
+                      onChange={(event) => setQuickTarget((current) => ({ ...current, targetValue: event.target.value }))}
+                      placeholder="0"
+                    />
+                  </div>
+                  <Button type="button" onClick={addTarget} disabled={targetUsersQuery.isLoading || (targetUsersQuery.data?.length ?? 0) === 0}>
+                    <Plus className="size-4" />
                     {t('actions.addTarget')}
                   </Button>
-                ) : null}
-              </div>
+                </div>
+              ) : null}
 
               {targets.fields.length === 0 ? (
                 <div className="flex min-h-32 items-center justify-center rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
@@ -274,7 +378,7 @@ export function SalesPlanDialog({
               ) : (
                 <div className="overflow-x-auto rounded-lg border">
                   <div className="min-w-[980px]">
-                    <div className="grid grid-cols-[220px_140px_220px_150px_minmax(180px,1fr)_48px] gap-2 border-b bg-muted/50 px-3 py-2 text-xs font-semibold text-muted-foreground">
+                    <div className="grid grid-cols-[220px_140px_220px_150px_minmax(180px,1fr)_88px] gap-2 border-b bg-muted/50 px-3 py-2 text-xs font-semibold text-muted-foreground">
                       <span>{t('targets.salesperson')}</span>
                       <span>{t('targets.month')}</span>
                       <span>{t('targets.metric')}</span>
@@ -285,7 +389,7 @@ export function SalesPlanDialog({
                     {targets.fields.map((target, index) => {
                       const detailTarget = plan?.targets[index];
                       return (
-                        <div key={target.id} className="grid grid-cols-[220px_140px_220px_150px_minmax(180px,1fr)_48px] items-start gap-2 border-b px-3 py-3 last:border-b-0">
+                        <div key={target.id} className="grid grid-cols-[220px_140px_220px_150px_minmax(180px,1fr)_88px] items-start gap-2 border-b px-3 py-3 last:border-b-0">
                           {editable ? (
                             <Select
                               value={String(form.watch(`targets.${index}.userId`) || '')}
@@ -318,17 +422,27 @@ export function SalesPlanDialog({
                             <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                             <SelectContent>{SALES_TARGET_METRICS.map((metric) => <SelectItem key={metric} value={String(metric)}>{t(`metric.${getMetricKey(metric)}`)}</SelectItem>)}</SelectContent>
                           </Select>
-                          <Input type="number" min={0} step="0.000001" disabled={!editable} {...form.register(`targets.${index}.targetValue`, { valueAsNumber: true })} />
+                          <Input type="number" min={0} step={COUNT_METRICS.has(form.watch(`targets.${index}.metric`) as SalesTargetMetric) ? 1 : 0.01} disabled={!editable} {...form.register(`targets.${index}.targetValue`, { valueAsNumber: true })} />
                           <Input maxLength={500} disabled={!editable} {...form.register(`targets.${index}.notes`)} />
                           {editable ? (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button type="button" variant="ghost" size="icon" className="size-9 text-destructive" onClick={() => targets.remove(index)} aria-label={t('actions.removeTarget')}>
-                                  <Trash2 className="size-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>{t('actions.removeTarget')}</TooltipContent>
-                            </Tooltip>
+                            <div className="flex items-center gap-1">
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button type="button" variant="ghost" size="icon" className="size-9" onClick={() => copyTargetToRemainingMonths(index)} aria-label={t('actions.copyToRemainingMonths')}>
+                                    <CopyPlus className="size-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>{t('actions.copyToRemainingMonths')}</TooltipContent>
+                              </Tooltip>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button type="button" variant="ghost" size="icon" className="size-9 text-destructive" onClick={() => targets.remove(index)} aria-label={t('actions.removeTarget')}>
+                                    <Trash2 className="size-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>{t('actions.removeTarget')}</TooltipContent>
+                              </Tooltip>
+                            </div>
                           ) : <span />}
                         </div>
                       );

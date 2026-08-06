@@ -18,6 +18,7 @@ import { ManagementListPageHeader } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -37,9 +38,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { hasPermission } from '@/features/access-control/utils/hasPermission';
-import {
-  SalesTargetMetric,
-} from '@/features/sales-planning';
+import { SalesPlanningWorkspaceNav, SalesTargetMetric } from '@/features/sales-planning';
 import { useSalesPlansQuery } from '@/features/sales-planning/hooks/useSalesPlanning';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useUIStore } from '@/stores/ui-store';
@@ -165,27 +164,41 @@ export function SalesForecastPage(): ReactElement {
         backLabel={t('actions.back')}
       />
 
+      <SalesPlanningWorkspaceNav />
+
       <section className="space-y-3">
-        <div className="grid gap-3 rounded-lg border bg-background p-3 md:grid-cols-2 xl:grid-cols-[140px_minmax(260px,1fr)_180px_240px_40px]">
-          <Select value={String(year)} onValueChange={(value) => setYear(Number(value))}>
-            <SelectTrigger aria-label={t('filters.year')}><SelectValue /></SelectTrigger>
-            <SelectContent>{years.map((item) => <SelectItem key={item} value={String(item)}>{item}</SelectItem>)}</SelectContent>
-          </Select>
-          <Select value={planId == null ? '' : String(planId)} onValueChange={(value) => setPlanId(Number(value))} disabled={plansQuery.isLoading || plans.length === 0}>
-            <SelectTrigger aria-label={t('filters.plan')}><SelectValue placeholder={plansQuery.isLoading ? t('filters.loadingPlans') : t('filters.selectPlan')} /></SelectTrigger>
-            <SelectContent>{plans.map((plan) => <SelectItem key={plan.id} value={String(plan.id)}>{plan.name}</SelectItem>)}</SelectContent>
-          </Select>
-          <Select value={String(month)} onValueChange={(value) => setMonth(Number(value))}>
-            <SelectTrigger aria-label={t('filters.month')}><SelectValue /></SelectTrigger>
-            <SelectContent>{Array.from({ length: 12 }, (_, index) => index + 1).map((item) => <SelectItem key={item} value={String(item)}>{monthLabel(item, locale)}</SelectItem>)}</SelectContent>
-          </Select>
-          <Select value={String(targetMetric)} onValueChange={(value) => setTargetMetric(Number(value) as SalesTargetMetric)}>
-            <SelectTrigger aria-label={t('filters.metric')}><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value={String(SalesTargetMetric.NetOrderAmount)}>{t('metric.netOrderAmount')}</SelectItem>
-              <SelectItem value={String(SalesTargetMetric.ErpOrderAmount)}>{t('metric.erpOrderAmount')}</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="grid items-end gap-3 rounded-lg border bg-background p-3 md:grid-cols-2 xl:grid-cols-[140px_minmax(260px,1fr)_180px_240px_40px]">
+          <div className="space-y-1.5">
+            <Label>{t('filters.year')}</Label>
+            <Select value={String(year)} onValueChange={(value) => setYear(Number(value))}>
+              <SelectTrigger aria-label={t('filters.year')}><SelectValue /></SelectTrigger>
+              <SelectContent>{years.map((item) => <SelectItem key={item} value={String(item)}>{item}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>{t('filters.plan')}</Label>
+            <Select value={planId == null ? '' : String(planId)} onValueChange={(value) => setPlanId(Number(value))} disabled={plansQuery.isLoading || plans.length === 0}>
+              <SelectTrigger aria-label={t('filters.plan')}><SelectValue placeholder={plansQuery.isLoading ? t('filters.loadingPlans') : t('filters.selectPlan')} /></SelectTrigger>
+              <SelectContent>{plans.map((plan) => <SelectItem key={plan.id} value={String(plan.id)}>{plan.name}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>{t('filters.month')}</Label>
+            <Select value={String(month)} onValueChange={(value) => setMonth(Number(value))}>
+              <SelectTrigger aria-label={t('filters.month')}><SelectValue /></SelectTrigger>
+              <SelectContent>{Array.from({ length: 12 }, (_, index) => index + 1).map((item) => <SelectItem key={item} value={String(item)}>{monthLabel(item, locale)}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1.5">
+            <Label>{t('filters.metric')}</Label>
+            <Select value={String(targetMetric)} onValueChange={(value) => setTargetMetric(Number(value) as SalesTargetMetric)}>
+              <SelectTrigger aria-label={t('filters.metric')}><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={String(SalesTargetMetric.NetOrderAmount)}>{t('metric.netOrderAmount')}</SelectItem>
+                <SelectItem value={String(SalesTargetMetric.ErpOrderAmount)}>{t('metric.erpOrderAmount')}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button variant="outline" size="icon" className="size-10" onClick={() => void forecastQuery.refetch()} disabled={!planId || forecastQuery.isFetching} aria-label={t('actions.refresh')}>

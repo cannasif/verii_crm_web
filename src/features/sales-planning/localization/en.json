@@ -14,6 +14,7 @@
     "delete": "Delete",
     "addTarget": "Add Target",
     "removeTarget": "Remove Target",
+    "copyToRemainingMonths": "Copy to Remaining Months",
     "close": "Close",
     "create": "Create Plan",
     "save": "Save Changes",
@@ -89,7 +90,8 @@
     "year": "Plan year must be between 2000 and 2100.",
     "currency": "Select a valid value from the ERP currency options.",
     "duplicateTarget": "The same salesperson, month, and KPI can occur only once in a plan.",
-    "wholeNumber": "Count targets must be whole numbers."
+    "wholeNumber": "Count targets must be whole numbers.",
+    "targetValue": "Enter a valid target value."
   },
   "messages": {
     "created": "Sales plan created.",
@@ -99,6 +101,8 @@
     "deleted": "Sales plan deleted.",
     "deleteFailed": "Sales plan could not be deleted.",
     "statusUpdated": "Sales plan status updated.",
+    "monthsCopied": "Target copied to {{count}} missing months.",
+    "noMonthsToCopy": "All months already exist for this salesperson and target type.",
     "statusFailed": "Sales plan status could not be updated."
   },
   "errors": {
@@ -140,7 +144,8 @@
       "selectPlan": "Select a sales plan",
       "loadingPlans": "Loading plans...",
       "allMetrics": "All KPIs",
-      "search": "Search salesperson, KPI, or note..."
+      "search": "Search salesperson, KPI, or note...",
+      "searchLabel": "Search"
     },
     "stats": {
       "targetRows": "Target rows",
