@@ -48,7 +48,8 @@ import {
 import {
   COUNT_METRICS,
   getMetricKey,
-  getMonthLabel,
+  getMonthlyPeriods,
+  getMonthPeriodLabel,
   getProgressStatusKey,
   SALES_TARGET_METRICS,
 } from '../utils/sales-planning-options';
@@ -76,16 +77,20 @@ export function SalesPlanningPerformancePage(): ReactElement {
   const setPageTitle = useUIStore((state) => state.setPageTitle);
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [periodStart, setPeriodStart] = useState(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`);
   const [planId, setPlanId] = useState<number | null>(null);
   const [metric, setMetric] = useState<SalesTargetMetric | 'all'>('all');
   const [search, setSearch] = useState('');
 
   const plansQuery = useSalesPlansQuery(year);
-  const attainmentQuery = useSalesPlanAttainmentQuery(planId, month);
+  const attainmentQuery = useSalesPlanAttainmentQuery(planId, periodStart);
   const { currencyOptions } = useCurrencyOptions();
   const plans = useMemo(() => plansQuery.data ?? [], [plansQuery.data]);
   const selectedPlan = plans.find((plan) => plan.id === planId);
+  const availablePeriods = useMemo(
+    () => selectedPlan ? getMonthlyPeriods(selectedPlan.startDate, selectedPlan.endDate) : [],
+    [selectedPlan],
+  );
 
   useEffect(() => {
     setPageTitle(t('performance.title'));
@@ -105,8 +110,10 @@ export function SalesPlanningPerformancePage(): ReactElement {
 
   useEffect(() => {
     if (!selectedPlan) return;
-    setMonth(new Date(selectedPlan.startDate).getUTCMonth() + 1);
-  }, [selectedPlan]);
+    setPeriodStart(selectedPlan.periodType === 2
+      ? selectedPlan.startDate.slice(0, 10)
+      : (availablePeriods[0] ?? selectedPlan.startDate.slice(0, 10)));
+  }, [availablePeriods, selectedPlan]);
 
   const currencyLabels = useMemo(
     () => new Map(currencyOptions.map((option) => [String(option.dovizTipi), option.code])),
@@ -175,9 +182,9 @@ export function SalesPlanningPerformancePage(): ReactElement {
           </div>
           <div className="space-y-1.5">
             <Label>{t('performance.filters.month')}</Label>
-            {selectedPlan?.periodType === 2 ? <div className="flex h-9 items-center rounded-md border bg-muted/30 px-3 text-sm text-muted-foreground">{t('targets.fullPlanRange')}</div> : <Select value={String(month)} onValueChange={(value) => setMonth(Number(value))}>
+            {selectedPlan?.periodType === 2 ? <div className="flex h-9 items-center rounded-md border bg-muted/30 px-3 text-sm text-muted-foreground">{t('targets.fullPlanRange')}</div> : <Select value={periodStart} onValueChange={setPeriodStart}>
               <SelectTrigger aria-label={t('performance.filters.month')}><SelectValue /></SelectTrigger>
-              <SelectContent>{Array.from({ length: 12 }, (_, index) => index + 1).map((item) => <SelectItem key={item} value={String(item)}>{getMonthLabel(item, locale)}</SelectItem>)}</SelectContent>
+              <SelectContent>{availablePeriods.map((item) => <SelectItem key={item} value={item}>{getMonthPeriodLabel(item, locale)}</SelectItem>)}</SelectContent>
             </Select>}
           </div>
           <div className="space-y-1.5">
@@ -212,7 +219,7 @@ export function SalesPlanningPerformancePage(): ReactElement {
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border bg-background px-4 py-3 text-sm">
               <span className="font-semibold">{data.planName}</span>
               <SalesPlanStatusBadge status={data.planStatus} />
-              <span className="text-muted-foreground">{getMonthLabel(data.month, locale)} {data.planYear}</span>
+              <span className="text-muted-foreground">{getMonthPeriodLabel(data.periodStart, locale)}</span>
               <span className="text-muted-foreground">{t('performance.labels.currency')}: <strong className="text-foreground">{currencyLabel}</strong></span>
               <span className="ml-auto text-xs text-muted-foreground">{t('performance.labels.generatedAt')}: {dateTimeFormatter.format(new Date(data.generatedAt))}</span>
             </div>

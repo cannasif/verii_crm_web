@@ -17,13 +17,14 @@ function unwrap<T>(response: ApiResponse<T | null>, fallbackMessage: string): T 
 export const salesForecastApi = {
   get: async (
     planId: number,
-    month: number,
+    periodStart: string,
     targetMetric: SalesTargetMetric,
     signal?: AbortSignal,
   ): Promise<SalesForecastDto> => {
+    const date = new Date(`${periodStart.slice(0, 10)}T00:00:00Z`);
     const response = await api.get<ApiResponse<SalesForecastDto | null>>(
       `/api/sales-forecasts/plans/${planId}`,
-      { params: { month, targetMetric }, signal },
+      { params: { month: date.getUTCMonth() + 1, year: date.getUTCFullYear(), targetMetric }, signal },
     );
     return unwrap(response, 'Satış tahmini yüklenemedi.');
   },

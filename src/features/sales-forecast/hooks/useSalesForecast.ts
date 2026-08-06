@@ -7,19 +7,19 @@ import type { UpsertSalesForecastOverrideDto } from '../types/sales-forecast.typ
 
 export const salesForecastQueryKeys = {
   all: ['sales-forecast'] as const,
-  detail: (planId: number | null, month: number, targetMetric: SalesTargetMetric) =>
-    ['sales-forecast', planId ?? 0, month, targetMetric] as const,
+  detail: (planId: number | null, periodStart: string, targetMetric: SalesTargetMetric) =>
+    ['sales-forecast', planId ?? 0, periodStart, targetMetric] as const,
 };
 
 export function useSalesForecastQuery(
   planId: number | null,
-  month: number,
+  periodStart: string,
   targetMetric: SalesTargetMetric,
 ) {
   return useQuery({
-    queryKey: salesForecastQueryKeys.detail(planId, month, targetMetric),
-    queryFn: ({ signal }) => salesForecastApi.get(planId!, month, targetMetric, signal),
-    enabled: planId != null && planId > 0 && month >= 1 && month <= 12,
+    queryKey: salesForecastQueryKeys.detail(planId, periodStart, targetMetric),
+    queryFn: ({ signal }) => salesForecastApi.get(planId!, periodStart, targetMetric, signal),
+    enabled: planId != null && planId > 0 && /^\d{4}-\d{2}-\d{2}$/.test(periodStart),
     staleTime: 60_000,
   });
 }

@@ -38,7 +38,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { hasPermission } from '@/features/access-control/utils/hasPermission';
-import { SalesPlanningWorkspaceNav, SalesTargetMetric } from '@/features/sales-planning';
+import { getMonthlyPeriods, getMonthPeriodLabel, SalesPlanningWorkspaceNav, SalesTargetMetric } from '@/features/sales-planning';
 import { useSalesPlansQuery } from '@/features/sales-planning/hooks/useSalesPlanning';
 import { useCurrencyOptions } from '@/services/hooks/useCurrencyOptions';
 import { useUIStore } from '@/stores/ui-store';
@@ -78,10 +78,6 @@ const QUOTATION_STATUS_KEYS: Record<number, string> = {
   7: 'superseded',
 };
 
-function monthLabel(month: number, locale: string): string {
-  return new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(2020, month - 1, 1));
-}
-
 export function SalesForecastPage(): ReactElement {
   const { t, i18n } = useTranslation('sales-forecast');
   const setPageTitle = useUIStore((state) => state.setPageTitle);
@@ -90,7 +86,7 @@ export function SalesForecastPage(): ReactElement {
   const canOpenQuotation = hasPermission(permissions, 'sales.quotations.update');
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [periodStart, setPeriodStart] = useState(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`);
   const [planId, setPlanId] = useState<number | null>(null);
   const [targetMetric, setTargetMetric] = useState<SalesTargetMetric>(SalesTargetMetric.NetOrderAmount);
   const [search, setSearch] = useState('');
@@ -99,7 +95,11 @@ export function SalesForecastPage(): ReactElement {
   const plansQuery = useSalesPlansQuery(year);
   const plans = useMemo(() => plansQuery.data ?? [], [plansQuery.data]);
   const selectedPlan = plans.find((plan) => plan.id === planId);
-  const forecastQuery = useSalesForecastQuery(planId, month, targetMetric);
+  const availablePeriods = useMemo(
+    () => selectedPlan ? getMonthlyPeriods(selectedPlan.startDate, selectedPlan.endDate) : [],
+    [selectedPlan],
+  );
+  const forecastQuery = useSalesForecastQuery(planId, periodStart, targetMetric);
   const { currencyOptions } = useCurrencyOptions();
   const locale = i18n.resolvedLanguage ?? i18n.language;
 
@@ -121,8 +121,10 @@ export function SalesForecastPage(): ReactElement {
 
   useEffect(() => {
     if (!selectedPlan) return;
-    setMonth(new Date(selectedPlan.startDate).getUTCMonth() + 1);
-  }, [selectedPlan]);
+    setPeriodStart(selectedPlan.periodType === 2
+      ? selectedPlan.startDate.slice(0, 10)
+      : (availablePeriods[0] ?? selectedPlan.startDate.slice(0, 10)));
+  }, [availablePeriods, selectedPlan]);
 
   const currencyLabels = useMemo(
     () => new Map(currencyOptions.map((option) => [String(option.dovizTipi), option.code])),
@@ -190,9 +192,9 @@ export function SalesForecastPage(): ReactElement {
           </div>
           <div className="space-y-1.5">
             <Label>{t('filters.month')}</Label>
-            {selectedPlan?.periodType === 2 ? <div className="flex h-9 items-center rounded-md border bg-muted/30 px-3 text-sm text-muted-foreground">{t('sales-planning:targets.fullPlanRange')}</div> : <Select value={String(month)} onValueChange={(value) => setMonth(Number(value))}>
+            {selectedPlan?.periodType === 2 ? <div className="flex h-9 items-center rounded-md border bg-muted/30 px-3 text-sm text-muted-foreground">{t('sales-planning:targets.fullPlanRange')}</div> : <Select value={periodStart} onValueChange={setPeriodStart}>
               <SelectTrigger aria-label={t('filters.month')}><SelectValue /></SelectTrigger>
-              <SelectContent>{Array.from({ length: 12 }, (_, index) => index + 1).map((item) => <SelectItem key={item} value={String(item)}>{monthLabel(item, locale)}</SelectItem>)}</SelectContent>
+              <SelectContent>{availablePeriods.map((item) => <SelectItem key={item} value={item}>{getMonthPeriodLabel(item, locale)}</SelectItem>)}</SelectContent>
             </Select>}
           </div>
           <div className="space-y-1.5">
@@ -230,7 +232,7 @@ export function SalesForecastPage(): ReactElement {
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border bg-background px-4 py-3 text-sm">
               <span className="font-semibold">{data.planName}</span>
               <Badge variant="outline" className={cn('rounded-md', HEALTH_STYLES[data.summary.healthStatus])}>{t(`health.${HEALTH_KEYS[data.summary.healthStatus]}`)}</Badge>
-              <span className="text-muted-foreground">{monthLabel(data.month, locale)} {data.planYear}</span>
+              <span className="text-muted-foreground">{getMonthPeriodLabel(data.periodStart, locale)}</span>
               <span className="text-muted-foreground">{t('labels.currency')}: <strong className="text-foreground">{currencyLabel}</strong></span>
               <span className="ml-auto text-xs text-muted-foreground">{t('labels.generatedAt')}: {dateTimeFormatter.format(new Date(data.generatedAt))}</span>
             </div>

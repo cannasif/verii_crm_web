@@ -29,10 +29,11 @@ export const salesPlanningApi = {
     return unwrap(response, 'Satış planı yüklenemedi.');
   },
 
-  getAttainment: async (id: number, month: number, signal?: AbortSignal): Promise<SalesPlanAttainmentDto> => {
+  getAttainment: async (id: number, periodStart: string, signal?: AbortSignal): Promise<SalesPlanAttainmentDto> => {
+    const date = new Date(`${periodStart.slice(0, 10)}T00:00:00Z`);
     const response = await api.get<ApiResponse<SalesPlanAttainmentDto | null>>(
       `/api/sales-plans/${id}/attainment`,
-      { params: { month }, signal },
+      { params: { month: date.getUTCMonth() + 1, year: date.getUTCFullYear() }, signal },
     );
     return unwrap(response, 'Satış hedefi gerçekleşmeleri yüklenemedi.');
   },

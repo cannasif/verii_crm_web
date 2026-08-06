@@ -46,3 +46,23 @@ export function getProgressStatusKey(status: SalesTargetProgressStatus): string 
 export function getMonthLabel(month: number, locale: string): string {
   return new Intl.DateTimeFormat(locale, { month: 'long' }).format(new Date(Date.UTC(2027, month - 1, 1)));
 }
+
+export function getMonthlyPeriods(startDate: string, endDate: string): string[] {
+  if (!startDate || !endDate || startDate > endDate) return [];
+  const start = new Date(`${startDate.slice(0, 10)}T00:00:00Z`);
+  const end = new Date(`${endDate.slice(0, 10)}T00:00:00Z`);
+  const cursor = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 1));
+  const result: string[] = [];
+
+  while (cursor <= end && result.length < 120) {
+    result.push(cursor.toISOString().slice(0, 10));
+    cursor.setUTCMonth(cursor.getUTCMonth() + 1);
+  }
+
+  return result;
+}
+
+export function getMonthPeriodLabel(periodStart: string, locale: string): string {
+  const date = new Date(`${periodStart.slice(0, 10)}T00:00:00Z`);
+  return new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(date);
+}

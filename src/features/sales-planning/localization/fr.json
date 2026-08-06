@@ -101,6 +101,8 @@
     "wholeNumber": "Les objectifs de quantité doivent être des nombres entiers.",
     "targetValue": "Saisissez une valeur d'objectif valide.",
     "dateRange": "La date de fin ne peut pas précéder la date de début.",
+    "targetOutsideDateRange": "Certains mois cibles sont hors de la période du plan. Rétablissez les dates ou supprimez ces lignes cibles.",
+    "removeTargetsBeforePeriodChange": "Les objectifs mensuels et annuels ont des significations différentes. Supprimez les lignes cibles avant de changer le type de période.",
     "overlappingTarget": "Ce commercial possède déjà le même KPI sur une période chevauchante."
   },
   "messages": {

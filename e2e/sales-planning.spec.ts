@@ -77,6 +77,16 @@ test('satış planı oluşturulur, gerçekleşme ekranında okunur, güncellenir
   await expect(dialog.getByText(/Plan tarih aralığı|Full plan date range/i).first()).toBeVisible();
   await dialog.getByRole('button', { name: /Aylık|Monthly/i }).click();
 
+  const currentYear = new Date().getFullYear();
+  await dialog.locator('#sales-plan-start-date').fill(`${currentYear}-10-01`);
+  await dialog.locator('#sales-plan-end-date').fill(`${currentYear + 1}-03-31`);
+  await dialog.getByRole('combobox').nth(2).click();
+  await expect(page.getByRole('option')).toHaveCount(6);
+  await expect(page.getByRole('option', { name: new RegExp(String(currentYear + 1)) }).first()).toBeVisible();
+  await page.keyboard.press('Escape');
+  await dialog.locator('#sales-plan-start-date').fill(`${currentYear}-01-01`);
+  await dialog.locator('#sales-plan-end-date').fill(`${currentYear}-12-31`);
+
   const salespersonCombobox = dialog.getByRole('combobox').nth(1);
   const dialogBox = await dialog.boundingBox();
   await salespersonCombobox.click();
@@ -92,12 +102,18 @@ test('satış planı oluşturulur, gerçekleşme ekranında okunur, güncellenir
 
   await dialog.locator('#sales-plan-quick-target-value').fill('125000.50');
   await dialog.getByRole('button', { name: /Hedef Ekle|Add Target/i }).click();
+  await dialog.getByRole('button', { name: /Yıllık|Yearly/i }).click();
+  await expect(dialog.getByRole('button', { name: /Kalan Aylara Kopyala|Copy to Remaining Months/i })).toBeVisible();
 
   const targetRow = dialog.locator('input[name="targets.0.targetValue"]').locator('..');
   await dialog.locator('input[name="targets.0.notes"]').fill('Aylık net sipariş hedefi');
   await expect(targetRow).toBeVisible();
   await dialog.getByRole('button', { name: /Kalan Aylara Kopyala|Copy to Remaining Months/i }).first().click();
   await expect(dialog.locator('input[name$=".targetValue"]')).toHaveCount(12);
+  await dialog.locator('#sales-plan-end-date').fill(`${currentYear}-06-30`);
+  await dialog.getByRole('button', { name: /Planı Oluştur|Create Plan/i }).click();
+  await expect(page.getByText(/plan tarih aralığının dışında|outside the plan date range/i)).toBeVisible();
+  await dialog.locator('#sales-plan-end-date').fill(`${currentYear}-12-31`);
   await page.screenshot({ path: testInfo.outputPath('sales-plan-guided-targets.png'), fullPage: true });
 
   const createResponsePromise = page.waitForResponse((response) =>
@@ -141,6 +157,7 @@ test('satış planı oluşturulur, gerçekleşme ekranında okunur, güncellenir
     attainmentResponse.ok(),
     `Hedef gerçekleşme isteği ${attainmentResponse.status()} döndü: ${await attainmentResponse.text()}`,
   ).toBeTruthy();
+  expect(new URL(attainmentResponse.url()).searchParams.get('year')).toMatch(/^\d{4}$/);
   expect(Date.now() - attainmentStartedAt).toBeLessThan(10_000);
   await expect(page.getByRole('heading', { name: /Hedef Gerçekleşmeleri|Target Attainment/i })).toBeVisible();
   const performancePlanSelect = page.getByRole('combobox', { name: /Satış planı|Sales plan/i });
@@ -174,6 +191,7 @@ test('satış planı oluşturulur, gerçekleşme ekranında okunur, güncellenir
     forecastResponse.ok(),
     `Satış tahmini isteği ${forecastResponse.status()} döndü: ${await forecastResponse.text()}`,
   ).toBeTruthy();
+  expect(new URL(forecastResponse.url()).searchParams.get('year')).toMatch(/^\d{4}$/);
   expect(Date.now() - forecastStartedAt).toBeLessThan(10_000);
   await expect(page.getByRole('heading', { name: /Satış Tahmini ve Pipeline Coverage|Sales Forecast and Pipeline Coverage/i })).toBeVisible();
   const forecastPlanSelect = page.getByRole('combobox', { name: /Satış planı|Sales plan/i });

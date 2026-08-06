@@ -13,7 +13,7 @@ export const salesPlanningQueryKeys = {
   all: ['sales-planning'] as const,
   list: (year?: number, status?: SalesPlanStatus) => ['sales-planning', 'list', year ?? 'all', status ?? 'all'] as const,
   detail: (id: number | null) => ['sales-planning', 'detail', id ?? 0] as const,
-  attainment: (id: number | null, month: number) => ['sales-planning', 'attainment', id ?? 0, month] as const,
+  attainment: (id: number | null, periodStart: string) => ['sales-planning', 'attainment', id ?? 0, periodStart] as const,
   targetUsers: ['sales-planning', 'target-users'] as const,
 };
 
@@ -34,11 +34,11 @@ export function useSalesPlanDetailQuery(id: number | null, enabled = true) {
   });
 }
 
-export function useSalesPlanAttainmentQuery(id: number | null, month: number, enabled = true) {
+export function useSalesPlanAttainmentQuery(id: number | null, periodStart: string, enabled = true) {
   return useQuery({
-    queryKey: salesPlanningQueryKeys.attainment(id, month),
-    queryFn: ({ signal }) => salesPlanningApi.getAttainment(id!, month, signal),
-    enabled: enabled && id != null && id > 0 && month >= 1 && month <= 12,
+    queryKey: salesPlanningQueryKeys.attainment(id, periodStart),
+    queryFn: ({ signal }) => salesPlanningApi.getAttainment(id!, periodStart, signal),
+    enabled: enabled && id != null && id > 0 && /^\d{4}-\d{2}-\d{2}$/.test(periodStart),
     staleTime: 60_000,
   });
 }

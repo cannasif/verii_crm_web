@@ -39,6 +39,7 @@ import {
   COUNT_METRICS,
   getMetricKey,
   getMonthLabel,
+  getMonthlyPeriods,
   SALES_TARGET_METRICS,
 } from '../utils/sales-planning-options';
 import { SalesPlanStatusBadge } from './SalesPlanStatusBadge';
@@ -87,19 +88,6 @@ const EMPTY_VALUES: SalesPlanFormValues = {
 
 function toDateInput(value: string): string {
   return value.slice(0, 10);
-}
-
-function getMonthlyPeriods(startDate: string, endDate: string): string[] {
-  if (!startDate || !endDate || startDate > endDate) return [];
-  const start = new Date(`${startDate}T00:00:00Z`);
-  const end = new Date(`${endDate}T00:00:00Z`);
-  const cursor = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth(), 1));
-  const result: string[] = [];
-  while (cursor <= end && result.length < 120) {
-    result.push(cursor.toISOString().slice(0, 10));
-    cursor.setUTCMonth(cursor.getUTCMonth() + 1);
-  }
-  return result;
 }
 
 interface SalesPlanDialogProps {
@@ -178,6 +166,12 @@ export function SalesPlanDialog({
       toast.error(t('validation.dateRange'));
       return;
     }
+    const allowedMonthlyPeriods = new Set(getMonthlyPeriods(values.startDate, values.endDate));
+    if (values.periodType === SalesPlanPeriodType.Monthly &&
+        values.targets.some((target) => !allowedMonthlyPeriods.has(target.periodStart))) {
+      toast.error(t('validation.targetOutsideDateRange'));
+      return;
+    }
     const duplicateKeys = new Set<string>();
     for (const target of values.targets) {
       const key = `${target.userId}:${values.periodType === SalesPlanPeriodType.Yearly ? values.startDate : target.periodStart}:${target.metric}`;
@@ -242,9 +236,11 @@ export function SalesPlanDialog({
       return;
     }
 
+    const periodType = form.getValues('periodType');
+    const periodStart = periodType === SalesPlanPeriodType.Yearly ? form.getValues('startDate') : quickTarget.periodStart;
     const duplicate = form.getValues('targets').some((target) =>
       target.userId === quickTarget.userId &&
-      target.periodStart === quickTarget.periodStart &&
+      target.periodStart === periodStart &&
       target.metric === quickTarget.metric,
     );
     if (duplicate) {
@@ -252,8 +248,6 @@ export function SalesPlanDialog({
       return;
     }
 
-    const periodType = form.getValues('periodType');
-    const periodStart = periodType === SalesPlanPeriodType.Yearly ? form.getValues('startDate') : quickTarget.periodStart;
     targets.append({ ...quickTarget, periodStart, month: Number(periodStart.slice(5, 7)), targetValue, notes: '' });
     setQuickTarget((current) => ({ ...current, targetValue: '' }));
   };
@@ -287,6 +281,15 @@ export function SalesPlanDialog({
     value: String(user.id),
     label: user.fullName || user.username,
   })), [targetUsersQuery.data]);
+
+  const changePeriodType = (value: SalesPlanPeriodType): void => {
+    if (value === periodType) return;
+    if (form.getValues('targets').length > 0) {
+      toast.info(t('validation.removeTargetsBeforePeriodChange'));
+      return;
+    }
+    form.setValue('periodType', value, { shouldDirty: true, shouldValidate: true });
+  };
 
   useEffect(() => {
     if (!open || periodType !== SalesPlanPeriodType.Monthly || monthlyPeriods.length === 0) return;
@@ -342,7 +345,7 @@ export function SalesPlanDialog({
                 <Label>{t('form.periodType')}</Label>
                 <div className="grid h-9 grid-cols-2 rounded-md border bg-muted/40 p-0.5">
                   {[SalesPlanPeriodType.Monthly, SalesPlanPeriodType.Yearly].map((value) => (
-                    <button key={value} type="button" disabled={!editable} className={`rounded-sm px-2 text-sm transition-colors ${periodType === value ? 'bg-background font-medium text-foreground shadow-sm' : 'text-muted-foreground'}`} onClick={() => form.setValue('periodType', value, { shouldDirty: true })}>
+                    <button key={value} type="button" disabled={!editable} className={`rounded-sm px-2 text-sm transition-colors ${periodType === value ? 'bg-background font-medium text-foreground shadow-sm' : 'text-muted-foreground'}`} onClick={() => changePeriodType(value)}>
                       {t(value === SalesPlanPeriodType.Monthly ? 'form.monthly' : 'form.yearly')}
                     </button>
                   ))}
@@ -493,14 +496,14 @@ export function SalesPlanDialog({
                           <Input maxLength={500} disabled={!editable} {...form.register(`targets.${index}.notes`)} />
                           {editable ? (
                             <div className="flex items-center gap-1">
-                              <Tooltip>
+                              {periodType === SalesPlanPeriodType.Monthly ? <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button type="button" variant="ghost" size="icon" className="size-9" onClick={() => copyTargetToRemainingMonths(index)} aria-label={t('actions.copyToRemainingMonths')}>
                                     <CopyPlus className="size-4" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>{t('actions.copyToRemainingMonths')}</TooltipContent>
-                              </Tooltip>
+                              </Tooltip> : null}
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button type="button" variant="ghost" size="icon" className="size-9 text-destructive" onClick={() => targets.remove(index)} aria-label={t('actions.removeTarget')}>

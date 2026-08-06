@@ -101,6 +101,8 @@
     "wholeNumber": "Count targets must be whole numbers.",
     "targetValue": "Enter a valid target value.",
     "dateRange": "End date cannot be before start date.",
+    "targetOutsideDateRange": "Some target months fall outside the plan date range. Restore the dates or remove those target rows.",
+    "removeTargetsBeforePeriodChange": "Monthly and yearly targets have different meanings. Remove existing target rows before changing the period type.",
     "overlappingTarget": "This salesperson already has the same KPI in an overlapping date range."
   },
   "messages": {

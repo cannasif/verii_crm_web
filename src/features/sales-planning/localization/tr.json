@@ -101,6 +101,8 @@
     "wholeNumber": "Adet hedefleri tam sayı olmalıdır.",
     "targetValue": "Geçerli bir hedef değeri girin.",
     "dateRange": "Bitiş tarihi başlangıç tarihinden önce olamaz.",
+    "targetOutsideDateRange": "Bazı hedef ayları plan tarih aralığının dışında. Tarihleri geri alın veya ilgili hedef satırlarını kaldırın.",
+    "removeTargetsBeforePeriodChange": "Aylık ve yıllık hedeflerin anlamı farklıdır. Dönem tipini değiştirmeden önce mevcut hedef satırlarını kaldırın.",
     "overlappingTarget": "Bu satışçıya aynı KPI için kesişen tarihlerde başka bir hedef zaten tanımlı."
   },
   "messages": {

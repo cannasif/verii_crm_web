@@ -101,6 +101,8 @@
     "wholeNumber": "Gli obiettivi di quantità devono essere numeri interi.",
     "targetValue": "Inserisci un valore obiettivo valido.",
     "dateRange": "La data di fine non può precedere la data di inizio.",
+    "targetOutsideDateRange": "Alcuni mesi obiettivo sono fuori dall'intervallo del piano. Ripristina le date o rimuovi le righe interessate.",
+    "removeTargetsBeforePeriodChange": "Gli obiettivi mensili e annuali hanno significati diversi. Rimuovi le righe obiettivo prima di cambiare il tipo di periodo.",
     "overlappingTarget": "Questo venditore ha già lo stesso KPI in un periodo sovrapposto."
   },
   "messages": {

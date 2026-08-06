@@ -101,6 +101,8 @@
     "wholeNumber": "Anzahlziele müssen ganze Zahlen sein.",
     "targetValue": "Geben Sie einen gültigen Zielwert ein.",
     "dateRange": "Das Enddatum darf nicht vor dem Startdatum liegen.",
+    "targetOutsideDateRange": "Einige Zielmonate liegen außerhalb des Planzeitraums. Stellen Sie die Daten wieder her oder entfernen Sie diese Zielzeilen.",
+    "removeTargetsBeforePeriodChange": "Monatliche und jährliche Ziele haben unterschiedliche Bedeutungen. Entfernen Sie vorhandene Zielzeilen, bevor Sie den Periodentyp ändern.",
     "overlappingTarget": "Für diesen Vertriebsmitarbeiter ist derselbe KPI in einem überlappenden Zeitraum bereits definiert."
   },
   "messages": {
