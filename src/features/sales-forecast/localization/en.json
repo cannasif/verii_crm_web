@@ -1,0 +1,123 @@
+{
+  "title": "Sales Forecast and Pipeline Coverage",
+  "description": "Track how open quotations contribute to targets, expected closure, and the sales gap.",
+  "actions": {
+    "back": "Back",
+    "refresh": "Refresh",
+    "retry": "Try again",
+    "openQuotation": "Open quotation",
+    "adjust": "Adjust forecast",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "filters": {
+    "year": "Year",
+    "plan": "Sales plan",
+    "loadingPlans": "Loading plans...",
+    "selectPlan": "Select a plan",
+    "month": "Month",
+    "metric": "Target KPI",
+    "search": "Search quotation, customer, or salesperson..."
+  },
+  "metric": {
+    "netOrderAmount": "Net order amount",
+    "erpOrderAmount": "ERP order amount"
+  },
+  "health": {
+    "noTarget": "No target",
+    "achieved": "Target achieved",
+    "onTrack": "On track",
+    "atRisk": "At risk",
+    "critical": "Critical gap"
+  },
+  "labels": {
+    "currency": "Currency",
+    "generatedAt": "Calculated"
+  },
+  "summary": {
+    "target": "Target",
+    "actual": "Actual",
+    "weightedForecast": "Weighted forecast",
+    "gap": "Sales gap",
+    "grossPipeline": "Gross pipeline",
+    "weightedPipeline": "Weighted pipeline",
+    "coverage": "Gross coverage",
+    "weightedCoverage": "Weighted coverage",
+    "openQuotes": "{{count}} open quotations",
+    "manualOverrides": "{{count}} manual adjustments",
+    "grossCoverage": "Gross ratio against remaining target",
+    "expectedCoverage": "Expected ratio against remaining target"
+  },
+  "salespeople": {
+    "title": "Salesperson forecasts",
+    "description": "Expected target attainment is calculated for each salesperson.",
+    "salesperson": "Salesperson",
+    "status": "Forecast status",
+    "winRate": "180-day win rate"
+  },
+  "pipeline": {
+    "title": "Open quotation pipeline",
+    "description": "Quotations expected to close in this month that have not converted to orders.",
+    "quotation": "Quotation",
+    "customer": "Customer",
+    "salesperson": "Salesperson",
+    "amount": "Amount",
+    "probability": "Probability",
+    "weighted": "Weighted amount",
+    "closeDate": "Expected close",
+    "risk": "Risk",
+    "actions": "Actions",
+    "offerDate": "Quotation date",
+    "manual": "Manual",
+    "calculated": "Calculated",
+    "inferred": "Estimated date",
+    "expired": "Expired",
+    "stale": "Open for too long",
+    "noRisk": "No warning"
+  },
+  "quotationStatus": {
+    "notStarted": "Not started",
+    "waiting": "Awaiting approval",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "closed": "Closed",
+    "customerCancelled": "Cancelled by customer",
+    "revisionClosed": "Closed for revision",
+    "superseded": "Superseded by revision"
+  },
+  "override": {
+    "title": "Forecast adjustment",
+    "description": "Update the expected closure of quotation {{documentNumber}}.",
+    "suggestedProbability": "Suggested probability",
+    "historicalWinRate": "Win rate",
+    "suggestedCloseDate": "Suggested date",
+    "expectedCloseDate": "Expected close date",
+    "probability": "Close probability (%)",
+    "notes": "Forecast note",
+    "notesPlaceholder": "Add the reason for this adjustment...",
+    "reset": "Use calculated values",
+    "resetConfirmTitle": "Remove the manual adjustment?",
+    "resetConfirmDescription": "The system will calculate the probability and date again.",
+    "resetConfirm": "Remove adjustment"
+  },
+  "messages": {
+    "overrideSaved": "Forecast adjustment saved.",
+    "overrideSaveFailed": "Forecast adjustment could not be saved.",
+    "overrideDeleted": "Manual adjustment removed.",
+    "overrideDeleteFailed": "Manual adjustment could not be removed."
+  },
+  "errors": {
+    "plans": "Sales plans could not be loaded.",
+    "forecast": "Sales forecast could not be loaded."
+  },
+  "empty": {
+    "noPlansTitle": "No sales plan for this year",
+    "noPlansDescription": "Create monthly sales targets before calculating a forecast.",
+    "selectPlanTitle": "Select a sales plan",
+    "selectPlanDescription": "Forecast and coverage are calculated from the selected plan.",
+    "noTargetsTitle": "No target for this KPI",
+    "noTargetsDescription": "No salesperson target exists for the selected month and KPI.",
+    "noPipelineTitle": "No open quotations for this month",
+    "noPipelineDescription": "No eligible open quotation is expected to close in the selected month."
+  }
+}

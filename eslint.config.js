@@ -37,4 +37,10 @@ export default tseslint.config(
       'no-case-declarations': 'warn',
     },
   },
+  {
+    files: ['playwright.config.ts', 'e2e/**/*.ts'],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
 )

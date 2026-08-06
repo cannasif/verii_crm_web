@@ -1,0 +1,190 @@
+{
+  "title": "Planification des ventes",
+  "description": "Préparez les objectifs mensuels, soumettez-les à approbation et verrouillez-les de manière contrôlée.",
+  "actions": {
+    "back": "Retour",
+    "newPlan": "Nouveau plan",
+    "refresh": "Actualiser",
+    "retry": "Réessayer",
+    "view": "Afficher",
+    "edit": "Modifier",
+    "submit": "Soumettre à approbation",
+    "approve": "Approuver",
+    "lock": "Verrouiller",
+    "delete": "Supprimer",
+    "addTarget": "Ajouter un objectif",
+    "removeTarget": "Retirer l'objectif",
+    "close": "Fermer",
+    "create": "Créer le plan",
+    "save": "Enregistrer les modifications",
+    "cancel": "Annuler",
+    "continue": "Continuer"
+  },
+  "status": {
+    "draft": "Brouillon",
+    "submitted": "En attente d'approbation",
+    "approved": "Approuvé",
+    "locked": "Verrouillé"
+  },
+  "metric": {
+    "netOrderAmount": "Montant net des commandes",
+    "erpOrderAmount": "Montant des commandes ERP",
+    "netQuotationAmount": "Montant net des devis",
+    "quotationCount": "Nombre de devis",
+    "orderCount": "Nombre de commandes",
+    "newCustomerCount": "Nombre de nouveaux clients",
+    "completedActivityCount": "Activités terminées"
+  },
+  "stats": {
+    "plans": "Plans visibles",
+    "targets": "Lignes d'objectif",
+    "salespeople": "Affectations commerciales",
+    "awaitingApproval": "En attente d'approbation"
+  },
+  "filters": {
+    "search": "Rechercher par nom, description ou devise...",
+    "allYears": "Toutes les années",
+    "allStatuses": "Tous les statuts"
+  },
+  "table": {
+    "plan": "Plan",
+    "period": "Période",
+    "status": "Statut",
+    "salespeople": "Commerciaux",
+    "targets": "Objectifs",
+    "updated": "Dernière modification",
+    "actions": "Actions",
+    "noDescription": "Aucune description saisie"
+  },
+  "empty": {
+    "title": "Aucun plan de vente trouvé",
+    "description": "Aucun plan ne correspond aux filtres. Si vous êtes autorisé, vous pouvez créer un nouveau brouillon."
+  },
+  "form": {
+    "createTitle": "Nouveau plan de vente",
+    "createDescription": "Préparez le titre du plan et les objectifs mensuels des commerciaux.",
+    "detailTitle": "Détail du plan de vente",
+    "detailDescription": "Consultez les objectifs et l'état actuel du workflow.",
+    "name": "Nom du plan",
+    "year": "Année du plan",
+    "currency": "Devise",
+    "selectCurrency": "Sélectionner une devise",
+    "description": "Description"
+  },
+  "targets": {
+    "title": "Objectifs mensuels",
+    "description": "Chaque combinaison commercial, mois et KPI ne peut être ajoutée qu'une seule fois.",
+    "empty": "Ce brouillon ne contient encore aucun objectif.",
+    "noSalespeople": "Aucun commercial actif de votre périmètre de visibilité ne peut recevoir un objectif.",
+    "salesperson": "Commercial",
+    "selectSalesperson": "Sélectionner un commercial",
+    "month": "Mois",
+    "metric": "KPI",
+    "value": "Valeur cible",
+    "notes": "Note",
+    "actions": "Actions"
+  },
+  "validation": {
+    "name": "Le nom du plan doit contenir entre 3 et 150 caractères.",
+    "year": "L'année du plan doit être comprise entre 2000 et 2100.",
+    "currency": "Sélectionnez une valeur valide parmi les devises ERP.",
+    "duplicateTarget": "La même combinaison commercial, mois et KPI ne peut apparaître qu'une seule fois.",
+    "wholeNumber": "Les objectifs de quantité doivent être des nombres entiers."
+  },
+  "messages": {
+    "created": "Plan de vente créé.",
+    "createFailed": "Impossible de créer le plan de vente.",
+    "updated": "Plan de vente mis à jour.",
+    "updateFailed": "Impossible de mettre à jour le plan de vente.",
+    "deleted": "Plan de vente supprimé.",
+    "deleteFailed": "Impossible de supprimer le plan de vente.",
+    "statusUpdated": "Statut du plan de vente mis à jour.",
+    "statusFailed": "Impossible de mettre à jour le statut du plan de vente."
+  },
+  "errors": {
+    "list": "Impossible de charger les plans de vente. Vérifiez votre connexion et réessayez.",
+    "detail": "Impossible de charger le détail du plan de vente."
+  },
+  "confirm": {
+    "reason": "Note d'opération",
+    "reasonPlaceholder": "Explication facultative...",
+    "submit": {
+      "title": "Soumettre le plan à approbation",
+      "description": "Le plan {{name}} sera fermé à la modification et envoyé pour approbation.",
+      "confirm": "Soumettre à approbation"
+    },
+    "approve": {
+      "title": "Approuver le plan",
+      "description": "Confirmez que vous approuvez les objectifs du plan {{name}}.",
+      "confirm": "Approuver"
+    },
+    "lock": {
+      "title": "Verrouiller le plan",
+      "description": "Le plan {{name}} ne pourra plus être modifié après son verrouillage.",
+      "confirm": "Verrouiller"
+    },
+    "delete": {
+      "title": "Supprimer le brouillon",
+      "description": "Le plan {{name}} sera retiré de la liste. L'opération restera dans le journal d'audit.",
+      "confirm": "Supprimer le brouillon"
+    }
+  },
+  "performance": {
+    "title": "Réalisation des objectifs",
+    "description": "Comparez les objectifs commerciaux mensuels aux résultats CRM et identifiez rapidement les écarts.",
+    "filters": {
+      "year": "Année du plan",
+      "plan": "Plan commercial",
+      "month": "Mois",
+      "metric": "Filtre KPI",
+      "selectPlan": "Sélectionner un plan commercial",
+      "loadingPlans": "Chargement des plans...",
+      "allMetrics": "Tous les KPI",
+      "search": "Rechercher un commercial, un KPI ou une note..."
+    },
+    "stats": {
+      "targetRows": "Lignes d'objectif",
+      "salespeople": "Commerciaux",
+      "achieved": "Objectifs atteints",
+      "needsAttention": "À surveiller"
+    },
+    "metricSummary": {
+      "title": "Résumé des KPI",
+      "description": "Chaque KPI est évalué dans sa propre unité. Sélectionnez un KPI pour filtrer le tableau."
+    },
+    "table": {
+      "title": "Détail des objectifs commerciaux",
+      "salesperson": "Commercial",
+      "kpi": "KPI",
+      "target": "Objectif",
+      "actual": "Réalisé",
+      "remaining": "Restant",
+      "progress": "Progression",
+      "status": "Statut",
+      "noNotes": "Aucune note"
+    },
+    "labels": {
+      "currency": "Devise",
+      "expectedProgress": "Attendu",
+      "generatedAt": "Calculé"
+    },
+    "progressStatus": {
+      "noTarget": "Sans objectif",
+      "notStarted": "Non commencé",
+      "atRisk": "À risque",
+      "onTrack": "Dans les temps",
+      "achieved": "Atteint"
+    },
+    "empty": {
+      "noPlansTitle": "Aucun plan commercial pour cette année",
+      "noPlansDescription": "Créez d'abord un plan commercial pour l'année sélectionnée.",
+      "selectPlanTitle": "Sélectionnez un plan commercial",
+      "selectPlanDescription": "Sélectionnez un plan ci-dessus pour afficher les objectifs mensuels et les résultats.",
+      "noTargetsTitle": "Aucun objectif pour ce filtre",
+      "noTargetsDescription": "Aucune ligne ne correspond au mois, au KPI ou aux critères de recherche sélectionnés."
+    },
+    "errors": {
+      "attainment": "La réalisation des objectifs n'a pas pu être chargée. Veuillez réessayer."
+    }
+  }
+}

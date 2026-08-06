@@ -31,6 +31,9 @@ export const ROUTE_PERMISSION_MAP: Record<string, string> = {
   '/orders/erp': 'sales.erp-orders.view',
   '/orders/:id': 'sales.orders.update',
   '/sales/erp-cleanup-logs': 'sales-documents.erp-cleanup-delete',
+  '/sales-planning': 'sales-planning.view',
+  '/sales-planning/performance': 'sales-planning.view',
+  '/sales-planning/forecast': 'sales-forecast.view',
 
   '/customer-management': 'customers.customer-management.view',
   '/customers/conflict-inbox': 'customers.conflict-inbox.view',
@@ -144,6 +147,8 @@ export const PATH_TO_PERMISSION_PATTERNS: Array<{ pattern: RegExp; permission: s
   { pattern: /^\/orders\/[^/]+(\/|$)/, permission: 'sales.orders.update' },
   { pattern: /^\/orders(\/|$)/, permission: 'sales.orders.view' },
   { pattern: /^\/sales\/erp-cleanup-logs(\/|$)/, permission: 'sales-documents.erp-cleanup-delete' },
+  { pattern: /^\/sales-planning\/forecast(\/|$)/, permission: 'sales-forecast.view' },
+  { pattern: /^\/sales-planning(\/|$)/, permission: 'sales-planning.view' },
 
   { pattern: /^\/customer-management(\/|$)/, permission: 'customers.customer-management.view' },
   { pattern: /^\/customers\/conflict-inbox(\/|$)/, permission: 'customers.conflict-inbox.view' },

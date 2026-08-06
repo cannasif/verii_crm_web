@@ -1,0 +1,190 @@
+{
+  "title": "Pianificazione vendite",
+  "description": "Prepara gli obiettivi mensili, inviali per l'approvazione e bloccali in modo controllato.",
+  "actions": {
+    "back": "Indietro",
+    "newPlan": "Nuovo piano",
+    "refresh": "Aggiorna",
+    "retry": "Riprova",
+    "view": "Visualizza",
+    "edit": "Modifica",
+    "submit": "Invia per approvazione",
+    "approve": "Approva",
+    "lock": "Blocca",
+    "delete": "Elimina",
+    "addTarget": "Aggiungi obiettivo",
+    "removeTarget": "Rimuovi obiettivo",
+    "close": "Chiudi",
+    "create": "Crea piano",
+    "save": "Salva modifiche",
+    "cancel": "Annulla",
+    "continue": "Continua"
+  },
+  "status": {
+    "draft": "Bozza",
+    "submitted": "In attesa di approvazione",
+    "approved": "Approvato",
+    "locked": "Bloccato"
+  },
+  "metric": {
+    "netOrderAmount": "Importo netto ordini",
+    "erpOrderAmount": "Importo ordini ERP",
+    "netQuotationAmount": "Importo netto preventivi",
+    "quotationCount": "Numero preventivi",
+    "orderCount": "Numero ordini",
+    "newCustomerCount": "Numero nuovi clienti",
+    "completedActivityCount": "Attività completate"
+  },
+  "stats": {
+    "plans": "Piani visibili",
+    "targets": "Righe obiettivo",
+    "salespeople": "Assegnazioni venditori",
+    "awaitingApproval": "In attesa di approvazione"
+  },
+  "filters": {
+    "search": "Cerca per nome, descrizione o valuta...",
+    "allYears": "Tutti gli anni",
+    "allStatuses": "Tutti gli stati"
+  },
+  "table": {
+    "plan": "Piano",
+    "period": "Periodo",
+    "status": "Stato",
+    "salespeople": "Venditori",
+    "targets": "Obiettivi",
+    "updated": "Ultima modifica",
+    "actions": "Azioni",
+    "noDescription": "Nessuna descrizione inserita"
+  },
+  "empty": {
+    "title": "Nessun piano vendite trovato",
+    "description": "Nessun piano corrisponde ai filtri selezionati. Se autorizzato, puoi creare una nuova bozza."
+  },
+  "form": {
+    "createTitle": "Nuovo piano vendite",
+    "createDescription": "Prepara il titolo del piano e gli obiettivi mensili dei venditori.",
+    "detailTitle": "Dettaglio piano vendite",
+    "detailDescription": "Esamina gli obiettivi e lo stato corrente del flusso di lavoro.",
+    "name": "Nome piano",
+    "year": "Anno del piano",
+    "currency": "Valuta",
+    "selectCurrency": "Seleziona valuta",
+    "description": "Descrizione"
+  },
+  "targets": {
+    "title": "Obiettivi mensili",
+    "description": "Ogni combinazione di venditore, mese e KPI può essere aggiunta una sola volta.",
+    "empty": "Questa bozza non contiene ancora righe obiettivo.",
+    "noSalespeople": "Nel tuo ambito di visibilità non ci sono venditori attivi a cui assegnare obiettivi.",
+    "salesperson": "Venditore",
+    "selectSalesperson": "Seleziona venditore",
+    "month": "Mese",
+    "metric": "KPI",
+    "value": "Valore obiettivo",
+    "notes": "Nota",
+    "actions": "Azioni"
+  },
+  "validation": {
+    "name": "Il nome del piano deve contenere da 3 a 150 caratteri.",
+    "year": "L'anno del piano deve essere compreso tra 2000 e 2100.",
+    "currency": "Seleziona un valore valido dalle opzioni valuta ERP.",
+    "duplicateTarget": "La stessa combinazione di venditore, mese e KPI può comparire una sola volta.",
+    "wholeNumber": "Gli obiettivi di quantità devono essere numeri interi."
+  },
+  "messages": {
+    "created": "Piano vendite creato.",
+    "createFailed": "Impossibile creare il piano vendite.",
+    "updated": "Piano vendite aggiornato.",
+    "updateFailed": "Impossibile aggiornare il piano vendite.",
+    "deleted": "Piano vendite eliminato.",
+    "deleteFailed": "Impossibile eliminare il piano vendite.",
+    "statusUpdated": "Stato del piano vendite aggiornato.",
+    "statusFailed": "Impossibile aggiornare lo stato del piano vendite."
+  },
+  "errors": {
+    "list": "Impossibile caricare i piani vendite. Controlla la connessione e riprova.",
+    "detail": "Impossibile caricare il dettaglio del piano vendite."
+  },
+  "confirm": {
+    "reason": "Nota operazione",
+    "reasonPlaceholder": "Spiegazione facoltativa...",
+    "submit": {
+      "title": "Invia il piano per approvazione",
+      "description": "Il piano {{name}} sarà chiuso alle modifiche e inviato per l'approvazione.",
+      "confirm": "Invia per approvazione"
+    },
+    "approve": {
+      "title": "Approva il piano",
+      "description": "Conferma di approvare gli obiettivi del piano {{name}}.",
+      "confirm": "Approva"
+    },
+    "lock": {
+      "title": "Blocca il piano",
+      "description": "Il piano {{name}} non potrà più essere modificato dopo il blocco.",
+      "confirm": "Blocca"
+    },
+    "delete": {
+      "title": "Elimina bozza",
+      "description": "Il piano {{name}} sarà rimosso dall'elenco. L'operazione resterà nel registro di audit.",
+      "confirm": "Elimina bozza"
+    }
+  },
+  "performance": {
+    "title": "Raggiungimento obiettivi",
+    "description": "Confronta gli obiettivi di vendita mensili con i risultati CRM e individua subito gli scostamenti.",
+    "filters": {
+      "year": "Anno del piano",
+      "plan": "Piano vendite",
+      "month": "Mese",
+      "metric": "Filtro KPI",
+      "selectPlan": "Seleziona un piano vendite",
+      "loadingPlans": "Caricamento piani...",
+      "allMetrics": "Tutti i KPI",
+      "search": "Cerca venditore, KPI o nota..."
+    },
+    "stats": {
+      "targetRows": "Righe obiettivo",
+      "salespeople": "Venditori",
+      "achieved": "Obiettivi raggiunti",
+      "needsAttention": "Da monitorare"
+    },
+    "metricSummary": {
+      "title": "Riepilogo KPI",
+      "description": "Ogni KPI viene valutato nella propria unità. Seleziona un KPI per filtrare la tabella."
+    },
+    "table": {
+      "title": "Dettaglio obiettivi venditori",
+      "salesperson": "Venditore",
+      "kpi": "KPI",
+      "target": "Obiettivo",
+      "actual": "Consuntivo",
+      "remaining": "Rimanente",
+      "progress": "Avanzamento",
+      "status": "Stato",
+      "noNotes": "Nessuna nota"
+    },
+    "labels": {
+      "currency": "Valuta",
+      "expectedProgress": "Atteso",
+      "generatedAt": "Calcolato"
+    },
+    "progressStatus": {
+      "noTarget": "Nessun obiettivo",
+      "notStarted": "Non iniziato",
+      "atRisk": "A rischio",
+      "onTrack": "In linea",
+      "achieved": "Raggiunto"
+    },
+    "empty": {
+      "noPlansTitle": "Nessun piano vendite per quest'anno",
+      "noPlansDescription": "Crea prima un piano vendite per l'anno selezionato.",
+      "selectPlanTitle": "Seleziona un piano vendite",
+      "selectPlanDescription": "Seleziona un piano sopra per vedere obiettivi mensili e risultati.",
+      "noTargetsTitle": "Nessun obiettivo per questo filtro",
+      "noTargetsDescription": "Nessuna riga corrisponde al mese, KPI o criterio di ricerca selezionato."
+    },
+    "errors": {
+      "attainment": "Impossibile caricare il raggiungimento degli obiettivi. Riprova."
+    }
+  }
+}

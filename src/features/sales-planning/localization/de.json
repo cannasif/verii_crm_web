@@ -1,0 +1,190 @@
+{
+  "title": "Verkaufsplanung",
+  "description": "Monatliche Verkaufsziele vorbereiten, zur Genehmigung senden und kontrolliert sperren.",
+  "actions": {
+    "back": "Zurück",
+    "newPlan": "Neuer Plan",
+    "refresh": "Aktualisieren",
+    "retry": "Erneut versuchen",
+    "view": "Anzeigen",
+    "edit": "Bearbeiten",
+    "submit": "Zur Genehmigung senden",
+    "approve": "Genehmigen",
+    "lock": "Sperren",
+    "delete": "Löschen",
+    "addTarget": "Ziel hinzufügen",
+    "removeTarget": "Ziel entfernen",
+    "close": "Schließen",
+    "create": "Plan erstellen",
+    "save": "Änderungen speichern",
+    "cancel": "Abbrechen",
+    "continue": "Fortfahren"
+  },
+  "status": {
+    "draft": "Entwurf",
+    "submitted": "Genehmigung ausstehend",
+    "approved": "Genehmigt",
+    "locked": "Gesperrt"
+  },
+  "metric": {
+    "netOrderAmount": "Netto-Auftragswert",
+    "erpOrderAmount": "ERP-Auftragswert",
+    "netQuotationAmount": "Netto-Angebotswert",
+    "quotationCount": "Anzahl Angebote",
+    "orderCount": "Anzahl Aufträge",
+    "newCustomerCount": "Anzahl Neukunden",
+    "completedActivityCount": "Abgeschlossene Aktivitäten"
+  },
+  "stats": {
+    "plans": "Sichtbare Pläne",
+    "targets": "Zielzeilen",
+    "salespeople": "Vertriebszuweisungen",
+    "awaitingApproval": "Warten auf Genehmigung"
+  },
+  "filters": {
+    "search": "Nach Planname, Beschreibung oder Währung suchen...",
+    "allYears": "Alle Jahre",
+    "allStatuses": "Alle Status"
+  },
+  "table": {
+    "plan": "Plan",
+    "period": "Zeitraum",
+    "status": "Status",
+    "salespeople": "Vertrieb",
+    "targets": "Ziele",
+    "updated": "Letzte Änderung",
+    "actions": "Aktionen",
+    "noDescription": "Keine Beschreibung eingegeben"
+  },
+  "empty": {
+    "title": "Kein Verkaufsplan gefunden",
+    "description": "Für die gewählten Filter gibt es keinen Plan. Mit entsprechender Berechtigung können Sie einen Entwurf erstellen."
+  },
+  "form": {
+    "createTitle": "Neuer Verkaufsplan",
+    "createDescription": "Planüberschrift und monatliche Ziele für Vertriebsmitarbeiter vorbereiten.",
+    "detailTitle": "Verkaufsplandetails",
+    "detailDescription": "Ziele und aktuellen Workflow-Status des Plans prüfen.",
+    "name": "Planname",
+    "year": "Planjahr",
+    "currency": "Währung",
+    "selectCurrency": "Währung auswählen",
+    "description": "Beschreibung"
+  },
+  "targets": {
+    "title": "Monatliche Ziele",
+    "description": "Jede Kombination aus Vertriebsmitarbeiter, Monat und KPI darf nur einmal vorkommen.",
+    "empty": "Dieser Entwurf enthält noch keine Zielzeile.",
+    "noSalespeople": "In Ihrem Sichtbarkeitsbereich gibt es keine aktiven Vertriebsmitarbeiter für eine Zielzuweisung.",
+    "salesperson": "Vertriebsmitarbeiter",
+    "selectSalesperson": "Vertriebsmitarbeiter auswählen",
+    "month": "Monat",
+    "metric": "KPI",
+    "value": "Zielwert",
+    "notes": "Notiz",
+    "actions": "Aktionen"
+  },
+  "validation": {
+    "name": "Der Planname muss zwischen 3 und 150 Zeichen lang sein.",
+    "year": "Das Planjahr muss zwischen 2000 und 2100 liegen.",
+    "currency": "Wählen Sie einen gültigen Wert aus den ERP-Währungsoptionen.",
+    "duplicateTarget": "Dieselbe Kombination aus Vertriebsmitarbeiter, Monat und KPI darf nur einmal vorkommen.",
+    "wholeNumber": "Anzahlziele müssen ganze Zahlen sein."
+  },
+  "messages": {
+    "created": "Verkaufsplan wurde erstellt.",
+    "createFailed": "Verkaufsplan konnte nicht erstellt werden.",
+    "updated": "Verkaufsplan wurde aktualisiert.",
+    "updateFailed": "Verkaufsplan konnte nicht aktualisiert werden.",
+    "deleted": "Verkaufsplan wurde gelöscht.",
+    "deleteFailed": "Verkaufsplan konnte nicht gelöscht werden.",
+    "statusUpdated": "Status des Verkaufsplans wurde aktualisiert.",
+    "statusFailed": "Status des Verkaufsplans konnte nicht aktualisiert werden."
+  },
+  "errors": {
+    "list": "Verkaufspläne konnten nicht geladen werden. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+    "detail": "Verkaufsplandetails konnten nicht geladen werden."
+  },
+  "confirm": {
+    "reason": "Vorgangsnotiz",
+    "reasonPlaceholder": "Optionale Erklärung...",
+    "submit": {
+      "title": "Plan zur Genehmigung senden",
+      "description": "Der Plan {{name}} wird für die Bearbeitung geschlossen und zur Genehmigung eingereicht.",
+      "confirm": "Zur Genehmigung senden"
+    },
+    "approve": {
+      "title": "Plan genehmigen",
+      "description": "Bestätigen Sie, dass Sie die Ziele im Plan {{name}} genehmigen.",
+      "confirm": "Genehmigen"
+    },
+    "lock": {
+      "title": "Plan sperren",
+      "description": "Der Plan {{name}} kann nach dem Sperren nicht mehr geändert werden.",
+      "confirm": "Sperren"
+    },
+    "delete": {
+      "title": "Entwurf löschen",
+      "description": "Der Plan {{name}} wird aus der Liste entfernt. Der Vorgang bleibt im Auditprotokoll erhalten.",
+      "confirm": "Entwurf löschen"
+    }
+  },
+  "performance": {
+    "title": "Zielerreichung",
+    "description": "Vergleichen Sie monatliche Vertriebsziele mit CRM-Ergebnissen und erkennen Sie Abweichungen frühzeitig.",
+    "filters": {
+      "year": "Planjahr",
+      "plan": "Vertriebsplan",
+      "month": "Monat",
+      "metric": "KPI-Filter",
+      "selectPlan": "Vertriebsplan auswählen",
+      "loadingPlans": "Pläne werden geladen...",
+      "allMetrics": "Alle KPIs",
+      "search": "Verkäufer, KPI oder Notiz suchen..."
+    },
+    "stats": {
+      "targetRows": "Zielzeilen",
+      "salespeople": "Verkäufer",
+      "achieved": "Erreichte Ziele",
+      "needsAttention": "Handlungsbedarf"
+    },
+    "metricSummary": {
+      "title": "KPI-Übersicht",
+      "description": "Jeder KPI wird in seiner eigenen Einheit bewertet. Wählen Sie einen KPI, um die Tabelle zu filtern."
+    },
+    "table": {
+      "title": "Zieldetails der Verkäufer",
+      "salesperson": "Verkäufer",
+      "kpi": "KPI",
+      "target": "Ziel",
+      "actual": "Ist",
+      "remaining": "Verbleibend",
+      "progress": "Fortschritt",
+      "status": "Status",
+      "noNotes": "Keine Notiz"
+    },
+    "labels": {
+      "currency": "Währung",
+      "expectedProgress": "Erwartet",
+      "generatedAt": "Berechnet"
+    },
+    "progressStatus": {
+      "noTarget": "Kein Ziel",
+      "notStarted": "Nicht begonnen",
+      "atRisk": "Gefährdet",
+      "onTrack": "Im Plan",
+      "achieved": "Erreicht"
+    },
+    "empty": {
+      "noPlansTitle": "Kein Vertriebsplan für dieses Jahr",
+      "noPlansDescription": "Erstellen Sie zuerst einen Vertriebsplan für das ausgewählte Jahr.",
+      "selectPlanTitle": "Vertriebsplan auswählen",
+      "selectPlanDescription": "Wählen Sie oben einen Plan, um monatliche Ziele und Ist-Ergebnisse anzuzeigen.",
+      "noTargetsTitle": "Keine Ziele für diesen Filter",
+      "noTargetsDescription": "Keine Zielzeile entspricht dem ausgewählten Monat, KPI oder Suchbegriff."
+    },
+    "errors": {
+      "attainment": "Die Zielerreichung konnte nicht geladen werden. Bitte versuchen Sie es erneut."
+    }
+  }
+}

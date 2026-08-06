@@ -1,0 +1,123 @@
+{
+  "title": "Satış Tahmini ve Pipeline Coverage",
+  "description": "Açık tekliflerin hedefe katkısını, beklenen kapanışı ve satış açığını izleyin.",
+  "actions": {
+    "back": "Geri",
+    "refresh": "Yenile",
+    "retry": "Tekrar dene",
+    "openQuotation": "Teklifi aç",
+    "adjust": "Tahmini düzenle",
+    "cancel": "İptal",
+    "save": "Kaydet"
+  },
+  "filters": {
+    "year": "Yıl",
+    "plan": "Satış planı",
+    "loadingPlans": "Planlar yükleniyor...",
+    "selectPlan": "Plan seçin",
+    "month": "Ay",
+    "metric": "Hedef KPI",
+    "search": "Teklif, müşteri veya satışçı ara..."
+  },
+  "metric": {
+    "netOrderAmount": "Net sipariş tutarı",
+    "erpOrderAmount": "ERP sipariş tutarı"
+  },
+  "health": {
+    "noTarget": "Hedef yok",
+    "achieved": "Hedef gerçekleşti",
+    "onTrack": "Hedef yolunda",
+    "atRisk": "Riskli",
+    "critical": "Kritik açık"
+  },
+  "labels": {
+    "currency": "Para birimi",
+    "generatedAt": "Hesaplanma"
+  },
+  "summary": {
+    "target": "Hedef",
+    "actual": "Gerçekleşen",
+    "weightedForecast": "Ağırlıklı tahmin",
+    "gap": "Satış açığı",
+    "grossPipeline": "Brüt pipeline",
+    "weightedPipeline": "Ağırlıklı pipeline",
+    "coverage": "Brüt coverage",
+    "weightedCoverage": "Ağırlıklı coverage",
+    "openQuotes": "{{count}} açık teklif",
+    "manualOverrides": "{{count}} manuel düzeltme",
+    "grossCoverage": "Kalan hedefe göre brüt oran",
+    "expectedCoverage": "Kalan hedefe göre beklenen oran"
+  },
+  "salespeople": {
+    "title": "Satışçı tahminleri",
+    "description": "Hedefe ulaşma beklentisi satışçı bazında hesaplanır.",
+    "salesperson": "Satışçı",
+    "status": "Tahmin durumu",
+    "winRate": "180 günlük kazanma oranı"
+  },
+  "pipeline": {
+    "title": "Açık teklif pipeline'ı",
+    "description": "Kapanış ayına düşen ve henüz siparişe dönüşmemiş teklifler.",
+    "quotation": "Teklif",
+    "customer": "Müşteri",
+    "salesperson": "Satışçı",
+    "amount": "Tutar",
+    "probability": "Olasılık",
+    "weighted": "Ağırlıklı tutar",
+    "closeDate": "Beklenen kapanış",
+    "risk": "Risk",
+    "actions": "İşlem",
+    "offerDate": "Teklif tarihi",
+    "manual": "Manuel",
+    "calculated": "Hesaplanan",
+    "inferred": "Tahmini tarih",
+    "expired": "Süresi doldu",
+    "stale": "Uzun süredir açık",
+    "noRisk": "Uyarı yok"
+  },
+  "quotationStatus": {
+    "notStarted": "Başlamadı",
+    "waiting": "Onay bekliyor",
+    "approved": "Onaylandı",
+    "rejected": "Reddedildi",
+    "closed": "Kapandı",
+    "customerCancelled": "Müşteri iptal etti",
+    "revisionClosed": "Revizyon için kapandı",
+    "superseded": "Yeni revizyonla değiştirildi"
+  },
+  "override": {
+    "title": "Tahmin düzeltmesi",
+    "description": "{{documentNumber}} teklifinin kapanış beklentisini güncelleyin.",
+    "suggestedProbability": "Önerilen olasılık",
+    "historicalWinRate": "Kazanma oranı",
+    "suggestedCloseDate": "Önerilen tarih",
+    "expectedCloseDate": "Beklenen kapanış tarihi",
+    "probability": "Kapanış olasılığı (%)",
+    "notes": "Tahmin notu",
+    "notesPlaceholder": "Düzeltmenin gerekçesini yazın...",
+    "reset": "Hesaplanan değere dön",
+    "resetConfirmTitle": "Manuel düzeltme kaldırılsın mı?",
+    "resetConfirmDescription": "Olasılık ve tarih yeniden sistem tarafından hesaplanacak.",
+    "resetConfirm": "Düzeltmeyi kaldır"
+  },
+  "messages": {
+    "overrideSaved": "Tahmin düzeltmesi kaydedildi.",
+    "overrideSaveFailed": "Tahmin düzeltmesi kaydedilemedi.",
+    "overrideDeleted": "Manuel düzeltme kaldırıldı.",
+    "overrideDeleteFailed": "Manuel düzeltme kaldırılamadı."
+  },
+  "errors": {
+    "plans": "Satış planları yüklenemedi.",
+    "forecast": "Satış tahmini yüklenemedi."
+  },
+  "empty": {
+    "noPlansTitle": "Bu yıl için satış planı yok",
+    "noPlansDescription": "Tahmin hesaplamak için önce aylık satış hedefleri oluşturulmalıdır.",
+    "selectPlanTitle": "Satış planı seçin",
+    "selectPlanDescription": "Tahmin ve coverage değerleri seçilen plana göre hesaplanır.",
+    "noTargetsTitle": "Bu KPI için hedef yok",
+    "noTargetsDescription": "Seçilen ay ve KPI için satışçı hedefi bulunamadı.",
+    "noPipelineTitle": "Bu aya ait açık teklif yok",
+    "noPipelineDescription": "Seçilen kapanış ayında açık ve uygun teklif bulunamadı."
+  }
+}

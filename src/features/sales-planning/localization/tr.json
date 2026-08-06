@@ -1,0 +1,190 @@
+{
+  "title": "Satış Planlama",
+  "description": "Aylık satış hedeflerini hazırlayın, onaya gönderin ve kontrollü biçimde kilitleyin.",
+  "actions": {
+    "back": "Geri",
+    "newPlan": "Yeni Plan",
+    "refresh": "Yenile",
+    "retry": "Tekrar Dene",
+    "view": "Görüntüle",
+    "edit": "Düzenle",
+    "submit": "Onaya Gönder",
+    "approve": "Onayla",
+    "lock": "Kilitle",
+    "delete": "Sil",
+    "addTarget": "Hedef Ekle",
+    "removeTarget": "Hedefi Kaldır",
+    "close": "Kapat",
+    "create": "Planı Oluştur",
+    "save": "Değişiklikleri Kaydet",
+    "cancel": "Vazgeç",
+    "continue": "Devam Et"
+  },
+  "status": {
+    "draft": "Taslak",
+    "submitted": "Onay Bekliyor",
+    "approved": "Onaylandı",
+    "locked": "Kilitli"
+  },
+  "metric": {
+    "netOrderAmount": "Net sipariş tutarı",
+    "erpOrderAmount": "ERP sipariş tutarı",
+    "netQuotationAmount": "Net teklif tutarı",
+    "quotationCount": "Teklif adedi",
+    "orderCount": "Sipariş adedi",
+    "newCustomerCount": "Yeni müşteri adedi",
+    "completedActivityCount": "Tamamlanan aktivite adedi"
+  },
+  "stats": {
+    "plans": "Görünen plan",
+    "targets": "Hedef satırı",
+    "salespeople": "Satışçı ataması",
+    "awaitingApproval": "Onay bekleyen"
+  },
+  "filters": {
+    "search": "Plan adı, açıklama veya para birimi ara...",
+    "allYears": "Tüm yıllar",
+    "allStatuses": "Tüm durumlar"
+  },
+  "table": {
+    "plan": "Plan",
+    "period": "Dönem",
+    "status": "Durum",
+    "salespeople": "Satışçı",
+    "targets": "Hedef",
+    "updated": "Son işlem",
+    "actions": "İşlemler",
+    "noDescription": "Açıklama girilmedi"
+  },
+  "empty": {
+    "title": "Satış planı bulunamadı",
+    "description": "Seçili filtrelere uygun plan yok. Yetkiniz varsa yeni bir taslak oluşturabilirsiniz."
+  },
+  "form": {
+    "createTitle": "Yeni satış planı",
+    "createDescription": "Plan başlığını ve aylık satışçı hedeflerini hazırlayın.",
+    "detailTitle": "Satış planı detayı",
+    "detailDescription": "Plan hedeflerini ve güncel iş akışı durumunu inceleyin.",
+    "name": "Plan adı",
+    "year": "Plan yılı",
+    "currency": "Para birimi",
+    "selectCurrency": "Para birimi seçin",
+    "description": "Açıklama"
+  },
+  "targets": {
+    "title": "Aylık hedefler",
+    "description": "Her satışçı, ay ve KPI birleşimi yalnızca bir kez eklenebilir.",
+    "empty": "Bu taslakta henüz hedef satırı yok.",
+    "noSalespeople": "Görünürlük kapsamınızda hedef atanabilecek aktif satışçı bulunamadı.",
+    "salesperson": "Satışçı",
+    "selectSalesperson": "Satışçı seçin",
+    "month": "Ay",
+    "metric": "KPI",
+    "value": "Hedef değer",
+    "notes": "Not",
+    "actions": "İşlemler"
+  },
+  "validation": {
+    "name": "Plan adı 3 ile 150 karakter arasında olmalıdır.",
+    "year": "Plan yılı 2000 ile 2100 arasında olmalıdır.",
+    "currency": "ERP para birimi seçeneklerinden geçerli bir değer seçin.",
+    "duplicateTarget": "Aynı satışçı, ay ve KPI bir planda yalnızca bir kez bulunabilir.",
+    "wholeNumber": "Adet hedefleri tam sayı olmalıdır."
+  },
+  "messages": {
+    "created": "Satış planı oluşturuldu.",
+    "createFailed": "Satış planı oluşturulamadı.",
+    "updated": "Satış planı güncellendi.",
+    "updateFailed": "Satış planı güncellenemedi.",
+    "deleted": "Satış planı silindi.",
+    "deleteFailed": "Satış planı silinemedi.",
+    "statusUpdated": "Satış planı durumu güncellendi.",
+    "statusFailed": "Satış planı durumu güncellenemedi."
+  },
+  "errors": {
+    "list": "Satış planları yüklenemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+    "detail": "Satış planı detayı yüklenemedi."
+  },
+  "confirm": {
+    "reason": "İşlem notu",
+    "reasonPlaceholder": "İsteğe bağlı açıklama...",
+    "submit": {
+      "title": "Planı onaya gönder",
+      "description": "{{name}} planı düzenlemeye kapanacak ve onay sırasına alınacak.",
+      "confirm": "Onaya Gönder"
+    },
+    "approve": {
+      "title": "Planı onayla",
+      "description": "{{name}} planındaki hedefleri onayladığınızı doğrulayın.",
+      "confirm": "Onayla"
+    },
+    "lock": {
+      "title": "Planı kilitle",
+      "description": "{{name}} planı kilitlendikten sonra değiştirilemez.",
+      "confirm": "Kilitle"
+    },
+    "delete": {
+      "title": "Taslağı sil",
+      "description": "{{name}} planı listeden kaldırılacak. Bu işlem audit kaydında korunur.",
+      "confirm": "Taslağı Sil"
+    }
+  },
+  "performance": {
+    "title": "Hedef Gerçekleşmeleri",
+    "description": "Aylık satış hedeflerini CRM sonuçlarıyla karşılaştırın ve sapmaları erken görün.",
+    "filters": {
+      "year": "Plan yılı",
+      "plan": "Satış planı",
+      "month": "Ay",
+      "metric": "KPI filtresi",
+      "selectPlan": "Satış planı seçin",
+      "loadingPlans": "Planlar yükleniyor...",
+      "allMetrics": "Tüm KPI'lar",
+      "search": "Satışçı, KPI veya not ara..."
+    },
+    "stats": {
+      "targetRows": "Hedef satırı",
+      "salespeople": "Satışçı",
+      "achieved": "Gerçekleşen hedef",
+      "needsAttention": "Dikkat gerektiren"
+    },
+    "metricSummary": {
+      "title": "KPI özeti",
+      "description": "Her KPI kendi ölçü birimi içinde ayrı değerlendirilir. Bir KPI'ya tıklayarak tabloyu filtreleyebilirsiniz."
+    },
+    "table": {
+      "title": "Satışçı hedef detayları",
+      "salesperson": "Satışçı",
+      "kpi": "KPI",
+      "target": "Hedef",
+      "actual": "Gerçekleşen",
+      "remaining": "Kalan",
+      "progress": "İlerleme",
+      "status": "Durum",
+      "noNotes": "Not girilmedi"
+    },
+    "labels": {
+      "currency": "Para birimi",
+      "expectedProgress": "Beklenen",
+      "generatedAt": "Hesaplanma"
+    },
+    "progressStatus": {
+      "noTarget": "Hedef yok",
+      "notStarted": "Başlamadı",
+      "atRisk": "Riskli",
+      "onTrack": "Planla uyumlu",
+      "achieved": "Gerçekleşti"
+    },
+    "empty": {
+      "noPlansTitle": "Bu yıl için satış planı yok",
+      "noPlansDescription": "Gerçekleşmeleri izlemek için önce seçili yıla ait bir satış planı oluşturun.",
+      "selectPlanTitle": "Bir satış planı seçin",
+      "selectPlanDescription": "Aylık hedef ve gerçekleşen sonuçlarını görmek için üstteki listeden plan seçin.",
+      "noTargetsTitle": "Bu filtrede hedef bulunamadı",
+      "noTargetsDescription": "Seçili ay, KPI veya arama ölçütüne uygun hedef satırı yok."
+    },
+    "errors": {
+      "attainment": "Hedef gerçekleşmeleri yüklenemedi. Lütfen tekrar deneyin."
+    }
+  }
+}

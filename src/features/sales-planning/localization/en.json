@@ -1,0 +1,190 @@
+{
+  "title": "Sales Planning",
+  "description": "Prepare monthly sales targets, submit them for approval, and lock them with a controlled workflow.",
+  "actions": {
+    "back": "Back",
+    "newPlan": "New Plan",
+    "refresh": "Refresh",
+    "retry": "Try Again",
+    "view": "View",
+    "edit": "Edit",
+    "submit": "Submit",
+    "approve": "Approve",
+    "lock": "Lock",
+    "delete": "Delete",
+    "addTarget": "Add Target",
+    "removeTarget": "Remove Target",
+    "close": "Close",
+    "create": "Create Plan",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "continue": "Continue"
+  },
+  "status": {
+    "draft": "Draft",
+    "submitted": "Awaiting Approval",
+    "approved": "Approved",
+    "locked": "Locked"
+  },
+  "metric": {
+    "netOrderAmount": "Net order amount",
+    "erpOrderAmount": "ERP order amount",
+    "netQuotationAmount": "Net quotation amount",
+    "quotationCount": "Quotation count",
+    "orderCount": "Order count",
+    "newCustomerCount": "New customer count",
+    "completedActivityCount": "Completed activity count"
+  },
+  "stats": {
+    "plans": "Visible plans",
+    "targets": "Target rows",
+    "salespeople": "Salesperson assignments",
+    "awaitingApproval": "Awaiting approval"
+  },
+  "filters": {
+    "search": "Search plan name, description, or currency...",
+    "allYears": "All years",
+    "allStatuses": "All statuses"
+  },
+  "table": {
+    "plan": "Plan",
+    "period": "Period",
+    "status": "Status",
+    "salespeople": "Salespeople",
+    "targets": "Targets",
+    "updated": "Last change",
+    "actions": "Actions",
+    "noDescription": "No description"
+  },
+  "empty": {
+    "title": "No sales plans found",
+    "description": "No plan matches the selected filters. Create a new draft if you have permission."
+  },
+  "form": {
+    "createTitle": "New sales plan",
+    "createDescription": "Prepare the plan header and monthly salesperson targets.",
+    "detailTitle": "Sales plan details",
+    "detailDescription": "Review plan targets and the current workflow status.",
+    "name": "Plan name",
+    "year": "Plan year",
+    "currency": "Currency",
+    "selectCurrency": "Select currency",
+    "description": "Description"
+  },
+  "targets": {
+    "title": "Monthly targets",
+    "description": "Each salesperson, month, and KPI combination can occur only once.",
+    "empty": "This draft does not contain a target row yet.",
+    "noSalespeople": "No active salesperson is available in your visibility scope.",
+    "salesperson": "Salesperson",
+    "selectSalesperson": "Select salesperson",
+    "month": "Month",
+    "metric": "KPI",
+    "value": "Target value",
+    "notes": "Notes",
+    "actions": "Actions"
+  },
+  "validation": {
+    "name": "Plan name must contain between 3 and 150 characters.",
+    "year": "Plan year must be between 2000 and 2100.",
+    "currency": "Select a valid value from the ERP currency options.",
+    "duplicateTarget": "The same salesperson, month, and KPI can occur only once in a plan.",
+    "wholeNumber": "Count targets must be whole numbers."
+  },
+  "messages": {
+    "created": "Sales plan created.",
+    "createFailed": "Sales plan could not be created.",
+    "updated": "Sales plan updated.",
+    "updateFailed": "Sales plan could not be updated.",
+    "deleted": "Sales plan deleted.",
+    "deleteFailed": "Sales plan could not be deleted.",
+    "statusUpdated": "Sales plan status updated.",
+    "statusFailed": "Sales plan status could not be updated."
+  },
+  "errors": {
+    "list": "Sales plans could not be loaded. Check your connection and try again.",
+    "detail": "Sales plan details could not be loaded."
+  },
+  "confirm": {
+    "reason": "Action note",
+    "reasonPlaceholder": "Optional explanation...",
+    "submit": {
+      "title": "Submit plan",
+      "description": "{{name}} will be closed for editing and sent for approval.",
+      "confirm": "Submit"
+    },
+    "approve": {
+      "title": "Approve plan",
+      "description": "Confirm that you approve the targets in {{name}}.",
+      "confirm": "Approve"
+    },
+    "lock": {
+      "title": "Lock plan",
+      "description": "{{name}} cannot be changed after it is locked.",
+      "confirm": "Lock"
+    },
+    "delete": {
+      "title": "Delete draft",
+      "description": "{{name}} will be removed from the list. The action remains in the audit history.",
+      "confirm": "Delete Draft"
+    }
+  },
+  "performance": {
+    "title": "Target Attainment",
+    "description": "Compare monthly sales targets with CRM results and identify gaps early.",
+    "filters": {
+      "year": "Plan year",
+      "plan": "Sales plan",
+      "month": "Month",
+      "metric": "KPI filter",
+      "selectPlan": "Select a sales plan",
+      "loadingPlans": "Loading plans...",
+      "allMetrics": "All KPIs",
+      "search": "Search salesperson, KPI, or note..."
+    },
+    "stats": {
+      "targetRows": "Target rows",
+      "salespeople": "Salespeople",
+      "achieved": "Targets achieved",
+      "needsAttention": "Needs attention"
+    },
+    "metricSummary": {
+      "title": "KPI summary",
+      "description": "Each KPI is evaluated in its own unit. Select a KPI to filter the table."
+    },
+    "table": {
+      "title": "Salesperson target details",
+      "salesperson": "Salesperson",
+      "kpi": "KPI",
+      "target": "Target",
+      "actual": "Actual",
+      "remaining": "Remaining",
+      "progress": "Progress",
+      "status": "Status",
+      "noNotes": "No notes"
+    },
+    "labels": {
+      "currency": "Currency",
+      "expectedProgress": "Expected",
+      "generatedAt": "Calculated"
+    },
+    "progressStatus": {
+      "noTarget": "No target",
+      "notStarted": "Not started",
+      "atRisk": "At risk",
+      "onTrack": "On track",
+      "achieved": "Achieved"
+    },
+    "empty": {
+      "noPlansTitle": "No sales plan for this year",
+      "noPlansDescription": "Create a sales plan for the selected year before tracking attainment.",
+      "selectPlanTitle": "Select a sales plan",
+      "selectPlanDescription": "Select a plan above to view monthly targets and actual results.",
+      "noTargetsTitle": "No targets match this filter",
+      "noTargetsDescription": "No target row matches the selected month, KPI, or search criteria."
+    },
+    "errors": {
+      "attainment": "Target attainment could not be loaded. Please try again."
+    }
+  }
+}

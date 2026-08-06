@@ -66,6 +66,14 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         icon: <ShoppingBag03Icon size={iconSize} className="text-orange-500" />,
         children: [
           {
+            title: t('sidebar.salesPlanning'),
+            children: [
+              { title: t('sidebar.salesPlans'), href: '/sales-planning' },
+              { title: t('sidebar.salesPlanPerformance'), href: '/sales-planning/performance' },
+              { title: t('sidebar.salesForecast'), href: '/sales-planning/forecast' },
+            ],
+          },
+          {
             title: t('sidebar.demands'),
             children: [
               { title: t('sidebar.demandCreateWizard'), href: '/demands/create' },

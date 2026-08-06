@@ -1,0 +1,190 @@
+{
+  "title": "Planificación de ventas",
+  "description": "Prepare objetivos de ventas mensuales, envíelos a aprobación y bloquéelos mediante un flujo controlado.",
+  "actions": {
+    "back": "Atrás",
+    "newPlan": "Nuevo plan",
+    "refresh": "Actualizar",
+    "retry": "Reintentar",
+    "view": "Ver",
+    "edit": "Editar",
+    "submit": "Enviar",
+    "approve": "Aprobar",
+    "lock": "Bloquear",
+    "delete": "Eliminar",
+    "addTarget": "Añadir objetivo",
+    "removeTarget": "Quitar objetivo",
+    "close": "Cerrar",
+    "create": "Crear plan",
+    "save": "Guardar cambios",
+    "cancel": "Cancelar",
+    "continue": "Continuar"
+  },
+  "status": {
+    "draft": "Borrador",
+    "submitted": "Pendiente de aprobación",
+    "approved": "Aprobado",
+    "locked": "Bloqueado"
+  },
+  "metric": {
+    "netOrderAmount": "Importe neto de pedidos",
+    "erpOrderAmount": "Importe de pedidos ERP",
+    "netQuotationAmount": "Importe neto de ofertas",
+    "quotationCount": "Número de ofertas",
+    "orderCount": "Número de pedidos",
+    "newCustomerCount": "Nuevos clientes",
+    "completedActivityCount": "Actividades completadas"
+  },
+  "stats": {
+    "plans": "Planes visibles",
+    "targets": "Líneas de objetivo",
+    "salespeople": "Asignaciones comerciales",
+    "awaitingApproval": "Pendientes de aprobación"
+  },
+  "filters": {
+    "search": "Buscar por nombre, descripción o moneda...",
+    "allYears": "Todos los años",
+    "allStatuses": "Todos los estados"
+  },
+  "table": {
+    "plan": "Plan",
+    "period": "Periodo",
+    "status": "Estado",
+    "salespeople": "Comerciales",
+    "targets": "Objetivos",
+    "updated": "Último cambio",
+    "actions": "Acciones",
+    "noDescription": "Sin descripción"
+  },
+  "empty": {
+    "title": "No se encontraron planes de ventas",
+    "description": "Ningún plan coincide con los filtros seleccionados. Cree un borrador si tiene permiso."
+  },
+  "form": {
+    "createTitle": "Nuevo plan de ventas",
+    "createDescription": "Prepare la cabecera del plan y los objetivos mensuales de cada comercial.",
+    "detailTitle": "Detalle del plan de ventas",
+    "detailDescription": "Revise los objetivos y el estado actual del flujo.",
+    "name": "Nombre del plan",
+    "year": "Año del plan",
+    "currency": "Moneda",
+    "selectCurrency": "Seleccione una moneda",
+    "description": "Descripción"
+  },
+  "targets": {
+    "title": "Objetivos mensuales",
+    "description": "Cada combinación de comercial, mes y KPI solo puede aparecer una vez.",
+    "empty": "Este borrador aún no contiene objetivos.",
+    "noSalespeople": "No hay comerciales activos disponibles en su ámbito de visibilidad.",
+    "salesperson": "Comercial",
+    "selectSalesperson": "Seleccione un comercial",
+    "month": "Mes",
+    "metric": "KPI",
+    "value": "Valor objetivo",
+    "notes": "Notas",
+    "actions": "Acciones"
+  },
+  "validation": {
+    "name": "El nombre del plan debe tener entre 3 y 150 caracteres.",
+    "year": "El año del plan debe estar entre 2000 y 2100.",
+    "currency": "Seleccione un valor válido de las opciones de moneda ERP.",
+    "duplicateTarget": "La misma combinación de comercial, mes y KPI solo puede aparecer una vez.",
+    "wholeNumber": "Los objetivos de cantidad deben ser números enteros."
+  },
+  "messages": {
+    "created": "Plan de ventas creado.",
+    "createFailed": "No se pudo crear el plan de ventas.",
+    "updated": "Plan de ventas actualizado.",
+    "updateFailed": "No se pudo actualizar el plan de ventas.",
+    "deleted": "Plan de ventas eliminado.",
+    "deleteFailed": "No se pudo eliminar el plan de ventas.",
+    "statusUpdated": "Estado del plan actualizado.",
+    "statusFailed": "No se pudo actualizar el estado del plan."
+  },
+  "errors": {
+    "list": "No se pudieron cargar los planes de ventas. Compruebe la conexión e inténtelo de nuevo.",
+    "detail": "No se pudo cargar el detalle del plan de ventas."
+  },
+  "confirm": {
+    "reason": "Nota de la acción",
+    "reasonPlaceholder": "Explicación opcional...",
+    "submit": {
+      "title": "Enviar plan",
+      "description": "{{name}} se cerrará para edición y se enviará a aprobación.",
+      "confirm": "Enviar"
+    },
+    "approve": {
+      "title": "Aprobar plan",
+      "description": "Confirme que aprueba los objetivos de {{name}}.",
+      "confirm": "Aprobar"
+    },
+    "lock": {
+      "title": "Bloquear plan",
+      "description": "{{name}} no podrá modificarse después de bloquearlo.",
+      "confirm": "Bloquear"
+    },
+    "delete": {
+      "title": "Eliminar borrador",
+      "description": "{{name}} se quitará de la lista. La acción permanecerá en el historial de auditoría.",
+      "confirm": "Eliminar borrador"
+    }
+  },
+  "performance": {
+    "title": "Cumplimiento de objetivos",
+    "description": "Compare los objetivos mensuales con los resultados del CRM e identifique desviaciones a tiempo.",
+    "filters": {
+      "year": "Año del plan",
+      "plan": "Plan de ventas",
+      "month": "Mes",
+      "metric": "Filtro de KPI",
+      "selectPlan": "Seleccione un plan de ventas",
+      "loadingPlans": "Cargando planes...",
+      "allMetrics": "Todos los KPI",
+      "search": "Buscar comercial, KPI o nota..."
+    },
+    "stats": {
+      "targetRows": "Líneas de objetivo",
+      "salespeople": "Comerciales",
+      "achieved": "Objetivos alcanzados",
+      "needsAttention": "Requieren atención"
+    },
+    "metricSummary": {
+      "title": "Resumen de KPI",
+      "description": "Cada KPI se evalúa en su propia unidad. Seleccione un KPI para filtrar la tabla."
+    },
+    "table": {
+      "title": "Detalle de objetivos por comercial",
+      "salesperson": "Comercial",
+      "kpi": "KPI",
+      "target": "Objetivo",
+      "actual": "Realizado",
+      "remaining": "Restante",
+      "progress": "Progreso",
+      "status": "Estado",
+      "noNotes": "Sin notas"
+    },
+    "labels": {
+      "currency": "Moneda",
+      "expectedProgress": "Esperado",
+      "generatedAt": "Calculado"
+    },
+    "progressStatus": {
+      "noTarget": "Sin objetivo",
+      "notStarted": "No iniciado",
+      "atRisk": "En riesgo",
+      "onTrack": "En curso",
+      "achieved": "Alcanzado"
+    },
+    "empty": {
+      "noPlansTitle": "No hay plan de ventas para este año",
+      "noPlansDescription": "Cree primero un plan de ventas para el año seleccionado.",
+      "selectPlanTitle": "Seleccione un plan de ventas",
+      "selectPlanDescription": "Seleccione un plan arriba para ver los objetivos mensuales y los resultados.",
+      "noTargetsTitle": "No hay objetivos para este filtro",
+      "noTargetsDescription": "Ninguna línea coincide con el mes, KPI o criterio de búsqueda seleccionado."
+    },
+    "errors": {
+      "attainment": "No se pudo cargar el cumplimiento de objetivos. Inténtelo de nuevo."
+    }
+  }
+}

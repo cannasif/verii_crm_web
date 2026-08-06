@@ -35,6 +35,9 @@ const CustomerManagementPage = lazyImport(() => import('@/features/customer-mana
 const ConflictInboxPage = lazyImport(() => import('@/features/customer-dedupe'), 'ConflictInboxPage');
 const Customer360Page = lazyImport(() => import('@/features/customer-360'), 'Customer360Page');
 const Salesmen360Page = lazyImport(() => import('@/features/salesman-360'), 'Salesmen360Page');
+const SalesPlanningPage = lazyImport(() => import('@/features/sales-planning'), 'SalesPlanningPage');
+const SalesPlanningPerformancePage = lazyImport(() => import('@/features/sales-planning'), 'SalesPlanningPerformancePage');
+const SalesForecastPage = lazyImport(() => import('@/features/sales-forecast'), 'SalesForecastPage');
 const ContactManagementPage = lazyImport(() => import('@/features/contact-management'), 'ContactManagementPage');
 const PaymentTypeManagementPage = lazyImport(() => import('@/features/payment-type-management'), 'PaymentTypeManagementPage');
 const UserDiscountLimitManagementPage = lazyImport(() => import('@/features/user-discount-limit-management'), 'UserDiscountLimitManagementPage');
@@ -165,6 +168,9 @@ export function createAppRouter() {
         { path: 'customers/conflict-inbox', element: <ConflictInboxPage /> },
         { path: 'customer-360/:customerId', element: <Customer360Page /> },
         { path: 'salesmen-360/:userId', element: <Salesmen360Page /> },
+        { path: 'sales-planning', element: <SalesPlanningPage /> },
+        { path: 'sales-planning/performance', element: <SalesPlanningPerformancePage /> },
+        { path: 'sales-planning/forecast', element: <SalesForecastPage /> },
         { path: 'contact-management', element: <ContactManagementPage /> },
         { path: 'payment-type-management', element: <PaymentTypeManagementPage /> },
         { path: 'user-discount-limit-management', element: <UserDiscountLimitManagementPage /> },
