@@ -40,7 +40,7 @@ const LIST_PARAMS = { pageNumber: 1, pageSize: 100 };
 export function GroupReportDefinitionList(): ReactElement {
   const { t } = useTranslation();
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('powerbi.group-report-definitions.view');
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<PowerBIGroupReportDefinitionGetDto | null>(null);
@@ -90,28 +90,36 @@ export function GroupReportDefinitionList(): ReactElement {
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (selectedItem) {
-      await deleteMutation.mutateAsync(selectedItem.id);
-      setDeleteDialogOpen(false);
-      setSelectedItem(null);
+      try {
+        await deleteMutation.mutateAsync(selectedItem.id);
+        setDeleteDialogOpen(false);
+        setSelectedItem(null);
+      } catch {
+        void 0;
+      }
     }
   };
 
   const handleFormSubmit = async (
     values: PowerBIGroupReportDefinitionFormSchema
   ): Promise<void> => {
-    if (editing) {
-      await updateMutation.mutateAsync({
-        id: editing.id,
-        data: { groupId: values.groupId, reportDefinitionId: values.reportDefinitionId },
-      });
-    } else {
-      await createMutation.mutateAsync({
-        groupId: values.groupId,
-        reportDefinitionId: values.reportDefinitionId,
-      });
+    try {
+      if (editing) {
+        await updateMutation.mutateAsync({
+          id: editing.id,
+          data: { groupId: values.groupId, reportDefinitionId: values.reportDefinitionId },
+        });
+      } else {
+        await createMutation.mutateAsync({
+          groupId: values.groupId,
+          reportDefinitionId: values.reportDefinitionId,
+        });
+      }
+      setFormOpen(false);
+      setEditing(null);
+    } catch {
+      void 0;
     }
-    setFormOpen(false);
-    setEditing(null);
   };
 
   return (

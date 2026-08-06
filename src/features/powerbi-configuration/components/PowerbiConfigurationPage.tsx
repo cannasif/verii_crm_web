@@ -8,7 +8,7 @@ import { Loader2, BarChart2 } from 'lucide-react';
 
 export function PowerbiConfigurationPage(): ReactElement {
   const { t } = useTranslation();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { data: configuration, isLoading } = usePowerbiConfiguration();
   const createMutation = useCreatePowerbiConfiguration();
   const updateMutation = useUpdatePowerbiConfiguration();

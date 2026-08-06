@@ -18,7 +18,7 @@ import { Loader2, ExternalLink, BarChart2, FileSearch } from 'lucide-react';
 
 export function PowerbiReportsListPage(): ReactElement {
   const { t } = useTranslation(['powerbi-viewer', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { data: items = [], isLoading } = usePowerbiReportsList();
 
   useEffect(() => {

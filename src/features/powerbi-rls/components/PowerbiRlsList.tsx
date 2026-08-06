@@ -75,20 +75,28 @@ export function PowerbiRlsList({
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (selectedItem) {
-      await deleteMutation.mutateAsync(selectedItem.id);
-      setDeleteDialogOpen(false);
-      setSelectedItem(null);
+      try {
+        await deleteMutation.mutateAsync(selectedItem.id);
+        setDeleteDialogOpen(false);
+        setSelectedItem(null);
+      } catch {
+        void 0;
+      }
     }
   };
 
   const handleFormSubmit = async (values: PowerbiRlsFormSchema): Promise<void> => {
-    if (editing) {
-      await updateMutation.mutateAsync({ id: editing.id, data: values });
-    } else {
-      await createMutation.mutateAsync(values);
+    try {
+      if (editing) {
+        await updateMutation.mutateAsync({ id: editing.id, data: values });
+      } else {
+        await createMutation.mutateAsync(values);
+      }
+      setFormOpen(false);
+      setEditing(null);
+    } catch {
+      void 0;
     }
-    setFormOpen(false);
-    setEditing(null);
   };
 
   return (

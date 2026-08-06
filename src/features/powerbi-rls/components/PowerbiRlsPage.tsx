@@ -8,7 +8,7 @@ import type { PowerBIReportRoleMapping } from '../types/powerbiRls.types';
 
 export function PowerbiRlsPage(): ReactElement {
   const { t } = useTranslation();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<PowerBIReportRoleMapping | null>(null);
 

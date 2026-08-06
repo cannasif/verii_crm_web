@@ -46,7 +46,7 @@ const LIST_PARAMS = {
 export function ReportDefinitionList(): ReactElement {
   const { t } = useTranslation();
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('powerbi.report-definitions.view');
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<PowerBIReportDefinitionGetDto | null>(null);
@@ -96,9 +96,13 @@ export function ReportDefinitionList(): ReactElement {
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (selectedItem) {
-      await deleteMutation.mutateAsync(selectedItem.id);
-      setDeleteDialogOpen(false);
-      setSelectedItem(null);
+      try {
+        await deleteMutation.mutateAsync(selectedItem.id);
+        setDeleteDialogOpen(false);
+        setSelectedItem(null);
+      } catch {
+        void 0;
+      }
     }
   };
 
@@ -115,13 +119,17 @@ export function ReportDefinitionList(): ReactElement {
       allowedUserIds: values.allowedUserIds || undefined,
       allowedRoleIds: values.allowedRoleIds || undefined,
     };
-    if (editing) {
-      await updateMutation.mutateAsync({ id: editing.id, data: payload });
-    } else {
-      await createMutation.mutateAsync(payload);
+    try {
+      if (editing) {
+        await updateMutation.mutateAsync({ id: editing.id, data: payload });
+      } else {
+        await createMutation.mutateAsync(payload);
+      }
+      setFormOpen(false);
+      setEditing(null);
+    } catch {
+      void 0;
     }
-    setFormOpen(false);
-    setEditing(null);
   };
 
   return (

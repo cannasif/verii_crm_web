@@ -41,7 +41,7 @@ const LIST_PARAMS = { pageNumber: 1, pageSize: 100 };
 export function GroupList(): ReactElement {
   const { t } = useTranslation();
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('powerbi.groups.view');
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<PowerBIGroupGetDto | null>(null);
@@ -87,31 +87,39 @@ export function GroupList(): ReactElement {
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (selectedItem) {
-      await deleteMutation.mutateAsync(selectedItem.id);
-      setDeleteDialogOpen(false);
-      setSelectedItem(null);
+      try {
+        await deleteMutation.mutateAsync(selectedItem.id);
+        setDeleteDialogOpen(false);
+        setSelectedItem(null);
+      } catch {
+        void 0;
+      }
     }
   };
 
   const handleFormSubmit = async (values: PowerBIGroupFormSchema): Promise<void> => {
-    if (editing) {
-      await updateMutation.mutateAsync({
-        id: editing.id,
-        data: {
+    try {
+      if (editing) {
+        await updateMutation.mutateAsync({
+          id: editing.id,
+          data: {
+            name: values.name,
+            description: values.description || undefined,
+            isActive: values.isActive,
+          },
+        });
+      } else {
+        await createMutation.mutateAsync({
           name: values.name,
           description: values.description || undefined,
           isActive: values.isActive,
-        },
-      });
-    } else {
-      await createMutation.mutateAsync({
-        name: values.name,
-        description: values.description || undefined,
-        isActive: values.isActive,
-      });
+        });
+      }
+      setFormOpen(false);
+      setEditing(null);
+    } catch {
+      void 0;
     }
-    setFormOpen(false);
-    setEditing(null);
   };
 
   return (

@@ -40,7 +40,7 @@ const LIST_PARAMS = { pageNumber: 1, pageSize: 100 };
 export function UserGroupList(): ReactElement {
   const { t } = useTranslation();
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('powerbi.user-groups.view');
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const queryClient = useQueryClient();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<UserPowerBIGroupGetDto | null>(null);
@@ -86,26 +86,34 @@ export function UserGroupList(): ReactElement {
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (selectedItem) {
-      await deleteMutation.mutateAsync(selectedItem.id);
-      setDeleteDialogOpen(false);
-      setSelectedItem(null);
+      try {
+        await deleteMutation.mutateAsync(selectedItem.id);
+        setDeleteDialogOpen(false);
+        setSelectedItem(null);
+      } catch {
+        void 0;
+      }
     }
   };
 
   const handleFormSubmit = async (values: UserPowerBIGroupFormSchema): Promise<void> => {
-    if (editing) {
-      await updateMutation.mutateAsync({
-        id: editing.id,
-        data: { userId: values.userId, groupId: values.groupId },
-      });
-    } else {
-      await createMutation.mutateAsync({
-        userId: values.userId,
-        groupId: values.groupId,
-      });
+    try {
+      if (editing) {
+        await updateMutation.mutateAsync({
+          id: editing.id,
+          data: { userId: values.userId, groupId: values.groupId },
+        });
+      } else {
+        await createMutation.mutateAsync({
+          userId: values.userId,
+          groupId: values.groupId,
+        });
+      }
+      setFormOpen(false);
+      setEditing(null);
+    } catch {
+      void 0;
     }
-    setFormOpen(false);
-    setEditing(null);
   };
 
   return (

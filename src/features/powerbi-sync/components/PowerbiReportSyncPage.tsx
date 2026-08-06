@@ -6,7 +6,7 @@ import { RefreshCw } from 'lucide-react';
 
 export function PowerbiReportSyncPage(): ReactElement {
   const { t } = useTranslation();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   useEffect(() => {
     setPageTitle(t('powerbiSync.title'));
