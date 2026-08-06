@@ -1,4 +1,5 @@
 import { type ReactElement, useEffect, useRef, useState } from 'react';
+import { Linkedin01Icon } from 'hugeicons-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -63,7 +64,6 @@ import {
   Building2,
   Briefcase,
   Phone,
-  Linkedin,
   Ruler,
   Weight,
   FileText,
@@ -126,7 +126,7 @@ function StatCard({ title, value, icon: Icon, description, colorClass, progress 
 
 export function ProfilePage(): ReactElement {
   const { t } = useTranslation();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const { user, branch } = useAuthStore();
   const userId = user?.id || 0;
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -510,7 +510,7 @@ export function ProfilePage(): ReactElement {
                                     </FormLabel>
                                     <FormControl>
                                       <div className="relative group">
-                                        <Linkedin className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-5" />
+                                        <Linkedin01Icon className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors size-5" />
                                         <Input
                                           type="url"
                                           {...field}
