@@ -101,7 +101,7 @@ export function DemandDetailPage(): ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const branch = useAuthStore((state) => state.branch);
   const demandId = id ? parseInt(id, 10) : 0;
   const returnTo = getDocumentReturnTo(location.state);

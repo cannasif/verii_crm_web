@@ -52,7 +52,7 @@ function resolveLabel(
 export function DistrictManagementPage(): ReactElement {
   const { t } = useTranslation(['district-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingDistrict, setEditingDistrict] = useState<DistrictDto | null>(null);

@@ -84,7 +84,7 @@ function resolveLabel(
 export function DocumentSerialTypeManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['document-serial-type-management', 'pricing-rule', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingDocumentSerialType, setEditingDocumentSerialType] = useState<DocumentSerialTypeDto | null>(null);

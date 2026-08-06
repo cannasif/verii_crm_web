@@ -89,7 +89,7 @@ export function WaitingApprovalsPage(): ReactElement {
   const { t, i18n } = useTranslation(['demand', 'common', 'approval']);
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const approveAction = useApproveAction();
   const rejectAction = useRejectAction();
 

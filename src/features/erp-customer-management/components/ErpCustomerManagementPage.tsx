@@ -44,7 +44,7 @@ function resolveLabel(
 export function ErpCustomerManagementPage(): ReactElement {
   const { t } = useTranslation(['erp-customer-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   const [selectedCustomer, setSelectedCustomer] = useState<ErpCustomer | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);

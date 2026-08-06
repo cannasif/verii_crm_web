@@ -148,7 +148,7 @@ export function DemandListPage(): ReactElement {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const queryClient = useQueryClient();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { user } = useAuthStore();
   const createRevisionMutation = useCreateRevisionOfDemand();
   const cleanupErpMutation = useCleanupDemandErpAndCreateCopy();

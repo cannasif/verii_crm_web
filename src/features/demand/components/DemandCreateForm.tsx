@@ -61,7 +61,7 @@ export function DemandCreateForm(): ReactElement {
   const { t } = useTranslation('demand');
 
   const navigate = useNavigate();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const user = useAuthStore((state) => state.user);
   const branch = useAuthStore((state) => state.branch);
 
