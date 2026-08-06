@@ -86,8 +86,8 @@ function getQuickActivityWindow(): { start: string; end: string } {
 
 export function CustomerManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['customer-management', 'common']);
-  const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const user = useAuthStore((s) => s.user);
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const location = useLocation();
 
   const isFrom360 = location.state?.from360 === true;

@@ -297,7 +297,7 @@ function SortableActivityItem({
 
 export function DailyTasksPage(): ReactElement {
   const { t, i18n } = useTranslation(['daily-tasks', 'activity-management', 'common']);
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
   const [activeTab, setActiveTab] = useState('tasks');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [formOpen, setFormOpen] = useState(false);
@@ -864,7 +864,7 @@ export function DailyTasksPage(): ReactElement {
     return `${y}-${m}-${dayStr}T${h}:00`;
   };
 
-  const getWeekDays = (): Date[] => {
+  const weekDays = useMemo(() => {
     const days: Date[] = [];
     for (let i = 0; i < 7; i++) {
       const d = new Date(calendarWeekStart);
@@ -873,7 +873,7 @@ export function DailyTasksPage(): ReactElement {
       days.push(d);
     }
     return days;
-  };
+  }, [calendarWeekStart]);
 
   const getActivitiesForSlot = (day: Date, hour: number): ActivityDto[] => {
     const slotStartMs = new Date(day.getFullYear(), day.getMonth(), day.getDate(), hour, 0, 0, 0).getTime();
@@ -1983,7 +1983,7 @@ export function DailyTasksPage(): ReactElement {
                         <div className="min-w-[600px]">
                           <div className="grid grid-cols-8 gap-px bg-slate-200 dark:bg-white/10 rounded-xl overflow-hidden">
                             <div className="sticky left-0 z-20 bg-slate-100 dark:bg-[#140d20] p-2 text-xs font-bold text-slate-500 dark:text-slate-400" />
-                            {getWeekDays().map((day) => (
+                            {weekDays.map((day) => (
                               <div key={day.toISOString()} className="sticky top-0 z-10 bg-slate-100 dark:bg-[#140d20] p-2 text-center text-xs font-bold text-slate-600 dark:text-slate-300">
                                 {day.toLocaleDateString(i18n.language, { weekday: 'short' })}
                                 <span className="block text-slate-500 dark:text-slate-400">{day.getDate()}</span>
@@ -1994,7 +1994,7 @@ export function DailyTasksPage(): ReactElement {
                                 <div className="sticky left-0 z-10 bg-slate-50 dark:bg-[#120b1b] p-1.5 text-[10px] font-medium text-slate-500 dark:text-slate-400 text-right pr-2">
                                   {String(hour).padStart(2, '0')}:00
                                 </div>
-                                {getWeekDays().map((day) => {
+                                {weekDays.map((day) => {
                                   const slotActivities = getActivitiesForSlot(day, hour);
                                   const isToday = day.toDateString() === new Date().toDateString();
                                   const isSelectedSlot =

@@ -84,8 +84,8 @@ function QuickActionItem({ icon: Icon, tone, label, description, onClick }: {
 export function DashboardPage(): ReactElement {
   const { t } = useTranslation('dashboard');
   const navigate = useNavigate();
-  const { setPageTitle } = useUIStore();
-  const { user } = useAuthStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
+  const user = useAuthStore((s) => s.user);
 
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [dashboardMode, setDashboardMode] = useState<'view' | 'edit'>('view');

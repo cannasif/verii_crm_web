@@ -218,7 +218,7 @@ function ActivityChip({ activity, compact = false, onSelect }: ActivityChipProps
 export function MyActivitiesCalendar(): ReactElement {
   const { t, i18n } = useTranslation('dashboard');
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const user = useAuthStore((s) => s.user);
   const [view, setView] = useState<CalendarView>('week');
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState<ActivityDto | null>(null);
@@ -246,6 +246,13 @@ export function MyActivitiesCalendar(): ReactElement {
     () => eachDayOfInterval({ start: visibleRange.start, end: addDays(visibleRange.end, -1) }),
     [visibleRange],
   );
+  const activitiesByDay = useMemo(() => {
+    const map = new Map<string, ActivityDto[]>();
+    days.forEach((day) => {
+      map.set(day.toISOString(), activities.filter((activity) => occursOnDay(activity, day)));
+    });
+    return map;
+  }, [days, activities]);
   const locale = i18n.language || 'tr-TR';
   const title = new Intl.DateTimeFormat(locale, view === 'week'
     ? { day: 'numeric', month: 'long', year: 'numeric' }
@@ -361,7 +368,7 @@ export function MyActivitiesCalendar(): ReactElement {
       ) : view === 'agenda' ? (
         <div className="max-h-[620px] overflow-y-auto p-4 md:p-5">
           {days.map((day) => {
-            const items = activities.filter((activity) => occursOnDay(activity, day));
+            const items = activitiesByDay.get(day.toISOString()) ?? [];
             if (items.length === 0) return null;
             return (
               <div key={day.toISOString()} className="mb-5 grid gap-3 md:grid-cols-[180px_1fr]">
@@ -386,7 +393,7 @@ export function MyActivitiesCalendar(): ReactElement {
               </div>
             ))}
             {days.map((day) => {
-              const items = activities.filter((activity) => occursOnDay(activity, day));
+              const items = activitiesByDay.get(day.toISOString()) ?? [];
               const isWeekend = day.getDay() === 0 || day.getDay() === 6;
               const visibleLimit = view === 'week' ? 12 : 3;
               return (

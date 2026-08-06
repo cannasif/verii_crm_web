@@ -48,8 +48,8 @@ function resolveLabel(
 
 export function CustomerTypeManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['customer-type-management', 'common']);
-  const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const user = useAuthStore((s) => s.user);
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingCustomerType, setEditingCustomerType] = useState<CustomerTypeDto | null>(null);
