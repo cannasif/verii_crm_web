@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyRound, ShieldCheck } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -28,7 +28,7 @@ export function PermissionGroupMultiSelect({
     sortDirection: 'asc',
   });
 
-  const items = (data?.data ?? []).filter((d) => d.isActive);
+  const items = useMemo(() => (data?.data ?? []).filter((d) => d.isActive), [data?.data]);
   const allSelected = items.length > 0 && value.length === items.length;
   const someSelected = value.length > 0 && !allSelected;
 

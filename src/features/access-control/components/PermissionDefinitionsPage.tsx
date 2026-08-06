@@ -65,7 +65,7 @@ function resolveLabel(t: (key: string) => string, key: string, fallback: string)
 export function PermissionDefinitionsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const queryClient = useQueryClient();
 
   const [formOpen, setFormOpen] = useState(false);

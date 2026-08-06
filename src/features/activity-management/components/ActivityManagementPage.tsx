@@ -137,7 +137,7 @@ export function ActivityManagementPage(): ReactElement {
   const { t } = useTranslation(['activity-management', 'common']);
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('activity.activity-management.view');
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [formOpen, setFormOpen] = useState(false);

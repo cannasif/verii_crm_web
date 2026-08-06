@@ -126,7 +126,7 @@ function getAuditActionLabel(actionType: string): string {
 
 export function AuditLogsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -262,24 +262,34 @@ export function AuditLogsPage(): ReactElement {
     { key: 'requestMethod', label: t('auditLogs.table.requestMethod') },
   ];
 
-  const exportRows = items.map((item) => ({
-    createdDate: new Date(item.createdDate).toLocaleString(),
-    traceId: item.traceId,
-    actionType: getAuditActionLabel(item.actionType),
-    entityType: item.entityType ?? '-',
-    entityId: item.entityId ?? '-',
-    result: item.result,
-    source: item.source ?? '-',
-    performedByUserEmail: item.performedByUserEmail ?? '-',
-    branchCode: item.branchCode ?? '-',
-    requestPath: item.requestPath ?? '-',
-    requestMethod: item.requestMethod ?? '-',
-  }));
+  const exportRows = useMemo(
+    () =>
+      items.map((item) => ({
+        createdDate: new Date(item.createdDate).toLocaleString(),
+        traceId: item.traceId,
+        actionType: getAuditActionLabel(item.actionType),
+        entityType: item.entityType ?? '-',
+        entityId: item.entityId ?? '-',
+        result: item.result,
+        source: item.source ?? '-',
+        performedByUserEmail: item.performedByUserEmail ?? '-',
+        branchCode: item.branchCode ?? '-',
+        requestPath: item.requestPath ?? '-',
+        requestMethod: item.requestMethod ?? '-',
+      })),
+    [items]
+  );
 
   const selectedAuditLog = detailQuery.data ?? items.find((item) => item.id === selectedAuditLogId) ?? null;
-  const currentPageErrorCount = items.filter((item) => ['error', 'failed'].includes(item.result.trim().toLowerCase())).length;
-  const currentPageTraceCount = new Set(items.map((item) => item.traceId)).size;
-  const appliedFilterCount = appliedFilterRows.filter((row) => row.value.trim()).length;
+  const currentPageErrorCount = useMemo(
+    () => items.filter((item) => ['error', 'failed'].includes(item.result.trim().toLowerCase())).length,
+    [items]
+  );
+  const currentPageTraceCount = useMemo(() => new Set(items.map((item) => item.traceId)).size, [items]);
+  const appliedFilterCount = useMemo(
+    () => appliedFilterRows.filter((row) => row.value.trim()).length,
+    [appliedFilterRows]
+  );
   const timeline = useMemo(
     () => [...items].sort((left, right) => new Date(left.createdDate).getTime() - new Date(right.createdDate).getTime()),
     [items]

@@ -48,7 +48,7 @@ type VisibilityPolicyColumnKey = keyof VisibilityPolicyDto | 'scopeLabel' | 'ent
 
 export function VisibilityPoliciesPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.visibility-policies.view');

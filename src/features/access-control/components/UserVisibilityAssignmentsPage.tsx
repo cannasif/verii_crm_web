@@ -208,7 +208,7 @@ function canApplyEntityAction(
 
 export function UserVisibilityAssignmentsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const queryClient = useQueryClient();
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [userSearchTerm, setUserSearchTerm] = useState('');

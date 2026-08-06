@@ -50,7 +50,7 @@ function resolveLabel(
 export function ActivityTypeManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['activity-meeting-type-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [formOpen, setFormOpen] = useState(false);

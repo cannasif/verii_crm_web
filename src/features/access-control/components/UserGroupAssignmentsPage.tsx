@@ -24,7 +24,7 @@ const INNER_PANEL_CLASSNAME =
 
 export function UserGroupAssignmentsPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedGroupIds, setSelectedGroupIds] = useState<number[]>([]);
   const [hasChanges, setHasChanges] = useState(false);

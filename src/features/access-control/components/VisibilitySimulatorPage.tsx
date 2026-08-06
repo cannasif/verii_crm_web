@@ -48,7 +48,7 @@ const VISIBLE_USERS_PAGE_SIZE = 20;
 
 export function VisibilitySimulatorPage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [selectedEntityType, setSelectedEntityType] = useState<string>('Quotation');
   const [recordId, setRecordId] = useState<string>('');

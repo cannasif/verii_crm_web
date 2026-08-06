@@ -36,7 +36,10 @@ export function PermissionDefinitionMultiSelect({
     sortDirection: 'asc',
   });
 
-  const items = (data?.data ?? []).filter((d) => d.isActive && isLeafPermissionCode(d.code));
+  const items = useMemo(
+    () => (data?.data ?? []).filter((d) => d.isActive && isLeafPermissionCode(d.code)),
+    [data?.data]
+  );
   const [search, setSearch] = useState('');
 
   const actionMeta = useMemo(

@@ -161,7 +161,7 @@ function SummaryBlock({
 
 export function AccessControlGuidePage(): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   const pageTitle = t('guide.title');
   useEffect(() => {
