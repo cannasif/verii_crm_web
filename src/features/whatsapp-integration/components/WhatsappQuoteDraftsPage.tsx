@@ -300,7 +300,7 @@ function WhatsappQuoteDraftActionPanel({ draft }: { draft: WhatsappQuoteDraftDto
 
 export function WhatsappQuoteDraftsPage(): ReactElement {
   const { t } = useTranslation(['whatsapp-integration', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const [pageNumber, setPageNumber] = useState(1);
   const [search, setSearch] = useState('');
   const [expandedDraftId, setExpandedDraftId] = useState<number | null>(null);

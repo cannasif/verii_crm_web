@@ -6,7 +6,7 @@ import { CheckCircle2, MessageSquareText, ShoppingCart, Workflow } from 'lucide-
 
 export function WhatsappFlowPage(): ReactElement {
   const { t } = useTranslation('whatsapp-integration');
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
 
   useEffect(() => {
     setPageTitle(t('flow.title'));

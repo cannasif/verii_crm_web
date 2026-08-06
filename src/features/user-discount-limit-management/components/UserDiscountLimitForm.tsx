@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
@@ -119,16 +119,20 @@ export function UserDiscountLimitForm({
     }
   };
 
-  const groupComboboxOptions: ComboboxOption[] = stokGroups.map(group => {
-    const groupCode = group.grupKodu || `__group_${group.isletmeKodu}_${group.subeKodu}`;
-    const displayText = group.grupKodu && group.grupAdi
-      ? `${group.grupKodu} - ${group.grupAdi}`
-      : group.grupAdi || group.grupKodu || groupCode;
-    return {
-      value: groupCode,
-      label: displayText
-    };
-  });
+  const groupComboboxOptions: ComboboxOption[] = useMemo(
+    () =>
+      stokGroups.map(group => {
+        const groupCode = group.grupKodu || `__group_${group.isletmeKodu}_${group.subeKodu}`;
+        const displayText = group.grupKodu && group.grupAdi
+          ? `${group.grupKodu} - ${group.grupAdi}`
+          : group.grupAdi || group.grupKodu || groupCode;
+        return {
+          value: groupCode,
+          label: displayText
+        };
+      }),
+    [stokGroups]
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

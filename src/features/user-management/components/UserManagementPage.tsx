@@ -54,7 +54,7 @@ function resolveLabel(t: (key: string) => string, key: string, fallback: string)
 export function UserManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['user-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<UserDto | null>(null);

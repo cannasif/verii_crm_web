@@ -20,7 +20,7 @@ function formatDate(value?: string | null): string {
 
 export function WhatsappLogsPage(): ReactElement {
   const { t } = useTranslation(['whatsapp-integration', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const [pageNumber, setPageNumber] = useState(1);
   const [search, setSearch] = useState('');
   const [errorsOnly, setErrorsOnly] = useState(false);

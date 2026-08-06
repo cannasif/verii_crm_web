@@ -24,7 +24,7 @@ function formatDate(value?: string | null): string {
 
 export function WhatsappConnectionPage(): ReactElement {
   const { t } = useTranslation(['whatsapp-integration', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const { data: status, isLoading } = useWhatsappStatusQuery();
   const updateSettingsMutation = useUpdateWhatsappSettingsMutation();
   const testMessageMutation = useWhatsappTestMessageMutation();

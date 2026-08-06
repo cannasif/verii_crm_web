@@ -49,7 +49,7 @@ function resolveLabel(
 export function UserDiscountLimitManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['user-discount-limit-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<UserDiscountLimitDto | null>(null);

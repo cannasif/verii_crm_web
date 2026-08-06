@@ -117,34 +117,38 @@ export function WindoQuickCreateDialog({
         return;
       }
 
-      const profile = await windoDefinitionApi.createProfil({
-        name: trimmedName,
-        profilDefinitionId: null,
-      });
+      try {
+        const profile = await windoDefinitionApi.createProfil({
+          name: trimmedName,
+          profilDefinitionId: null,
+        });
 
-      await windoDefinitionApi.createDemir({
-        name: trimmedDemirName,
-        profilDefinitionId: profile.id,
-      });
+        await windoDefinitionApi.createDemir({
+          name: trimmedDemirName,
+          profilDefinitionId: profile.id,
+        });
 
-      await windoDefinitionApi.createVida({
-        name: trimmedVidaName,
-        profilDefinitionId: profile.id,
-      });
+        await windoDefinitionApi.createVida({
+          name: trimmedVidaName,
+          profilDefinitionId: profile.id,
+        });
 
-      await queryClient.invalidateQueries({ queryKey: ['windo-definition'] });
-      await queryClient.invalidateQueries({ queryKey: ['windo-definition-management'] });
-      toast.success(
-        i18n.language.startsWith('tr')
-          ? 'Profil, demir ve vida kaydı oluşturuldu'
-          : 'Profile, rebar and screw records created'
-      );
-      onCreated(profile);
-      setName('');
-      setDemirName('');
-      setVidaName('');
-      setProfilDefinitionId(null);
-      onOpenChange(false);
+        await queryClient.invalidateQueries({ queryKey: ['windo-definition'] });
+        await queryClient.invalidateQueries({ queryKey: ['windo-definition-management'] });
+        toast.success(
+          i18n.language.startsWith('tr')
+            ? 'Profil, demir ve vida kaydı oluşturuldu'
+            : 'Profile, rebar and screw records created'
+        );
+        onCreated(profile);
+        setName('');
+        setDemirName('');
+        setVidaName('');
+        setProfilDefinitionId(null);
+        onOpenChange(false);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : `${label} oluşturulamadı`);
+      }
       return;
     }
 
@@ -153,7 +157,11 @@ export function WindoQuickCreateDialog({
       profilDefinitionId: requiresProfil && profilDefinitionId ? Number(profilDefinitionId) : null,
     };
 
-    await mutation.mutateAsync(payload);
+    try {
+      await mutation.mutateAsync(payload);
+    } catch {
+      /* noop */
+    }
   };
 
   return (

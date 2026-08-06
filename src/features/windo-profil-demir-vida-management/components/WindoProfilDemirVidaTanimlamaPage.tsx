@@ -234,6 +234,9 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       setDraftVidaName('');
       setDraftProfilDefinitionId(null);
     },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Bir hata oluştu');
+    },
   });
 
   const updateMutation = useMutation({
@@ -248,6 +251,9 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       setDraftVidaName('');
       setDraftProfilDefinitionId(null);
     },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Bir hata oluştu');
+    },
   });
 
   const deleteMutation = useMutation({
@@ -255,6 +261,9 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
     onSuccess: async () => {
       toast.success(t('toasts.deleted', { section: config.title }));
       await invalidate();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Bir hata oluştu');
     },
   });
 
@@ -279,28 +288,32 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
         return;
       }
 
-      const profile = await config.create({
-        name,
-        profilDefinitionId: null,
-      });
+      try {
+        const profile = await config.create({
+          name,
+          profilDefinitionId: null,
+        });
 
-      await windoDefinitionApi.createDemir({
-        name: trimmedDemirName,
-        profilDefinitionId: profile.id,
-      });
+        await windoDefinitionApi.createDemir({
+          name: trimmedDemirName,
+          profilDefinitionId: profile.id,
+        });
 
-      await windoDefinitionApi.createVida({
-        name: trimmedVidaName,
-        profilDefinitionId: profile.id,
-      });
+        await windoDefinitionApi.createVida({
+          name: trimmedVidaName,
+          profilDefinitionId: profile.id,
+        });
 
-      toast.success(t('toasts.bundleCreated', { section: config.title, defaultValue: 'Profil, demir ve vida birlikte oluşturuldu.' }));
-      await invalidate();
-      setDialogOpen(false);
-      setDraftName('');
-      setDraftDemirName('');
-      setDraftVidaName('');
-      setDraftProfilDefinitionId(null);
+        toast.success(t('toasts.bundleCreated', { section: config.title, defaultValue: 'Profil, demir ve vida birlikte oluşturuldu.' }));
+        await invalidate();
+        setDialogOpen(false);
+        setDraftName('');
+        setDraftDemirName('');
+        setDraftVidaName('');
+        setDraftProfilDefinitionId(null);
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : 'Bir hata oluştu');
+      }
       return;
     }
 
@@ -309,12 +322,16 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
       profilDefinitionId: config.requiresProfilParent && draftProfilDefinitionId ? Number(draftProfilDefinitionId) : null,
     };
 
-    if (editingItem) {
-      await updateMutation.mutateAsync({ id: editingItem.id, data: payload });
-      return;
-    }
+    try {
+      if (editingItem) {
+        await updateMutation.mutateAsync({ id: editingItem.id, data: payload });
+        return;
+      }
 
-    await createMutation.mutateAsync(payload);
+      await createMutation.mutateAsync(payload);
+    } catch {
+      /* noop */
+    }
   };
 
   useEffect(() => {
@@ -549,7 +566,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
                       size="icon"
                       className="rounded-xl text-red-600"
                       onClick={() => {
-                        void deleteMutation.mutateAsync(item.id);
+                        deleteMutation.mutate(item.id);
                       }}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -653,7 +670,7 @@ function DefinitionManagementTable({ config }: { config: DefinitionSectionConfig
 
 export function WindoProfilDemirVidaTanimlamaPage(): ReactElement {
   const { t } = useTranslation(WINDO_I18N_NS);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const [activeKind, setActiveKind] = useState<DefinitionKind>('profil');
 
   useEffect(() => {
