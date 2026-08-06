@@ -1023,7 +1023,10 @@ export function AiAssistantWidget(): ReactElement | null {
       }
     };
 
-    const handlePointerMove = (event: globalThis.PointerEvent): void => {
+    let pendingMoveEvent: globalThis.PointerEvent | null = null;
+    let moveRafId: number | null = null;
+
+    const processPointerMove = (event: globalThis.PointerEvent): void => {
       const dragState = dragStateRef.current;
       if (!dragState || dragState.pointerId !== event.pointerId) return;
 
@@ -1078,6 +1081,17 @@ export function AiAssistantWidget(): ReactElement | null {
       setWidgetPosition(logicalPosition);
     };
 
+    const handlePointerMove = (event: globalThis.PointerEvent): void => {
+      pendingMoveEvent = event;
+      if (moveRafId !== null) return;
+
+      moveRafId = window.requestAnimationFrame(() => {
+        moveRafId = null;
+        if (pendingMoveEvent) processPointerMove(pendingMoveEvent);
+        pendingMoveEvent = null;
+      });
+    };
+
     window.addEventListener('pointermove', handlePointerMove);
     window.addEventListener('pointerup', finishDrag);
     window.addEventListener('pointercancel', finishDrag);
@@ -1086,6 +1100,7 @@ export function AiAssistantWidget(): ReactElement | null {
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', finishDrag);
       window.removeEventListener('pointercancel', finishDrag);
+      if (moveRafId !== null) window.cancelAnimationFrame(moveRafId);
       document.body.style.userSelect = previousUserSelect;
       document.body.style.touchAction = previousTouchAction;
     };
