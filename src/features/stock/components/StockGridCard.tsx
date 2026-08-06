@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { memo, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Eye, Heart, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,7 @@ export type StockGridCardProps = {
   detailLabel: string;
 };
 
-export function StockGridCard({
+function StockGridCardComponent({
   stock,
   onNavigateDetail,
   onToggleFavorite,
@@ -177,3 +177,5 @@ export function StockGridCard({
     </div>
   );
 }
+
+export const StockGridCard = memo(StockGridCardComponent);

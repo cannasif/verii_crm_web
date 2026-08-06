@@ -36,7 +36,7 @@ export function StockDetailPage(): ReactElement {
   const { canCreate, canUpdate } = useCrudPermissions('stock.stocks.view');
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const [activeTab, setActiveTab] = useState('basic');
   const stockId = id ? parseInt(id, 10) : 0;
   const didMeasureDataReady = useRef(false);

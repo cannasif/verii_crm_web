@@ -69,6 +69,8 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
 
       setSelectedFiles([]);
       setAltTexts([]);
+    } catch {
+      void 0;
     } finally {
       setUploading(false);
     }

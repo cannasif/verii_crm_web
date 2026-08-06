@@ -129,7 +129,7 @@ export function StockListPage(): ReactElement {
   const { t, i18n } = useTranslation(['stock', 'common']);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const { user } = useAuthStore();
 
   const [pageNumber, setPageNumber] = useState(1);
@@ -448,9 +448,13 @@ export function StockListPage(): ReactElement {
     );
   };
 
-  const navigateToStockDetail = (stockId: number): void => {
+  const navigateToStockDetail = useCallback((stockId: number): void => {
     navigate(`/stocks/${stockId}`);
-  };
+  }, [navigate]);
+
+  const handleToggleFavorite = useCallback((stockId: number, next: boolean): void => {
+    toggleStockFavorite.mutate({ stockId, data: { isFavorite: next } });
+  }, [toggleStockFavorite]);
 
   const renderCell = (stock: StockGetDto, key: StockColumnKey): ReactElement | string => {
     if (key === 'Id') return `#${stock.id}`;
@@ -805,9 +809,7 @@ export function StockListPage(): ReactElement {
                           key={stock.id}
                           stock={stock}
                           onNavigateDetail={navigateToStockDetail}
-                          onToggleFavorite={(stockId, next) => {
-                            toggleStockFavorite.mutate({ stockId, data: { isFavorite: next } });
-                          }}
+                          onToggleFavorite={handleToggleFavorite}
                           isFavoritePending={toggleStockFavorite.isPending}
                           favoriteLabelOn={t('list.removeFavorite')}
                           favoriteLabelOff={t('list.addFavorite')}

@@ -11,7 +11,7 @@ import type { UpdateSystemSettingsDto } from '../types/systemSettings';
 
 export function SystemSettingsPage(): ReactElement {
   const { t } = useTranslation();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const { data, isLoading } = useSystemSettingsQuery();
   const updateMutation = useUpdateSystemSettingsMutation();
   const erpConnectionMutation = useMutation({

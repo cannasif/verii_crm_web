@@ -41,21 +41,29 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (imageToDelete) {
-      await deleteImage.mutateAsync({
-        id: imageToDelete.id,
-        stockId,
-      });
-      setDeleteDialogOpen(false);
-      setImageToDelete(null);
+      try {
+        await deleteImage.mutateAsync({
+          id: imageToDelete.id,
+          stockId,
+        });
+        setDeleteDialogOpen(false);
+        setImageToDelete(null);
+      } catch {
+        void 0;
+      }
     }
   };
 
   const handleSetPrimary = async (image: StockImageDto): Promise<void> => {
     if (!canUpdate) return;
-    await setPrimary.mutateAsync({
-      id: image.id,
-      stockId,
-    });
+    try {
+      await setPrimary.mutateAsync({
+        id: image.id,
+        stockId,
+      });
+    } catch {
+      void 0;
+    }
   };
 
   if (isLoading || isFetching) {

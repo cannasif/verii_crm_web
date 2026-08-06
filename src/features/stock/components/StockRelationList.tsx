@@ -46,12 +46,16 @@ export function StockRelationList({ stockId }: StockRelationListProps): ReactEle
 
   const handleDeleteConfirm = async (): Promise<void> => {
     if (relationToDelete) {
-      await deleteRelation.mutateAsync({
-        id: relationToDelete.id,
-        stockId,
-      });
-      setDeleteDialogOpen(false);
-      setRelationToDelete(null);
+      try {
+        await deleteRelation.mutateAsync({
+          id: relationToDelete.id,
+          stockId,
+        });
+        setDeleteDialogOpen(false);
+        setRelationToDelete(null);
+      } catch {
+        void 0;
+      }
     }
   };
 

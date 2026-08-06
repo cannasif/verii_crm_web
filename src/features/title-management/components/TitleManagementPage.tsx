@@ -53,7 +53,7 @@ function resolveLabel(
 export function TitleManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['title-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingTitle, setEditingTitle] = useState<TitleDto | null>(null);

@@ -58,7 +58,7 @@ function resolveLabel(
 export function ShippingAddressManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['shipping-address-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [selectedShippingAddress, setSelectedShippingAddress] = useState<ShippingAddressDto | null>(null);
