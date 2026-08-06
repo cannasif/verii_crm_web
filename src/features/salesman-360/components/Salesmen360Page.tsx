@@ -6,8 +6,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { useAuthStore } from '@/stores/auth-store';
+import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
+import { hasPermission } from '@/features/access-control/utils/hasPermission';
+import { SalesPlanContextReport } from '@/features/sales-planning';
 import {
   useSalesmenOverviewQuery,
   useSalesmenPerformanceQuery,
@@ -58,6 +61,11 @@ export function Salesmen360Page(): ReactElement {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const authUser = useAuthStore((s) => s.user);
+  const { data: permissions } = useMyPermissionsQuery();
+  const canViewSalesPlanning = hasPermission(permissions, 'sales-planning.view') ||
+    hasPermission(permissions, 'sales-planning.manage') ||
+    hasPermission(permissions, 'sales-planning.submit') ||
+    hasPermission(permissions, 'sales-planning.approve');
   const rawUserId = params.userId ?? '';
   const isAllSalesmen = rawUserId === ALL_SALESMEN_ROUTE_VALUE;
   const userId = isAllSalesmen ? ALL_SALESMEN_ID : rawUserId === 'me' ? (authUser?.id ?? 0) : Number(rawUserId || 0);
@@ -111,6 +119,12 @@ export function Salesmen360Page(): ReactElement {
   useEffect(() => {
     setSelectedUserIds(isAllSalesmen || userId <= 0 ? [] : [userId]);
   }, [isAllSalesmen, userId]);
+
+  useEffect(() => {
+    if (!canViewSalesPlanning && activeTab === 'planning') {
+      setActiveTab('overview');
+    }
+  }, [activeTab, canViewSalesPlanning]);
 
   useEffect(() => {
     if (selectedUserIds.length === 0 || visibleSalesmen.length === 0) {
@@ -388,7 +402,21 @@ export function Salesmen360Page(): ReactElement {
         </div>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Salesmen360TabKey)} className="space-y-6">
-          <SalesmenReportTabs />
+          <SalesmenReportTabs showPlanning={canViewSalesPlanning} />
+
+          {canViewSalesPlanning ? (
+            <TabsContent value="planning" className="space-y-4">
+              <SalesPlanContextReport
+                userIds={selectedUserIds}
+                enabled={activeTab === 'planning'}
+                contextLabel={t('salesman360.planning.description', {
+                  defaultValue: isTeamScope
+                    ? 'Seçili satış ekibinin hedef gerçekleşmesini ve beklenen satış tahminini izleyin.'
+                    : 'Seçili satışçının hedef gerçekleşmesini ve beklenen satış tahminini izleyin.',
+                })}
+              />
+            </TabsContent>
+          ) : null}
 
           {!isTeamScope ? (
             <SalesmenOverviewTab

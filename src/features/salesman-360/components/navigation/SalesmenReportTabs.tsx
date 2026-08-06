@@ -13,6 +13,7 @@ import {
   PinOff,
   ShoppingCart,
   TableProperties,
+  Target,
   type LucideIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +31,10 @@ export type Salesmen360TabKey =
   | 'activity'
   | 'customer'
   | 'stock'
-  | 'movement';
+  | 'movement'
+  | 'planning';
+
+export type Salesmen360PerformanceSection = Exclude<Salesmen360TabKey, 'planning'>;
 
 interface ReportTabDefinition {
   value: Salesmen360TabKey;
@@ -38,7 +42,7 @@ interface ReportTabDefinition {
   icon: LucideIcon;
 }
 
-export function SalesmenReportTabs(): ReactElement {
+export function SalesmenReportTabs({ showPlanning = false }: { showPlanning?: boolean }): ReactElement {
   const { t } = useTranslation();
   const userId = useAuthStore((state) => state.user?.id ?? 0);
   const storageKey = `salesmen360:report-tabs:v1:${userId || 'anonymous'}`;
@@ -67,6 +71,11 @@ export function SalesmenReportTabs(): ReactElement {
       }),
       icon: ChartNoAxesCombined,
     },
+    ...(showPlanning ? [{
+      value: 'planning' as const,
+      label: t('salesman360.reportTabs.planning', { defaultValue: 'Hedef ve tahmin' }),
+      icon: Target,
+    }] : []),
     {
       value: 'demand',
       label: t('salesman360.reportTabs.demand', {

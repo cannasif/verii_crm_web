@@ -1733,6 +1733,7 @@
       "noResults": "Eşleşen satış temsilcisi yok."
     },
     "reportTabs": {
+      "planning": "Hedef ve tahmin",
       "sales": "Satış performansı",
       "demand": "Talep performansı",
       "quotation": "Teklif performansı",

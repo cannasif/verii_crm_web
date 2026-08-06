@@ -14,7 +14,7 @@ import { PerformanceKpiOverview } from './performance/PerformanceKpiOverview';
 import { SalesPerformanceDetailPanels } from './performance/SalesPerformanceDetailPanels';
 import { TeamSalesValuePanel } from './performance/TeamSalesValuePanel';
 import { SalesmenPerformancePivotReport } from './performance/SalesmenPerformancePivotReport';
-import type { Salesmen360TabKey } from './navigation/SalesmenReportTabs';
+import type { Salesmen360PerformanceSection } from './navigation/SalesmenReportTabs';
 
 const STATUS_COLORS: Record<string, string> = {
   draft: '#94a3b8',
@@ -51,7 +51,7 @@ export function SalesmenPerformanceDashboard({
   locale: string;
   currency?: string;
   periodParams?: Salesmen360PeriodParams;
-  section: Salesmen360TabKey;
+  section: Salesmen360PerformanceSection;
 }): ReactElement {
   const { t } = useTranslation();
   const Recharts = useRechartsModule(Boolean(data) && !isLoading && !isError);

@@ -1734,6 +1734,7 @@
       "noResults": "No matches."
     },
     "reportTabs": {
+      "planning": "Targets and forecast",
       "sales": "Sales performance",
       "demand": "Demand performance",
       "quotation": "Quotation performance",

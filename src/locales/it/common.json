@@ -1686,6 +1686,7 @@
       "noResults": "Nessun risultato."
     },
     "reportTabs": {
+      "planning": "Obiettivi e previsioni",
       "sales": "Prestazioni di vendita",
       "demand": "Prestazioni delle richieste",
       "quotation": "Prestazioni delle offerte",

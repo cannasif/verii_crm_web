@@ -1686,6 +1686,7 @@
       "noResults": "Aucun résultat."
     },
     "reportTabs": {
+      "planning": "Objectifs et prévisions",
       "sales": "Performance commerciale",
       "demand": "Performance des demandes",
       "quotation": "Performance des devis",

@@ -1686,6 +1686,7 @@
       "noResults": "Keine Treffer."
     },
     "reportTabs": {
+      "planning": "Ziele und Prognose",
       "sales": "Verkaufsleistung",
       "demand": "Anfrageleistung",
       "quotation": "Angebotsleistung",

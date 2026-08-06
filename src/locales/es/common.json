@@ -1686,6 +1686,7 @@
       "noResults": "Sin resultados."
     },
     "reportTabs": {
+      "planning": "Objetivos y previsión",
       "sales": "Rendimiento de ventas",
       "demand": "Rendimiento de solicitudes",
       "quotation": "Rendimiento de ofertas",
