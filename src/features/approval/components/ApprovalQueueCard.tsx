@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react';
+import { memo, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { CheckCircle2, XCircle, Eye, Clock } from 'lucide-react';
 import type { ApprovalQueueCardProps } from '../types/approval-types';
 import { ApprovalStatus, ApprovalLevel } from '../types/approval-types';
 
-export function ApprovalQueueCard({
+export const ApprovalQueueCard = memo(function ApprovalQueueCard({
   queue,
   onViewDetail,
   onApprove,
@@ -108,4 +108,4 @@ export function ApprovalQueueCard({
       </CardContent>
     </Card>
   );
-}
+});

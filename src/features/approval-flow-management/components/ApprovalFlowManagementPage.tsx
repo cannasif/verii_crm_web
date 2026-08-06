@@ -43,7 +43,7 @@ type ApprovalFlowColumnKey = keyof ApprovalFlowDto;
 export function ApprovalFlowManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['approval-flow-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingApprovalFlow, setEditingApprovalFlow] = useState<ApprovalFlowDto | null>(null);

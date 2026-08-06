@@ -142,7 +142,10 @@ function createRouteEntityContext(pathname: string): {
 export function AiAssistantPage(): ReactElement {
   const { t } = useTranslation('ai-assistant');
   const navigate = useNavigate();
-  const { setPageTitle, setAiAssistantWidgetVisible, isAiAssistantWidgetVisible, isSidebarOpen } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
+  const setAiAssistantWidgetVisible = useUIStore((s) => s.setAiAssistantWidgetVisible);
+  const isAiAssistantWidgetVisible = useUIStore((s) => s.isAiAssistantWidgetVisible);
+  const isSidebarOpen = useUIStore((s) => s.isSidebarOpen);
   const { user } = useAuthStore();
   const { data: greeting, isLoading } = useAiAssistantGreetingQuery();
   const { data: analytics } = useAiAssistantAnalyticsQuery();

@@ -96,7 +96,10 @@ export function ApprovalFlowStepList({
   const deleteStep = useDeleteApprovalFlowStep();
   const reorderSteps = useReorderApprovalFlowSteps();
 
-  const sortedSteps = [...steps].sort((a, b) => a.stepOrder - b.stepOrder);
+  const sortedSteps = useMemo(
+    () => [...steps].sort((a, b) => a.stepOrder - b.stepOrder),
+    [steps]
+  );
 
   const availableRoleGroupOptions = useMemo(() => {
     const usedRoleGroupIds = new Set(

@@ -1,4 +1,4 @@
-import { type ReactElement, useState } from 'react';
+import { type ReactElement, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useUIStore } from '@/stores/ui-store';
 import { useEffect } from 'react';
@@ -11,7 +11,7 @@ import type { ApprovalQueueGetDto } from '../types/approval-types';
 
 export function ApprovalQueueList(): ReactElement {
   const { t } = useTranslation(['approval', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const { data: pendingApprovals, isLoading, error } = usePendingApprovals();
   const [selectedQueue, setSelectedQueue] = useState<ApprovalQueueGetDto | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
@@ -23,25 +23,25 @@ export function ApprovalQueueList(): ReactElement {
     };
   }, [t, setPageTitle]);
 
-  const handleViewDetail = (queue: ApprovalQueueGetDto): void => {
+  const handleViewDetail = useCallback((queue: ApprovalQueueGetDto): void => {
     setSelectedQueue(queue);
     setIsDetailModalOpen(true);
-  };
+  }, []);
 
   const handleCloseModal = (): void => {
     setIsDetailModalOpen(false);
     setSelectedQueue(null);
   };
 
-  const handleApprove = (queue: ApprovalQueueGetDto): void => {
+  const handleApprove = useCallback((queue: ApprovalQueueGetDto): void => {
     setSelectedQueue(queue);
     setIsDetailModalOpen(true);
-  };
+  }, []);
 
-  const handleReject = (queue: ApprovalQueueGetDto): void => {
+  const handleReject = useCallback((queue: ApprovalQueueGetDto): void => {
     setSelectedQueue(queue);
     setIsDetailModalOpen(true);
-  };
+  }, []);
 
   if (isLoading) {
     return (
