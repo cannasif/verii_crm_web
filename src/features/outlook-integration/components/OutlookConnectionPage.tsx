@@ -21,7 +21,7 @@ function formatDate(value?: string | null): string {
 
 export function OutlookConnectionPage(): ReactElement {
   const { t } = useTranslation(['outlook-integration', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 

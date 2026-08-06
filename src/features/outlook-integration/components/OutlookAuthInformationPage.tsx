@@ -5,7 +5,7 @@ import { useUIStore } from '@/stores/ui-store';
 
 export function OutlookAuthInformationPage(): ReactElement {
   const { t } = useTranslation('outlook-integration');
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   useEffect(() => {
     setPageTitle(t('page.authInformationTitle'));

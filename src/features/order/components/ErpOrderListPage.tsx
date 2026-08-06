@@ -198,7 +198,7 @@ function DetailLineTable({
 
 export function ErpOrderListPage(): ReactElement {
   const { t, i18n } = useTranslation(['order', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
 

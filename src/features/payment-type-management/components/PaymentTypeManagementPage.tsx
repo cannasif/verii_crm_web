@@ -54,7 +54,7 @@ function resolveLabel(
 export function PaymentTypeManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['payment-type-management', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingPaymentType, setEditingPaymentType] = useState<PaymentTypeDto | null>(null);

@@ -7,7 +7,7 @@ import { useOutlookStatusQuery } from '../hooks/useOutlookStatusQuery';
 
 export function OutlookSyncPage(): ReactElement {
   const { t } = useTranslation('outlook-integration');
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { data: status, isLoading } = useOutlookStatusQuery();
 
   useEffect(() => {

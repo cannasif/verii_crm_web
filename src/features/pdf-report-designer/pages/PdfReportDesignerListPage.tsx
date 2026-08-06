@@ -137,7 +137,7 @@ export function PdfReportDesignerListPage(): ReactElement {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, PDF_REPORT_SEARCH_FIELDS);
   const [pageNumber, setPageNumber] = useState(1);

@@ -103,7 +103,7 @@ export function OrderCreateForm(): ReactElement {
   const { t } = useTranslation(['order', 'common']);
   const navigate = useNavigate();
   const location = useLocation();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const user = useAuthStore((state) => state.user);
   const branch = useAuthStore((state) => state.branch);
 

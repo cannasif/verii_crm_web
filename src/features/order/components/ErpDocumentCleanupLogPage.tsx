@@ -98,7 +98,7 @@ function formatDate(value?: string | null, locale?: string): string {
 
 export function ErpDocumentCleanupLogPage(): ReactElement {
   const { t, i18n } = useTranslation(['common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { user } = useAuthStore();
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
