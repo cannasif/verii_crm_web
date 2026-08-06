@@ -54,7 +54,7 @@ export function LoginPage(): React.JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
   const { data: branches, isLoading: isBranchesLoading } = useBranches();
   const { mutate: login, isPending } = useLogin(branches);
-  const { logout } = useAuthStore();
+  const logout = useAuthStore((s) => s.logout);
   
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [capsLockActive, setCapsLockActive] = useState(false);

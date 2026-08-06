@@ -94,7 +94,7 @@ function getCurrentPath(stack: CatalogCategoryNodeDto[], selectedLeaf: CatalogCa
 
 export function CategoryDefinitionsPage(): ReactElement {
   const { t, i18n } = useTranslation(['category-definitions', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
   const [activeTab, setActiveTab] = useState<'summary' | 'stocks' | 'favorites' | 'rules' | 'tips'>('summary');
   const [selectedCatalogId, setSelectedCatalogId] = useState<number | null>(null);
   const [navigationStack, setNavigationStack] = useState<CatalogCategoryNodeDto[]>([]);

@@ -50,8 +50,8 @@ type ApprovalRoleColumnKey = keyof ApprovalRoleDto;
 
 export function ApprovalRoleManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['approval-role-management', 'common']);
-  const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const user = useAuthStore((s) => s.user);
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<ApprovalRoleDto | null>(null);

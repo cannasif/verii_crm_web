@@ -38,8 +38,8 @@ type ApprovalRoleGroupColumnKey = keyof ApprovalRoleGroupDto;
 
 export function ApprovalRoleGroupManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['approval-role-group-management', 'common']);
-  const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const user = useAuthStore((s) => s.user);
+  const setPageTitle = useUIStore((s) => s.setPageTitle);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<ApprovalRoleGroupDto | null>(null);
