@@ -28,7 +28,8 @@ interface SidebarProps {
 }
 
 function SubMenuComponent({ item, pathname, searchQuery }: { item: NavItem; pathname: string; searchQuery: string }): ReactElement {
-  const { setSearchQuery, setSidebarOpen } = useUIStore();
+  const setSearchQuery = useUIStore((state) => state.setSearchQuery);
+  const setSidebarOpen = useUIStore((state) => state.setSidebarOpen);
   
   const hasActiveChild = item.children?.some(child => child.href === pathname) || false;
   
@@ -118,7 +119,9 @@ function NavItemComponent({
   isManualClick: boolean;
 }): ReactElement {
   const location = useLocation();
-  const { isSidebarOpen, setSidebarOpen, setSearchQuery } = useUIStore();
+  const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
+  const setSidebarOpen = useUIStore((state) => state.setSidebarOpen);
+  const setSearchQuery = useUIStore((state) => state.setSearchQuery);
   
   const checkIsActive = (navItem: NavItem): boolean => {
     if (navItem.href === location.pathname) return true;
@@ -320,7 +323,10 @@ function NavItemComponent({
 
 export function Sidebar({ items }: SidebarProps): ReactElement {
 
-  const { isSidebarOpen, setSidebarOpen, searchQuery, setSearchQuery } = useUIStore();
+  const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
+  const setSidebarOpen = useUIStore((state) => state.setSidebarOpen);
+  const searchQuery = useUIStore((state) => state.searchQuery);
+  const setSearchQuery = useUIStore((state) => state.setSearchQuery);
   const location = useLocation();
   const navigate = useNavigate();
 

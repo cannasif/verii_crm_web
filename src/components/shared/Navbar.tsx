@@ -45,7 +45,11 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { user } = useAuthStore();
-  const { toggleSidebar, searchQuery, setSearchQuery, setSidebarOpen, isSidebarOpen } = useUIStore();
+  const toggleSidebar = useUIStore((state) => state.toggleSidebar);
+  const searchQuery = useUIStore((state) => state.searchQuery);
+  const setSearchQuery = useUIStore((state) => state.setSearchQuery);
+  const setSidebarOpen = useUIStore((state) => state.setSidebarOpen);
+  const isSidebarOpen = useUIStore((state) => state.isSidebarOpen);
   const [userProfileModalOpen, setUserProfileModalOpen] = useState(false);
   const userDetail = useAppShellStore((state) =>
     user?.id ? state.userSummaries[String(user.id)]?.data ?? null : null
