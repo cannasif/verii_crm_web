@@ -90,6 +90,8 @@ const DEFAULT_COL_WIDTH = 150;
 const ACTIONS_COL_WIDTH = 84;
 const MIN_TABLE_VIEWPORT_HEIGHT = 180;
 const DEFAULT_TABLE_VIEWPORT_MAX_HEIGHT = 'min(65dvh, 720px)';
+const TABLE_HEADER_ESTIMATED_HEIGHT = 42;
+const TABLE_ROW_ESTIMATED_HEIGHT = 48;
 const TABLE_VIEWPORT_BOTTOM_GAP = 12;
 const CONTEXT_MENU_WIDTH = 320;
 const CONTEXT_MENU_PREFERRED_HEIGHT = 360;
@@ -483,7 +485,12 @@ export function DataTableGrid<TRow, TKey extends string>({
         const availableHeight = Math.floor(
           viewportBottom - tableTop - paginationHeight - TABLE_VIEWPORT_BOTTOM_GAP
         );
-        const nextHeight = Math.max(MIN_TABLE_VIEWPORT_HEIGHT, availableHeight);
+        const preferredHeight = TABLE_HEADER_ESTIMATED_HEIGHT
+          + Math.max(1, pageSize) * TABLE_ROW_ESTIMATED_HEIGHT;
+        const nextHeight = Math.max(
+          MIN_TABLE_VIEWPORT_HEIGHT,
+          Math.min(preferredHeight, availableHeight)
+        );
         setTableViewportMaxHeight((current) => current === nextHeight ? current : nextHeight);
       });
     };
@@ -678,7 +685,12 @@ export function DataTableGrid<TRow, TKey extends string>({
     ?? (showActionsColumn ? renderActionsCell : undefined);
 
   return (
-    <div ref={gridRootRef} className="flex min-h-0 min-w-0 w-full flex-col gap-2" data-grid-fit-viewport={fitViewport}>
+    <div
+      ref={gridRootRef}
+      className="flex min-h-0 min-w-0 w-full flex-col gap-0 overflow-hidden rounded-md border border-slate-200/90 bg-stone-50/70 dark:border-white/10 dark:bg-transparent"
+      data-grid-fit-viewport={fitViewport}
+      data-grid-root="true"
+    >
       {actionBar ? <DataTableActionBar {...actionBar} /> : toolbar}
       <div className="relative min-h-0 w-full min-w-0 flex-1">
         {isLoading && (
@@ -692,7 +704,7 @@ export function DataTableGrid<TRow, TKey extends string>({
         <div
           ref={tableScrollRef}
           className={cn(
-            'crm-data-grid-viewport custom-scrollbar relative w-full min-w-0 overflow-auto overscroll-contain rounded-md border *:data-[slot=table-container]:overflow-visible',
+            'crm-data-grid-viewport custom-scrollbar relative w-full min-w-0 overflow-auto overscroll-contain *:data-[slot=table-container]:overflow-visible',
             resizingKey
               ? 'cursor-col-resize select-none'
               : isDragging
@@ -700,6 +712,9 @@ export function DataTableGrid<TRow, TKey extends string>({
                 : 'cursor-grab'
           )}
           style={{
+            height: fitViewport
+              ? (tableViewportMaxHeight == null ? DEFAULT_TABLE_VIEWPORT_MAX_HEIGHT : `${tableViewportMaxHeight}px`)
+              : undefined,
             maxHeight: fitViewport
               ? (tableViewportMaxHeight == null ? DEFAULT_TABLE_VIEWPORT_MAX_HEIGHT : `${tableViewportMaxHeight}px`)
               : undefined,
@@ -998,7 +1013,11 @@ export function DataTableGrid<TRow, TKey extends string>({
       </div>
     </div>
 
-      <div ref={paginationRef} className="mt-1 flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-200/90 px-3 pb-4 pt-3 sm:px-4 dark:border-white/10">
+      <div
+        ref={paginationRef}
+        className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-slate-200/90 px-3 pb-4 pt-3 sm:px-4 dark:border-white/10"
+        data-grid-pagination="true"
+      >
         <div className="flex min-w-0 flex-wrap items-center gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

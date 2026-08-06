@@ -5,16 +5,16 @@ export const MANAGEMENT_LIST_CARD_CLASSNAME =
   'gap-0 overflow-hidden border-slate-300/80 bg-stone-50/95 p-0 shadow-md ring-1 ring-slate-200/70 backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1025]/60 dark:shadow-sm dark:ring-0';
 
 export const MANAGEMENT_LIST_CARD_HEADER_CLASSNAME =
-  'gap-2 rounded-t-xl border-b-2 border-slate-300/80 bg-slate-100/90 px-3 py-3 sm:px-4 sm:py-3 dark:border-white/10 dark:bg-white/[0.04]';
+  'gap-2 border-b border-slate-300/80 bg-slate-100/90 px-3 py-3 sm:px-4 sm:py-3 dark:border-white/10 dark:bg-white/[0.04]';
 
 export const MANAGEMENT_LIST_CARD_TITLE_CLASSNAME = 'text-slate-900 dark:text-white';
 
 export const MANAGEMENT_LIST_CARD_CONTENT_CLASSNAME =
-  'min-h-0 bg-stone-50/80 px-3 pb-3 pt-2 sm:px-4 sm:pb-4 dark:bg-transparent';
+  'min-h-0 bg-stone-50/80 p-0 dark:bg-transparent';
 
 /** Tablo alanının iç çerçevesi (toolbar ile grid arası). */
 export const MANAGEMENT_LIST_TABLE_SHELL_CLASSNAME =
-  'overflow-hidden rounded-lg border border-slate-300/70 bg-stone-100/80 shadow-sm dark:border-white/10 dark:bg-transparent dark:shadow-none';
+  'overflow-hidden bg-stone-50/80 dark:bg-transparent';
 
 export const MANAGEMENT_TOOLBAR_OUTLINE_BUTTON_CLASSNAME =
   'border-slate-300 bg-white shadow-sm hover:bg-stone-50 dark:border-white/15 dark:bg-transparent dark:shadow-none';
@@ -40,8 +40,9 @@ export const ADD_BUTTON_CLASS =
 
 /** DataTableGrid sarmalayıcı — thead / hücre border ve hover (müşteri listesi). */
 export const MANAGEMENT_DATA_GRID_CLASSNAME = cn(
-  'management-data-grid rounded-md',
-  '[&_[data-slot=table-container]]:rounded-md',
+  'management-data-grid',
+  '[&_[data-grid-root=true]]:rounded-none [&_[data-grid-root=true]]:border-0 [&_[data-grid-root=true]]:bg-transparent',
+  '[&_[data-slot=table-container]]:rounded-none',
   '[&_table]:border-collapse [&_thead_tr]:bg-slate-100/90 dark:[&_thead_tr]:bg-white/[0.06]',
   '[&_th]:border-b [&_th]:border-r [&_th]:border-slate-200/90 dark:[&_th]:border-white/10 [&_th]:font-semibold [&_th]:text-xs [&_th]:uppercase [&_th]:tracking-wide [&_th]:text-slate-600 dark:[&_th]:text-slate-300',
   '[&_th:last-child]:border-r-0',
