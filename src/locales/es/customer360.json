@@ -14,6 +14,7 @@
     "error": "Could not load ERP balance summary."
   },
   "tabs": {
+    "salesPlanning": "Objetivos y previsión",
     "quotations": "Cotizaciones",
     "orders": "Pedidos",
     "activities": "Actividades",
@@ -25,6 +26,9 @@
     "imagesDefaultDescription": "Imagen de tarjeta de visita",
     "erpMovements": "Movimientos ERP",
     "erpOrders": "Pedidos ERP"
+  },
+  "salesGoalReport": {
+    "description": "Cumplimiento de objetivos y previsión de los vendedores responsables de este cliente ({{salespeople}}). La vista muestra el ámbito del vendedor, no el importe del cliente."
   },
   "quickQuotations": {
     "empty": "No se encontraron cotizaciones rápidas para este cliente",

@@ -14,6 +14,7 @@
     "error": "Could not load ERP balance summary."
   },
   "tabs": {
+    "salesPlanning": "الأهداف والتوقعات",
     "quotations": "عروض الأسعار",
     "orders": "الطلبات",
     "activities": "الأنشطة",
@@ -25,6 +26,9 @@
     "imagesDefaultDescription": "صورة البطاقة الشخصية",
     "erpMovements": "حركات ERP",
     "erpOrders": "طلبات ERP"
+  },
+  "salesGoalReport": {
+    "description": "تحقيق الأهداف وتوقعات المبيعات للمندوبين المسؤولين عن هذا العميل ({{salespeople}}). يعرض هذا القسم نطاق المندوب وليس مبلغ العميل."
   },
   "quickQuotations": {
     "empty": "لم يتم العثور على عروض أسعار سريعة لهذا العميل",

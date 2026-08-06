@@ -14,6 +14,7 @@
     "error": "Could not load ERP balance summary."
   },
   "tabs": {
+    "salesPlanning": "Objectifs et prévisions",
     "quotations": "Devis",
     "orders": "Commandes",
     "activities": "Activités",
@@ -25,6 +26,9 @@
     "imagesDefaultDescription": "Image de carte de visite",
     "erpMovements": "Mouvements ERP",
     "erpOrders": "Commandes ERP"
+  },
+  "salesGoalReport": {
+    "description": "Réalisation des objectifs et prévisions des commerciaux responsables de ce client ({{salespeople}}). Cette vue représente le périmètre commercial, pas le montant du client."
   },
   "quickQuotations": {
     "empty": "Aucun devis rapide trouvé pour ce client",

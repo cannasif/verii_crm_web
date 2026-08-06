@@ -2,6 +2,8 @@ export interface Customer360ProfileDto {
   id: number;
   name: string;
   customerCode?: string | null;
+  salesRepCode?: string | null;
+  salesRepUsers?: Array<{ userId: number; userName: string }>;
 }
 
 export interface Customer360KpiDto {

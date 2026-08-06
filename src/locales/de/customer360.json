@@ -14,6 +14,7 @@
     "error": "Could not load ERP balance summary."
   },
   "tabs": {
+    "salesPlanning": "Ziele und Prognose",
     "quotations": "Angebote",
     "orders": "Bestellungen",
     "activities": "Aktivitäten",
@@ -25,6 +26,9 @@
     "imagesDefaultDescription": "Visitenkartenbild",
     "erpMovements": "ERP-Bewegungen",
     "erpOrders": "ERP-Bestellungen"
+  },
+  "salesGoalReport": {
+    "description": "Zielerreichung und Verkaufsprognose der für diesen Kunden zuständigen Vertriebsmitarbeiter ({{salespeople}}). Die Ansicht zeigt den Vertriebsbereich, nicht den Kundenbetrag."
   },
   "quickQuotations": {
     "empty": "Keine Schnellangebote für diesen Kunden gefunden",

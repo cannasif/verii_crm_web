@@ -29,6 +29,7 @@ import {
   MoreVertical,
   Package,
   Send,
+  Target,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -94,6 +95,9 @@ import { getApiBaseUrl } from '@/lib/axios';
 import { formatSystemDate, formatSystemNumber } from '@/lib/system-settings';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
+import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
+import { hasPermission } from '@/features/access-control/utils/hasPermission';
+import { SalesPlanContextReport } from '@/features/sales-planning';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
 import { useQueryClient } from '@tanstack/react-query';
@@ -1499,6 +1503,11 @@ export function Customer360Page(): ReactElement {
     [t]
   );
   const { user } = useAuthStore();
+  const { data: permissions } = useMyPermissionsQuery();
+  const canViewSalesPlanning = hasPermission(permissions, 'sales-planning.view') ||
+    hasPermission(permissions, 'sales-planning.manage') ||
+    hasPermission(permissions, 'sales-planning.submit') ||
+    hasPermission(permissions, 'sales-planning.approve');
   const canViewErpOrders = useCanViewCustomerErpOrders();
   const id = Number(customerId ?? 0);
   const [currency, setCurrency] = useState<string>(ALL_CURRENCY);
@@ -1559,6 +1568,8 @@ export function Customer360Page(): ReactElement {
   const profile = data?.profile ?? { id: 0, name: '', customerCode: null };
   const customerErpCode = customerDetail?.customerCode ?? profile.customerCode;
   const customerDisplayName = customerDetail?.name ?? profile.name;
+  const salesRepUsers = data?.profile.salesRepUsers ?? [];
+  const showSalesPlanningTab = canViewSalesPlanning && salesRepUsers.length > 0;
 
   const customer360Tabs = useMemo(() => {
     const tabs = [
@@ -1570,13 +1581,16 @@ export function Customer360Page(): ReactElement {
         : []),
       { value: 'activities', icon: Activity, label: tc('tabs.activities') },
       { value: 'analytics', icon: Activity, label: tc('tabs.analytics') },
+      ...(showSalesPlanningTab
+        ? [{ value: 'salesPlanning' as const, icon: Target, label: tc('tabs.salesPlanning') }]
+        : []),
       { value: 'quickQuotations', icon: FileText, label: tc('tabs.quickQuotations') },
       { value: 'erpMovements', icon: ClipboardList, label: tc('tabs.erpMovements') },
       { value: 'mailLogs', icon: Mail, label: tc('tabs.mailLogs') },
       { value: 'images', icon: ImageIcon, label: tc('tabs.images') },
     ];
     return tabs;
-  }, [canViewErpOrders, tc]);
+  }, [canViewErpOrders, showSalesPlanningTab, tc]);
   const handleQuickActivitySubmit = useCallback(
     async (
       formData: ActivityFormSchema,
@@ -2045,6 +2059,18 @@ export function Customer360Page(): ReactElement {
             </>
           )}
         </TabsContent>
+
+        {showSalesPlanningTab ? (
+          <TabsContent value="salesPlanning" className="space-y-4">
+            <SalesPlanContextReport
+              userIds={salesRepUsers.map((item) => item.userId)}
+              enabled={activeTab === 'salesPlanning'}
+              contextLabel={tc('salesGoalReport.description', {
+                salespeople: salesRepUsers.map((item) => item.userName).join(', '),
+              })}
+            />
+          </TabsContent>
+        ) : null}
 
         <TabsContent value="quickQuotations" className="space-y-4">
           {isQuickQuotationsLoading ? (

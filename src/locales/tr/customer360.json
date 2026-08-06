@@ -14,6 +14,7 @@
     "error": "ERP bakiye özeti yüklenemedi."
   },
   "tabs": {
+    "salesPlanning": "Hedef ve Tahmin",
     "quotations": "Teklifler",
     "orders": "Siparişler",
     "activities": "Aktiviteler",
@@ -25,6 +26,9 @@
     "mailLogs": "E-posta Geçmişi",
     "images": "Görseller",
     "imagesDefaultDescription": "Kartvizit Görseli"
+  },
+  "salesGoalReport": {
+    "description": "Bu müşteriden sorumlu satışçıların ({{salespeople}}) hedef gerçekleşmesi ve satış tahmini. Bu görünüm müşteri tutarını değil, sorumlu satışçı kapsamını gösterir."
   },
   "quickQuotations": {
     "empty": "Bu cariye ait hızlı teklif bulunamadı",

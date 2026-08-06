@@ -14,6 +14,7 @@
     "error": "Could not load ERP balance summary."
   },
   "tabs": {
+    "salesPlanning": "Targets and Forecast",
     "quotations": "Quotations",
     "orders": "Orders",
     "activities": "Activities",
@@ -25,6 +26,9 @@
     "imagesDefaultDescription": "Business card image",
     "erpMovements": "ERP Movements",
     "erpOrders": "ERP Orders"
+  },
+  "salesGoalReport": {
+    "description": "Target attainment and sales forecast for the salespeople responsible for this customer ({{salespeople}}). This view represents the salesperson scope, not the customer's amount."
   },
   "quickQuotations": {
     "empty": "No quick quotations found for this customer",
