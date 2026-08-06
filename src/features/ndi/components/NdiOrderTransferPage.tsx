@@ -1125,49 +1125,82 @@ export function NdiOrderTransferPage(): ReactElement {
     });
   }, [orders, search]);
 
-  const selectedLines = selectedOrderLines.filter((line) => selectedLineIds.has(line.id));
-  const selectedQuantity = selectedLines.reduce((total, line) => total + line.remainingQuantity, 0);
-  const selectedWarehouses = Array.from(new Set(selectedOrderLines.map((line) => line.warehouse)));
-  const selectedShipmentTypes = Array.from(new Set(selectedOrdersForTransfer.map((order) => order.shipmentType)));
-  const selectedRepresentatives = Array.from(new Set(selectedOrdersForTransfer.map((order) => order.representative)));
-  const selectedSpecialCodes1 = Array.from(new Set(
-    selectedOrdersForTransfer
-      .map((order) => order.specialCode1?.trim())
-      .filter((value): value is string => Boolean(value))
-  ));
-  const selectedExportRefNos = Array.from(new Set(
-    selectedOrdersForTransfer
-      .map((order) => order.exportRefNo?.trim())
-      .filter((value): value is string => Boolean(value))
-  ));
-  const selectedOrderExportTypes = Array.from(new Set(
-    selectedOrdersForTransfer
-      .map((order) => order.orderExportType)
-      .filter((value): value is number => value != null)
-  ));
-  const selectedOrderTypes = Array.from(new Set(
-    selectedOrdersForTransfer
-      .map((order) => order.orderTipi)
-      .filter((value): value is number => value != null)
-  ));
-  const selectedProjects = Array.from(new Set(
-    selectedOrdersForTransfer
-      .map((order) => order.projectCode?.trim())
-      .filter((value): value is string => Boolean(value))
-  ));
+  const selectedLines = useMemo(
+    () => selectedOrderLines.filter((line) => selectedLineIds.has(line.id)),
+    [selectedOrderLines, selectedLineIds]
+  );
+  const selectedQuantity = useMemo(
+    () => selectedLines.reduce((total, line) => total + line.remainingQuantity, 0),
+    [selectedLines]
+  );
+  const selectedWarehouses = useMemo(
+    () => Array.from(new Set(selectedOrderLines.map((line) => line.warehouse))),
+    [selectedOrderLines]
+  );
+  const selectedShipmentTypes = useMemo(
+    () => Array.from(new Set(selectedOrdersForTransfer.map((order) => order.shipmentType))),
+    [selectedOrdersForTransfer]
+  );
+  const selectedRepresentatives = useMemo(
+    () => Array.from(new Set(selectedOrdersForTransfer.map((order) => order.representative))),
+    [selectedOrdersForTransfer]
+  );
+  const selectedSpecialCodes1 = useMemo(
+    () => Array.from(new Set(
+      selectedOrdersForTransfer
+        .map((order) => order.specialCode1?.trim())
+        .filter((value): value is string => Boolean(value))
+    )),
+    [selectedOrdersForTransfer]
+  );
+  const selectedExportRefNos = useMemo(
+    () => Array.from(new Set(
+      selectedOrdersForTransfer
+        .map((order) => order.exportRefNo?.trim())
+        .filter((value): value is string => Boolean(value))
+    )),
+    [selectedOrdersForTransfer]
+  );
+  const selectedOrderExportTypes = useMemo(
+    () => Array.from(new Set(
+      selectedOrdersForTransfer
+        .map((order) => order.orderExportType)
+        .filter((value): value is number => value != null)
+    )),
+    [selectedOrdersForTransfer]
+  );
+  const selectedOrderTypes = useMemo(
+    () => Array.from(new Set(
+      selectedOrdersForTransfer
+        .map((order) => order.orderTipi)
+        .filter((value): value is number => value != null)
+    )),
+    [selectedOrdersForTransfer]
+  );
+  const selectedProjects = useMemo(
+    () => Array.from(new Set(
+      selectedOrdersForTransfer
+        .map((order) => order.projectCode?.trim())
+        .filter((value): value is string => Boolean(value))
+    )),
+    [selectedOrdersForTransfer]
+  );
   const decisionContext = useMemo<NdiDecisionContext>(() => ({
     mode: transferMode,
     manualTarget,
     manualDocumentType,
   }), [manualDocumentType, manualTarget, transferMode]);
-  const selectedRules = Array.from(new Map(
-    selectedOrdersForTransfer.map((order) => {
-      const rule = getDecisionRule(order, decisionContext);
-      return [rule.id, rule] as const;
-    })
-  ).values());
-  const selectedRuleIds = new Set(selectedRules.map((rule) => rule.id));
-  const selectedRuleTitles = selectedRules.map((rule) => rule.title).join(', ');
+  const selectedRules = useMemo(
+    () => Array.from(new Map(
+      selectedOrdersForTransfer.map((order) => {
+        const rule = getDecisionRule(order, decisionContext);
+        return [rule.id, rule] as const;
+      })
+    ).values()),
+    [selectedOrdersForTransfer, decisionContext]
+  );
+  const selectedRuleIds = useMemo(() => new Set(selectedRules.map((rule) => rule.id)), [selectedRules]);
+  const selectedRuleTitles = useMemo(() => selectedRules.map((rule) => rule.title).join(', '), [selectedRules]);
   const selectedRuleIdsKey = useMemo(
     () => selectedRules.map((rule) => rule.id).sort().join(','),
     [selectedRules]

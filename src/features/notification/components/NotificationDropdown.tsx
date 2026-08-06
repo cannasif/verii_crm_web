@@ -1,4 +1,4 @@
-import { type ReactElement, useState, useEffect, useRef, useCallback } from 'react';
+import { type ReactElement, useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -117,20 +117,19 @@ export function NotificationDropdown({ children }: NotificationDropdownProps): R
     setIsOpen(false);
   }, []);
 
-  const { realTimeNotifications } = useNotificationStore();
-  
-  const apiNotifications = data?.pages.flatMap((page) => page.data) ?? [];
-  
-  const mergedNotifications = [
+  const realTimeNotifications = useNotificationStore((state) => state.realTimeNotifications);
+
+  const apiNotifications = useMemo(() => data?.pages.flatMap((page) => page.data) ?? [], [data?.pages]);
+
+  const notifications = useMemo(() => [
     ...realTimeNotifications.filter((n) => !apiNotifications.some((apiN) => apiN.id === n.id)),
     ...apiNotifications,
   ].sort((a, b) => {
     const dateA = new Date(a.createdDate || a.timestamp || 0).getTime();
     const dateB = new Date(b.createdDate || b.timestamp || 0).getTime();
     return dateB - dateA;
-  });
-  
-  const notifications = mergedNotifications;
+  }), [realTimeNotifications, apiNotifications]);
+
   const isLoadingInitial = isLoading && notifications.length === 0;
 
   return (

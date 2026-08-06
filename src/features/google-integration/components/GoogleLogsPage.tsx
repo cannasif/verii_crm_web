@@ -79,7 +79,7 @@ function resolveLabel(
 export function GoogleLogsPage(): ReactElement {
   const { t } = useTranslation(['google-integration', 'common']);
   const { user } = useAuthStore();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState<number>(10);

@@ -78,7 +78,7 @@ function normalizeCron(cron?: string): string {
 
 export function HangfireMonitoringPage(): ReactElement {
   const { t } = useTranslation(['hangfire-monitoring', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const queryClient = useQueryClient();
 
   const [failedPage, setFailedPage] = useState(1);

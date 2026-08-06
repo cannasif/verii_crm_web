@@ -24,7 +24,7 @@ function formatDate(value?: string | null): string {
 
 export function GoogleConnectionPage(): ReactElement {
   const { t } = useTranslation(['google-integration', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 

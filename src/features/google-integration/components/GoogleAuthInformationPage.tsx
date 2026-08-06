@@ -18,7 +18,7 @@ const GOOGLE_TENANT_SETTINGS_QUERY_KEY = ['google-integration', 'tenant-oauth-se
 
 export function GoogleAuthInformationPage(): ReactElement {
   const { t } = useTranslation(['google-integration', 'common']);
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const queryClient = useQueryClient();
   const { data: permissions } = useMyPermissionsQuery();
 

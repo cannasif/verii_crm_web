@@ -1,4 +1,4 @@
-import { type ReactElement, useCallback, useMemo } from 'react';
+import { memo, type ReactElement, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FileText, Receipt, Package, Headphones, Info } from 'lucide-react';
@@ -13,7 +13,7 @@ interface NotificationItemProps {
   onNavigate?: (route: string) => void;
 }
 
-export function NotificationItem({ notification, onNavigate }: NotificationItemProps): ReactElement {
+export const NotificationItem = memo(function NotificationItem({ notification, onNavigate }: NotificationItemProps): ReactElement {
   const { t } = useTranslation(['notification', 'common']);
   const queryClient = useQueryClient();
   const userId = useAuthStore((state) => state.user?.id ?? null);
@@ -172,4 +172,4 @@ export function NotificationItem({ notification, onNavigate }: NotificationItemP
       )}
     </div>
   );
-}
+});

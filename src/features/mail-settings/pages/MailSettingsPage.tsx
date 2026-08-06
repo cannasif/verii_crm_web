@@ -8,7 +8,7 @@ import type { SmtpSettingsFormSchema } from '../types/smtpSettings';
 
 export function MailSettingsPage(): ReactElement {
   const { t } = useTranslation();
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { data, isLoading } = useSmtpSettingsQuery();
   const updateMutation = useUpdateSmtpSettingsMutation();
 

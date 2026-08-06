@@ -7,7 +7,7 @@ import { useGoogleStatusQuery } from '../hooks/useGoogleStatusQuery';
 
 export function GoogleSyncPage(): ReactElement {
   const { t } = useTranslation('google-integration');
-  const { setPageTitle } = useUIStore();
+  const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { data: status, isLoading } = useGoogleStatusQuery();
 
   useEffect(() => {
