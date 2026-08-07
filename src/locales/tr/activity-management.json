@@ -17,6 +17,7 @@
   "potentialCustomer": "Müşteri",
   "customer": "Müşteri",
   "selectCustomer": "Müşteri Seç",
+  "customerRequiredForActivityType": "Seçilen aktivite tipi için cari seçimi zorunludur.",
   "erpCustomerCode": "ERP Müşteri Kodu",
   "product": "Stok/Ürün",
   "selectProduct": "Stok/Ürün Seç",

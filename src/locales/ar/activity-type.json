@@ -23,7 +23,9 @@
     "nameMaxLength": "يجب أن يكون اسم نوع النشاط بحد أقصى 100 حرفًا",
     "description": "الوصف",
     "descriptionPlaceholder": "أدخل الوصف (اختياري)",
-    "descriptionMaxLength": "يجب أن يكون الوصف بحد أقصى 500 حرفًا"
+    "descriptionMaxLength": "يجب أن يكون الوصف بحد أقصى 500 حرفًا",
+    "customerRequired": "اختيار العميل إلزامي",
+    "customerRequiredDescription": "يتطلب اختيار عميل عند إنشاء نشاط من هذا النوع."
   },
   "table": {
     "id": "المعرف",
@@ -31,6 +33,9 @@
     "description": "الوصف",
     "createdDate": "تاريخ الإنشاء",
     "createdBy": "تم الإنشاء بواسطة",
+    "customerRequired": "العميل إلزامي",
+    "yes": "نعم",
+    "no": "لا",
     "showing": "عرض {{from}}-{{to}} / {{total}}",
     "page": "صفحة {{current}} / {{total}}",
     "title": "قائمة أنواع الأنشطة"
@@ -55,7 +60,8 @@
   "advancedFilter": {
     "columnName": "اسم نوع النشاط",
     "columnDescription": "الوصف",
-    "columnCreatedBy": "تم الإنشاء بواسطة"
+    "columnCreatedBy": "تم الإنشاء بواسطة",
+    "columnCustomerRequired": "العميل إلزامي"
   },
   "create": "نوع نشاط جديد",
   "error": "حدث خطأ"

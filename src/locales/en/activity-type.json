@@ -15,7 +15,8 @@
   "advancedFilter": {
     "columnName": "Activity Type Name",
     "columnDescription": "Description",
-    "columnCreatedBy": "Created By"
+    "columnCreatedBy": "Created By",
+    "columnCustomerRequired": "Customer required"
   },
   "form": {
     "addTitle": "Add New Activity Type",
@@ -28,7 +29,9 @@
     "nameMaxLength": "Activity type name can be at most 100 characters",
     "description": "Description",
     "descriptionPlaceholder": "Enter description (optional)",
-    "descriptionMaxLength": "Description can be at most 500 characters"
+    "descriptionMaxLength": "Description can be at most 500 characters",
+    "customerRequired": "Customer selection required",
+    "customerRequiredDescription": "Requires a customer to be selected when an activity of this type is created."
   },
   "table": {
     "id": "ID",
@@ -36,6 +39,9 @@
     "description": "Description",
     "createdDate": "Created Date",
     "createdBy": "Created By",
+    "customerRequired": "Customer required",
+    "yes": "Yes",
+    "no": "No",
     "showing": "Showing {{from}}-{{to}} / {{total}}",
     "page": "Page {{current}} / {{total}}",
     "title": "Activity Type List"

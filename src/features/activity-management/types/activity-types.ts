@@ -4,6 +4,7 @@ export interface ActivityTypeRef {
   id: number;
   name: string;
   description?: string;
+  isCustomerRequired: boolean;
   createdDate?: string;
   updatedDate?: string;
   deletedDate?: string;

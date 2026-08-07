@@ -23,7 +23,9 @@
     "nameMaxLength": "Name der Aktivitätsart darf maximal 100 Zeichen lang sein",
     "description": "Beschreibung",
     "descriptionPlaceholder": "Beschreibung eingeben (optional)",
-    "descriptionMaxLength": "Beschreibung darf maximal 500 Zeichen lang sein"
+    "descriptionMaxLength": "Beschreibung darf maximal 500 Zeichen lang sein",
+    "customerRequired": "Kundenauswahl erforderlich",
+    "customerRequiredDescription": "Erfordert bei der Erstellung einer Aktivität dieses Typs die Auswahl eines Kunden."
   },
   "table": {
     "id": "ID",
@@ -31,6 +33,9 @@
     "description": "Beschreibung",
     "createdDate": "Erstellungsdatum",
     "createdBy": "Erstellt von",
+    "customerRequired": "Kunde erforderlich",
+    "yes": "Ja",
+    "no": "Nein",
     "showing": "Zeige {{from}}-{{to}} von {{total}}",
     "page": "Seite {{current}} / {{total}}",
     "title": "Aktivitätsart-Liste"
@@ -55,7 +60,8 @@
   "advancedFilter": {
     "columnName": "Name der Aktivitätsart",
     "columnDescription": "Beschreibung",
-    "columnCreatedBy": "Erstellt von"
+    "columnCreatedBy": "Erstellt von",
+    "columnCustomerRequired": "Kunde erforderlich"
   },
   "create": "Neuer Aktivitätstyp",
   "error": "Ein Fehler ist aufgetreten"

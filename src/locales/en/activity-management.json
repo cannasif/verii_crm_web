@@ -14,6 +14,7 @@
   "potentialCustomer": "Customer",
   "customer": "Customer",
   "selectCustomer": "Select Customer",
+  "customerRequiredForActivityType": "A customer must be selected for the selected activity type.",
   "erpCustomerCode": "ERP Customer Code",
   "product": "Stock/Product",
   "selectProduct": "Select Stock/Product",

@@ -23,7 +23,9 @@
     "nameMaxLength": "Le nom du type d'activité ne peut pas dépasser 100 caractères",
     "description": "Description",
     "descriptionPlaceholder": "Entrez la description (optionnel)",
-    "descriptionMaxLength": "La description ne peut pas dépasser 500 caractères"
+    "descriptionMaxLength": "La description ne peut pas dépasser 500 caractères",
+    "customerRequired": "Sélection du client obligatoire",
+    "customerRequiredDescription": "Exige la sélection d'un client lors de la création d'une activité de ce type."
   },
   "table": {
     "id": "IDENTIFIANT",
@@ -31,6 +33,9 @@
     "description": "Description",
     "createdDate": "Date de création",
     "createdBy": "Créé par",
+    "customerRequired": "Client obligatoire",
+    "yes": "Oui",
+    "no": "Non",
     "showing": "Affichage de {{from}}-{{to}} sur {{total}}",
     "page": "Page {{current}} / {{total}}",
     "title": "Liste des types d'activité"
@@ -55,7 +60,8 @@
   "advancedFilter": {
     "columnName": "Nom du type d'activité",
     "columnDescription": "Description",
-    "columnCreatedBy": "Créé par"
+    "columnCreatedBy": "Créé par",
+    "columnCustomerRequired": "Client obligatoire"
   },
   "create": "Nouveau type d'activité",
   "error": "Une erreur est survenue"

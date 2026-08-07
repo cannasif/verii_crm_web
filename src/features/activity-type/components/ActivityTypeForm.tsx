@@ -13,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 import {
   Form,
   FormControl,
@@ -23,7 +24,7 @@ import {
 } from '@/components/ui/form';
 import { activityTypeFormSchema, type ActivityTypeFormSchema } from '../types/activity-type-types';
 import type { ActivityTypeDto } from '../types/activity-type-types';
-import { ListTodo, Type, FileText, X } from 'lucide-react';
+import { ListTodo, Type, FileText, Building2, X } from 'lucide-react';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface ActivityTypeFormProps {
@@ -69,6 +70,7 @@ export function ActivityTypeForm({
     defaultValues: {
       name: '',
       description: '',
+      isCustomerRequired: false,
     },
   });
   useEffect(() => {
@@ -76,11 +78,13 @@ export function ActivityTypeForm({
       form.reset({
         name: activityType.name,
         description: activityType.description || '',
+        isCustomerRequired: activityType.isCustomerRequired ?? false,
       });
     } else {
       form.reset({
         name: '',
         description: '',
+        isCustomerRequired: false,
       });
     }
   }, [activityType, form]);
@@ -181,6 +185,31 @@ export function ActivityTypeForm({
                         />
                       </FormControl>
                       <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="isCustomerRequired"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/5">
+                      <div className="space-y-1">
+                        <FormLabel className="flex items-center gap-2 text-sm font-bold text-slate-800 dark:text-slate-100">
+                          <Building2 size={17} className="text-primary" />
+                          {t('activityType.form.customerRequired')}
+                        </FormLabel>
+                        <p className="text-xs leading-5 text-slate-500 dark:text-slate-400">
+                          {t('activityType.form.customerRequiredDescription')}
+                        </p>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          aria-label={t('activityType.form.customerRequired')}
+                        />
+                      </FormControl>
                     </FormItem>
                   )}
                 />

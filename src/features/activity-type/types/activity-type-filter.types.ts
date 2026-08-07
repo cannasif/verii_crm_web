@@ -5,6 +5,7 @@ import type { FilterRow } from '@/lib/advanced-filter-types';
 export const ACTIVITY_TYPE_FILTER_COLUMNS: readonly FilterColumnConfig[] = [
   { value: 'name', type: 'string', labelKey: 'advancedFilter.columnName' },
   { value: 'description', type: 'string', labelKey: 'advancedFilter.columnDescription' },
+  { value: 'isCustomerRequired', type: 'boolean', labelKey: 'advancedFilter.columnCustomerRequired' },
   { value: 'createdByFullUser', type: 'string', labelKey: 'advancedFilter.columnCreatedBy' },
 ] as const;
 

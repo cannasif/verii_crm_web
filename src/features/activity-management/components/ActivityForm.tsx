@@ -272,6 +272,13 @@ export function ActivityForm({
   );
 
   const watchedCustomerId = form.watch('potentialCustomerId');
+  const watchedActivityTypeId = form.watch('activityTypeId');
+  const selectedActivityType = useMemo(
+    () => activityTypeDropdown.items.find((item) => item.id === watchedActivityTypeId)
+      ?? (activity && activity.activityTypeId === watchedActivityTypeId ? activity.activityType : undefined),
+    [activity, activityTypeDropdown.items, watchedActivityTypeId],
+  );
+  const isCustomerRequired = selectedActivityType?.isCustomerRequired === true;
   const watchedReminders = form.watch('reminders') || [];
   const watchedIsAllDay = form.watch('isAllDay');
 
@@ -377,6 +384,12 @@ export function ActivityForm({
     if (!watchedCustomerId) form.setValue('contactId', undefined);
   }, [watchedCustomerId, form]);
 
+  useEffect(() => {
+    if (!isCustomerRequired || (watchedCustomerId != null && watchedCustomerId > 0)) {
+      form.clearErrors('potentialCustomerId');
+    }
+  }, [form, isCustomerRequired, watchedCustomerId]);
+
   // Müşteriyi yalnızca atanan kullanıcı değişince doğrula (teklif formu ile aynı).
   // Dialogdan potansiyel seçildiğinde customerOptions (1000 kayıt) listesinde olmasa da silinmesin.
   useEffect(() => {
@@ -432,6 +445,16 @@ export function ActivityForm({
   }, [watchedIsAllDay, open, form]);
 
   const handleSubmit = async (data: ActivityFormSchema): Promise<void> => {
+    if (isCustomerRequired && (!data.potentialCustomerId || data.potentialCustomerId <= 0)) {
+      setActiveTab('details');
+      form.setError('potentialCustomerId', {
+        type: 'manual',
+        message: t('customerRequiredForActivityType'),
+      });
+      setCustomerSelectDialogOpen(true);
+      return;
+    }
+
     const imagesToUpload = pendingImages.map(img => ({
       file: img.file,
       description: img.description,
@@ -524,7 +547,10 @@ export function ActivityForm({
                               value={field.value ? String(field.value) : ''}
                               onSelect={(v) => {
                                 field.onChange(v ?? '');
-                                form.setValue('activityTypeId', v ? Number(v) : undefined);
+                                form.setValue('activityTypeId', v ? Number(v) : undefined, {
+                                  shouldDirty: true,
+                                  shouldValidate: true,
+                                });
                               }}
                               onDebouncedSearchChange={setActivityTypeSearchTerm}
                               onFetchNextPage={activityTypeDropdown.fetchNextPage}
@@ -666,7 +692,7 @@ export function ActivityForm({
 
                         return (
                           <FormItem>
-                            <FormLabel className={LABEL_STYLE}><Building2 size={16} className="text-primary shrink-0" /> {t('customer')}</FormLabel>
+                            <FormLabel className={LABEL_STYLE} required={isCustomerRequired}><Building2 size={16} className="text-primary shrink-0" /> {t('customer')}</FormLabel>
                             <div className="flex w-full items-center gap-2">
                               <FormControl>
                                 <Input
@@ -686,6 +712,11 @@ export function ActivityForm({
                                 </Button>
                               )}
                             </div>
+                            {isCustomerRequired && !form.formState.errors.potentialCustomerId && (
+                              <p className="text-xs font-medium text-amber-600 dark:text-amber-300">
+                                {t('customerRequiredForActivityType')}
+                              </p>
+                            )}
                             <FormMessage className="text-xs text-red-500" />
                           </FormItem>
                         );

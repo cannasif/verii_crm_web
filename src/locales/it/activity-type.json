@@ -23,7 +23,9 @@
     "nameMaxLength": "Il nome del tipo di attività deve contenere al massimo 100 caratteri",
     "description": "Descrizione",
     "descriptionPlaceholder": "Inserisci descrizione (opzionale)",
-    "descriptionMaxLength": "La descrizione deve contenere al massimo 500 caratteri"
+    "descriptionMaxLength": "La descrizione deve contenere al massimo 500 caratteri",
+    "customerRequired": "Selezione cliente obbligatoria",
+    "customerRequiredDescription": "Richiede la selezione di un cliente durante la creazione di un'attività di questo tipo."
   },
   "table": {
     "id": "ID",
@@ -31,6 +33,9 @@
     "description": "Descrizione",
     "createdDate": "Data Creazione",
     "createdBy": "Creato Da",
+    "customerRequired": "Cliente obbligatorio",
+    "yes": "Sì",
+    "no": "No",
     "showing": "Visualizzazione {{from}}-{{to}} / {{total}}",
     "page": "Pagina {{current}} / {{total}}",
     "title": "Elenco tipi di attività"
@@ -55,7 +60,8 @@
   "advancedFilter": {
     "columnName": "Nome tipo di attività",
     "columnDescription": "Descrizione",
-    "columnCreatedBy": "Creato da"
+    "columnCreatedBy": "Creato da",
+    "columnCustomerRequired": "Cliente obbligatorio"
   },
   "create": "Nuovo tipo di attività",
   "error": "Si è verificato un errore"

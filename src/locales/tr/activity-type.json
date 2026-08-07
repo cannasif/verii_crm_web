@@ -17,7 +17,8 @@
   "advancedFilter": {
     "columnName": "Aktivite Tipi Adı",
     "columnDescription": "Açıklama",
-    "columnCreatedBy": "Oluşturan"
+    "columnCreatedBy": "Oluşturan",
+    "columnCustomerRequired": "Cari zorunlu"
   },
   "form": {
     "addTitle": "Yeni Aktivite Tipi Ekle",
@@ -30,7 +31,9 @@
     "nameMaxLength": "Aktivite tipi adı en fazla 100 karakter olabilir",
     "description": "Açıklama",
     "descriptionPlaceholder": "Açıklama girin (opsiyonel)",
-    "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir"
+    "descriptionMaxLength": "Açıklama en fazla 500 karakter olabilir",
+    "customerRequired": "Cari seçimi zorunlu",
+    "customerRequiredDescription": "Bu tipte aktivite oluşturulurken cari seçilmesini zorunlu kılar."
   },
   "table": {
     "title": "Aktivite Tipi Listesi",
@@ -39,6 +42,9 @@
     "description": "Açıklama",
     "createdDate": "Oluşturulma Tarihi",
     "createdBy": "Oluşturan Kullanıcı",
+    "customerRequired": "Cari zorunlu",
+    "yes": "Evet",
+    "no": "Hayır",
     "showing": "{{from}}-{{to}} / {{total}} gösteriliyor",
     "page": "Sayfa {{current}} / {{total}}"
   },

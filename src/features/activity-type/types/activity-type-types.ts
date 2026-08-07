@@ -4,6 +4,7 @@ export interface ActivityTypeDto {
   id: number;
   name: string;
   description?: string;
+  isCustomerRequired: boolean;
   createdDate: string;
   updatedDate?: string;
   createdBy?: string;
@@ -14,11 +15,13 @@ export interface ActivityTypeDto {
 export interface CreateActivityTypeDto {
   name: string;
   description?: string;
+  isCustomerRequired: boolean;
 }
 
 export interface UpdateActivityTypeDto {
   name: string;
   description?: string;
+  isCustomerRequired: boolean;
 }
 
 export interface ActivityTypeListFilters {
@@ -29,6 +32,7 @@ export interface ActivityTypeListFilters {
 export interface ActivityTypeFormData {
   name: string;
   description?: string;
+  isCustomerRequired: boolean;
 }
 
 export const activityTypeFormSchema = z.object({
@@ -41,6 +45,7 @@ export const activityTypeFormSchema = z.object({
     .max(500, 'activityType.form.description.maxLength')
     .optional()
     .nullable(),
+  isCustomerRequired: z.boolean(),
 });
 
 export type ActivityTypeFormSchema = z.infer<typeof activityTypeFormSchema>;

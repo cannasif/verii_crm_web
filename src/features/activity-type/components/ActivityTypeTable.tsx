@@ -23,7 +23,7 @@ import { Alert02Icon } from 'hugeicons-react';
 export interface ColumnDef<T> {
   key: keyof T;
   label: string;
-  type: 'text' | 'date' | 'user' | 'description';
+  type: 'text' | 'date' | 'user' | 'description' | 'boolean';
   className?: string;
   headClassName?: string;
 }
@@ -69,6 +69,7 @@ export const getColumnsConfig = (t: TFunction): ColumnDef<ActivityTypeDto>[] => 
   { key: 'id', label: t('table.id'), type: 'text', ...MANAGEMENT_LIST_ID_COLUMN_DEF },
   { key: 'name', label: t('table.name'), type: 'text', className: 'font-semibold text-slate-900 dark:text-white min-w-[200px]' },
   { key: 'description', label: t('table.description'), type: 'description', className: 'min-w-[250px] max-w-[300px]' },
+  { key: 'isCustomerRequired', label: t('table.customerRequired'), type: 'boolean', className: 'whitespace-nowrap' },
   { key: 'createdDate', label: t('table.createdDate'), type: 'date', className: 'whitespace-nowrap' },
   { key: 'createdByFullUser', label: t('table.createdBy'), type: 'user', className: 'whitespace-nowrap' },
 ];
@@ -77,10 +78,11 @@ function renderCellContent(
   item: ActivityTypeDto,
   column: ColumnDef<ActivityTypeDto>,
   i18n: { language: string },
+  t: TFunction,
   colWidth?: number
 ): React.ReactNode {
   const value = item[column.key];
-  if (!value && value !== 0) return '-';
+  if (value === null || value === undefined || value === '') return '-';
 
   switch (column.type) {
     case 'description': {
@@ -100,6 +102,14 @@ function renderCellContent(
           <User size={14} className="text-indigo-500/50 shrink-0" />
           <span className="truncate">{String(value)}</span>
         </div>
+      );
+    case 'boolean':
+      return (
+        <span className={String(value) === 'true'
+          ? 'inline-flex rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-bold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+          : 'inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-500 dark:bg-white/10 dark:text-slate-400'}>
+          {String(value) === 'true' ? t('table.yes') : t('table.no')}
+        </span>
       );
     case 'text':
     default:
@@ -178,7 +188,7 @@ export function ActivityTypeTable({
 
   const cellRenderer = (row: ActivityTypeDto, key: ActivityTypeColumnKey, colWidth?: number): React.ReactNode => {
     const col = tableColumns.find((c) => c.key === key);
-    if (col) return renderCellContent(row, col, i18n, colWidth);
+    if (col) return renderCellContent(row, col, i18n, t, colWidth);
     const val = row[key];
     if (val == null && val !== 0) return '-';
     return String(val);

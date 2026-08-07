@@ -14,6 +14,7 @@
   "potentialCustomer": "العميل",
   "customer": "العميل",
   "selectCustomer": "اختر العميل",
+  "customerRequiredForActivityType": "يجب اختيار عميل لنوع النشاط المحدد.",
   "erpCustomerCode": "رمز عميل ERP",
   "product": "المخزون/المنتج",
   "selectProduct": "اختر المخزون/المنتج",
