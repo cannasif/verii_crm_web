@@ -48,6 +48,7 @@ interface NdiOrderLine {
   currencyType?: number | null;
   currencyRate?: number | null;
   exchangeRate?: number | null;
+  lineSpecialCode1?: string | null;
   remainingQuantity: number;
   unit: string;
   warehouse: string;
@@ -59,6 +60,7 @@ interface NdiOrderLine {
 
 interface NdiPreparedLine {
   id: string;
+  sourceLineNo: number;
   orderNo: string;
   stockCode: string;
   stockName: string;
@@ -69,6 +71,7 @@ interface NdiPreparedLine {
   currencyType?: number | null;
   currencyRate?: number | null;
   exchangeRate?: number | null;
+  lineSpecialCode1?: string | null;
   unit: string;
   sourceWarehouse: string;
   targetWarehouse: string;
@@ -154,6 +157,8 @@ function buildNdiTransferRequest(transfer: NdiPreparedTransfer): NdiTransferCrea
       lines: transfer.lines
         .filter((line) => line.orderNo === document.sourceDocumentNo)
         .map((line) => ({
+          sourceLineId: line.id,
+          sourceLineNo: line.sourceLineNo,
           stockCode: line.stockCode,
           stockName: line.stockName,
           sourceQuantity: line.sourceQuantity,
@@ -940,6 +945,7 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, indexInFis: number
     currencyType,
     currencyRate,
     exchangeRate,
+    lineSpecialCode1: line.stharKod1?.trim() || null,
     remainingQuantity,
     unit: line.olcuBirimi || line.olcuBr || '-',
     warehouse: line.depoKodu == null ? '' : String(line.depoKodu),
@@ -1586,9 +1592,12 @@ export function NdiOrderTransferPage(): ReactElement {
         const lineRatio = outcome && outcome.requestedQuantity > 0
           ? outcome.transferQuantity / outcome.requestedQuantity
           : 1;
+        const lineIdParts = line.id.split('::');
+        const sourceLineNo = Number(lineIdParts[lineIdParts.length - 1] ?? 0) + 1;
 
         return {
           id: line.id,
+          sourceLineNo,
           orderNo: line.orderNo,
           stockCode: line.stockCode,
           stockName: line.stockName,
@@ -1599,6 +1608,7 @@ export function NdiOrderTransferPage(): ReactElement {
         currencyType: line.currencyType,
           currencyRate: line.currencyRate,
           exchangeRate: line.exchangeRate,
+          lineSpecialCode1: line.lineSpecialCode1,
           unit: line.unit,
           sourceWarehouse: line.warehouse,
           targetWarehouse: outcome?.targetWarehouseLocked ? outcome.targetWarehouse : line.warehouse,
@@ -2369,7 +2379,14 @@ export function NdiOrderTransferPage(): ReactElement {
                           <div className="text-xs font-bold text-[var(--crm-app-text-muted)]">{line.shipmentType}</div>
                         </td>
                         <td className={`${NDI_TABLE_CELL} font-black text-primary`}>{line.stockCode}</td>
-                        <td className={`${NDI_TABLE_CELL} font-bold text-foreground`}>{line.stockName}</td>
+                        <td className={NDI_TABLE_CELL}>
+                          <div className="font-bold text-foreground">{line.stockName}</div>
+                          {line.lineSpecialCode1 && (
+                            <div className="mt-1 text-xs font-bold text-[var(--crm-app-text-muted)]">
+                              Satır Kod1: {line.lineSpecialCode1}
+                            </div>
+                          )}
+                        </td>
                         <td className={`${NDI_TABLE_CELL} text-right font-black`}>
                           {numberFormatter.format(line.quantity)} {line.unit}
                         </td>
@@ -2866,6 +2883,9 @@ function PreparedTransferPanel({
                 <td className="px-3 py-2">
                   <div className="font-black text-[#e11d73]">{line.stockCode}</div>
                   <div className="line-clamp-1 font-bold text-[#42536b]">{line.stockName}</div>
+                  {line.lineSpecialCode1 && (
+                    <div className="text-xs font-bold text-[#718096]">Satır Kod1: {line.lineSpecialCode1}</div>
+                  )}
                 </td>
                 <td className="px-3 py-2 text-right font-black">
                   {numberFormatter.format(line.sourceQuantity)} {line.unit}

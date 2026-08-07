@@ -32,6 +32,7 @@ export interface NetsisCustomerDispatchLineDto {
   dovizKuru?: number | null;
   olcuBirimi?: string | null;
   olcuBr?: string | null;
+  stharKod1?: string | null;
   teslimMiktari: number;
   bakiye: number;
   ekalan?: string | null;
@@ -77,6 +78,8 @@ export interface NetsisCustomerDocumentSeriesDto {
 }
 
 export interface NdiTransferCreateLineRequest {
+  sourceLineId?: string | null;
+  sourceLineNo?: number | null;
   stockCode: string;
   stockName?: string | null;
   sourceQuantity: number;
