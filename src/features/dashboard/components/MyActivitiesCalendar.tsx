@@ -150,10 +150,12 @@ function statusLabel(activity: ActivityDto, t: (key: string) => string): string 
 interface ActivityChipProps {
   activity: ActivityDto;
   compact?: boolean;
+  /** Only shown when the calendar is not already filtered down to a single assignee. */
+  showAssignee?: boolean;
   onSelect: (activity: ActivityDto) => void;
 }
 
-function ActivityChip({ activity, compact = false, onSelect }: ActivityChipProps): ReactElement {
+function ActivityChip({ activity, compact = false, showAssignee = false, onSelect }: ActivityChipProps): ReactElement {
   const { t, i18n } = useTranslation('dashboard');
   const locale = i18n.language || 'tr-TR';
   const time = activity.isAllDay ? '' : format(new Date(activity.startDateTime), 'HH:mm');
@@ -175,7 +177,12 @@ function ActivityChip({ activity, compact = false, onSelect }: ActivityChipProps
             {time && <span className="shrink-0 text-[10px] font-black tabular-nums opacity-70">{time}</span>}
             <span className="truncate text-[11px] font-bold">{activity.subject}</span>
           </span>
-          {!compact && customer && <span className="mt-0.5 block truncate text-[10px] opacity-70">{customer}</span>}
+          {showAssignee && !compact && (
+            <span className="mt-0.5 flex min-w-0 items-center gap-1 text-[10px] opacity-70">
+              <UserRound size={9} className="shrink-0" />
+              <span className="truncate font-semibold">{assigneeName(activity)}</span>
+            </span>
+          )}
         </button>
       </HoverCardTrigger>
       <HoverCardContent side="right" align="start">
@@ -302,6 +309,7 @@ export function MyActivitiesCalendar(): ReactElement {
   const selectedAssigneeLabel = selectedAssigneeId === 'all'
     ? t('calendar.assignees.all')
     : assignees.find((item) => item.id === selectedAssigneeId)?.name ?? t('calendar.assignees.all');
+  const showAssigneeOnChips = isSystemAdmin && selectedAssigneeId === 'all';
 
   const activities = useMemo(
     () => isSystemAdmin && selectedAssigneeId !== 'all'
@@ -521,7 +529,7 @@ export function MyActivitiesCalendar(): ReactElement {
                   {isToday(day) && <span className="rounded-full bg-[image:var(--crm-brand-gradient)] px-2 py-0.5 text-[10px] font-black text-white">{t('calendar.today')}</span>}
                 </div>
                 <div className="space-y-2 border-l-2 border-dashed border-slate-200 pl-3 dark:border-white/10 md:pl-4">
-                  {items.map((activity) => <ActivityChip key={activity.id} activity={activity} onSelect={setSelected} />)}
+                  {items.map((activity) => <ActivityChip key={activity.id} activity={activity} showAssignee={showAssigneeOnChips} onSelect={setSelected} />)}
                 </div>
               </div>
             );
@@ -560,7 +568,7 @@ export function MyActivitiesCalendar(): ReactElement {
                     {items.length > 0 && <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-500 dark:bg-white/10 dark:text-slate-400">{items.length}</span>}
                   </div>
                   <div className="space-y-1.5">
-                    {items.slice(0, visibleLimit).map((activity) => <ActivityChip key={activity.id} compact={view === 'month'} activity={activity} onSelect={setSelected} />)}
+                    {items.slice(0, visibleLimit).map((activity) => <ActivityChip key={activity.id} compact={view === 'month'} showAssignee={showAssigneeOnChips} activity={activity} onSelect={setSelected} />)}
                     {items.length > visibleLimit && (
                       <button type="button" className="w-full rounded-md py-0.5 text-left text-[10px] font-bold text-primary hover:underline" onClick={() => { setCursor(day); setView('agenda'); }}>
                         +{items.length - visibleLimit} {t('calendar.more')}

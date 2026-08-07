@@ -126,19 +126,19 @@ export function DashboardPage(): ReactElement {
   };
 
   return (
-    <div className="flex flex-col gap-6 p-1 md:p-4 overflow-x-hidden w-full pb-10">
+    <div className="flex flex-col gap-3 p-1 md:p-4 overflow-x-hidden w-full pb-10">
 
-      <div className="flex-none flex flex-col md:flex-row md:items-center justify-between gap-4 px-1">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-1 flex flex-wrap items-center gap-2">
+      <div className="flex-none flex flex-row items-center justify-between gap-3 px-1">
+        <div className="flex min-w-0 items-baseline gap-2">
+          <h1 className="truncate text-base md:text-lg font-bold text-slate-800 dark:text-white flex items-center gap-1.5">
             <span>{t(`greeting.${timeOfDay}`)},</span>
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-orange-500">
+            <span className="truncate text-transparent bg-clip-text bg-linear-to-r from-primary to-orange-500">
               <span className="md:hidden">{firstName}</span>
               <span className="hidden md:inline">{displayName}</span>
             </span>
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 text-sm font-medium flex items-center gap-2">
-            <CalendarDays size={15} />
+          <p className="hidden shrink-0 items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 sm:flex">
+            <CalendarDays size={13} />
             {formatDate()}
           </p>
         </div>
