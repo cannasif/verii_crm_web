@@ -69,11 +69,12 @@
   },
   "tabs": { "label": "Gösterge paneli görünümleri", "reports": "Raporlarım", "calendar": "Takvimim" },
   "calendar": {
-    "title": "Aktivite takvimim", "description": "Size atanan planları, görüşmeleri ve görevleri tek takvimde yönetin.",
+    "title": "Aktivite takvimim", "description": "Size atanan planları, görüşmeleri ve görevleri tek takvimde yönetin.", "descriptionAdmin": "Tüm kullanıcıların planlarını görüntüleyin ve aktivite sorumlusuna göre filtreleyin.",
+    "assignees": { "title": "Aktivite sorumluları", "description": "Takvimi bir sorumluya göre süzmek için kişiye tıklayın.", "all": "Tüm kullanıcılar", "allShort": "TÜM", "previous": "Önceki sorumlular", "next": "Sonraki sorumlular" },
     "views": { "month": "Ay", "week": "Hafta", "agenda": "Ajanda" },
     "summary": { "total": "Toplam aktivite", "scheduled": "Planlanan", "completed": "Tamamlanan", "overdue": "Geciken" },
     "status": { "scheduled": "Planlandı", "completed": "Tamamlandı", "cancelled": "İptal edildi", "overdue": "Gecikti" },
-    "detail": { "date": "Tarih ve saat", "status": "Durum", "customer": "Müşteri / kişi", "customerCode": "Cari kodu", "description": "Açıklama", "clickHint": "Detaylar için tıklayın" },
+    "detail": { "date": "Tarih ve saat", "status": "Durum", "assignee": "Aktivite sorumlusu", "customer": "Müşteri / kişi", "customerCode": "Cari kodu", "description": "Açıklama", "clickHint": "Detaylar için tıklayın" },
     "today": "Bugün", "previous": "Önceki dönem", "next": "Sonraki dönem", "newActivity": "Aktivite ekle", "activity": "Aktivite", "more": "daha", "empty": "Bu dönemde aktiviteniz yok", "loadError": "Takvim aktiviteleri yüklenemedi.", "openActivities": "Aktivite yönetimini aç"
   },
   "sidebar": {

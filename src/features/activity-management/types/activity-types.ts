@@ -97,6 +97,7 @@ export interface ActivityDto {
   assignedUser?: {
     id: number;
     fullName?: string;
+    username?: string;
     userName?: string;
   };
   contactId?: number;

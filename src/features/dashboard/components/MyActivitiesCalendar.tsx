@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -49,8 +49,9 @@ import {
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
-import { useMyActivitiesCalendar } from '@/features/activity-management/hooks/useMyActivitiesCalendar';
+import { useDashboardActivitiesCalendar } from '@/features/activity-management/hooks/useMyActivitiesCalendar';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
+import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
@@ -81,6 +82,13 @@ function customerName(activity: ActivityDto): string | undefined {
     || activity.contact?.fullName
     || [activity.contact?.firstName, activity.contact?.lastName].filter(Boolean).join(' ')
     || undefined;
+}
+
+function assigneeName(activity: ActivityDto): string {
+  return activity.assignedUser?.fullName?.trim()
+    || activity.assignedUser?.username
+    || activity.assignedUser?.userName
+    || `#${activity.assignedUserId}`;
 }
 
 function occursOnDay(activity: ActivityDto, day: Date): boolean {
@@ -193,6 +201,12 @@ function ActivityChip({ activity, compact = false, onSelect }: ActivityChipProps
               <span className="truncate font-semibold">{customer}</span>
             </div>
           )}
+          {activity.assignedUserId > 0 && (
+            <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+              <UserRound size={13} className="shrink-0 text-primary" />
+              <span className="truncate font-semibold">{assigneeName(activity)}</span>
+            </div>
+          )}
           {activity.erpCustomerCode && (
             <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
               <MapPin size={13} className="shrink-0 text-primary" />
@@ -219,10 +233,19 @@ export function MyActivitiesCalendar(): ReactElement {
   const { t, i18n } = useTranslation('dashboard');
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
+  const {
+    data: permissions,
+    isLoading: permissionsLoading,
+    isError: permissionsError,
+  } = useMyPermissionsQuery();
+  const isSystemAdmin = permissions?.isSystemAdmin === true;
+  const permissionsReady = permissions !== null || permissionsError;
   const [view, setView] = useState<CalendarView>('week');
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState<ActivityDto | null>(null);
+  const [selectedAssigneeId, setSelectedAssigneeId] = useState<number | 'all'>('all');
   const [formOpen, setFormOpen] = useState(false);
+  const assigneeRailRef = useRef<HTMLDivElement>(null);
   const createActivity = useCreateActivity();
 
   const weekStartsOn = 1 as const;
@@ -240,7 +263,44 @@ export function MyActivitiesCalendar(): ReactElement {
 
   const queryStart = format(visibleRange.start, "yyyy-MM-dd'T'00:00:00");
   const queryEnd = format(visibleRange.end, "yyyy-MM-dd'T'00:00:00");
-  const { data: activities = [], isLoading, isFetching, isError, refetch } = useMyActivitiesCalendar(queryStart, queryEnd);
+  const {
+    data: calendarActivities = [],
+    isLoading: calendarLoading,
+    isFetching,
+    isError,
+    refetch,
+  } = useDashboardActivitiesCalendar(queryStart, queryEnd, isSystemAdmin, permissionsReady);
+  const isLoading = permissionsLoading || !permissionsReady || calendarLoading;
+
+  const assignees = useMemo(() => {
+    const byId = new Map<number, { id: number; name: string; count: number }>();
+    calendarActivities.forEach((activity) => {
+      const current = byId.get(activity.assignedUserId);
+      if (current) {
+        current.count += 1;
+      } else {
+        byId.set(activity.assignedUserId, {
+          id: activity.assignedUserId,
+          name: assigneeName(activity),
+          count: 1,
+        });
+      }
+    });
+    return [...byId.values()].sort((left, right) => left.name.localeCompare(right.name, i18n.language));
+  }, [calendarActivities, i18n.language]);
+
+  useEffect(() => {
+    if (!isSystemAdmin || (selectedAssigneeId !== 'all' && !assignees.some((item) => item.id === selectedAssigneeId))) {
+      setSelectedAssigneeId('all');
+    }
+  }, [assignees, isSystemAdmin, selectedAssigneeId]);
+
+  const activities = useMemo(
+    () => isSystemAdmin && selectedAssigneeId !== 'all'
+      ? calendarActivities.filter((activity) => activity.assignedUserId === selectedAssigneeId)
+      : calendarActivities,
+    [calendarActivities, isSystemAdmin, selectedAssigneeId],
+  );
 
   const days = useMemo(
     () => eachDayOfInterval({ start: visibleRange.start, end: addDays(visibleRange.end, -1) }),
@@ -317,7 +377,9 @@ export function MyActivitiesCalendar(): ReactElement {
                 {t('calendar.title')}
                 <Sparkles size={14} className="text-amber-400" />
               </h2>
-              <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">{t('calendar.description')}</p>
+              <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+                {t(isSystemAdmin ? 'calendar.descriptionAdmin' : 'calendar.description')}
+              </p>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -348,6 +410,84 @@ export function MyActivitiesCalendar(): ReactElement {
           ))}
         </div>
       </div>
+
+      {isSystemAdmin && (
+        <div className="border-b border-slate-200 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#130d1b] md:px-5">
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200">
+                {t('calendar.assignees.title')}
+              </h3>
+              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+                {t('calendar.assignees.description')}
+              </p>
+            </div>
+            <div className="flex shrink-0 gap-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg"
+                aria-label={t('calendar.assignees.previous')}
+                onClick={() => assigneeRailRef.current?.scrollBy({ left: -320, behavior: 'smooth' })}
+              >
+                <ChevronLeft size={15} />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg"
+                aria-label={t('calendar.assignees.next')}
+                onClick={() => assigneeRailRef.current?.scrollBy({ left: 320, behavior: 'smooth' })}
+              >
+                <ChevronRight size={15} />
+              </Button>
+            </div>
+          </div>
+          <div ref={assigneeRailRef} className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
+            <button
+              type="button"
+              onClick={() => setSelectedAssigneeId('all')}
+              className={cn(
+                'flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-left transition',
+                selectedAssigneeId === 'all'
+                  ? 'border-primary bg-primary/10 text-primary shadow-sm'
+                  : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-primary/40 dark:border-white/10 dark:bg-white/5 dark:text-slate-200',
+              )}
+            >
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[image:var(--crm-brand-gradient)] text-[10px] font-black text-white">
+                {t('calendar.assignees.allShort')}
+              </span>
+              <span className="whitespace-nowrap text-xs font-black">{t('calendar.assignees.all')}</span>
+              <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-black tabular-nums text-slate-600 dark:bg-black/20 dark:text-slate-300">
+                {calendarActivities.length}
+              </span>
+            </button>
+            {assignees.map((assignee) => (
+              <button
+                key={assignee.id}
+                type="button"
+                onClick={() => setSelectedAssigneeId(assignee.id)}
+                className={cn(
+                  'flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-left transition',
+                  selectedAssigneeId === assignee.id
+                    ? 'border-primary bg-primary/10 text-primary shadow-sm'
+                    : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-primary/40 dark:border-white/10 dark:bg-white/5 dark:text-slate-200',
+                )}
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-200 text-[10px] font-black uppercase text-slate-700 dark:bg-white/10 dark:text-slate-200">
+                  {assignee.name.split(/\s+/).slice(0, 2).map((part) => part.charAt(0)).join('') || '#'}
+                </span>
+                <span className="max-w-44 truncate whitespace-nowrap text-xs font-black">{assignee.name}</span>
+                <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-black tabular-nums text-slate-600 dark:bg-black/20 dark:text-slate-300">
+                  {assignee.count}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/60 px-4 py-3 dark:border-white/10 dark:bg-white/[0.02] md:px-5">
         <div className="flex items-center gap-2">
@@ -432,7 +572,7 @@ export function MyActivitiesCalendar(): ReactElement {
 
       <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
-          {selected && <><DialogHeader><DialogTitle className="pr-8 text-xl">{selected.subject}</DialogTitle><DialogDescription>{selected.activityType?.name || t('calendar.activity')}</DialogDescription></DialogHeader><div className="grid gap-3 py-2 sm:grid-cols-2"><Detail icon={Clock3} label={t('calendar.detail.date')} value={formatActivityRange(selected, locale)} /><Detail icon={CheckCircle2} label={t('calendar.detail.status')} value={statusLabel(selected, t)} />{customerName(selected) && <Detail icon={UserRound} label={t('calendar.detail.customer')} value={customerName(selected)!} />}{selected.erpCustomerCode && <Detail icon={MapPin} label={t('calendar.detail.customerCode')} value={selected.erpCustomerCode} />}</div>{selected.description && <div className="rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-white/5 dark:text-slate-200"><div className="mb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">{t('calendar.detail.description')}</div>{selected.description}</div>}<div className="mt-2 flex justify-end"><Button onClick={() => navigate('/activity-management')}>{t('calendar.openActivities')}</Button></div></>}
+          {selected && <><DialogHeader><DialogTitle className="pr-8 text-xl">{selected.subject}</DialogTitle><DialogDescription>{selected.activityType?.name || t('calendar.activity')}</DialogDescription></DialogHeader><div className="grid gap-3 py-2 sm:grid-cols-2"><Detail icon={Clock3} label={t('calendar.detail.date')} value={formatActivityRange(selected, locale)} /><Detail icon={CheckCircle2} label={t('calendar.detail.status')} value={statusLabel(selected, t)} /><Detail icon={UserRound} label={t('calendar.detail.assignee')} value={assigneeName(selected)} />{customerName(selected) && <Detail icon={UserRound} label={t('calendar.detail.customer')} value={customerName(selected)!} />}{selected.erpCustomerCode && <Detail icon={MapPin} label={t('calendar.detail.customerCode')} value={selected.erpCustomerCode} />}</div>{selected.description && <div className="rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-white/5 dark:text-slate-200"><div className="mb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">{t('calendar.detail.description')}</div>{selected.description}</div>}<div className="mt-2 flex justify-end"><Button onClick={() => navigate('/activity-management')}>{t('calendar.openActivities')}</Button></div></>}
         </DialogContent>
       </Dialog>
 

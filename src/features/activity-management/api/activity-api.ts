@@ -15,6 +15,14 @@ export const activityApi = {
     throw new Error(response.message || response.exceptionMessage || i18n.t('listLoadError', { ns: AM_NS }));
   },
 
+  getAdminCalendar: async (startDate: string, endDate: string): Promise<ActivityDto[]> => {
+    const response = await api.get<ApiResponse<ActivityDto[]>>('/api/Activity/calendar/admin', {
+      params: { startDate, endDate },
+    });
+    if (response.success && response.data) return response.data;
+    throw new Error(response.message || response.exceptionMessage || i18n.t('listLoadError', { ns: AM_NS }));
+  },
+
   getList: async (params: Omit<PagedParams, 'filters'> & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<ActivityDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<ActivityDto>>>(
       '/api/Activity/query',

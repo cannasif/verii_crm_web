@@ -69,11 +69,12 @@
   },
   "tabs": { "label": "Dashboard views", "reports": "My Reports", "calendar": "My Calendar" },
   "calendar": {
-    "title": "My activity calendar", "description": "Manage your assigned plans, meetings and tasks in one calendar.",
+    "title": "My activity calendar", "description": "Manage your assigned plans, meetings and tasks in one calendar.", "descriptionAdmin": "View every user's plans and filter the calendar by activity assignee.",
+    "assignees": { "title": "Activity assignees", "description": "Click a person to filter the calendar by assignee.", "all": "All users", "allShort": "ALL", "previous": "Previous assignees", "next": "Next assignees" },
     "views": { "month": "Month", "week": "Week", "agenda": "Agenda" },
     "summary": { "total": "Total activities", "scheduled": "Scheduled", "completed": "Completed", "overdue": "Overdue" },
     "status": { "scheduled": "Scheduled", "completed": "Completed", "cancelled": "Cancelled", "overdue": "Overdue" },
-    "detail": { "date": "Date and time", "status": "Status", "customer": "Customer / contact", "customerCode": "Customer code", "description": "Description", "clickHint": "Click for details" },
+    "detail": { "date": "Date and time", "status": "Status", "assignee": "Activity assignee", "customer": "Customer / contact", "customerCode": "Customer code", "description": "Description", "clickHint": "Click for details" },
     "today": "Today", "previous": "Previous period", "next": "Next period", "newActivity": "Add activity", "activity": "Activity", "more": "more", "empty": "You have no activities in this period", "loadError": "Calendar activities could not be loaded.", "openActivities": "Open activity management"
   },
   "sidebar": {
