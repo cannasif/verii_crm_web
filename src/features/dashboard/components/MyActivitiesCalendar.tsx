@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -21,7 +21,9 @@ import {
 import {
   CalendarDays,
   CalendarRange,
+  Check,
   CheckCircle2,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   CircleAlert,
@@ -36,6 +38,7 @@ import {
   Sparkles,
   Tag,
   UserRound,
+  Users,
   type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -47,6 +50,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useDashboardActivitiesCalendar } from '@/features/activity-management/hooks/useMyActivitiesCalendar';
@@ -244,8 +248,8 @@ export function MyActivitiesCalendar(): ReactElement {
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState<ActivityDto | null>(null);
   const [selectedAssigneeId, setSelectedAssigneeId] = useState<number | 'all'>('all');
+  const [assigneePickerOpen, setAssigneePickerOpen] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
-  const assigneeRailRef = useRef<HTMLDivElement>(null);
   const createActivity = useCreateActivity();
 
   const weekStartsOn = 1 as const;
@@ -294,6 +298,10 @@ export function MyActivitiesCalendar(): ReactElement {
       setSelectedAssigneeId('all');
     }
   }, [assignees, isSystemAdmin, selectedAssigneeId]);
+
+  const selectedAssigneeLabel = selectedAssigneeId === 'all'
+    ? t('calendar.assignees.all')
+    : assignees.find((item) => item.id === selectedAssigneeId)?.name ?? t('calendar.assignees.all');
 
   const activities = useMemo(
     () => isSystemAdmin && selectedAssigneeId !== 'all'
@@ -365,139 +373,135 @@ export function MyActivitiesCalendar(): ReactElement {
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#130d1b]">
-      <div className="relative overflow-hidden border-b border-slate-200 p-4 dark:border-white/10 md:p-5">
-        <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-[image:var(--crm-brand-gradient)] opacity-[0.07] blur-2xl" aria-hidden />
-        <div className="relative flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[image:var(--crm-brand-gradient)] text-white shadow-md shadow-primary/25">
-              <CalendarDays size={21} />
+      <div className="relative overflow-hidden border-b border-slate-200 px-4 py-3 dark:border-white/10 md:px-5">
+        <div className="pointer-events-none absolute -right-16 -top-24 h-52 w-52 rounded-full bg-[image:var(--crm-brand-gradient)] opacity-[0.07] blur-2xl" aria-hidden />
+        <div className="relative flex flex-wrap items-center gap-x-3 gap-y-2">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/25">
+              <CalendarDays size={18} />
             </div>
-            <div>
-              <h2 className="flex items-center gap-1.5 text-lg font-black text-slate-900 dark:text-white">
-                {t('calendar.title')}
-                <Sparkles size={14} className="text-amber-400" />
-              </h2>
-              <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
-                {t(isSystemAdmin ? 'calendar.descriptionAdmin' : 'calendar.description')}
-              </p>
-            </div>
+            <h2
+              className="flex items-center gap-1.5 whitespace-nowrap text-base font-black text-slate-900 dark:text-white"
+              title={t(isSystemAdmin ? 'calendar.descriptionAdmin' : 'calendar.description')}
+            >
+              {t('calendar.title')}
+              <Sparkles size={13} className="text-amber-400" />
+            </h2>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-white/10 dark:bg-white/5">
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            {summaryCards.map(({ label, value, icon: Icon, tone }) => (
+              <span
+                key={label}
+                title={label}
+                className={cn('flex items-center gap-1.5 rounded-lg px-2 py-1', summaryToneClasses[tone])}
+              >
+                <Icon size={13} className="shrink-0" />
+                <span className="text-sm font-black leading-none tabular-nums">{value}</span>
+                <span className="hidden whitespace-nowrap text-[11px] font-bold leading-none lg:inline">{label}</span>
+              </span>
+            ))}
+          </div>
+
+          <div className="ms-auto flex items-center gap-2">
+            <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 dark:border-white/10 dark:bg-white/5">
               {(['month', 'week', 'agenda'] as const).map((item) => {
                 const ViewIcon = viewIcons[item];
                 return (
-                  <button key={item} type="button" onClick={() => setView(item)} className={cn('flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition', view === item ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-white dark:text-slate-300 dark:hover:bg-white/10')}>
-                    <ViewIcon size={14} />{t(`calendar.views.${item}`)}
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setView(item)}
+                    title={t(`calendar.views.${item}`)}
+                    className={cn('flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-bold transition', view === item ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-white dark:text-slate-300 dark:hover:bg-white/10')}
+                  >
+                    <ViewIcon size={14} />
+                    <span className="hidden sm:inline">{t(`calendar.views.${item}`)}</span>
                   </button>
                 );
               })}
             </div>
-            <Button size="sm" className="bg-[image:var(--crm-brand-gradient)] text-white shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:scale-[1.02] transition-all" onClick={() => setFormOpen(true)}>
-              <Plus size={15} className="mr-1.5" />{t('calendar.newActivity')}
+            <Button size="sm" className="h-8 bg-[image:var(--crm-brand-gradient)] px-3 text-white shadow-sm shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-md hover:shadow-primary/30" onClick={() => setFormOpen(true)}>
+              <Plus size={15} className="sm:mr-1.5" />
+              <span className="hidden sm:inline">{t('calendar.newActivity')}</span>
             </Button>
           </div>
         </div>
-
-        <div className="relative mt-4 grid grid-cols-2 gap-2.5 lg:grid-cols-4">
-          {summaryCards.map(({ label, value, icon: Icon, tone }) => (
-            <div key={label} className="group flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-3 transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/5">
-              <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition group-hover:scale-105', summaryToneClasses[tone])}>
-                <Icon size={17} />
-              </div>
-              <div className="min-w-0"><div className="text-xl font-black tabular-nums text-slate-900 dark:text-white">{value}</div><div className="truncate text-[11px] font-semibold text-slate-500">{label}</div></div>
-            </div>
-          ))}
-        </div>
       </div>
 
-      {isSystemAdmin && (
-        <div className="border-b border-slate-200 bg-white px-4 py-3 dark:border-white/10 dark:bg-[#130d1b] md:px-5">
-          <div className="mb-2 flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-200">
-                {t('calendar.assignees.title')}
-              </h3>
-              <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
-                {t('calendar.assignees.description')}
-              </p>
-            </div>
-            <div className="flex shrink-0 gap-1">
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="h-8 w-8 rounded-lg"
-                aria-label={t('calendar.assignees.previous')}
-                onClick={() => assigneeRailRef.current?.scrollBy({ left: -320, behavior: 'smooth' })}
-              >
-                <ChevronLeft size={15} />
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                className="h-8 w-8 rounded-lg"
-                aria-label={t('calendar.assignees.next')}
-                onClick={() => assigneeRailRef.current?.scrollBy({ left: 320, behavior: 'smooth' })}
-              >
-                <ChevronRight size={15} />
-              </Button>
-            </div>
-          </div>
-          <div ref={assigneeRailRef} className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
-            <button
-              type="button"
-              onClick={() => setSelectedAssigneeId('all')}
-              className={cn(
-                'flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-left transition',
-                selectedAssigneeId === 'all'
-                  ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                  : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-primary/40 dark:border-white/10 dark:bg-white/5 dark:text-slate-200',
-              )}
-            >
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[image:var(--crm-brand-gradient)] text-[10px] font-black text-white">
-                {t('calendar.assignees.allShort')}
-              </span>
-              <span className="whitespace-nowrap text-xs font-black">{t('calendar.assignees.all')}</span>
-              <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-black tabular-nums text-slate-600 dark:bg-black/20 dark:text-slate-300">
-                {calendarActivities.length}
-              </span>
-            </button>
-            {assignees.map((assignee) => (
-              <button
-                key={assignee.id}
-                type="button"
-                onClick={() => setSelectedAssigneeId(assignee.id)}
-                className={cn(
-                  'flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-left transition',
-                  selectedAssigneeId === assignee.id
-                    ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                    : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-primary/40 dark:border-white/10 dark:bg-white/5 dark:text-slate-200',
-                )}
-              >
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-200 text-[10px] font-black uppercase text-slate-700 dark:bg-white/10 dark:text-slate-200">
-                  {assignee.name.split(/\s+/).slice(0, 2).map((part) => part.charAt(0)).join('') || '#'}
-                </span>
-                <span className="max-w-44 truncate whitespace-nowrap text-xs font-black">{assignee.name}</span>
-                <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-black tabular-nums text-slate-600 dark:bg-black/20 dark:text-slate-300">
-                  {assignee.count}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-slate-200 bg-slate-50/60 px-4 py-2 dark:border-white/10 dark:bg-white/[0.02] md:px-5">
+        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => move(-1)} aria-label={t('calendar.previous')}><ChevronLeft size={16} /></Button>
+        <Button variant="outline" size="sm" className="h-8 rounded-lg px-2.5 text-xs font-bold" onClick={() => setCursor(new Date())}>{t('calendar.today')}</Button>
+        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => move(1)} aria-label={t('calendar.next')}><ChevronRight size={16} /></Button>
+        <h3 className="ml-1 whitespace-nowrap capitalize text-sm font-black text-slate-900 dark:text-white md:text-base">{title}</h3>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-slate-50/60 px-4 py-3 dark:border-white/10 dark:bg-white/[0.02] md:px-5">
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" className="rounded-lg" onClick={() => move(-1)} aria-label={t('calendar.previous')}><ChevronLeft size={17} /></Button>
-          <Button variant="outline" size="sm" className="rounded-lg font-bold" onClick={() => setCursor(new Date())}>{t('calendar.today')}</Button>
-          <Button variant="outline" size="icon" className="rounded-lg" onClick={() => move(1)} aria-label={t('calendar.next')}><ChevronRight size={17} /></Button>
-          <h3 className="ml-1.5 capitalize text-base font-black text-slate-900 dark:text-white md:text-lg">{title}</h3>
-        </div>
-        <Button variant="ghost" size="sm" disabled={isFetching} onClick={() => void refetch()}>
-          <RotateCw size={15} className={cn('mr-1.5', isFetching && 'animate-spin')} />{t('refresh')}
+        {isSystemAdmin && (
+          <Popover open={assigneePickerOpen} onOpenChange={setAssigneePickerOpen}>
+            <PopoverTrigger asChild>
+              <button
+                type="button"
+                className={cn(
+                  'flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-bold transition',
+                  selectedAssigneeId === 'all'
+                    ? 'border-slate-200 bg-white text-slate-700 hover:border-primary/40 dark:border-white/10 dark:bg-white/5 dark:text-slate-200'
+                    : 'border-primary bg-primary/10 text-primary',
+                )}
+                title={t('calendar.assignees.description')}
+              >
+                <Users size={14} className="shrink-0" />
+                <span className="max-w-32 truncate">{selectedAssigneeLabel}</span>
+                <span className="rounded-full bg-slate-100 px-1.5 text-[10px] font-black tabular-nums text-slate-600 dark:bg-white/10 dark:text-slate-300">
+                  {activities.length}
+                </span>
+                <ChevronDown size={13} className={cn('shrink-0 transition-transform', assigneePickerOpen && 'rotate-180')} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent align="start" className="w-64 overflow-hidden rounded-xl p-0">
+              <div className="border-b border-slate-100 px-3 py-2 dark:border-white/5">
+                <p className="text-xs font-black text-slate-900 dark:text-white">{t('calendar.assignees.title')}</p>
+              </div>
+              <div className="max-h-72 overflow-y-auto p-1.5">
+                {[{ id: 'all' as const, name: t('calendar.assignees.all'), count: calendarActivities.length }, ...assignees].map((assignee) => {
+                  const isActive = selectedAssigneeId === assignee.id;
+                  return (
+                    <button
+                      key={assignee.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedAssigneeId(assignee.id);
+                        setAssigneePickerOpen(false);
+                      }}
+                      className={cn(
+                        'flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left transition',
+                        isActive ? 'bg-primary/10 text-primary' : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/5',
+                      )}
+                    >
+                      <span className={cn(
+                        'flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[9px] font-black uppercase',
+                        assignee.id === 'all'
+                          ? 'bg-[image:var(--crm-brand-gradient)] text-white'
+                          : 'bg-slate-200 text-slate-700 dark:bg-white/10 dark:text-slate-200',
+                      )}>
+                        {assignee.id === 'all'
+                          ? t('calendar.assignees.allShort')
+                          : assignee.name.split(/\s+/).slice(0, 2).map((part) => part.charAt(0)).join('') || '#'}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate text-xs font-bold">{assignee.name}</span>
+                      <span className="shrink-0 rounded-full bg-slate-100 px-1.5 text-[10px] font-black tabular-nums text-slate-600 dark:bg-white/10 dark:text-slate-300">
+                        {assignee.count}
+                      </span>
+                      {isActive ? <Check size={13} className="shrink-0" /> : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
+
+        <Button variant="ghost" size="sm" className="ms-auto h-8 px-2.5 text-xs" disabled={isFetching} onClick={() => void refetch()}>
+          <RotateCw size={14} className={cn('sm:mr-1.5', isFetching && 'animate-spin')} />
+          <span className="hidden sm:inline">{t('refresh')}</span>
         </Button>
       </div>
 
