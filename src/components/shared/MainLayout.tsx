@@ -1,5 +1,6 @@
 import { type ReactElement, Suspense, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import { Shield01Icon } from 'hugeicons-react';
 import { PageLoader } from './PageLoader';
 import { RouteNamespaceLoader } from './RouteNamespaceLoader';
@@ -34,8 +35,10 @@ interface MainLayoutProps {
 
 export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
   const { t } = useTranslation('common');
+  const { pathname } = useLocation();
   const { skin } = useTheme();
   const isPremium = skin === 'premium';
+  const isDashboardRoute = pathname === '/';
   const isAiAssistantInSidebar = useUIStore((state) => state.isAiAssistantInSidebar);
   const isAiAssistantWidgetVisible = useUIStore((state) => state.isAiAssistantWidgetVisible);
   const { data: permissions, isLoading, isError } = useMyPermissionsQuery();
@@ -340,7 +343,13 @@ export function MainLayout({ navItems }: MainLayoutProps): ReactElement {
         {isPremium && <PremiumTopNav items={items} />}
         <TooltipProvider delayDuration={200}>
           <div className="flex-1 min-h-0 relative">
-            <main className="crm-main-scroll absolute inset-0 overflow-y-auto overflow-x-hidden p-4 md:p-6 text-foreground scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent touch-pan-y overscroll-contain [-webkit-overflow-scrolling:touch]">
+            <main
+              className={`crm-main-scroll absolute inset-0 overflow-y-auto overflow-x-hidden text-foreground scrollbar-thin scrollbar-thumb-zinc-200 dark:scrollbar-thumb-zinc-800 scrollbar-track-transparent touch-pan-y overscroll-contain [-webkit-overflow-scrolling:touch] ${
+                isDashboardRoute
+                  ? 'crm-main-scroll--dashboard px-4 pb-4 pt-1 md:px-6 md:pb-6 md:pt-1'
+                  : 'p-4 md:p-6'
+              }`}
+            >
               <div className="crm-main-workspace w-full min-h-full max-w-[1920px] mx-auto pb-8">
                 <Suspense fallback={<PageLoader />}>
                   <RouteNamespaceLoader>

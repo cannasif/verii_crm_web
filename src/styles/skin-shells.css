@@ -618,6 +618,10 @@ html.skin-premium .crm-main-scroll {
   padding: clamp(1rem, 2vw, 2rem);
 }
 
+html.skin-premium .crm-main-scroll.crm-main-scroll--dashboard {
+  padding-top: 0.25rem;
+}
+
 html.skin-premium .crm-main-workspace {
   max-width: 97.5rem;
   padding-bottom: 2.5rem;
