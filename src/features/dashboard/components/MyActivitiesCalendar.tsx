@@ -35,6 +35,7 @@ import {
   MousePointerClick,
   Plus,
   RotateCw,
+  Search,
   Sparkles,
   Tag,
   UserRound,
@@ -59,6 +60,7 @@ import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPerm
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
+import { matchesSearchTerm } from '@/lib/search';
 import {
   ActivityPriority,
   ActivityStatus,
@@ -256,6 +258,7 @@ export function MyActivitiesCalendar(): ReactElement {
   const [selected, setSelected] = useState<ActivityDto | null>(null);
   const [selectedAssigneeId, setSelectedAssigneeId] = useState<number | 'all'>('all');
   const [assigneePickerOpen, setAssigneePickerOpen] = useState(false);
+  const [assigneeFilterTerm, setAssigneeFilterTerm] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const createActivity = useCreateActivity();
 
@@ -309,6 +312,17 @@ export function MyActivitiesCalendar(): ReactElement {
   const selectedAssigneeLabel = selectedAssigneeId === 'all'
     ? t('calendar.assignees.all')
     : assignees.find((item) => item.id === selectedAssigneeId)?.name ?? t('calendar.assignees.all');
+
+  const assigneeOptions = useMemo(
+    () => [{ id: 'all' as const, name: t('calendar.assignees.all'), count: calendarActivities.length }, ...assignees],
+    [assignees, calendarActivities.length, t],
+  );
+  const visibleAssigneeOptions = useMemo(
+    () => assigneeFilterTerm.trim()
+      ? assigneeOptions.filter((assignee) => matchesSearchTerm(assigneeFilterTerm, [assignee.name]))
+      : assigneeOptions,
+    [assigneeOptions, assigneeFilterTerm],
+  );
   const showAssigneeOnChips = isSystemAdmin && selectedAssigneeId === 'all';
 
   const activities = useMemo(
@@ -444,7 +458,13 @@ export function MyActivitiesCalendar(): ReactElement {
         <h3 className="ml-1 whitespace-nowrap capitalize text-sm font-black text-slate-900 dark:text-white md:text-base">{title}</h3>
 
         {isSystemAdmin && (
-          <Popover open={assigneePickerOpen} onOpenChange={setAssigneePickerOpen}>
+          <Popover
+            open={assigneePickerOpen}
+            onOpenChange={(open) => {
+              setAssigneePickerOpen(open);
+              if (!open) setAssigneeFilterTerm('');
+            }}
+          >
             <PopoverTrigger asChild>
               <button
                 type="button"
@@ -468,8 +488,23 @@ export function MyActivitiesCalendar(): ReactElement {
               <div className="border-b border-slate-100 px-3 py-2 dark:border-white/5">
                 <p className="text-xs font-black text-slate-900 dark:text-white">{t('calendar.assignees.title')}</p>
               </div>
+              <div className="border-b border-slate-100 px-2.5 py-2 dark:border-white/5">
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" aria-hidden />
+                  <input
+                    type="text"
+                    value={assigneeFilterTerm}
+                    onChange={(event) => setAssigneeFilterTerm(event.target.value)}
+                    placeholder={t('calendar.assignees.searchPlaceholder')}
+                    className="h-8 w-full rounded-lg border border-slate-200 bg-white pl-8 pr-2.5 text-xs text-slate-700 outline-none transition-colors placeholder:text-slate-400 focus:border-primary/60 focus:ring-2 focus:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:placeholder:text-slate-500"
+                  />
+                </div>
+              </div>
               <div className="max-h-72 overflow-y-auto p-1.5">
-                {[{ id: 'all' as const, name: t('calendar.assignees.all'), count: calendarActivities.length }, ...assignees].map((assignee) => {
+                {visibleAssigneeOptions.length === 0 && (
+                  <p className="px-2 py-3 text-center text-xs font-medium text-slate-400 dark:text-slate-500">{t('calendar.assignees.noMatch')}</p>
+                )}
+                {visibleAssigneeOptions.map((assignee) => {
                   const isActive = selectedAssigneeId === assignee.id;
                   return (
                     <button
@@ -518,7 +553,7 @@ export function MyActivitiesCalendar(): ReactElement {
       ) : isError ? (
         <div className="flex min-h-80 flex-col items-center justify-center gap-3 p-6 text-center"><CircleAlert className="text-rose-500" size={32} /><p className="font-semibold text-slate-700 dark:text-slate-200">{t('calendar.loadError')}</p><Button onClick={() => void refetch()}>{t('refresh')}</Button></div>
       ) : view === 'agenda' ? (
-        <div className="max-h-[620px] overflow-y-auto p-4 md:p-5">
+        <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-y-auto p-4 md:p-5">
           {days.map((day) => {
             const items = activitiesByDay.get(day.toISOString()) ?? [];
             if (items.length === 0) return null;
@@ -537,8 +572,11 @@ export function MyActivitiesCalendar(): ReactElement {
           {activities.length === 0 && <EmptyCalendar label={t('calendar.empty')} />}
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <div className="min-w-[900px] grid grid-cols-7">
+        <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-auto">
+          <div
+            className="min-w-[900px] grid h-full grid-cols-7"
+            style={{ gridTemplateRows: `auto repeat(${Math.max(1, days.length / 7)}, minmax(${view === 'week' ? '160px' : '70px'}, 1fr))` }}
+          >
             {days.slice(0, 7).map((day) => (
               <div key={`header-${day.getDay()}`} className={cn('border-b border-r border-slate-200 bg-slate-50 px-2 py-2.5 text-center text-[11px] font-black uppercase tracking-wider text-slate-500 last:border-r-0 dark:border-white/10 dark:bg-white/5', (day.getDay() === 0 || day.getDay() === 6) && 'text-[var(--crm-brand-text)]')}>
                 {new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(day)}
@@ -552,8 +590,7 @@ export function MyActivitiesCalendar(): ReactElement {
                 <div
                   key={day.toISOString()}
                   className={cn(
-                    'min-h-32 border-b border-r border-slate-200 p-2 last:border-r-0 dark:border-white/10',
-                    view === 'week' && 'min-h-[520px]',
+                    'flex flex-col overflow-y-auto border-b border-r border-slate-200 p-2 last:border-r-0 dark:border-white/10',
                     !isSameMonth(day, cursor) && view === 'month' && 'bg-slate-50/70 dark:bg-white/[0.02]',
                     isWeekend && (isSameMonth(day, cursor) || view === 'week') && 'bg-slate-50/40 dark:bg-white/[0.015]',
                   )}

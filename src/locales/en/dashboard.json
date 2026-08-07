@@ -70,7 +70,7 @@
   "tabs": { "label": "Dashboard views", "reports": "My Reports", "calendar": "My Calendar" },
   "calendar": {
     "title": "My activity calendar", "description": "Manage your assigned plans, meetings and tasks in one calendar.", "descriptionAdmin": "View every user's plans and filter the calendar by activity assignee.",
-    "assignees": { "title": "Activity assignees", "description": "Click a person to filter the calendar by assignee.", "all": "All users", "allShort": "ALL", "previous": "Previous assignees", "next": "Next assignees" },
+    "assignees": { "title": "Activity assignees", "description": "Click a person to filter the calendar by assignee.", "all": "All users", "allShort": "ALL", "previous": "Previous assignees", "next": "Next assignees", "searchPlaceholder": "Search user...", "noMatch": "No matching user" },
     "views": { "month": "Month", "week": "Week", "agenda": "Agenda" },
     "summary": { "total": "Total", "scheduled": "Scheduled", "completed": "Completed", "overdue": "Overdue" },
     "status": { "scheduled": "Scheduled", "completed": "Completed", "cancelled": "Cancelled", "overdue": "Overdue" },
