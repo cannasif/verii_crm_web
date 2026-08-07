@@ -67,7 +67,19 @@
     "criticalStock": "Critical Stock",
     "stockStatus": "See stock status"
   },
-  "tabs": { "label": "Dashboard views", "reports": "My Reports", "calendar": "My Calendar" },
+  "tabs": { "label": "Dashboard views", "reports": "My Reports", "calendar": "My Calendar", "demands": "Demands", "quotations": "Quotations", "orders": "Orders" },
+  "salesCalendar": {
+    "demand": { "title": "Demand calendar" },
+    "quotation": { "title": "Quotation calendar" },
+    "order": { "title": "Order calendar" },
+    "descriptionAdmin": "View all users' documents and filter by sales representative.",
+    "descriptionSelf": "Track your sales documents and ERP conversions in one calendar.",
+    "summary": { "period": "This period", "today": "Created today", "erp": "Converted to ERP today", "waiting": "Waiting approval" },
+    "ownerLabel": "Sales representative", "allOwners": "All users", "ownerSearch": "Search user...",
+    "today": "Today", "previous": "Previous month", "next": "Next month", "more": "more", "loadError": "Sales calendar could not be loaded.",
+    "customerUnknown": "Customer information is unavailable", "erpYes": "ERP record created", "erpNo": "ERP record not created", "openDocument": "Open document details",
+    "detail": { "date": "Document date", "amount": "Grand total", "owner": "Sales representative", "erp": "ERP status / number" }
+  },
   "calendar": {
     "title": "My activity calendar", "description": "Manage your assigned plans, meetings and tasks in one calendar.", "descriptionAdmin": "View every user's plans and filter the calendar by activity assignee.",
     "assignees": { "title": "Activity assignees", "description": "Click a person to filter the calendar by assignee.", "all": "All users", "allShort": "ALL", "previous": "Previous assignees", "next": "Next assignees", "searchPlaceholder": "Search user...", "noMatch": "No matching user" },
@@ -75,6 +87,7 @@
     "summary": { "total": "Total", "scheduled": "Scheduled", "completed": "Completed", "overdue": "Overdue" },
     "status": { "scheduled": "Scheduled", "completed": "Completed", "cancelled": "Cancelled", "overdue": "Overdue" },
     "detail": { "date": "Date and time", "status": "Status", "assignee": "Activity assignee", "customer": "Customer / contact", "customerCode": "Customer code", "description": "Description", "clickHint": "Click for details" },
+    "media": { "tabs": { "details": "Details", "activityImages": "Activity images", "customerImages": "Customer images" }, "emptyActivityImages": "No images have been added to this activity.", "emptyCustomerImages": "No images have been added to the linked customer.", "loadError": "Images could not be loaded. Please try again.", "openImage": "Open full-size image" },
     "today": "Today", "previous": "Previous period", "next": "Next period", "newActivity": "Add activity", "activity": "Activity", "more": "more", "empty": "You have no activities in this period", "loadError": "Calendar activities could not be loaded.", "openActivities": "Open activity management"
   },
   "sidebar": {

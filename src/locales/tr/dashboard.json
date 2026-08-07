@@ -67,7 +67,19 @@
     "criticalStock": "Kritik Stok",
     "stockStatus": "Stok durumunu gör"
   },
-  "tabs": { "label": "Gösterge paneli görünümleri", "reports": "Raporlarım", "calendar": "Takvimim" },
+  "tabs": { "label": "Gösterge paneli görünümleri", "reports": "Raporlarım", "calendar": "Takvimim", "demands": "Talepler", "quotations": "Teklifler", "orders": "Siparişler" },
+  "salesCalendar": {
+    "demand": { "title": "Talep takvimi" },
+    "quotation": { "title": "Teklif takvimi" },
+    "order": { "title": "Sipariş takvimi" },
+    "descriptionAdmin": "Tüm kullanıcıların belgelerini görüntüleyin ve satış sorumlusuna göre filtreleyin.",
+    "descriptionSelf": "Size ait satış belgelerini ve ERP dönüşümlerini tek takvimde izleyin.",
+    "summary": { "period": "Bu dönem", "today": "Bugün girilen", "erp": "Bugün ERP'ye dönen", "waiting": "Onay bekleyen" },
+    "ownerLabel": "Satış sorumlusu", "allOwners": "Tüm kullanıcılar", "ownerSearch": "Kullanıcı ara...",
+    "today": "Bugün", "previous": "Önceki ay", "next": "Sonraki ay", "more": "daha", "loadError": "Satış takvimi yüklenemedi.",
+    "customerUnknown": "Müşteri bilgisi bulunmuyor", "erpYes": "ERP kaydı oluştu", "erpNo": "ERP kaydı oluşmadı", "openDocument": "Belge detayını aç",
+    "detail": { "date": "Belge tarihi", "amount": "Toplam tutar", "owner": "Satış sorumlusu", "erp": "ERP durumu / numarası" }
+  },
   "calendar": {
     "title": "Aktivite takvimim", "description": "Size atanan planları, görüşmeleri ve görevleri tek takvimde yönetin.", "descriptionAdmin": "Tüm kullanıcıların planlarını görüntüleyin ve aktivite sorumlusuna göre filtreleyin.",
     "assignees": { "title": "Aktivite sorumluları", "description": "Takvimi bir sorumluya göre süzmek için kişiye tıklayın.", "all": "Tüm kullanıcılar", "allShort": "TÜM", "previous": "Önceki sorumlular", "next": "Sonraki sorumlular", "searchPlaceholder": "Kullanıcı ara...", "noMatch": "Eşleşen kullanıcı yok" },
@@ -75,6 +87,7 @@
     "summary": { "total": "Toplam", "scheduled": "Planlanan", "completed": "Tamamlanan", "overdue": "Geciken" },
     "status": { "scheduled": "Planlandı", "completed": "Tamamlandı", "cancelled": "İptal edildi", "overdue": "Gecikti" },
     "detail": { "date": "Tarih ve saat", "status": "Durum", "assignee": "Aktivite sorumlusu", "customer": "Müşteri / kişi", "customerCode": "Cari kodu", "description": "Açıklama", "clickHint": "Detaylar için tıklayın" },
+    "media": { "tabs": { "details": "Detaylar", "activityImages": "Aktivite görselleri", "customerImages": "Cari görselleri" }, "emptyActivityImages": "Bu aktiviteye eklenmiş görsel bulunmuyor.", "emptyCustomerImages": "Bağlı cariye eklenmiş görsel bulunmuyor.", "loadError": "Görseller yüklenemedi. Lütfen tekrar deneyin.", "openImage": "Görseli tam boy aç" },
     "today": "Bugün", "previous": "Önceki dönem", "next": "Sonraki dönem", "newActivity": "Aktivite ekle", "activity": "Aktivite", "more": "daha", "empty": "Bu dönemde aktiviteniz yok", "loadError": "Takvim aktiviteleri yüklenemedi.", "openActivities": "Aktivite yönetimini aç"
   },
   "sidebar": {

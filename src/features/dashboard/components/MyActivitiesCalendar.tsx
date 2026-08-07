@@ -29,6 +29,8 @@ import {
   CircleAlert,
   Clock3,
   LayoutGrid,
+  Images,
+  ExternalLink,
   List,
   Loader2,
   MapPin,
@@ -52,6 +54,7 @@ import {
 } from '@/components/ui/dialog';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useDashboardActivitiesCalendar } from '@/features/activity-management/hooks/useMyActivitiesCalendar';
@@ -60,6 +63,9 @@ import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPerm
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
+import { useActivityImages } from '@/features/activity-image-management/hooks/useActivityImages';
+import { useCustomerImagesQuery } from '@/features/customer-360/hooks/useCustomer360';
+import { getImageUrl } from '@/lib/image-url';
 import { matchesSearchTerm } from '@/lib/search';
 import {
   ActivityPriority,
@@ -256,11 +262,24 @@ export function MyActivitiesCalendar(): ReactElement {
   const [view, setView] = useState<CalendarView>('week');
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState<ActivityDto | null>(null);
+  const [detailTab, setDetailTab] = useState('details');
   const [selectedAssigneeId, setSelectedAssigneeId] = useState<number | 'all'>('all');
   const [assigneePickerOpen, setAssigneePickerOpen] = useState(false);
   const [assigneeFilterTerm, setAssigneeFilterTerm] = useState('');
   const [formOpen, setFormOpen] = useState(false);
   const createActivity = useCreateActivity();
+  const activityImagesQuery = useActivityImages(
+    selected?.id,
+    selected !== null && detailTab === 'activityImages',
+  );
+  const customerImagesQuery = useCustomerImagesQuery(
+    selected?.potentialCustomerId ?? 0,
+    selected !== null && detailTab === 'customerImages',
+  );
+
+  useEffect(() => {
+    setDetailTab('details');
+  }, [selected?.id]);
 
   const weekStartsOn = 1 as const;
   const visibleRange = useMemo(() => {
@@ -620,8 +639,77 @@ export function MyActivitiesCalendar(): ReactElement {
       )}
 
       <Dialog open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
-          {selected && <><DialogHeader><DialogTitle className="pr-8 text-xl">{selected.subject}</DialogTitle><DialogDescription>{selected.activityType?.name || t('calendar.activity')}</DialogDescription></DialogHeader><div className="grid gap-3 py-2 sm:grid-cols-2"><Detail icon={Clock3} label={t('calendar.detail.date')} value={formatActivityRange(selected, locale)} /><Detail icon={CheckCircle2} label={t('calendar.detail.status')} value={statusLabel(selected, t)} /><Detail icon={UserRound} label={t('calendar.detail.assignee')} value={assigneeName(selected)} />{customerName(selected) && <Detail icon={UserRound} label={t('calendar.detail.customer')} value={customerName(selected)!} />}{selected.erpCustomerCode && <Detail icon={MapPin} label={t('calendar.detail.customerCode')} value={selected.erpCustomerCode} />}</div>{selected.description && <div className="rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-white/5 dark:text-slate-200"><div className="mb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">{t('calendar.detail.description')}</div>{selected.description}</div>}<div className="mt-2 flex justify-end"><Button onClick={() => navigate('/activity-management')}>{t('calendar.openActivities')}</Button></div></>}
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
+          {selected && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="pr-8 text-xl">{selected.subject}</DialogTitle>
+                <DialogDescription>{selected.activityType?.name || t('calendar.activity')}</DialogDescription>
+              </DialogHeader>
+
+              <Tabs value={detailTab} onValueChange={setDetailTab} className="min-w-0">
+                <TabsList className="grid h-auto w-full grid-cols-2 gap-1 sm:grid-cols-3">
+                  <TabsTrigger value="details">{t('calendar.media.tabs.details')}</TabsTrigger>
+                  <TabsTrigger value="activityImages">{t('calendar.media.tabs.activityImages')}</TabsTrigger>
+                  {selected.potentialCustomerId && selected.potentialCustomerId > 0 && (
+                    <TabsTrigger value="customerImages">{t('calendar.media.tabs.customerImages')}</TabsTrigger>
+                  )}
+                </TabsList>
+
+                <TabsContent value="details" className="mt-4 space-y-3">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Detail icon={Clock3} label={t('calendar.detail.date')} value={formatActivityRange(selected, locale)} />
+                    <Detail icon={CheckCircle2} label={t('calendar.detail.status')} value={statusLabel(selected, t)} />
+                    <Detail icon={UserRound} label={t('calendar.detail.assignee')} value={assigneeName(selected)} />
+                    {customerName(selected) && <Detail icon={UserRound} label={t('calendar.detail.customer')} value={customerName(selected)!} />}
+                    {selected.erpCustomerCode && <Detail icon={MapPin} label={t('calendar.detail.customerCode')} value={selected.erpCustomerCode} />}
+                  </div>
+                  {selected.description && (
+                    <div className="rounded-xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-white/5 dark:text-slate-200">
+                      <div className="mb-1 text-[10px] font-black uppercase tracking-wider text-slate-400">{t('calendar.detail.description')}</div>
+                      {selected.description}
+                    </div>
+                  )}
+                </TabsContent>
+
+                <TabsContent value="activityImages" className="mt-4">
+                  <DashboardImageGallery
+                    items={(activityImagesQuery.data ?? []).map((image) => ({
+                      id: image.id,
+                      src: getImageUrl(image.resimUrl),
+                      description: image.resimAciklama,
+                    }))}
+                    isLoading={activityImagesQuery.isLoading}
+                    isError={activityImagesQuery.isError}
+                    emptyText={t('calendar.media.emptyActivityImages')}
+                    errorText={t('calendar.media.loadError')}
+                    openLabel={t('calendar.media.openImage')}
+                  />
+                </TabsContent>
+
+                {selected.potentialCustomerId && selected.potentialCustomerId > 0 && (
+                  <TabsContent value="customerImages" className="mt-4">
+                    <DashboardImageGallery
+                      items={(customerImagesQuery.data ?? []).map((image) => ({
+                        id: image.id,
+                        src: getImageUrl(image.imageUrl),
+                        description: image.imageDescription ?? undefined,
+                      }))}
+                      isLoading={customerImagesQuery.isLoading}
+                      isError={customerImagesQuery.isError}
+                      emptyText={t('calendar.media.emptyCustomerImages')}
+                      errorText={t('calendar.media.loadError')}
+                      openLabel={t('calendar.media.openImage')}
+                    />
+                  </TabsContent>
+                )}
+              </Tabs>
+
+              <div className="flex justify-end">
+                <Button onClick={() => navigate('/activity-management')}>{t('calendar.openActivities')}</Button>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
@@ -655,4 +743,56 @@ function EmptyCalendar({ label }: { label: string }): ReactElement {
 
 function Detail({ icon: Icon, label, value }: { icon: typeof Clock3; label: string; value: string }): ReactElement {
   return <div className="flex items-start gap-3 rounded-xl border border-slate-200 p-3 dark:border-white/10"><Icon size={17} className="mt-0.5 shrink-0 text-primary" /><div><div className="text-[10px] font-black uppercase tracking-wider text-slate-400">{label}</div><div className="mt-0.5 text-sm font-bold text-slate-800 dark:text-slate-100">{value}</div></div></div>;
+}
+
+interface DashboardImageGalleryProps {
+  items: Array<{ id: number; src: string | null; description?: string }>;
+  isLoading: boolean;
+  isError: boolean;
+  emptyText: string;
+  errorText: string;
+  openLabel: string;
+}
+
+function DashboardImageGallery({ items, isLoading, isError, emptyText, errorText, openLabel }: DashboardImageGalleryProps): ReactElement {
+  if (isLoading) {
+    return <div className="flex min-h-48 items-center justify-center"><Loader2 className="animate-spin text-primary" size={24} /></div>;
+  }
+
+  if (isError) {
+    return <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">{errorText}</div>;
+  }
+
+  const visibleItems = items.filter((item) => Boolean(item.src));
+  if (visibleItems.length === 0) {
+    return (
+      <div className="flex min-h-48 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-slate-200 text-center text-sm text-slate-500 dark:border-white/10 dark:text-slate-400">
+        <Images size={28} className="text-slate-300 dark:text-slate-600" />
+        <span>{emptyText}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {visibleItems.map((item) => (
+        <a
+          key={item.id}
+          href={item.src ?? undefined}
+          target="_blank"
+          rel="noreferrer"
+          className="group overflow-hidden rounded-xl border border-slate-200 bg-slate-50 transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-white/5"
+          aria-label={openLabel}
+        >
+          <div className="aspect-square overflow-hidden bg-slate-100 dark:bg-white/5">
+            <img src={item.src ?? undefined} alt={item.description || openLabel} loading="lazy" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+          </div>
+          <div className="flex items-center justify-between gap-2 px-3 py-2">
+            <span className="truncate text-xs font-semibold text-slate-600 dark:text-slate-300">{item.description || openLabel}</span>
+            <ExternalLink size={13} className="shrink-0 text-primary" />
+          </div>
+        </a>
+      ))}
+    </div>
+  );
 }

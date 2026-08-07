@@ -69,12 +69,12 @@ export function useCustomer360CohortQuery(id: number, months = 12) {
   });
 }
 
-export function useCustomerImagesQuery(id: number) {
+export function useCustomerImagesQuery(id: number, enabled = true) {
   return useQuery({
     queryKey: ['customer360', 'images', id],
     queryFn: ({ signal }) => getCustomerImages({ id, signal }),
     staleTime: IMAGES_STALE_MS,
-    enabled: id > 0,
+    enabled: enabled && id > 0,
   });
 }
 

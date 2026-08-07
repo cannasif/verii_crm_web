@@ -27,8 +27,11 @@ export const activityImageApi = {
     throw new Error(response.message || 'Resimler yüklenemedi');
   },
 
-  getByActivityId: async (activityId: number): Promise<ActivityImageDto[]> => {
-    const response = await api.get<ApiResponse<ActivityImageDto[]>>(`/api/ActivityImage/by-activity/${activityId}`);
+  getByActivityId: async (activityId: number, signal?: AbortSignal): Promise<ActivityImageDto[]> => {
+    const response = await api.get<ApiResponse<ActivityImageDto[]>>(
+      `/api/ActivityImage/by-activity/${activityId}`,
+      { signal },
+    );
     if (response.success && response.data) {
       return response.data;
     }

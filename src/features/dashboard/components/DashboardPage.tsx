@@ -8,6 +8,7 @@ import { formatSystemDate } from '@/lib/system-settings';
 import { clearPerfMarks, perfMark, perfMeasureOnNextPaint } from '@/lib/perf-metrics';
 import { AssignedReportsDashboardSection } from '@/features/report-builder/components/AssignedReportsDashboardSection';
 import { MyActivitiesCalendar } from './MyActivitiesCalendar';
+import { DashboardSalesCalendar } from './DashboardSalesCalendar';
 import {
   Zap,
   CalendarDays,
@@ -20,6 +21,9 @@ import {
   Eye,
   Database,
   BarChart3,
+  ClipboardList,
+  FileText,
+  ShoppingCart,
 } from 'lucide-react';
 
 import {
@@ -89,7 +93,7 @@ export function DashboardPage(): ReactElement {
 
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [dashboardMode, setDashboardMode] = useState<'view' | 'edit'>('view');
-  const [activeTab, setActiveTab] = useState<'reports' | 'calendar'>('calendar');
+  const [activeTab, setActiveTab] = useState<'reports' | 'calendar' | 'demand' | 'quotation' | 'order'>('calendar');
   const tCommon = useTranslation('common').t;
 
   useEffect(() => {
@@ -126,7 +130,7 @@ export function DashboardPage(): ReactElement {
   };
 
   return (
-    <div className="flex flex-col gap-3 p-1 md:p-4 overflow-x-hidden w-full pb-10">
+    <div className="flex w-full flex-col gap-3 overflow-x-hidden px-1 pb-10 pt-0 md:px-4 md:pt-0">
 
       <div className="flex-none flex flex-row items-center justify-between gap-3 px-1">
         <div className="flex min-w-0 items-baseline gap-2">
@@ -238,7 +242,7 @@ export function DashboardPage(): ReactElement {
         </div>
       </div>
 
-      <div className="flex w-full max-w-xl rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-white/10 dark:bg-[#130d1b]" role="tablist" aria-label={t('tabs.label')}>
+      <div className="flex w-full max-w-4xl gap-1 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-white/10 dark:bg-[#130d1b]" role="tablist" aria-label={t('tabs.label')}>
         <button
           type="button"
           role="tab"
@@ -248,6 +252,22 @@ export function DashboardPage(): ReactElement {
         >
           <CalendarDays size={15} />{t('tabs.calendar')}
         </button>
+        {([
+          { id: 'demand' as const, icon: ClipboardList, label: t('tabs.demands') },
+          { id: 'quotation' as const, icon: FileText, label: t('tabs.quotations') },
+          { id: 'order' as const, icon: ShoppingCart, label: t('tabs.orders') },
+        ]).map(({ id, icon: Icon, label }) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === id}
+            onClick={() => setActiveTab(id)}
+            className={cn('flex min-w-28 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition', activeTab === id ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
+          >
+            <Icon size={15} />{label}
+          </button>
+        ))}
         <button
           type="button"
           role="tab"
@@ -259,9 +279,11 @@ export function DashboardPage(): ReactElement {
         </button>
       </div>
 
-      {activeTab === 'reports'
-        ? <AssignedReportsDashboardSection mode={dashboardMode} onModeChange={setDashboardMode} />
-        : <MyActivitiesCalendar />}
+      {activeTab === 'reports' && <AssignedReportsDashboardSection mode={dashboardMode} onModeChange={setDashboardMode} />}
+      {activeTab === 'calendar' && <MyActivitiesCalendar />}
+      {activeTab === 'demand' && <DashboardSalesCalendar documentType="Demand" />}
+      {activeTab === 'quotation' && <DashboardSalesCalendar documentType="Quotation" />}
+      {activeTab === 'order' && <DashboardSalesCalendar documentType="Order" />}
 
     </div>
   );
