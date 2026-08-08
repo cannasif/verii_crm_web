@@ -27,10 +27,13 @@ import {
   type NdiTransferCreateResponseDto,
   type NdiTransferCreatedDocumentDto,
   type NdiTransferFailedDocumentDto,
+  type NdiTransferPreviewDocumentDto,
   type NdiTransferredRecordDto,
   type NetsisCustomerDispatchDto,
   type NetsisCustomerDispatchLineDto,
   type NetsisCustomerDocumentSeriesDto,
+  type NetsisNdiTransferScenarioDto,
+  type NetsisNdiTransferRuleDto,
 } from '../api/ndi-api';
 import { NdiConnectionTestDialog } from './NdiConnectionTestDialog';
 
@@ -121,6 +124,7 @@ interface NdiPreparedTransfer {
   totalTransferQuantity: number;
   targetDocumentGroupCount: number;
   sirket24InvoiceGroupCount: number;
+  previewDocuments: NdiTransferPreviewDocumentDto[];
   lines: NdiPreparedLine[];
   warnings: string[];
 }
@@ -203,6 +207,11 @@ function assertPreparedSeriesIntegrity(transfer: NdiPreparedTransfer): void {
     `${selection.targetNetsisCompany.trim().toUpperCase()}|${selection.documentType}`,
     normalizeNdiSeriesInput(selection.targetSeries),
   ]));
+  if (transfer.manualDocuments.length === 0
+    || transfer.manualDocuments.some((selection) => !isValidNdiSeries(selection.targetSeries))) {
+    throw new Error('Manuel NDI belge planındaki seri seçimi geçersiz. Belge gönderilmedi; serileri yeniden seçin.');
+  }
+
   transfer.createdDocuments.forEach((document) => {
     const key = `${document.targetNetsisCompany.trim().toUpperCase()}|${document.documentType}`;
     const selectedSeries = manualSeries.get(key);
@@ -249,18 +258,9 @@ interface NdiOrder {
 interface NdiTransferRule {
   id: NdiOrder['operationProfile'];
   title: string;
-  documentType: NdiOrder['documentType'];
   sourceSerial: string;
   sourceNetsisCompany: string;
-  targetCompany: string;
   targetNetsisCompany: string;
-  targetSerial: string;
-  shipmentRule: string;
-  taxRule: string;
-  warehouseRule: string;
-  transferNote: string;
-  officialNote: string;
-  bulkNote: string;
 }
 
 type NdiBusinessSeries = 'NUR' | 'VIN' | 'DIS' | 'SIP';
@@ -374,66 +374,30 @@ const transferRules: NdiTransferRule[] = [
   {
     id: 'nuray',
     title: 'NURAY - İrsaliye/Fatura',
-    documentType: 'irsaliye',
     sourceSerial: 'NUR',
     sourceNetsisCompany: 'SIRKET24',
-    targetCompany: 'NURAY',
     targetNetsisCompany: 'NURAY24',
-    targetSerial: 'Seçilen irsaliye ve fatura belge serileri',
-    shipmentRule: 'Ayrı sevk carisi varsa yalnız NURAY24 irsaliyesi; yoksa yalnız NURAY24 faturası oluşturulur.',
-    taxRule: 'NURAY24 KDV her zaman %20; Şirket24 KDV 1/4 işlemde %5, TAM işlemde %20.',
-    warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'Hedef belge başarılı olursa kaynak SIRKET24 irsaliyeleri seçilen fatura serisiyle bağlantılı faturalaştırılır.',
-    officialNote: 'Her aşama bir öncekinin başarısına bağlıdır; yeniden denemede başarılı belgeler tekrar oluşturulmaz.',
-    bulkNote: 'Aynı ilk 3 karakter grubundaki NUR belgeleri toplu seçilebilir; uyumsuz olanlar ayrı gruplarda oluşturulur.',
   },
   {
     id: 'windoformKapi',
     title: 'WINDOFORM KAPI',
-    documentType: 'irsaliye',
     sourceSerial: 'VIN',
     sourceNetsisCompany: 'SIRKET24',
-    targetCompany: 'WINDO',
     targetNetsisCompany: 'WIN24',
-    targetSerial: 'Seçilen irsaliye ve fatura belge serileri',
-    shipmentRule: 'Özel Kod K ise yalnız WIN24 irsaliyesi; K değilse sevk carisi varsa irsaliye, yoksa fatura oluşturulur.',
-    taxRule: 'Özel Kod K: WIN24 ve SIRKET24 %0; diğer WIN24 işlemleri %20.',
-    warehouseRule: 'Kaynak depo korunur.',
-    transferNote: 'Hedef belge başarılı olursa kaynak SIRKET24 irsaliyeleri seçilen fatura serisiyle bağlantılı faturalaştırılır.',
-    officialNote: 'Her aşama bir öncekinin başarısına bağlıdır; aynı irsaliye ikinci kez faturalaştırılmaz.',
-    bulkNote: 'Aynı ilk 3 karakter grubundaki VIN belgeleri toplu seçilebilir; uyumsuz olanlar ayrı gruplarda oluşturulur.',
   },
   {
     id: 'disTicaret',
     title: 'DIŞ TİCARET',
-    documentType: 'irsaliye',
     sourceSerial: 'DIS',
     sourceNetsisCompany: 'SIRKET24',
-    targetCompany: 'WIN DIS',
     targetNetsisCompany: 'DISTIC24',
-    targetSerial: 'Seçilen irsaliye ve fatura belge serileri',
-    shipmentRule: 'DIŞTİC24 hedefli veya sipariş numarası D ile başlayan kayıtlarda hedef şirkete belge aktarılmaz.',
-    taxRule: 'Yalnız kaynak SIRKET24 irsaliyelerine bağlı %0 KDV’li fatura oluşturulur.',
-    warehouseRule: 'Hedef şirket aktarımı olmadığı için DIŞTİC24 depo kuralı uygulanmaz.',
-    transferNote: 'Seçili kaynak SIRKET24 irsaliyeleri, seçilen fatura serisiyle bağlantılı faturalaştırılır.',
-    officialNote: 'DIŞTİC24 tarafından belge numarası alınmaz ve bu şirkete REST kaydı gönderilmez.',
-    bulkNote: 'Uyumlu kaynak irsaliyeler SIRKET24 tarafında tek bağlantılı faturada birleştirilir.',
   },
   {
     id: 'sirket24',
     title: 'ŞİRKET24 Fatura',
-    documentType: 'fatura',
     sourceSerial: 'SIP',
     sourceNetsisCompany: 'SIRKET24',
-    targetCompany: 'ŞİRKET24',
     targetNetsisCompany: 'SIRKET24',
-    targetSerial: 'Seçilen fatura belge serisi',
-    shipmentRule: 'Mevcut SIRKET24 irsaliyesi doğrudan faturalaştırılır.',
-    taxRule: 'KDV 0; resmi evrak oluşmayacak.',
-    warehouseRule: 'Depo kuralı yok.',
-    transferNote: 'SIRKET24 irsaliyesi seçilen fatura serisiyle IrsToFat üzerinden faturalaştırılır.',
-    officialNote: 'Resmi evrak oluşmayacak.',
-    bulkNote: 'Aynı ilk 3 karakter grubundaki SIP irsaliyeleri tek bağlantılı faturada birleştirilir.',
   },
 ];
 
@@ -821,8 +785,8 @@ function buildRuleOutcome(
         warehouse.note,
         quantityRule.note,
         vat.note,
-        effectiveRule.officialNote,
-        effectiveRule.bulkNote,
+        'Bu hızlı karar API öncesi kullanıcı kontrolüdür; kesin belge planı API önizlemesinden alınır.',
+        'Kaynak satırların sırası korunur; kesin belge grupları API tarafından belirlenir.',
         'Ek alan 1 ve satır bilgileri aktarım payloadında korunmalıdır.',
       ];
   const userNotes: string[] = [];
@@ -912,8 +876,7 @@ function mapDispatchToOrder(dispatch: NetsisCustomerDispatchDto): NdiOrder {
     hasShipment: hasSeparateShippingCustomer(dispatch.cariKodu, dispatch.teslimCariKodu),
     shippingCustomerCode: dispatch.teslimCariKodu?.trim() || null,
     shippingCustomerName: dispatch.teslimCariIsim?.trim() || null,
-    specialCode1: dispatch.ozelKod1?.trim()
-      || (operationProfile === 'disTicaret' || (exportType && exportType !== '-') ? 'K' : 'N'),
+    specialCode1: dispatch.ozelKod1?.trim() || null,
     specialCode2: dispatch.ozelKod2?.trim() || null,
     projectCode: dispatch.projectCode?.trim() || null,
     description: dispatch.aciklama || '',
@@ -998,6 +961,11 @@ export function NdiOrderTransferPage(): ReactElement {
     queryKey: ['ndi', 'customer-dispatches'],
     queryFn: ndiApi.getCustomerDispatches,
     staleTime: 60_000,
+  });
+  const ndiRulesQuery = useQuery({
+    queryKey: ['ndi', 'transfer-rules'],
+    queryFn: ndiApi.getNdiTransferRules,
+    staleTime: Number.POSITIVE_INFINITY,
   });
 
   const orders = useMemo(() => (dispatchesQuery.data ?? []).map(mapDispatchToOrder), [dispatchesQuery.data]);
@@ -1349,9 +1317,6 @@ export function NdiOrderTransferPage(): ReactElement {
   const visibleRuleOutcomes = revealedGuideRuleId
     ? ruleOutcomes.filter((outcome) => orderProfileByOrderId.get(outcome.orderId) === revealedGuideRuleId)
     : [];
-  const visibleSelectedRules = revealedGuideRuleId
-    ? selectedRules.filter((rule) => rule.id === revealedGuideRuleId)
-    : [];
   const batchAction = useMemo(() => resolveBatchAction(ruleOutcomes), [ruleOutcomes]);
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
@@ -1685,12 +1650,24 @@ export function NdiOrderTransferPage(): ReactElement {
         totalTransferQuantity: preparedLines.reduce((total, line) => total + line.transferQuantity, 0),
         targetDocumentGroupCount: 0,
         sirket24InvoiceGroupCount: 0,
+        previewDocuments: [],
         lines: preparedLines,
         warnings: ruleOutcomes.flatMap((outcome) => outcome.warnings),
       };
       const apiPreview = await ndiApi.previewNdiTransfer(buildNdiTransferRequest(transfer));
+      if (apiPreview.documents.length === 0) {
+        throw new Error('API geçerli bir NDI belge planı döndürmedi. Netsis aktarımı başlatılmadı.');
+      }
+
       transfer.targetDocumentGroupCount = apiPreview.targetDocumentGroupCount;
       transfer.sirket24InvoiceGroupCount = apiPreview.sirket24InvoiceGroupCount;
+      transfer.previewDocuments = apiPreview.documents;
+      transfer.sourceNetsisCompanies = Array.from(new Set(
+        apiPreview.documents.map((document) => document.sourceNetsisCompany)
+      ));
+      transfer.targetNetsisCompanies = Array.from(new Set(
+        apiPreview.documents.map((document) => document.targetNetsisCompany)
+      ));
       transfer.warnings = Array.from(new Set([...transfer.warnings, ...apiPreview.warnings]));
 
       setPreparedTransfer(transfer);
@@ -2188,7 +2165,9 @@ export function NdiOrderTransferPage(): ReactElement {
                     setRevealedGuideRuleId((current) => (current === ruleId ? null : ruleId));
                   }}
                   ruleOutcomes={visibleRuleOutcomes}
-                  selectedRules={visibleSelectedRules}
+                  apiRules={ndiRulesQuery.data ?? []}
+                  rulesLoading={ndiRulesQuery.isLoading}
+                  rulesError={ndiRulesQuery.isError}
                 />
               ) : (
                 <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-950 dark:border-blue-400/30 dark:bg-blue-500/10 dark:text-blue-100">
@@ -2821,12 +2800,12 @@ function PreparedTransferPanel({
         <RuleMini label="Fatura Serisi" value={transfer.invoiceSeries} />
         <RuleMini label="Hedef Belge Grubu" value={String(transfer.targetDocumentGroupCount)} />
         <RuleMini label="ŞİRKET24 Fatura Grubu" value={String(transfer.sirket24InvoiceGroupCount)} />
-        <RuleMini label="Aktarılacak Miktar" value={numberFormatter.format(transfer.totalTransferQuantity)} />
+        <RuleMini label="Hedefe Seçilen Miktar" value={numberFormatter.format(transfer.totalTransferQuantity)} />
       </div>
 
       <div className="mt-3 grid gap-2 md:grid-cols-2">
-        {transfer.createdDocuments.map((document) => (
-          <div key={`${document.sourceDocumentNo}-${document.targetSeries}`} className="rounded-md border border-[#bbf7d0] bg-white px-3 py-2">
+        {transfer.previewDocuments.map((document, index) => (
+          <div key={`${document.sourceDocumentNo}-${document.targetNetsisCompany}-${document.documentType}-${index}`} className="rounded-md border border-[#bbf7d0] bg-white px-3 py-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="text-xs font-black text-[#047857]">{document.documentType}</div>
               <div className="rounded-full bg-[#ecfdf5] px-2 py-0.5 text-[10px] font-black text-[#047857]">
@@ -2836,6 +2815,13 @@ function PreparedTransferPanel({
             <div className="mt-1 text-sm font-black text-[#172033]">Hedef seri: {document.targetSeries}</div>
             <div className="mt-1 text-[11px] font-bold text-[#536780]">
               {document.sourceNetsisCompany} / {document.sourceDocumentNo} {'->'} {document.targetNetsisCompany} / {document.targetSeries}
+            </div>
+            <div className="mt-2 grid grid-cols-2 gap-1 text-[10px] font-bold text-[#536780]">
+              <span>KDV: %{numberFormatter.format(document.vatRate)}</span>
+              <span>Miktar: {numberFormatter.format(document.transferQuantity)} / {numberFormatter.format(document.sourceQuantity)}</span>
+              <span>Tarih: {document.documentDateRule}</span>
+              <span>Kur: {document.exchangeRateRule}</span>
+              <span className="col-span-2">Depo: {document.targetWarehouse || 'Kaynak kalem deposu'}</span>
             </div>
           </div>
         ))}
@@ -2873,7 +2859,7 @@ function PreparedTransferPanel({
               <th className="px-3 py-2 text-right">Kur</th>
               <th className="px-3 py-2">Kaynak Depo</th>
               <th className="px-3 py-2">Hedef Depo</th>
-              <th className="px-3 py-2">KDV</th>
+              <th className="px-3 py-2">Ön Kontrol KDV</th>
             </tr>
           </thead>
           <tbody>
@@ -2952,8 +2938,8 @@ function TransferPreviewDialog({
             <RuleMini label="ŞİRKET24 Fatura Grubu" value={String(transfer.sirket24InvoiceGroupCount)} />
           </div>
           <div className="grid gap-3 md:grid-cols-2">
-            {transfer.createdDocuments.map((document) => (
-              <div key={`${document.sourceDocumentNo}-${document.targetSeries}`} className="rounded-xl border border-[#bbf7d0] bg-[#f7fffb] p-4">
+            {transfer.previewDocuments.map((document, index) => (
+              <div key={`${document.sourceDocumentNo}-${document.targetNetsisCompany}-${document.documentType}-${index}`} className="rounded-xl border border-[#bbf7d0] bg-[#f7fffb] p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="rounded-full bg-[#dcfce7] px-2 py-1 text-xs font-black text-[#047857]">
                     {document.documentType}
@@ -2969,9 +2955,16 @@ function TransferPreviewDialog({
                   <div className="rounded-md bg-white px-3 py-2">
                     Hedef: {document.targetNetsisCompany} / Seri {document.targetSeries}
                   </div>
-                  {document.followUpNote ? (
+                  <div className="grid grid-cols-2 gap-2 rounded-md bg-white px-3 py-2">
+                    <span>KDV: %{numberFormatter.format(document.vatRate)}</span>
+                    <span>Miktar: {numberFormatter.format(document.transferQuantity)} / {numberFormatter.format(document.sourceQuantity)}</span>
+                    <span>Tarih: {document.documentDateRule}</span>
+                    <span>Kur: {document.exchangeRateRule}</span>
+                    <span className="col-span-2">Depo: {document.targetWarehouse || 'Kaynak kalem deposu'}</span>
+                  </div>
+                  {document.isSirket24SourceInvoice ? (
                     <div className="rounded-md border border-[#fde68a] bg-[#fffbeb] px-3 py-2 text-[#92400e]">
-                      {document.followUpNote}
+                      Kaynak SIRKET24 irsaliyesi bağlantılı faturaya dönüştürülecek.
                     </div>
                   ) : null}
                 </div>
@@ -3365,40 +3358,46 @@ function SeriesGuide({
   revealedRuleId,
   onToggleReveal,
   ruleOutcomes,
-  selectedRules,
+  apiRules,
+  rulesLoading,
+  rulesError,
 }: {
   activeRuleIds: Set<NdiTransferRule['id']>;
   revealedRuleId: NdiTransferRule['id'] | null;
   onToggleReveal: (ruleId: NdiTransferRule['id']) => void;
   ruleOutcomes: NdiRuleOutcome[];
-  selectedRules: NdiTransferRule[];
+  apiRules: NetsisNdiTransferRuleDto[];
+  rulesLoading: boolean;
+  rulesError: boolean;
 }): ReactElement {
-  const rows: Array<{ id: NdiTransferRule['id']; title: string; items: string[] }> = [
-    { id: 'nuray', title: 'NURAY24 Netsis Şirketi (NUR / N)', items: ['Otomatikte sevk var -> yalnız NURAY24 irsaliyesi; sevk yok -> yalnız NURAY24 faturası', 'NURAY24 KDV -> %20', '1/4 -> hedef miktar 1/4; SIRKET24 tam miktar ve KDV %5', 'Normal/TAM -> miktar tam; SIRKET24 KDV %20', 'Hedef irsaliye ayrıca hedefte faturalaştırılmaz'] },
-    { id: 'windoformKapi', title: 'WIN24 Netsis Şirketi (VIN / WIN / V)', items: ['Özel Kod K -> yalnız WIN24 irsaliyesi ve KDV %0', 'K değilse sevk var -> irsaliye; sevk yok -> fatura', 'Özel Kod 1 ve Özel Kod 2 hedef belgeye aktarılır', 'Normal WIN24 KDV -> %20', 'SIRKET24 KDV -> K %0 / diğer %20'] },
-    { id: 'disTicaret', title: 'DISTIC24 Kuralı (DIS / D)', items: ['DIŞTİC24 hedefli veya sipariş numarası D ile başlayan kayıtta hedef şirkete aktarım yapılmaz', 'Yalnız SIRKET24 bağlantılı faturası oluşturulur', 'KDV -> %0', 'Seçili kaynak irsaliyelerin bağlantısı korunur', 'Fatura serisi kullanıcı seçiminden alınır'] },
-    { id: 'sirket24', title: 'SIRKET24 Netsis Şirketi (SIP / S)', items: ['Mevcut SIRKET24 irsaliyesi seçilen seriyle faturalaştırılır', 'Yeni irsaliye oluşturulmaz', 'KDV -> %0', 'Fatura kaynak irsaliye bağlantısını korur'] },
-  ];
+  const rows: Array<{
+    id: NdiTransferRule['id'];
+    title: string;
+    summary: string;
+    apiRule?: NetsisNdiTransferRuleDto;
+  }> = transferRules.map((rule) => {
+    const apiRule = apiRules.find((item) => item.code.toUpperCase() === rule.sourceSerial);
+
+    return {
+      id: rule.id,
+      title: apiRule
+        ? `${apiRule.title} · ${apiRule.sourceNetsisCompany} -> ${apiRule.targetNetsisCompany} (${apiRule.sourceSerial})`
+        : `${rule.title} (${rule.sourceSerial})`,
+      summary: apiRule?.description
+        ?? (rulesLoading
+          ? 'Kural matrisi API’den yükleniyor.'
+          : rulesError
+            ? 'Kural matrisi API’den alınamadı; aktarım API önizlemesi olmadan gönderilemez.'
+            : 'Bu kural ailesi için API tanımı bulunamadı.'),
+      apiRule,
+    };
+  });
   const hasActiveRule = activeRuleIds.size > 0;
   const isOpen = revealedRuleId !== null;
+  const revealedRow = rows.find((row) => row.id === revealedRuleId);
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
-  const orderedSelectedRules = [...selectedRules].sort((left, right) => {
-    if (left.id === 'windoformKapi') {
-      return 1;
-    }
-
-    if (right.id === 'windoformKapi') {
-      return -1;
-    }
-
-    return 0;
-  });
 
   const handleRowClick = (ruleId: NdiTransferRule['id'], event: React.MouseEvent): void => {
-    if (!activeRuleIds.has(ruleId)) {
-      return;
-    }
-
     if (isPointerDragClick(event, pointerStartRef.current)) {
       return;
     }
@@ -3414,17 +3413,13 @@ function SeriesGuide({
     return (
       <div
         key={row.id}
-        role={isActive ? 'button' : undefined}
-        tabIndex={isActive ? 0 : undefined}
+        role="button"
+        tabIndex={0}
         onMouseDown={(event) => {
           pointerStartRef.current = { x: event.clientX, y: event.clientY };
         }}
         onClick={(event) => handleRowClick(row.id, event)}
         onKeyDown={(event) => {
-          if (!isActive) {
-            return;
-          }
-
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
             onToggleReveal(row.id);
@@ -3435,7 +3430,7 @@ function SeriesGuide({
             ? 'cursor-pointer border-primary bg-primary/15 shadow-[0_0_0_2px_rgba(236,72,153,0.18)]'
             : isActive
               ? 'cursor-pointer border-primary bg-primary/10 shadow-[0_0_0_2px_rgba(236,72,153,0.12)] hover:bg-primary/15'
-              : 'border-slate-300 bg-[var(--crm-app-panel)] dark:border-white/20'
+              : 'cursor-pointer border-slate-300 bg-[var(--crm-app-panel)] hover:border-primary/50 hover:bg-primary/5 dark:border-white/20'
         } ${fullWidth ? 'w-full' : ''}`}
       >
         <div className="flex items-start justify-between gap-2">
@@ -3446,12 +3441,19 @@ function SeriesGuide({
             <span className="rounded-full bg-primary px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.08em] text-white">Aktif</span>
           ) : null}
         </div>
-        <div className="mt-2 space-y-1">
-          {row.items.map((item) => (
-            <div key={item} className={`rounded px-2 py-1 text-[11px] font-black ${isActive || isRevealed ? 'bg-white/70 text-foreground dark:bg-black/20' : 'bg-primary/10 text-muted-foreground'}`}>
-              {item}
-            </div>
-          ))}
+        <p className="mt-2 line-clamp-3 text-[11px] font-semibold leading-relaxed text-muted-foreground">
+          {row.summary}
+        </p>
+        <div className="mt-2 flex flex-wrap gap-1">
+          <RuleBadge tone="info" label={`${row.apiRule?.scenarios?.length ?? 0} senaryo`} />
+          <RuleBadge
+            tone="success"
+            label={`${row.apiRule?.scenarios?.filter((scenario) => scenario.mode === 'automatic').length ?? 0} otomatik`}
+          />
+          <RuleBadge
+            tone="warn"
+            label={`${row.apiRule?.scenarios?.filter((scenario) => scenario.mode === 'manual').length ?? 0} manuel`}
+          />
         </div>
       </div>
     );
@@ -3461,33 +3463,47 @@ function SeriesGuide({
     <div className="mt-3 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <div className="text-xs font-black uppercase tracking-[0.16em] text-[var(--crm-app-text-muted)]">Seri ve Depo Rehberi</div>
+          <div className="text-xs font-black uppercase tracking-[0.16em] text-[var(--crm-app-text-muted)]">NDI Kural Matrisi</div>
           <p className="mt-1 text-xs font-semibold text-[var(--crm-app-text-muted)]">
             {isOpen
-              ? 'Sol taraftan şirket seçimini değiştirebilir, sağ tarafta kural detaylarını inceleyebilirsiniz.'
+              ? 'Sol taraftan kural ailesini değiştirebilir, sağ tarafta API karar motorunun tüm senaryolarını inceleyebilirsiniz.'
               : hasActiveRule
-                ? 'Seçilen irsaliyeye uygun şirket kartı vurgulanır. Kural detaylarını görmek için ilgili karta tıklayın.'
-                : 'Seçilen irsaliyenin kaynak şirketi ve seri bilgisine göre çalışacak NDI kuralı aşağıda vurgulanır.'}
+                ? 'Seçilen irsaliyeye uygulanacak aile vurgulanır. Tüm aileler seçilmeden de incelenebilir.'
+                : 'Dört ana aile altındaki otomatik ve manuel karar senaryolarını incelemek için bir karta tıklayın.'}
           </p>
         </div>
         <RuleBadge
           tone={revealedRuleId ? 'success' : hasActiveRule ? 'warn' : 'info'}
-          label={revealedRuleId ? 'Kural detayı açık' : hasActiveRule ? 'Kart seçimi gerekli' : 'İrsaliye seçince kural görünür'}
+          label={revealedRuleId ? 'Matris açık' : hasActiveRule ? 'Uygulanan aile vurgulandı' : '4 kural ailesi'}
         />
       </div>
 
       {isOpen ? (
-        <div className="mt-3 grid items-start gap-3 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)]">
-          <div className="flex flex-col gap-2">
+        <div className="mt-3">
+          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
             {rows.map((row) => renderCompanyCard(row, true))}
           </div>
-          <div className="flex min-w-0 flex-col gap-2">
-            {ruleOutcomes.map((outcome) => (
-              <RuleOutcomeCard key={outcome.orderId} outcome={outcome} />
-            ))}
-            {orderedSelectedRules.map((rule) => (
-              <RuleCard key={rule.id} rule={rule} />
-            ))}
+          <div className="mt-3 flex min-w-0 flex-col gap-2">
+            {revealedRow?.apiRule ? (
+              <NdiRuleScenarioMatrix key={revealedRow.apiRule.code} rule={revealedRow.apiRule} />
+            ) : (
+              <div className="rounded-md border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-semibold text-muted-foreground dark:border-white/20">
+                API kural matrisi yüklenemedi.
+              </div>
+            )}
+            {ruleOutcomes.length > 0 ? (
+              <section className="mt-1 border-t border-slate-300 pt-3 dark:border-white/20">
+                <div className="mb-2">
+                  <div className="text-xs font-black uppercase tracking-[0.14em] text-[var(--crm-app-text-muted)]">Seçili Belgeye Uygulanan Sonuç</div>
+                  <p className="mt-1 text-xs font-semibold text-muted-foreground">Bu bölüm seçili kaynak belgenin hızlı ön kontrol sonucudur; kesin belge listesi API önizlemesinde gösterilir.</p>
+                </div>
+                <div className="flex min-w-0 flex-col gap-2">
+                  {ruleOutcomes.map((outcome) => (
+                    <RuleOutcomeCard key={outcome.orderId} outcome={outcome} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
           </div>
         </div>
       ) : (
@@ -3497,12 +3513,131 @@ function SeriesGuide({
           </div>
           {hasActiveRule ? (
             <p className="mt-3 rounded-md border border-dashed border-slate-300 px-3 py-3 text-center text-base font-semibold text-[var(--crm-app-text-muted)] dark:border-white/20">
-              Kural detaylarını görmek için vurgulanan şirket kartına tıklayın.
+              Uygulanan aile vurgulandı. Ayrıntılı karar matrisini açmak için istediğiniz karta tıklayın.
             </p>
           ) : null}
         </>
       )}
     </div>
+  );
+}
+
+type NdiScenarioModeFilter = 'all' | NetsisNdiTransferScenarioDto['mode'];
+
+function NdiRuleScenarioMatrix({ rule }: { rule: NetsisNdiTransferRuleDto }): ReactElement {
+  const [modeFilter, setModeFilter] = useState<NdiScenarioModeFilter>('all');
+  const scenarios = rule.scenarios ?? [];
+  const automaticCount = scenarios.filter((scenario) => scenario.mode === 'automatic').length;
+  const manualCount = scenarios.filter((scenario) => scenario.mode === 'manual').length;
+  const visibleScenarios = modeFilter === 'all'
+    ? scenarios
+    : scenarios.filter((scenario) => scenario.mode === modeFilter);
+
+  return (
+    <section data-testid="ndi-rule-scenario-matrix" className="min-w-0 overflow-hidden rounded-lg border border-slate-300 bg-[var(--crm-app-panel)] dark:border-white/20">
+      <div className="flex flex-col gap-3 border-b border-slate-300 px-3 py-3 dark:border-white/20 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-sm font-black text-foreground">{rule.title} Karar Senaryoları</h3>
+            <RuleBadge tone="info" label={`${scenarios.length} senaryo`} />
+          </div>
+          <p className="mt-1 text-xs font-semibold leading-relaxed text-muted-foreground">{rule.description}</p>
+        </div>
+        <div className="inline-flex w-fit shrink-0 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] p-1 dark:border-white/20" aria-label="Senaryo modu">
+          {([
+            ['all', `Tümü ${scenarios.length}`],
+            ['automatic', `Otomatik ${automaticCount}`],
+            ['manual', `Manuel ${manualCount}`],
+          ] as const).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setModeFilter(value)}
+              className={`min-h-8 px-3 text-xs font-black transition ${modeFilter === value ? 'rounded bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="divide-y divide-slate-300 dark:divide-white/20">
+        {visibleScenarios.map((scenario) => (
+          <NdiRuleScenarioRow key={scenario.key} scenario={scenario} />
+        ))}
+      </div>
+
+      {rule.validationRules?.length > 0 ? (
+        <div className="border-t border-slate-300 bg-amber-50/70 px-3 py-3 dark:border-white/20 dark:bg-amber-950/20">
+          <div className="flex items-center gap-2 text-xs font-black text-amber-900 dark:text-amber-200">
+            <ShieldCheck size={15} /> İşlemi Koruyan Validasyonlar
+          </div>
+          <div className="mt-2 grid gap-x-5 gap-y-1 md:grid-cols-2">
+            {rule.validationRules.map((validationRule) => (
+              <div key={validationRule} className="flex gap-2 text-xs font-semibold leading-relaxed text-amber-950/80 dark:text-amber-100/80">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+                <span>{validationRule}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function NdiRuleScenarioRow({ scenario }: { scenario: NetsisNdiTransferScenarioDto }): ReactElement {
+  return (
+    <article data-testid="ndi-rule-scenario-row" className="px-3 py-4 odd:bg-transparent even:bg-[var(--crm-app-panel-muted)]">
+      <div className="grid gap-3 lg:grid-cols-[180px_minmax(0,1fr)_220px] lg:items-start">
+        <div>
+          <RuleBadge tone={scenario.mode === 'automatic' ? 'success' : 'warn'} label={scenario.mode === 'automatic' ? 'Otomatik' : 'Manuel'} />
+          <div className="mt-2 font-black leading-snug text-foreground">{scenario.title}</div>
+          <div className="mt-1 break-all font-mono text-[9px] font-bold text-muted-foreground">{scenario.key}</div>
+        </div>
+        <div>
+          <div className="text-[10px] font-black uppercase tracking-[0.1em] text-[var(--crm-app-text-muted)]">Çalışma Koşulu</div>
+          <p className="mt-1 font-semibold leading-relaxed text-foreground">{scenario.condition}</p>
+        </div>
+        <div className="border-l-2 border-primary/50 pl-3">
+          <div className="text-[10px] font-black uppercase tracking-[0.1em] text-[var(--crm-app-text-muted)]">Miktar Kuralı</div>
+          <p className="mt-1 font-bold leading-relaxed text-foreground">{scenario.quantityRule}</p>
+        </div>
+      </div>
+
+      <div className={`mt-3 grid gap-3 ${scenario.documents.length > 1 ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+        {scenario.documents.map((document, index) => (
+          <div key={`${scenario.key}-${document.targetNetsisCompany}-${document.documentType}-${index}`} className="border-l-2 border-emerald-400 bg-emerald-50/60 px-3 py-2 dark:bg-emerald-950/20">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="font-black text-foreground">{document.targetNetsisCompany} · {document.documentType}</div>
+              <div className="text-[11px] font-black text-emerald-800 dark:text-emerald-200">{document.quantityRule} · KDV {document.vatRule}</div>
+            </div>
+            <div className="mt-2 grid gap-x-4 gap-y-1 text-[11px] font-semibold leading-relaxed text-muted-foreground sm:grid-cols-2">
+              <div><span className="font-black text-foreground">Tarih:</span> {document.dateRule}</div>
+              <div><span className="font-black text-foreground">Kur:</span> {document.exchangeRateRule}</div>
+            </div>
+            <div className="mt-1 text-[11px] font-semibold leading-relaxed text-muted-foreground">{document.sourceLinkRule}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-3 grid gap-2 border-t border-slate-200 pt-3 text-[11px] leading-relaxed dark:border-white/10 md:grid-cols-3">
+        <div><span className="font-black text-foreground">Seri:</span> <span className="font-semibold text-muted-foreground">{scenario.seriesRule}</span></div>
+        <div><span className="font-black text-foreground">Depo:</span> <span className="font-semibold text-muted-foreground">{scenario.warehouseRule}</span></div>
+        <div><span className="font-black text-foreground">Bağlantı:</span> <span className="font-semibold text-muted-foreground">{scenario.sourceLinkRule}</span></div>
+      </div>
+
+      {scenario.notes.length > 0 ? (
+        <div className="mt-2 space-y-1">
+          {scenario.notes.map((note) => (
+            <div key={note} className="flex gap-2 text-[11px] font-semibold leading-relaxed text-muted-foreground">
+              <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+              <span>{note}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </article>
   );
 }
 
@@ -3649,50 +3784,6 @@ function RuleTextList({ title, values, tone }: { title: string; values: string[]
           </div>
         ))}
       </div>
-    </div>
-  );
-}
-
-function RuleCard({ rule }: { rule: NdiTransferRule }): ReactElement {
-  const { expanded, toggle, handleMouseDown, handleClick } = useCollapsibleCardToggle();
-
-  return (
-    <div
-      onMouseDown={handleMouseDown}
-      onClick={handleClick}
-      className="cursor-pointer rounded-lg border border-slate-300 bg-[var(--crm-app-panel-muted)] p-3 transition hover:shadow-sm dark:border-white/20"
-    >
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="font-black text-foreground">{rule.title}</div>
-        <div className="flex items-center gap-2">
-          <span className="rounded-full bg-primary/10 px-2 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-primary">
-            {rule.documentType}
-          </span>
-          <ExpandToggleButton expanded={expanded} onToggle={toggle} />
-        </div>
-      </div>
-      {expanded ? (
-        <div className="mt-3 grid gap-2 text-xs font-bold text-[var(--crm-app-text-muted)] sm:grid-cols-2">
-          <RuleLine label="Kaynak Seri" value={rule.sourceSerial} />
-          <RuleLine label="Netsis Şirketi" value={`${rule.sourceNetsisCompany} -> ${rule.targetNetsisCompany}`} />
-          <RuleLine label="Hedef" value={`${rule.targetCompany} / ${rule.targetSerial}`} />
-          <RuleLine label="Sevk" value={rule.shipmentRule} />
-          <RuleLine label="KDV" value={rule.taxRule} />
-          <RuleLine label="Depo" value={rule.warehouseRule} />
-          <RuleLine label="Not" value={rule.transferNote} />
-          <RuleLine label="Evrak" value={rule.officialNote} />
-          <RuleLine label="Toplu" value={rule.bulkNote} />
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function RuleLine({ label, value }: { label: string; value: string }): ReactElement {
-  return (
-    <div className="rounded-md bg-[var(--crm-app-panel)] px-2 py-2">
-      <div className="text-[10px] font-black uppercase tracking-[0.12em] text-[var(--crm-app-text-muted)]">{label}</div>
-      <div className="mt-1 leading-snug text-muted-foreground">{value}</div>
     </div>
   );
 }

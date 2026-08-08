@@ -62,6 +62,32 @@ export interface NetsisNdiTransferRuleDto {
   targetSerialRule: string;
   carriesSourceSerialToTarget: boolean;
   description: string;
+  guideItems: string[];
+  validationRules: string[];
+  scenarios: NetsisNdiTransferScenarioDto[];
+}
+
+export interface NetsisNdiTransferScenarioDto {
+  key: string;
+  mode: 'automatic' | 'manual';
+  title: string;
+  condition: string;
+  quantityRule: string;
+  seriesRule: string;
+  warehouseRule: string;
+  sourceLinkRule: string;
+  notes: string[];
+  documents: NetsisNdiTransferScenarioDocumentDto[];
+}
+
+export interface NetsisNdiTransferScenarioDocumentDto {
+  targetNetsisCompany: string;
+  documentType: string;
+  quantityRule: string;
+  vatRule: string;
+  dateRule: string;
+  exchangeRateRule: string;
+  sourceLinkRule: string;
 }
 
 export interface NetsisCustomerDocumentSeriesDto {
@@ -170,10 +196,17 @@ export interface NdiTransferCreateResponseDto {
 
 export interface NdiTransferPreviewDocumentDto {
   sourceDocumentNo: string;
+  sourceNetsisCompany: string;
   targetNetsisCompany: string;
   targetSeries: string;
   documentType: string;
   vatRate: number;
+  lineCount: number;
+  sourceQuantity: number;
+  transferQuantity: number;
+  targetWarehouse?: string | null;
+  documentDateRule: string;
+  exchangeRateRule: string;
   usesFullSourceQuantity: boolean;
   isSirket24SourceInvoice: boolean;
 }
