@@ -74,7 +74,19 @@
   "reportPreparing": "جاري إعداد التقرير...",
   "reportDownloaded": "تم تنزيل التقرير.",
   "reportError": "لا يمكن استلام التقرير.",
-  "tabs": { "label": "طرق عرض لوحة المعلومات", "reports": "تقاريري", "calendar": "تقويمي" },
+  "tabs": { "label": "طرق عرض لوحة المعلومات", "reports": "تقاريري", "calendar": "تقويمي", "demands": "الطلبات", "quotations": "عروض الأسعار", "orders": "أوامر البيع" },
+  "salesCalendar": {
+    "demand": { "title": "تقويم الطلبات" },
+    "quotation": { "title": "تقويم عروض الأسعار" },
+    "order": { "title": "تقويم أوامر البيع" },
+    "descriptionAdmin": "اعرض مستندات جميع المستخدمين وقم بالتصفية حسب ممثل المبيعات.",
+    "descriptionSelf": "تابع مستندات المبيعات وتحويلات ERP في تقويم واحد.",
+    "summary": { "period": "هذه الفترة", "today": "أُنشئت اليوم", "erp": "حُوّلت إلى ERP اليوم", "waiting": "بانتظار الموافقة" },
+    "ownerLabel": "ممثل المبيعات", "allOwners": "جميع المستخدمين", "ownerSearch": "البحث عن مستخدم...", "unassignedOwner": "غير معيّن",
+    "today": "اليوم", "previous": "الشهر السابق", "next": "الشهر التالي", "more": "المزيد", "empty": "لا توجد مستندات في هذه الفترة", "loadError": "تعذر تحميل تقويم المبيعات.",
+    "customerUnknown": "معلومات العميل غير متوفرة", "erpYes": "تم إنشاء سجل ERP", "erpNo": "لم يتم إنشاء سجل ERP", "openDocument": "فتح تفاصيل المستند",
+    "detail": { "date": "تاريخ المستند", "amount": "الإجمالي الكلي", "owner": "ممثل المبيعات", "erp": "حالة / رقم ERP", "customer": "العميل", "deliveryDate": "تاريخ التسليم", "lines": "بنود المستند", "lineCount": "{{count}} بند", "productCode": "رمز المنتج", "productName": "اسم المنتج", "quantity": "الكمية", "unitPrice": "سعر الوحدة", "discount": "الخصم", "vat": "ضريبة القيمة المضافة", "lineTotal": "إجمالي البند", "noLines": "لم يتم العثور على بنود لهذا المستند.", "loading": "جاري تحميل المستند والبنود...", "loadError": "تعذر تحميل تفاصيل المستند." }
+  },
   "calendar": { "title": "تقويم أنشطتي", "description": "إدارة الخطط والاجتماعات والمهام المسندة إليك.", "descriptionAdmin": "عرض خطط جميع المستخدمين والتصفية حسب مسؤول النشاط.", "assignees": { "title": "مسؤولو الأنشطة", "description": "انقر على شخص لتصفية التقويم حسب المسؤول.", "all": "جميع المستخدمين", "allShort": "الكل", "previous": "المسؤولون السابقون", "next": "المسؤولون التاليون", "searchPlaceholder": "البحث عن مستخدم...", "noMatch": "لا يوجد مستخدم مطابق" }, "views": { "month": "شهر", "week": "أسبوع", "agenda": "جدول" }, "summary": { "total": "الإجمالي", "scheduled": "مخطط", "completed": "مكتمل", "overdue": "متأخر" }, "status": { "scheduled": "مخطط", "completed": "مكتمل", "cancelled": "ملغى", "overdue": "متأخر" }, "detail": { "date": "التاريخ والوقت", "status": "الحالة", "assignee": "مسؤول النشاط", "customer": "العميل / جهة الاتصال", "customerCode": "رمز العميل", "description": "الوصف", "clickHint": "انقر لعرض التفاصيل" }, "today": "اليوم", "previous": "الفترة السابقة", "next": "الفترة التالية", "newActivity": "إضافة نشاط", "activity": "نشاط", "more": "المزيد", "empty": "لا توجد أنشطة في هذه الفترة", "loadError": "تعذر تحميل التقويم.", "openActivities": "فتح إدارة الأنشطة" },
   "noDate": "لا يوجد تاريخ",
   "unnamedActivity": "نشاط مجهول"

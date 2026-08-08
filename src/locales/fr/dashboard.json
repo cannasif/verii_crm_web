@@ -66,7 +66,19 @@
   "reportPreparing": "Le rapport est en préparation...",
   "reportDownloaded": "Le rapport a été téléchargé.",
   "reportError": "Le rapport n'a pas pu être reçu.",
-  "tabs": { "label": "Vues du tableau de bord", "reports": "Mes rapports", "calendar": "Mon calendrier" },
+  "tabs": { "label": "Vues du tableau de bord", "reports": "Mes rapports", "calendar": "Mon calendrier", "demands": "Demandes", "quotations": "Devis", "orders": "Commandes" },
+  "salesCalendar": {
+    "demand": { "title": "Calendrier des demandes" },
+    "quotation": { "title": "Calendrier des devis" },
+    "order": { "title": "Calendrier des commandes" },
+    "descriptionAdmin": "Consultez les documents de tous les utilisateurs et filtrez par représentant commercial.",
+    "descriptionSelf": "Suivez vos documents commerciaux et conversions ERP dans un seul calendrier.",
+    "summary": { "period": "Cette période", "today": "Créés aujourd'hui", "erp": "Convertis en ERP aujourd'hui", "waiting": "En attente d'approbation" },
+    "ownerLabel": "Représentant commercial", "allOwners": "Tous les utilisateurs", "ownerSearch": "Rechercher un utilisateur...", "unassignedOwner": "Non assigné",
+    "today": "Aujourd'hui", "previous": "Mois précédent", "next": "Mois suivant", "more": "de plus", "empty": "Aucun document sur cette période", "loadError": "Impossible de charger le calendrier des ventes.",
+    "customerUnknown": "Informations client indisponibles", "erpYes": "Enregistrement ERP créé", "erpNo": "Enregistrement ERP non créé", "openDocument": "Ouvrir les détails du document",
+    "detail": { "date": "Date du document", "amount": "Total général", "owner": "Représentant commercial", "erp": "Statut / numéro ERP", "customer": "Client", "deliveryDate": "Date de livraison", "lines": "Lignes du document", "lineCount": "{{count}} lignes", "productCode": "Code produit", "productName": "Nom du produit", "quantity": "Quantité", "unitPrice": "Prix unitaire", "discount": "Remise", "vat": "TVA", "lineTotal": "Total ligne", "noLines": "Aucune ligne trouvée pour ce document.", "loading": "Chargement du document et des lignes...", "loadError": "Impossible de charger les détails du document." }
+  },
   "calendar": { "title": "Mon calendrier d’activités", "description": "Gérez vos plans, réunions et tâches assignés.", "descriptionAdmin": "Consultez les plans de tous les utilisateurs et filtrez par responsable.", "assignees": { "title": "Responsables d’activité", "description": "Cliquez sur une personne pour filtrer le calendrier.", "all": "Tous les utilisateurs", "allShort": "TOUS", "previous": "Responsables précédents", "next": "Responsables suivants", "searchPlaceholder": "Rechercher un utilisateur...", "noMatch": "Aucun utilisateur correspondant" }, "views": { "month": "Mois", "week": "Semaine", "agenda": "Agenda" }, "summary": { "total": "Total", "scheduled": "Planifiées", "completed": "Terminées", "overdue": "En retard" }, "status": { "scheduled": "Planifiée", "completed": "Terminée", "cancelled": "Annulée", "overdue": "En retard" }, "detail": { "date": "Date et heure", "status": "Statut", "assignee": "Responsable d’activité", "customer": "Client / contact", "customerCode": "Code client", "description": "Description", "clickHint": "Cliquez pour plus de détails" }, "today": "Aujourd’hui", "previous": "Période précédente", "next": "Période suivante", "newActivity": "Ajouter une activité", "activity": "Activité", "more": "de plus", "empty": "Aucune activité sur cette période", "loadError": "Impossible de charger le calendrier.", "openActivities": "Ouvrir la gestion des activités" },
   "sidebar": {
     "customers": "Clients",

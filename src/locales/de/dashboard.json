@@ -66,7 +66,19 @@
   "reportPreparing": "Der Bericht ist in Vorbereitung...",
   "reportDownloaded": "Der Bericht wurde heruntergeladen.",
   "reportError": "Der Bericht konnte nicht empfangen werden.",
-  "tabs": { "label": "Dashboard-Ansichten", "reports": "Meine Berichte", "calendar": "Mein Kalender" },
+  "tabs": { "label": "Dashboard-Ansichten", "reports": "Meine Berichte", "calendar": "Mein Kalender", "demands": "Anfragen", "quotations": "Angebote", "orders": "Bestellungen" },
+  "salesCalendar": {
+    "demand": { "title": "Anfragekalender" },
+    "quotation": { "title": "Angebotskalender" },
+    "order": { "title": "Bestellkalender" },
+    "descriptionAdmin": "Dokumente aller Benutzer anzeigen und nach Vertriebsmitarbeiter filtern.",
+    "descriptionSelf": "Verfolgen Sie Ihre Verkaufsdokumente und ERP-Konvertierungen in einem Kalender.",
+    "summary": { "period": "Dieser Zeitraum", "today": "Heute erstellt", "erp": "Heute in ERP übertragen", "waiting": "Genehmigung ausstehend" },
+    "ownerLabel": "Vertriebsmitarbeiter", "allOwners": "Alle Benutzer", "ownerSearch": "Benutzer suchen...", "unassignedOwner": "Nicht zugewiesen",
+    "today": "Heute", "previous": "Vorheriger Monat", "next": "Nächster Monat", "more": "mehr", "empty": "Keine Dokumente in diesem Zeitraum", "loadError": "Verkaufskalender konnte nicht geladen werden.",
+    "customerUnknown": "Kundeninformationen nicht verfügbar", "erpYes": "ERP-Datensatz erstellt", "erpNo": "Kein ERP-Datensatz erstellt", "openDocument": "Dokumentdetails öffnen",
+    "detail": { "date": "Belegdatum", "amount": "Gesamtbetrag", "owner": "Vertriebsmitarbeiter", "erp": "ERP-Status / Nummer", "customer": "Kunde", "deliveryDate": "Lieferdatum", "lines": "Belegpositionen", "lineCount": "{{count}} Positionen", "productCode": "Produktcode", "productName": "Produktname", "quantity": "Menge", "unitPrice": "Stückpreis", "discount": "Rabatt", "vat": "MwSt.", "lineTotal": "Positionssumme", "noLines": "Für dieses Dokument wurden keine Positionen gefunden.", "loading": "Dokument und Positionen werden geladen...", "loadError": "Dokumentdetails konnten nicht geladen werden." }
+  },
   "calendar": { "title": "Mein Aktivitätskalender", "description": "Zugewiesene Termine, Besprechungen und Aufgaben verwalten.", "descriptionAdmin": "Pläne aller Benutzer anzeigen und nach Verantwortlichem filtern.", "assignees": { "title": "Aktivitätsverantwortliche", "description": "Klicken Sie auf eine Person, um den Kalender zu filtern.", "all": "Alle Benutzer", "allShort": "ALLE", "previous": "Vorherige Verantwortliche", "next": "Nächste Verantwortliche", "searchPlaceholder": "Benutzer suchen...", "noMatch": "Kein passender Benutzer" }, "views": { "month": "Monat", "week": "Woche", "agenda": "Agenda" }, "summary": { "total": "Gesamt", "scheduled": "Geplant", "completed": "Erledigt", "overdue": "Überfällig" }, "status": { "scheduled": "Geplant", "completed": "Erledigt", "cancelled": "Storniert", "overdue": "Überfällig" }, "detail": { "date": "Datum und Uhrzeit", "status": "Status", "assignee": "Aktivitätsverantwortlicher", "customer": "Kunde / Kontakt", "customerCode": "Kundencode", "description": "Beschreibung", "clickHint": "Für Details klicken" }, "today": "Heute", "previous": "Vorheriger Zeitraum", "next": "Nächster Zeitraum", "newActivity": "Aktivität hinzufügen", "activity": "Aktivität", "more": "mehr", "empty": "Keine Aktivitäten in diesem Zeitraum", "loadError": "Kalender konnte nicht geladen werden.", "openActivities": "Aktivitätsverwaltung öffnen" },
   "sidebar": {
     "customers": "Kunden",

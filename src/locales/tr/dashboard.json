@@ -76,7 +76,7 @@
     "descriptionSelf": "Size ait satış belgelerini ve ERP dönüşümlerini tek takvimde izleyin.",
     "summary": { "period": "Bu dönem", "today": "Bugün girilen", "erp": "Bugün ERP'ye dönen", "waiting": "Onay bekleyen" },
     "ownerLabel": "Satış sorumlusu", "allOwners": "Tüm kullanıcılar", "ownerSearch": "Kullanıcı ara...", "unassignedOwner": "Atanmamış",
-    "today": "Bugün", "previous": "Önceki ay", "next": "Sonraki ay", "more": "daha", "loadError": "Satış takvimi yüklenemedi.",
+    "today": "Bugün", "previous": "Önceki ay", "next": "Sonraki ay", "more": "daha", "empty": "Bu dönemde belge bulunmuyor", "loadError": "Satış takvimi yüklenemedi.",
     "customerUnknown": "Müşteri bilgisi bulunmuyor", "erpYes": "ERP kaydı oluştu", "erpNo": "ERP kaydı oluşmadı", "openDocument": "Belge detayını aç",
     "detail": { "date": "Belge tarihi", "amount": "Toplam tutar", "owner": "Satış sorumlusu", "erp": "ERP durumu / numarası", "customer": "Müşteri", "deliveryDate": "Teslim tarihi", "lines": "Belge kalemleri", "lineCount": "{{count}} kalem", "productCode": "Stok kodu", "productName": "Stok adı", "quantity": "Miktar", "unitPrice": "Birim fiyat", "discount": "İndirim", "vat": "KDV", "lineTotal": "Satır toplamı", "noLines": "Bu belgeye ait kalem bulunamadı.", "loading": "Belge ve kalemler yükleniyor...", "loadError": "Belgenin ayrıntıları yüklenemedi." }
   },

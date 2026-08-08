@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
+  addDays,
   addMonths,
+  addWeeks,
   eachDayOfInterval,
   endOfMonth,
   endOfWeek,
@@ -13,9 +15,11 @@ import {
   startOfMonth,
   startOfWeek,
   subMonths,
+  subWeeks,
 } from 'date-fns';
 import {
   CalendarDays,
+  CalendarRange,
   CheckCircle2,
   ChevronDown,
   ChevronLeft,
@@ -23,10 +27,13 @@ import {
   CircleDotDashed,
   ExternalLink,
   FileCheck2,
+  LayoutGrid,
+  List,
   Loader2,
   PackageOpen,
   Search,
   Users,
+  type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -42,6 +49,73 @@ import type { DashboardSalesDocumentDetail } from '../types/dashboard-sales-docu
 
 interface DashboardSalesCalendarProps {
   documentType: DashboardSalesDocumentType;
+}
+
+type CalendarView = 'month' | 'week' | 'agenda';
+
+interface SalesCalendarEventButtonProps {
+  item: DashboardSalesCalendarItem;
+  showOwner: boolean;
+  compact?: boolean;
+  unassignedOwnerLabel: string;
+  customerUnknownLabel: string;
+  onSelect: (item: DashboardSalesCalendarItem) => void;
+}
+
+function getCustomerDisplay(
+  item: DashboardSalesCalendarItem,
+  customerUnknownLabel: string,
+): { name: string; code: string | null } {
+  const code = item.customerCode?.trim() || null;
+  const customerName = item.customerName?.trim() || null;
+  if (customerName) {
+    return { name: customerName, code };
+  }
+  if (code) {
+    return { name: code, code: null };
+  }
+  return { name: customerUnknownLabel, code: null };
+}
+
+function SalesCalendarEventButton({
+  item,
+  showOwner,
+  compact = false,
+  unassignedOwnerLabel,
+  customerUnknownLabel,
+  onSelect,
+}: SalesCalendarEventButtonProps): ReactElement {
+  const customer = getCustomerDisplay(item, customerUnknownLabel);
+  const ariaLabel = showOwner
+    ? `${item.representativeName || unassignedOwnerLabel} ${customer.code ? `${customer.code} ${customer.name}` : customer.name}`
+    : (customer.code ? `${customer.code} ${customer.name}` : customer.name);
+
+  return (
+    <button
+      type="button"
+      data-testid="sales-calendar-event"
+      aria-label={ariaLabel}
+      onClick={() => onSelect(item)}
+      className={cn(
+        'w-full rounded-md border-l-4 px-1.5 py-1 text-left transition hover:-translate-y-px hover:shadow-sm',
+        compact ? 'py-0.5' : 'py-1',
+        statusTone(item),
+      )}
+    >
+      {showOwner ? (
+        <>
+          <span className="block truncate text-[10px] font-black">{item.representativeName || unassignedOwnerLabel}</span>
+          <span className="block truncate text-[9px] font-semibold opacity-70">{customer.name}</span>
+          {customer.code ? <span className="block truncate text-[9px] font-bold opacity-60">{customer.code}</span> : null}
+        </>
+      ) : (
+        <>
+          <span className="block truncate text-[10px] font-black">{customer.name}</span>
+          {customer.code ? <span className="block truncate text-[9px] font-semibold opacity-70">{customer.code}</span> : null}
+        </>
+      )}
+    </button>
+  );
 }
 
 const ROUTES: Record<DashboardSalesDocumentType, string> = {
@@ -180,17 +254,27 @@ function SalesDocumentDetailReport({
 export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarProps): ReactElement {
   const { t, i18n } = useTranslation('dashboard');
   const navigate = useNavigate();
+  const [view, setView] = useState<CalendarView>('month');
   const [cursor, setCursor] = useState(() => new Date());
   const [selectedOwnerId, setSelectedOwnerId] = useState<number | 'all'>('all');
   const [ownerSearch, setOwnerSearch] = useState('');
   const [selectedItem, setSelectedItem] = useState<DashboardSalesCalendarItem | null>(null);
 
-  const monthStart = startOfMonth(cursor);
-  const monthEnd = endOfMonth(cursor);
-  const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 });
-  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
-  const startDate = toQueryDate(gridStart);
-  const endDate = toQueryDate(new Date(gridEnd.getFullYear(), gridEnd.getMonth(), gridEnd.getDate() + 1));
+  const weekStartsOn = 1 as const;
+  const visibleRange = useMemo(() => {
+    if (view === 'week') {
+      const start = startOfWeek(cursor, { weekStartsOn });
+      return { start, end: addDays(endOfWeek(cursor, { weekStartsOn }), 1) };
+    }
+    const monthStart = startOfMonth(cursor);
+    return {
+      start: startOfWeek(monthStart, { weekStartsOn }),
+      end: addDays(endOfWeek(endOfMonth(cursor), { weekStartsOn }), 1),
+    };
+  }, [cursor, view]);
+
+  const startDate = toQueryDate(visibleRange.start);
+  const endDate = toQueryDate(visibleRange.end);
   const { data, isLoading, isFetching, isError, refetch } = useDashboardSalesCalendar(documentType, startDate, endDate);
   const detailQuery = useDashboardSalesDocumentDetail(documentType, selectedItem?.id ?? null);
 
@@ -212,9 +296,27 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
     return data.owners.filter((owner) => owner.name.toLocaleLowerCase(i18n.language).includes(search));
   }, [data, ownerSearch, i18n.language]);
 
-  const days = useMemo(() => eachDayOfInterval({ start: gridStart, end: gridEnd }), [gridStart, gridEnd]);
+  const days = useMemo(
+    () => eachDayOfInterval({ start: visibleRange.start, end: addDays(visibleRange.end, -1) }),
+    [visibleRange],
+  );
+  const itemsByDay = useMemo(() => {
+    const map = new Map<string, DashboardSalesCalendarItem[]>();
+    days.forEach((day) => {
+      map.set(
+        day.toISOString(),
+        visibleItems.filter((item) => isSameDay(new Date(item.documentDate), day)),
+      );
+    });
+    return map;
+  }, [days, visibleItems]);
   const selectedOwner = data?.owners.find((owner) => owner.id === selectedOwnerId);
   const showOwnerOnCalendar = data?.isSystemAdmin === true && selectedOwnerId === 'all';
+  const viewIcons: Record<CalendarView, LucideIcon> = { month: LayoutGrid, week: CalendarRange, agenda: List };
+  const locale = i18n.language;
+  const title = new Intl.DateTimeFormat(locale, view === 'week'
+    ? { day: 'numeric', month: 'long', year: 'numeric' }
+    : { month: 'long', year: 'numeric' }).format(cursor);
   const summary = useMemo(() => {
     if (!data || selectedOwnerId === 'all') {
       return {
@@ -233,11 +335,12 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
     };
   }, [data, selectedOwnerId, visibleItems]);
   const titleKey = documentType.toLocaleLowerCase() as 'demand' | 'quotation' | 'order';
-  const weekdayLabels = Array.from({ length: 7 }, (_, index) =>
-    new Intl.DateTimeFormat(i18n.language, { weekday: 'short' }).format(
-      new Date(2026, 0, 5 + index),
-    ),
-  );
+
+  const move = (direction: -1 | 1): void => {
+    setCursor((current) => view === 'week'
+      ? (direction < 0 ? subWeeks(current, 1) : addWeeks(current, 1))
+      : (direction < 0 ? subMonths(current, 1) : addMonths(current, 1)));
+  };
 
   const openDocument = (item: DashboardSalesCalendarItem) => {
     navigate(`${ROUTES[documentType]}/${item.id}`);
@@ -258,12 +361,34 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button type="button" variant="outline" size="sm" onClick={() => setCursor(subMonths(cursor, 1))} aria-label={t('salesCalendar.previous')}><ChevronLeft size={15} /></Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 dark:border-white/10 dark:bg-white/5">
+            {(['month', 'week', 'agenda'] as const).map((item) => {
+              const ViewIcon = viewIcons[item];
+              return (
+                <button
+                  key={item}
+                  type="button"
+                  onClick={() => setView(item)}
+                  title={t(`calendar.views.${item}`)}
+                  className={cn(
+                    'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-bold transition',
+                    view === item
+                      ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20'
+                      : 'text-slate-600 hover:bg-white dark:text-slate-300 dark:hover:bg-white/10',
+                  )}
+                >
+                  <ViewIcon size={14} />
+                  <span className="hidden sm:inline">{t(`calendar.views.${item}`)}</span>
+                </button>
+              );
+            })}
+          </div>
+          <Button type="button" variant="outline" size="sm" onClick={() => move(-1)} aria-label={t('calendar.previous')}><ChevronLeft size={15} /></Button>
           <Button type="button" variant="outline" size="sm" onClick={() => setCursor(new Date())}>{t('salesCalendar.today')}</Button>
-          <Button type="button" variant="outline" size="sm" onClick={() => setCursor(addMonths(cursor, 1))} aria-label={t('salesCalendar.next')}><ChevronRight size={15} /></Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => move(1)} aria-label={t('calendar.next')}><ChevronRight size={15} /></Button>
           <span className="min-w-28 text-center text-sm font-black capitalize text-slate-800 dark:text-slate-100">
-            {new Intl.DateTimeFormat(i18n.language, { month: 'long', year: 'numeric' }).format(cursor)}
+            {title}
           </span>
         </div>
       </div>
@@ -319,44 +444,101 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
         <div className="flex min-h-80 flex-col items-center justify-center gap-3 text-sm font-bold text-rose-600">
           {t('salesCalendar.loadError')}<Button type="button" variant="outline" onClick={() => void refetch()}>{t('refresh')}</Button>
         </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <div className="min-w-[840px]">
-            <div className="grid grid-cols-7 border-b border-slate-200 bg-slate-50 dark:border-white/10 dark:bg-white/[0.03]">
-              {weekdayLabels.map((label) => <div key={label} className="px-2 py-2 text-center text-[10px] font-black uppercase tracking-wider text-slate-400">{label}</div>)}
-            </div>
-            <div className="grid grid-cols-7">
-              {days.map((day) => {
-                const dayItems = visibleItems.filter((item) => isSameDay(new Date(item.documentDate), day));
-                return (
-                  <div key={day.toISOString()} className={cn('min-h-28 border-b border-r border-slate-100 p-1.5 dark:border-white/5', !isSameMonth(day, cursor) && 'bg-slate-50/70 opacity-60 dark:bg-white/[0.02]', isToday(day) && 'bg-primary/[0.03]')}>
-                    <div className={cn('mb-1 flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black text-slate-500', isToday(day) && 'bg-primary text-white')}>{format(day, 'd')}</div>
-                    <div className="space-y-1">
-                      {dayItems.slice(0, 4).map((item) => (
-                        <button
-                          key={item.id}
-                          type="button"
-                          data-testid="sales-calendar-event"
-                          aria-label={showOwnerOnCalendar ? `${item.representativeName || t('salesCalendar.unassignedOwner')} ${item.documentNumber}` : item.documentNumber}
-                          onClick={() => setSelectedItem(item)}
-                          className={cn('w-full rounded-md border-l-4 px-1.5 py-1 text-left transition hover:-translate-y-px hover:shadow-sm', statusTone(item))}
-                        >
-                          {showOwnerOnCalendar ? (
-                            <>
-                              <span className="block truncate text-[10px] font-black">{item.representativeName || t('salesCalendar.unassignedOwner')}</span>
-                              <span className="block truncate text-[9px] font-semibold opacity-70">{item.documentNumber}</span>
-                            </>
-                          ) : (
-                            <span className="block truncate text-[10px] font-black">{item.documentNumber}</span>
-                          )}
-                        </button>
-                      ))}
-                      {dayItems.length > 4 && <span className="block px-1 text-[9px] font-bold text-primary">+{dayItems.length - 4} {t('salesCalendar.more')}</span>}
-                    </div>
+      ) : view === 'agenda' ? (
+        <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-y-auto p-4 md:p-5">
+          {days.map((day) => {
+            const dayItems = itemsByDay.get(day.toISOString()) ?? [];
+            if (dayItems.length === 0) return null;
+            return (
+              <div key={day.toISOString()} className="mb-5 grid gap-3 md:grid-cols-[180px_1fr]">
+                <div className="flex items-center gap-2 md:flex-col md:items-start md:gap-1">
+                  <div className="font-black text-slate-900 dark:text-white">
+                    {new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(day)}
                   </div>
-                );
-              })}
+                  {isToday(day) && (
+                    <span className="rounded-full bg-[image:var(--crm-brand-gradient)] px-2 py-0.5 text-[10px] font-black text-white">
+                      {t('salesCalendar.today')}
+                    </span>
+                  )}
+                </div>
+                <div className="space-y-2 border-l-2 border-dashed border-slate-200 pl-3 dark:border-white/10 md:pl-4">
+                  {dayItems.map((item) => (
+                    <SalesCalendarEventButton
+                      key={item.id}
+                      item={item}
+                      showOwner={showOwnerOnCalendar}
+                      unassignedOwnerLabel={t('salesCalendar.unassignedOwner')}
+                      customerUnknownLabel={t('salesCalendar.customerUnknown')}
+                      onSelect={setSelectedItem}
+                    />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+          {visibleItems.length === 0 && (
+            <div className="flex min-h-64 flex-col items-center justify-center gap-3 text-slate-400">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-white/5">
+                <List size={26} />
+              </div>
+              <span className="font-semibold">{t('salesCalendar.empty')}</span>
             </div>
+          )}
+        </div>
+      ) : (
+        <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-auto">
+          <div
+            className="min-w-[840px] grid h-full grid-cols-7"
+            style={{ gridTemplateRows: `auto repeat(${Math.max(1, days.length / 7)}, minmax(${view === 'week' ? '160px' : '70px'}, 1fr))` }}
+          >
+            {days.slice(0, 7).map((day) => (
+              <div key={`header-${day.toISOString()}`} className="border-b border-r border-slate-200 bg-slate-50 px-2 py-2 text-center text-[10px] font-black uppercase tracking-wider text-slate-400 last:border-r-0 dark:border-white/10 dark:bg-white/[0.03]">
+                {new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(day)}
+              </div>
+            ))}
+            {days.map((day) => {
+              const dayItems = itemsByDay.get(day.toISOString()) ?? [];
+              const visibleLimit = view === 'week' ? 12 : 4;
+              return (
+                <div
+                  key={day.toISOString()}
+                  className={cn(
+                    'flex flex-col overflow-y-auto border-b border-r border-slate-100 p-1.5 dark:border-white/5',
+                    !isSameMonth(day, cursor) && view === 'month' && 'bg-slate-50/70 opacity-60 dark:bg-white/[0.02]',
+                    isToday(day) && 'bg-primary/[0.03]',
+                  )}
+                >
+                  <div className={cn('mb-1 flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black text-slate-500', isToday(day) && 'bg-primary text-white')}>
+                    {format(day, 'd')}
+                  </div>
+                  <div className="space-y-1">
+                    {dayItems.slice(0, visibleLimit).map((item) => (
+                      <SalesCalendarEventButton
+                        key={item.id}
+                        item={item}
+                        compact={view === 'month'}
+                        showOwner={showOwnerOnCalendar}
+                        unassignedOwnerLabel={t('salesCalendar.unassignedOwner')}
+                        customerUnknownLabel={t('salesCalendar.customerUnknown')}
+                        onSelect={setSelectedItem}
+                      />
+                    ))}
+                    {dayItems.length > visibleLimit && (
+                      <button
+                        type="button"
+                        className="block w-full px-1 text-left text-[9px] font-bold text-primary hover:underline"
+                        onClick={() => {
+                          setCursor(day);
+                          setView('agenda');
+                        }}
+                      >
+                        +{dayItems.length - visibleLimit} {t('salesCalendar.more')}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
