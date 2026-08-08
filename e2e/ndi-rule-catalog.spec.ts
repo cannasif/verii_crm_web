@@ -24,7 +24,7 @@ async function login(page: Page): Promise<void> {
   await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 20_000 });
 }
 
-test('NDI rule catalog is served by the API and rendered by the web page', async ({ page }) => {
+test('NDI rule catalog is served by the API and rendered by the web page', async ({ page }, testInfo) => {
   const pageErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
 
@@ -61,21 +61,43 @@ test('NDI rule catalog is served by the API and rendered by the web page', async
   expect(rules.every((rule) => (rule.validationRules?.length ?? 0) > 0)).toBeTruthy();
   expect(rules.reduce((total, rule) => total + (rule.scenarios?.length ?? 0), 0)).toBe(18);
 
-  for (const rule of rules) {
-    await expect(page.getByText(rule.title, { exact: false }).first()).toBeVisible();
-    await expect(page.getByText(rule.targetNetsisCompany, { exact: false }).first()).toBeVisible();
-  }
-
   const matrix = page.getByTestId('ndi-rule-scenario-matrix');
-  for (const rule of rules) {
-    await page.getByRole('button').filter({ hasText: rule.title }).first().click();
-    await expect(matrix).toBeVisible();
-    await expect(matrix.getByTestId('ndi-rule-scenario-row')).toHaveCount(rule.scenarios?.length ?? 0);
+  await expect(matrix).toBeVisible();
+  await expect(matrix.getByText("API'den 18 ayrı kural", { exact: true })).toBeVisible();
+  await expect(matrix.getByTestId('ndi-rule-scenario-row')).toHaveCount(18);
 
-    const manualCount = rule.scenarios?.filter((scenario) => scenario.mode === 'manual').length ?? 0;
-    await matrix.getByRole('button', { name: /Manuel/ }).click();
-    await expect(matrix.getByTestId('ndi-rule-scenario-row')).toHaveCount(manualCount);
+  for (const rule of rules) {
+    await matrix.getByRole('button', { name: `Kural grubu ${rule.code}` }).click();
+    await expect(matrix.getByTestId('ndi-rule-scenario-row')).toHaveCount(rule.scenarios?.length ?? 0);
+    await expect(matrix.getByText(rule.targetNetsisCompany, { exact: false }).first()).toBeVisible();
   }
+
+  await matrix.getByRole('button', { name: 'Tüm kural grupları' }).click();
+  await matrix.getByRole('button', { name: 'Manuel kurallar' }).click();
+  await expect(matrix.getByTestId('ndi-rule-scenario-row')).toHaveCount(8);
+
+  await matrix.getByRole('button', { name: 'Otomatik kurallar' }).click();
+  await expect(matrix.getByTestId('ndi-rule-scenario-row')).toHaveCount(10);
+
+  await matrix.getByRole('button', { name: 'Tüm çalışma modları' }).click();
+  await expect(matrix.getByTestId('ndi-rule-scenario-row')).toHaveCount(18);
+  await matrix.evaluate((element) => element.scrollIntoView({ block: 'start' }));
+  await page.screenshot({ path: testInfo.outputPath('ndi-rule-catalog-desktop.png') });
+
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const closeSidebarButton = page.getByRole('button', { name: 'Menüyü kapat' });
+  if (await closeSidebarButton.isVisible()) {
+    await closeSidebarButton.click();
+    await expect(page.locator('aside[data-sidebar-open="false"]')).toBeVisible();
+    await page.waitForTimeout(300);
+  }
+  await expect(matrix).toBeVisible();
+  await expect(matrix.getByTestId('ndi-rule-scenario-row')).toHaveCount(18);
+  await matrix.evaluate((element) => element.scrollIntoView({ block: 'start' }));
+  await page.screenshot({ path: testInfo.outputPath('ndi-rule-catalog-mobile.png') });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
 
   expect(pageErrors).toEqual([]);
 });

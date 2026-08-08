@@ -953,7 +953,6 @@ export function NdiOrderTransferPage(): ReactElement {
   const [sendError, setSendError] = useState<string | null>(null);
   const [transferResult, setTransferResult] = useState<NdiTransferCreateResponseDto | null>(null);
   const [transferResultDialog, setTransferResultDialog] = useState<NdiTransferCreateResponseDto | null>(null);
-  const [revealedGuideRuleId, setRevealedGuideRuleId] = useState<NdiTransferRule['id'] | null>(null);
   const preparedTransferRef = useRef<HTMLDivElement | null>(null);
   const previousLineIdsRef = useRef<Set<string>>(new Set());
 
@@ -1175,10 +1174,6 @@ export function NdiOrderTransferPage(): ReactElement {
   );
   const selectedRuleIds = useMemo(() => new Set(selectedRules.map((rule) => rule.id)), [selectedRules]);
   const selectedRuleTitles = useMemo(() => selectedRules.map((rule) => rule.title).join(', '), [selectedRules]);
-  const selectedRuleIdsKey = useMemo(
-    () => selectedRules.map((rule) => rule.id).sort().join(','),
-    [selectedRules]
-  );
   const quarterModeAvailable = transferMode === 'manual'
     ? manualDocuments.length > 0
     : selectedRules.length > 0 && selectedRules.every((rule) => rule.id === 'nuray');
@@ -1189,25 +1184,6 @@ export function NdiOrderTransferPage(): ReactElement {
     }
   }, [quarterModeAvailable, quantityMode]);
 
-  useEffect(() => {
-    if (selectedIrsNoList.length === 0) {
-      setRevealedGuideRuleId(null);
-      return;
-    }
-
-    setRevealedGuideRuleId((current) => {
-      if (current === null) {
-        return null;
-      }
-
-      const activeRuleIds = selectedRuleIdsKey.split(',').filter(Boolean) as NdiTransferRule['id'][];
-      if (activeRuleIds.includes(current)) {
-        return current;
-      }
-
-      return activeRuleIds[0] ?? null;
-    });
-  }, [selectedIrsNoList, selectedRuleIdsKey]);
   const selectedLinesByOrderNo = useMemo(() => {
     const grouped = new Map<string, NdiOrderLine[]>();
     selectedOrderLines.forEach((line) => {
@@ -1310,13 +1286,6 @@ export function NdiOrderTransferPage(): ReactElement {
 
     return options;
   }, [customerDocumentSeries]);
-  const orderProfileByOrderId = useMemo(
-    () => new Map(selectedOrdersForTransfer.map((order) => [order.id, getDecisionRule(order, decisionContext).id])),
-    [decisionContext, selectedOrdersForTransfer]
-  );
-  const visibleRuleOutcomes = revealedGuideRuleId
-    ? ruleOutcomes.filter((outcome) => orderProfileByOrderId.get(outcome.orderId) === revealedGuideRuleId)
-    : [];
   const batchAction = useMemo(() => resolveBatchAction(ruleOutcomes), [ruleOutcomes]);
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
@@ -2160,11 +2129,7 @@ export function NdiOrderTransferPage(): ReactElement {
               {transferMode === 'automatic' ? (
                 <SeriesGuide
                   activeRuleIds={selectedRuleIds}
-                  revealedRuleId={revealedGuideRuleId}
-                  onToggleReveal={(ruleId) => {
-                    setRevealedGuideRuleId((current) => (current === ruleId ? null : ruleId));
-                  }}
-                  ruleOutcomes={visibleRuleOutcomes}
+                  ruleOutcomes={ruleOutcomes}
                   apiRules={ndiRulesQuery.data ?? []}
                   rulesLoading={ndiRulesQuery.isLoading}
                   rulesError={ndiRulesQuery.isError}
@@ -3353,199 +3318,57 @@ function InfoChip({ icon, label, value }: { icon: ReactElement; label: string; v
   );
 }
 
+type NdiScenarioModeFilter = 'all' | NetsisNdiTransferScenarioDto['mode'];
+
 function SeriesGuide({
   activeRuleIds,
-  revealedRuleId,
-  onToggleReveal,
   ruleOutcomes,
   apiRules,
   rulesLoading,
   rulesError,
 }: {
   activeRuleIds: Set<NdiTransferRule['id']>;
-  revealedRuleId: NdiTransferRule['id'] | null;
-  onToggleReveal: (ruleId: NdiTransferRule['id']) => void;
   ruleOutcomes: NdiRuleOutcome[];
   apiRules: NetsisNdiTransferRuleDto[];
   rulesLoading: boolean;
   rulesError: boolean;
 }): ReactElement {
-  const rows: Array<{
-    id: NdiTransferRule['id'];
-    title: string;
-    summary: string;
-    apiRule?: NetsisNdiTransferRuleDto;
-  }> = transferRules.map((rule) => {
-    const apiRule = apiRules.find((item) => item.code.toUpperCase() === rule.sourceSerial);
-
-    return {
-      id: rule.id,
-      title: apiRule
-        ? `${apiRule.title} · ${apiRule.sourceNetsisCompany} -> ${apiRule.targetNetsisCompany} (${apiRule.sourceSerial})`
-        : `${rule.title} (${rule.sourceSerial})`,
-      summary: apiRule?.description
-        ?? (rulesLoading
-          ? 'Kural matrisi API’den yükleniyor.'
-          : rulesError
-            ? 'Kural matrisi API’den alınamadı; aktarım API önizlemesi olmadan gönderilemez.'
-            : 'Bu kural ailesi için API tanımı bulunamadı.'),
-      apiRule,
-    };
-  });
-  const hasActiveRule = activeRuleIds.size > 0;
-  const isOpen = revealedRuleId !== null;
-  const revealedRow = rows.find((row) => row.id === revealedRuleId);
-  const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
-
-  const handleRowClick = (ruleId: NdiTransferRule['id'], event: React.MouseEvent): void => {
-    if (isPointerDragClick(event, pointerStartRef.current)) {
-      return;
-    }
-
-    window.getSelection()?.removeAllRanges();
-    onToggleReveal(ruleId);
-  };
-
-  const renderCompanyCard = (row: (typeof rows)[number], fullWidth = false): ReactElement => {
-    const isActive = activeRuleIds.has(row.id);
-    const isRevealed = revealedRuleId === row.id;
-
-    return (
-      <div
-        key={row.id}
-        role="button"
-        tabIndex={0}
-        onMouseDown={(event) => {
-          pointerStartRef.current = { x: event.clientX, y: event.clientY };
-        }}
-        onClick={(event) => handleRowClick(row.id, event)}
-        onKeyDown={(event) => {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            onToggleReveal(row.id);
-          }
-        }}
-        className={`rounded-md border px-3 py-2 transition ${
-          isRevealed
-            ? 'cursor-pointer border-primary bg-primary/15 shadow-[0_0_0_2px_rgba(236,72,153,0.18)]'
-            : isActive
-              ? 'cursor-pointer border-primary bg-primary/10 shadow-[0_0_0_2px_rgba(236,72,153,0.12)] hover:bg-primary/15'
-              : 'cursor-pointer border-slate-300 bg-[var(--crm-app-panel)] hover:border-primary/50 hover:bg-primary/5 dark:border-white/20'
-        } ${fullWidth ? 'w-full' : ''}`}
-      >
-        <div className="flex items-start justify-between gap-2">
-          <div className="text-xs font-black text-foreground">{row.title}</div>
-          {isRevealed ? (
-            <span className="rounded-full bg-primary px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.08em] text-white">Açık</span>
-          ) : isActive ? (
-            <span className="rounded-full bg-primary px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.08em] text-white">Aktif</span>
-          ) : null}
-        </div>
-        <p className="mt-2 line-clamp-3 text-[11px] font-semibold leading-relaxed text-muted-foreground">
-          {row.summary}
-        </p>
-        <div className="mt-2 flex flex-wrap gap-1">
-          <RuleBadge tone="info" label={`${row.apiRule?.scenarios?.length ?? 0} senaryo`} />
-          <RuleBadge
-            tone="success"
-            label={`${row.apiRule?.scenarios?.filter((scenario) => scenario.mode === 'automatic').length ?? 0} otomatik`}
-          />
-          <RuleBadge
-            tone="warn"
-            label={`${row.apiRule?.scenarios?.filter((scenario) => scenario.mode === 'manual').length ?? 0} manuel`}
-          />
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <div className="mt-3 rounded-lg border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] p-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <div className="text-xs font-black uppercase tracking-[0.16em] text-[var(--crm-app-text-muted)]">NDI Kural Matrisi</div>
-          <p className="mt-1 text-xs font-semibold text-[var(--crm-app-text-muted)]">
-            {isOpen
-              ? 'Sol taraftan kural ailesini değiştirebilir, sağ tarafta API karar motorunun tüm senaryolarını inceleyebilirsiniz.'
-              : hasActiveRule
-                ? 'Seçilen irsaliyeye uygulanacak aile vurgulanır. Tüm aileler seçilmeden de incelenebilir.'
-                : 'Dört ana aile altındaki otomatik ve manuel karar senaryolarını incelemek için bir karta tıklayın.'}
-          </p>
-        </div>
-        <RuleBadge
-          tone={revealedRuleId ? 'success' : hasActiveRule ? 'warn' : 'info'}
-          label={revealedRuleId ? 'Matris açık' : hasActiveRule ? 'Uygulanan aile vurgulandı' : '4 kural ailesi'}
-        />
-      </div>
-
-      {isOpen ? (
-        <div className="mt-3">
-          <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-            {rows.map((row) => renderCompanyCard(row, true))}
-          </div>
-          <div className="mt-3 flex min-w-0 flex-col gap-2">
-            {revealedRow?.apiRule ? (
-              <NdiRuleScenarioMatrix key={revealedRow.apiRule.code} rule={revealedRow.apiRule} />
-            ) : (
-              <div className="rounded-md border border-dashed border-slate-300 px-4 py-8 text-center text-sm font-semibold text-muted-foreground dark:border-white/20">
-                API kural matrisi yüklenemedi.
-              </div>
-            )}
-            {ruleOutcomes.length > 0 ? (
-              <section className="mt-1 border-t border-slate-300 pt-3 dark:border-white/20">
-                <div className="mb-2">
-                  <div className="text-xs font-black uppercase tracking-[0.14em] text-[var(--crm-app-text-muted)]">Seçili Belgeye Uygulanan Sonuç</div>
-                  <p className="mt-1 text-xs font-semibold text-muted-foreground">Bu bölüm seçili kaynak belgenin hızlı ön kontrol sonucudur; kesin belge listesi API önizlemesinde gösterilir.</p>
-                </div>
-                <div className="flex min-w-0 flex-col gap-2">
-                  {ruleOutcomes.map((outcome) => (
-                    <RuleOutcomeCard key={outcome.orderId} outcome={outcome} />
-                  ))}
-                </div>
-              </section>
-            ) : null}
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-4">
-            {rows.map((row) => renderCompanyCard(row))}
-          </div>
-          {hasActiveRule ? (
-            <p className="mt-3 rounded-md border border-dashed border-slate-300 px-3 py-3 text-center text-base font-semibold text-[var(--crm-app-text-muted)] dark:border-white/20">
-              Uygulanan aile vurgulandı. Ayrıntılı karar matrisini açmak için istediğiniz karta tıklayın.
-            </p>
-          ) : null}
-        </>
-      )}
-    </div>
-  );
-}
-
-type NdiScenarioModeFilter = 'all' | NetsisNdiTransferScenarioDto['mode'];
-
-function NdiRuleScenarioMatrix({ rule }: { rule: NetsisNdiTransferRuleDto }): ReactElement {
+  const [familyFilter, setFamilyFilter] = useState('all');
   const [modeFilter, setModeFilter] = useState<NdiScenarioModeFilter>('all');
-  const scenarios = rule.scenarios ?? [];
-  const automaticCount = scenarios.filter((scenario) => scenario.mode === 'automatic').length;
-  const manualCount = scenarios.filter((scenario) => scenario.mode === 'manual').length;
-  const visibleScenarios = modeFilter === 'all'
-    ? scenarios
-    : scenarios.filter((scenario) => scenario.mode === modeFilter);
+  const catalogEntries = apiRules.flatMap((rule) =>
+    (rule.scenarios ?? []).map((scenario) => ({ rule, scenario })),
+  );
+  const automaticCount = catalogEntries.filter(({ scenario }) => scenario.mode === 'automatic').length;
+  const manualCount = catalogEntries.filter(({ scenario }) => scenario.mode === 'manual').length;
+  const activeRuleCodes = new Set(
+    transferRules
+      .filter((rule) => activeRuleIds.has(rule.id))
+      .map((rule) => rule.sourceSerial.toUpperCase()),
+  );
+  const visibleEntries = catalogEntries.filter(({ rule, scenario }) =>
+    (familyFilter === 'all' || rule.code.toUpperCase() === familyFilter) &&
+    (modeFilter === 'all' || scenario.mode === modeFilter),
+  );
+  const filteredRule = familyFilter === 'all'
+    ? null
+    : apiRules.find((rule) => rule.code.toUpperCase() === familyFilter) ?? null;
 
   return (
-    <section data-testid="ndi-rule-scenario-matrix" className="min-w-0 overflow-hidden rounded-lg border border-slate-300 bg-[var(--crm-app-panel)] dark:border-white/20">
-      <div className="flex flex-col gap-3 border-b border-slate-300 px-3 py-3 dark:border-white/20 lg:flex-row lg:items-center lg:justify-between">
+    <div className="mt-3 rounded-lg border border-slate-300 bg-[var(--crm-app-panel-muted)] p-3 dark:border-white/20">
+      <section data-testid="ndi-rule-scenario-matrix" className="min-w-0 overflow-hidden rounded-lg border border-slate-300 bg-[var(--crm-app-panel)] dark:border-white/20">
+      <div className="flex flex-col gap-3 border-b border-slate-300 px-3 py-3 dark:border-white/20 2xl:flex-row 2xl:items-center 2xl:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-sm font-black text-foreground">{rule.title} Karar Senaryoları</h3>
-            <RuleBadge tone="info" label={`${scenarios.length} senaryo`} />
+            <h3 className="text-sm font-black text-foreground">NDI Aktarım Kuralları</h3>
+            <RuleBadge tone="info" label={`API'den ${catalogEntries.length} ayrı kural`} />
           </div>
-          <p className="mt-1 text-xs font-semibold leading-relaxed text-muted-foreground">{rule.description}</p>
+          <p className="mt-1 text-xs font-semibold leading-relaxed text-muted-foreground">
+            Otomatik ve manuel aktarım kararları API kural kataloğundan güncel olarak listelenir.
+          </p>
         </div>
-        <div className="inline-flex w-fit shrink-0 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] p-1 dark:border-white/20" aria-label="Senaryo modu">
+        <div className="inline-flex w-fit shrink-0 rounded-md border border-slate-300 bg-[var(--crm-app-panel-muted)] p-1 dark:border-white/20" role="group" aria-label="Kural çalışma modu">
           {([
-            ['all', `Tümü ${scenarios.length}`],
+            ['all', `Tümü ${catalogEntries.length}`],
             ['automatic', `Otomatik ${automaticCount}`],
             ['manual', `Manuel ${manualCount}`],
           ] as const).map(([value, label]) => (
@@ -3553,6 +3376,8 @@ function NdiRuleScenarioMatrix({ rule }: { rule: NetsisNdiTransferRuleDto }): Re
               key={value}
               type="button"
               onClick={() => setModeFilter(value)}
+              aria-label={value === 'all' ? 'Tüm çalışma modları' : value === 'automatic' ? 'Otomatik kurallar' : 'Manuel kurallar'}
+              aria-pressed={modeFilter === value}
               className={`min-h-8 px-3 text-xs font-black transition ${modeFilter === value ? 'rounded bg-primary text-white shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
             >
               {label}
@@ -3561,19 +3386,61 @@ function NdiRuleScenarioMatrix({ rule }: { rule: NetsisNdiTransferRuleDto }): Re
         </div>
       </div>
 
-      <div className="divide-y divide-slate-300 dark:divide-white/20">
-        {visibleScenarios.map((scenario) => (
-          <NdiRuleScenarioRow key={scenario.key} scenario={scenario} />
-        ))}
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-300 bg-[var(--crm-app-panel-muted)] px-3 py-2 dark:border-white/20" role="group" aria-label="Kural şirketi">
+        <button
+          type="button"
+          onClick={() => setFamilyFilter('all')}
+          aria-label="Tüm kural grupları"
+          aria-pressed={familyFilter === 'all'}
+          className={`min-h-8 rounded-md px-3 text-xs font-black transition ${familyFilter === 'all' ? 'bg-primary text-white shadow-sm' : 'border border-slate-300 bg-[var(--crm-app-panel)] text-muted-foreground hover:text-foreground dark:border-white/20'}`}
+        >
+          Tümü {catalogEntries.length}
+        </button>
+        {apiRules.map((rule) => {
+          const code = rule.code.toUpperCase();
+          const count = rule.scenarios?.length ?? 0;
+
+          return (
+            <button
+              key={rule.code}
+              type="button"
+              onClick={() => setFamilyFilter(code)}
+              aria-label={`Kural grubu ${code}`}
+              aria-pressed={familyFilter === code}
+              className={`min-h-8 rounded-md px-3 text-xs font-black transition ${familyFilter === code ? 'bg-primary text-white shadow-sm' : 'border border-slate-300 bg-[var(--crm-app-panel)] text-muted-foreground hover:text-foreground dark:border-white/20'}`}
+            >
+              {code} {count}
+            </button>
+          );
+        })}
       </div>
 
-      {rule.validationRules?.length > 0 ? (
+      {rulesLoading ? (
+        <div className="px-4 py-10 text-center text-sm font-semibold text-muted-foreground">Kurallar API'den yükleniyor.</div>
+      ) : rulesError ? (
+        <div className="px-4 py-10 text-center text-sm font-semibold text-red-700 dark:text-red-300">NDI kural kataloğu API'den alınamadı.</div>
+      ) : visibleEntries.length === 0 ? (
+        <div className="px-4 py-10 text-center text-sm font-semibold text-muted-foreground">Seçilen filtrelere uygun aktarım kuralı bulunamadı.</div>
+      ) : (
+      <div className="max-h-[640px] divide-y divide-slate-300 overflow-y-auto overscroll-contain dark:divide-white/20">
+        {visibleEntries.map(({ rule, scenario }) => (
+          <NdiRuleScenarioRow
+            key={`${rule.code}-${scenario.key}`}
+            rule={rule}
+            scenario={scenario}
+            isActiveFamily={activeRuleCodes.has(rule.code.toUpperCase())}
+          />
+        ))}
+      </div>
+      )}
+
+      {filteredRule && filteredRule.validationRules?.length > 0 ? (
         <div className="border-t border-slate-300 bg-amber-50/70 px-3 py-3 dark:border-white/20 dark:bg-amber-950/20">
           <div className="flex items-center gap-2 text-xs font-black text-amber-900 dark:text-amber-200">
-            <ShieldCheck size={15} /> İşlemi Koruyan Validasyonlar
+            <ShieldCheck size={15} /> {filteredRule.code} API Koruma Kontrolleri
           </div>
-          <div className="mt-2 grid gap-x-5 gap-y-1 md:grid-cols-2">
-            {rule.validationRules.map((validationRule) => (
+          <div className="mt-2 grid gap-x-5 gap-y-1 2xl:grid-cols-2">
+            {filteredRule.validationRules.map((validationRule) => (
               <div key={validationRule} className="flex gap-2 text-xs font-semibold leading-relaxed text-amber-950/80 dark:text-amber-100/80">
                 <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
                 <span>{validationRule}</span>
@@ -3582,17 +3449,46 @@ function NdiRuleScenarioMatrix({ rule }: { rule: NetsisNdiTransferRuleDto }): Re
           </div>
         </div>
       ) : null}
-    </section>
+
+      </section>
+
+      {ruleOutcomes.length > 0 ? (
+        <section className="mt-3 border-t border-slate-300 pt-3 dark:border-white/20">
+          <div className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-[var(--crm-app-text-muted)]">Seçili Belgeye Uygulanan Sonuç</div>
+          <div className="flex min-w-0 flex-col gap-2">
+            {ruleOutcomes.map((outcome) => (
+              <RuleOutcomeCard key={outcome.orderId} outcome={outcome} />
+            ))}
+          </div>
+        </section>
+      ) : null}
+    </div>
   );
 }
 
-function NdiRuleScenarioRow({ scenario }: { scenario: NetsisNdiTransferScenarioDto }): ReactElement {
+function NdiRuleScenarioRow({
+  rule,
+  scenario,
+  isActiveFamily,
+}: {
+  rule: NetsisNdiTransferRuleDto;
+  scenario: NetsisNdiTransferScenarioDto;
+  isActiveFamily: boolean;
+}): ReactElement {
   return (
-    <article data-testid="ndi-rule-scenario-row" className="px-3 py-4 odd:bg-transparent even:bg-[var(--crm-app-panel-muted)]">
-      <div className="grid gap-3 lg:grid-cols-[180px_minmax(0,1fr)_220px] lg:items-start">
+    <article
+      data-testid="ndi-rule-scenario-row"
+      className={`border-l-4 px-3 py-4 ${isActiveFamily ? 'border-l-primary bg-primary/5' : 'border-l-transparent odd:bg-transparent even:bg-[var(--crm-app-panel-muted)]'}`}
+    >
+      <div className="grid gap-3 2xl:grid-cols-[180px_minmax(0,1fr)_220px] 2xl:items-start">
         <div>
-          <RuleBadge tone={scenario.mode === 'automatic' ? 'success' : 'warn'} label={scenario.mode === 'automatic' ? 'Otomatik' : 'Manuel'} />
+          <div className="flex flex-wrap gap-1">
+            <RuleBadge tone="info" label={rule.code.toUpperCase()} />
+            <RuleBadge tone={scenario.mode === 'automatic' ? 'success' : 'warn'} label={scenario.mode === 'automatic' ? 'Otomatik' : 'Manuel'} />
+            {isActiveFamily ? <RuleBadge tone="success" label="Seçili belge grubu" /> : null}
+          </div>
           <div className="mt-2 font-black leading-snug text-foreground">{scenario.title}</div>
+          <div className="mt-1 text-[11px] font-bold text-muted-foreground">{rule.sourceNetsisCompany} -&gt; {rule.targetNetsisCompany}</div>
           <div className="mt-1 break-all font-mono text-[9px] font-bold text-muted-foreground">{scenario.key}</div>
         </div>
         <div>
@@ -3605,7 +3501,7 @@ function NdiRuleScenarioRow({ scenario }: { scenario: NetsisNdiTransferScenarioD
         </div>
       </div>
 
-      <div className={`mt-3 grid gap-3 ${scenario.documents.length > 1 ? 'md:grid-cols-2' : 'grid-cols-1'}`}>
+      <div className={`mt-3 grid gap-3 ${scenario.documents.length > 1 ? '2xl:grid-cols-2' : 'grid-cols-1'}`}>
         {scenario.documents.map((document, index) => (
           <div key={`${scenario.key}-${document.targetNetsisCompany}-${document.documentType}-${index}`} className="border-l-2 border-emerald-400 bg-emerald-50/60 px-3 py-2 dark:bg-emerald-950/20">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -3621,7 +3517,7 @@ function NdiRuleScenarioRow({ scenario }: { scenario: NetsisNdiTransferScenarioD
         ))}
       </div>
 
-      <div className="mt-3 grid gap-2 border-t border-slate-200 pt-3 text-[11px] leading-relaxed dark:border-white/10 md:grid-cols-3">
+      <div className="mt-3 grid gap-2 border-t border-slate-200 pt-3 text-[11px] leading-relaxed dark:border-white/10 2xl:grid-cols-3">
         <div><span className="font-black text-foreground">Seri:</span> <span className="font-semibold text-muted-foreground">{scenario.seriesRule}</span></div>
         <div><span className="font-black text-foreground">Depo:</span> <span className="font-semibold text-muted-foreground">{scenario.warehouseRule}</span></div>
         <div><span className="font-black text-foreground">Bağlantı:</span> <span className="font-semibold text-muted-foreground">{scenario.sourceLinkRule}</span></div>
