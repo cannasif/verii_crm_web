@@ -31,6 +31,7 @@ import {
   type NdiTransferredRecordDto,
   type NetsisCustomerDispatchDto,
   type NetsisCustomerDispatchLineDto,
+  type NetsisCustomerDispatchOrderCheckDto,
   type NetsisCustomerDocumentSeriesDto,
   type NetsisNdiTransferScenarioDto,
   type NetsisNdiTransferRuleDto,
@@ -932,6 +933,36 @@ function mapDispatchLines(
   });
 }
 
+function applyOrderCheck(
+  order: NdiOrder,
+  check?: NetsisCustomerDispatchOrderCheckDto
+): NdiOrder {
+  const sourceOrderNo = check?.siparisNo?.trim() || null;
+  const shippingCustomerCode = check?.teslimCariKodu?.trim() || order.shippingCustomerCode || null;
+  const series = getKnownSeries(sourceOrderNo || order.orderNo);
+  const operationProfile: NdiOrder['operationProfile'] = series === 'NUR'
+    ? 'nuray'
+    : series === 'DIS'
+      ? 'disTicaret'
+      : series === 'SIP'
+        ? 'sirket24'
+        : series === 'VIN'
+          ? 'windoformKapi'
+          : order.operationProfile;
+
+  return {
+    ...order,
+    sourceOrderNo,
+    operationProfile,
+    hasShipment: hasSeparateShippingCustomer(order.customerCode, shippingCustomerCode),
+    shippingCustomerCode,
+    description: check?.aciklama?.trim() || order.description,
+    exportRefNo: check?.exportRefNo?.trim() || null,
+    orderExportType: check?.exportType ?? null,
+    orderTipi: check?.tipi ?? null,
+  };
+}
+
 export function NdiOrderTransferPage(): ReactElement {
   const [activeTab, setActiveTab] = useState<'pending' | 'transferred'>('pending');
   const [search, setSearch] = useState('');
@@ -944,6 +975,8 @@ export function NdiOrderTransferPage(): ReactElement {
   const [invoiceSeries, setInvoiceSeries] = useState('');
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(() => new Set());
   const [selectedLineIds, setSelectedLineIds] = useState<Set<string>>(() => new Set());
+  const [checkingOrderId, setCheckingOrderId] = useState<string | null>(null);
+  const [selectionRuleError, setSelectionRuleError] = useState<string | null>(null);
   const [prepareAttempted, setPrepareAttempted] = useState(false);
   const [isPreparingTransfer, setIsPreparingTransfer] = useState(false);
   const [prepareError, setPrepareError] = useState<string | null>(null);
@@ -955,6 +988,10 @@ export function NdiOrderTransferPage(): ReactElement {
   const [transferResultDialog, setTransferResultDialog] = useState<NdiTransferCreateResponseDto | null>(null);
   const preparedTransferRef = useRef<HTMLDivElement | null>(null);
   const previousLineIdsRef = useRef<Set<string>>(new Set());
+  const {
+    expanded: rulesPanelExpanded,
+    toggle: toggleRulesPanel,
+  } = useCollapsibleCardToggle();
 
   const dispatchesQuery = useQuery({
     queryKey: ['ndi', 'customer-dispatches'],
@@ -993,33 +1030,10 @@ export function NdiOrderTransferPage(): ReactElement {
   });
 
   const selectedOrdersForTransfer = useMemo(() => {
-    return selectedOrders.map((order) => {
-      const check = orderChecksByDocumentNo.get(order.orderNo);
-      const sourceOrderNo = check?.siparisNo?.trim() || null;
-      const shippingCustomerCode = check?.teslimCariKodu?.trim() || order.shippingCustomerCode || null;
-      const series = getKnownSeries(sourceOrderNo || order.orderNo);
-      const operationProfile: NdiOrder['operationProfile'] = series === 'NUR'
-        ? 'nuray'
-        : series === 'DIS'
-          ? 'disTicaret'
-          : series === 'SIP'
-            ? 'sirket24'
-            : series === 'VIN'
-              ? 'windoformKapi'
-              : order.operationProfile;
-
-      return {
-        ...order,
-        sourceOrderNo,
-        operationProfile,
-        hasShipment: hasSeparateShippingCustomer(order.customerCode, shippingCustomerCode),
-        shippingCustomerCode,
-        description: check?.aciklama?.trim() || order.description,
-        exportRefNo: check?.exportRefNo?.trim() || null,
-        orderExportType: check?.exportType ?? null,
-        orderTipi: check?.tipi ?? null,
-      };
-    });
+    return selectedOrders.map((order) => applyOrderCheck(
+      order,
+      orderChecksByDocumentNo.get(order.orderNo)
+    ));
   }, [orderChecksByDocumentNo, selectedOrders]);
   const linesQuery = useQuery({
     queryKey: ['ndi', 'customer-dispatch-lines', selectedIrsNoList],
@@ -1173,7 +1187,6 @@ export function NdiOrderTransferPage(): ReactElement {
     [selectedOrdersForTransfer, decisionContext]
   );
   const selectedRuleIds = useMemo(() => new Set(selectedRules.map((rule) => rule.id)), [selectedRules]);
-  const selectedRuleTitles = useMemo(() => selectedRules.map((rule) => rule.title).join(', '), [selectedRules]);
   const quarterModeAvailable = transferMode === 'manual'
     ? manualDocuments.length > 0
     : selectedRules.length > 0 && selectedRules.every((rule) => rule.id === 'nuray');
@@ -1321,38 +1334,78 @@ export function NdiOrderTransferPage(): ReactElement {
     && hasValidDocumentSeries;
   const prepareDisabled = selectedLines.length === 0 || linesQuery.isFetching || orderChecksQuery.isFetching || isPreparingTransfer;
 
-  const toggleOrder = (order: NdiOrder) => {
-    const selectedCustomer = selectedOrders[0]?.customerCode?.trim();
-    if (!selectedOrderIds.has(order.id)
-      && selectedCustomer
-      && selectedCustomer.localeCompare(order.customerCode.trim(), undefined, { sensitivity: 'accent' }) !== 0) {
-      setPrepareError(`Aynı anda yalnızca ${selectedCustomer} carisine ait irsaliyeler seçilebilir.`);
+  const toggleOrder = async (order: NdiOrder): Promise<void> => {
+    if (checkingOrderId !== null) {
       return;
     }
 
-    setPreparedTransfer(null);
-    setSuccessDialogTransfer(null);
-    setTransferResult(null);
-    setTransferResultDialog(null);
-    setSendError(null);
-    setPrepareAttempted(false);
-    setPrepareError(null);
-    setSelectedOrderIds((current) => {
-      const currentOrders = orders.filter((item) => current.has(item.id));
-      const currentPrefix = currentOrders[0] ? getOrderPrefix(currentOrders[0]) : getOrderPrefix(order);
-      const orderPrefix = getOrderPrefix(order);
-      const next = transferMode === 'manual' || orderPrefix === currentPrefix
-        ? new Set(current)
-        : new Set<string>();
-
-      if (next.has(order.id)) {
+    if (selectedOrderIds.has(order.id)) {
+      setSelectionRuleError(null);
+      setPreparedTransfer(null);
+      setSuccessDialogTransfer(null);
+      setTransferResult(null);
+      setTransferResultDialog(null);
+      setSendError(null);
+      setPrepareAttempted(false);
+      setPrepareError(null);
+      setSelectedOrderIds((current) => {
+        const next = new Set(current);
         next.delete(order.id);
-      } else {
-        next.add(order.id);
+        return next;
+      });
+      return;
+    }
+
+    const selectedCustomer = selectedOrders[0]?.customerCode?.trim();
+    if (selectedCustomer
+      && selectedCustomer.localeCompare(order.customerCode.trim(), undefined, { sensitivity: 'accent' }) !== 0) {
+      setSelectionRuleError(`Bu irsaliye seçilemez. Aktif grupta yalnızca ${selectedCustomer} carisine ait irsaliyeler kullanılabilir.`);
+      return;
+    }
+
+    setCheckingOrderId(order.id);
+    setSelectionRuleError(null);
+
+    try {
+      const candidateOrders = [...selectedOrders, order];
+      const checks = await ndiApi.getCustomerDispatchOrderChecks(
+        candidateOrders.map((item) => item.orderNo).join(',')
+      );
+      const checksByDocumentNo = new Map(checks.map((check) => [check.fatirsNo, check]));
+      const resolvedOrders = candidateOrders.map((item) => applyOrderCheck(
+        item,
+        checksByDocumentNo.get(item.orderNo)
+      ));
+
+      const resolvedRules = Array.from(new Map(resolvedOrders.map((item) => {
+        const rule = getRule(item);
+        return [rule.id, rule] as const;
+      })).values());
+
+      if (resolvedRules.length > 1) {
+        const activeRule = getRule(resolvedOrders[0]);
+        const candidateRule = getRule(resolvedOrders[resolvedOrders.length - 1]);
+        setSelectionRuleError(
+          `${order.orderNo} seçilemez. Aktif kural “${activeRule.title}”, bu irsaliyenin kuralı “${candidateRule.title}”. Aynı aktarım grubunda yalnızca tek NDI kuralına ait irsaliyeler seçilebilir.`
+        );
+        return;
       }
 
-      return next;
-    });
+      setPreparedTransfer(null);
+      setSuccessDialogTransfer(null);
+      setTransferResult(null);
+      setTransferResultDialog(null);
+      setSendError(null);
+      setPrepareAttempted(false);
+      setPrepareError(null);
+      setSelectedOrderIds((current) => new Set(current).add(order.id));
+    } catch (error) {
+      setSelectionRuleError(
+        `Bu irsaliyenin NDI kuralı doğrulanamadı ve seçim güvenli şekilde durduruldu. ${error instanceof Error ? error.message : 'Sipariş kontrol servisi yanıt vermedi.'}`
+      );
+    } finally {
+      setCheckingOrderId(null);
+    }
   };
 
   useEffect(() => {
@@ -1408,6 +1461,8 @@ export function NdiOrderTransferPage(): ReactElement {
     setQuantityMode('auto');
     setSelectedOrderIds(new Set());
     setSelectedLineIds(new Set());
+    setCheckingOrderId(null);
+    setSelectionRuleError(null);
     setPrepareAttempted(false);
     setPrepareError(null);
     setPreparedTransfer(null);
@@ -1430,6 +1485,7 @@ export function NdiOrderTransferPage(): ReactElement {
 
   const changeTransferMode = (mode: NdiTransferMode) => {
     setTransferMode(mode);
+    setSelectionRuleError(null);
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
     setTransferResult(null);
@@ -1750,7 +1806,7 @@ export function NdiOrderTransferPage(): ReactElement {
                 <p className="text-xs font-semibold text-[var(--crm-app-text-muted)]">
                   {transferMode === 'manual'
                     ? 'Aynı cariye ait kaynak irsaliyeleri seçin; uyumlu kayıtlar tek belgede, diğerleri ayrı gruplarda oluşturulur.'
-                    : 'Aynı cari ve prefix grubundaki kaynak irsaliyeleri seçin; uyumluluk farkları ayrı belge grupları oluşturur.'}
+                    : 'Aynı cari ve aynı NDI kuralına ait kaynak irsaliyeleri seçin.'}
                 </p>
               </div>
             </div>
@@ -1778,6 +1834,12 @@ export function NdiOrderTransferPage(): ReactElement {
                 {dispatchesQuery.isFetching ? <Loader2 size={17} className="animate-spin" /> : <RefreshCw size={17} />}
               </button>
             </div>
+            {selectionRuleError ? (
+              <div className="mt-3 flex gap-2 rounded-lg border border-red-300 bg-red-50 p-3 text-xs font-bold leading-relaxed text-red-800 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-100">
+                <AlertCircle size={16} className="mt-0.5 shrink-0" />
+                <span>{selectionRuleError}</span>
+              </div>
+            ) : null}
           </div>
 
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3">
@@ -1801,17 +1863,21 @@ export function NdiOrderTransferPage(): ReactElement {
                   <button
                     key={order.id}
                     type="button"
-                    onClick={() => toggleOrder(order)}
+                    onClick={() => void toggleOrder(order)}
+                    disabled={checkingOrderId !== null}
+                    aria-busy={checkingOrderId === order.id}
                     className={`grid w-full grid-cols-[30px_1fr_auto] gap-3 rounded-lg border p-3 text-left transition ${
                       isSelected ? 'border-primary bg-primary/10 shadow-sm' : 'border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] hover:border-primary/40'
-                    }`}
+                    } disabled:cursor-wait disabled:opacity-60`}
                   >
                     <div
                       className={`mt-1 flex h-7 w-7 items-center justify-center rounded-md border ${
                         isSelected ? 'border-primary bg-primary text-white' : 'border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] text-[var(--crm-app-text-muted)]'
                       }`}
                     >
-                      {isSelected ? <CheckCircle2 size={17} /> : <Circle size={17} />}
+                      {checkingOrderId === order.id
+                        ? <Loader2 size={17} className="animate-spin" />
+                        : isSelected ? <CheckCircle2 size={17} /> : <Circle size={17} />}
                     </div>
 
                     <div className="min-w-0">
@@ -2108,7 +2174,9 @@ export function NdiOrderTransferPage(): ReactElement {
                   <p className="mt-1 text-sm font-bold text-foreground">
                     {transferMode === 'manual'
                       ? `${manualDocuments.length} hedef belge işaretlendi.`
-                      : selectedRuleTitles ? `${selectedRuleTitles} · ${batchAction.hint}` : 'İrsaliye seçildiğinde çalışacak aktarım kuralı burada gösterilir.'}
+                      : selectedRules.length === 1
+                        ? `Aktif çalışacak kural: ${selectedRules[0].title} · ${batchAction.hint}`
+                        : 'İrsaliye seçildiğinde aktif çalışacak NDI kuralı burada gösterilir.'}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -2124,27 +2192,30 @@ export function NdiOrderTransferPage(): ReactElement {
                   {blockedRuleCount > 0 ? <RuleBadge tone="danger" label={`${blockedRuleCount} blok`} /> : <RuleBadge tone="success" label="Blok yok" />}
                   {warningCount > 0 ? <RuleBadge tone="warn" label={`${warningCount} uyarı`} /> : <RuleBadge tone="success" label="Uyarı yok" />}
                   <RuleBadge tone="success" label="Ek alan aktarılır" />
+                  <ExpandToggleButton expanded={rulesPanelExpanded} onToggle={toggleRulesPanel} />
                 </div>
               </div>
-              {transferMode === 'automatic' ? (
-                <SeriesGuide
-                  activeRuleIds={selectedRuleIds}
-                  ruleOutcomes={ruleOutcomes}
-                  apiRules={ndiRulesQuery.data ?? []}
-                  rulesLoading={ndiRulesQuery.isLoading}
-                  rulesError={ndiRulesQuery.isError}
-                />
-              ) : (
-                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-950 dark:border-blue-400/30 dark:bg-blue-500/10 dark:text-blue-100">
-                  <div className="text-xs font-black uppercase tracking-[0.14em]">Manuel aktarım</div>
-                  <p className="mt-2 text-sm font-bold">
-                    {manualDocuments.length > 0
-                      ? `İşaretlenen belgeler: ${manualDocuments.map((selection) => `${selection.targetNetsisCompany} ${selection.documentType}`).join(', ')}.`
-                      : 'En az bir firma ve belge türü işaretleyin.'}
-                    {' '}Otomatik şirket yönlendirmesi ve takip faturası çalışmaz.
-                  </p>
-                </div>
-              )}
+              {rulesPanelExpanded ? (
+                transferMode === 'automatic' ? (
+                  <SeriesGuide
+                    activeRuleIds={selectedRuleIds}
+                    ruleOutcomes={ruleOutcomes}
+                    apiRules={ndiRulesQuery.data ?? []}
+                    rulesLoading={ndiRulesQuery.isLoading}
+                    rulesError={ndiRulesQuery.isError}
+                  />
+                ) : (
+                  <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-4 text-blue-950 dark:border-blue-400/30 dark:bg-blue-500/10 dark:text-blue-100">
+                    <div className="text-xs font-black uppercase tracking-[0.14em]">Manuel aktarım</div>
+                    <p className="mt-2 text-sm font-bold">
+                      {manualDocuments.length > 0
+                        ? `İşaretlenen belgeler: ${manualDocuments.map((selection) => `${selection.targetNetsisCompany} ${selection.documentType}`).join(', ')}.`
+                        : 'En az bir firma ve belge türü işaretleyin.'}
+                      {' '}Otomatik şirket yönlendirmesi ve takip faturası çalışmaz.
+                    </p>
+                  </div>
+                )
+              ) : null}
               {prepareAttempted && !canPrepareSelectedLines ? (
                 <div className="mt-3 rounded-lg border border-[#fecaca] bg-[#fff8f8] p-3">
                   <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
