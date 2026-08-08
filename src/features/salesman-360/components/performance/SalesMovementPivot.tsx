@@ -9,6 +9,7 @@ import {
   Filter,
   GripVertical,
   Rows3,
+  RotateCcw,
   Save,
   Search,
   Sigma,
@@ -60,6 +61,8 @@ type MeasureKey =
   | 'erpOrderCount'
   | 'activityCount'
   | 'completedActivityCount'
+  | 'convertedDemandCount'
+  | 'convertedQuotationCount'
   | 'customerCount'
   | 'demandQuantity'
   | 'quotationQuantity'
@@ -68,9 +71,15 @@ type MeasureKey =
   | 'quotationAmount'
   | 'orderAmount'
   | 'erpOrderAmount'
+  | 'demandConversionRate'
+  | 'quotationConversionRate'
+  | 'erpIntegrationRate'
+  | 'activityCompletionRate'
   | 'quantity'
   | 'amount';
 type DropZone = 'rows' | 'columns' | 'filters';
+
+export type SalesPivotScope = 'movement' | 'sales' | 'demand' | 'quotation' | 'order' | 'activity' | 'customer' | 'stock';
 
 interface DimensionDefinition {
   key: DimensionKey;
@@ -89,6 +98,8 @@ interface PivotAggregate {
   erpOrderIds: Set<number>;
   activityIds: Set<number>;
   completedActivityIds: Set<number>;
+  convertedDemandIds: Set<number>;
+  convertedQuotationIds: Set<number>;
   customerIds: Set<number>;
   demandQuantity: number;
   quotationQuantity: number;
@@ -122,6 +133,14 @@ interface PivotSort {
   columnKey?: string;
 }
 
+interface PivotScopeDefinition {
+  label: string;
+  documentTypes?: readonly string[];
+  dimensions: readonly DimensionKey[];
+  measures: readonly MeasureKey[];
+  defaultLayout: PivotLayout;
+}
+
 function weekLabel(value: string): string {
   if (!value) return '-';
   const date = new Date(value);
@@ -144,6 +163,23 @@ function dueState(row: Salesmen360SalesMovementDto): string {
   return due.getTime() < Date.now() ? 'Gecikmiş' : 'Planlı';
 }
 
+function statusLabel(value: string): string {
+  const labels: Record<string, string> = {
+    draft: 'Taslak',
+    waiting: 'Onayda',
+    pendingapproval: 'Onayda',
+    approved: 'Onaylandı',
+    rejected: 'Reddedildi',
+    closed: 'Kapatıldı',
+    customercancelled: 'Müşteri iptali',
+    revision: 'Revizyon',
+    scheduled: 'Planlandı',
+    completed: 'Tamamlandı',
+    cancelled: 'İptal',
+  };
+  return labels[value.replace(/[^a-z]/gi, '').toLowerCase()] ?? (value || '-');
+}
+
 const DIMENSIONS: readonly DimensionDefinition[] = [
   { key: 'salesman', label: 'Satışçı', group: 'Genel', value: (row) => row.salesmanName || '-' },
   { key: 'customerSalesman', label: 'Cari satışçısı', group: 'Cari', value: (row) => row.customerSalesmanName || 'Cari satışçısı yok' },
@@ -159,12 +195,12 @@ const DIMENSIONS: readonly DimensionDefinition[] = [
   { key: 'stockCode', label: 'Stok kodu', group: 'Belge', value: (row) => row.stockCode || 'Stok kodu yok' },
   { key: 'stockName', label: 'Stok adı', group: 'Belge', value: (row) => row.stockName || 'Stoksuz hareket' },
   { key: 'documentNumber', label: 'Belge no / konu', group: 'Belge', value: (row) => row.documentNumber || `#${row.documentId}` },
-  { key: 'status', label: 'Genel durum', group: 'Belge', value: (row) => row.status || '-' },
-  { key: 'documentStatus', label: 'Belge durumu', group: 'Belge', value: (row) => ['demand', 'quotation', 'order'].includes(row.documentType) ? (row.status || '-') : 'Belge dışı' },
+  { key: 'status', label: 'Genel durum', group: 'Belge', value: (row) => statusLabel(row.status) },
+  { key: 'documentStatus', label: 'Belge durumu', group: 'Belge', value: (row) => ['demand', 'quotation', 'order'].includes(row.documentType) ? statusLabel(row.status) : 'Belge dışı' },
   { key: 'conversionStatus', label: 'Dönüşüm durumu', group: 'Belge', value: (row) => row.conversionStatus || 'Dönüşüm dışı' },
   { key: 'currency', label: 'Döviz', group: 'Belge', value: (row) => row.currency || 'Para birimi yok' },
   { key: 'activityType', label: 'Aktivite türü', group: 'Aktivite', value: (row) => row.activityType || 'Aktivite dışı' },
-  { key: 'activityStatus', label: 'Aktivite durumu', group: 'Aktivite', value: (row) => row.documentType === 'activity' ? (row.status || '-') : 'Aktivite dışı' },
+  { key: 'activityStatus', label: 'Aktivite durumu', group: 'Aktivite', value: (row) => row.documentType === 'activity' ? statusLabel(row.status) : 'Aktivite dışı' },
   { key: 'activityPriority', label: 'Aktivite önceliği', group: 'Aktivite', value: (row) => row.documentType === 'activity' ? (row.activityPriority || 'Öncelik yok') : 'Aktivite dışı' },
   { key: 'activityDueState', label: 'Aktivite vade durumu', group: 'Aktivite', value: dueState },
   { key: 'day', label: 'Gün', group: 'Tarih', value: (row) => row.date ? row.date.slice(0, 10) : '-' },
@@ -181,6 +217,8 @@ const MEASURES: readonly { key: MeasureKey; label: string }[] = [
   { key: 'erpOrderCount', label: 'ERP sipariş' },
   { key: 'activityCount', label: 'Aktivite' },
   { key: 'completedActivityCount', label: 'Tamamlanan aktivite' },
+  { key: 'convertedDemandCount', label: 'Teklife dönen talep' },
+  { key: 'convertedQuotationCount', label: 'Siparişe dönen teklif' },
   { key: 'customerCount', label: 'Açılan cari' },
   { key: 'demandQuantity', label: 'Talep stok miktarı' },
   { key: 'quotationQuantity', label: 'Teklif stok miktarı' },
@@ -189,6 +227,10 @@ const MEASURES: readonly { key: MeasureKey; label: string }[] = [
   { key: 'quotationAmount', label: 'Teklif tutarı' },
   { key: 'orderAmount', label: 'Sipariş tutarı' },
   { key: 'erpOrderAmount', label: 'ERP sipariş tutarı' },
+  { key: 'demandConversionRate', label: 'Talep dönüşüm %' },
+  { key: 'quotationConversionRate', label: 'Teklif dönüşüm %' },
+  { key: 'erpIntegrationRate', label: 'ERP aktarım %' },
+  { key: 'activityCompletionRate', label: 'Aktivite tamamlama %' },
   { key: 'documentCount', label: 'Toplam hareket' },
   { key: 'quantity', label: 'Miktar' },
   { key: 'amount', label: 'Tutar' },
@@ -198,6 +240,75 @@ const EMPTY_LAYOUT: PivotLayout = { rows: [], columns: [], filters: [], filterVa
 const PIVOT_LAYOUT_STORAGE_PREFIX = 'salesmen360:sales-movement-pivot:v2';
 const dimensionMap = new Map(DIMENSIONS.map((field) => [field.key, field]));
 const measureMap = new Map(MEASURES.map((field) => [field.key, field]));
+const DOCUMENT_DIMENSIONS: readonly DimensionKey[] = [
+  'salesman', 'customerSalesman', 'customerSalesmanCode', 'customer', 'customerCode', 'customerName',
+  'stock', 'stockCode', 'stockName', 'documentNumber', 'documentStatus', 'conversionStatus',
+  'day', 'week', 'month', 'quarter', 'year', 'currency', 'erpStatus',
+];
+const DOCUMENT_MEASURES: readonly MeasureKey[] = [
+  'documentCount', 'demandCount', 'convertedDemandCount', 'demandConversionRate', 'quotationCount',
+  'convertedQuotationCount', 'quotationConversionRate', 'orderCount', 'erpOrderCount', 'erpIntegrationRate',
+  'demandQuantity', 'quotationQuantity', 'orderQuantity', 'demandAmount', 'quotationAmount', 'orderAmount',
+  'erpOrderAmount', 'quantity', 'amount',
+];
+const PIVOT_SCOPES: Record<SalesPivotScope, PivotScopeDefinition> = {
+  movement: {
+    label: 'Tüm satış hareketleri',
+    dimensions: DIMENSIONS.map((field) => field.key),
+    measures: MEASURES.map((field) => field.key),
+    defaultLayout: EMPTY_LAYOUT,
+  },
+  sales: {
+    label: 'Satış performansı',
+    documentTypes: ['demand', 'quotation', 'order', 'customer'],
+    dimensions: ['salesman', 'documentType', 'customer', 'customerSalesman', 'stock', 'documentNumber', 'documentStatus', 'conversionStatus', 'day', 'week', 'month', 'quarter', 'year', 'currency', 'erpStatus'],
+    measures: DOCUMENT_MEASURES,
+    defaultLayout: { rows: ['salesman'], columns: ['documentType'], filters: ['currency'], filterValues: {}, measures: ['documentCount', 'amount'] },
+  },
+  demand: {
+    label: 'Talep performansı',
+    documentTypes: ['demand'],
+    dimensions: DOCUMENT_DIMENSIONS,
+    measures: ['demandCount', 'convertedDemandCount', 'demandConversionRate', 'demandQuantity', 'demandAmount'],
+    defaultLayout: { rows: ['salesman', 'customer'], columns: ['documentStatus'], filters: ['month', 'currency'], filterValues: {}, measures: ['demandCount', 'demandAmount'] },
+  },
+  quotation: {
+    label: 'Teklif performansı',
+    documentTypes: ['quotation'],
+    dimensions: DOCUMENT_DIMENSIONS,
+    measures: ['quotationCount', 'convertedQuotationCount', 'quotationConversionRate', 'quotationQuantity', 'quotationAmount'],
+    defaultLayout: { rows: ['salesman', 'customer'], columns: ['documentStatus'], filters: ['month', 'currency'], filterValues: {}, measures: ['quotationCount', 'quotationAmount'] },
+  },
+  order: {
+    label: 'Sipariş performansı',
+    documentTypes: ['order'],
+    dimensions: DOCUMENT_DIMENSIONS,
+    measures: ['orderCount', 'erpOrderCount', 'erpIntegrationRate', 'orderQuantity', 'orderAmount', 'erpOrderAmount'],
+    defaultLayout: { rows: ['salesman', 'customer'], columns: ['erpStatus'], filters: ['documentStatus', 'month', 'currency'], filterValues: {}, measures: ['orderCount', 'orderAmount', 'erpOrderAmount'] },
+  },
+  activity: {
+    label: 'Aktivite performansı',
+    documentTypes: ['activity'],
+    dimensions: ['salesman', 'customerSalesman', 'customerSalesmanCode', 'customer', 'customerCode', 'customerName', 'documentNumber', 'activityType', 'activityStatus', 'activityPriority', 'activityDueState', 'day', 'week', 'month', 'quarter', 'year'],
+    measures: ['activityCount', 'completedActivityCount', 'activityCompletionRate'],
+    defaultLayout: { rows: ['salesman', 'activityType'], columns: ['activityStatus'], filters: ['activityDueState', 'month'], filterValues: {}, measures: ['activityCount', 'activityCompletionRate'] },
+  },
+  customer: {
+    label: 'Cari bazlı satış analizi',
+    documentTypes: ['demand', 'quotation', 'order'],
+    dimensions: ['customer', 'customerCode', 'customerName', 'customerSalesman', 'customerSalesmanCode', 'salesman', 'documentType', 'documentNumber', 'documentStatus', 'conversionStatus', 'stock', 'day', 'week', 'month', 'quarter', 'year', 'currency', 'erpStatus'],
+    measures: DOCUMENT_MEASURES,
+    defaultLayout: { rows: ['customer', 'salesman'], columns: ['documentType'], filters: ['currency', 'month'], filterValues: {}, measures: ['documentCount', 'amount'] },
+  },
+  stock: {
+    label: 'Stok bazlı satış analizi',
+    documentTypes: ['demand', 'quotation', 'order'],
+    dimensions: ['stock', 'stockCode', 'stockName', 'salesman', 'customer', 'customerSalesman', 'documentType', 'documentNumber', 'documentStatus', 'conversionStatus', 'day', 'week', 'month', 'quarter', 'year', 'currency', 'erpStatus'],
+    measures: DOCUMENT_MEASURES,
+    defaultLayout: { rows: ['stock', 'salesman'], columns: ['documentType'], filters: ['currency', 'month'], filterValues: {}, measures: ['documentCount', 'quantity', 'amount'] },
+  },
+};
+const PERCENT_MEASURES = new Set<MeasureKey>(['demandConversionRate', 'quotationConversionRate', 'erpIntegrationRate', 'activityCompletionRate']);
 
 function cloneLayout(layout: PivotLayout): PivotLayout {
   return {
@@ -209,11 +320,11 @@ function cloneLayout(layout: PivotLayout): PivotLayout {
   };
 }
 
-function sanitizeLayout(value: unknown): PivotLayout {
+function sanitizeLayout(value: unknown, definition: PivotScopeDefinition): PivotLayout {
   if (!value || typeof value !== 'object') return cloneLayout(EMPTY_LAYOUT);
   const parsed = value as Partial<PivotLayout>;
-  const validDimensions = new Set(DIMENSIONS.map((field) => field.key));
-  const validMeasures = new Set(MEASURES.map((field) => field.key));
+  const validDimensions = new Set(definition.dimensions);
+  const validMeasures = new Set(definition.measures);
   const dimensions = (items: DimensionKey[] | undefined): DimensionKey[] => Array.from(new Set((items ?? []).filter((item) => validDimensions.has(item))));
   const rows = dimensions(parsed.rows);
   const columns = dimensions(parsed.columns).filter((item) => !rows.includes(item));
@@ -239,6 +350,8 @@ function createAggregate(): PivotAggregate {
     erpOrderIds: new Set(),
     activityIds: new Set(),
     completedActivityIds: new Set(),
+    convertedDemandIds: new Set(),
+    convertedQuotationIds: new Set(),
     customerIds: new Set(),
     demandQuantity: 0,
     quotationQuantity: 0,
@@ -258,11 +371,13 @@ function addMovement(target: PivotAggregate, movement: Salesmen360SalesMovementD
     target.demandIds.add(movement.documentId);
     target.demandQuantity += movement.quantity ?? 0;
     target.demandAmount += movement.amount ?? 0;
+    if (movement.conversionStatus === 'Teklife dönüştü') target.convertedDemandIds.add(movement.documentId);
   }
   if (movement.documentType === 'quotation') {
     target.quotationIds.add(movement.documentId);
     target.quotationQuantity += movement.quantity ?? 0;
     target.quotationAmount += movement.amount ?? 0;
+    if (movement.conversionStatus === 'Siparişe dönüştü') target.convertedQuotationIds.add(movement.documentId);
   }
   if (movement.documentType === 'order') {
     target.orderIds.add(movement.documentId);
@@ -289,7 +404,13 @@ function aggregateValue(aggregate: PivotAggregate | undefined, measure: MeasureK
   if (measure === 'erpOrderCount') return aggregate.erpOrderIds.size;
   if (measure === 'activityCount') return aggregate.activityIds.size;
   if (measure === 'completedActivityCount') return aggregate.completedActivityIds.size;
+  if (measure === 'convertedDemandCount') return aggregate.convertedDemandIds.size;
+  if (measure === 'convertedQuotationCount') return aggregate.convertedQuotationIds.size;
   if (measure === 'customerCount') return aggregate.customerIds.size;
+  if (measure === 'demandConversionRate') return aggregate.demandIds.size > 0 ? (aggregate.convertedDemandIds.size / aggregate.demandIds.size) * 100 : 0;
+  if (measure === 'quotationConversionRate') return aggregate.quotationIds.size > 0 ? (aggregate.convertedQuotationIds.size / aggregate.quotationIds.size) * 100 : 0;
+  if (measure === 'erpIntegrationRate') return aggregate.orderIds.size > 0 ? (aggregate.erpOrderIds.size / aggregate.orderIds.size) * 100 : 0;
+  if (measure === 'activityCompletionRate') return aggregate.activityIds.size > 0 ? (aggregate.completedActivityIds.size / aggregate.activityIds.size) * 100 : 0;
   return aggregate[measure];
 }
 
@@ -310,14 +431,22 @@ function FieldChip({ label, onRemove }: { label: string; onRemove?: () => void }
   );
 }
 
-export function SalesMovementPivot({ movements, locale }: { movements: Salesmen360SalesMovementDto[]; locale: string }): ReactElement {
+export function SalesMovementPivot({ movements, locale, scope = 'movement' }: {
+  movements: Salesmen360SalesMovementDto[];
+  locale: string;
+  scope?: SalesPivotScope;
+}): ReactElement {
   const userId = useAuthStore((state) => state.user?.id ?? 0);
-  const storageKey = `${PIVOT_LAYOUT_STORAGE_PREFIX}:${userId || 'anonymous'}`;
+  const definition = PIVOT_SCOPES[scope];
+  const storageKey = scope === 'movement'
+    ? `${PIVOT_LAYOUT_STORAGE_PREFIX}:${userId || 'anonymous'}`
+    : `${PIVOT_LAYOUT_STORAGE_PREFIX}:${scope}:${userId || 'anonymous'}`;
   const [initialLayout] = useState<PivotLayout>(() => {
     try {
-      return sanitizeLayout(JSON.parse(window.localStorage.getItem(storageKey) ?? 'null'));
+      const stored = window.localStorage.getItem(storageKey);
+      return stored ? sanitizeLayout(JSON.parse(stored), definition) : cloneLayout(definition.defaultLayout);
     } catch {
-      return cloneLayout(EMPTY_LAYOUT);
+      return cloneLayout(definition.defaultLayout);
     }
   });
   const [draftLayout, setDraftLayout] = useState<PivotLayout>(() => cloneLayout(initialLayout));
@@ -331,10 +460,26 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
   const [sort, setSort] = useState<PivotSort>({ kind: 'label', direction: 'asc' });
   const hasAppliedDesign = appliedLayout.rows.length > 0 && appliedLayout.measures.length > 0;
   const isDirty = JSON.stringify(draftLayout) !== JSON.stringify(savedLayout);
+  const scopedMovements = useMemo(
+    () => definition.documentTypes
+      ? movements.filter((movement) => definition.documentTypes!.includes(movement.documentType))
+      : movements,
+    [definition.documentTypes, movements],
+  );
+  const availableDimensions = useMemo(
+    () => DIMENSIONS.filter((field) => definition.dimensions.includes(field.key)),
+    [definition.dimensions],
+  );
+  const availableMeasures = useMemo(
+    () => MEASURES.filter((field) => definition.measures.includes(field.key)),
+    [definition.measures],
+  );
   const visibleDimensions = useMemo(() => {
     const search = fieldSearch.trim().toLocaleLowerCase('tr');
-    return search ? DIMENSIONS.filter((field) => `${field.label} ${field.group}`.toLocaleLowerCase('tr').includes(search)) : DIMENSIONS;
-  }, [fieldSearch]);
+    return search
+      ? availableDimensions.filter((field) => `${field.label} ${field.group}`.toLocaleLowerCase('tr').includes(search))
+      : availableDimensions;
+  }, [availableDimensions, fieldSearch]);
 
   useEffect(() => {
     setAppliedLayout(cloneLayout(draftLayout));
@@ -343,13 +488,13 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
 
   const valuesByDimension = useMemo(() => Object.fromEntries(DIMENSIONS.map((field) => [
     field.key,
-    Array.from(new Set(movements.map(field.value))).sort(compareText),
-  ])) as Record<DimensionKey, string[]>, [movements]);
+    Array.from(new Set(scopedMovements.map(field.value))).sort(compareText),
+  ])) as Record<DimensionKey, string[]>, [scopedMovements]);
 
   const filteredMovements = useMemo(() => {
     if (!hasAppliedDesign) return [];
     const search = movementSearch.trim().toLocaleLowerCase('tr-TR');
-    return movements.filter((movement) => {
+    return scopedMovements.filter((movement) => {
       const matchesFilters = appliedLayout.filters.every((fieldKey) => {
         const selected = appliedLayout.filterValues[fieldKey];
         return !selected || selected.length === 0 || selected.includes(dimensionMap.get(fieldKey)!.value(movement));
@@ -364,7 +509,7 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
       ].join(' ').toLocaleLowerCase('tr-TR');
       return searchableText.includes(search);
     });
-  }, [appliedLayout, hasAppliedDesign, movementSearch, movements]);
+  }, [appliedLayout, hasAppliedDesign, movementSearch, scopedMovements]);
 
   const pivot = useMemo(() => {
     const rootNodes = new Map<string, PivotTreeNode>();
@@ -443,10 +588,13 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
   }, [expandedNodes, movementSearch, pivot.roots]);
 
   const pivotColumns = appliedLayout.columns.length > 0 ? pivot.columns : [[buildKey([]), []] as [string, string[]]];
-  const format = (value: number, measure: MeasureKey): string => new Intl.NumberFormat(locale, {
-    minimumFractionDigits: showDecimals && ['demandAmount', 'quotationAmount', 'orderAmount', 'erpOrderAmount', 'amount'].includes(measure) ? 2 : 0,
-    maximumFractionDigits: ['documentCount', 'demandCount', 'quotationCount', 'orderCount', 'erpOrderCount', 'activityCount', 'completedActivityCount', 'customerCount'].includes(measure) || !showDecimals ? 0 : 2,
-  }).format(value);
+  const format = (value: number, measure: MeasureKey): string => {
+    const formatted = new Intl.NumberFormat(locale, {
+      minimumFractionDigits: showDecimals && (['demandAmount', 'quotationAmount', 'orderAmount', 'erpOrderAmount', 'amount'] as MeasureKey[]).includes(measure) ? 2 : 0,
+      maximumFractionDigits: (['documentCount', 'demandCount', 'quotationCount', 'orderCount', 'erpOrderCount', 'activityCount', 'completedActivityCount', 'convertedDemandCount', 'convertedQuotationCount', 'customerCount'] as MeasureKey[]).includes(measure) || !showDecimals ? 0 : 2,
+    }).format(value);
+    return PERCENT_MEASURES.has(measure) ? `%${formatted}` : formatted;
+  };
 
   const toggleSort = (next: Omit<PivotSort, 'direction'>): void => setSort((current) => {
     const sameColumn = current.kind === next.kind && current.measure === next.measure && current.columnKey === next.columnKey;
@@ -508,19 +656,37 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
     window.localStorage.removeItem(storageKey);
   };
 
+  const restoreRecommendedLayout = (): void => {
+    const recommended = cloneLayout(definition.defaultLayout);
+    setDraftLayout(recommended);
+    setAppliedLayout(cloneLayout(recommended));
+    setSavedLayout(cloneLayout(recommended));
+    setExpandedNodes(new Set());
+    window.localStorage.removeItem(storageKey);
+    toast.success(`${definition.label} için önerilen pivot düzeni geri yüklendi.`);
+  };
+
   const exportPivot = async (): Promise<void> => {
     setIsExporting(true);
     try {
       const header: ExcelRow = [
         ...appliedLayout.rows.map((field) => dimensionMap.get(field)!.label),
         ...pivotColumns.flatMap(([, values]) => appliedLayout.measures.map((measure) => `${values.length ? `${values.join(' / ')} · ` : ''}${measureMap.get(measure)!.label}`)),
+        ...(appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => `Satır toplamı · ${measureMap.get(measure)!.label}`) : []),
       ];
       const leaves = (nodes: PivotTreeNode[]): PivotTreeNode[] => nodes.flatMap((node) => node.children.length ? leaves(node.children) : [node]);
       const rows: ExcelRow[] = leaves(pivot.roots).map((node) => [
         ...node.values,
         ...pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => aggregateValue(pivot.cells.get(`${node.key}\u0001${columnKey}`), measure))),
+        ...(appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => aggregateValue(pivot.rowTotals.get(node.key), measure)) : []),
       ]);
-      await exportSheetsToXlsx('donem-ici-satis-hareketleri-pivot', [{ name: 'Satış Hareketleri Pivot', rows: [header, ...rows] }]);
+      const totalRow: ExcelRow = [
+        'Genel toplam',
+        ...appliedLayout.rows.slice(1).map(() => ''),
+        ...pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => aggregateValue(pivot.columnTotals.get(columnKey), measure))),
+        ...(appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => aggregateValue(pivot.grandTotal, measure)) : []),
+      ];
+      await exportSheetsToXlsx(`satis-kpi-${scope}-pivot`, [{ name: 'Satış KPI Pivot', rows: [header, ...rows, totalRow] }]);
     } finally {
       setIsExporting(false);
     }
@@ -562,8 +728,9 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
     <div className="relative">
       <div className="sticky top-0 z-40 border-b border-slate-200 bg-white/97 p-3 shadow-sm backdrop-blur dark:border-white/10 dark:bg-[#160d20]/97">
         <div className="mb-2 flex flex-wrap items-center gap-2">
-          <div className="min-w-48 flex-1"><h4 className="text-sm font-black">Pivot tasarımı</h4><p className="text-[11px] text-slate-500">Her alan, filtre ve değer değişikliği tabloya anında uygulanır.</p></div>
+          <div className="min-w-48 flex-1"><h4 className="text-sm font-black">{definition.label} pivotu</h4><p className="text-[11px] text-slate-500">Her alan, filtre ve değer değişikliği rapora anında uygulanır.</p></div>
           {isDirty ? <span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-700">Kaydedilmemiş görünüm</span> : null}
+          {scope !== 'movement' ? <Button variant="outline" size="sm" className="h-8" onClick={restoreRecommendedLayout}><RotateCcw className="mr-1 size-3.5" />Önerilen düzen</Button> : null}
           <Button variant="outline" size="sm" className="h-8" onClick={clear}><Trash2 className="mr-1 size-3.5" />Temizle</Button>
           <Button size="sm" className="h-8" onClick={save}><Save className="mr-1 size-3.5" />Görünümü kaydet</Button>
         </div>
@@ -580,7 +747,7 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50/80 p-2 dark:border-white/10 dark:bg-white/3">
           <span className="mr-1 flex items-center gap-1 text-[9px] font-black uppercase text-slate-500"><Sigma className="size-3" />Değer kolonları</span>
-          {MEASURES.map((measure) => {
+          {availableMeasures.map((measure) => {
             const selected = draftLayout.measures.includes(measure.key);
             return <button key={measure.key} type="button" onClick={() => setDraftLayout((current) => ({ ...current, measures: selected ? current.measures.filter((item) => item !== measure.key) : [...current.measures, measure.key] }))} className={cn('rounded-md border px-2 py-1 text-[11px] font-bold', selected ? 'border-primary bg-primary text-primary-foreground' : 'border-slate-200 bg-white text-slate-600 dark:border-white/10 dark:bg-white/3 dark:text-slate-300')}>{measure.label}</button>;
           })}
@@ -597,7 +764,7 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
         <div className="p-4">
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-              <p className="shrink-0 text-xs font-semibold text-slate-500">{filteredMovements.length} hareket · {pivot.roots.length} ana grup · Satırlar `+ / −` ile açılır</p>
+              <p className="shrink-0 text-xs font-semibold text-slate-500">{filteredMovements.length} kayıt · {pivot.roots.length} ana grup · Satırlar `+ / −` ile açılır</p>
               <label className="flex h-9 min-w-60 max-w-md flex-1 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 shadow-sm dark:border-white/10 dark:bg-white/3">
                 <Search className="size-4 shrink-0 text-slate-400" />
                 <input
@@ -618,8 +785,9 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
                 <tr>
                   <th rowSpan={2} className="sticky left-0 z-40 min-w-72 border-b border-r border-slate-200 px-3 py-2 text-left font-black dark:border-white/10 dark:bg-[#20152d]"><button type="button" className="flex w-full items-center gap-1 text-left" onClick={() => toggleSort({ kind: 'label' })}>{appliedLayout.rows.map((field) => dimensionMap.get(field)!.label).join(' → ')}<SortIcon active={sort.kind === 'label'} /></button></th>
                   {pivotColumns.map(([columnKey, values]) => <th key={columnKey} colSpan={appliedLayout.measures.length} className="border-b border-r border-slate-200 px-3 py-2 text-center font-black dark:border-white/10">{values.length ? values.join(' / ') : 'Değerler'}</th>)}
+                  {appliedLayout.columns.length > 0 ? <th colSpan={appliedLayout.measures.length} className="border-b border-r border-primary/20 bg-primary/8 px-3 py-2 text-center font-black text-primary">Satır toplamı</th> : null}
                 </tr>
-                <tr>{pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => <th key={`${columnKey}-${measure}`} className="min-w-28 border-b border-r border-slate-200 px-3 py-2 text-right text-[10px] font-black uppercase dark:border-white/10"><button type="button" className="flex w-full items-center justify-end gap-1" onClick={() => toggleSort({ kind: 'measure', measure, columnKey })}>{measureMap.get(measure)!.label}<SortIcon active={sort.kind === 'measure' && sort.measure === measure && sort.columnKey === columnKey} /></button></th>))}</tr>
+                <tr>{pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => <th key={`${columnKey}-${measure}`} className="min-w-28 border-b border-r border-slate-200 px-3 py-2 text-right text-[10px] font-black uppercase dark:border-white/10"><button type="button" className="flex w-full items-center justify-end gap-1" onClick={() => toggleSort({ kind: 'measure', measure, columnKey })}>{measureMap.get(measure)!.label}<SortIcon active={sort.kind === 'measure' && sort.measure === measure && sort.columnKey === columnKey} /></button></th>))}{appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => <th key={`total-${measure}`} className="min-w-28 border-b border-r border-primary/20 bg-primary/8 px-3 py-2 text-right text-[10px] font-black uppercase text-primary"><button type="button" className="flex w-full items-center justify-end gap-1" onClick={() => toggleSort({ kind: 'measure', measure })}>{measureMap.get(measure)!.label}<SortIcon active={sort.kind === 'measure' && sort.measure === measure && !sort.columnKey} /></button></th>) : null}</tr>
               </thead>
               <tbody>
                 {visibleRows.map((node) => {
@@ -633,9 +801,17 @@ export function SalesMovementPivot({ movements, locale }: { movements: Salesmen3
                       </div>
                     </td>
                     {pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => <td key={`${columnKey}-${measure}`} className="border-b border-r border-slate-200 px-3 py-2 text-right tabular-nums dark:border-white/10">{format(aggregateValue(pivot.cells.get(`${node.key}\u0001${columnKey}`), measure), measure)}</td>))}
+                    {appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => <td key={`total-${measure}`} className="border-b border-r border-primary/15 bg-primary/5 px-3 py-2 text-right font-bold tabular-nums">{format(aggregateValue(pivot.rowTotals.get(node.key), measure), measure)}</td>) : null}
                   </tr>;
                 })}
               </tbody>
+              <tfoot className="sticky bottom-0 z-20 bg-slate-100 font-black dark:bg-[#20152d]">
+                <tr>
+                  <td className="sticky left-0 z-30 border-r border-t border-slate-200 px-3 py-2 dark:border-white/10 dark:bg-[#20152d]">Genel toplam</td>
+                  {pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => <td key={`${columnKey}-${measure}`} className="border-r border-t border-slate-200 px-3 py-2 text-right tabular-nums dark:border-white/10">{format(aggregateValue(pivot.columnTotals.get(columnKey), measure), measure)}</td>))}
+                  {appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => <td key={`total-${measure}`} className="border-r border-t border-primary/20 bg-primary/10 px-3 py-2 text-right text-primary tabular-nums">{format(aggregateValue(pivot.grandTotal, measure), measure)}</td>) : null}
+                </tr>
+              </tfoot>
             </table>
             {pivot.roots.length === 0 ? <div className="p-10 text-center text-sm text-slate-500">Seçilen kırılım ve filtrelerde hareket bulunamadı.</div> : null}
           </div>
