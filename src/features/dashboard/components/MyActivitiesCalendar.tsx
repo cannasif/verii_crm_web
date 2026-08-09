@@ -263,6 +263,7 @@ export function MyActivitiesCalendar(): ReactElement {
   const [view, setView] = useState<CalendarView>('week');
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState<ActivityDto | null>(null);
+  const [dayPopover, setDayPopover] = useState<{ day: Date; items: ActivityDto[] } | null>(null);
   const [detailTab, setDetailTab] = useState('details');
   const [selectedAssigneeId, setSelectedAssigneeId] = useState<number | 'all'>('all');
   const [assigneePickerOpen, setAssigneePickerOpen] = useState(false);
@@ -605,12 +606,21 @@ export function MyActivitiesCalendar(): ReactElement {
             {days.map((day) => {
               const items = activitiesByDay.get(day.toISOString()) ?? [];
               const isWeekend = day.getDay() === 0 || day.getDay() === 6;
-              const visibleLimit = view === 'week' ? 12 : 3;
+              const visibleLimit = view === 'week' ? 12 : 2;
+              const openDayPopover = (): void => {
+                if (items.length === 0) return;
+                setDayPopover({ day, items });
+              };
               return (
                 <div
                   key={day.toISOString()}
+                  onContextMenu={(event) => {
+                    if (items.length === 0) return;
+                    event.preventDefault();
+                    openDayPopover();
+                  }}
                   className={cn(
-                    'flex flex-col overflow-y-auto border-b border-r border-slate-200 p-2 last:border-r-0 dark:border-white/10',
+                    'flex flex-col overflow-hidden border-b border-r border-slate-200 p-2 last:border-r-0 dark:border-white/10',
                     !isSameMonth(day, cursor) && view === 'month' && 'bg-slate-50/70 dark:bg-white/[0.02]',
                     isWeekend && (isSameMonth(day, cursor) || view === 'week') && 'bg-slate-50/40 dark:bg-white/[0.015]',
                   )}
@@ -627,7 +637,17 @@ export function MyActivitiesCalendar(): ReactElement {
                   <div className="space-y-1.5">
                     {items.slice(0, visibleLimit).map((activity) => <ActivityChip key={activity.id} compact={view === 'month'} showAssignee={showAssigneeOnChips} activity={activity} onSelect={setSelected} />)}
                     {items.length > visibleLimit && (
-                      <button type="button" className="w-full rounded-md py-0.5 text-left text-[10px] font-bold text-primary hover:underline" onClick={() => { setCursor(day); setView('agenda'); }}>
+                      <button
+                        type="button"
+                        title={t('calendar.more')}
+                        className="w-full rounded-md py-0.5 text-left text-[10px] font-bold text-primary hover:bg-primary/5 hover:underline"
+                        onClick={openDayPopover}
+                        onContextMenu={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          openDayPopover();
+                        }}
+                      >
                         +{items.length - visibleLimit} {t('calendar.more')}
                       </button>
                     )}
@@ -720,6 +740,34 @@ export function MyActivitiesCalendar(): ReactElement {
         onSubmit={handleCreateActivity}
         isLoading={createActivity.isPending}
       />
+
+      <Dialog open={dayPopover !== null} onOpenChange={(open) => !open && setDayPopover(null)}>
+        <DialogContent className="max-h-[80vh] overflow-hidden p-0 sm:max-w-md">
+          {dayPopover && (
+            <>
+              <DialogHeader className="border-b border-slate-200 p-4 text-left dark:border-white/10">
+                <DialogTitle className="capitalize">
+                  {new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(dayPopover.day)}
+                </DialogTitle>
+                <DialogDescription>{t('calendar.title')} · {dayPopover.items.length}</DialogDescription>
+              </DialogHeader>
+              <div className="max-h-[60vh] space-y-1.5 overflow-y-auto p-3">
+                {dayPopover.items.map((activity) => (
+                  <ActivityChip
+                    key={activity.id}
+                    activity={activity}
+                    showAssignee={showAssigneeOnChips}
+                    onSelect={(picked) => {
+                      setSelected(picked);
+                      setDayPopover(null);
+                    }}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
