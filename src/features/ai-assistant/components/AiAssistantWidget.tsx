@@ -6,6 +6,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createClientId } from '@/lib/create-client-id';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
 import { useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
@@ -13,6 +14,7 @@ import { AiAssistantAnswerCard } from './AiAssistantAnswerCard';
 import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
 import { AiAssistantDockDialog } from './AiAssistantDockDialog';
 import { AiAssistantLastErrorButton } from './AiAssistantLastErrorButton';
+import { AiAssistantExportMenu } from './AiAssistantExportMenu';
 import {
   clampToContentBounds,
   consumeAiAssistantWidgetPlacementResetOnShow,
@@ -36,6 +38,7 @@ import { useAiAssistantWidgetBounds } from '../hooks/useAiAssistantWidgetBounds'
 import {
   createAiAssistantActionItemsFromToolActions,
   createAiAssistantChatHistoryKey,
+  createAiAssistantSessionStorageKey,
   readAiAssistantChatHistory,
   writeAiAssistantChatHistory,
   type AiAssistantChatMessage,
@@ -85,7 +88,6 @@ const minimumThinkingDurationMs = 900;
 const missingTranslationText = 'Çeviri eksik';
 const widgetPositionStorageKey = 'crm-ai-assistant-widget-position';
 const edgeAttachmentStorageKey = 'crm-ai-assistant-edge-attachment';
-const widgetSessionStorageKey = 'crm-ai-assistant-widget-session-key';
 const dragActivationThresholdPx = 8;
 const widgetDefaultWidth = 500;
 const widgetDefaultHeight = 700;
@@ -189,17 +191,24 @@ function createSessionKey(): string {
   return `widget-${createMessageId()}`;
 }
 
-function readAssistantSessionKey(): string {
+function readAssistantSessionKey(storageKey: string): string {
   if (typeof window === 'undefined' || !window.localStorage) {
     return createSessionKey();
   }
 
-  const existingKey = window.localStorage.getItem(widgetSessionStorageKey);
+  const existingKey = window.localStorage.getItem(storageKey);
   if (existingKey) return existingKey;
 
   const nextKey = createSessionKey();
-  window.localStorage.setItem(widgetSessionStorageKey, nextKey);
+  window.localStorage.setItem(storageKey, nextKey);
   return nextKey;
+}
+
+function findPrecedingUserQuestion(messages: AiAssistantChatMessage[], messageIndex: number): string {
+  for (let index = messageIndex - 1; index >= 0; index -= 1) {
+    if (messages[index]?.role === 'user') return messages[index].content;
+  }
+  return '';
 }
 
 type DragState = {
@@ -383,10 +392,11 @@ export function AiAssistantWidget(): ReactElement | null {
   const { t } = useTranslation('ai-assistant');
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuthStore();
+  const { user, branch } = useAuthStore();
   const { data: greeting, isLoading } = useAiAssistantGreetingQuery();
   const askMutation = useAskAiAssistantMutation();
-  const chatHistoryKey = createAiAssistantChatHistoryKey(user);
+  const chatHistoryKey = createAiAssistantChatHistoryKey(user, branch);
+  const sessionStorageKey = createAiAssistantSessionStorageKey('widget', user, branch);
   const [isOpen, setIsOpen] = useState(false);
   const [question, setQuestion] = useState('');
   const [messages, setMessages] = useState<AiAssistantChatMessage[]>(() =>
@@ -428,7 +438,7 @@ export function AiAssistantWidget(): ReactElement | null {
   const setAiAssistantInSidebar = useUIStore((state) => state.setAiAssistantInSidebar);
   const isAiAssistantWidgetVisible = useUIStore((state) => state.isAiAssistantWidgetVisible);
   const setAiAssistantWidgetVisible = useUIStore((state) => state.setAiAssistantWidgetVisible);
-  const [sessionKey, setSessionKey] = useState<string>(() => readAssistantSessionKey());
+  const [sessionKey, setSessionKey] = useState<string>(() => readAssistantSessionKey(sessionStorageKey));
   const [languagePreference, setLanguagePreference] = useState<AiAssistantLanguagePreference>(() =>
     readAiAssistantLanguagePreference()
   );
@@ -461,6 +471,7 @@ export function AiAssistantWidget(): ReactElement | null {
   edgeAttachmentRef.current = edgeAttachment;
   contentBoundsRef.current = contentBounds;
   const loadedChatHistoryKeyRef = useRef(chatHistoryKey);
+  const loadedSessionStorageKeyRef = useRef(sessionStorageKey);
   const skipNextHistoryWriteRef = useRef(false);
   const readText = useCallback((key: string, fallback?: string, options?: Record<string, unknown>): string => {
     const value = t(key, { defaultValue: fallback ?? aiAssistantTextFallbacks[key] ?? key, ...options });
@@ -677,6 +688,13 @@ export function AiAssistantWidget(): ReactElement | null {
 
     setMessages(readAiAssistantChatHistory(chatHistoryKey));
   }, [chatHistoryKey]);
+
+  useEffect(() => {
+    if (loadedSessionStorageKeyRef.current === sessionStorageKey) return;
+
+    loadedSessionStorageKeyRef.current = sessionStorageKey;
+    setSessionKey(readAssistantSessionKey(sessionStorageKey));
+  }, [sessionStorageKey]);
 
   useEffect(() => {
     const SpeechRecognition = (window as SpeechWindow).SpeechRecognition || (window as SpeechWindow).webkitSpeechRecognition;
@@ -1152,7 +1170,7 @@ export function AiAssistantWidget(): ReactElement | null {
       ]);
       if (result.sessionKey && result.sessionKey !== sessionKey) {
         setSessionKey(result.sessionKey);
-        window.localStorage.setItem(widgetSessionStorageKey, result.sessionKey);
+        window.localStorage.setItem(sessionStorageKey, result.sessionKey);
       }
       setMessages((currentMessages) => [
         ...currentMessages,
@@ -1167,6 +1185,7 @@ export function AiAssistantWidget(): ReactElement | null {
           toolActions: result.toolActions ?? [],
           sources: result.sources ?? [],
           context: result.context ?? null,
+          structuredResult: result.structuredResult ?? null,
           intent: result.intent,
         },
       ]);
@@ -1239,7 +1258,7 @@ export function AiAssistantWidget(): ReactElement | null {
     const nextSessionKey = createSessionKey();
     setSessionKey(nextSessionKey);
     if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem(widgetSessionStorageKey, nextSessionKey);
+      window.localStorage.setItem(sessionStorageKey, nextSessionKey);
     }
     setMessages([]);
     setDynamicSuggestions([]);
@@ -1803,7 +1822,7 @@ export function AiAssistantWidget(): ReactElement | null {
               </div>
             )}
 
-            {messages.map((message) => (
+            {messages.map((message, messageIndex) => (
               <div
                 key={message.id}
                 className={message.role === 'user' ? 'flex justify-end' : 'space-y-3'}
@@ -1834,6 +1853,21 @@ export function AiAssistantWidget(): ReactElement | null {
                           answer={message.content}
                           headerAction={(
                             <div className="flex items-center gap-1">
+                              {message.structuredResult?.rows.length ? (
+                                <AiAssistantExportMenu
+                                  result={message.structuredResult}
+                                  question={findPrecedingUserQuestion(messages, messageIndex)}
+                                  answer={message.content}
+                                  language={languagePreference === 'auto' ? 'tr' : languagePreference}
+                                  labels={{
+                                    action: readText('export.action'),
+                                    excel: readText('export.excel'),
+                                    pdf: readText('export.pdf'),
+                                    success: readText('export.success'),
+                                    error: readText('export.error'),
+                                  }}
+                                />
+                              ) : null}
                               <Button
                                 type="button"
                                 variant="ghost"
@@ -1965,23 +1999,26 @@ export function AiAssistantWidget(): ReactElement | null {
                 <span className="shrink-0 text-[0.68rem] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
                   {readText('responseLanguage')}
                 </span>
-                <div className="flex min-w-[8.75rem] shrink-0 rounded-full border border-slate-300 bg-white p-0.5 dark:border-white/20 dark:bg-black/20">
-                  {aiAssistantLanguageOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      disabled={isAssistantBusy}
-                      title={option.value === 'auto' ? readText('responseLanguageAuto') : option.label}
-                      onClick={() => changeLanguagePreference(option.value)}
-                      className={`inline-flex h-6 min-w-[2.5rem] flex-1 items-center justify-center rounded-full px-2 text-center text-[0.62rem] font-black uppercase transition ${languagePreference === option.value
-                        ? 'border border-primary/40 bg-[image:var(--crm-brand-gradient)] text-white shadow-sm'
-                        : 'border border-transparent text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10'
-                        } disabled:cursor-not-allowed disabled:opacity-60`}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
+                <Select
+                  value={languagePreference}
+                  disabled={isAssistantBusy}
+                  onValueChange={(value) => changeLanguagePreference(value as AiAssistantLanguagePreference)}
+                >
+                  <SelectTrigger
+                    className="h-7 w-20 shrink-0 rounded-xl border-slate-300 bg-white text-[0.68rem] font-black uppercase dark:border-white/20 dark:bg-black/20"
+                    aria-label={readText('responseLanguage')}
+                    title={languagePreference === 'auto' ? readText('responseLanguageAuto') : languagePreference.toUpperCase()}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {aiAssistantLanguageOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value} className="font-bold uppercase">
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div className="flex flex-col rounded-[1.6rem] border border-slate-200 bg-white/90 shadow-sm dark:border-white/10 dark:bg-white/[0.06] overflow-hidden focus-within:ring-2 focus-within:ring-primary/25 dark:focus-within:ring-primary/20 transition-all duration-200">

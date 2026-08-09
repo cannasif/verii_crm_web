@@ -7,6 +7,7 @@ import type {
   AiAssistantAnswerDto,
   AiAssistantAskRequestDto,
   AiAssistantConversationHistoryDto,
+  AiAssistantConversationListItemDto,
   AiAssistantGreetingDto,
 } from '../types/ai-assistant.types';
 
@@ -61,6 +62,33 @@ export const aiAssistantApi = {
           defaultValue: 'AI sohbet geçmişi alınamadı.',
         })
     );
+  },
+
+  getConversations: async (includeArchived = false, take = 30): Promise<AiAssistantConversationListItemDto[]> => {
+    const response = await api.get<ApiResponse<AiAssistantConversationListItemDto[]>>(
+      '/api/AiAssistant/conversations',
+      { params: { includeArchived, take } }
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || 'AI sohbet listesi alinamadi.');
+  },
+
+  setConversationArchived: async (
+    sessionKey: string,
+    isArchived: boolean
+  ): Promise<AiAssistantConversationListItemDto> => {
+    const response = await api.patch<ApiResponse<AiAssistantConversationListItemDto>>(
+      `/api/AiAssistant/conversations/${encodeURIComponent(sessionKey)}/archive`,
+      { isArchived }
+    );
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(response.message || 'AI sohbeti arsivlenemedi.');
   },
 
   ask: async (request: AiAssistantAskRequestDto): Promise<AiAssistantAnswerDto> => {

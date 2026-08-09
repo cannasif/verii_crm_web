@@ -72,7 +72,21 @@
   "openAction": "Aç",
   "copyAnswer": "Yanıtı kopyala",
   "copied": "Kopyalandı",
+  "export": {
+    "action": "Sonucu indir",
+    "excel": "Excel olarak indir",
+    "pdf": "PDF olarak indir",
+    "success": "AI sonucu indirildi.",
+    "error": "AI sonucu indirilemedi. Lutfen tekrar deneyin."
+  },
   "newChat": "Yeni sohbet",
+  "conversations": {
+    "title": "Sohbet geçmişi",
+    "loading": "Sohbetler yükleniyor...",
+    "empty": "Henüz kayıtlı sohbet yok.",
+    "messages": "mesaj",
+    "archive": "Sohbeti arşivle"
+  },
   "emptyQuestion": "Lütfen bir soru yazın.",
   "openChat": "AI sohbeti aç",
   "closeChat": "AI sohbeti kapat",

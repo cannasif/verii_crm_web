@@ -72,7 +72,21 @@
   "openAction": "Open",
   "copyAnswer": "Copy answer",
   "copied": "Copied",
+  "export": {
+    "action": "Download result",
+    "excel": "Download as Excel",
+    "pdf": "Download as PDF",
+    "success": "AI result downloaded.",
+    "error": "AI result could not be downloaded. Please try again."
+  },
   "newChat": "New chat",
+  "conversations": {
+    "title": "Conversation history",
+    "loading": "Loading conversations...",
+    "empty": "No saved conversation yet.",
+    "messages": "messages",
+    "archive": "Archive conversation"
+  },
   "emptyQuestion": "Please enter a question.",
   "openChat": "Open AI chat",
   "closeChat": "Close AI chat",

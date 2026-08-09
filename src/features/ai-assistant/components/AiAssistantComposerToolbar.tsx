@@ -2,6 +2,7 @@ import { type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { aiAssistantLanguageOptions } from '../lib/ai-assistant-language';
 import type { AiAssistantErrorContext } from '../lib/ai-assistant-error-context';
@@ -73,23 +74,26 @@ export function AiAssistantComposerToolbar({
       <span className="shrink-0 text-[0.68rem] font-black uppercase tracking-wide text-slate-500 dark:text-slate-400">
         {t('responseLanguage')}
       </span>
-      <div className="flex min-w-[8.75rem] shrink-0 rounded-full border border-slate-300 bg-white p-0.5 dark:border-white/20 dark:bg-black/20">
-        {aiAssistantLanguageOptions.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            disabled={isAssistantBusy}
-            title={option.value === 'auto' ? t('responseLanguageAuto') : option.label}
-            onClick={() => onChangeLanguagePreference(option.value)}
-            className={`inline-flex h-7 min-w-[2.5rem] flex-1 items-center justify-center rounded-full px-2 text-center text-[0.62rem] font-black uppercase transition ${languagePreference === option.value
-              ? 'border border-primary/40 bg-[image:var(--crm-brand-gradient)] text-white shadow-sm'
-              : 'border border-transparent text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10'
-              } disabled:cursor-not-allowed disabled:opacity-60`}
-          >
-            {option.label}
-          </button>
-        ))}
-      </div>
+      <Select
+        value={languagePreference}
+        disabled={isAssistantBusy}
+        onValueChange={(value) => onChangeLanguagePreference(value as AiAssistantLanguagePreference)}
+      >
+        <SelectTrigger
+          className="h-8 w-24 shrink-0 rounded-xl border-slate-300 bg-white text-xs font-black uppercase dark:border-white/20 dark:bg-black/20"
+          aria-label={t('responseLanguage')}
+          title={languagePreference === 'auto' ? t('responseLanguageAuto') : languagePreference.toUpperCase()}
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {aiAssistantLanguageOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="font-bold uppercase">
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   );
 

@@ -55,7 +55,7 @@ export interface AiAssistantAskRequestDto {
   attachments?: AiAssistantAttachmentDto[];
 }
 
-export type AiAssistantLanguagePreference = 'auto' | 'tr' | 'en';
+export type AiAssistantLanguagePreference = 'auto' | 'tr' | 'en' | 'de' | 'fr' | 'es' | 'it' | 'ar';
 
 export interface AiAssistantAttachmentDto {
   fileName: string;
@@ -106,6 +106,19 @@ export interface AiAssistantResponseContextDto {
   attachmentCount: number;
 }
 
+export interface AiAssistantStructuredColumnDto {
+  key: string;
+  label: string;
+  dataType: 'text' | 'number' | 'currency' | 'date' | string;
+}
+
+export interface AiAssistantStructuredResultDto {
+  type: string;
+  title: string;
+  columns: AiAssistantStructuredColumnDto[];
+  rows: Array<Record<string, unknown>>;
+}
+
 export interface AiAssistantAnswerDto {
   sessionId?: number | null;
   sessionKey?: string | null;
@@ -114,6 +127,7 @@ export interface AiAssistantAnswerDto {
   responseLanguage?: 'tr' | 'en' | string;
   answer: string;
   context?: AiAssistantResponseContextDto | null;
+  structuredResult?: AiAssistantStructuredResultDto | null;
   summary: AiAssistantSummaryDto | null;
   actionItems: AiAssistantActionItemDto[];
   toolActions?: AiAssistantToolActionDto[];
@@ -139,6 +153,8 @@ export interface AiAssistantConversationMessageDto {
   content: string;
   intent?: string | null;
   context?: AiAssistantResponseContextDto | null;
+  structuredResult?: AiAssistantStructuredResultDto | null;
+  sources: AiAssistantSourceDto[];
   createdDate: string;
   latencyMs?: number | null;
   toolActions: AiAssistantToolActionDto[];
@@ -147,6 +163,8 @@ export interface AiAssistantConversationMessageDto {
 export interface AiAssistantConversationHistoryDto {
   sessionId: number;
   sessionKey: string;
+  title?: string | null;
+  isArchived: boolean;
   status: string;
   currentPath?: string | null;
   routeTitle?: string | null;
@@ -156,6 +174,21 @@ export interface AiAssistantConversationHistoryDto {
   lastIntent?: string | null;
   lastMessageAt: string;
   messages: AiAssistantConversationMessageDto[];
+}
+
+export interface AiAssistantConversationListItemDto {
+  sessionId: number;
+  sessionKey: string;
+  title: string;
+  status: string;
+  isArchived: boolean;
+  routeTitle?: string | null;
+  entityType?: string | null;
+  entityId?: number | null;
+  customerId?: number | null;
+  lastIntent?: string | null;
+  lastMessageAt: string;
+  messageCount: number;
 }
 
 export interface AiAssistantIntentMetricDto {

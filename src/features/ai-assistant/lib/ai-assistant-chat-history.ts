@@ -2,6 +2,7 @@ import type {
   AiAssistantActionItemDto,
   AiAssistantResponseContextDto,
   AiAssistantSourceDto,
+  AiAssistantStructuredResultDto,
   AiAssistantToolActionDto,
 } from '../types/ai-assistant.types';
 
@@ -21,6 +22,7 @@ export type AiAssistantChatMessage = {
   toolActions?: AiAssistantToolActionDto[];
   sources?: AiAssistantSourceDto[];
   context?: AiAssistantResponseContextDto | null;
+  structuredResult?: AiAssistantStructuredResultDto | null;
   intent?: string;
 };
 
@@ -29,12 +31,36 @@ type AiAssistantChatUser = {
   email?: string | null;
 };
 
+type AiAssistantChatBranch = {
+  id?: string | number | null;
+  code?: string | null;
+};
+
 const chatHistoryPrefix = 'crm-ai-assistant-chat';
 const chatHistoryLimit = 60;
 
-export function createAiAssistantChatHistoryKey(user?: AiAssistantChatUser | null): string {
+function createAiAssistantStorageScope(
+  user?: AiAssistantChatUser | null,
+  branch?: AiAssistantChatBranch | null
+): string {
   const userKey = user?.id ? `user-${user.id}` : user?.email?.trim().toLowerCase() || 'anonymous';
-  return `${chatHistoryPrefix}:${userKey}`;
+  const branchKey = branch?.code?.trim().toLowerCase() || branch?.id?.toString() || 'no-branch';
+  return `${userKey}:branch-${branchKey}`;
+}
+
+export function createAiAssistantChatHistoryKey(
+  user?: AiAssistantChatUser | null,
+  branch?: AiAssistantChatBranch | null
+): string {
+  return `${chatHistoryPrefix}:${createAiAssistantStorageScope(user, branch)}`;
+}
+
+export function createAiAssistantSessionStorageKey(
+  surface: 'page' | 'widget',
+  user?: AiAssistantChatUser | null,
+  branch?: AiAssistantChatBranch | null
+): string {
+  return `crm-ai-assistant-${surface}-session:${createAiAssistantStorageScope(user, branch)}`;
 }
 
 export function readAiAssistantChatHistory(key: string): AiAssistantChatMessage[] {
@@ -129,6 +155,8 @@ export function createAiAssistantChatMessagesFromServer(
     createdDate: string;
     intent?: string | null;
     context?: AiAssistantResponseContextDto | null;
+    structuredResult?: AiAssistantStructuredResultDto | null;
+    sources?: AiAssistantSourceDto[] | null;
     toolActions?: AiAssistantToolActionDto[] | null;
   }>
 ): AiAssistantChatMessage[] {
@@ -141,6 +169,8 @@ export function createAiAssistantChatMessagesFromServer(
       createdAt: message.createdDate,
       intent: message.intent ?? undefined,
       context: isAiAssistantResponseContext(message.context) ? message.context : undefined,
+      structuredResult: message.structuredResult ?? undefined,
+      sources: message.sources ?? [],
       toolActions: message.toolActions ?? undefined,
       actionItems: createAiAssistantActionItemsFromToolActions(message.toolActions),
     }))

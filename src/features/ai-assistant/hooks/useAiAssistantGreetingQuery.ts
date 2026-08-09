@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { aiAssistantApi } from '../api/ai-assistant-api';
-import type { AiAssistantAnalyticsDto, AiAssistantConversationHistoryDto, AiAssistantGreetingDto } from '../types/ai-assistant.types';
+import type { AiAssistantAnalyticsDto, AiAssistantConversationHistoryDto, AiAssistantConversationListItemDto, AiAssistantGreetingDto } from '../types/ai-assistant.types';
 
 export const AI_ASSISTANT_QUERY_KEYS = {
   greeting: ['ai-assistant', 'greeting'] as const,
   analytics: ['ai-assistant', 'analytics'] as const,
   conversation: (sessionKey: string) => ['ai-assistant', 'conversation', sessionKey] as const,
+  conversations: (branchKey: string) => ['ai-assistant', 'conversations', branchKey] as const,
 };
 
 export function useAiAssistantGreetingQuery(): ReturnType<typeof useQuery<AiAssistantGreetingDto>> {
@@ -13,6 +14,17 @@ export function useAiAssistantGreetingQuery(): ReturnType<typeof useQuery<AiAssi
     queryKey: AI_ASSISTANT_QUERY_KEYS.greeting,
     queryFn: aiAssistantApi.getGreeting,
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useAiAssistantConversationsQuery(
+  branchKey: string
+): ReturnType<typeof useQuery<AiAssistantConversationListItemDto[]>> {
+  return useQuery({
+    queryKey: AI_ASSISTANT_QUERY_KEYS.conversations(branchKey),
+    queryFn: () => aiAssistantApi.getConversations(false, 30),
+    staleTime: 10 * 1000,
+    refetchOnWindowFocus: false,
   });
 }
 
