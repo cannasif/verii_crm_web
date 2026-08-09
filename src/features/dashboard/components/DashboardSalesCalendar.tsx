@@ -31,6 +31,7 @@ import {
   List,
   Loader2,
   PackageOpen,
+  RotateCw,
   Search,
   Users,
   type LucideIcon,
@@ -346,76 +347,103 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
     navigate(`${ROUTES[documentType]}/${item.id}`);
   };
 
+  const summaryCards: Array<{ label: string; value: number; icon: LucideIcon; tone: string }> = [
+    { label: t('salesCalendar.summary.period'), value: summary.total, icon: CalendarDays, tone: 'blue' },
+    { label: t('salesCalendar.summary.today'), value: summary.today, icon: FileCheck2, tone: 'fuchsia' },
+    { label: t('salesCalendar.summary.erp'), value: summary.erp, icon: CheckCircle2, tone: 'emerald' },
+    { label: t('salesCalendar.summary.waiting'), value: summary.waiting, icon: CircleDotDashed, tone: 'amber' },
+  ];
+  const summaryToneClasses: Record<string, string> = {
+    blue: 'bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300',
+    fuchsia: 'bg-fuchsia-50 text-fuchsia-600 dark:bg-fuchsia-500/15 dark:text-fuchsia-300',
+    amber: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
+    emerald: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
+  };
+
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#130d1b]">
-      <div className="flex flex-col gap-3 border-b border-slate-200 p-4 dark:border-white/10 lg:flex-row lg:items-center lg:justify-between">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary"><CalendarDays size={18} /></span>
-            <div>
-              <h2 className="text-base font-black text-slate-900 dark:text-white">{t(`salesCalendar.${titleKey}.title`)}</h2>
-              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                {data?.isSystemAdmin ? t('salesCalendar.descriptionAdmin') : t('salesCalendar.descriptionSelf')}
-              </p>
+      <div className="relative overflow-hidden border-b border-slate-200 px-4 py-3 dark:border-white/10 md:px-5">
+        <div className="pointer-events-none absolute -right-16 -top-24 h-52 w-52 rounded-full bg-[image:var(--crm-brand-gradient)] opacity-[0.07] blur-2xl" aria-hidden />
+        <div className="relative flex flex-wrap items-center gap-x-3 gap-y-2">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/25">
+              <CalendarDays size={18} />
+            </div>
+            <h2
+              className="whitespace-nowrap text-base font-black text-slate-900 dark:text-white"
+              title={data?.isSystemAdmin ? t('salesCalendar.descriptionAdmin') : t('salesCalendar.descriptionSelf')}
+            >
+              {t(`salesCalendar.${titleKey}.title`)}
+            </h2>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            {summaryCards.map(({ label, value, icon: Icon, tone }) => (
+              <span
+                key={label}
+                title={label}
+                className={cn('flex items-center gap-1.5 rounded-lg px-2 py-1', summaryToneClasses[tone])}
+              >
+                <Icon size={13} className="shrink-0" />
+                <span className="text-sm font-black leading-none tabular-nums">{isLoading ? '-' : value}</span>
+                <span className="hidden whitespace-nowrap text-[11px] font-bold leading-none lg:inline">{label}</span>
+              </span>
+            ))}
+          </div>
+
+          <div className="ms-auto flex items-center gap-2">
+            <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 dark:border-white/10 dark:bg-white/5">
+              {(['month', 'week', 'agenda'] as const).map((item) => {
+                const ViewIcon = viewIcons[item];
+                return (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setView(item)}
+                    title={t(`calendar.views.${item}`)}
+                    className={cn(
+                      'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-bold transition',
+                      view === item
+                        ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20'
+                        : 'text-slate-600 hover:bg-white dark:text-slate-300 dark:hover:bg-white/10',
+                    )}
+                  >
+                    <ViewIcon size={14} />
+                    <span className="hidden sm:inline">{t(`calendar.views.${item}`)}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 dark:border-white/10 dark:bg-white/5">
-            {(['month', 'week', 'agenda'] as const).map((item) => {
-              const ViewIcon = viewIcons[item];
-              return (
-                <button
-                  key={item}
-                  type="button"
-                  onClick={() => setView(item)}
-                  title={t(`calendar.views.${item}`)}
-                  className={cn(
-                    'flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-bold transition',
-                    view === item
-                      ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20'
-                      : 'text-slate-600 hover:bg-white dark:text-slate-300 dark:hover:bg-white/10',
-                  )}
-                >
-                  <ViewIcon size={14} />
-                  <span className="hidden sm:inline">{t(`calendar.views.${item}`)}</span>
-                </button>
-              );
-            })}
-          </div>
-          <Button type="button" variant="outline" size="sm" onClick={() => move(-1)} aria-label={t('calendar.previous')}><ChevronLeft size={15} /></Button>
-          <Button type="button" variant="outline" size="sm" onClick={() => setCursor(new Date())}>{t('salesCalendar.today')}</Button>
-          <Button type="button" variant="outline" size="sm" onClick={() => move(1)} aria-label={t('calendar.next')}><ChevronRight size={15} /></Button>
-          <span className="min-w-28 text-center text-sm font-black capitalize text-slate-800 dark:text-slate-100">
-            {title}
-          </span>
-        </div>
       </div>
 
-      <div className="grid grid-cols-2 border-b border-slate-200 sm:grid-cols-4 dark:border-white/10">
-        {[
-          { label: t('salesCalendar.summary.period'), value: summary.total, icon: CalendarDays, tone: 'text-blue-600' },
-          { label: t('salesCalendar.summary.today'), value: summary.today, icon: FileCheck2, tone: 'text-fuchsia-600' },
-          { label: t('salesCalendar.summary.erp'), value: summary.erp, icon: CheckCircle2, tone: 'text-emerald-600' },
-          { label: t('salesCalendar.summary.waiting'), value: summary.waiting, icon: CircleDotDashed, tone: 'text-amber-600' },
-        ].map(({ label, value, icon: Icon, tone }) => (
-          <div key={label} className="flex items-center gap-2 border-b border-r border-slate-100 px-4 py-3 last:border-r-0 sm:border-b-0 dark:border-white/5">
-            <Icon size={17} className={tone} />
-            <div><p className="text-[10px] font-black uppercase tracking-wide text-slate-400">{label}</p><p className="text-xl font-black text-slate-900 dark:text-white">{isLoading ? '-' : value}</p></div>
-          </div>
-        ))}
-      </div>
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-2 border-b border-slate-200 bg-slate-50/60 px-4 py-2 dark:border-white/10 dark:bg-white/[0.02] md:px-5">
+        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => move(-1)} aria-label={t('calendar.previous')}><ChevronLeft size={16} /></Button>
+        <Button variant="outline" size="sm" className="h-8 rounded-lg px-2.5 text-xs font-bold" onClick={() => setCursor(new Date())}>{t('salesCalendar.today')}</Button>
+        <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => move(1)} aria-label={t('calendar.next')}><ChevronRight size={16} /></Button>
+        <h3 className="ml-1 whitespace-nowrap capitalize text-sm font-black text-slate-900 dark:text-white md:text-base">{title}</h3>
 
-      {data?.isSystemAdmin && (
-        <div className="flex items-center gap-2 border-b border-slate-200 bg-slate-50/60 px-4 py-3 dark:border-white/10 dark:bg-white/[0.02]">
-          <Users size={15} className="text-primary" />
-          <span className="text-xs font-bold text-slate-500">{t('salesCalendar.ownerLabel')}</span>
+        {data?.isSystemAdmin && (
           <Popover>
             <PopoverTrigger asChild>
-              <Button type="button" variant="outline" size="sm" className="min-w-44 justify-between">
-                <span className="truncate">{selectedOwner?.name ?? t('salesCalendar.allOwners')}</span><ChevronDown size={14} />
-              </Button>
+              <button
+                type="button"
+                className={cn(
+                  'flex h-8 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-bold transition',
+                  selectedOwnerId === 'all'
+                    ? 'border-slate-200 bg-white text-slate-700 hover:border-primary/40 dark:border-white/10 dark:bg-white/5 dark:text-slate-200'
+                    : 'border-primary bg-primary/10 text-primary',
+                )}
+                title={t('salesCalendar.ownerLabel')}
+              >
+                <Users size={14} className="shrink-0" />
+                <span className="max-w-32 truncate">{selectedOwner?.name ?? t('salesCalendar.allOwners')}</span>
+                <span className="rounded-full bg-slate-100 px-1.5 text-[10px] font-black tabular-nums text-slate-600 dark:bg-white/10 dark:text-slate-300">
+                  {selectedOwnerId === 'all' ? data.totalCount : selectedOwner?.documentCount}
+                </span>
+                <ChevronDown size={13} className="shrink-0" />
+              </button>
             </PopoverTrigger>
             <PopoverContent align="start" className="w-72 p-2">
               <div className="mb-2 flex items-center gap-2 rounded-lg border border-slate-200 px-2 dark:border-white/10">
@@ -434,9 +462,13 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
               </div>
             </PopoverContent>
           </Popover>
-          {isFetching && <Loader2 size={14} className="animate-spin text-primary" />}
-        </div>
-      )}
+        )}
+
+        <Button variant="ghost" size="sm" className="ms-auto h-8 px-2.5 text-xs" disabled={isFetching} onClick={() => void refetch()}>
+          <RotateCw size={14} className={cn('sm:mr-1.5', isFetching && 'animate-spin')} />
+          <span className="hidden sm:inline">{t('refresh')}</span>
+        </Button>
+      </div>
 
       {isLoading ? (
         <div className="flex min-h-96 items-center justify-center gap-2 text-sm font-bold text-slate-500"><Loader2 size={18} className="animate-spin text-primary" />{t('loading')}</div>
