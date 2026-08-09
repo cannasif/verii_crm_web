@@ -98,22 +98,22 @@ function SalesCalendarEventButton({
       aria-label={ariaLabel}
       onClick={() => onSelect(item)}
       className={cn(
-        'w-full rounded-md border-l-4 px-1.5 py-1 text-left transition hover:-translate-y-px hover:shadow-sm',
+        'w-full rounded-md border-l-4 px-1.5 text-left transition hover:-translate-y-px hover:shadow-sm',
         compact ? 'py-0.5' : 'py-1',
         statusTone(item),
       )}
     >
-      {showOwner ? (
+      {compact ? (
+        <span className="block truncate text-[10px] font-bold leading-tight">
+          {showOwner ? (item.representativeName || unassignedOwnerLabel) : customer.name}
+        </span>
+      ) : showOwner ? (
         <>
           <span className="block truncate text-[10px] font-black">{item.representativeName || unassignedOwnerLabel}</span>
           <span className="block truncate text-[9px] font-semibold opacity-70">{customer.name}</span>
-          {customer.code ? <span className="block truncate text-[9px] font-bold opacity-60">{customer.code}</span> : null}
         </>
       ) : (
-        <>
-          <span className="block truncate text-[10px] font-black">{customer.name}</span>
-          {customer.code ? <span className="block truncate text-[9px] font-semibold opacity-70">{customer.code}</span> : null}
-        </>
+        <span className="block truncate text-[10px] font-black">{customer.name}</span>
       )}
     </button>
   );

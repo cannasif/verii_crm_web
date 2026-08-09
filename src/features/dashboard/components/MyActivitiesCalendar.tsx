@@ -177,7 +177,8 @@ function ActivityChip({ activity, compact = false, showAssignee = false, onSelec
           type="button"
           onClick={() => onSelect(activity)}
           className={cn(
-            'w-full rounded-lg border-l-4 px-2.5 py-1.5 text-left shadow-xs transition hover:-translate-y-px hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+            'w-full rounded-md border-l-4 text-left shadow-xs transition hover:-translate-y-px hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+            compact ? 'px-2 py-1' : 'px-2.5 py-1.5',
             eventTone(activity),
           )}
         >
