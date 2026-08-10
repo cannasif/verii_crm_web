@@ -1241,13 +1241,17 @@ export function NdiOrderTransferPage(): ReactElement {
     queryFn: () => ndiApi.getCustomerDocumentSeries(selectedSeriesCompany, selectedCustomerCode),
     enabled: transferMode === 'automatic' && selectedSeriesCompany.length > 0 && selectedCustomerCode.length > 0,
     staleTime: 60_000,
+    retry: false,
   });
   const manualDocumentSeriesQueries = useQueries({
     queries: MANUAL_TARGETS.map((target) => ({
       queryKey: ['ndi', 'customer-document-series', target, selectedCustomerCode],
       queryFn: () => ndiApi.getCustomerDocumentSeries(target, selectedCustomerCode),
-      enabled: transferMode === 'manual' && selectedCustomerCode.length > 0,
+      enabled: transferMode === 'manual'
+        && selectedCustomerCode.length > 0
+        && manualDocuments.some((selection) => selection.targetNetsisCompany === target),
       staleTime: 60_000,
+      retry: false,
     })),
   });
   const manualDocumentSeriesByTarget = useMemo(
@@ -1261,44 +1265,14 @@ export function NdiOrderTransferPage(): ReactElement {
     () => customerDocumentSeriesQuery.data ?? [],
     [customerDocumentSeriesQuery.data]
   );
-  const dispatchSeriesOptions = useMemo((): ComboboxOption[] => {
-    const seen = new Set<string>();
-    const options: ComboboxOption[] = [];
-
-    customerDocumentSeries.forEach((series) => {
-      const value = series.dispatchSeries?.trim() ?? '';
-      if (!value || seen.has(value)) {
-        return;
-      }
-
-      seen.add(value);
-      options.push({
-        value,
-        label: `${series.dispatchDocumentType || 'İrsaliye'} — ${series.dispatchSeries}`,
-      });
-    });
-
-    return options;
-  }, [customerDocumentSeries]);
-  const invoiceSeriesOptions = useMemo((): ComboboxOption[] => {
-    const seen = new Set<string>();
-    const options: ComboboxOption[] = [];
-
-    customerDocumentSeries.forEach((series) => {
-      const value = series.invoiceSeries?.trim() ?? '';
-      if (!value || seen.has(value)) {
-        return;
-      }
-
-      seen.add(value);
-      options.push({
-        value,
-        label: `E-Fatura: ${series.eInvoiceActive || '-'} — ${series.invoiceDocumentType || 'Fatura'} — ${series.invoiceSeries}`,
-      });
-    });
-
-    return options;
-  }, [customerDocumentSeries]);
+  const dispatchSeriesOptions = useMemo(
+    () => getDocumentSeriesOptions(customerDocumentSeries, 'İrsaliye'),
+    [customerDocumentSeries]
+  );
+  const invoiceSeriesOptions = useMemo(
+    () => getDocumentSeriesOptions(customerDocumentSeries, 'Fatura'),
+    [customerDocumentSeries]
+  );
   const batchAction = useMemo(() => resolveBatchAction(ruleOutcomes), [ruleOutcomes]);
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
@@ -1328,11 +1302,50 @@ export function NdiOrderTransferPage(): ReactElement {
     ? hasValidManualDocuments
     : (!needsDispatchSeries || (isValidNdiSeries(dispatchSeries) && hasSelectedDispatchSeries))
       && (!needsInvoiceSeries || (isValidNdiSeries(invoiceSeries) && hasSelectedInvoiceSeries));
+  const dispatchSeriesReady = !needsDispatchSeries
+    || (isValidNdiSeries(dispatchSeries) && hasSelectedDispatchSeries);
+  const invoiceSeriesReady = !needsInvoiceSeries
+    || (isValidNdiSeries(invoiceSeries) && hasSelectedInvoiceSeries);
+  const selectedManualTargetIndexes = Array.from(new Set(manualDocuments.map((selection) =>
+    MANUAL_TARGETS.indexOf(selection.targetNetsisCompany as NdiManualTarget)
+  ))).filter((index) => index >= 0);
+  const automaticSeriesLookupUnavailable = transferMode === 'automatic'
+    && customerDocumentSeriesQuery.isError;
+  const manualSeriesLookupUnavailable = transferMode === 'manual'
+    && selectedManualTargetIndexes.some((index) => manualDocumentSeriesQueries[index]?.isError);
+  const documentSeriesLookupUnavailable = automaticSeriesLookupUnavailable || manualSeriesLookupUnavailable;
+  const documentSeriesLookupPending = transferMode === 'automatic'
+    ? customerDocumentSeriesQuery.isFetching
+    : selectedManualTargetIndexes.some((index) => manualDocumentSeriesQueries[index]?.isFetching);
+  const documentSeriesErrorMessage = transferMode === 'automatic'
+    ? customerDocumentSeriesQuery.error instanceof Error
+      ? customerDocumentSeriesQuery.error.message
+      : 'Cari belge serileri doğrulanamadı.'
+    : selectedManualTargetIndexes
+      .map((index) => manualDocumentSeriesQueries[index]?.error)
+      .find((error): error is Error => error instanceof Error)?.message
+      ?? 'Seçilen hedef şirketin cari belge serileri doğrulanamadı.';
   const canPrepareSelectedLines = selectedLines.length > 0
     && blockedRuleCount === 0
     && selectedLinesWithoutPrice.length === 0
     && hasValidDocumentSeries;
-  const prepareDisabled = selectedLines.length === 0 || linesQuery.isFetching || orderChecksQuery.isFetching || isPreparingTransfer;
+  const prepareDisabled = selectedLines.length === 0
+    || linesQuery.isFetching
+    || orderChecksQuery.isFetching
+    || isPreparingTransfer
+    || documentSeriesLookupPending
+    || documentSeriesLookupUnavailable;
+
+  const retryDocumentSeries = (): void => {
+    if (transferMode === 'automatic') {
+      void customerDocumentSeriesQuery.refetch();
+      return;
+    }
+
+    void Promise.all(selectedManualTargetIndexes.map((index) =>
+      manualDocumentSeriesQueries[index]?.refetch()
+    ));
+  };
 
   const toggleOrder = async (order: NdiOrder): Promise<void> => {
     if (checkingOrderId !== null) {
@@ -2017,6 +2030,29 @@ export function NdiOrderTransferPage(): ReactElement {
               </div>
             </div>
 
+            {documentSeriesLookupUnavailable ? (
+              <div role="alert" className="mt-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-amber-950 dark:border-amber-500/40 dark:bg-amber-950/30 dark:text-amber-100">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 text-sm font-black">
+                      <AlertCircle size={17} /> Belge serileri doğrulanamadı
+                    </div>
+                    <p className="mt-1 break-words text-xs font-bold">{documentSeriesErrorMessage}</p>
+                    <p className="mt-1 text-xs font-semibold opacity-80">
+                      Yanlış seriyle Netsis kaydı oluşmaması için aktarım geçici olarak durduruldu.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={retryDocumentSeries}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-md border border-amber-400 bg-white px-3 py-2 text-xs font-black text-amber-900 transition hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-100"
+                  >
+                    <RefreshCw size={14} /> Tekrar dene
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
             {transferMode === 'manual' ? (
               <div className="mt-3 grid gap-3 xl:grid-cols-2 2xl:grid-cols-4">
                 {MANUAL_TARGETS.map((target, targetIndex) => {
@@ -2054,7 +2090,7 @@ export function NdiOrderTransferPage(): ReactElement {
                                     onValueChange={(value) => changeManualDocumentSeries(target, documentType, value)}
                                     placeholder={`${documentType} serisi seçin`}
                                     emptyText={query?.isError ? 'Seriler alınamadı.' : 'Uygun seri bulunamadı.'}
-                                    disabled={!selectedCustomerCode}
+                                    disabled={!selectedCustomerCode || query?.isError}
                                     isLoading={query?.isFetching ?? false}
                                     loadingText="Seriler yükleniyor..."
                                     searchable={false}
@@ -2089,7 +2125,7 @@ export function NdiOrderTransferPage(): ReactElement {
                           ? 'İrsaliye serisi bulunamadı.'
                           : 'Önce bir irsaliye seçin.'
                     }
-                    disabled={!selectedCustomerCode || !needsDispatchSeries}
+                    disabled={!selectedCustomerCode || !needsDispatchSeries || customerDocumentSeriesQuery.isError}
                     isLoading={customerDocumentSeriesQuery.isFetching}
                     loadingText="Seriler yükleniyor..."
                     searchable={false}
@@ -2122,7 +2158,7 @@ export function NdiOrderTransferPage(): ReactElement {
                           ? 'Fatura serisi bulunamadı.'
                           : 'Önce bir irsaliye seçin.'
                     }
-                    disabled={!selectedCustomerCode || !needsInvoiceSeries}
+                    disabled={!selectedCustomerCode || !needsInvoiceSeries || customerDocumentSeriesQuery.isError}
                     isLoading={customerDocumentSeriesQuery.isFetching}
                     loadingText="Seriler yükleniyor..."
                     searchable={false}
@@ -2200,6 +2236,8 @@ export function NdiOrderTransferPage(): ReactElement {
                   <SeriesGuide
                     activeRuleIds={selectedRuleIds}
                     ruleOutcomes={ruleOutcomes}
+                    dispatchSeriesReady={dispatchSeriesReady}
+                    invoiceSeriesReady={invoiceSeriesReady}
                     apiRules={ndiRulesQuery.data ?? []}
                     rulesLoading={ndiRulesQuery.isLoading}
                     rulesError={ndiRulesQuery.isError}
@@ -3394,12 +3432,16 @@ type NdiScenarioModeFilter = 'all' | NetsisNdiTransferScenarioDto['mode'];
 function SeriesGuide({
   activeRuleIds,
   ruleOutcomes,
+  dispatchSeriesReady,
+  invoiceSeriesReady,
   apiRules,
   rulesLoading,
   rulesError,
 }: {
   activeRuleIds: Set<NdiTransferRule['id']>;
   ruleOutcomes: NdiRuleOutcome[];
+  dispatchSeriesReady: boolean;
+  invoiceSeriesReady: boolean;
   apiRules: NetsisNdiTransferRuleDto[];
   rulesLoading: boolean;
   rulesError: boolean;
@@ -3528,7 +3570,11 @@ function SeriesGuide({
           <div className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-[var(--crm-app-text-muted)]">Seçili Belgeye Uygulanan Sonuç</div>
           <div className="flex min-w-0 flex-col gap-2">
             {ruleOutcomes.map((outcome) => (
-              <RuleOutcomeCard key={outcome.orderId} outcome={outcome} />
+              <RuleOutcomeCard
+                key={outcome.orderId}
+                outcome={outcome}
+                seriesReady={outcome.action === 'IRSALIYELISTIR' ? dispatchSeriesReady : invoiceSeriesReady}
+              />
             ))}
           </div>
         </section>
@@ -3671,14 +3717,21 @@ function ExpandToggleButton({ expanded, onToggle }: { expanded: boolean; onToggl
   );
 }
 
-function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement {
+function RuleOutcomeCard({ outcome, seriesReady }: { outcome: NdiRuleOutcome; seriesReady: boolean }): ReactElement {
   const { expanded, toggle, handleMouseDown, handleClick } = useCollapsibleCardToggle();
+  const statusLabel = !outcome.canProceed ? 'Bloklu' : seriesReady ? 'Hazır' : 'Seri bekleniyor';
+  const statusTone = !outcome.canProceed ? 'danger' : seriesReady ? 'success' : 'warn';
+  const cardTone = !outcome.canProceed
+    ? 'border-red-300 bg-red-50 dark:border-red-700/50 dark:bg-red-950/30'
+    : seriesReady
+      ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-700/50 dark:bg-emerald-950/30'
+      : 'border-amber-300 bg-amber-50 dark:border-amber-700/50 dark:bg-amber-950/30';
 
   return (
     <div
       onMouseDown={handleMouseDown}
       onClick={handleClick}
-      className={`cursor-pointer rounded-lg border p-3 transition hover:shadow-sm ${outcome.canProceed ? 'border-emerald-300 bg-emerald-50 dark:border-emerald-700/50 dark:bg-emerald-950/30' : 'border-red-300 bg-red-50 dark:border-red-700/50 dark:bg-red-950/30'}`}
+      className={`cursor-pointer rounded-lg border p-3 transition hover:shadow-sm ${cardTone}`}
     >
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
@@ -3688,14 +3741,14 @@ function RuleOutcomeCard({ outcome }: { outcome: NdiRuleOutcome }): ReactElement
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-1 sm:max-w-[45%] sm:shrink-0 sm:justify-end">
-          <RuleBadge tone={outcome.canProceed ? 'success' : 'danger'} label={outcome.canProceed ? 'Hazır' : 'Bloklu'} />
+          <RuleBadge tone={statusTone} label={statusLabel} />
           <RuleBadge tone={outcome.targetWarehouseLocked ? 'warn' : 'info'} label={outcome.targetWarehouseLocked ? 'Depo sabit' : 'Kaynak depo'} />
           <ExpandToggleButton expanded={expanded} onToggle={toggle} />
         </div>
       </div>
 
       <div className="mt-3 grid gap-2 sm:grid-cols-4">
-        <RuleMini label="Hedef Seri" value={outcome.targetSeries} />
+        <RuleMini label="Hedef Seri" value={seriesReady ? outcome.targetSeries : 'Seçim gerekli'} />
         <RuleMini label="Hedef Depo" value={outcome.targetWarehouseLabel} />
         <RuleMini
           label="Aktarılacak Miktar"

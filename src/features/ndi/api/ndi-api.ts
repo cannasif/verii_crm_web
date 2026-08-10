@@ -355,7 +355,7 @@ export const ndiApi = {
   },
 
   getCustomerDispatchLines: async (irsNoList: string): Promise<NetsisCustomerDispatchLineDto[]> => {
-    const fallbackMessage = 'Netsis irsaliye kalemleri yuklenemedi. API baglantisi ve FN_RII_REH_MUSTIRS_KALEM fonksiyonu kontrol edilmeli.';
+    const fallbackMessage = 'Seçilen irsaliyenin kalemleri ERP’den yüklenemedi. Sayfayı yenileyip tekrar deneyin.';
     try {
       const response = await api.get<ApiResponse<NetsisCustomerDispatchLineDto[]>>('/api/NetsisRead/getCustomerDispatchLines', {
         params: { irsNoList },
@@ -382,11 +382,16 @@ export const ndiApi = {
   },
 
   getCustomerDocumentSeries: async (company: string, customerCode: string): Promise<NetsisCustomerDocumentSeriesDto[]> => {
-    const response = await api.get<ApiResponse<NetsisCustomerDocumentSeriesDto[]>>(
-      '/api/NetsisRead/getCustomerDocumentSeries',
-      { params: { company, customerCode } }
-    );
-    return ensureSuccess(response, 'Cari belge serileri yüklenemedi.');
+    const fallbackMessage = `${company} için cari belge serileri doğrulanamadı. Lütfen tekrar deneyin.`;
+    try {
+      const response = await api.get<ApiResponse<NetsisCustomerDocumentSeriesDto[]>>(
+        '/api/NetsisRead/getCustomerDocumentSeries',
+        { params: { company, customerCode } }
+      );
+      return ensureSuccess(response, fallbackMessage);
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, fallbackMessage));
+    }
   },
 
   previewNdiTransfer: async (request: NdiTransferCreateRequest): Promise<NdiTransferPreviewResponseDto> => {

@@ -24,6 +24,17 @@ async function login(page: Page): Promise<void> {
   await expect(page).not.toHaveURL(/\/auth\/login/, { timeout: 20_000 });
 }
 
+function apiEnvelope<T>(data: T, message = 'ok') {
+  return {
+    success: true,
+    message,
+    exceptionMessage: '',
+    data,
+    errors: [],
+    statusCode: 200,
+  };
+}
+
 test('NDI rule catalog is served by the API and rendered by the web page', async ({ page }, testInfo) => {
   const pageErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
@@ -61,6 +72,7 @@ test('NDI rule catalog is served by the API and rendered by the web page', async
   expect(rules.every((rule) => (rule.validationRules?.length ?? 0) > 0)).toBeTruthy();
   expect(rules.reduce((total, rule) => total + (rule.scenarios?.length ?? 0), 0)).toBe(18);
 
+  await page.getByRole('button', { name: 'Kuralları genişlet' }).click();
   const matrix = page.getByTestId('ndi-rule-scenario-matrix');
   await expect(matrix).toBeVisible();
   await expect(matrix.getByText("API'den 18 ayrı kural", { exact: true })).toBeVisible();
@@ -100,4 +112,76 @@ test('NDI rule catalog is served by the API and rendered by the web page', async
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBeTruthy();
 
   expect(pageErrors).toEqual([]);
+});
+
+test('NDI transfer is safely blocked when customer document series cannot be verified', async ({ page }) => {
+  const sourceDocumentNo = 'SIP202600000001';
+  const customerCode = '120-01-27-017';
+
+  await login(page);
+  await page.route('**/api/NetsisRead/getCustomerDispatches', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify(apiEnvelope([{
+      irsaliyeNo: sourceDocumentNo,
+      cariKodu: customerCode,
+      cariIsim: 'NDI REGRESYON CARISI',
+      tarih: '2026-08-10T00:00:00',
+      tipi: '6',
+      ozelKod1: 'N',
+    }])),
+  }));
+  await page.route('**/api/NetsisRead/getCustomerDispatchOrderChecks*', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify(apiEnvelope([{
+      fatirsNo: sourceDocumentNo,
+      siparisNo: sourceDocumentNo,
+      tipi: 6,
+    }])),
+  }));
+  await page.route('**/api/NetsisRead/getCustomerDispatchLines*', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify(apiEnvelope([{
+      fisNo: sourceDocumentNo,
+      cariKodu: customerCode,
+      stokKodu: 'TEST-STOK-001',
+      stokAdi: 'NDI Regresyon Stoku',
+      depoKodu: 100,
+      miktar: 10,
+      bakiye: 10,
+      tlFiyat: 125,
+      teslimMiktari: 0,
+    }])),
+  }));
+  await page.route('**/api/NetsisNdiTransfer/transferred', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify(apiEnvelope([])),
+  }));
+  await page.route('**/api/NetsisRead/getCustomerDocumentSeries*', (route) => route.fulfill({
+    status: 503,
+    contentType: 'application/json',
+    body: JSON.stringify({
+      ...apiEnvelope(null, 'Belge serileri şu anda doğrulanamıyor.'),
+      success: false,
+      exceptionMessage: `${customerCode} carisinin belge serileri okunamadı. Aktarım güvenliğiniz için işlem durduruldu.`,
+      errorCode: 'NDI_DOCUMENT_SERIES_UNAVAILABLE',
+      statusCode: 503,
+    }),
+  }));
+
+  await page.goto('/ndi/order-line-selection');
+  await page.getByText(sourceDocumentNo, { exact: true }).first().click();
+
+  const alert = page.getByRole('alert').filter({ hasText: 'Belge serileri doğrulanamadı' });
+  await expect(alert).toBeVisible();
+  await expect(alert).toContainText('Aktarım güvenliğiniz için işlem durduruldu');
+  await expect(alert.getByRole('button', { name: 'Tekrar dene' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Seçili Kalemleri Hazırla' })).toBeDisabled();
+
+  await page.getByRole('button', { name: 'Kuralları genişlet' }).click();
+  await expect(page.getByText('Seri bekleniyor', { exact: true })).toBeVisible();
+  await expect(page.getByText('Seçim gerekli', { exact: true })).toBeVisible();
 });
