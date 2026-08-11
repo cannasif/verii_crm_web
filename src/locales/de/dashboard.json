@@ -80,6 +80,20 @@
     "detail": { "date": "Belegdatum", "amount": "Gesamtbetrag", "owner": "Vertriebsmitarbeiter", "erp": "ERP-Status / Nummer", "customer": "Kunde", "deliveryDate": "Lieferdatum", "lines": "Belegpositionen", "lineCount": "{{count}} Positionen", "productCode": "Produktcode", "productName": "Produktname", "quantity": "Menge", "unitPrice": "Stückpreis", "discount": "Rabatt", "vat": "MwSt.", "lineTotal": "Positionssumme", "noLines": "Für dieses Dokument wurden keine Positionen gefunden.", "loading": "Dokument und Positionen werden geladen...", "loadError": "Dokumentdetails konnten nicht geladen werden." }
   },
   "calendar": { "title": "Mein Aktivitätskalender", "description": "Zugewiesene Termine, Besprechungen und Aufgaben verwalten.", "descriptionAdmin": "Pläne aller Benutzer anzeigen und nach Verantwortlichem filtern.", "assignees": { "title": "Aktivitätsverantwortliche", "description": "Klicken Sie auf eine Person, um den Kalender zu filtern.", "all": "Alle Benutzer", "allShort": "ALLE", "previous": "Vorherige Verantwortliche", "next": "Nächste Verantwortliche", "searchPlaceholder": "Benutzer suchen...", "noMatch": "Kein passender Benutzer" }, "views": { "month": "Monat", "week": "Woche", "agenda": "Agenda" }, "summary": { "total": "Gesamt", "scheduled": "Geplant", "completed": "Erledigt", "overdue": "Überfällig" }, "status": { "scheduled": "Geplant", "completed": "Erledigt", "cancelled": "Storniert", "overdue": "Überfällig" }, "detail": { "date": "Datum und Uhrzeit", "status": "Status", "assignee": "Aktivitätsverantwortlicher", "customer": "Kunde / Kontakt", "customerCode": "Kundencode", "description": "Beschreibung", "clickHint": "Für Details klicken" }, "today": "Heute", "previous": "Vorheriger Zeitraum", "next": "Nächster Zeitraum", "newActivity": "Aktivität hinzufügen", "showDayActivities": "Aktivitäten dieses Tages anzeigen ({{count}})", "activity": "Aktivität", "more": "mehr", "empty": "Keine Aktivitäten in diesem Zeitraum", "loadError": "Kalender konnte nicht geladen werden.", "openActivities": "Aktivitätsverwaltung öffnen" },
+  "contextActions": {
+    "viewDetails": "Details anzeigen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "customerInfo": "Kundenakte öffnen",
+    "customer360": "Kunde 360 öffnen",
+    "cancelDocument": "Beleg stornieren",
+    "cancelDocumentTitle": "Beleg stornieren",
+    "cancelDocumentDescription": "Beleg {{number}} wird storniert. Der Verlauf bleibt erhalten und der Beleg wird aus den aktiven Vorgängen entfernt.",
+    "cancellationReason": "Stornogrund",
+    "cancellationReasonPlaceholder": "Geben Sie einen kurzen und verständlichen Grund ein...",
+    "deleteActivityTitle": "Aktivität löschen",
+    "deleteActivityDescription": "Die Aktivität {{subject}} wird dauerhaft gelöscht. Möchten Sie fortfahren?"
+  },
   "sidebar": {
     "customers": "Kunden",
     "customerManagement": "Kundenmanagement",

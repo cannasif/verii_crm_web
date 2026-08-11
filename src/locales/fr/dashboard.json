@@ -80,6 +80,20 @@
     "detail": { "date": "Date du document", "amount": "Total général", "owner": "Représentant commercial", "erp": "Statut / numéro ERP", "customer": "Client", "deliveryDate": "Date de livraison", "lines": "Lignes du document", "lineCount": "{{count}} lignes", "productCode": "Code produit", "productName": "Nom du produit", "quantity": "Quantité", "unitPrice": "Prix unitaire", "discount": "Remise", "vat": "TVA", "lineTotal": "Total ligne", "noLines": "Aucune ligne trouvée pour ce document.", "loading": "Chargement du document et des lignes...", "loadError": "Impossible de charger les détails du document." }
   },
   "calendar": { "title": "Mon calendrier d’activités", "description": "Gérez vos plans, réunions et tâches assignés.", "descriptionAdmin": "Consultez les plans de tous les utilisateurs et filtrez par responsable.", "assignees": { "title": "Responsables d’activité", "description": "Cliquez sur une personne pour filtrer le calendrier.", "all": "Tous les utilisateurs", "allShort": "TOUS", "previous": "Responsables précédents", "next": "Responsables suivants", "searchPlaceholder": "Rechercher un utilisateur...", "noMatch": "Aucun utilisateur correspondant" }, "views": { "month": "Mois", "week": "Semaine", "agenda": "Agenda" }, "summary": { "total": "Total", "scheduled": "Planifiées", "completed": "Terminées", "overdue": "En retard" }, "status": { "scheduled": "Planifiée", "completed": "Terminée", "cancelled": "Annulée", "overdue": "En retard" }, "detail": { "date": "Date et heure", "status": "Statut", "assignee": "Responsable d’activité", "customer": "Client / contact", "customerCode": "Code client", "description": "Description", "clickHint": "Cliquez pour plus de détails" }, "today": "Aujourd’hui", "previous": "Période précédente", "next": "Période suivante", "newActivity": "Ajouter une activité", "showDayActivities": "Afficher les activités de ce jour ({{count}})", "activity": "Activité", "more": "de plus", "empty": "Aucune activité sur cette période", "loadError": "Impossible de charger le calendrier.", "openActivities": "Ouvrir la gestion des activités" },
+  "contextActions": {
+    "viewDetails": "Afficher les détails",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "customerInfo": "Ouvrir la fiche client",
+    "customer360": "Ouvrir Client 360",
+    "cancelDocument": "Annuler le document",
+    "cancelDocumentTitle": "Annuler le document",
+    "cancelDocumentDescription": "Le document {{number}} sera annulé. Son historique sera conservé et il sera retiré des opérations actives.",
+    "cancellationReason": "Motif de l'annulation",
+    "cancellationReasonPlaceholder": "Saisissez un motif court et compréhensible...",
+    "deleteActivityTitle": "Supprimer l'activité",
+    "deleteActivityDescription": "L'activité {{subject}} sera définitivement supprimée. Voulez-vous continuer ?"
+  },
   "sidebar": {
     "customers": "Clients",
     "customerManagement": "Gestion des clients",

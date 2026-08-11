@@ -60,6 +60,20 @@
     "reviewQuotations": "تحقق من العروض",
     "stockStatus": "انظر حالة المخزون"
   },
+  "contextActions": {
+    "viewDetails": "عرض التفاصيل",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "customerInfo": "فتح بطاقة العميل",
+    "customer360": "فتح العميل 360",
+    "cancelDocument": "إلغاء المستند",
+    "cancelDocumentTitle": "إلغاء المستند",
+    "cancelDocumentDescription": "سيتم إلغاء المستند {{number}} مع الاحتفاظ بسجله وإزالته من العمليات النشطة.",
+    "cancellationReason": "سبب الإلغاء",
+    "cancellationReasonPlaceholder": "اكتب سبباً قصيراً وواضحاً للإلغاء...",
+    "deleteActivityTitle": "حذف النشاط",
+    "deleteActivityDescription": "سيتم حذف النشاط {{subject}} نهائياً. هل تريد المتابعة؟"
+  },
   "sidebar": {
     "customers": "العملاء",
     "customerManagement": "إدارة العملاء",

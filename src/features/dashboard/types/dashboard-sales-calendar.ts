@@ -15,6 +15,7 @@ export interface DashboardSalesCalendarItem {
   createdDate: string;
   representativeId?: number | null;
   representativeName: string;
+  customerId?: number | null;
   customerName: string;
   customerCode?: string | null;
   status?: number | null;

@@ -90,6 +90,20 @@
     "media": { "tabs": { "details": "Details", "activityImages": "Activity images", "customerImages": "Customer images" }, "emptyActivityImages": "No images have been added to this activity.", "emptyCustomerImages": "No images have been added to the linked customer.", "loadError": "Images could not be loaded. Please try again.", "openImage": "Open full-size image" },
     "today": "Today", "previous": "Previous period", "next": "Next period", "newActivity": "Add activity", "showDayActivities": "Show activities for this day ({{count}})", "activity": "Activity", "more": "more", "empty": "You have no activities in this period", "loadError": "Calendar activities could not be loaded.", "openActivities": "Open activity management"
   },
+  "contextActions": {
+    "viewDetails": "View details",
+    "edit": "Edit",
+    "delete": "Delete",
+    "customerInfo": "Open customer record",
+    "customer360": "Open Customer 360",
+    "cancelDocument": "Cancel document",
+    "cancelDocumentTitle": "Cancel document",
+    "cancelDocumentDescription": "Document {{number}} will be cancelled. Its history will be preserved and it will be removed from active work.",
+    "cancellationReason": "Cancellation reason",
+    "cancellationReasonPlaceholder": "Enter a short and clear cancellation reason...",
+    "deleteActivityTitle": "Delete activity",
+    "deleteActivityDescription": "Activity {{subject}} will be permanently deleted. Are you sure you want to continue?"
+  },
   "sidebar": {
     "customers": "Customers",
     "customerManagement": "Customer Management",

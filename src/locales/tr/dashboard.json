@@ -90,6 +90,20 @@
     "media": { "tabs": { "details": "Detaylar", "activityImages": "Aktivite görselleri", "customerImages": "Cari görselleri" }, "emptyActivityImages": "Bu aktiviteye eklenmiş görsel bulunmuyor.", "emptyCustomerImages": "Bağlı cariye eklenmiş görsel bulunmuyor.", "loadError": "Görseller yüklenemedi. Lütfen tekrar deneyin.", "openImage": "Görseli tam boy aç" },
     "today": "Bugün", "previous": "Önceki dönem", "next": "Sonraki dönem", "newActivity": "Aktivite ekle", "showDayActivities": "Günün aktivitelerini göster ({{count}})", "activity": "Aktivite", "more": "daha", "empty": "Bu dönemde aktiviteniz yok", "loadError": "Takvim aktiviteleri yüklenemedi.", "openActivities": "Aktivite yönetimini aç"
   },
+  "contextActions": {
+    "viewDetails": "Detayı görüntüle",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "customerInfo": "Cari bilgisine git",
+    "customer360": "Cari 360'a git",
+    "cancelDocument": "Belgeyi iptal et",
+    "cancelDocumentTitle": "Belgeyi iptal et",
+    "cancelDocumentDescription": "{{number}} numaralı belge iptal edilecek. Bu işlem belgenin geçmişini korur ve aktif işlemlerden kaldırır.",
+    "cancellationReason": "İptal nedeni",
+    "cancellationReasonPlaceholder": "Kullanıcının anlayabileceği kısa bir iptal nedeni yazın...",
+    "deleteActivityTitle": "Aktiviteyi sil",
+    "deleteActivityDescription": "{{subject}} aktivitesi kalıcı olarak silinecek. Devam etmek istediğinizden emin misiniz?"
+  },
   "sidebar": {
     "customers": "Müşteriler",
     "customerManagement": "Müşteri Yönetimi",

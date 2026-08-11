@@ -19,8 +19,10 @@ import {
   subWeeks,
 } from 'date-fns';
 import {
+  Building2,
   CalendarDays,
   CalendarRange,
+  ChartNoAxesCombined,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -31,15 +33,18 @@ import {
   LayoutGrid,
   Images,
   ExternalLink,
+  Eye,
   List,
   Loader2,
   MapPin,
   MousePointerClick,
+  Pencil,
   Plus,
   RotateCw,
   Search,
   Sparkles,
   Tag,
+  Trash2,
   UserRound,
   Users,
   type LucideIcon,
@@ -57,6 +62,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -67,6 +73,7 @@ import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useDashboardActivitiesCalendar } from '@/features/activity-management/hooks/useMyActivitiesCalendar';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
+import { useDeleteActivity } from '@/features/activity-management/hooks/useDeleteActivity';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
@@ -177,42 +184,87 @@ interface ActivityChipProps {
   compact?: boolean;
   /** Only shown when the calendar is not already filtered down to a single assignee. */
   showAssignee?: boolean;
+  canUpdate: boolean;
+  canDelete: boolean;
+  canOpenCustomer: boolean;
+  canOpenCustomer360: boolean;
   onSelect: (activity: ActivityDto) => void;
+  onEdit: (activity: ActivityDto) => void;
+  onDelete: (activity: ActivityDto) => void;
+  onOpenCustomer: (activity: ActivityDto) => void;
+  onOpenCustomer360: (activity: ActivityDto) => void;
 }
 
-function ActivityChip({ activity, compact = false, showAssignee = false, onSelect }: ActivityChipProps): ReactElement {
+function ActivityChip({
+  activity,
+  compact = false,
+  showAssignee = false,
+  canUpdate,
+  canDelete,
+  canOpenCustomer,
+  canOpenCustomer360,
+  onSelect,
+  onEdit,
+  onDelete,
+  onOpenCustomer,
+  onOpenCustomer360,
+}: ActivityChipProps): ReactElement {
   const { t, i18n } = useTranslation('dashboard');
   const locale = i18n.language || 'tr-TR';
   const time = activity.isAllDay ? '' : format(new Date(activity.startDateTime), 'HH:mm');
   const customer = customerName(activity);
   const statusKind = eventStatusKind(activity);
+  const hasCustomer = Boolean(activity.potentialCustomerId && activity.potentialCustomerId > 0);
+  const [hoverOpen, setHoverOpen] = useState(false);
+  const [suppressHover, setSuppressHover] = useState(false);
 
   return (
-    <HoverCard openDelay={250} closeDelay={80}>
-      <HoverCardTrigger asChild>
-        <button
-          type="button"
-          data-testid="activity-calendar-event"
-          onClick={() => onSelect(activity)}
-          className={cn(
-            'w-full rounded-md border-l-4 text-left shadow-xs transition hover:-translate-y-px hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-            compact ? 'px-2 py-1' : 'px-2.5 py-1.5',
-            eventTone(activity),
-          )}
+    <ContextMenu
+      onOpenChange={(open) => {
+        if (open) {
+          setSuppressHover(true);
+          setHoverOpen(false);
+        }
+      }}
+    >
+      <ContextMenuTrigger asChild>
+        <div
+          className="w-full"
+          onContextMenu={(event) => event.stopPropagation()}
+          onPointerEnter={() => setSuppressHover(false)}
         >
-          <span className="flex min-w-0 items-center gap-1.5">
-            {time && <span className="shrink-0 text-[10px] font-black tabular-nums opacity-70">{time}</span>}
-            <span className="truncate text-[11px] font-bold">{activity.subject}</span>
-          </span>
-          {showAssignee && !compact && (
-            <span className="mt-0.5 flex min-w-0 items-center gap-1 text-[10px] opacity-70">
-              <UserRound size={9} className="shrink-0" />
-              <span className="truncate font-semibold">{assigneeName(activity)}</span>
-            </span>
-          )}
-        </button>
-      </HoverCardTrigger>
-      <HoverCardContent side="right" align="start">
+          <HoverCard
+            open={suppressHover ? false : hoverOpen}
+            onOpenChange={(open) => {
+              if (!suppressHover) setHoverOpen(open);
+            }}
+            openDelay={250}
+            closeDelay={80}
+          >
+            <HoverCardTrigger asChild>
+              <button
+                type="button"
+                data-testid="activity-calendar-event"
+                onClick={() => onSelect(activity)}
+                className={cn(
+                  'w-full rounded-md border-l-4 text-left shadow-xs transition hover:-translate-y-px hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+                  compact ? 'px-2 py-1' : 'px-2.5 py-1.5',
+                  eventTone(activity),
+                )}
+              >
+                <span className="flex min-w-0 items-center gap-1.5">
+                  {time && <span className="shrink-0 text-[10px] font-black tabular-nums opacity-70">{time}</span>}
+                  <span className="truncate text-[11px] font-bold">{activity.subject}</span>
+                </span>
+                {showAssignee && !compact && (
+                  <span className="mt-0.5 flex min-w-0 items-center gap-1 text-[10px] opacity-70">
+                    <UserRound size={9} className="shrink-0" />
+                    <span className="truncate font-semibold">{assigneeName(activity)}</span>
+                  </span>
+                )}
+              </button>
+            </HoverCardTrigger>
+      <HoverCardContent side="right" align="start" className="pointer-events-none">
         <div className="flex items-start gap-2.5 border-b border-slate-100 p-3.5 dark:border-white/5">
           <span className={cn('mt-1.5 h-2 w-2 shrink-0 rounded-full', STATUS_DOT_CLASSES[statusKind])} aria-hidden />
           <div className="min-w-0 flex-1">
@@ -262,8 +314,47 @@ function ActivityChip({ activity, compact = false, showAssignee = false, onSelec
           <MousePointerClick size={11} />
           {t('calendar.detail.clickHint')}
         </div>
-      </HoverCardContent>
-    </HoverCard>
+            </HoverCardContent>
+          </HoverCard>
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuLabel className="truncate text-xs font-bold text-slate-500 dark:text-slate-400">
+          {activity.subject}
+        </ContextMenuLabel>
+        <ContextMenuSeparator />
+        <ContextMenuItem data-testid="activity-calendar-open-detail" onSelect={() => onSelect(activity)} className="gap-2">
+          <Eye size={15} className="text-primary" />
+          {t('contextActions.viewDetails')}
+        </ContextMenuItem>
+        {canUpdate && (
+          <ContextMenuItem data-testid="activity-calendar-edit" onSelect={() => onEdit(activity)} className="gap-2">
+            <Pencil size={15} className="text-blue-500" />
+            {t('contextActions.edit')}
+          </ContextMenuItem>
+        )}
+        {hasCustomer && (canOpenCustomer || canOpenCustomer360) && <ContextMenuSeparator />}
+        {hasCustomer && canOpenCustomer && (
+          <ContextMenuItem data-testid="activity-calendar-customer-info" onSelect={() => onOpenCustomer(activity)} className="gap-2">
+            <Building2 size={15} className="text-indigo-500" />
+            {t('contextActions.customerInfo')}
+          </ContextMenuItem>
+        )}
+        {hasCustomer && canOpenCustomer360 && (
+          <ContextMenuItem data-testid="activity-calendar-customer-360" onSelect={() => onOpenCustomer360(activity)} className="gap-2">
+            <ChartNoAxesCombined size={15} className="text-emerald-500" />
+            {t('contextActions.customer360')}
+          </ContextMenuItem>
+        )}
+        {canDelete && <ContextMenuSeparator />}
+        {canDelete && (
+          <ContextMenuItem data-testid="activity-calendar-delete" onSelect={() => onDelete(activity)} className="gap-2 text-rose-600 focus:text-rose-600">
+            <Trash2 size={15} />
+            {t('contextActions.delete')}
+          </ContextMenuItem>
+        )}
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
 
@@ -332,10 +423,12 @@ function CalendarDayContextMenu({
 }
 
 export function MyActivitiesCalendar(): ReactElement {
-  const { t, i18n } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation(['dashboard', 'common']);
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-  const { canCreate } = useCrudPermissions('activity.activity-management.view');
+  const { canCreate, canUpdate, canDelete } = useCrudPermissions('activity.activity-management.view');
+  const { canView: canViewCustomer } = useCrudPermissions('customers.customer-management.view');
+  const { canView: canViewCustomer360 } = useCrudPermissions('customer360.overview.view');
   const {
     data: permissions,
     isLoading: permissionsLoading,
@@ -346,6 +439,7 @@ export function MyActivitiesCalendar(): ReactElement {
   const [view, setView] = useState<CalendarView>('week');
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState<ActivityDto | null>(null);
+  const [deleteItem, setDeleteItem] = useState<ActivityDto | null>(null);
   const [dayPopover, setDayPopover] = useState<{ day: Date; items: ActivityDto[] } | null>(null);
   const [detailTab, setDetailTab] = useState('details');
   const [selectedAssigneeId, setSelectedAssigneeId] = useState<number | 'all'>('all');
@@ -354,6 +448,7 @@ export function MyActivitiesCalendar(): ReactElement {
   const [formOpen, setFormOpen] = useState(false);
   const [createSelection, setCreateSelection] = useState<ActivityCreateSelection | null>(null);
   const createActivity = useCreateActivity();
+  const deleteActivity = useDeleteActivity();
   const activityImagesQuery = useActivityImages(
     selected?.id,
     selected !== null && detailTab === 'activityImages',
@@ -511,6 +606,54 @@ export function MyActivitiesCalendar(): ReactElement {
       ? (direction < 0 ? subWeeks(current, 1) : addWeeks(current, 1))
       : (direction < 0 ? subMonths(current, 1) : addMonths(current, 1)));
   };
+
+  const openActivityEditor = (activity: ActivityDto): void => {
+    navigate(`/activity-management?activityId=${activity.id}`);
+  };
+
+  const openCustomer = (activity: ActivityDto): void => {
+    if (!activity.potentialCustomerId) return;
+    navigate(`/customer-management?customerId=${activity.potentialCustomerId}`);
+  };
+
+  const openCustomer360 = (activity: ActivityDto): void => {
+    if (!activity.potentialCustomerId) return;
+    navigate(`/customer-360/${activity.potentialCustomerId}`);
+  };
+
+  const requestDelete = (activity: ActivityDto): void => {
+    setSelected(null);
+    setDayPopover(null);
+    setDeleteItem(activity);
+  };
+
+  const confirmDelete = async (): Promise<void> => {
+    if (!deleteItem) return;
+    await deleteActivity.mutateAsync(deleteItem.id);
+    setDeleteItem(null);
+    await refetch();
+  };
+
+  const renderActivityChip = (
+    activity: ActivityDto,
+    options?: { compact?: boolean; onSelect?: (selectedActivity: ActivityDto) => void },
+  ): ReactElement => (
+    <ActivityChip
+      key={activity.id}
+      activity={activity}
+      compact={options?.compact}
+      showAssignee={showAssigneeOnChips}
+      canUpdate={canUpdate}
+      canDelete={canDelete}
+      canOpenCustomer={canViewCustomer}
+      canOpenCustomer360={canViewCustomer360}
+      onSelect={options?.onSelect ?? setSelected}
+      onEdit={openActivityEditor}
+      onDelete={requestDelete}
+      onOpenCustomer={openCustomer}
+      onOpenCustomer360={openCustomer360}
+    />
+  );
 
   return (
     <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#130d1b]">
@@ -702,7 +845,7 @@ export function MyActivitiesCalendar(): ReactElement {
                     {isToday(day) && <span className="rounded-full bg-[image:var(--crm-brand-gradient)] px-2 py-0.5 text-[10px] font-black text-white">{t('calendar.today')}</span>}
                   </div>
                   <div className="space-y-2 border-l-2 border-dashed border-slate-200 pl-3 dark:border-white/10 md:pl-4">
-                    {items.map((activity) => <ActivityChip key={activity.id} activity={activity} showAssignee={showAssigneeOnChips} onSelect={setSelected} />)}
+                    {items.map((activity) => renderActivityChip(activity))}
                   </div>
                 </div>
               </CalendarDayContextMenu>
@@ -765,7 +908,7 @@ export function MyActivitiesCalendar(): ReactElement {
                       {items.length > 0 && <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-500 dark:bg-white/10 dark:text-slate-400">{items.length}</span>}
                     </div>
                     <div className="space-y-1.5">
-                      {items.slice(0, visibleLimit).map((activity) => <ActivityChip key={activity.id} compact={view === 'month'} showAssignee={showAssigneeOnChips} activity={activity} onSelect={setSelected} />)}
+                      {items.slice(0, visibleLimit).map((activity) => renderActivityChip(activity, { compact: view === 'month' }))}
                       {items.length > visibleLimit && (
                         <button
                           type="button"
@@ -861,6 +1004,25 @@ export function MyActivitiesCalendar(): ReactElement {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={deleteItem !== null} onOpenChange={(open) => !deleteActivity.isPending && !open && setDeleteItem(null)}>
+        <DialogContent data-testid="activity-calendar-delete-dialog" className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('contextActions.deleteActivityTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('contextActions.deleteActivityDescription', { subject: deleteItem?.subject ?? '' })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button type="button" variant="outline" disabled={deleteActivity.isPending} onClick={() => setDeleteItem(null)}>
+              {t('cancel', { ns: 'common' })}
+            </Button>
+            <Button type="button" variant="destructive" disabled={deleteActivity.isPending} onClick={() => void confirmDelete()}>
+              {deleteActivity.isPending ? t('deleting', { ns: 'common' }) : t('contextActions.delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <ActivityForm
         open={formOpen}
         onOpenChange={handleFormOpenChange}
@@ -881,17 +1043,12 @@ export function MyActivitiesCalendar(): ReactElement {
                 <DialogDescription>{t('calendar.title')} · {dayPopover.items.length}</DialogDescription>
               </DialogHeader>
               <div className="max-h-[60vh] space-y-1.5 overflow-y-auto p-3">
-                {dayPopover.items.map((activity) => (
-                  <ActivityChip
-                    key={activity.id}
-                    activity={activity}
-                    showAssignee={showAssigneeOnChips}
-                    onSelect={(picked) => {
-                      setSelected(picked);
-                      setDayPopover(null);
-                    }}
-                  />
-                ))}
+                {dayPopover.items.map((activity) => renderActivityChip(activity, {
+                  onSelect: (picked) => {
+                    setSelected(picked);
+                    setDayPopover(null);
+                  },
+                }))}
               </div>
             </>
           )}

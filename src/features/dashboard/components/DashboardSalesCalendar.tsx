@@ -18,8 +18,11 @@ import {
   subWeeks,
 } from 'date-fns';
 import {
+  Ban,
+  Building2,
   CalendarDays,
   CalendarRange,
+  ChartNoAxesCombined,
   CheckCircle2,
   ChevronDown,
   ChevronLeft,
@@ -27,10 +30,12 @@ import {
   CircleDotDashed,
   ExternalLink,
   FileCheck2,
+  Eye,
   LayoutGrid,
   List,
   Loader2,
   PackageOpen,
+  Pencil,
   RotateCw,
   Search,
   Users,
@@ -48,6 +53,12 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
+import { canCustomerCancelDocument } from '@/features/approval/utils/resolve-document-status';
+import { useCancelDemandByCustomer } from '@/features/demand/hooks/useCancelDemandByCustomer';
+import { useCancelQuotationByCustomer } from '@/features/quotation/hooks/useCancelQuotationByCustomer';
+import { useCancelOrderByCustomer } from '@/features/order/hooks/useCancelOrderByCustomer';
 import { useDashboardSalesCalendar } from '../hooks/useDashboardSalesCalendar';
 import { useDashboardSalesDocumentDetail } from '../hooks/useDashboardSalesDocumentDetail';
 import type {
@@ -70,7 +81,14 @@ interface SalesCalendarEventButtonProps {
   showOwner: boolean;
   compact?: boolean;
   unassignedOwnerLabel: string;
+  canUpdate: boolean;
+  canOpenCustomer: boolean;
+  canOpenCustomer360: boolean;
   onSelect: (item: DashboardSalesCalendarItem) => void;
+  onEdit: (item: DashboardSalesCalendarItem) => void;
+  onCancel: (item: DashboardSalesCalendarItem) => void;
+  onOpenCustomer: (item: DashboardSalesCalendarItem) => void;
+  onOpenCustomer360: (item: DashboardSalesCalendarItem) => void;
 }
 
 interface SalesCalendarDayContextMenuProps {
@@ -120,29 +138,79 @@ function SalesCalendarEventButton({
   showOwner,
   compact = false,
   unassignedOwnerLabel,
+  canUpdate,
+  canOpenCustomer,
+  canOpenCustomer360,
   onSelect,
+  onEdit,
+  onCancel,
+  onOpenCustomer,
+  onOpenCustomer360,
 }: SalesCalendarEventButtonProps): ReactElement {
+  const { t } = useTranslation('dashboard');
   const documentLabel = item.documentNumber?.trim() || `#${item.id}`;
   const visibleLabel = showOwner
     ? `${item.representativeName || unassignedOwnerLabel} · ${documentLabel}`
     : documentLabel;
+  const hasCustomer = Boolean(item.customerId && item.customerId > 0);
+  const canCancel = canUpdate && canCustomerCancelDocument(item.status ?? null, item.isErpIntegrated);
 
   return (
-    <button
-      type="button"
-      data-testid="sales-calendar-event"
-      aria-label={visibleLabel}
-      onClick={() => onSelect(item)}
-      className={cn(
-        'w-full rounded-md border-l-4 px-1.5 text-left transition hover:-translate-y-px hover:shadow-sm',
-        compact ? 'py-0.5' : 'py-1',
-        statusTone(item),
-      )}
-    >
-      <span className={cn('block truncate text-[10px] leading-tight', compact ? 'font-bold' : 'font-black')}>
-        {visibleLabel}
-      </span>
-    </button>
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <button
+          type="button"
+          data-testid="sales-calendar-event"
+          aria-label={visibleLabel}
+          onClick={() => onSelect(item)}
+          className={cn(
+            'w-full rounded-md border-l-4 px-1.5 text-left transition hover:-translate-y-px hover:shadow-sm',
+            compact ? 'py-0.5' : 'py-1',
+            statusTone(item),
+          )}
+        >
+          <span className={cn('block truncate text-[10px] leading-tight', compact ? 'font-bold' : 'font-black')}>
+            {visibleLabel}
+          </span>
+        </button>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuLabel className="truncate text-xs font-bold text-slate-500 dark:text-slate-400">
+          {documentLabel}
+        </ContextMenuLabel>
+        <ContextMenuSeparator />
+        <ContextMenuItem data-testid="sales-calendar-open-detail" onSelect={() => onSelect(item)} className="gap-2">
+          <Eye size={15} className="text-primary" />
+          {t('contextActions.viewDetails')}
+        </ContextMenuItem>
+        {canUpdate && (
+          <ContextMenuItem data-testid="sales-calendar-edit" onSelect={() => onEdit(item)} className="gap-2">
+            <Pencil size={15} className="text-blue-500" />
+            {t('contextActions.edit')}
+          </ContextMenuItem>
+        )}
+        {hasCustomer && (canOpenCustomer || canOpenCustomer360) && <ContextMenuSeparator />}
+        {hasCustomer && canOpenCustomer && (
+          <ContextMenuItem data-testid="sales-calendar-customer-info" onSelect={() => onOpenCustomer(item)} className="gap-2">
+            <Building2 size={15} className="text-indigo-500" />
+            {t('contextActions.customerInfo')}
+          </ContextMenuItem>
+        )}
+        {hasCustomer && canOpenCustomer360 && (
+          <ContextMenuItem data-testid="sales-calendar-customer-360" onSelect={() => onOpenCustomer360(item)} className="gap-2">
+            <ChartNoAxesCombined size={15} className="text-emerald-500" />
+            {t('contextActions.customer360')}
+          </ContextMenuItem>
+        )}
+        {canCancel && <ContextMenuSeparator />}
+        {canCancel && (
+          <ContextMenuItem data-testid="sales-calendar-cancel" onSelect={() => onCancel(item)} className="gap-2 text-rose-600 focus:text-rose-600">
+            <Ban size={15} />
+            {t('contextActions.cancelDocument')}
+          </ContextMenuItem>
+        )}
+      </ContextMenuContent>
+    </ContextMenu>
   );
 }
 
@@ -150,6 +218,12 @@ const ROUTES: Record<DashboardSalesDocumentType, string> = {
   Demand: '/demands',
   Quotation: '/quotations',
   Order: '/orders',
+};
+
+const PERMISSIONS: Record<DashboardSalesDocumentType, string> = {
+  Demand: 'sales.demands.view',
+  Quotation: 'sales.quotations.view',
+  Order: 'sales.orders.view',
 };
 
 function toQueryDate(value: Date): string {
@@ -280,14 +354,21 @@ function SalesDocumentDetailReport({
 }
 
 export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarProps): ReactElement {
-  const { t, i18n } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation(['dashboard', 'common']);
   const navigate = useNavigate();
+  const { canUpdate } = useCrudPermissions(PERMISSIONS[documentType]);
+  const { canView: canViewCustomer } = useCrudPermissions('customers.customer-management.view');
+  const { canView: canViewCustomer360 } = useCrudPermissions('customer360.overview.view');
+  const cancelDemand = useCancelDemandByCustomer();
+  const cancelQuotation = useCancelQuotationByCustomer();
+  const cancelOrder = useCancelOrderByCustomer();
   const [view, setView] = useState<CalendarView>('month');
   const [cursor, setCursor] = useState(() => new Date());
   const [selectedOwnerId, setSelectedOwnerId] = useState<number | 'all'>('all');
   const [ownerSearch, setOwnerSearch] = useState('');
   const [selectedItem, setSelectedItem] = useState<DashboardSalesCalendarItem | null>(null);
   const [dayPopover, setDayPopover] = useState<{ day: Date; items: DashboardSalesCalendarItem[] } | null>(null);
+  const [cancellationItem, setCancellationItem] = useState<DashboardSalesCalendarItem | null>(null);
 
   const weekStartsOn = 1 as const;
   const visibleRange = useMemo(() => {
@@ -374,6 +455,56 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
   const openDocument = (item: DashboardSalesCalendarItem) => {
     navigate(`${ROUTES[documentType]}/${item.id}`);
   };
+
+  const openCustomer = (item: DashboardSalesCalendarItem): void => {
+    if (!item.customerId) return;
+    navigate(`/customer-management?customerId=${item.customerId}`);
+  };
+
+  const openCustomer360 = (item: DashboardSalesCalendarItem): void => {
+    if (!item.customerId) return;
+    navigate(`/customer-360/${item.customerId}`);
+  };
+
+  const requestCancellation = (item: DashboardSalesCalendarItem): void => {
+    setDayPopover(null);
+    setCancellationItem(item);
+  };
+
+  const cancelMutation = documentType === 'Demand'
+    ? cancelDemand
+    : documentType === 'Quotation'
+      ? cancelQuotation
+      : cancelOrder;
+
+  const confirmCancellation = async (reason: string): Promise<void> => {
+    if (!cancellationItem) return;
+    await cancelMutation.mutateAsync({ id: cancellationItem.id, reason: reason || null });
+    if (selectedItem?.id === cancellationItem.id) setSelectedItem(null);
+    setCancellationItem(null);
+    await refetch();
+  };
+
+  const renderCalendarEvent = (
+    item: DashboardSalesCalendarItem,
+    options?: { compact?: boolean; onSelect?: (selected: DashboardSalesCalendarItem) => void },
+  ): ReactElement => (
+    <SalesCalendarEventButton
+      key={item.id}
+      item={item}
+      compact={options?.compact}
+      showOwner={showOwnerOnCalendar}
+      unassignedOwnerLabel={t('salesCalendar.unassignedOwner')}
+      canUpdate={canUpdate}
+      canOpenCustomer={canViewCustomer}
+      canOpenCustomer360={canViewCustomer360}
+      onSelect={options?.onSelect ?? setSelectedItem}
+      onEdit={openDocument}
+      onCancel={requestCancellation}
+      onOpenCustomer={openCustomer}
+      onOpenCustomer360={openCustomer360}
+    />
+  );
 
   const summaryCards: Array<{ label: string; value: number; icon: LucideIcon; tone: string }> = [
     { label: t('salesCalendar.summary.period'), value: summary.total, icon: CalendarDays, tone: 'blue' },
@@ -522,15 +653,7 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
                   )}
                 </div>
                 <div className="space-y-2 border-l-2 border-dashed border-slate-200 pl-3 dark:border-white/10 md:pl-4">
-                  {dayItems.map((item) => (
-                    <SalesCalendarEventButton
-                      key={item.id}
-                      item={item}
-                      showOwner={showOwnerOnCalendar}
-                      unassignedOwnerLabel={t('salesCalendar.unassignedOwner')}
-                      onSelect={setSelectedItem}
-                    />
-                  ))}
+                  {dayItems.map((item) => renderCalendarEvent(item))}
                 </div>
               </div>
             );
@@ -587,16 +710,7 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
                       {format(day, 'd')}
                     </div>
                     <div className="space-y-1">
-                      {dayItems.slice(0, visibleLimit).map((item) => (
-                        <SalesCalendarEventButton
-                          key={item.id}
-                          item={item}
-                          compact={view === 'month'}
-                          showOwner={showOwnerOnCalendar}
-                          unassignedOwnerLabel={t('salesCalendar.unassignedOwner')}
-                          onSelect={setSelectedItem}
-                        />
-                      ))}
+                      {dayItems.slice(0, visibleLimit).map((item) => renderCalendarEvent(item, { compact: view === 'month' }))}
                       {dayItems.length > visibleLimit && (
                         <button
                           type="button"
@@ -660,23 +774,34 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
                 <DialogDescription>{t(`salesCalendar.${titleKey}.title`)} · {dayPopover.items.length}</DialogDescription>
               </DialogHeader>
               <div className="max-h-[60vh] space-y-1.5 overflow-y-auto p-3">
-                {dayPopover.items.map((item) => (
-                  <SalesCalendarEventButton
-                    key={item.id}
-                    item={item}
-                    showOwner={showOwnerOnCalendar}
-                    unassignedOwnerLabel={t('salesCalendar.unassignedOwner')}
-                    onSelect={(selected) => {
-                      setSelectedItem(selected);
-                      setDayPopover(null);
-                    }}
-                  />
-                ))}
+                {dayPopover.items.map((item) => renderCalendarEvent(item, {
+                  onSelect: (selected) => {
+                    setSelectedItem(selected);
+                    setDayPopover(null);
+                  },
+                }))}
               </div>
             </>
           )}
         </DialogContent>
       </Dialog>
+
+      <CustomerCancellationDialog
+        open={cancellationItem !== null}
+        title={t('contextActions.cancelDocumentTitle')}
+        description={t('contextActions.cancelDocumentDescription', {
+          number: cancellationItem?.documentNumber ?? '',
+        })}
+        reasonLabel={t('contextActions.cancellationReason')}
+        reasonPlaceholder={t('contextActions.cancellationReasonPlaceholder')}
+        cancelLabel={t('cancel', { ns: 'common' })}
+        confirmLabel={t('contextActions.cancelDocument')}
+        isPending={cancelMutation.isPending}
+        onOpenChange={(open) => {
+          if (!open) setCancellationItem(null);
+        }}
+        onConfirm={confirmCancellation}
+      />
     </section>
   );
 }
