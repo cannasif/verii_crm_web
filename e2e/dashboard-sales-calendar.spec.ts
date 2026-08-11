@@ -90,4 +90,21 @@ test('aktivite sekmesi takvim verisini API hatası olmadan yükler', async ({ pa
   expect(activityResponse.ok(), await activityResponse.text()).toBeTruthy();
   await expect(page.getByText(/Aktivite takvimim|My activity calendar/i)).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText(/Takvim aktiviteleri yüklenemedi|Calendar activities could not be loaded/i)).toHaveCount(0);
+
+  const calendarDay = page.getByTestId('activity-calendar-day').first();
+  await expect(calendarDay).toBeVisible({ timeout: 30_000 });
+  const selectedDate = await calendarDay.getAttribute('data-calendar-date');
+  if (!selectedDate) throw new Error('Activity calendar day has no date metadata.');
+
+  await calendarDay.click({ button: 'right' });
+  const createFromDay = page.getByTestId('activity-calendar-create');
+  await expect(createFromDay).toBeVisible();
+  await createFromDay.click();
+
+  const activityDialog = page.getByRole('dialog').last();
+  await expect(activityDialog).toBeVisible();
+  await expect(activityDialog.locator('input[type="datetime-local"]').first()).toHaveValue(
+    new RegExp(`^${selectedDate}T`)
+  );
+  await page.keyboard.press('Escape');
 });

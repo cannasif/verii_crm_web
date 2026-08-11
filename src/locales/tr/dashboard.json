@@ -88,7 +88,7 @@
     "status": { "scheduled": "Planlandı", "completed": "Tamamlandı", "cancelled": "İptal edildi", "overdue": "Gecikti" },
     "detail": { "date": "Tarih ve saat", "status": "Durum", "assignee": "Aktivite sorumlusu", "customer": "Müşteri / kişi", "customerCode": "Cari kodu", "description": "Açıklama", "clickHint": "Detaylar için tıklayın" },
     "media": { "tabs": { "details": "Detaylar", "activityImages": "Aktivite görselleri", "customerImages": "Cari görselleri" }, "emptyActivityImages": "Bu aktiviteye eklenmiş görsel bulunmuyor.", "emptyCustomerImages": "Bağlı cariye eklenmiş görsel bulunmuyor.", "loadError": "Görseller yüklenemedi. Lütfen tekrar deneyin.", "openImage": "Görseli tam boy aç" },
-    "today": "Bugün", "previous": "Önceki dönem", "next": "Sonraki dönem", "newActivity": "Aktivite ekle", "activity": "Aktivite", "more": "daha", "empty": "Bu dönemde aktiviteniz yok", "loadError": "Takvim aktiviteleri yüklenemedi.", "openActivities": "Aktivite yönetimini aç"
+    "today": "Bugün", "previous": "Önceki dönem", "next": "Sonraki dönem", "newActivity": "Aktivite ekle", "showDayActivities": "Günün aktivitelerini göster ({{count}})", "activity": "Aktivite", "more": "daha", "empty": "Bu dönemde aktiviteniz yok", "loadError": "Takvim aktiviteleri yüklenemedi.", "openActivities": "Aktivite yönetimini aç"
   },
   "sidebar": {
     "customers": "Müşteriler",

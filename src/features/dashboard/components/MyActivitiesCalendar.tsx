@@ -46,6 +46,14 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -60,6 +68,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useDashboardActivitiesCalendar } from '@/features/activity-management/hooks/useMyActivitiesCalendar';
 import { useCreateActivity } from '@/features/activity-management/hooks/useCreateActivity';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
@@ -75,6 +84,11 @@ import {
 } from '@/features/activity-management/types/activity-types';
 
 type CalendarView = 'month' | 'week' | 'agenda';
+
+type ActivityCreateSelection = {
+  date: string | null;
+  assignedUserId: number | null;
+};
 
 function numericValue(value: number | string): number {
   if (typeof value === 'number') return value;
@@ -249,10 +263,75 @@ function ActivityChip({ activity, compact = false, showAssignee = false, onSelec
   );
 }
 
+interface CalendarDayContextMenuProps {
+  day: Date;
+  itemCount: number;
+  locale: string;
+  canCreate: boolean;
+  createLabel: string;
+  showActivitiesLabel: string;
+  openActivitiesLabel: string;
+  onCreate: () => void;
+  onShowActivities: () => void;
+  onOpenActivities: () => void;
+  children: ReactElement;
+}
+
+function CalendarDayContextMenu({
+  day,
+  itemCount,
+  locale,
+  canCreate,
+  createLabel,
+  showActivitiesLabel,
+  openActivitiesLabel,
+  onCreate,
+  onShowActivities,
+  onOpenActivities,
+  children,
+}: CalendarDayContextMenuProps): ReactElement {
+  const dateLabel = new Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(day);
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuLabel className="truncate capitalize text-xs font-bold text-slate-500 dark:text-slate-400">
+          {dateLabel}
+        </ContextMenuLabel>
+        <ContextMenuSeparator />
+        {canCreate && (
+          <ContextMenuItem data-testid="activity-calendar-create" onSelect={onCreate} className="gap-2">
+            <Plus size={15} className="text-primary" />
+            {createLabel}
+          </ContextMenuItem>
+        )}
+        {itemCount > 0 && (
+          <ContextMenuItem data-testid="activity-calendar-show-day" onSelect={onShowActivities} className="gap-2">
+            <List size={15} className="text-blue-500" />
+            {showActivitiesLabel}
+          </ContextMenuItem>
+        )}
+        {(canCreate || itemCount > 0) && <ContextMenuSeparator />}
+        <ContextMenuItem data-testid="activity-calendar-open-management" onSelect={onOpenActivities} className="gap-2">
+          <ExternalLink size={15} className="text-slate-500" />
+          {openActivitiesLabel}
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+}
+
 export function MyActivitiesCalendar(): ReactElement {
   const { t, i18n } = useTranslation('dashboard');
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
+  const { canCreate } = useCrudPermissions('activity.activity-management.view');
   const {
     data: permissions,
     isLoading: permissionsLoading,
@@ -269,6 +348,7 @@ export function MyActivitiesCalendar(): ReactElement {
   const [assigneePickerOpen, setAssigneePickerOpen] = useState(false);
   const [assigneeFilterTerm, setAssigneeFilterTerm] = useState('');
   const [formOpen, setFormOpen] = useState(false);
+  const [createSelection, setCreateSelection] = useState<ActivityCreateSelection | null>(null);
   const createActivity = useCreateActivity();
   const activityImagesQuery = useActivityImages(
     selected?.id,
@@ -391,6 +471,19 @@ export function MyActivitiesCalendar(): ReactElement {
   };
   const viewIcons: Record<CalendarView, LucideIcon> = { month: LayoutGrid, week: CalendarRange, agenda: List };
 
+  const openCreateActivity = (day?: Date): void => {
+    if (!canCreate) return;
+    setCreateSelection({
+      date: day ? format(day, 'yyyy-MM-dd') : null,
+      assignedUserId: selectedAssigneeId === 'all' ? user?.id ?? null : selectedAssigneeId,
+    });
+    setFormOpen(true);
+  };
+
+  const handleFormOpenChange = (open: boolean): void => {
+    setFormOpen(open);
+    if (!open) setCreateSelection(null);
+  };
   const handleCreateActivity = async (
     data: ActivityFormSchema,
     pendingImages?: { file: File; description: string }[],
@@ -405,6 +498,7 @@ export function MyActivitiesCalendar(): ReactElement {
       });
     }
     setFormOpen(false);
+    setCreateSelection(null);
     void refetch();
   };
 
@@ -464,10 +558,12 @@ export function MyActivitiesCalendar(): ReactElement {
                 );
               })}
             </div>
-            <Button size="sm" className="h-8 bg-[image:var(--crm-brand-gradient)] px-3 text-white shadow-sm shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-md hover:shadow-primary/30" onClick={() => setFormOpen(true)}>
-              <Plus size={15} className="sm:mr-1.5" />
-              <span className="hidden sm:inline">{t('calendar.newActivity')}</span>
-            </Button>
+            {canCreate && (
+              <Button size="sm" className="h-8 bg-[image:var(--crm-brand-gradient)] px-3 text-white shadow-sm shadow-primary/20 transition-all hover:scale-[1.02] hover:shadow-md hover:shadow-primary/30" onClick={() => openCreateActivity()}>
+                <Plus size={15} className="sm:mr-1.5" />
+                <span className="hidden sm:inline">{t('calendar.newActivity')}</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -579,15 +675,33 @@ export function MyActivitiesCalendar(): ReactElement {
             const items = activitiesByDay.get(day.toISOString()) ?? [];
             if (items.length === 0) return null;
             return (
-              <div key={day.toISOString()} className="mb-5 grid gap-3 md:grid-cols-[180px_1fr]">
-                <div className="flex items-center gap-2 md:flex-col md:items-start md:gap-1">
-                  <div className="font-black text-slate-900 dark:text-white">{new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(day)}</div>
-                  {isToday(day) && <span className="rounded-full bg-[image:var(--crm-brand-gradient)] px-2 py-0.5 text-[10px] font-black text-white">{t('calendar.today')}</span>}
+              <CalendarDayContextMenu
+                key={day.toISOString()}
+                day={day}
+                itemCount={items.length}
+                locale={locale}
+                canCreate={canCreate}
+                createLabel={t('calendar.newActivity')}
+                showActivitiesLabel={t('calendar.showDayActivities', { count: items.length })}
+                openActivitiesLabel={t('calendar.openActivities')}
+                onCreate={() => openCreateActivity(day)}
+                onShowActivities={() => setDayPopover({ day, items })}
+                onOpenActivities={() => navigate('/activity-management')}
+              >
+                <div
+                  data-testid="activity-calendar-agenda-day"
+                  data-calendar-date={format(day, 'yyyy-MM-dd')}
+                  className="mb-5 grid gap-3 md:grid-cols-[180px_1fr]"
+                >
+                  <div className="flex items-center gap-2 md:flex-col md:items-start md:gap-1">
+                    <div className="font-black text-slate-900 dark:text-white">{new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(day)}</div>
+                    {isToday(day) && <span className="rounded-full bg-[image:var(--crm-brand-gradient)] px-2 py-0.5 text-[10px] font-black text-white">{t('calendar.today')}</span>}
+                  </div>
+                  <div className="space-y-2 border-l-2 border-dashed border-slate-200 pl-3 dark:border-white/10 md:pl-4">
+                    {items.map((activity) => <ActivityChip key={activity.id} activity={activity} showAssignee={showAssigneeOnChips} onSelect={setSelected} />)}
+                  </div>
                 </div>
-                <div className="space-y-2 border-l-2 border-dashed border-slate-200 pl-3 dark:border-white/10 md:pl-4">
-                  {items.map((activity) => <ActivityChip key={activity.id} activity={activity} showAssignee={showAssigneeOnChips} onSelect={setSelected} />)}
-                </div>
-              </div>
+              </CalendarDayContextMenu>
             );
           })}
           {activities.length === 0 && <EmptyCalendar label={t('calendar.empty')} />}
@@ -612,47 +726,53 @@ export function MyActivitiesCalendar(): ReactElement {
                 setDayPopover({ day, items });
               };
               return (
-                <div
+                <CalendarDayContextMenu
                   key={day.toISOString()}
-                  onContextMenu={(event) => {
-                    if (items.length === 0) return;
-                    event.preventDefault();
-                    openDayPopover();
-                  }}
-                  className={cn(
-                    'flex flex-col overflow-hidden border-b border-r border-slate-200 p-2 last:border-r-0 dark:border-white/10',
-                    !isSameMonth(day, cursor) && view === 'month' && 'bg-slate-50/70 dark:bg-white/[0.02]',
-                    isWeekend && (isSameMonth(day, cursor) || view === 'week') && 'bg-slate-50/40 dark:bg-white/[0.015]',
-                  )}
+                  day={day}
+                  itemCount={items.length}
+                  locale={locale}
+                  canCreate={canCreate}
+                  createLabel={t('calendar.newActivity')}
+                  showActivitiesLabel={t('calendar.showDayActivities', { count: items.length })}
+                  openActivitiesLabel={t('calendar.openActivities')}
+                  onCreate={() => openCreateActivity(day)}
+                  onShowActivities={openDayPopover}
+                  onOpenActivities={() => navigate('/activity-management')}
                 >
-                  <div className="mb-2 flex items-center justify-between">
-                    <span className={cn(
-                      'flex h-7 w-7 items-center justify-center rounded-full text-xs font-black transition',
-                      isToday(day) ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/30' : isSameMonth(day, cursor) || view === 'week' ? 'text-slate-800 dark:text-slate-100' : 'text-slate-400',
-                    )}>
-                      {format(day, 'd')}
-                    </span>
-                    {items.length > 0 && <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-500 dark:bg-white/10 dark:text-slate-400">{items.length}</span>}
-                  </div>
-                  <div className="space-y-1.5">
-                    {items.slice(0, visibleLimit).map((activity) => <ActivityChip key={activity.id} compact={view === 'month'} showAssignee={showAssigneeOnChips} activity={activity} onSelect={setSelected} />)}
-                    {items.length > visibleLimit && (
-                      <button
-                        type="button"
-                        title={t('calendar.more')}
-                        className="w-full rounded-md py-0.5 text-left text-[10px] font-bold text-primary hover:bg-primary/5 hover:underline"
-                        onClick={openDayPopover}
-                        onContextMenu={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          openDayPopover();
-                        }}
-                      >
-                        +{items.length - visibleLimit} {t('calendar.more')}
-                      </button>
+                  <div
+                    data-testid="activity-calendar-day"
+                    data-calendar-date={format(day, 'yyyy-MM-dd')}
+                    data-activity-count={items.length}
+                    className={cn(
+                      'flex flex-col overflow-hidden border-b border-r border-slate-200 p-2 last:border-r-0 dark:border-white/10',
+                      !isSameMonth(day, cursor) && view === 'month' && 'bg-slate-50/70 dark:bg-white/[0.02]',
+                      isWeekend && (isSameMonth(day, cursor) || view === 'week') && 'bg-slate-50/40 dark:bg-white/[0.015]',
                     )}
+                  >
+                    <div className="mb-2 flex items-center justify-between">
+                      <span className={cn(
+                        'flex h-7 w-7 items-center justify-center rounded-full text-xs font-black transition',
+                        isToday(day) ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/30' : isSameMonth(day, cursor) || view === 'week' ? 'text-slate-800 dark:text-slate-100' : 'text-slate-400',
+                      )}>
+                        {format(day, 'd')}
+                      </span>
+                      {items.length > 0 && <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-500 dark:bg-white/10 dark:text-slate-400">{items.length}</span>}
+                    </div>
+                    <div className="space-y-1.5">
+                      {items.slice(0, visibleLimit).map((activity) => <ActivityChip key={activity.id} compact={view === 'month'} showAssignee={showAssigneeOnChips} activity={activity} onSelect={setSelected} />)}
+                      {items.length > visibleLimit && (
+                        <button
+                          type="button"
+                          title={t('calendar.more')}
+                          className="w-full rounded-md py-0.5 text-left text-[10px] font-bold text-primary hover:bg-primary/5 hover:underline"
+                          onClick={openDayPopover}
+                        >
+                          +{items.length - visibleLimit} {t('calendar.more')}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
+                </CalendarDayContextMenu>
               );
             })}
           </div>
@@ -736,9 +856,11 @@ export function MyActivitiesCalendar(): ReactElement {
 
       <ActivityForm
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={handleFormOpenChange}
         onSubmit={handleCreateActivity}
         isLoading={createActivity.isPending}
+        initialDate={createSelection?.date}
+        initialAssignedUserId={createSelection?.assignedUserId}
       />
 
       <Dialog open={dayPopover !== null} onOpenChange={(open) => !open && setDayPopover(null)}>

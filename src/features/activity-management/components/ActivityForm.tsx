@@ -66,6 +66,7 @@ interface ActivityFormProps {
   activity?: ActivityDto | null;
   isLoading?: boolean;
   initialDate?: string | null;
+  initialAssignedUserId?: number | null;
   initialStartDateTime?: string | null;
   initialEndDateTime?: string | null;
   initialPotentialCustomerId?: number | null;
@@ -184,6 +185,7 @@ export function ActivityForm({
   activity,
   isLoading = false,
   initialDate,
+  initialAssignedUserId,
   initialStartDateTime,
   initialEndDateTime,
   initialPotentialCustomerId,
@@ -237,7 +239,7 @@ export function ActivityForm({
       activityTypeId: undefined,
       status: ActivityStatus.Scheduled,
       priority: ActivityPriority.Medium,
-      assignedUserId: user?.id ?? 0,
+      assignedUserId: initialAssignedUserId ?? user?.id ?? 0,
       paymentTypeId: undefined,
       activityMeetingTypeId: undefined,
       activityTopicPurposeId: undefined,
@@ -354,7 +356,7 @@ export function ActivityForm({
       status: ActivityStatus.Scheduled,
       priority: ActivityPriority.Medium,
       contactId: initialContactId ?? undefined,
-      assignedUserId: user?.id ?? 0,
+      assignedUserId: initialAssignedUserId ?? user?.id ?? 0,
       paymentTypeId: undefined,
       activityMeetingTypeId: undefined,
       activityTopicPurposeId: undefined,
@@ -365,7 +367,7 @@ export function ActivityForm({
       reminders: [],
     });
     setSelectedCustomerDisplayName(initialCustomerDisplayName ?? null);
-    prevAssignedUserIdRef.current = user?.id ?? 0;
+    prevAssignedUserIdRef.current = initialAssignedUserId ?? user?.id ?? 0;
   }, [
     activity,
     defaultStartDateTime,
@@ -373,6 +375,7 @@ export function ActivityForm({
     initialContactId,
     initialCustomerDisplayName,
     initialDate,
+    initialAssignedUserId,
     initialEndDateTime,
     initialErpCustomerCode,
     initialPotentialCustomerId,
