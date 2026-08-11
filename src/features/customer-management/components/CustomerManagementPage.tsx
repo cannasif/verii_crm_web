@@ -1,6 +1,6 @@
 import { type ReactElement, useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
@@ -53,6 +53,7 @@ import {
 } from '../utils/customer-conflict';
 import { customerApi } from '../api/customer-api';
 import { queryKeys } from '../utils/query-keys';
+import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 
 const EMPTY_CUSTOMERS: CustomerDto[] = [];
 const PAGE_KEY = 'customer-management';
@@ -87,8 +88,10 @@ function getQuickActivityWindow(): { start: string; end: string } {
 export function CustomerManagementPage(): ReactElement {
   const { t, i18n } = useTranslation(['customer-management', 'common']);
   const user = useAuthStore((s) => s.user);
+  const { canUpdate } = useCrudPermissions('customers.customer-management.view');
   const setPageTitle = useUIStore((s) => s.setPageTitle);
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const isFrom360 = location.state?.from360 === true;
 
@@ -169,6 +172,47 @@ export function CustomerManagementPage(): ReactElement {
     if (!isFrom360) return [];
     return loadTablePaginationState(PAGE_KEY, userId, { pageNumber: 1, pageSize: 10, searchTerm: '' }).appliedFilterRows ?? [];
   });
+
+  useEffect(() => {
+    const rawCustomerId = searchParams.get('customerId');
+    if (!rawCustomerId) return;
+
+    const customerId = Number(rawCustomerId);
+    if (!Number.isInteger(customerId) || customerId <= 0) {
+      const nextParams = new URLSearchParams(searchParams);
+      nextParams.delete('customerId');
+      setSearchParams(nextParams, { replace: true });
+      return;
+    }
+
+    let cancelled = false;
+    void customerApi.getById(customerId)
+      .then((customer) => {
+        if (cancelled) return;
+        if (canUpdate) {
+          setEditingCustomer(customer);
+          setDuplicateConflicts(null);
+          setFormOpen(true);
+          return;
+        }
+
+        setSearchTerm(customer.customerCode?.trim() || customer.name?.trim() || String(customer.id));
+        setPageNumber(1);
+      })
+      .catch(() => {
+        // Invalid or inaccessible deep links fall back to the customer list.
+      })
+      .finally(() => {
+        if (cancelled) return;
+        const nextParams = new URLSearchParams(searchParams);
+        nextParams.delete('customerId');
+        setSearchParams(nextParams, { replace: true });
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [canUpdate, searchParams, setSearchParams]);
 
   const prevParamsRef = useRef({ pageSize, searchTerm, appliedFilterRows, sortBy, sortDirection });
 
