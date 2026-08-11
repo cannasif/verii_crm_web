@@ -150,7 +150,7 @@ function SalesCalendarEventButton({
   const { t } = useTranslation('dashboard');
   const documentLabel = item.documentNumber?.trim() || `#${item.id}`;
   const visibleLabel = showOwner
-    ? `${item.representativeName || unassignedOwnerLabel} · ${documentLabel}`
+    ? `${item.representativeName || unassignedOwnerLabel} / ${documentLabel}`
     : documentLabel;
   const hasCustomer = Boolean(item.customerId && item.customerId > 0);
   const canCancel = canUpdate && canCustomerCancelDocument(item.status ?? null, item.isErpIntegrated);
@@ -163,9 +163,13 @@ function SalesCalendarEventButton({
           data-testid="sales-calendar-event"
           aria-label={visibleLabel}
           onClick={() => onSelect(item)}
+          onContextMenu={(event) => {
+            event.stopPropagation();
+            event.nativeEvent.stopImmediatePropagation();
+          }}
           className={cn(
             'w-full rounded-md border-l-4 px-1.5 text-left transition hover:-translate-y-px hover:shadow-sm',
-            compact ? 'py-0.5' : 'py-1',
+            compact ? 'h-5 py-0.5' : 'py-1',
             statusTone(item),
           )}
         >
@@ -506,21 +510,31 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
     />
   );
 
-  const summaryCards: Array<{ label: string; value: number; icon: LucideIcon; tone: string }> = [
-    { label: t('salesCalendar.summary.period'), value: summary.total, icon: CalendarDays, tone: 'blue' },
-    { label: t('salesCalendar.summary.today'), value: summary.today, icon: FileCheck2, tone: 'fuchsia' },
-    { label: t('salesCalendar.summary.erp'), value: summary.erp, icon: CheckCircle2, tone: 'emerald' },
-    { label: t('salesCalendar.summary.waiting'), value: summary.waiting, icon: CircleDotDashed, tone: 'amber' },
-  ];
-  const summaryToneClasses: Record<string, string> = {
+  const summaryToneClasses = {
     blue: 'bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-300',
     fuchsia: 'bg-fuchsia-50 text-fuchsia-600 dark:bg-fuchsia-500/15 dark:text-fuchsia-300',
     amber: 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300',
     emerald: 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300',
-  };
+  } as const;
+  const summaryCards = [
+    { key: 'period', label: t('salesCalendar.summary.period'), value: summary.total, icon: CalendarDays, tone: 'blue' },
+    { key: 'today', label: t('salesCalendar.summary.today'), value: summary.today, icon: FileCheck2, tone: 'fuchsia' },
+    { key: 'erp', label: t('salesCalendar.summary.erp'), value: summary.erp, icon: CheckCircle2, tone: 'emerald' },
+    { key: 'waiting', label: t('salesCalendar.summary.waiting'), value: summary.waiting, icon: CircleDotDashed, tone: 'amber' },
+  ] satisfies Array<{
+    key: string;
+    label: string;
+    value: number;
+    icon: LucideIcon;
+    tone: keyof typeof summaryToneClasses;
+  }>;
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#130d1b]">
+    <section
+      data-testid="sales-calendar-context-boundary"
+      onContextMenu={(event) => event.preventDefault()}
+      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#130d1b]"
+    >
       <div className="relative overflow-hidden border-b border-slate-200 px-4 py-3 dark:border-white/10 md:px-5">
         <div className="pointer-events-none absolute -right-16 -top-24 h-52 w-52 rounded-full bg-[image:var(--crm-brand-gradient)] opacity-[0.07] blur-2xl" aria-hidden />
         <div className="relative flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -536,18 +550,28 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
             </h2>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5">
-            {summaryCards.map(({ label, value, icon: Icon, tone }) => (
-              <span
-                key={label}
-                title={label}
-                className={cn('flex items-center gap-1.5 rounded-lg px-2 py-1', summaryToneClasses[tone])}
-              >
-                <Icon size={13} className="shrink-0" />
-                <span className="text-sm font-black leading-none tabular-nums">{isLoading ? '-' : value}</span>
-                <span className="hidden whitespace-nowrap text-[11px] font-bold leading-none lg:inline">{label}</span>
-              </span>
-            ))}
+          <div className="flex items-center gap-1">
+            {summaryCards.map(({ key, label, value, icon: Icon, tone }) => {
+              const displayValue = isLoading ? '-' : value;
+
+              return (
+                <span
+                  key={key}
+                  data-testid={`sales-calendar-summary-${key}`}
+                  title={`${label}: ${displayValue}`}
+                  aria-label={`${label}: ${displayValue}`}
+                  className={cn(
+                    'inline-flex h-7 min-w-11 items-center justify-center gap-1 rounded-lg px-1.5',
+                    summaryToneClasses[tone],
+                  )}
+                >
+                  <Icon size={12} className="shrink-0" aria-hidden />
+                  <span className="text-xs font-black leading-none tabular-nums" aria-hidden>
+                    {displayValue}
+                  </span>
+                </span>
+              );
+            })}
           </div>
 
           <div className="ms-auto flex items-center gap-2">
@@ -668,10 +692,17 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
           )}
         </div>
       ) : (
-        <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-x-auto overflow-y-hidden">
+        <div className={cn(
+          'overflow-x-auto overflow-y-clip',
+          view === 'week' && 'h-[calc(100vh-410px)] min-h-[380px]',
+        )}>
           <div
-            className="min-w-[840px] grid h-full grid-cols-7"
-            style={{ gridTemplateRows: `auto repeat(${Math.max(1, days.length / 7)}, minmax(${view === 'week' ? '160px' : '70px'}, 1fr))` }}
+            className={cn('min-w-[840px] grid grid-cols-7', view === 'week' ? 'h-full' : 'h-auto')}
+            style={{
+              gridTemplateRows: view === 'month'
+                ? `auto repeat(${Math.max(1, days.length / 7)}, 104px)`
+                : 'auto minmax(320px, 1fr)',
+            }}
           >
             {days.slice(0, 7).map((day) => (
               <div key={`header-${day.toISOString()}`} className="border-b border-r border-slate-200 bg-slate-50 px-2 py-2 text-center text-[10px] font-black uppercase tracking-wider text-slate-400 last:border-r-0 dark:border-white/10 dark:bg-white/[0.03]">
@@ -701,7 +732,7 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
                     data-calendar-date={format(day, 'yyyy-MM-dd')}
                     data-document-count={dayItems.length}
                     className={cn(
-                      'flex flex-col overflow-hidden border-b border-r border-slate-100 p-1.5 dark:border-white/5',
+                      'flex min-h-0 flex-col overflow-clip border-b border-r border-slate-100 p-1.5 dark:border-white/5',
                       !isSameMonth(day, cursor) && view === 'month' && 'bg-slate-50/70 opacity-60 dark:bg-white/[0.02]',
                       isToday(day) && 'bg-primary/[0.03]',
                     )}
@@ -709,14 +740,14 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
                     <div className={cn('mb-1 flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black text-slate-500', isToday(day) && 'bg-primary text-white')}>
                       {format(day, 'd')}
                     </div>
-                    <div className="space-y-1">
+                    <div className="min-h-0 space-y-1 overflow-clip">
                       {dayItems.slice(0, visibleLimit).map((item) => renderCalendarEvent(item, { compact: view === 'month' }))}
                       {dayItems.length > visibleLimit && (
                         <button
                           type="button"
                           data-testid="sales-calendar-more"
                           title={t('salesCalendar.more')}
-                          className="block w-full rounded-md px-1 py-0.5 text-left text-[9px] font-bold text-primary hover:bg-primary/5 hover:underline"
+                          className="block h-5 w-full rounded-md px-1 py-0.5 text-left text-[9px] font-bold leading-none text-primary hover:bg-primary/5 hover:underline"
                           onClick={openDayPopover}
                         >
                           +{dayItems.length - visibleLimit} {t('salesCalendar.more')}

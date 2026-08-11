@@ -230,7 +230,10 @@ function ActivityChip({
       <ContextMenuTrigger asChild>
         <div
           className="w-full"
-          onContextMenu={(event) => event.stopPropagation()}
+          onContextMenu={(event) => {
+            event.stopPropagation();
+            event.nativeEvent.stopImmediatePropagation();
+          }}
           onPointerEnter={() => setSuppressHover(false)}
         >
           <HoverCard
@@ -248,13 +251,13 @@ function ActivityChip({
                 onClick={() => onSelect(activity)}
                 className={cn(
                   'w-full rounded-md border-l-4 text-left shadow-xs transition hover:-translate-y-px hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
-                  compact ? 'px-2 py-1' : 'px-2.5 py-1.5',
+                  compact ? 'h-5 px-1.5 py-0.5' : 'px-2.5 py-1.5',
                   eventTone(activity),
                 )}
               >
                 <span className="flex min-w-0 items-center gap-1.5">
-                  {time && <span className="shrink-0 text-[10px] font-black tabular-nums opacity-70">{time}</span>}
-                  <span className="truncate text-[11px] font-bold">{activity.subject}</span>
+                  {time && <span className={cn('shrink-0 font-black tabular-nums opacity-70', compact ? 'text-[9px] leading-none' : 'text-[10px]')}>{time}</span>}
+                  <span className={cn('truncate font-bold', compact ? 'text-[10px] leading-none' : 'text-[11px]')}>{activity.subject}</span>
                 </span>
                 {showAssignee && !compact && (
                   <span className="mt-0.5 flex min-w-0 items-center gap-1 text-[10px] opacity-70">
@@ -656,7 +659,11 @@ export function MyActivitiesCalendar(): ReactElement {
   );
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#130d1b]">
+    <section
+      data-testid="activity-calendar-context-boundary"
+      onContextMenu={(event) => event.preventDefault()}
+      className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#130d1b]"
+    >
       <div className="relative overflow-hidden border-b border-slate-200 px-4 py-3 dark:border-white/10 md:px-5">
         <div className="pointer-events-none absolute -right-16 -top-24 h-52 w-52 rounded-full bg-[image:var(--crm-brand-gradient)] opacity-[0.07] blur-2xl" aria-hidden />
         <div className="relative flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -854,10 +861,17 @@ export function MyActivitiesCalendar(): ReactElement {
           {activities.length === 0 && <EmptyCalendar label={t('calendar.empty')} />}
         </div>
       ) : (
-        <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-x-auto overflow-y-hidden">
+        <div className={cn(
+          'overflow-x-auto overflow-y-clip',
+          view === 'week' && 'h-[calc(100vh-410px)] min-h-[380px]',
+        )}>
           <div
-            className="min-w-[900px] grid h-full grid-cols-7"
-            style={{ gridTemplateRows: `auto repeat(${Math.max(1, days.length / 7)}, minmax(${view === 'week' ? '160px' : '70px'}, 1fr))` }}
+            className={cn('min-w-[900px] grid grid-cols-7', view === 'week' ? 'h-full' : 'h-auto')}
+            style={{
+              gridTemplateRows: view === 'month'
+                ? `auto repeat(${Math.max(1, days.length / 7)}, 104px)`
+                : 'auto minmax(320px, 1fr)',
+            }}
           >
             {days.slice(0, 7).map((day) => (
               <div key={`header-${day.getDay()}`} className={cn('border-b border-r border-slate-200 bg-slate-50 px-2 py-2.5 text-center text-[11px] font-black uppercase tracking-wider text-slate-500 last:border-r-0 dark:border-white/10 dark:bg-white/5', (day.getDay() === 0 || day.getDay() === 6) && 'text-[var(--crm-brand-text)]')}>
@@ -893,28 +907,30 @@ export function MyActivitiesCalendar(): ReactElement {
                     data-calendar-date={format(day, 'yyyy-MM-dd')}
                     data-activity-count={items.length}
                     className={cn(
-                      'flex flex-col overflow-hidden border-b border-r border-slate-200 p-2 last:border-r-0 dark:border-white/10',
+                      'flex min-h-0 flex-col overflow-clip border-b border-r border-slate-200 last:border-r-0 dark:border-white/10',
+                      view === 'month' ? 'p-1.5' : 'p-2',
                       !isSameMonth(day, cursor) && view === 'month' && 'bg-slate-50/70 dark:bg-white/[0.02]',
                       isWeekend && (isSameMonth(day, cursor) || view === 'week') && 'bg-slate-50/40 dark:bg-white/[0.015]',
                     )}
                   >
-                    <div className="mb-2 flex items-center justify-between">
+                    <div className={cn('flex items-center justify-between', view === 'month' ? 'mb-1' : 'mb-2')}>
                       <span className={cn(
-                        'flex h-7 w-7 items-center justify-center rounded-full text-xs font-black transition',
+                        'flex items-center justify-center rounded-full font-black transition',
+                        view === 'month' ? 'h-5 w-5 text-[10px]' : 'h-7 w-7 text-xs',
                         isToday(day) ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/30' : isSameMonth(day, cursor) || view === 'week' ? 'text-slate-800 dark:text-slate-100' : 'text-slate-400',
                       )}>
                         {format(day, 'd')}
                       </span>
                       {items.length > 0 && <span className="rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-500 dark:bg-white/10 dark:text-slate-400">{items.length}</span>}
                     </div>
-                    <div className="space-y-1.5">
+                    <div className={cn('min-h-0 overflow-clip', view === 'month' ? 'space-y-1' : 'space-y-1.5')}>
                       {items.slice(0, visibleLimit).map((activity) => renderActivityChip(activity, { compact: view === 'month' }))}
                       {items.length > visibleLimit && (
                         <button
                           type="button"
                           data-testid="activity-calendar-more"
                           title={t('calendar.more')}
-                          className="w-full rounded-md py-0.5 text-left text-[10px] font-bold text-primary hover:bg-primary/5 hover:underline"
+                          className="block h-5 w-full rounded-md px-1 py-0.5 text-left text-[10px] font-bold leading-none text-primary hover:bg-primary/5 hover:underline"
                           onClick={openDayPopover}
                         >
                           +{items.length - visibleLimit} {t('calendar.more')}
