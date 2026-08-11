@@ -75,7 +75,7 @@
     "descriptionSelf": "Verfolgen Sie Ihre Verkaufsdokumente und ERP-Konvertierungen in einem Kalender.",
     "summary": { "period": "Dieser Zeitraum", "today": "Heute erstellt", "erp": "Heute in ERP übertragen", "waiting": "Genehmigung ausstehend" },
     "ownerLabel": "Vertriebsmitarbeiter", "allOwners": "Alle Benutzer", "ownerSearch": "Benutzer suchen...", "unassignedOwner": "Nicht zugewiesen",
-    "today": "Heute", "previous": "Vorheriger Monat", "next": "Nächster Monat", "more": "mehr", "empty": "Keine Dokumente in diesem Zeitraum", "loadError": "Verkaufskalender konnte nicht geladen werden.",
+    "today": "Heute", "previous": "Vorheriger Monat", "next": "Nächster Monat", "more": "mehr", "showDayDocuments": "Alle Dokumente dieses Tages anzeigen ({{count}})", "empty": "Keine Dokumente in diesem Zeitraum", "loadError": "Verkaufskalender konnte nicht geladen werden.",
     "customerUnknown": "Kundeninformationen nicht verfügbar", "erpYes": "ERP-Datensatz erstellt", "erpNo": "Kein ERP-Datensatz erstellt", "openDocument": "Dokumentdetails öffnen",
     "detail": { "date": "Belegdatum", "amount": "Gesamtbetrag", "owner": "Vertriebsmitarbeiter", "erp": "ERP-Status / Nummer", "customer": "Kunde", "deliveryDate": "Lieferdatum", "lines": "Belegpositionen", "lineCount": "{{count}} Positionen", "productCode": "Produktcode", "productName": "Produktname", "quantity": "Menge", "unitPrice": "Stückpreis", "discount": "Rabatt", "vat": "MwSt.", "lineTotal": "Positionssumme", "noLines": "Für dieses Dokument wurden keine Positionen gefunden.", "loading": "Dokument und Positionen werden geladen...", "loadError": "Dokumentdetails konnten nicht geladen werden." }
   },

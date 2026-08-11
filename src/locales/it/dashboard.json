@@ -75,7 +75,7 @@
     "descriptionSelf": "Monitora i tuoi documenti di vendita e le conversioni ERP in un unico calendario.",
     "summary": { "period": "Questo periodo", "today": "Creati oggi", "erp": "Convertiti in ERP oggi", "waiting": "In attesa di approvazione" },
     "ownerLabel": "Rappresentante commerciale", "allOwners": "Tutti gli utenti", "ownerSearch": "Cerca utente...", "unassignedOwner": "Non assegnato",
-    "today": "Oggi", "previous": "Mese precedente", "next": "Mese successivo", "more": "altre", "empty": "Nessun documento in questo periodo", "loadError": "Impossibile caricare il calendario vendite.",
+    "today": "Oggi", "previous": "Mese precedente", "next": "Mese successivo", "more": "altre", "showDayDocuments": "Mostra tutti i documenti del giorno ({{count}})", "empty": "Nessun documento in questo periodo", "loadError": "Impossibile caricare il calendario vendite.",
     "customerUnknown": "Informazioni cliente non disponibili", "erpYes": "Record ERP creato", "erpNo": "Record ERP non creato", "openDocument": "Apri dettagli documento",
     "detail": { "date": "Data documento", "amount": "Totale generale", "owner": "Rappresentante commerciale", "erp": "Stato / numero ERP", "customer": "Cliente", "deliveryDate": "Data di consegna", "lines": "Righe documento", "lineCount": "{{count}} righe", "productCode": "Codice prodotto", "productName": "Nome prodotto", "quantity": "Quantità", "unitPrice": "Prezzo unitario", "discount": "Sconto", "vat": "IVA", "lineTotal": "Totale riga", "noLines": "Nessuna riga trovata per questo documento.", "loading": "Caricamento documento e righe...", "loadError": "Impossibile caricare i dettagli del documento." }
   },

@@ -75,7 +75,7 @@
     "descriptionSelf": "Suivez vos documents commerciaux et conversions ERP dans un seul calendrier.",
     "summary": { "period": "Cette période", "today": "Créés aujourd'hui", "erp": "Convertis en ERP aujourd'hui", "waiting": "En attente d'approbation" },
     "ownerLabel": "Représentant commercial", "allOwners": "Tous les utilisateurs", "ownerSearch": "Rechercher un utilisateur...", "unassignedOwner": "Non assigné",
-    "today": "Aujourd'hui", "previous": "Mois précédent", "next": "Mois suivant", "more": "de plus", "empty": "Aucun document sur cette période", "loadError": "Impossible de charger le calendrier des ventes.",
+    "today": "Aujourd'hui", "previous": "Mois précédent", "next": "Mois suivant", "more": "de plus", "showDayDocuments": "Afficher tous les documents du jour ({{count}})", "empty": "Aucun document sur cette période", "loadError": "Impossible de charger le calendrier des ventes.",
     "customerUnknown": "Informations client indisponibles", "erpYes": "Enregistrement ERP créé", "erpNo": "Enregistrement ERP non créé", "openDocument": "Ouvrir les détails du document",
     "detail": { "date": "Date du document", "amount": "Total général", "owner": "Représentant commercial", "erp": "Statut / numéro ERP", "customer": "Client", "deliveryDate": "Date de livraison", "lines": "Lignes du document", "lineCount": "{{count}} lignes", "productCode": "Code produit", "productName": "Nom du produit", "quantity": "Quantité", "unitPrice": "Prix unitaire", "discount": "Remise", "vat": "TVA", "lineTotal": "Total ligne", "noLines": "Aucune ligne trouvée pour ce document.", "loading": "Chargement du document et des lignes...", "loadError": "Impossible de charger les détails du document." }
   },

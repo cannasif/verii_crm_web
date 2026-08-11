@@ -41,6 +41,30 @@ test('satış takvimi sorumlu görünürlüğünü uygular ve belge kalemlerini 
   expect(calendar.isSystemAdmin).toBe(true);
   expect(calendar.items.length).toBeGreaterThan(0);
 
+  const salesCalendarDays = page.getByTestId('sales-calendar-day');
+  for (let index = 0; index < await salesCalendarDays.count(); index += 1) {
+    const day = salesCalendarDays.nth(index);
+    const documentCount = Number(await day.getAttribute('data-document-count'));
+    await expect(day.getByTestId('sales-calendar-event')).toHaveCount(Math.min(documentCount, 2));
+    await expect(day.getByTestId('sales-calendar-more')).toHaveCount(documentCount > 2 ? 1 : 0);
+  }
+  const populatedDay = page.locator('[data-testid="sales-calendar-day"]:not([data-document-count="0"])').first();
+  await expect(populatedDay).toBeVisible({ timeout: 30_000 });
+  const dayItemCount = Number(await populatedDay.getAttribute('data-document-count'));
+  expect(dayItemCount).toBeGreaterThan(0);
+  await expect(populatedDay.getByTestId('sales-calendar-event')).toHaveCount(Math.min(dayItemCount, 2));
+  await expect(populatedDay.getByTestId('sales-calendar-more')).toHaveCount(dayItemCount > 2 ? 1 : 0);
+
+  await populatedDay.click({ button: 'right' });
+  const showDayDocuments = page.getByTestId('sales-calendar-show-day');
+  await expect(showDayDocuments).toBeVisible();
+  await showDayDocuments.click();
+
+  const dayDialog = page.getByTestId('sales-calendar-day-dialog');
+  await expect(dayDialog).toBeVisible();
+  await expect(dayDialog.getByTestId('sales-calendar-event')).toHaveCount(dayItemCount);
+  await page.keyboard.press('Escape');
+  await expect(dayDialog).toBeHidden();
   const firstEvent = page.getByTestId('sales-calendar-event').first();
   await expect(firstEvent).toBeVisible({ timeout: 30_000 });
   const firstLabel = await firstEvent.getAttribute('aria-label');
@@ -91,6 +115,13 @@ test('aktivite sekmesi takvim verisini API hatası olmadan yükler', async ({ pa
   await expect(page.getByText(/Aktivite takvimim|My activity calendar/i)).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText(/Takvim aktiviteleri yüklenemedi|Calendar activities could not be loaded/i)).toHaveCount(0);
 
+  const activityCalendarDays = page.getByTestId('activity-calendar-day');
+  for (let index = 0; index < await activityCalendarDays.count(); index += 1) {
+    const day = activityCalendarDays.nth(index);
+    const activityCount = Number(await day.getAttribute('data-activity-count'));
+    await expect(day.getByTestId('activity-calendar-event')).toHaveCount(Math.min(activityCount, 3));
+    await expect(day.getByTestId('activity-calendar-more')).toHaveCount(activityCount > 3 ? 1 : 0);
+  }
   const calendarDay = page.getByTestId('activity-calendar-day').first();
   await expect(calendarDay).toBeVisible({ timeout: 30_000 });
   const selectedDate = await calendarDay.getAttribute('data-calendar-date');
@@ -107,4 +138,16 @@ test('aktivite sekmesi takvim verisini API hatası olmadan yükler', async ({ pa
     new RegExp(`^${selectedDate}T`)
   );
   await page.keyboard.press('Escape');
+
+  const populatedActivityDay = page.locator('[data-testid="activity-calendar-day"]:not([data-activity-count="0"])').first();
+  if (await populatedActivityDay.count()) {
+    const activityCount = Number(await populatedActivityDay.getAttribute('data-activity-count'));
+    await populatedActivityDay.click({ button: 'right' });
+    await page.getByTestId('activity-calendar-show-day').click();
+
+    const dayActivitiesDialog = page.getByTestId('activity-calendar-day-dialog');
+    await expect(dayActivitiesDialog).toBeVisible();
+    await expect(dayActivitiesDialog.getByTestId('activity-calendar-event')).toHaveCount(activityCount);
+    await page.keyboard.press('Escape');
+  }
 });

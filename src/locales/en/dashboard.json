@@ -76,7 +76,7 @@
     "descriptionSelf": "Track your sales documents and ERP conversions in one calendar.",
     "summary": { "period": "This period", "today": "Created today", "erp": "Converted to ERP today", "waiting": "Waiting approval" },
     "ownerLabel": "Sales representative", "allOwners": "All users", "ownerSearch": "Search user...", "unassignedOwner": "Unassigned",
-    "today": "Today", "previous": "Previous month", "next": "Next month", "more": "more", "empty": "No documents in this period", "loadError": "Sales calendar could not be loaded.",
+    "today": "Today", "previous": "Previous month", "next": "Next month", "more": "more", "showDayDocuments": "Show all documents for this day ({{count}})", "empty": "No documents in this period", "loadError": "Sales calendar could not be loaded.",
     "customerUnknown": "Customer information is unavailable", "erpYes": "ERP record created", "erpNo": "ERP record not created", "openDocument": "Open document details",
     "detail": { "date": "Document date", "amount": "Grand total", "owner": "Sales representative", "erp": "ERP status / number", "customer": "Customer", "deliveryDate": "Delivery date", "lines": "Document lines", "lineCount": "{{count}} lines", "productCode": "Product code", "productName": "Product name", "quantity": "Quantity", "unitPrice": "Unit price", "discount": "Discount", "vat": "VAT", "lineTotal": "Line total", "noLines": "No lines were found for this document.", "loading": "Loading document and lines...", "loadError": "Document details could not be loaded." }
   },

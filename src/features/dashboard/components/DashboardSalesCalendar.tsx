@@ -37,6 +37,14 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
@@ -54,48 +62,76 @@ interface DashboardSalesCalendarProps {
 
 type CalendarView = 'month' | 'week' | 'agenda';
 
+const MONTH_CALENDAR_DAY_PREVIEW_LIMIT = 2;
+const WEEK_CALENDAR_DAY_PREVIEW_LIMIT = 3;
+
 interface SalesCalendarEventButtonProps {
   item: DashboardSalesCalendarItem;
   showOwner: boolean;
   compact?: boolean;
   unassignedOwnerLabel: string;
-  customerUnknownLabel: string;
   onSelect: (item: DashboardSalesCalendarItem) => void;
 }
 
-function getCustomerDisplay(
-  item: DashboardSalesCalendarItem,
-  customerUnknownLabel: string,
-): { name: string; code: string | null } {
-  const code = item.customerCode?.trim() || null;
-  const customerName = item.customerName?.trim() || null;
-  if (customerName) {
-    return { name: customerName, code };
-  }
-  if (code) {
-    return { name: code, code: null };
-  }
-  return { name: customerUnknownLabel, code: null };
+interface SalesCalendarDayContextMenuProps {
+  day: Date;
+  itemCount: number;
+  locale: string;
+  showAllLabel: string;
+  onShowAll: () => void;
+  children: ReactElement;
 }
 
+function SalesCalendarDayContextMenu({
+  day,
+  itemCount,
+  locale,
+  showAllLabel,
+  onShowAll,
+  children,
+}: SalesCalendarDayContextMenuProps): ReactElement {
+  if (itemCount === 0) return children;
+
+  const dateLabel = new Intl.DateTimeFormat(locale, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(day);
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuLabel className="truncate capitalize text-xs font-bold text-slate-500 dark:text-slate-400">
+          {dateLabel}
+        </ContextMenuLabel>
+        <ContextMenuSeparator />
+        <ContextMenuItem data-testid="sales-calendar-show-day" onSelect={onShowAll} className="gap-2">
+          <List size={15} className="text-primary" />
+          {showAllLabel}
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+}
 function SalesCalendarEventButton({
   item,
   showOwner,
   compact = false,
   unassignedOwnerLabel,
-  customerUnknownLabel,
   onSelect,
 }: SalesCalendarEventButtonProps): ReactElement {
-  const customer = getCustomerDisplay(item, customerUnknownLabel);
-  const ariaLabel = showOwner
-    ? `${item.representativeName || unassignedOwnerLabel} ${customer.code ? `${customer.code} ${customer.name}` : customer.name}`
-    : (customer.code ? `${customer.code} ${customer.name}` : customer.name);
+  const documentLabel = item.documentNumber?.trim() || `#${item.id}`;
+  const visibleLabel = showOwner
+    ? `${item.representativeName || unassignedOwnerLabel} · ${documentLabel}`
+    : documentLabel;
 
   return (
     <button
       type="button"
       data-testid="sales-calendar-event"
-      aria-label={ariaLabel}
+      aria-label={visibleLabel}
       onClick={() => onSelect(item)}
       className={cn(
         'w-full rounded-md border-l-4 px-1.5 text-left transition hover:-translate-y-px hover:shadow-sm',
@@ -103,18 +139,9 @@ function SalesCalendarEventButton({
         statusTone(item),
       )}
     >
-      {compact ? (
-        <span className="block truncate text-[10px] font-bold leading-tight">
-          {showOwner ? (item.representativeName || unassignedOwnerLabel) : customer.name}
-        </span>
-      ) : showOwner ? (
-        <>
-          <span className="block truncate text-[10px] font-black">{item.representativeName || unassignedOwnerLabel}</span>
-          <span className="block truncate text-[9px] font-semibold opacity-70">{customer.name}</span>
-        </>
-      ) : (
-        <span className="block truncate text-[10px] font-black">{customer.name}</span>
-      )}
+      <span className={cn('block truncate text-[10px] leading-tight', compact ? 'font-bold' : 'font-black')}>
+        {visibleLabel}
+      </span>
     </button>
   );
 }
@@ -501,7 +528,6 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
                       item={item}
                       showOwner={showOwnerOnCalendar}
                       unassignedOwnerLabel={t('salesCalendar.unassignedOwner')}
-                      customerUnknownLabel={t('salesCalendar.customerUnknown')}
                       onSelect={setSelectedItem}
                     />
                   ))}
@@ -519,7 +545,7 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
           )}
         </div>
       ) : (
-        <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-auto">
+        <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-x-auto overflow-y-hidden">
           <div
             className="min-w-[840px] grid h-full grid-cols-7"
             style={{ gridTemplateRows: `auto repeat(${Math.max(1, days.length / 7)}, minmax(${view === 'week' ? '160px' : '70px'}, 1fr))` }}
@@ -531,57 +557,60 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
             ))}
             {days.map((day) => {
               const dayItems = itemsByDay.get(day.toISOString()) ?? [];
-              const visibleLimit = view === 'week' ? 12 : 2;
+              const visibleLimit = view === 'month'
+                ? MONTH_CALENDAR_DAY_PREVIEW_LIMIT
+                : WEEK_CALENDAR_DAY_PREVIEW_LIMIT;
               const openDayPopover = (): void => {
                 if (dayItems.length === 0) return;
                 setDayPopover({ day, items: dayItems });
               };
               return (
-                <div
+                <SalesCalendarDayContextMenu
                   key={day.toISOString()}
-                  onContextMenu={(event) => {
-                    if (dayItems.length === 0) return;
-                    event.preventDefault();
-                    openDayPopover();
-                  }}
-                  className={cn(
-                    'flex flex-col overflow-hidden border-b border-r border-slate-100 p-1.5 dark:border-white/5',
-                    !isSameMonth(day, cursor) && view === 'month' && 'bg-slate-50/70 opacity-60 dark:bg-white/[0.02]',
-                    isToday(day) && 'bg-primary/[0.03]',
-                  )}
+                  day={day}
+                  itemCount={dayItems.length}
+                  locale={locale}
+                  showAllLabel={t('salesCalendar.showDayDocuments', { count: dayItems.length })}
+                  onShowAll={openDayPopover}
                 >
-                  <div className={cn('mb-1 flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black text-slate-500', isToday(day) && 'bg-primary text-white')}>
-                    {format(day, 'd')}
-                  </div>
-                  <div className="space-y-1">
-                    {dayItems.slice(0, visibleLimit).map((item) => (
-                      <SalesCalendarEventButton
-                        key={item.id}
-                        item={item}
-                        compact={view === 'month'}
-                        showOwner={showOwnerOnCalendar}
-                        unassignedOwnerLabel={t('salesCalendar.unassignedOwner')}
-                        customerUnknownLabel={t('salesCalendar.customerUnknown')}
-                        onSelect={setSelectedItem}
-                      />
-                    ))}
-                    {dayItems.length > visibleLimit && (
-                      <button
-                        type="button"
-                        title={t('salesCalendar.more')}
-                        className="block w-full rounded-md px-1 py-0.5 text-left text-[9px] font-bold text-primary hover:bg-primary/5 hover:underline"
-                        onClick={openDayPopover}
-                        onContextMenu={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                          openDayPopover();
-                        }}
-                      >
-                        +{dayItems.length - visibleLimit} {t('salesCalendar.more')}
-                      </button>
+                  <div
+                    data-testid="sales-calendar-day"
+                    data-calendar-date={format(day, 'yyyy-MM-dd')}
+                    data-document-count={dayItems.length}
+                    className={cn(
+                      'flex flex-col overflow-hidden border-b border-r border-slate-100 p-1.5 dark:border-white/5',
+                      !isSameMonth(day, cursor) && view === 'month' && 'bg-slate-50/70 opacity-60 dark:bg-white/[0.02]',
+                      isToday(day) && 'bg-primary/[0.03]',
                     )}
+                  >
+                    <div className={cn('mb-1 flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-black text-slate-500', isToday(day) && 'bg-primary text-white')}>
+                      {format(day, 'd')}
+                    </div>
+                    <div className="space-y-1">
+                      {dayItems.slice(0, visibleLimit).map((item) => (
+                        <SalesCalendarEventButton
+                          key={item.id}
+                          item={item}
+                          compact={view === 'month'}
+                          showOwner={showOwnerOnCalendar}
+                          unassignedOwnerLabel={t('salesCalendar.unassignedOwner')}
+                          onSelect={setSelectedItem}
+                        />
+                      ))}
+                      {dayItems.length > visibleLimit && (
+                        <button
+                          type="button"
+                          data-testid="sales-calendar-more"
+                          title={t('salesCalendar.more')}
+                          className="block w-full rounded-md px-1 py-0.5 text-left text-[9px] font-bold text-primary hover:bg-primary/5 hover:underline"
+                          onClick={openDayPopover}
+                        >
+                          +{dayItems.length - visibleLimit} {t('salesCalendar.more')}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
+                </SalesCalendarDayContextMenu>
               );
             })}
           </div>
@@ -621,7 +650,7 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
       </Dialog>
 
       <Dialog open={dayPopover !== null} onOpenChange={(open) => !open && setDayPopover(null)}>
-        <DialogContent className="max-h-[80vh] overflow-hidden p-0 sm:max-w-md">
+        <DialogContent data-testid="sales-calendar-day-dialog" className="max-h-[80vh] overflow-hidden p-0 sm:max-w-md">
           {dayPopover && (
             <>
               <DialogHeader className="border-b border-slate-200 p-4 text-left dark:border-white/10">
@@ -637,7 +666,6 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
                     item={item}
                     showOwner={showOwnerOnCalendar}
                     unassignedOwnerLabel={t('salesCalendar.unassignedOwner')}
-                    customerUnknownLabel={t('salesCalendar.customerUnknown')}
                     onSelect={(selected) => {
                       setSelectedItem(selected);
                       setDayPopover(null);

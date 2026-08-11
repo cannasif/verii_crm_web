@@ -85,6 +85,9 @@ import {
 
 type CalendarView = 'month' | 'week' | 'agenda';
 
+const MONTH_CALENDAR_DAY_PREVIEW_LIMIT = 2;
+const WEEK_CALENDAR_DAY_PREVIEW_LIMIT = 3;
+
 type ActivityCreateSelection = {
   date: string | null;
   assignedUserId: number | null;
@@ -189,6 +192,7 @@ function ActivityChip({ activity, compact = false, showAssignee = false, onSelec
       <HoverCardTrigger asChild>
         <button
           type="button"
+          data-testid="activity-calendar-event"
           onClick={() => onSelect(activity)}
           className={cn(
             'w-full rounded-md border-l-4 text-left shadow-xs transition hover:-translate-y-px hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
@@ -707,7 +711,7 @@ export function MyActivitiesCalendar(): ReactElement {
           {activities.length === 0 && <EmptyCalendar label={t('calendar.empty')} />}
         </div>
       ) : (
-        <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-auto">
+        <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-x-auto overflow-y-hidden">
           <div
             className="min-w-[900px] grid h-full grid-cols-7"
             style={{ gridTemplateRows: `auto repeat(${Math.max(1, days.length / 7)}, minmax(${view === 'week' ? '160px' : '70px'}, 1fr))` }}
@@ -720,7 +724,9 @@ export function MyActivitiesCalendar(): ReactElement {
             {days.map((day) => {
               const items = activitiesByDay.get(day.toISOString()) ?? [];
               const isWeekend = day.getDay() === 0 || day.getDay() === 6;
-              const visibleLimit = view === 'week' ? 12 : 2;
+              const visibleLimit = view === 'month'
+                ? MONTH_CALENDAR_DAY_PREVIEW_LIMIT
+                : WEEK_CALENDAR_DAY_PREVIEW_LIMIT;
               const openDayPopover = (): void => {
                 if (items.length === 0) return;
                 setDayPopover({ day, items });
@@ -763,6 +769,7 @@ export function MyActivitiesCalendar(): ReactElement {
                       {items.length > visibleLimit && (
                         <button
                           type="button"
+                          data-testid="activity-calendar-more"
                           title={t('calendar.more')}
                           className="w-full rounded-md py-0.5 text-left text-[10px] font-bold text-primary hover:bg-primary/5 hover:underline"
                           onClick={openDayPopover}
@@ -864,7 +871,7 @@ export function MyActivitiesCalendar(): ReactElement {
       />
 
       <Dialog open={dayPopover !== null} onOpenChange={(open) => !open && setDayPopover(null)}>
-        <DialogContent className="max-h-[80vh] overflow-hidden p-0 sm:max-w-md">
+        <DialogContent data-testid="activity-calendar-day-dialog" className="max-h-[80vh] overflow-hidden p-0 sm:max-w-md">
           {dayPopover && (
             <>
               <DialogHeader className="border-b border-slate-200 p-4 text-left dark:border-white/10">
