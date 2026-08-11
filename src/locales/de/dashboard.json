@@ -66,7 +66,22 @@
   "reportPreparing": "Der Bericht ist in Vorbereitung...",
   "reportDownloaded": "Der Bericht wurde heruntergeladen.",
   "reportError": "Der Bericht konnte nicht empfangen werden.",
-  "tabs": { "label": "Dashboard-Ansichten", "reports": "Meine Berichte", "calendar": "Mein Kalender", "demands": "Anfragen", "quotations": "Angebote", "orders": "Bestellungen" },
+  "tabs": { "label": "Dashboard-Ansichten", "reports": "Meine Berichte", "calendar": "Mein Kalender", "demands": "Anfragen", "quotations": "Angebote", "orders": "Bestellungen", "salesMap": "Vertriebskarte" },
+  "salesMap": {
+    "title": "Globale Vertriebskarte",
+    "descriptionAdmin": "Vergleichen Sie Angebote und Bestellungen des gesamten Teams nach Stadt.",
+    "descriptionSelf": "Verfolgen Sie Ihre Angebote und Bestellungen nach Stadt.",
+    "startDate": "Start", "endDate": "Ende", "apply": "Anwenden", "rangeTooLarge": "Der Zeitraum darf 370 Tage nicht überschreiten.",
+    "presets": { "30days": "Letzte 30 Tage", "90days": "Letzte 90 Tage", "365days": "Letzte 365 Tage", "year": "Dieses Jahr" },
+    "metrics": { "label": "Auf der Karte angezeigte Kennzahlen", "quotations": "Angebote", "orders": "Bestellungen", "erpOrders": "ERP-Bestellungen", "tlAmount": "TRY-Betrag" },
+    "summary": { "orderTl": "Bestellwert (TRY)" },
+    "views": { "globe": "3D-Globus", "flat": "2D-Karte" },
+    "autoRotate": "Automatisch drehen",
+    "ranking": { "title": "Top-Städte", "description": "Nach gewählten Kennzahlen", "documents": "Belege" },
+    "unlocated": "{{count}} Belege ohne Standort werden nicht angezeigt.",
+    "empty": "Für diesen Zeitraum sind keine kartierbaren Verkaufsdaten vorhanden.",
+    "loadError": "Die Vertriebskarte konnte nicht geladen werden."
+  },
   "salesCalendar": {
     "demand": { "title": "Anfragekalender" },
     "quotation": { "title": "Angebotskalender" },

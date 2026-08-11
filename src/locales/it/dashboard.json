@@ -66,7 +66,22 @@
   "reportPreparing": "Il rapporto è in preparazione...",
   "reportDownloaded": "Il rapporto è stato scaricato.",
   "reportError": "Non è stato possibile ricevere il rapporto.",
-  "tabs": { "label": "Viste dashboard", "reports": "I miei report", "calendar": "Il mio calendario", "demands": "Richieste", "quotations": "Preventivi", "orders": "Ordini" },
+  "tabs": { "label": "Viste dashboard", "reports": "I miei report", "calendar": "Il mio calendario", "demands": "Richieste", "quotations": "Preventivi", "orders": "Ordini", "salesMap": "Mappa vendite" },
+  "salesMap": {
+    "title": "Mappa mondiale delle vendite",
+    "descriptionAdmin": "Confronta preventivi e ordini di tutto il team per città.",
+    "descriptionSelf": "Segui la distribuzione dei tuoi preventivi e ordini per città.",
+    "startDate": "Inizio", "endDate": "Fine", "apply": "Applica", "rangeTooLarge": "L'intervallo non può superare 370 giorni.",
+    "presets": { "30days": "Ultimi 30 giorni", "90days": "Ultimi 90 giorni", "365days": "Ultimi 365 giorni", "year": "Quest'anno" },
+    "metrics": { "label": "Metriche mostrate sulla mappa", "quotations": "Preventivi", "orders": "Ordini", "erpOrders": "Ordini ERP", "tlAmount": "Importo TRY" },
+    "summary": { "orderTl": "Importo ordini (TRY)" },
+    "views": { "globe": "Globo 3D", "flat": "Mappa 2D" },
+    "autoRotate": "Rotazione automatica",
+    "ranking": { "title": "Città principali", "description": "In base alle metriche", "documents": "documenti" },
+    "unlocated": "{{count}} documenti senza posizione non sono mostrati.",
+    "empty": "Nessun dato di vendita mappabile in questo periodo.",
+    "loadError": "Impossibile caricare la mappa vendite."
+  },
   "salesCalendar": {
     "demand": { "title": "Calendario richieste" },
     "quotation": { "title": "Calendario preventivi" },

@@ -7,3 +7,9 @@ export const queryKeys = {
   dashboard: () => [DASHBOARD_QUERY_KEYS.DATA] as const,
   currencyRates: () => [DASHBOARD_QUERY_KEYS.CURRENCY_RATES] as const,
 };
+
+export const dashboardQueryKeys = {
+  root: ['dashboard'] as const,
+  salesMap: (startDate: string, endDate: string) =>
+    [...dashboardQueryKeys.root, 'sales-map', startDate, endDate] as const,
+};

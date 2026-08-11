@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useState } from 'react';
+import { lazy, Suspense, type ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useUIStore } from '@/stores/ui-store';
@@ -24,6 +24,7 @@ import {
   ClipboardList,
   FileText,
   ShoppingCart,
+  Globe2,
 } from 'lucide-react';
 
 import {
@@ -37,6 +38,10 @@ import {
 import { cn } from '@/lib/utils';
 import { CRM_MENU_ITEM_INTERACTIVE_CLASS } from '@/lib/menu-interactive-styles';
 import type { LucideIcon } from 'lucide-react';
+
+const DashboardSalesMap = lazy(() =>
+  import('./DashboardSalesMap').then((module) => ({ default: module.DashboardSalesMap })),
+);
 
 type QuickActionTone = 'blue' | 'amber' | 'violet';
 
@@ -93,7 +98,7 @@ export function DashboardPage(): ReactElement {
 
   const [timeOfDay, setTimeOfDay] = useState<'morning' | 'afternoon' | 'evening'>('morning');
   const [dashboardMode, setDashboardMode] = useState<'view' | 'edit'>('view');
-  const [activeTab, setActiveTab] = useState<'reports' | 'calendar' | 'demand' | 'quotation' | 'order'>('calendar');
+  const [activeTab, setActiveTab] = useState<'reports' | 'calendar' | 'demand' | 'quotation' | 'order' | 'salesMap'>('calendar');
   const tCommon = useTranslation('common').t;
 
   useEffect(() => {
@@ -256,6 +261,7 @@ export function DashboardPage(): ReactElement {
           { id: 'demand' as const, icon: ClipboardList, label: t('tabs.demands') },
           { id: 'quotation' as const, icon: FileText, label: t('tabs.quotations') },
           { id: 'order' as const, icon: ShoppingCart, label: t('tabs.orders') },
+          { id: 'salesMap' as const, icon: Globe2, label: t('tabs.salesMap') },
         ]).map(({ id, icon: Icon, label }) => (
           <button
             key={id}
@@ -284,6 +290,11 @@ export function DashboardPage(): ReactElement {
       {activeTab === 'demand' && <DashboardSalesCalendar documentType="Demand" />}
       {activeTab === 'quotation' && <DashboardSalesCalendar documentType="Quotation" />}
       {activeTab === 'order' && <DashboardSalesCalendar documentType="Order" />}
+      {activeTab === 'salesMap' && (
+        <Suspense fallback={<div className="h-[580px] w-full animate-pulse rounded-xl bg-slate-100 dark:bg-white/5" />}>
+          <DashboardSalesMap />
+        </Suspense>
+      )}
 
     </div>
   );

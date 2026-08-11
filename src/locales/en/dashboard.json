@@ -67,7 +67,22 @@
     "criticalStock": "Critical Stock",
     "stockStatus": "See stock status"
   },
-  "tabs": { "label": "Dashboard views", "reports": "My Reports", "calendar": "My Calendar", "demands": "Demands", "quotations": "Quotations", "orders": "Orders" },
+  "tabs": { "label": "Dashboard views", "reports": "My Reports", "calendar": "My Calendar", "demands": "Demands", "quotations": "Quotations", "orders": "Orders", "salesMap": "Sales Map" },
+  "salesMap": {
+    "title": "Global sales map",
+    "descriptionAdmin": "Compare quotation and order activity across the entire team by city.",
+    "descriptionSelf": "Track the city distribution of your quotations and orders.",
+    "startDate": "Start", "endDate": "End", "apply": "Apply", "rangeTooLarge": "The date range cannot exceed 370 days.",
+    "presets": { "30days": "Last 30 days", "90days": "Last 90 days", "365days": "Last 365 days", "year": "This year" },
+    "metrics": { "label": "Metrics shown on the map", "quotations": "Quotations", "orders": "Orders", "erpOrders": "ERP orders", "tlAmount": "TRY amount" },
+    "summary": { "orderTl": "Order amount (TRY)" },
+    "views": { "globe": "3D Globe", "flat": "2D Map" },
+    "autoRotate": "Auto rotate",
+    "ranking": { "title": "Top cities", "description": "By selected metrics", "documents": "documents" },
+    "unlocated": "{{count}} documents with missing locations are not shown on the map.",
+    "empty": "No mappable sales data exists in this date range.",
+    "loadError": "The sales map could not be loaded. Please try again."
+  },
   "salesCalendar": {
     "demand": { "title": "Demand calendar" },
     "quotation": { "title": "Quotation calendar" },

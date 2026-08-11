@@ -66,7 +66,22 @@
   "reportPreparing": "Le rapport est en préparation...",
   "reportDownloaded": "Le rapport a été téléchargé.",
   "reportError": "Le rapport n'a pas pu être reçu.",
-  "tabs": { "label": "Vues du tableau de bord", "reports": "Mes rapports", "calendar": "Mon calendrier", "demands": "Demandes", "quotations": "Devis", "orders": "Commandes" },
+  "tabs": { "label": "Vues du tableau de bord", "reports": "Mes rapports", "calendar": "Mon calendrier", "demands": "Demandes", "quotations": "Devis", "orders": "Commandes", "salesMap": "Carte des ventes" },
+  "salesMap": {
+    "title": "Carte mondiale des ventes",
+    "descriptionAdmin": "Comparez les devis et commandes de toute l'équipe par ville.",
+    "descriptionSelf": "Suivez la répartition de vos devis et commandes par ville.",
+    "startDate": "Début", "endDate": "Fin", "apply": "Appliquer", "rangeTooLarge": "La période ne peut pas dépasser 370 jours.",
+    "presets": { "30days": "30 derniers jours", "90days": "90 derniers jours", "365days": "365 derniers jours", "year": "Cette année" },
+    "metrics": { "label": "Indicateurs affichés sur la carte", "quotations": "Devis", "orders": "Commandes", "erpOrders": "Commandes ERP", "tlAmount": "Montant TRY" },
+    "summary": { "orderTl": "Montant des commandes (TRY)" },
+    "views": { "globe": "Globe 3D", "flat": "Carte 2D" },
+    "autoRotate": "Rotation automatique",
+    "ranking": { "title": "Villes principales", "description": "Selon les indicateurs", "documents": "documents" },
+    "unlocated": "{{count}} documents sans localisation ne sont pas affichés.",
+    "empty": "Aucune donnée de vente cartographiable pour cette période.",
+    "loadError": "La carte des ventes n'a pas pu être chargée."
+  },
   "salesCalendar": {
     "demand": { "title": "Calendrier des demandes" },
     "quotation": { "title": "Calendrier des devis" },
