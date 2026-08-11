@@ -34,7 +34,12 @@ export const appendPagedQueryParams = (
 
   if (params.pageNumber) queryParams.append(pageParamName, params.pageNumber.toString());
   if (params.pageSize) queryParams.append(pageSizeParamName, params.pageSize.toString());
-  if (params.search?.trim()) queryParams.append('search', params.search.trim());
+  const search = params.search?.trim();
+  if (search) {
+    queryParams.append('search', search);
+    [...new Set(params.searchFields?.map((field) => field.trim()).filter(Boolean) ?? [])]
+      .forEach((field) => queryParams.append('searchFields', field));
+  }
   if (params.sortBy) queryParams.append('sortBy', params.sortBy);
   if (params.sortDirection) queryParams.append('sortDirection', params.sortDirection);
   if (params.filters) {
