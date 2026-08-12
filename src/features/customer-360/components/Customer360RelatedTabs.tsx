@@ -1,7 +1,7 @@
 import { type ReactElement, type ReactNode, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, FileText, Plus, ShoppingCart, Activity, ChevronRight as RowChevron } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FileText, Plus, ShoppingCart, Activity, ChevronRight as RowChevron, type LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -60,7 +60,7 @@ function RelatedCard({
   headerActions,
   children,
 }: {
-  icon: React.ElementType;
+  icon: LucideIcon;
   title: string;
   count?: number;
   createLabel: string;

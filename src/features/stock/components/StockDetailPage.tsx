@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, Box, Image as ImageIcon, Layers, Info, PackageOpen, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Box, Image as ImageIcon, Layers, Info, PackageOpen, ShieldCheck, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useStockDetail } from '../hooks/useStockDetail';
 import { getLocalizedStockName } from '../utils/localized-stock-name';
@@ -249,7 +249,7 @@ function StockTabSkeleton({ tall = false }: { tall?: boolean }): ReactElement {
   );
 }
 
-function TabItem({ value, icon: Icon, label }: { value: string; icon: React.ElementType; label: string }): ReactElement {
+function TabItem({ value, icon: Icon, label }: { value: string; icon: LucideIcon; label: string }): ReactElement {
   return (
     <TabsTrigger
       value={value}

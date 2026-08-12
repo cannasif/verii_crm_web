@@ -14,7 +14,8 @@ import {
   Building2, 
   GitBranch,
   CheckCircle2,
-  ListFilter
+  ListFilter,
+  type LucideIcon,
 } from 'lucide-react';
 import { toast } from 'sonner'; 
 import type { StockGetDto } from '../types';
@@ -162,7 +163,7 @@ export function StockBasicInfo({ stock }: StockBasicInfoProps): ReactElement {
   );
 }
 
-function SectionHeader({ icon: Icon, title }: { icon: React.ElementType, title: string }) {
+function SectionHeader({ icon: Icon, title }: { icon: LucideIcon, title: string }) {
     return (
         <h4 className="text-sm font-bold text-zinc-800 dark:text-zinc-100 flex items-center gap-2 mb-2">
             <div className="p-1.5 rounded-md bg-zinc-100 dark:bg-white/5 text-zinc-500 dark:text-zinc-400">
@@ -184,7 +185,7 @@ function InfoItem({
 }: { 
     label: string, 
     value?: string | null, 
-    icon?: React.ElementType,
+    icon?: LucideIcon,
     copyable?: boolean,
     featured?: boolean,
     className?: string,

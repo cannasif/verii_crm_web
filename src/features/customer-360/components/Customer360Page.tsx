@@ -30,6 +30,7 @@ import {
   Package,
   Send,
   Target,
+  type LucideIcon,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -198,7 +199,7 @@ function SectionCard({
   renderItem,
 }: {
   title: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   items: unknown[];
   emptyKey: string;
   renderItem: (item: unknown) => ReactElement;
@@ -1174,7 +1175,7 @@ function sanitizePhone(phone?: string | null): string | null {
   return cleaned.length >= 7 ? cleaned : null;
 }
 
-function HeroChip({ icon: Icon, children }: { icon: React.ElementType; children: React.ReactNode }): ReactElement {
+function HeroChip({ icon: Icon, children }: { icon: LucideIcon; children: React.ReactNode }): ReactElement {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-muted/50 px-2.5 py-1 text-xs font-medium text-foreground/80">
       <Icon className="h-3.5 w-3.5 text-primary" />
@@ -1190,7 +1191,7 @@ function HeroInfoActionIcon({
   label,
   tone,
 }: {
-  icon: React.ElementType;
+  icon: LucideIcon;
   href?: string;
   onClick?: () => void;
   label: string;
@@ -1235,7 +1236,7 @@ function HeroInfoLine({
   valueHref,
   actions,
 }: {
-  icon: React.ElementType;
+  icon: LucideIcon;
   label: string;
   value?: string | null;
   emptyLabel: string;
@@ -1292,7 +1293,7 @@ function HeroActionButton({
   tone = 'default',
   disabled,
 }: {
-  icon: React.ElementType;
+  icon: LucideIcon;
   label: string;
   onClick?: () => void;
   href?: string;

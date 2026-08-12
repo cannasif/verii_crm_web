@@ -78,6 +78,7 @@ import {
   CheckCircle,
   Settings,
   X,
+  type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ProfilePictureEditor } from './ProfilePictureEditor';
@@ -85,7 +86,7 @@ import { ProfilePictureEditor } from './ProfilePictureEditor';
 interface StatCardProps {
   title: string;
   value: string | number;
-  icon: React.ElementType;
+  icon: LucideIcon;
   description?: string;
   colorClass?: string;
   progress?: number;
