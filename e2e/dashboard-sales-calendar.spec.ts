@@ -55,7 +55,15 @@ test('satış takvimi sorumlu görünürlüğünü uygular ve belge kalemlerini 
   await expect(populatedDay.getByTestId('sales-calendar-event')).toHaveCount(Math.min(dayItemCount, 2));
   await expect(populatedDay.getByTestId('sales-calendar-more')).toHaveCount(dayItemCount > 2 ? 1 : 0);
 
-  await populatedDay.click({ button: 'right' });
+  const populatedDayBox = await populatedDay.boundingBox();
+  expect(populatedDayBox).not.toBeNull();
+  await populatedDay.click({
+    button: 'right',
+    position: {
+      x: Math.max(1, Math.floor((populatedDayBox?.width ?? 2) - 8)),
+      y: Math.max(1, Math.floor((populatedDayBox?.height ?? 2) - 8)),
+    },
+  });
   const showDayDocuments = page.getByTestId('sales-calendar-show-day');
   await expect(showDayDocuments).toBeVisible();
   await showDayDocuments.click();
