@@ -3,13 +3,10 @@ import { Canvas, type ThreeEvent, useFrame, useLoader, useThree } from '@react-t
 import * as THREE from 'three';
 import { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { DashboardSalesMapLocation } from '../types/dashboard-sales-map';
-
-interface RankedLocation extends DashboardSalesMapLocation {
-  score: number;
-}
+import type { RankedSalesMapLocation } from '../utils/sales-map-metrics';
 
 interface SalesWorldGlobeProps {
-  locations: RankedLocation[];
+  locations: RankedSalesMapLocation[];
   selectedKey: string | null;
   autoRotate: boolean;
   onSelect: (location: DashboardSalesMapLocation) => void;
@@ -95,9 +92,8 @@ function GlobeControls({ autoRotate }: { autoRotate: boolean }) {
 function LocationMarkers({ locations, selectedKey, onSelect, onHover }: Omit<SalesWorldGlobeProps, 'autoRotate'>) {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
-  const lowColor = useMemo(() => new THREE.Color('#38bdf8'), []);
-  const highColor = useMemo(() => new THREE.Color('#f43f8c'), []);
   const selectedColor = useMemo(() => new THREE.Color('#fbbf24'), []);
+  const radialAxis = useMemo(() => new THREE.Vector3(0, 1, 0), []);
   const { invalidate } = useThree();
 
   useEffect(() => {
@@ -105,18 +101,17 @@ function LocationMarkers({ locations, selectedKey, onSelect, onHover }: Omit<Sal
     if (!mesh) return;
 
     locations.forEach((location, index) => {
-      const position = latLngToVector(location.latitude, location.longitude, EARTH_RADIUS + 0.045);
-      const scale = 0.055 + Math.sqrt(Math.max(0, location.score)) * 0.11;
+      const position = latLngToVector(location.latitude, location.longitude, EARTH_RADIUS + 0.095);
       dummy.position.copy(position);
-      dummy.scale.setScalar(location.key === selectedKey ? scale * 1.35 : scale);
-      dummy.lookAt(position.clone().multiplyScalar(2));
+      dummy.quaternion.setFromUnitVectors(radialAxis, position.clone().normalize());
+      dummy.scale.setScalar(location.key === selectedKey ? 1.35 : 1);
       dummy.updateMatrix();
       mesh.setMatrixAt(index, dummy.matrix);
       mesh.setColorAt(
         index,
         location.key === selectedKey
           ? selectedColor
-          : lowColor.clone().lerp(highColor, Math.min(1, Math.max(0, location.score))),
+          : new THREE.Color(location.color),
       );
     });
 
@@ -124,7 +119,7 @@ function LocationMarkers({ locations, selectedKey, onSelect, onHover }: Omit<Sal
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     mesh.computeBoundingSphere();
     invalidate();
-  }, [dummy, highColor, invalidate, locations, lowColor, selectedColor, selectedKey]);
+  }, [dummy, invalidate, locations, radialAxis, selectedColor, selectedKey]);
 
   const resolveLocation = (event: ThreeEvent<PointerEvent | MouseEvent>) => {
     if (event.instanceId == null) return null;
@@ -146,7 +141,7 @@ function LocationMarkers({ locations, selectedKey, onSelect, onHover }: Omit<Sal
       }}
       onPointerOut={() => onHover(null)}
     >
-      <sphereGeometry args={[1, 12, 10]} />
+      <coneGeometry args={[0.065, 0.19, 10]} />
       <meshStandardMaterial roughness={0.35} metalness={0.08} emissive="#181028" emissiveIntensity={0.12} />
     </instancedMesh>
   );

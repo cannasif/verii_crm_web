@@ -12,24 +12,39 @@ import {
   Rotate3D,
   ShoppingCart,
   TurkishLira,
+  UserRound,
+  Users,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useDashboardSalesMap } from '../hooks/useDashboardSalesMap';
 import type {
   DashboardSalesMapLocation,
   SalesMapMetric,
   SalesMapMetricState,
+  SalesMapScope,
 } from '../types/dashboard-sales-map';
-import { rankSalesMapLocations } from '../utils/sales-map-metrics';
+import {
+  getSalesMapOwnerColor,
+  rankSalesMapLocations,
+  type RankedSalesMapLocation,
+} from '../utils/sales-map-metrics';
 
 const SalesWorldGlobe = lazy(() => import('./SalesWorldGlobe'));
 
 type MapViewMode = 'globe' | 'flat';
 type DatePreset = 'year' | '30days' | '90days' | '365days';
+const ALL_COUNTRIES = '__all__';
 
 interface DateRangeValue {
   start: string;
@@ -108,7 +123,7 @@ function FlatWorldMap({
   selectedKey,
   onSelect,
 }: {
-  locations: Array<DashboardSalesMapLocation & { score: number }>;
+  locations: RankedSalesMapLocation[];
   selectedKey: string | null;
   onSelect: (location: DashboardSalesMapLocation) => void;
 }) {
@@ -124,7 +139,6 @@ function FlatWorldMap({
       {locations.map((location) => {
         const left = ((location.longitude + 180) / 360) * 100;
         const top = ((90 - location.latitude) / 180) * 100;
-        const size = 10 + Math.sqrt(Math.max(0, location.score)) * 18;
         return (
           <button
             key={location.key}
@@ -132,11 +146,13 @@ function FlatWorldMap({
             aria-label={location.cityName}
             onClick={() => onSelect(location)}
             className={cn(
-              'absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 shadow-[0_0_18px_rgba(244,63,140,0.55)] transition-transform hover:scale-125 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white',
-              selectedKey === location.key ? 'border-white bg-amber-400' : 'border-white/80 bg-fuchsia-500',
+              'absolute flex size-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/90 bg-black/65 shadow-lg transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white',
+              selectedKey === location.key && 'scale-110 ring-2 ring-amber-300',
             )}
-            style={{ left: `${left}%`, top: `${top}%`, width: size, height: size }}
-          />
+            style={{ left: `${left}%`, top: `${top}%`, color: location.color }}
+          >
+            <MapPin size={17} fill="currentColor" />
+          </button>
         );
       })}
     </div>
@@ -149,6 +165,8 @@ export function DashboardSalesMap() {
   const [draftRange, setDraftRange] = useState<DateRangeValue>(initialRange);
   const [appliedRange, setAppliedRange] = useState<DateRangeValue>(initialRange);
   const [metrics, setMetrics] = useState<SalesMapMetricState>(DEFAULT_METRICS);
+  const [scope, setScope] = useState<SalesMapScope>('all');
+  const [countryFilter, setCountryFilter] = useState(ALL_COUNTRIES);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [hoveredLocation, setHoveredLocation] = useState<DashboardSalesMapLocation | null>(null);
   const [viewMode, setViewMode] = useState<MapViewMode>(getInitialMapViewMode);
@@ -158,11 +176,36 @@ export function DashboardSalesMap() {
 
   const queryStart = `${appliedRange.start}T00:00:00`;
   const queryEnd = `${addDays(appliedRange.end, 1)}T00:00:00`;
-  const mapQuery = useDashboardSalesMap(queryStart, queryEnd);
-  const locations = useMemo(
-    () => rankSalesMapLocations(mapQuery.data?.locations ?? [], metrics),
-    [mapQuery.data?.locations, metrics],
+  const mapQuery = useDashboardSalesMap(queryStart, queryEnd, scope);
+  const countryOptions = useMemo(() => {
+    const countries = new Map<string, string>();
+    (mapQuery.data?.locations ?? []).forEach((location) => {
+      const key = location.countryCode || location.countryName;
+      if (key) countries.set(key, location.countryName || location.countryCode);
+    });
+    return Array.from(countries, ([value, label]) => ({ value, label }))
+      .sort((left, right) => left.label.localeCompare(right.label, i18n.language));
+  }, [i18n.language, mapQuery.data?.locations]);
+  const filteredLocations = useMemo(
+    () => (mapQuery.data?.locations ?? []).filter((location) => (
+      countryFilter === ALL_COUNTRIES || (location.countryCode || location.countryName) === countryFilter
+    )),
+    [countryFilter, mapQuery.data?.locations],
   );
+  const locations = useMemo(
+    () => rankSalesMapLocations(filteredLocations, metrics),
+    [filteredLocations, metrics],
+  );
+  const ownerLegend = useMemo(() => {
+    const owners = new Map<string, { userId?: number | null; fullName: string; documentCount: number }>();
+    filteredLocations.forEach((location) => location.owners.forEach((owner) => {
+      const key = owner.userId == null ? `name:${owner.fullName}` : `id:${owner.userId}`;
+      const current = owners.get(key) ?? { userId: owner.userId, fullName: owner.fullName, documentCount: 0 };
+      current.documentCount += owner.quotationCount + owner.orderCount;
+      owners.set(key, current);
+    }));
+    return Array.from(owners.values()).sort((left, right) => right.documentCount - left.documentCount);
+  }, [filteredLocations]);
 
   useEffect(() => {
     if (locations.length === 0) {
@@ -175,6 +218,12 @@ export function DashboardSalesMap() {
   }, [locations, selectedKey]);
 
   useEffect(() => {
+    if (countryFilter !== ALL_COUNTRIES && !countryOptions.some((country) => country.value === countryFilter)) {
+      setCountryFilter(ALL_COUNTRIES);
+    }
+  }, [countryFilter, countryOptions]);
+
+  useEffect(() => {
     if (reducedMotion) setAutoRotate(false);
   }, [reducedMotion]);
 
@@ -184,6 +233,12 @@ export function DashboardSalesMap() {
   const rangeTooLarge = rangeDayCount > 370;
   const invalidRange = !draftRange.start || !draftRange.end || draftRange.start > draftRange.end || rangeTooLarge;
   const activeMetricCount = Object.values(metrics).filter(Boolean).length;
+  const visibleTotals = useMemo(() => filteredLocations.reduce((totals, location) => ({
+    quotationCount: totals.quotationCount + location.quotationCount,
+    orderCount: totals.orderCount + location.orderCount,
+    erpOrderCount: totals.erpOrderCount + location.erpOrderCount,
+    tlAmount: totals.tlAmount + location.quotationTlAmount + location.orderTlAmount,
+  }), { quotationCount: 0, orderCount: 0, erpOrderCount: 0, tlAmount: 0 }), [filteredLocations]);
   const numberFormatter = useMemo(() => new Intl.NumberFormat(i18n.language), [i18n.language]);
   const currencyFormatter = useMemo(
     () => new Intl.NumberFormat(i18n.language, { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }),
@@ -235,11 +290,17 @@ export function DashboardSalesMap() {
   const data = mapQuery.data;
   if (!data) return null;
 
+  const isCountryFiltered = countryFilter !== ALL_COUNTRIES;
+  const visibleCountryCount = new Set(filteredLocations.map((location) => location.countryCode || location.countryName)).size;
+  const visibleAdministrativeAreaCount = filteredLocations.filter(
+    (location) => location.administrativeAreaType !== 'country',
+  ).length;
+
   const summaryItems = [
-    { label: t('salesMap.metrics.quotations'), value: numberFormatter.format(data.quotationCount), icon: FileText, tone: 'text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-500/10' },
-    { label: t('salesMap.metrics.orders'), value: numberFormatter.format(data.orderCount), icon: ShoppingCart, tone: 'text-sky-600 bg-sky-50 dark:bg-sky-500/10' },
-    { label: t('salesMap.metrics.erpOrders'), value: numberFormatter.format(data.erpOrderCount), icon: Database, tone: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10' },
-    { label: t('salesMap.metrics.tlAmount'), value: currencyFormatter.format(data.quotationTlAmount + data.orderTlAmount), icon: TurkishLira, tone: 'text-amber-600 bg-amber-50 dark:bg-amber-500/10' },
+    { label: t('salesMap.metrics.quotations'), value: numberFormatter.format(isCountryFiltered ? visibleTotals.quotationCount : data.quotationCount), icon: FileText, tone: 'text-fuchsia-600 bg-fuchsia-50 dark:bg-fuchsia-500/10' },
+    { label: t('salesMap.metrics.orders'), value: numberFormatter.format(isCountryFiltered ? visibleTotals.orderCount : data.orderCount), icon: ShoppingCart, tone: 'text-sky-600 bg-sky-50 dark:bg-sky-500/10' },
+    { label: t('salesMap.metrics.erpOrders'), value: numberFormatter.format(isCountryFiltered ? visibleTotals.erpOrderCount : data.erpOrderCount), icon: Database, tone: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10' },
+    { label: t('salesMap.metrics.tlAmount'), value: currencyFormatter.format(isCountryFiltered ? visibleTotals.tlAmount : data.quotationTlAmount + data.orderTlAmount), icon: TurkishLira, tone: 'text-amber-600 bg-amber-50 dark:bg-amber-500/10' },
   ];
 
   return (
@@ -252,8 +313,16 @@ export function DashboardSalesMap() {
           <div>
             <h2 className="font-bold text-slate-900 dark:text-white">{t('salesMap.title')}</h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              {data.isSystemAdmin ? t('salesMap.descriptionAdmin') : t('salesMap.descriptionSelf')}
+              {data.isSystemAdmin && !data.isMineOnly ? t('salesMap.descriptionAdmin') : t('salesMap.descriptionSelf')}
             </p>
+            <div className="mt-1.5 flex flex-wrap gap-1.5 text-[10px] font-bold text-slate-500 dark:text-slate-300">
+              <span className="rounded bg-slate-100 px-1.5 py-0.5 dark:bg-white/10">
+                {t('salesMap.coverage.countries', { count: isCountryFiltered ? visibleCountryCount : data.countryCount })}
+              </span>
+              <span className="rounded bg-slate-100 px-1.5 py-0.5 dark:bg-white/10">
+                {t('salesMap.coverage.areas', { count: isCountryFiltered ? visibleAdministrativeAreaCount : data.administrativeAreaCount })}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -273,6 +342,43 @@ export function DashboardSalesMap() {
 
       <div className="flex flex-col gap-3 border-b border-slate-200 p-4 dark:border-white/10 xl:flex-row xl:items-end xl:justify-between">
         <div className="flex flex-wrap items-end gap-2">
+          {data.isSystemAdmin && (
+            <div className="grid gap-1 text-[11px] font-bold text-slate-600 dark:text-slate-300">
+              {t('salesMap.scope.label')}
+              <div className="flex h-9 rounded-md border border-slate-200 bg-slate-50 p-0.5 dark:border-white/10 dark:bg-white/5">
+                <button
+                  type="button"
+                  aria-pressed={scope === 'all'}
+                  onClick={() => setScope('all')}
+                  className={cn('flex items-center gap-1.5 rounded px-2.5 text-[11px]', scope === 'all' ? 'bg-white text-fuchsia-700 shadow-sm dark:bg-white/10 dark:text-fuchsia-300' : 'text-slate-500')}
+                >
+                  <Users size={13} />{t('salesMap.scope.all')}
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={scope === 'mine'}
+                  onClick={() => setScope('mine')}
+                  className={cn('flex items-center gap-1.5 rounded px-2.5 text-[11px]', scope === 'mine' ? 'bg-white text-fuchsia-700 shadow-sm dark:bg-white/10 dark:text-fuchsia-300' : 'text-slate-500')}
+                >
+                  <UserRound size={13} />{t('salesMap.scope.mine')}
+                </button>
+              </div>
+            </div>
+          )}
+          <label className="grid gap-1 text-[11px] font-bold text-slate-600 dark:text-slate-300">
+            {t('salesMap.country.label')}
+            <Select value={countryFilter} onValueChange={setCountryFilter}>
+              <SelectTrigger className="h-9 w-44 bg-white dark:bg-white/5">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent align="start">
+                <SelectItem value={ALL_COUNTRIES}>{t('salesMap.country.all')}</SelectItem>
+                {countryOptions.map((country) => (
+                  <SelectItem key={country.value} value={country.value}>{country.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </label>
           <label className="grid gap-1 text-[11px] font-bold text-slate-600 dark:text-slate-300">
             {t('salesMap.startDate')}
             <Input
@@ -366,6 +472,12 @@ export function DashboardSalesMap() {
             </div>
           )}
 
+          {mapQuery.isFetching && (
+            <div className="absolute right-3 top-24 z-20 flex items-center gap-2 rounded-md border border-white/15 bg-black/65 px-2.5 py-1.5 text-[10px] font-bold text-white sm:top-14">
+              <RefreshCw size={12} className="animate-spin" />{t('salesMap.refreshing')}
+            </div>
+          )}
+
           {viewMode === 'globe' && canUseWebGl ? (
             <Suspense fallback={<Skeleton className="h-full min-h-[520px] w-full rounded-none bg-slate-900" />}>
               <SalesWorldGlobe
@@ -396,7 +508,11 @@ export function DashboardSalesMap() {
                 <MapPin size={16} className="text-fuchsia-300" />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-black">{detailLocation.cityName}</p>
-                  <p className="truncate text-[10px] font-medium text-white/60">{detailLocation.countryName}</p>
+                  <p className="truncate text-[10px] font-medium text-white/60">
+                    {detailLocation.administrativeAreaType === 'country'
+                      ? t('salesMap.areaType.country')
+                      : `${detailLocation.countryName} · ${t(`salesMap.areaType.${detailLocation.administrativeAreaType}`)}`}
+                  </p>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
@@ -405,6 +521,24 @@ export function DashboardSalesMap() {
                 <span className="text-white/60">{t('salesMap.metrics.erpOrders')}</span><strong className="text-right">{numberFormatter.format(detailLocation.erpOrderCount)}</strong>
                 <span className="text-white/60">{t('salesMap.metrics.tlAmount')}</span><strong className="text-right">{currencyFormatter.format(detailLocation.quotationTlAmount + detailLocation.orderTlAmount)}</strong>
               </div>
+              {detailLocation.owners.length > 0 && (
+                <div className="mt-2 border-t border-white/10 pt-2">
+                  <p className="mb-1 text-[9px] font-bold uppercase text-white/50">{t('salesMap.owners.breakdown')}</p>
+                  <div className="space-y-1">
+                    {detailLocation.owners
+                      .slice()
+                      .sort((left, right) => (right.quotationCount + right.orderCount) - (left.quotationCount + left.orderCount))
+                      .slice(0, 4)
+                      .map((owner) => (
+                        <div key={owner.userId ?? owner.fullName} className="flex items-center gap-1.5 text-[10px]">
+                          <span className="size-2 shrink-0 rounded-sm" style={{ backgroundColor: getSalesMapOwnerColor(owner) }} />
+                          <span className="min-w-0 flex-1 truncate">{owner.fullName || t('salesMap.owners.unassigned')}</span>
+                          <strong>{numberFormatter.format(owner.quotationCount + owner.orderCount)}</strong>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -419,6 +553,19 @@ export function DashboardSalesMap() {
               {locations.length}
             </span>
           </div>
+          {ownerLegend.length > 0 && (
+            <div className="border-b border-slate-200 px-4 py-2.5 dark:border-white/10">
+              <p className="mb-1.5 text-[9px] font-bold uppercase text-slate-400">{t('salesMap.owners.legend')}</p>
+              <div className="flex max-h-14 flex-wrap gap-x-3 gap-y-1 overflow-hidden">
+                {ownerLegend.slice(0, 8).map((owner) => (
+                  <span key={owner.userId ?? owner.fullName} className="flex min-w-0 items-center gap-1 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+                    <span className="size-2 shrink-0 rounded-sm" style={{ backgroundColor: getSalesMapOwnerColor(owner) }} />
+                    <span className="max-w-24 truncate">{owner.fullName || t('salesMap.owners.unassigned')}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="max-h-[420px] overflow-y-auto p-2 lg:max-h-[455px]">
             {locations.slice(0, 20).map((location, index) => (
               <button
@@ -426,18 +573,30 @@ export function DashboardSalesMap() {
                 type="button"
                 onClick={() => setSelectedKey(location.key)}
                 className={cn(
-                  'mb-1 flex w-full items-center gap-3 rounded-lg px-2.5 py-2 text-left transition last:mb-0 hover:bg-white hover:shadow-sm dark:hover:bg-white/5',
+                  'relative mb-1 flex w-full items-center gap-3 overflow-hidden rounded-lg px-2.5 py-2 text-left transition last:mb-0 hover:bg-white hover:shadow-sm dark:hover:bg-white/5',
                   selectedKey === location.key && 'bg-white shadow-sm ring-1 ring-fuchsia-200 dark:bg-white/5 dark:ring-fuchsia-500/30',
                 )}
               >
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-y-0 left-0 opacity-10"
+                  style={{ width: `${Math.max(3, location.score * 100)}%`, backgroundColor: location.color }}
+                />
                 <span className="w-5 text-center text-xs font-black text-slate-400">{index + 1}</span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate text-xs font-bold text-slate-800 dark:text-white">{location.cityName}</span>
-                  <span className="block truncate text-[10px] text-slate-500">{location.countryName}</span>
+                  <span className="flex items-center gap-1.5 truncate text-xs font-bold text-slate-800 dark:text-white">
+                    <span className="size-2 shrink-0 rounded-sm" style={{ backgroundColor: location.color }} />
+                    <span className="truncate">{location.cityName}</span>
+                  </span>
+                  <span className="block truncate pl-3.5 text-[10px] text-slate-500">
+                    {location.administrativeAreaType === 'country'
+                      ? `${t('salesMap.areaType.country')} · ${location.dominantOwner?.fullName || t('salesMap.owners.unassigned')}`
+                      : `${location.countryName} · ${location.dominantOwner?.fullName || t('salesMap.owners.unassigned')}`}
+                  </span>
                 </span>
                 <span className="text-right text-[10px] font-bold text-slate-600 dark:text-slate-300">
                   {numberFormatter.format(location.quotationCount + location.orderCount)}<br />
-                  <span className="font-medium text-slate-400">{t('salesMap.ranking.documents')}</span>
+                  <span className="font-medium text-slate-400">{currencyFormatter.format(location.quotationTlAmount + location.orderTlAmount)}</span>
                 </span>
               </button>
             ))}
