@@ -19,7 +19,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Upload, Pencil, Trash2, ExternalLink, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Upload, Pencil, Trash2, ExternalLink, Image as ImageIcon, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { getApiBaseUrl } from '@/lib/axios';
 import { useActivityImages } from '../hooks/useActivityImages';
 import { useUploadActivityImages } from '../hooks/useUploadActivityImages';
@@ -63,7 +64,14 @@ export function ActivityImageTab({
   const [imageToDelete, setImageToDelete] = useState<{ id: string | number; resimUrl: string; resimAciklama?: string } | null>(null);
 
   const isPendingMode = !activityId || deferMode;
-  const { data: images = [], isLoading } = useActivityImages(activityId);
+  const {
+    data: images = [],
+    isLoading,
+    isFetching,
+    isError,
+    error,
+    refetch,
+  } = useActivityImages(activityId);
   const uploadMutation = useUploadActivityImages(activityId || 0);
   const updateMutation = useUpdateActivityImage(activityId || 0);
   const deleteMutation = useDeleteActivityImage(activityId || 0);
@@ -151,7 +159,7 @@ export function ActivityImageTab({
     setDeleteDialogOpen(true);
   };
 
-  const confirmDelete = (): void => {
+  const confirmDelete = async (): Promise<void> => {
     if (imageToDelete) {
       if (isPendingMode) {
         if (typeof imageToDelete.id === 'string' && imageToDelete.id.startsWith('pending-')) {
@@ -163,7 +171,7 @@ export function ActivityImageTab({
         setImageToDelete(null);
         return;
       }
-      deleteMutation.mutate(Number(imageToDelete.id));
+      await deleteMutation.mutateAsync(Number(imageToDelete.id));
       setDeleteDialogOpen(false);
       setImageToDelete(null);
     }
@@ -177,7 +185,10 @@ export function ActivityImageTab({
     return `${baseUrl}${url.startsWith('/') ? url : `/${url}`}`;
   };
 
-  if (isLoading) {
+  const showInitialLoading = isLoading || (isFetching && images.length === 0 && !isError);
+  const isMutating = uploadMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
+
+  if (showInitialLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -188,9 +199,29 @@ export function ActivityImageTab({
     );
   }
 
+  if (isError && images.length === 0) {
+    return (
+      <div className="flex min-h-64 flex-col items-center justify-center gap-4 rounded-xl border border-red-200 bg-red-50/60 px-6 py-12 text-center dark:border-red-900/50 dark:bg-red-950/20">
+        <AlertCircle className="h-9 w-9 text-red-500" />
+        <div className="space-y-1">
+          <p className="font-semibold text-slate-900 dark:text-white">
+            {t('detailLoadError', { ns: 'activity-management' })}
+          </p>
+          <p className="max-w-lg text-sm text-slate-600 dark:text-slate-400">
+            {error instanceof Error ? error.message : t('UnexpectedError', { ns: 'common' })}
+          </p>
+        </div>
+        <Button type="button" variant="outline" onClick={() => void refetch()} disabled={isFetching}>
+          {isFetching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+          {t('retry', { ns: 'common' })}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-4">
         <div>
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
             {t('activity-image:title')}
@@ -199,15 +230,33 @@ export function ActivityImageTab({
             {t('activity-image:subtitle')}
           </p>
         </div>
-        <Button
-          onClick={handleUploadClick}
-          disabled={uploadMutation.isPending}
-          className="bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white "
-        >
-          <Upload className="h-4 w-4 mr-2" />
-          {t('activity-image:uploadImages')}
-        </Button>
+        <div className="flex items-center gap-3">
+          {isFetching && (
+            <span className="inline-flex items-center gap-2 text-xs font-medium text-muted-foreground" role="status">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {t('activity-image:loading')}
+            </span>
+          )}
+          <Button
+            onClick={handleUploadClick}
+            disabled={isMutating}
+            className="bg-[image:var(--crm-brand-gradient)] hover:opacity-90 text-white "
+          >
+            {uploadMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
+            {t('activity-image:uploadImages')}
+          </Button>
+        </div>
       </div>
+
+      {isError && (
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/20 dark:text-amber-200">
+          <span>{t('detailLoadError', { ns: 'activity-management' })}</span>
+          <Button type="button" size="sm" variant="outline" onClick={() => void refetch()} disabled={isFetching}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            {t('retry', { ns: 'common' })}
+          </Button>
+        </div>
+      )}
 
       {displayImages.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl space-y-4">
@@ -252,20 +301,11 @@ export function ActivityImageTab({
                 <TableRow key={image.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
                   <TableCell className="w-32">
                     <div className="h-20 w-20 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                      <img
+                      <ImageWithLoading
                         src={getFullImageUrl(image.resimUrl)}
                         alt={image.resimAciklama || 'Activity image'}
+                        containerClassName="h-full w-full"
                         className="h-full w-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            const icon = document.createElement('div');
-                            icon.innerHTML = '<svg class="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>';
-                            parent.appendChild(icon.firstChild!);
-                          }
-                        }}
                       />
                     </div>
                   </TableCell>
@@ -291,6 +331,7 @@ export function ActivityImageTab({
                         variant="ghost"
                         size="icon"
                         onClick={() => handleEdit(image)}
+                        disabled={isMutating}
                         className="h-8 w-8 text-slate-600 hover:text-primary dark:text-slate-400 dark:hover:text-primary"
                       >
                         <Pencil className="h-4 w-4" />
@@ -299,6 +340,7 @@ export function ActivityImageTab({
                         variant="ghost"
                         size="icon"
                         onClick={() => handleDelete(image)}
+                        disabled={isMutating}
                         className="h-8 w-8 text-slate-600 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -342,7 +384,8 @@ export function ActivityImageTab({
               {t('common.cancel')}
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmDelete}
+              onClick={() => void confirmDelete()}
+              disabled={deleteMutation.isPending}
               className="bg-red-600 hover:bg-red-700 text-white"
             >
               {deleteMutation.isPending ? (

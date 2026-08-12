@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Image, Upload, X, Trash2 } from 'lucide-react';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { ACCEPTED_IMAGE_TYPES, MAX_FILE_SIZE, type FileWithPreview } from '../types/activity-image-types';
 
 interface ActivityImageUploadDialogProps {
@@ -171,9 +172,10 @@ export function ActivityImageUploadDialog({
                       className="flex items-start gap-3 p-3 border border-slate-200 dark:border-white/10 rounded-lg bg-slate-50 dark:bg-white/5"
                     >
                       <div className="h-16 w-16 rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0">
-                        <img
+                        <ImageWithLoading
                           src={fileItem.preview}
                           alt={fileItem.file.name}
+                          containerClassName="h-full w-full"
                           className="h-full w-full object-cover"
                         />
                       </div>

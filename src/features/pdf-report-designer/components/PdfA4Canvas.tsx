@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -673,9 +674,10 @@ function ImageElementBlock({
   if (isUrl) {
     return (
       <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-slate-100">
-        <img
+        <ImageWithLoading
           src={resolvePdfImageSrc(imageValue)}
           alt=""
+          containerClassName="h-full w-full"
           className="h-full w-full"
           style={{ objectFit: element.style?.imageFit ?? 'contain' }}
         />
@@ -1232,9 +1234,10 @@ function ElementSettingsPopover({
             {el.value ? (
               <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50">
                 <div className="flex h-28 items-center justify-center bg-white">
-                  <img
+                  <ImageWithLoading
                     src={resolvePdfImageSrc(el.value)}
                     alt=""
+                    containerClassName="h-full w-full"
                     className="h-full w-full object-contain"
                   />
                 </div>

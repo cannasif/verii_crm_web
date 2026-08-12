@@ -3,6 +3,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { useReportStore } from '../store/useReportStore';
 import { Input } from '@/components/ui/input';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import {
   Select,
   SelectContent,
@@ -386,10 +387,11 @@ function ImagePropertiesPanel(): ReactElement | null {
       {isUrl && (
         <div className="rounded border border-slate-200 bg-slate-50 p-2">
           <span className="text-xs text-slate-500">{t('reportDesigner.properties.preview')}</span>
-          <img
+          <ImageWithLoading
             src={selectedElement.value}
             alt=""
-            className="mt-1 max-h-20 w-full object-contain"
+            containerClassName="mt-1 h-20 w-full"
+            className="h-full w-full object-contain"
           />
         </div>
       )}

@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Image, X } from 'lucide-react';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import {
   activityImageUpdateSchema,
   type ActivityImageUpdateSchema,
@@ -124,14 +125,11 @@ export function ActivityImageEditDialog({
           {image && (
             <div className="mb-6">
               <div className="rounded-lg overflow-hidden bg-slate-100 dark:bg-slate-800 max-w-sm mx-auto">
-                <img
+                <ImageWithLoading
                   src={image.resimUrl}
                   alt={image.resimAciklama || 'Activity image'}
-                  className="w-full h-auto object-contain max-h-64"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                  }}
+                  containerClassName="min-h-40 w-full bg-slate-100 dark:bg-slate-800"
+                  className="h-full max-h-64 w-full object-contain"
                 />
               </div>
             </div>

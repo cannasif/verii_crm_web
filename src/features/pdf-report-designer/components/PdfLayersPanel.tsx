@@ -25,6 +25,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -356,9 +357,10 @@ export function PdfLayersPanel({ onNavigateToPage, templateId, ruleType }: PdfLa
                   {selectedElement.value ? (
                     <div className="overflow-hidden rounded-md border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/40">
                       <div className="flex h-24 items-center justify-center bg-white dark:bg-slate-900">
-                        <img
+                        <ImageWithLoading
                           src={resolvePdfImageSrc(selectedElement.value)}
                           alt=""
+                          containerClassName="h-full w-full"
                           className="h-full w-full object-contain"
                         />
                       </div>

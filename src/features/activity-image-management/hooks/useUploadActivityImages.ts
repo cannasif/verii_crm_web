@@ -3,7 +3,8 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { activityImageApi } from '../api/activity-image-api';
 import { activityImageKeys } from '../utils/query-keys';
-import type { UploadActivityImagesPayload } from '../types/activity-image-types';
+import { ACTIVITY_QUERY_KEYS } from '@/features/activity-management/utils/query-keys';
+import type { ActivityImageDto, UploadActivityImagesPayload } from '../types/activity-image-types';
 
 export function useUploadActivityImages(activityId: number) {
   const queryClient = useQueryClient();
@@ -11,8 +12,18 @@ export function useUploadActivityImages(activityId: number) {
 
   return useMutation({
     mutationFn: (payload: UploadActivityImagesPayload) => activityImageApi.upload(activityId, payload),
-    onSuccess: (data) => {
-      void queryClient.invalidateQueries({ queryKey: activityImageKeys.byActivity(activityId) });
+    onSuccess: async (data) => {
+      queryClient.setQueryData<ActivityImageDto[]>(
+        activityImageKeys.byActivity(activityId),
+        (current = []) => {
+          const uploadedIds = new Set(data.map((image) => image.id));
+          return [...current.filter((image) => !uploadedIds.has(image.id)), ...data];
+        },
+      );
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: activityImageKeys.byActivity(activityId) }),
+        queryClient.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.LIST], exact: false }),
+      ]);
       const count = data.length;
       toast.success(
         t('activity-image:uploadSuccess', { count })

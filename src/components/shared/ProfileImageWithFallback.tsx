@@ -1,10 +1,12 @@
-import { type ReactElement, type ReactNode, useState } from 'react';
+import { type ReactElement, type ReactNode } from 'react';
+import { ImageWithLoading } from './ImageWithLoading';
 
 interface ProfileImageWithFallbackProps {
   src: string | null;
   alt: string;
   className?: string;
   fallback: ReactNode;
+  isLoading?: boolean;
 }
 
 export function ProfileImageWithFallback({
@@ -12,19 +14,16 @@ export function ProfileImageWithFallback({
   alt,
   className,
   fallback,
+  isLoading = false,
 }: ProfileImageWithFallbackProps): ReactElement {
-  const [failedSource, setFailedSource] = useState<string | null>(null);
-
-  if (!src || failedSource === src) {
-    return <>{fallback}</>;
-  }
-
   return (
-    <img
+    <ImageWithLoading
       src={src}
       alt={alt}
       className={className}
-      onError={() => setFailedSource(src)}
+      containerClassName="h-full w-full"
+      fallback={fallback}
+      isSourcePending={isLoading}
     />
   );
 }

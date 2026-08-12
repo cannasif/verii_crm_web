@@ -32,6 +32,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { categoryDefinitionsApi } from '@/features/category-definitions/api/category-definitions-api';
@@ -1550,10 +1551,12 @@ export function CatalogStockSelectDialog({
                     <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-slate-100 via-white to-slate-200/70 dark:from-zinc-900 dark:via-slate-950 dark:to-zinc-900">
                       {imageUrl ? (
                         <>
-                          <img
+                          <ImageWithLoading
                             src={imageUrl}
                             alt={getLocalizedStockName(stock, i18n.language)}
+                            as="span"
                             loading="lazy"
+                            containerClassName="absolute inset-0 h-full w-full"
                             className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                           />
                           <div

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import {
   Dialog,
   DialogContent,
@@ -27,7 +28,14 @@ interface StockImageListProps {
 export function StockImageList({ stockId }: StockImageListProps): ReactElement {
   const { t } = useTranslation(['stock', 'common']);
   const { canUpdate, canDelete } = useCrudPermissions('stock.stocks.view');
-  const { data: images, isLoading, isFetching } = useStockImages(stockId);
+  const {
+    data: images = [],
+    isLoading,
+    isFetching,
+    isError,
+    error,
+    refetch,
+  } = useStockImages(stockId);
   const deleteImage = useStockImageDelete();
   const setPrimary = useStockImageSetPrimary();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -66,7 +74,7 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
     }
   };
 
-  if (isLoading || isFetching) {
+  if (isLoading || (isFetching && images.length === 0)) {
     return (
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {[1, 2, 3, 4].map((i) => (
@@ -85,7 +93,22 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
     );
   }
 
-  if (!images || images.length === 0) {
+  if (isError && images.length === 0) {
+    return (
+      <div className="flex min-h-48 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-red-200 bg-red-50/60 p-6 text-center dark:border-red-500/20 dark:bg-red-950/10">
+        <ImageIcon className="h-8 w-8 text-red-400" />
+        <p className="text-sm font-medium text-red-700 dark:text-red-300">
+          {error?.message || t('messages.error')}
+        </p>
+        <Button type="button" size="sm" variant="outline" onClick={() => void refetch()} disabled={isFetching}>
+          {isFetching ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+          {t('retry', { ns: 'common' })}
+        </Button>
+      </div>
+    );
+  }
+
+  if (images.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 border-2 border-dashed border-zinc-200 dark:border-white/10 rounded-2xl bg-zinc-50/50 dark:bg-white/5 transition-all hover:bg-zinc-50 dark:hover:bg-white/10">
         <div className="p-4 bg-white dark:bg-zinc-800 rounded-full shadow-sm mb-4">
@@ -109,7 +132,12 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
 
   return (
     <>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="relative grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {isFetching ? (
+          <div className="absolute right-2 top-2 z-30 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm dark:bg-zinc-900/90">
+            <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />
+          </div>
+        ) : null}
         {sortedImages.map((image) => (
           <div
             key={image.id}
@@ -125,14 +153,12 @@ export function StockImageList({ stockId }: StockImageListProps): ReactElement {
                   </Badge>
                 )}
                 
-                <img
+                <ImageWithLoading
                   src={getImageUrl(image.filePath) || ''}
                   alt={image.altText || image.stockName || 'Stock image'}
+                  containerClassName="h-full w-full"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect width="100" height="100" fill="%23f4f4f5"/%3E%3Ctext x="50" y="50" text-anchor="middle" dy=".3em" fill="%23a1a1aa" font-family="sans-serif" font-size="12"%3EGörsel Yok%3C/text%3E%3C/svg%3E';
-                  }}
                 />
                 
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-300" />

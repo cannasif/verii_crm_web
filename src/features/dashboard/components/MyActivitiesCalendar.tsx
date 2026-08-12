@@ -69,6 +69,7 @@ import {
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useDashboardActivitiesCalendar } from '@/features/activity-management/hooks/useMyActivitiesCalendar';
@@ -986,8 +987,11 @@ export function MyActivitiesCalendar(): ReactElement {
                       src: getImageUrl(image.resimUrl),
                       description: image.resimAciklama,
                     }))}
-                    isLoading={activityImagesQuery.isLoading}
+                    isLoading={activityImagesQuery.isLoading || (activityImagesQuery.isFetching && (activityImagesQuery.data?.length ?? 0) === 0)}
+                    isRefreshing={activityImagesQuery.isFetching && (activityImagesQuery.data?.length ?? 0) > 0}
                     isError={activityImagesQuery.isError}
+                    onRetry={() => void activityImagesQuery.refetch()}
+                    retryLabel={t('retry', { ns: 'common' })}
                     emptyText={t('calendar.media.emptyActivityImages')}
                     errorText={t('calendar.media.loadError')}
                     openLabel={t('calendar.media.openImage')}
@@ -1002,8 +1006,11 @@ export function MyActivitiesCalendar(): ReactElement {
                         src: getImageUrl(image.imageUrl),
                         description: image.imageDescription ?? undefined,
                       }))}
-                      isLoading={customerImagesQuery.isLoading}
+                      isLoading={customerImagesQuery.isLoading || (customerImagesQuery.isFetching && (customerImagesQuery.data?.length ?? 0) === 0)}
+                      isRefreshing={customerImagesQuery.isFetching && (customerImagesQuery.data?.length ?? 0) > 0}
                       isError={customerImagesQuery.isError}
+                      onRetry={() => void customerImagesQuery.refetch()}
+                      retryLabel={t('retry', { ns: 'common' })}
                       emptyText={t('calendar.media.emptyCustomerImages')}
                       errorText={t('calendar.media.loadError')}
                       openLabel={t('calendar.media.openImage')}
@@ -1099,19 +1106,30 @@ function Detail({ icon: Icon, label, value }: { icon: typeof Clock3; label: stri
 interface DashboardImageGalleryProps {
   items: Array<{ id: number; src: string | null; description?: string }>;
   isLoading: boolean;
+  isRefreshing: boolean;
   isError: boolean;
+  onRetry: () => void;
+  retryLabel: string;
   emptyText: string;
   errorText: string;
   openLabel: string;
 }
 
-function DashboardImageGallery({ items, isLoading, isError, emptyText, errorText, openLabel }: DashboardImageGalleryProps): ReactElement {
+function DashboardImageGallery({ items, isLoading, isRefreshing, isError, onRetry, retryLabel, emptyText, errorText, openLabel }: DashboardImageGalleryProps): ReactElement {
   if (isLoading) {
     return <div className="flex min-h-48 items-center justify-center"><Loader2 className="animate-spin text-primary" size={24} /></div>;
   }
 
   if (isError) {
-    return <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">{errorText}</div>;
+    return (
+      <div className="flex min-h-48 flex-col items-center justify-center gap-3 rounded-xl border border-rose-200 bg-rose-50 p-4 text-center text-sm font-semibold text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-300">
+        <span>{errorText}</span>
+        <Button type="button" size="sm" variant="outline" onClick={onRetry}>
+          <RotateCw className="mr-2 h-4 w-4" />
+          {retryLabel}
+        </Button>
+      </div>
+    );
   }
 
   const visibleItems = items.filter((item) => Boolean(item.src));
@@ -1125,7 +1143,12 @@ function DashboardImageGallery({ items, isLoading, isError, emptyText, errorText
   }
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <div className="relative grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {isRefreshing ? (
+        <div className="absolute right-2 top-2 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 shadow-sm dark:bg-zinc-900/90" aria-label={retryLabel}>
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+        </div>
+      ) : null}
       {visibleItems.map((item) => (
         <a
           key={item.id}
@@ -1136,7 +1159,13 @@ function DashboardImageGallery({ items, isLoading, isError, emptyText, errorText
           aria-label={openLabel}
         >
           <div className="aspect-square overflow-hidden bg-slate-100 dark:bg-white/5">
-            <img src={item.src ?? undefined} alt={item.description || openLabel} loading="lazy" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+            <ImageWithLoading
+              src={item.src}
+              alt={item.description || openLabel}
+              loading="lazy"
+              containerClassName="h-full w-full"
+              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            />
           </div>
           <div className="flex items-center justify-between gap-2 px-3 py-2">
             <span className="truncate text-xs font-semibold text-slate-600 dark:text-slate-300">{item.description || openLabel}</span>

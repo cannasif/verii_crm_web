@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { getImageUrl } from '@/features/stock/utils/image-url';
 import { StockWarehouseBalanceBadge } from '@/features/stock/components/StockWarehouseBalanceBadge';
 import {
@@ -163,10 +164,12 @@ function ProductSelectCatalogStockCard({
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-slate-100 via-white to-slate-200/70 dark:from-zinc-900 dark:via-slate-950 dark:to-zinc-900">
         {imageUrl ? (
           <>
-            <img
+            <ImageWithLoading
               src={imageUrl}
               alt={displayStockName}
+              as="span"
               loading="lazy"
+              containerClassName="absolute inset-0 h-full w-full"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             />
             <div

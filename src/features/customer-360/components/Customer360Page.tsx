@@ -30,6 +30,7 @@ import {
   Package,
   Send,
   Target,
+  Loader2,
   type LucideIcon,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,6 +56,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
@@ -1534,7 +1536,13 @@ export function Customer360Page(): ReactElement {
   const { data: chartsData, isLoading: isChartsLoading, isError: isChartsError } =
     useCustomer360AnalyticsChartsQuery(id, 12, currencyParam, activeTab === 'analytics');
   const { data: cohortData, isLoading: isCohortLoading } = useCustomer360CohortQuery(id, 12);
-  const { data: customerImages = [], isLoading: isImagesLoading, isError: isImagesError } = useCustomerImagesQuery(id);
+  const {
+    data: customerImages = [],
+    isLoading: isImagesLoading,
+    isFetching: isImagesFetching,
+    isError: isImagesError,
+    refetch: refetchCustomerImages,
+  } = useCustomerImagesQuery(id);
   const { data: quickQuotations = [], isLoading: isQuickQuotationsLoading, isError: isQuickQuotationsError } = useCustomer360QuickQuotationsQuery(id);
   const { data: erpMovements = [], isLoading: isErpMovementsLoading, isError: isErpMovementsError } = useCustomer360ErpMovementsQuery(id);
   const { data: erpBalance, isLoading: isErpBalanceLoading, isError: isErpBalanceError } = useCustomer360ErpBalanceQuery(id);
@@ -2158,6 +2166,9 @@ export function Customer360Page(): ReactElement {
                 {imageItems.length > 0 && (
                   <Badge variant="secondary" className="rounded-full">{imageItems.length}</Badge>
                 )}
+                {isImagesFetching && imageItems.length > 0 ? (
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" aria-hidden="true" />
+                ) : null}
               </CardTitle>
               <input
                 ref={imageInputRef}
@@ -2179,14 +2190,20 @@ export function Customer360Page(): ReactElement {
               </Button>
             </CardHeader>
             <CardContent>
-              {isImagesLoading ? (
+              {isImagesLoading || (isImagesFetching && imageItems.length === 0) ? (
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                   {Array.from({ length: 8 }).map((_, idx) => (
                     <Skeleton key={idx} className="aspect-square w-full rounded-xl" />
                   ))}
                 </div>
               ) : isImagesError ? (
-                <p className="text-sm text-muted-foreground">{tc('analytics.error')}</p>
+                <div className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border text-center">
+                  <p className="text-sm text-muted-foreground">{tc('analytics.error')}</p>
+                  <Button type="button" size="sm" variant="outline" onClick={() => void refetchCustomerImages()}>
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                    {tc('retry')}
+                  </Button>
+                </div>
               ) : imageItems.length === 0 ? (
                 <button
                   type="button"
@@ -2205,9 +2222,10 @@ export function Customer360Page(): ReactElement {
                       key={img.id}
                       className="group relative aspect-square overflow-hidden rounded-xl border border-border bg-muted/40"
                     >
-                      <img
+                      <ImageWithLoading
                         src={img.src}
                         alt={img.imageDescription ?? `customer-image-${img.id}`}
+                        containerClassName="h-full w-full"
                         className="h-full w-full cursor-zoom-in object-cover transition-transform duration-300 group-hover:scale-105"
                         loading="lazy"
                         onClick={() => setLightboxIndex(index)}
@@ -2277,10 +2295,11 @@ export function Customer360Page(): ReactElement {
                   <DialogTitle>{imageItems[lightboxIndex].imageDescription ?? tc('tabs.images')}</DialogTitle>
                   <DialogDescription>{tc('tabs.images')}</DialogDescription>
                 </DialogHeader>
-                <img
+                <ImageWithLoading
                   src={imageItems[lightboxIndex].src}
                   alt={imageItems[lightboxIndex].imageDescription ?? `customer-image-${imageItems[lightboxIndex].id}`}
-                  className="max-h-[75vh] w-full rounded-t-lg object-contain bg-black/5 dark:bg-black/40"
+                  containerClassName="min-h-64 w-full rounded-t-lg bg-black/5 dark:bg-black/40"
+                  className="max-h-[75vh] w-full rounded-t-lg object-contain"
                 />
                 <div className="flex items-center justify-between gap-3 p-4">
                   <p className="text-sm font-medium">

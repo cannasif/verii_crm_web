@@ -99,7 +99,7 @@ export function UserProfileModal({
   } = useTheme();
   const { user, logout, branch } = useAuthStore();
   const navigate = useNavigate();
-  const { data: userDetail } = useUserDetailByUserId(user?.id || 0, open);
+  const { data: userDetail, isLoading: isUserDetailLoading } = useUserDetailByUserId(user?.id || 0, open);
 
   const [isDark, setIsDark] = useState(false);
 
@@ -231,6 +231,7 @@ export function UserProfileModal({
                   src={getImageUrl(userDetail?.profilePictureUrl) || null}
                   alt={displayName}
                   className="h-full w-full rounded-[1.3rem] object-cover md:rounded-[1.8rem]"
+                  isLoading={isUserDetailLoading}
                   fallback={(
                     <div className="flex h-full w-full items-center justify-center rounded-[1.3rem] bg-[image:var(--crm-brand-gradient)] md:rounded-[1.8rem]">
                       <span className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-black text-white drop-shadow-lg">

@@ -8,5 +8,6 @@ export function useActivityImages(activityId: number | undefined, enabled = true
     queryFn: ({ signal }) => activityImageApi.getByActivityId(activityId!, signal),
     enabled: enabled && !!activityId && activityId > 0,
     staleTime: 30 * 1000,
+    refetchOnMount: 'always',
   });
 }

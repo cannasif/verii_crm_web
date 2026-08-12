@@ -42,7 +42,7 @@ import {
 } from '../types/activity-types';
 import { ACTIVITY_STATUSES, ACTIVITY_PRIORITIES, REMINDER_MINUTE_PRESETS } from '../utils/activity-constants';
 import { useCustomerOptions } from '@/features/customer-management/hooks/useCustomerOptions';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { contactApi } from '@/features/contact-management/api/contact-api';
 import { useAuthStore } from '@/stores/auth-store';
 import type { PagedFilter } from '@/types/api';
@@ -52,6 +52,8 @@ import { buildActivitySaveRequiredHintLines } from '@/lib/activity-save-required
 import { resolveActivityCustomerDisplayName } from '@/lib/activity-customer-display';
 import { Search, Calendar, FileText, List, CheckSquare, Building2, User, AlertCircle, X, Bell, Plus, Trash2, Image } from 'lucide-react';
 import { ActivityImageTab } from '@/features/activity-image-management';
+import { activityImageKeys } from '@/features/activity-image-management/utils/query-keys';
+import { ACTIVITY_QUERY_KEYS } from '../utils/query-keys';
 import { isZodFieldRequired } from '@/lib/zod-required';
 
 interface ActivityFormProps {
@@ -195,6 +197,7 @@ export function ActivityForm({
   preservePrefilledCustomer = false,
 }: ActivityFormProps): ReactElement {
   const { t } = useTranslation(['activity-management', 'common']);
+  const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const [activityTypeSearchTerm, setActivityTypeSearchTerm] = useState('');
   const [assignedUserSearchTerm, setAssignedUserSearchTerm] = useState('');
@@ -214,6 +217,7 @@ export function ActivityForm({
   const [pendingImages, setPendingImages] = useState<{ id: string; file: File; description: string; previewUrl: string }[]>([]);
   const [pendingDeletedImageIds, setPendingDeletedImageIds] = useState<number[]>([]);
   const [pendingUpdatedImageDescriptions, setPendingUpdatedImageDescriptions] = useState<Record<number, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
   const pendingImagesRef = useRef(pendingImages);
   useEffect(() => {
     pendingImagesRef.current = pendingImages;
@@ -263,7 +267,7 @@ export function ActivityForm({
   });
 
   const isFormValid = form.formState.isValid;
-  const isSubmitting = isLoading;
+  const isSubmitting = isLoading || isSaving;
   const watchedFormValues = form.watch();
   const saveHintLines = useMemo(
     () =>
@@ -462,14 +466,27 @@ export function ActivityForm({
       file: img.file,
       description: img.description,
     }));
-    await onSubmit(data, imagesToUpload, pendingDeletedImageIds, pendingUpdatedImageDescriptions);
-    if (!isLoading) {
+    const hasPendingImageChanges = imagesToUpload.length > 0
+      || pendingDeletedImageIds.length > 0
+      || Object.keys(pendingUpdatedImageDescriptions).length > 0;
+
+    setIsSaving(true);
+    try {
+      await onSubmit(data, imagesToUpload, pendingDeletedImageIds, pendingUpdatedImageDescriptions);
+      if (hasPendingImageChanges) {
+        await Promise.all([
+          queryClient.invalidateQueries({ queryKey: activityImageKeys.all }),
+          queryClient.invalidateQueries({ queryKey: [ACTIVITY_QUERY_KEYS.LIST], exact: false }),
+        ]);
+      }
       pendingImages.forEach((img) => URL.revokeObjectURL(img.previewUrl));
       setPendingImages([]);
       setPendingDeletedImageIds([]);
       setPendingUpdatedImageDescriptions({});
       form.reset();
       onOpenChange(false);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -966,7 +983,7 @@ export function ActivityForm({
             <TabsContent value="images" className="mt-0">
               <ActivityImageTab
                 activityId={activity?.id}
-                deferMode={true}
+                deferMode={!activity?.id}
                 pendingImages={pendingImages}
                 onAddPendingImages={(newImages) => setPendingImages((prev) => [...prev, ...newImages])}
                 onRemovePendingImage={(id) => {

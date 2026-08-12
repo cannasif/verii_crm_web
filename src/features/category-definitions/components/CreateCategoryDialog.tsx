@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { Button as UiButton } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { categoryDefinitionsApi } from '../api/category-definitions-api';
@@ -350,10 +351,11 @@ export function CreateCategoryDialog({
                 </div>
                 <div className="mt-4 flex flex-col items-center gap-3 text-center">
                   {previewImageUrl ? (
-                    <img
+                    <ImageWithLoading
                       src={previewImageUrl}
                       alt={form.name.trim() || t('categoryDefinitions.visualPreviewFallback')}
-                      className="h-16 w-16 rounded-2xl object-cover border border-slate-200 dark:border-white/10 shadow-sm"
+                      containerClassName="h-16 w-16 rounded-2xl border border-slate-200 shadow-sm dark:border-white/10"
+                      className="h-full w-full object-cover"
                     />
                   ) : (
                     <div className={`flex h-16 w-16 items-center justify-center rounded-2xl shadow-sm ${selectedPreset.colorClassName}`}>

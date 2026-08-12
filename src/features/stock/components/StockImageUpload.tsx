@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { CloudUpload, X, Image as ImageIcon, FileText, Loader2 } from 'lucide-react';
 import { useStockImageUpload } from '../hooks/useStockImageUpload';
 import { cn } from '@/lib/utils';
@@ -168,9 +169,10 @@ export function StockImageUpload({ stockId }: StockImageUploadProps): ReactEleme
                 "
               >
                 <div className="relative h-16 w-16 shrink-0 rounded-lg overflow-hidden border border-zinc-100 dark:border-zinc-800 bg-zinc-100 dark:bg-zinc-800">
-                    <img 
-                        src={previews[index]} 
-                        alt="Preview" 
+                    <ImageWithLoading
+                        src={previews[index]}
+                        alt="Preview"
+                        containerClassName="h-full w-full"
                         className="h-full w-full object-cover"
                     />
                 </div>

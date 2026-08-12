@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -259,13 +260,17 @@ export function UserDetailDialog({
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
               <div className="relative group cursor-pointer mb-5" onClick={() => fileInputRef.current?.click()}>
                 <div className="w-28 h-28 rounded-full border-[4px] border-white dark:border-[#2a1d35] bg-zinc-200 dark:bg-slate-800 overflow-hidden relative shadow-lg">
-                    {previewUrl ? (
-                      <img src={previewUrl} alt="Profile" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                    ) : (
+                    <ImageWithLoading
+                      src={previewUrl}
+                      alt="Profile"
+                      containerClassName="h-full w-full"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      fallback={(
                       <div className="w-full h-full flex items-center justify-center text-4xl font-bold text-white bg-gradient-to-br from-primary to-[var(--crm-brand-accent)]">
                          {user?.name?.[0]?.toUpperCase() || 'U'}
                       </div>
-                    )}
+                      )}
+                    />
                     {/* Hover Overlay */}
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                       <Camera size={26} className="text-white drop-shadow-md" />

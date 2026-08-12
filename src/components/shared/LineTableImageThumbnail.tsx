@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactElement, type SyntheticEvent } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { cn } from '@/lib/utils';
 import {
   cacheLineImageFromHtmlImage,
@@ -79,11 +80,13 @@ export function LineTableImageThumbnail({
           }}
           aria-label={alt}
         >
-          <img
+          <ImageWithLoading
             src={src}
             alt={alt}
+            as="span"
             loading="lazy"
             onLoad={handleImageLoad}
+            containerClassName="h-10 w-10"
             className="h-10 w-10 object-cover"
           />
         </button>
@@ -96,10 +99,11 @@ export function LineTableImageThumbnail({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <img
+        <ImageWithLoading
           src={src}
           alt={alt}
-          className="max-h-64 max-w-[min(88vw,300px)] rounded-md object-contain"
+          containerClassName="h-64 w-[min(88vw,300px)] rounded-md bg-slate-100 dark:bg-white/5"
+          className="h-full w-full rounded-md object-contain"
         />
       </PopoverContent>
     </Popover>

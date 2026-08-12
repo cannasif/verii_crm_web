@@ -2,6 +2,7 @@ import { memo, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Eye, Heart, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { cn } from '@/lib/utils';
 import type { StockGetWithMainImageDto } from '../types';
 import { getImageUrl } from '../utils/image-url';
@@ -81,10 +82,11 @@ function StockGridCardComponent({
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-gradient-to-br from-slate-100 via-accent/25 to-slate-200/70 dark:from-zinc-900 dark:via-primary/5 dark:to-zinc-900">
         {imageUrl ? (
           <>
-            <img
+            <ImageWithLoading
               src={imageUrl}
               alt={displayStockName}
               loading="lazy"
+              containerClassName="absolute inset-0 h-full w-full"
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
             />
             <div

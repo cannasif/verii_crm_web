@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -289,13 +290,17 @@ export function ProfilePage(): ReactElement {
         <div className="relative flex flex-col md:flex-row items-center md:items-start gap-8">
           <div className="relative shrink-0 group">
             <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl border-4 border-slate-300/50 dark:border-white/20 bg-muted overflow-hidden shadow-2xl ring-4 ring-primary/20 group-hover:ring-primary/40 transition-all duration-500">
-              {previewUrl ? (
-                <img src={previewUrl} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-              ) : (
+              <ImageWithLoading
+                src={previewUrl}
+                alt={displayName}
+                containerClassName="h-full w-full"
+                className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-700"
+                fallback={(
                 <div className="w-full h-full flex items-center justify-center text-5xl font-black text-white bg-linear-to-br from-primary via-primary to-orange-500">
                   {displayName[0]?.toUpperCase() || 'U'}
                 </div>
-              )}
+                )}
+              />
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}

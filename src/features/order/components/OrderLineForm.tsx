@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { PricingRuleInsightDialog } from '@/components/shared/PricingRuleInsightDialog';
@@ -1771,10 +1772,11 @@ export function OrderLineForm({
               </div>
               {formData.imagePath ? (
                 <div className="space-y-3">
-                  <img
+                  <ImageWithLoading
                     src={getImageUrl(formData.imagePath) ?? formData.imagePath}
                     alt={formData.productName || t('common.lineImage.title')}
-                    className="h-44 w-full rounded-xl border border-slate-200 dark:border-white/10 object-cover bg-white dark:bg-white/[0.04]"
+                    containerClassName="h-44 w-full rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-white/[0.04]"
+                    className="h-full w-full object-cover"
                   />
                   <Button
                     type="button"

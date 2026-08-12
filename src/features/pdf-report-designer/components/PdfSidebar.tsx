@@ -5,6 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { usePdfReportDesignerStore } from '../store/usePdfReportDesignerStore';
 import { isPdfTableElement } from '../types/pdf-report-template.types';
 import { Input } from '@/components/ui/input';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -494,10 +495,11 @@ function ImagePropertiesPanel({
         {isUrl && (
           <div className="rounded border border-slate-200 bg-slate-50 p-2">
             <span className="text-xs text-slate-500">{t('reportDesigner.properties.preview')}</span>
-            <img
+            <ImageWithLoading
               src={resolvePdfImageSrc(selectedElement.value ?? '')}
               alt=""
-              className="mt-1 max-h-20 w-full object-contain"
+              containerClassName="mt-1 h-20 w-full"
+              className="h-full w-full object-contain"
             />
           </div>
         )}

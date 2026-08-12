@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
+import { ImageWithLoading } from '@/components/shared/ImageWithLoading';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -160,7 +161,12 @@ function ImageElementBlock({ element }: { element: ReportElement }): ReactElemen
   if (isUrl) {
     return (
       <div className="flex h-full w-full items-center justify-center overflow-hidden bg-slate-100">
-        <img src={element.value} alt="" className="h-full w-full object-contain" />
+        <ImageWithLoading
+          src={element.value}
+          alt=""
+          containerClassName="h-full w-full"
+          className="h-full w-full object-contain"
+        />
       </div>
     );
   }

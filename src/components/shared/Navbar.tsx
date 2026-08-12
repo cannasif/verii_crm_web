@@ -54,6 +54,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
   const userDetail = useAppShellStore((state) =>
     user?.id ? state.userSummaries[String(user.id)]?.data ?? null : null
   );
+  const appShellStatus = useAppShellStore((state) => state.bootstrapStatus);
   const premiumSearchResults = useMemo(() => {
     if (!isPremium || !searchQuery.trim()) return [];
     return flattenDestinations(navItems)
@@ -245,6 +246,7 @@ export function Navbar({ navItems = [] }: NavbarProps): ReactElement {
                       src={getImageUrl(userDetail?.profilePictureUrl) || null}
                       alt={displayName}
                       className="h-full w-full object-cover"
+                      isLoading={appShellStatus === 'loading' && !userDetail}
                       fallback={<span className="text-xs font-bold text-[var(--crm-brand-primary)]">{displayInitials}</span>}
                     />
                   </div>
