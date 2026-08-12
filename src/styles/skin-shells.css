@@ -32,13 +32,17 @@ html.skin-premium .crm-shell-ambient {
 
 html.skin-premium .app-navbar-panel {
   position: relative;
-  min-height: 4.5rem;
-  padding-inline: clamp(0.85rem, 2vw, 2rem);
+  min-height: 4rem;
+  padding-inline: clamp(0.75rem, 1.25vw, 1.5rem);
   border-bottom-color: transparent;
   background: color-mix(in srgb, var(--crm-app-panel) 45%, transparent);
   box-shadow: none;
   backdrop-filter: blur(20px) saturate(1.15);
   -webkit-backdrop-filter: blur(20px) saturate(1.15);
+}
+
+html.skin-premium .app-navbar-panel > div {
+  height: 4rem;
 }
 
 html.skin-premium .app-navbar-panel::after {
@@ -61,7 +65,7 @@ html.skin-premium .app-navbar-panel::after {
 .crm-premium-navbar-logo-button {
   display: inline-flex;
   width: clamp(7rem, 11vw, 9rem);
-  height: 3.35rem;
+  height: 2.85rem;
   flex: 0 0 auto;
   align-items: center;
   justify-content: flex-start;
@@ -178,7 +182,7 @@ html.skin-premium .crm-premium-navbar-search__input:focus {
 .crm-premium-nav {
   position: relative;
   z-index: 35;
-  padding: 0.4rem 0 0.3rem;
+  padding: 0.2rem 0 0.15rem;
 }
 
 .crm-premium-nav__collapsible {
@@ -210,7 +214,7 @@ html.skin-premium .crm-premium-navbar-search__input:focus {
   gap: 0.2rem;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  padding: 0.42rem 0.65rem;
+  padding: 0.32rem 0.5rem;
   border-block: 1px solid color-mix(in oklab, var(--crm-brand-primary) 15%, var(--crm-app-border));
   background: color-mix(in srgb, var(--crm-app-panel-strong) 38%, transparent);
   box-shadow:
@@ -367,7 +371,7 @@ html.skin-premium .crm-premium-navbar-search__input:focus {
   align-items: center;
   justify-content: center;
   gap: 0.42rem;
-  padding: 0.68rem 1rem;
+  padding: 0.56rem 0.9rem;
   border: 0;
   border-radius: 0.75rem;
   background: transparent;
@@ -615,7 +619,8 @@ html.skin-premium.dark .crm-premium-nav__tab--open {
 }
 
 html.skin-premium .crm-main-scroll {
-  padding: clamp(1rem, 2vw, 2rem);
+  padding-block: clamp(0.75rem, 1vw, 1.25rem);
+  padding-inline: clamp(0.75rem, 1.25vw, 1.5rem);
 }
 
 html.skin-premium .crm-main-scroll.crm-main-scroll--dashboard {
@@ -623,8 +628,8 @@ html.skin-premium .crm-main-scroll.crm-main-scroll--dashboard {
 }
 
 html.skin-premium .crm-main-workspace {
-  max-width: 97.5rem;
-  padding-bottom: 2.5rem;
+  max-width: none;
+  padding-bottom: 0.75rem;
 }
 
 html.skin-premium .crm-main-workspace [data-slot='card'] {
