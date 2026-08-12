@@ -36,6 +36,16 @@ test('satış KPI rapor sekmeleri hazır pivot düzenleriyle açılır', async (
   await page.goto('/salesmen-360/me');
   const currentPeriod = page.getByText('Bu ay', { exact: true });
   await expect(currentPeriod).toBeVisible({ timeout: 30_000 });
+
+  const reportToolbar = page.getByTestId('salesmen360-report-toolbar');
+  const reportTabsToolbar = page.getByTestId('salesmen360-report-tabs');
+  await expect(reportToolbar).toBeVisible();
+  await expect(reportTabsToolbar).toBeVisible();
+  const reportToolbarBox = await reportToolbar.boundingBox();
+  const reportTabsToolbarBox = await reportTabsToolbar.boundingBox();
+  expect(reportToolbarBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(150);
+  expect(reportTabsToolbarBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(52);
+
   await currentPeriod.click();
   await page.getByRole('option', { name: 'Bu yıl', exact: true }).click();
 

@@ -316,92 +316,97 @@ export function Salesmen360Page(): ReactElement {
 
   return (
     <TooltipProvider delayDuration={300} skipDelayDuration={0}>
-      <div className="w-full px-1.5 pt-0 pb-8 space-y-6 animate-in fade-in duration-500">
-        <div className="flex flex-col gap-5 pt-4">
-          <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm dark:border-white/10 dark:bg-slate-950/60">
+      <div className="w-full space-y-3 px-1.5 pb-8 pt-0 animate-in fade-in duration-500">
+        <div className="pt-1">
+          <div
+            data-testid="salesmen360-report-toolbar"
+            className="relative overflow-visible rounded-lg border border-slate-200/80 bg-white shadow-sm dark:border-white/10 dark:bg-slate-950/60"
+          >
             <div className="pointer-events-none absolute inset-0 bg-[image:var(--crm-brand-gradient-soft)] opacity-70 dark:opacity-40" />
-            <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-              <div className="flex min-w-0 items-center gap-4">
+            <div className="relative grid items-center gap-3 p-3 lg:grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(15rem,0.75fr)_auto_minmax(34rem,1.7fr)]">
+              <div className="flex min-w-0 items-center gap-3">
                 {isTeamScope ? (
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-accent shadow-inner dark:border-primary/30 dark:bg-primary/10">
-                    <Users className="h-8 w-8 text-primary" />
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-accent shadow-inner dark:border-primary/30 dark:bg-primary/10">
+                    <Users className="size-5 text-primary" />
                   </div>
                 ) : (
-                  <div className="shrink-0 rounded-full bg-[image:var(--crm-brand-gradient)] p-[2px] shadow-lg shadow-primary/20">
-                    <div className="flex h-[62px] w-[62px] items-center justify-center rounded-full bg-white font-serif text-xl font-semibold text-primary dark:bg-slate-950">
+                  <div className="shrink-0 rounded-full bg-[image:var(--crm-brand-gradient)] p-[2px] shadow-md shadow-primary/15">
+                    <div className="flex size-11 items-center justify-center rounded-full bg-white text-sm font-bold text-primary dark:bg-slate-950">
                       {getInitials(overview.fullName)}
                     </div>
                   </div>
                 )}
-                <div className="min-w-0 space-y-1">
-                  <div className="flex flex-wrap items-baseline gap-2.5">
-                    <h1 className="truncate font-serif text-[1.7rem] font-semibold tracking-tight text-slate-900 dark:text-white sm:text-[1.9rem]">
+                <div className="min-w-0">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <h1 className="truncate text-lg font-bold text-slate-900 dark:text-white">
                       {isTeamScope ? t('salesman360.title') : overview.fullName || t('salesman360.title')}
                     </h1>
-                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-primary/60 px-2.5 py-0.5 text-[10px] font-black tracking-wider text-primary">
+                    <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-primary/40 bg-white/70 px-2 py-0.5 text-[9px] font-black text-primary dark:bg-white/5">
                       <LineChart className="size-3" />
                       360°
                     </span>
                   </div>
-                  <p className="truncate text-[13px] font-medium italic text-slate-500 dark:text-slate-400">
+                  <p className="mt-0.5 truncate text-xs font-medium text-slate-500 dark:text-slate-400">
                     {isTeamScope ? t('salesman360.subtitle') : overview.email || t('salesman360.subtitle')}
                   </p>
                 </div>
               </div>
 
               {!isTeamScope ? (
-                <div className="flex w-full flex-wrap items-stretch justify-between gap-y-3 divide-x divide-slate-200 sm:w-auto sm:flex-nowrap sm:justify-end dark:divide-white/10">
-                  <div className="flex flex-col justify-center pr-3 text-right sm:px-4 sm:first:pl-0 sm:last:pr-0">
-                    <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalOrders ?? 0}</p>
-                    <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                <div className="flex items-center divide-x divide-slate-200 rounded-lg border border-slate-200/80 bg-white/70 px-1.5 py-1 dark:divide-white/10 dark:border-white/10 dark:bg-white/5">
+                  <div className="min-w-20 px-2.5 text-right">
+                    <p className="text-sm font-bold tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalOrders ?? 0}</p>
+                    <p className="text-[8px] font-bold uppercase tracking-[0.1em] text-slate-400">
                       {t('salesman360.kpi.totalOrders')}
                     </p>
                   </div>
-                  <div className="flex flex-col justify-center px-3 text-right sm:px-4 sm:first:pl-0 sm:last:pr-0">
-                    <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalActivities ?? 0}</p>
-                    <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                  <div className="min-w-20 px-2.5 text-right">
+                    <p className="text-sm font-bold tabular-nums text-slate-900 dark:text-white">{overview.kpis.totalActivities ?? 0}</p>
+                    <p className="text-[8px] font-bold uppercase tracking-[0.1em] text-slate-400">
                       {t('salesman360.kpi.totalActivities')}
                     </p>
                   </div>
                   {lastActivityDateFormatted !== '-' ? (
-                    <div className="flex flex-col justify-center pl-3 text-right sm:px-4 sm:first:pl-0 sm:last:pr-0">
-                      <p className="text-lg font-bold tabular-nums text-slate-900 dark:text-white">{lastActivityDateFormatted}</p>
-                      <p className="mt-0.5 text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                    <div className="min-w-24 px-2.5 text-right">
+                      <p className="text-xs font-bold tabular-nums text-slate-900 dark:text-white">{lastActivityDateFormatted}</p>
+                      <p className="text-[8px] font-bold uppercase tracking-[0.1em] text-slate-400">
                         {t('salesman360.analytics.lastActivityDate')}
                       </p>
                     </div>
                   ) : null}
                 </div>
               ) : null}
+
+              <div className="min-w-0 lg:col-span-2 xl:col-span-1">
+                <Salesmen360Filters
+                  salesmen={salespersonOptions}
+                  selectedUserIds={selectedUserIds}
+                  showSalesmanFilter={visibleSalesmen.length > 1}
+                  onSelectedUserIdsChange={setSelectedUserIds}
+                  currencyOptions={currencyOptions}
+                  selectedCurrency={selectedCurrency}
+                  selectedCurrencyLabel={selectedCurrencyOption?.label}
+                  onSelectCurrency={setSelectedCurrency}
+                  selectedPeriod={selectedPeriod}
+                  onSelectPeriod={setSelectedPeriod}
+                  customStartDate={customStartDate}
+                  customEndDate={customEndDate}
+                  onCustomStartDateChange={setCustomStartDate}
+                  onCustomEndDateChange={setCustomEndDate}
+                  isCustomDateRangeDirty={
+                    customStartDate !== appliedCustomStartDate || customEndDate !== appliedCustomEndDate
+                  }
+                  onApplyCustomDateRange={() => {
+                    setAppliedCustomStartDate(customStartDate);
+                    setAppliedCustomEndDate(customEndDate);
+                  }}
+                />
+              </div>
             </div>
           </div>
-
-          <Salesmen360Filters
-            salesmen={salespersonOptions}
-            selectedUserIds={selectedUserIds}
-            showSalesmanFilter={visibleSalesmen.length > 1}
-            onSelectedUserIdsChange={setSelectedUserIds}
-            currencyOptions={currencyOptions}
-            selectedCurrency={selectedCurrency}
-            selectedCurrencyLabel={selectedCurrencyOption?.label}
-            onSelectCurrency={setSelectedCurrency}
-            selectedPeriod={selectedPeriod}
-            onSelectPeriod={setSelectedPeriod}
-            customStartDate={customStartDate}
-            customEndDate={customEndDate}
-            onCustomStartDateChange={setCustomStartDate}
-            onCustomEndDateChange={setCustomEndDate}
-            isCustomDateRangeDirty={
-              customStartDate !== appliedCustomStartDate || customEndDate !== appliedCustomEndDate
-            }
-            onApplyCustomDateRange={() => {
-              setAppliedCustomStartDate(customStartDate);
-              setAppliedCustomEndDate(customEndDate);
-            }}
-          />
         </div>
 
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Salesmen360TabKey)} className="space-y-6">
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as Salesmen360TabKey)} className="space-y-3">
           <SalesmenReportTabs showPlanning={canViewSalesPlanning} />
 
           {canViewSalesPlanning ? (

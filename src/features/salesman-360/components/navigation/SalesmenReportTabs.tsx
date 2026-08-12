@@ -122,30 +122,36 @@ export function SalesmenReportTabs({ showPlanning = false }: { showPlanning?: bo
   ];
 
   return (
-    <div className={cn('z-20 flex items-center gap-2 border-y border-slate-200/80 bg-white/90 py-2 backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/90', preferences.pinned && 'sticky top-0')}>
-      {preferences.visible ? <div className="min-w-0 flex-1 overflow-x-auto">
-      <TabsList className="flex h-auto min-w-max gap-2 rounded-2xl border border-slate-200 bg-white/80 p-1.5 shadow-sm dark:border-white/10 dark:bg-white/3">
+    <div
+      data-testid="salesmen360-report-tabs"
+      className={cn(
+        'z-20 flex min-h-10 items-center gap-1 rounded-lg border border-slate-200/80 bg-white/90 p-1 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/90',
+        preferences.pinned && 'sticky top-0',
+      )}
+    >
+      {preferences.visible ? <div className="scrollbar-hide min-w-0 flex-1 overflow-x-auto">
+      <TabsList className="flex h-8 min-w-max justify-start gap-1 rounded-none bg-transparent p-0 shadow-none">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
             <TabsTrigger
               key={tab.value}
               value={tab.value}
-              className="group h-11 min-w-40 justify-start gap-2 rounded-xl px-3 text-xs font-black data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"
+              className="group h-8 min-w-max justify-start gap-1 rounded-md px-1.5 text-[10px] font-bold data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm"
             >
-              <Icon className="size-4 shrink-0" aria-hidden />
+              <Icon className="size-3.5 shrink-0" aria-hidden />
               <span className="truncate">{tab.label}</span>
             </TabsTrigger>
           );
         })}
       </TabsList>
       </div> : <div className="flex-1 px-2 text-xs font-bold text-slate-400">Rapor sekmeleri gizlendi</div>}
-      <div className="mr-2 flex shrink-0 items-center gap-1 rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-white/10 dark:bg-white/5">
+      <div className="flex shrink-0 items-center gap-0.5 border-l border-slate-200 pl-1 dark:border-white/10">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className={cn('size-8 rounded-lg', preferences.pinned && 'bg-primary/10 text-primary')}
+          className={cn('size-8 rounded-md', preferences.pinned && 'bg-primary/10 text-primary')}
           title={preferences.pinned ? 'Sekme çubuğunun sabitliğini kaldır' : 'Sekme çubuğunu üste sabitle'}
           aria-label={preferences.pinned ? 'Sekme çubuğunun sabitliğini kaldır' : 'Sekme çubuğunu üste sabitle'}
           onClick={() => setPreferences((current) => ({ ...current, pinned: !current.pinned }))}
@@ -156,7 +162,7 @@ export function SalesmenReportTabs({ showPlanning = false }: { showPlanning?: bo
           type="button"
           variant="ghost"
           size="icon"
-          className="size-8 rounded-lg"
+          className="size-8 rounded-md"
           title={preferences.visible ? 'Rapor sekmelerini gizle' : 'Rapor sekmelerini göster'}
           aria-label={preferences.visible ? 'Rapor sekmelerini gizle' : 'Rapor sekmelerini göster'}
           onClick={() => setPreferences((current) => ({ ...current, visible: !current.visible }))}
