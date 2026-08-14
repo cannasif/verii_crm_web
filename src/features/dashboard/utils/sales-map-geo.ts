@@ -28,11 +28,71 @@ export const POLITICAL_LABEL_MUTED = '#4b5563';
 export function getSalesMapCountryIso(properties: SalesMapCountryProperties): string {
   const primary = (properties.ISO_A2 || '').toUpperCase();
   if (/^[A-Z]{2}$/.test(primary)) return primary;
-  const type = properties.TYPE || '';
-  if (type === 'Sovereign country' || type === 'Country') {
-    const fallback = (properties.ISO_A2_EH || '').toUpperCase();
-    if (/^[A-Z]{2}$/.test(fallback)) return fallback;
-  }
+  const fallback = (properties.ISO_A2_EH || '').toUpperCase();
+  if (/^[A-Z]{2}$/.test(fallback)) return fallback;
+  return '';
+}
+
+const COUNTRY_CODE_ALIASES: Record<string, string> = {
+  USA: 'US',
+  AMERICA: 'US',
+  AMERIKA: 'US',
+  UNITEDSTATES: 'US',
+  UNITEDSTATESOFAMERICA: 'US',
+  UK: 'GB',
+  GBR: 'GB',
+  UAE: 'AE',
+  RUS: 'RU',
+  RUSSIA: 'RU',
+  RUSYA: 'RU',
+  TUR: 'TR',
+  TURKEY: 'TR',
+  TURKIYE: 'TR',
+  ITALY: 'IT',
+  ITALYA: 'IT',
+  DEU: 'DE',
+  GERMANY: 'DE',
+  ALMANYA: 'DE',
+  FRA: 'FR',
+  FRANCE: 'FR',
+  FRANSA: 'FR',
+  ESP: 'ES',
+  SPAIN: 'ES',
+  ISPANYA: 'ES',
+  NLD: 'NL',
+  CHN: 'CN',
+  JPN: 'JP',
+};
+
+function stripCountryKey(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleUpperCase('en-US')
+    .replace(/İ/g, 'I')
+    .replace(/I/g, 'I')
+    .replace(/[^A-Z]/g, '');
+}
+
+export function normalizeSalesMapCountryCode(
+  countryCode?: string | null,
+  countryName?: string | null,
+  cityName?: string | null,
+): string {
+  const rawCode = stripCountryKey(countryCode || '');
+  if (COUNTRY_CODE_ALIASES[rawCode]) return COUNTRY_CODE_ALIASES[rawCode];
+  if (/^[A-Z]{2}$/.test(rawCode)) return rawCode;
+
+  const nameKey = stripCountryKey(countryName || cityName || '');
+  if (COUNTRY_CODE_ALIASES[nameKey]) return COUNTRY_CODE_ALIASES[nameKey];
+  if (/AMERIKA|UNITEDSTATES|USA/.test(nameKey)) return 'US';
+  if (/ITALYA|ITALY/.test(nameKey)) return 'IT';
+  if (/TURKIYE|TURKEY/.test(nameKey)) return 'TR';
+  if (/ALMANYA|GERMANY/.test(nameKey)) return 'DE';
+  if (/FRANSA|FRANCE/.test(nameKey)) return 'FR';
+  if (/ISPANYA|SPAIN/.test(nameKey)) return 'ES';
+  if (/RUSYA|RUSSIA/.test(nameKey)) return 'RU';
+  if (/BIRLESIKKRALLIK|UNITEDKINGDOM|ENGLAND/.test(nameKey)) return 'GB';
   return '';
 }
 
@@ -86,8 +146,12 @@ export function countryGeometryToSvgPath(
 export function buildCountryColorMap(locations: RankedSalesMapLocation[]): Map<string, string> {
   const buckets = new Map<string, { color: string; score: number }>();
   locations.forEach((location) => {
-    const code = (location.countryCode || '').toUpperCase();
-    if (!/^[A-Z]{2}$/.test(code)) return;
+    const code = normalizeSalesMapCountryCode(
+      location.countryCode,
+      location.countryName,
+      location.cityName,
+    );
+    if (!code) return;
     const current = buckets.get(code);
     if (!current || location.score > current.score) {
       buckets.set(code, { color: location.color, score: location.score });
@@ -100,12 +164,84 @@ export function findSalesMapLocationForCountry(
   locations: RankedSalesMapLocation[],
   countryCode: string,
 ): RankedSalesMapLocation | undefined {
-  const code = countryCode.toUpperCase();
-  if (!/^[A-Z]{2}$/.test(code)) return undefined;
-  const matches = locations.filter((location) => (location.countryCode || '').toUpperCase() === code);
+  const code = normalizeSalesMapCountryCode(countryCode);
+  if (!code) return undefined;
+  const matches = locations.filter((location) => (
+    normalizeSalesMapCountryCode(location.countryCode, location.countryName, location.cityName) === code
+  ));
   if (matches.length === 0) return undefined;
   const countryLevel = matches.find((location) => location.administrativeAreaType === 'country');
   if (countryLevel) return countryLevel;
+  return matches.reduce((best, location) => (location.score > best.score ? location : best));
+}
+
+const PROVINCE_NAME_ALIASES: Record<string, string> = {
+  afyon: 'afyonkarahisar',
+  afyonkarahisar: 'afyonkarahisar',
+  icel: 'mersin',
+  mersin: 'mersin',
+  maras: 'kahramanmaras',
+  kahramanmaras: 'kahramanmaras',
+  urfa: 'sanliurfa',
+  sanliurfa: 'sanliurfa',
+  hakkari: 'hakkari',
+};
+
+export function normalizeSalesMapProvinceKey(value: string): string {
+  const mappedChars = value
+    .trim()
+    .replace(/İ/g, 'i')
+    .replace(/I/g, 'i')
+    .replace(/ı/g, 'i')
+    .replace(/Ğ/g, 'g')
+    .replace(/ğ/g, 'g')
+    .replace(/Ü/g, 'u')
+    .replace(/ü/g, 'u')
+    .replace(/Ş/g, 's')
+    .replace(/ş/g, 's')
+    .replace(/Ö/g, 'o')
+    .replace(/ö/g, 'o')
+    .replace(/Ç/g, 'c')
+    .replace(/ç/g, 'c')
+    .replace(/Â/g, 'a')
+    .replace(/â/g, 'a')
+    .replace(/Î/g, 'i')
+    .replace(/î/g, 'i')
+    .replace(/Û/g, 'u')
+    .replace(/û/g, 'u')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '')
+    .trim();
+  return PROVINCE_NAME_ALIASES[mappedChars] ?? mappedChars;
+}
+
+export function buildProvinceColorMap(locations: RankedSalesMapLocation[]): Map<string, string> {
+  const buckets = new Map<string, { color: string; score: number }>();
+  locations.forEach((location) => {
+    if (normalizeSalesMapCountryCode(location.countryCode, location.countryName, location.cityName) !== 'TR') return;
+    if (location.administrativeAreaType === 'country') return;
+    const key = normalizeSalesMapProvinceKey(location.cityName);
+    if (!key) return;
+    const current = buckets.get(key);
+    if (!current || location.score > current.score) {
+      buckets.set(key, { color: location.color, score: location.score });
+    }
+  });
+  return new Map(Array.from(buckets, ([key, value]) => [key, value.color]));
+}
+
+export function findSalesMapLocationForProvince(
+  locations: RankedSalesMapLocation[],
+  provinceName: string,
+): RankedSalesMapLocation | undefined {
+  const target = normalizeSalesMapProvinceKey(provinceName);
+  if (!target) return undefined;
+  const matches = locations.filter((location) => {
+    if (normalizeSalesMapCountryCode(location.countryCode, location.countryName, location.cityName) !== 'TR') return false;
+    if (location.administrativeAreaType === 'country') return false;
+    return normalizeSalesMapProvinceKey(location.cityName) === target;
+  });
+  if (matches.length === 0) return undefined;
   return matches.reduce((best, location) => (location.score > best.score ? location : best));
 }
 

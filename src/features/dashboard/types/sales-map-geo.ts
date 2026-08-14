@@ -3,6 +3,7 @@ export type SalesMapStyle = 'satellite' | 'political';
 export interface SalesMapCountryProperties {
   ISO_A2?: string;
   ISO_A2_EH?: string;
+  PROVINCE_CODE?: string;
   TYPE?: string;
   NAME?: string;
   NAME_EN?: string;

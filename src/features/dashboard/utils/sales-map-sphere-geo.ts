@@ -249,6 +249,43 @@ export function buildSphereCountryMeshes(
   }).filter((country) => Boolean(country.code));
 }
 
+export function buildSphereProvinceMeshes(
+  geo: SalesMapCountriesGeoJson,
+  language: string,
+  radius: number,
+): SphereCountryMeshData[] {
+  return geo.features.map((feature) => {
+    const code = (feature.properties.PROVINCE_CODE || '').trim().toLowerCase();
+    const polygons = featurePolygons(feature);
+    const geometries: THREE.BufferGeometry[] = [];
+    const border: number[] = [];
+
+    polygons.forEach((rings) => {
+      const geometry = buildPolygonGeometry(rings, radius);
+      if (geometry) geometries.push(geometry);
+      border.push(...buildBorderPositions(rings, radius + 0.002));
+    });
+
+    let fillGeometry: THREE.BufferGeometry | null = null;
+    if (geometries.length === 1) {
+      fillGeometry = geometries[0];
+    } else if (geometries.length > 1) {
+      fillGeometry = mergeGeometriesSafe(geometries);
+      geometries.forEach((geometry) => geometry.dispose());
+    }
+
+    return {
+      code,
+      name: getSalesMapCountryName(feature.properties, language),
+      labelRank: feature.properties.LABELRANK ?? 4,
+      labelLongitude: typeof feature.properties.LABEL_X === 'number' ? feature.properties.LABEL_X : 0,
+      labelLatitude: typeof feature.properties.LABEL_Y === 'number' ? feature.properties.LABEL_Y : 0,
+      fillGeometry,
+      borderPositions: new Float32Array(border),
+    };
+  }).filter((province) => Boolean(province.code));
+}
+
 export const POLITICAL_OCEAN_COLOR = '#9ec5e8';
 export const POLITICAL_LAND_COLOR = POLITICAL_LAND;
 export const POLITICAL_BORDER_COLOR = POLITICAL_BORDER;
