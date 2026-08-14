@@ -20,7 +20,7 @@ import {
 } from 'hugeicons-react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Check, MonitorCog, Palette, Sparkles, TerminalSquare } from 'lucide-react';
+import { Check, Gem, LayoutDashboard, MonitorCog, Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -389,7 +389,7 @@ export function UserProfileModal({
                         skin === 'terminal' && 'crm-skin-switch__option--active',
                       )}
                     >
-                      <TerminalSquare aria-hidden />
+                      <LayoutDashboard aria-hidden />
                       <span>{t('shell.terminal')}</span>
                     </button>
                     <button
@@ -403,7 +403,7 @@ export function UserProfileModal({
                         skin === 'premium' && 'crm-skin-switch__option--active',
                       )}
                     >
-                      <Sparkles aria-hidden />
+                      <Gem aria-hidden />
                       <span>{t('shell.premium')}</span>
                     </button>
                   </div>

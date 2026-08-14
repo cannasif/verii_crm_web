@@ -5776,7 +5776,7 @@
   },
   "shell": {
     "interfaceStyle": "Style d’interface",
-    "terminal": "Terminal",
+    "terminal": "Classique",
     "premium": "Premium",
     "terminalHint": "Disposition compacte avec barre latérale et espace CRM actuel",
     "premiumHint": "Grand espace vitré avec navigation supérieure",

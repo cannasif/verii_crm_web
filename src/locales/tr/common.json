@@ -6024,7 +6024,7 @@
   },
   "shell": {
     "interfaceStyle": "Arayüz stili",
-    "terminal": "Terminal",
+    "terminal": "Klasik",
     "premium": "Premium",
     "terminalHint": "Kompakt sidebar düzeni ve mevcut CRM çalışma alanı",
     "premiumHint": "Üst navigasyonlu geniş ve cam yüzeyli çalışma alanı",

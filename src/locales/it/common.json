@@ -5850,7 +5850,7 @@
   },
   "shell": {
     "interfaceStyle": "Stile interfaccia",
-    "terminal": "Terminale",
+    "terminal": "Classico",
     "premium": "Premium",
     "terminalHint": "Layout compatto con barra laterale e area CRM esistente",
     "premiumHint": "Ampia area vetrata con navigazione superiore",

@@ -6025,7 +6025,7 @@
   },
   "shell": {
     "interfaceStyle": "Interface style",
-    "terminal": "Terminal",
+    "terminal": "Classic",
     "premium": "Premium",
     "terminalHint": "Compact sidebar layout and the existing CRM workspace",
     "premiumHint": "Wide glass workspace with top navigation",

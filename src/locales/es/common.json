@@ -5822,7 +5822,7 @@
   },
   "shell": {
     "interfaceStyle": "Estilo de interfaz",
-    "terminal": "Terminal",
+    "terminal": "Clásico",
     "premium": "Premium",
     "terminalHint": "Diseño compacto con barra lateral y espacio CRM actual",
     "premiumHint": "Espacio amplio acristalado con navegación superior",

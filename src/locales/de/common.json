@@ -5785,7 +5785,7 @@
   },
   "shell": {
     "interfaceStyle": "Oberflächenstil",
-    "terminal": "Terminal",
+    "terminal": "Klassisch",
     "premium": "Premium",
     "terminalHint": "Kompaktes Seitenleistenlayout und bestehender CRM-Arbeitsbereich",
     "premiumHint": "Breiter Glas-Arbeitsbereich mit oberer Navigation",
