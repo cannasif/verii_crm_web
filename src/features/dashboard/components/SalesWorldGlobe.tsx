@@ -116,7 +116,7 @@ function alignCameraNorthUp(camera: THREE.Camera): void {
 
 function rotateSpeedForDistance(distance: number): number {
   const t = THREE.MathUtils.clamp((distance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE), 0, 1);
-  return 0.018 + t * 0.032;
+  return 0.55 + t * 0.35;
 }
 
 function CameraFocus({
@@ -197,11 +197,11 @@ function GlobeControls({
     controlsRef.current = controls;
     controls.enablePan = false;
     controls.enableDamping = true;
-    controls.dampingFactor = 0.08;
+    controls.dampingFactor = 0.14;
     controls.minDistance = MIN_DISTANCE;
     controls.maxDistance = MAX_DISTANCE;
     controls.rotateSpeed = rotateSpeedForDistance(camera.position.length());
-    controls.zoomSpeed = 0.55;
+    controls.zoomSpeed = 0.7;
     controls.autoRotate = autoRotate;
     controls.autoRotateSpeed = 0.035;
     controls.enableZoom = true;
