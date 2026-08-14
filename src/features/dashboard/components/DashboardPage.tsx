@@ -247,15 +247,16 @@ export function DashboardPage(): ReactElement {
         </div>
       </div>
 
-      <div className="flex w-full max-w-4xl gap-1 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-white/10 dark:bg-[#130d1b]" role="tablist" aria-label={t('tabs.label')}>
+      <div className="flex w-full gap-1 overflow-x-auto rounded-xl border border-slate-200 bg-white p-1 shadow-sm dark:border-white/10 dark:bg-[#130d1b] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist" aria-label={t('tabs.label')}>
         <button
           type="button"
           role="tab"
           aria-selected={activeTab === 'calendar'}
           onClick={() => setActiveTab('calendar')}
-          className={cn('flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition', activeTab === 'calendar' ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
+          className={cn('flex min-w-[7rem] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition sm:min-w-0', activeTab === 'calendar' ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
         >
-          <CalendarDays size={15} />{t('tabs.calendar')}
+          <CalendarDays size={15} className="shrink-0" />
+          <span className="truncate">{t('tabs.calendar')}</span>
         </button>
         {([
           { id: 'demand' as const, icon: ClipboardList, label: t('tabs.demands') },
@@ -269,9 +270,10 @@ export function DashboardPage(): ReactElement {
             role="tab"
             aria-selected={activeTab === id}
             onClick={() => setActiveTab(id)}
-            className={cn('flex min-w-28 flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition', activeTab === id ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
+            className={cn('flex min-w-[7rem] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition sm:min-w-0', activeTab === id ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
           >
-            <Icon size={15} />{label}
+            <Icon size={15} className="shrink-0" />
+            <span className="truncate">{label}</span>
           </button>
         ))}
         <button
@@ -279,9 +281,10 @@ export function DashboardPage(): ReactElement {
           role="tab"
           aria-selected={activeTab === 'reports'}
           onClick={() => setActiveTab('reports')}
-          className={cn('flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition', activeTab === 'reports' ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
+          className={cn('flex min-w-[7rem] flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition sm:min-w-0', activeTab === 'reports' ? 'bg-[image:var(--crm-brand-gradient)] text-white shadow-sm shadow-primary/20' : 'text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5')}
         >
-          <BarChart3 size={15} />{t('tabs.reports')}
+          <BarChart3 size={15} className="shrink-0" />
+          <span className="truncate">{t('tabs.reports')}</span>
         </button>
       </div>
 

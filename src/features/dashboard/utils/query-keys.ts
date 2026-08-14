@@ -12,4 +12,5 @@ export const dashboardQueryKeys = {
   root: ['dashboard'] as const,
   salesMap: (startDate: string, endDate: string, scope: 'all' | 'mine') =>
     [...dashboardQueryKeys.root, 'sales-map', startDate, endDate, scope] as const,
+  salesMapCountries: () => [...dashboardQueryKeys.root, 'sales-map-countries'] as const,
 };

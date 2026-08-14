@@ -1,15 +1,20 @@
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   CalendarRange,
+  ChevronDown,
   Database,
   FileText,
   Globe2,
+  LandPlot,
   LocateOff,
   Map as MapIcon,
   MapPin,
+  Maximize2,
+  Minimize2,
   RefreshCw,
   Rotate3D,
+  Satellite,
   ShoppingCart,
   TurkishLira,
   UserRound,
@@ -28,17 +33,25 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 import { useDashboardSalesMap } from '../hooks/useDashboardSalesMap';
+import { useSalesMapCountries } from '../hooks/useSalesMapCountries';
 import type {
   DashboardSalesMapLocation,
   SalesMapMetric,
   SalesMapMetricState,
   SalesMapScope,
 } from '../types/dashboard-sales-map';
+import type { SalesMapStyle } from '../types/sales-map-geo';
+import {
+  buildCountryColorMap,
+  formatSalesMapPinLabel,
+} from '../utils/sales-map-geo';
 import {
   getSalesMapOwnerColor,
   rankSalesMapLocations,
-  type RankedSalesMapLocation,
 } from '../utils/sales-map-metrics';
+import { SalesFlatMap } from './SalesFlatMap';
+import { SalesMapNavControls } from './SalesMapNavControls';
+import type { SalesWorldGlobeHandle } from './SalesWorldGlobe';
 
 const SalesWorldGlobe = lazy(() => import('./SalesWorldGlobe'));
 
@@ -118,47 +131,6 @@ function usePrefersReducedMotion(): boolean {
   return reducedMotion;
 }
 
-function FlatWorldMap({
-  locations,
-  selectedKey,
-  onSelect,
-}: {
-  locations: RankedSalesMapLocation[];
-  selectedKey: string | null;
-  onSelect: (location: DashboardSalesMapLocation) => void;
-}) {
-  return (
-    <div className="relative h-full min-h-[360px] overflow-hidden bg-[#07111f]" data-testid="sales-map-flat">
-      <img
-        src="/assets/maps/earth-blue-marble-2048.jpg"
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 h-full w-full object-fill opacity-90"
-      />
-      <div className="absolute inset-0 bg-black/10" aria-hidden="true" />
-      {locations.map((location) => {
-        const left = ((location.longitude + 180) / 360) * 100;
-        const top = ((90 - location.latitude) / 180) * 100;
-        return (
-          <button
-            key={location.key}
-            type="button"
-            aria-label={location.cityName}
-            onClick={() => onSelect(location)}
-            className={cn(
-              'absolute flex size-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/90 bg-black/65 shadow-lg transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white',
-              selectedKey === location.key && 'scale-110 ring-2 ring-amber-300',
-            )}
-            style={{ left: `${left}%`, top: `${top}%`, color: location.color }}
-          >
-            <MapPin size={17} fill="currentColor" />
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
 export function DashboardSalesMap() {
   const { t, i18n } = useTranslation('dashboard');
   const initialRange = useMemo(() => getPresetRange('year'), []);
@@ -170,13 +142,18 @@ export function DashboardSalesMap() {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [hoveredLocation, setHoveredLocation] = useState<DashboardSalesMapLocation | null>(null);
   const [viewMode, setViewMode] = useState<MapViewMode>(getInitialMapViewMode);
+  const [mapStyle, setMapStyle] = useState<SalesMapStyle>('political');
   const [autoRotate, setAutoRotate] = useState(false);
+  const [mapExpanded, setMapExpanded] = useState(false);
+  const [detailExpanded, setDetailExpanded] = useState(true);
+  const globeRef = useRef<SalesWorldGlobeHandle>(null);
   const reducedMotion = usePrefersReducedMotion();
   const canUseWebGl = useMemo(() => supportsWebGl(), []);
 
   const queryStart = `${appliedRange.start}T00:00:00`;
   const queryEnd = `${addDays(appliedRange.end, 1)}T00:00:00`;
   const mapQuery = useDashboardSalesMap(queryStart, queryEnd, scope);
+  const countriesQuery = useSalesMapCountries(true);
   const countryOptions = useMemo(() => {
     const countries = new Map<string, string>();
     (mapQuery.data?.locations ?? []).forEach((location) => {
@@ -196,6 +173,7 @@ export function DashboardSalesMap() {
     () => rankSalesMapLocations(filteredLocations, metrics),
     [filteredLocations, metrics],
   );
+  const countryColors = useMemo(() => buildCountryColorMap(locations), [locations]);
   const ownerLegend = useMemo(() => {
     const owners = new Map<string, { userId?: number | null; fullName: string; documentCount: number }>();
     filteredLocations.forEach((location) => location.owners.forEach((owner) => {
@@ -226,6 +204,24 @@ export function DashboardSalesMap() {
   useEffect(() => {
     if (reducedMotion) setAutoRotate(false);
   }, [reducedMotion]);
+
+  useEffect(() => {
+    if (selectedKey) setDetailExpanded(true);
+  }, [selectedKey]);
+
+  useEffect(() => {
+    if (!mapExpanded) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMapExpanded(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mapExpanded]);
 
   const selectedLocation = locations.find((location) => location.key === selectedKey) ?? null;
   const detailLocation = hoveredLocation ?? selectedLocation;
@@ -440,59 +436,153 @@ export function DashboardSalesMap() {
       </div>
 
       <div className="grid min-h-[520px] lg:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="relative min-h-[440px] overflow-hidden bg-[#07111f] lg:min-h-[520px]">
-          <div className="absolute left-3 top-3 z-10 flex items-center gap-1 rounded-lg border border-white/15 bg-black/55 p-1 text-white backdrop-blur-sm">
-            <button
-              type="button"
-              onClick={() => canUseWebGl && setViewMode('globe')}
-              disabled={!canUseWebGl}
-              className={cn('flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[11px] font-bold', viewMode === 'globe' ? 'bg-white text-slate-900' : 'text-white/75 hover:bg-white/10')}
-            >
-              <Rotate3D size={14} />{t('salesMap.views.globe')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('flat')}
-              className={cn('flex h-8 items-center gap-1.5 rounded-md px-2.5 text-[11px] font-bold', viewMode === 'flat' ? 'bg-white text-slate-900' : 'text-white/75 hover:bg-white/10')}
-            >
-              <MapIcon size={14} />{t('salesMap.views.flat')}
-            </button>
+        <div className="relative min-h-[440px] lg:min-h-[520px]">
+          {mapExpanded && (
+            <div
+              role="presentation"
+              className="fixed inset-0 z-40 bg-black/40"
+              onClick={() => setMapExpanded(false)}
+            />
+          )}
+          <div
+            className={cn(
+              'overflow-hidden',
+              mapStyle === 'political' ? 'bg-[#0b1220]' : 'bg-[#061018]',
+              mapExpanded
+                ? 'fixed left-1/2 top-1/2 z-[45] h-[min(42rem,78dvh)] w-[min(68rem,calc(100vw-1.5rem))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-white/15 shadow-2xl sm:h-[min(46rem,80dvh)] sm:w-[min(72rem,calc(100vw-2.5rem))] md:w-[min(76rem,calc(100vw-3rem))]'
+                : 'absolute inset-0',
+            )}
+          >
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-start justify-between gap-2 p-2.5 sm:p-3">
+            <div className="pointer-events-auto flex min-w-0 flex-1 flex-wrap gap-1">
+              <div className="flex items-center gap-0.5 rounded-lg border border-white/15 bg-black/55 p-0.5 text-white backdrop-blur-sm sm:gap-1 sm:p-1">
+                <button
+                  type="button"
+                  aria-label={t('salesMap.views.globe')}
+                  title={t('salesMap.views.globe')}
+                  onClick={() => canUseWebGl && setViewMode('globe')}
+                  disabled={!canUseWebGl}
+                  className={cn('flex h-8 items-center gap-1.5 rounded-md px-2 text-[11px] font-bold sm:px-2.5', viewMode === 'globe' ? 'bg-white text-slate-900' : 'text-white/75 hover:bg-white/10')}
+                >
+                  <Rotate3D size={14} className="shrink-0" />
+                  <span className="hidden sm:inline">{t('salesMap.views.globe')}</span>
+                </button>
+                <button
+                  type="button"
+                  aria-label={t('salesMap.views.flat')}
+                  title={t('salesMap.views.flat')}
+                  onClick={() => setViewMode('flat')}
+                  className={cn('flex h-8 items-center gap-1.5 rounded-md px-2 text-[11px] font-bold sm:px-2.5', viewMode === 'flat' ? 'bg-white text-slate-900' : 'text-white/75 hover:bg-white/10')}
+                >
+                  <MapIcon size={14} className="shrink-0" />
+                  <span className="hidden sm:inline">{t('salesMap.views.flat')}</span>
+                </button>
+              </div>
+              <div className="flex items-center gap-0.5 rounded-lg border border-white/15 bg-black/55 p-0.5 text-white backdrop-blur-sm sm:gap-1 sm:p-1">
+                <button
+                  type="button"
+                  aria-label={t('salesMap.styles.political')}
+                  title={t('salesMap.styles.political')}
+                  onClick={() => setMapStyle('political')}
+                  className={cn('flex h-8 items-center gap-1.5 rounded-md px-2 text-[11px] font-bold sm:px-2.5', mapStyle === 'political' ? 'bg-white text-slate-900' : 'text-white/75 hover:bg-white/10')}
+                >
+                  <LandPlot size={14} className="shrink-0" />
+                  <span className="hidden sm:inline">{t('salesMap.styles.political')}</span>
+                </button>
+                <button
+                  type="button"
+                  aria-label={t('salesMap.styles.satellite')}
+                  title={t('salesMap.styles.satellite')}
+                  onClick={() => setMapStyle('satellite')}
+                  className={cn('flex h-8 items-center gap-1.5 rounded-md px-2 text-[11px] font-bold sm:px-2.5', mapStyle === 'satellite' ? 'bg-white text-slate-900' : 'text-white/75 hover:bg-white/10')}
+                >
+                  <Satellite size={14} className="shrink-0" />
+                  <span className="hidden sm:inline">{t('salesMap.styles.satellite')}</span>
+                </button>
+              </div>
+            </div>
+
+            <div className="pointer-events-auto flex shrink-0 flex-col items-end gap-1.5">
+              <button
+                type="button"
+                aria-label={mapExpanded ? t('salesMap.expand.close') : t('salesMap.expand.open')}
+                onClick={() => setMapExpanded((current) => !current)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/15 bg-black/45 text-white/80 backdrop-blur-sm transition hover:bg-black/65 hover:text-white"
+              >
+                {mapExpanded ? <Minimize2 size={15} strokeWidth={2.25} /> : <Maximize2 size={15} strokeWidth={2.25} />}
+              </button>
+              {viewMode === 'globe' && canUseWebGl && (
+                <div className="flex items-center gap-2 rounded-lg border border-white/15 bg-black/55 px-2 py-1.5 text-xs font-semibold text-white backdrop-blur-sm sm:px-3 sm:py-2">
+                  <Rotate3D size={14} className="shrink-0" />
+                  <span className="hidden sm:inline">{t('salesMap.autoRotate')}</span>
+                  <Switch
+                    checked={autoRotate}
+                    disabled={reducedMotion}
+                    onCheckedChange={setAutoRotate}
+                    aria-label={t('salesMap.autoRotate')}
+                    className="data-[state=checked]:bg-fuchsia-500"
+                  />
+                </div>
+              )}
+              {mapQuery.isFetching && (
+                <div className="flex items-center gap-2 rounded-md border border-white/15 bg-black/65 px-2.5 py-1.5 text-[10px] font-bold text-white">
+                  <RefreshCw size={12} className="animate-spin" />
+                  <span className="hidden sm:inline">{t('salesMap.refreshing')}</span>
+                </div>
+              )}
+            </div>
           </div>
 
-          {viewMode === 'globe' && canUseWebGl && (
-            <div className="absolute right-3 top-14 z-10 flex items-center gap-2 rounded-lg border border-white/15 bg-black/55 px-3 py-2 text-xs font-semibold text-white backdrop-blur-sm sm:top-3">
-              <Rotate3D size={14} />
-              {t('salesMap.autoRotate')}
-              <Switch
-                checked={autoRotate}
-                disabled={reducedMotion}
-                onCheckedChange={setAutoRotate}
-                className="data-[state=checked]:bg-fuchsia-500"
-              />
-            </div>
-          )}
-
-          {mapQuery.isFetching && (
-            <div className="absolute right-3 top-24 z-20 flex items-center gap-2 rounded-md border border-white/15 bg-black/65 px-2.5 py-1.5 text-[10px] font-bold text-white sm:top-14">
-              <RefreshCw size={12} className="animate-spin" />{t('salesMap.refreshing')}
-            </div>
-          )}
-
           {viewMode === 'globe' && canUseWebGl ? (
-            <Suspense fallback={<Skeleton className="h-full min-h-[520px] w-full rounded-none bg-slate-900" />}>
-              <SalesWorldGlobe
+            <div className="absolute inset-0 z-0">
+              <Suspense fallback={<Skeleton className="h-full min-h-[520px] w-full rounded-none bg-slate-900" />}>
+                <SalesWorldGlobe
+                  ref={globeRef}
+                  locations={locations}
+                  selectedKey={selectedKey}
+                  autoRotate={autoRotate}
+                  mapStyle={mapStyle}
+                  countriesGeo={countriesQuery.data}
+                  countryColors={countryColors}
+                  language={i18n.language}
+                  metrics={metrics}
+                  onSelect={(location) => setSelectedKey(location.key)}
+                  onHover={setHoveredLocation}
+                />
+              </Suspense>
+            </div>
+          ) : (
+            <div className="absolute inset-0 z-0">
+              <SalesFlatMap
                 locations={locations}
                 selectedKey={selectedKey}
-                autoRotate={autoRotate}
+                mapStyle={mapStyle}
+                countries={countriesQuery.data}
+                countryColors={countryColors}
+                language={i18n.language}
+                metrics={metrics}
                 onSelect={(location) => setSelectedKey(location.key)}
-                onHover={setHoveredLocation}
               />
-            </Suspense>
-          ) : (
-            <FlatWorldMap
-              locations={locations}
-              selectedKey={selectedKey}
-              onSelect={(location) => setSelectedKey(location.key)}
+            </div>
+          )}
+
+          {viewMode === 'globe' && canUseWebGl && (
+            <SalesMapNavControls
+              variant="joystick"
+              onZoomIn={() => globeRef.current?.zoomIn()}
+              onZoomOut={() => globeRef.current?.zoomOut()}
+              onPan={(vector) => globeRef.current?.pan(vector)}
+              onResetNorth={() => globeRef.current?.resetNorth()}
+              zoomInLabel={t('salesMap.nav.zoomIn')}
+              zoomOutLabel={t('salesMap.nav.zoomOut')}
+              panLabel={t('salesMap.nav.pan')}
+              panUpLabel={t('salesMap.nav.panUp')}
+              panDownLabel={t('salesMap.nav.panDown')}
+              panLeftLabel={t('salesMap.nav.panLeft')}
+              panRightLabel={t('salesMap.nav.panRight')}
+              compassLabel={t('salesMap.nav.compass')}
+              expandLabel={t('salesMap.nav.expand')}
+              collapseLabel={t('salesMap.nav.collapse')}
             />
           )}
 
@@ -503,10 +593,19 @@ export function DashboardSalesMap() {
           )}
 
           {detailLocation && (
-            <div className="absolute bottom-3 left-3 right-3 z-10 max-w-sm rounded-lg border border-white/15 bg-black/70 p-3 text-white shadow-xl backdrop-blur-md sm:right-auto sm:w-80">
-              <div className="mb-2 flex items-center gap-2">
-                <MapPin size={16} className="text-fuchsia-300" />
-                <div className="min-w-0">
+            <div className="absolute bottom-3 left-3 right-14 z-20 overflow-hidden rounded-lg border border-white/15 bg-black/70 text-white shadow-xl backdrop-blur-md sm:right-auto sm:w-80">
+              <button
+                type="button"
+                className="flex w-full items-center gap-2 p-2.5 text-left sm:cursor-default sm:p-3"
+                aria-expanded={detailExpanded}
+                aria-label={detailExpanded ? t('salesMap.detail.collapse') : t('salesMap.detail.expand')}
+                onClick={() => {
+                  if (window.matchMedia('(min-width: 640px)').matches) return;
+                  setDetailExpanded((current) => !current);
+                }}
+              >
+                <MapPin size={16} className="shrink-0 text-fuchsia-300" />
+                <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-black">{detailLocation.cityName}</p>
                   <p className="truncate text-[10px] font-medium text-white/60">
                     {detailLocation.administrativeAreaType === 'country'
@@ -514,33 +613,43 @@ export function DashboardSalesMap() {
                       : `${detailLocation.countryName} · ${t(`salesMap.areaType.${detailLocation.administrativeAreaType}`)}`}
                   </p>
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
-                <span className="text-white/60">{t('salesMap.metrics.quotations')}</span><strong className="text-right">{numberFormatter.format(detailLocation.quotationCount)}</strong>
-                <span className="text-white/60">{t('salesMap.metrics.orders')}</span><strong className="text-right">{numberFormatter.format(detailLocation.orderCount)}</strong>
-                <span className="text-white/60">{t('salesMap.metrics.erpOrders')}</span><strong className="text-right">{numberFormatter.format(detailLocation.erpOrderCount)}</strong>
-                <span className="text-white/60">{t('salesMap.metrics.tlAmount')}</span><strong className="text-right">{currencyFormatter.format(detailLocation.quotationTlAmount + detailLocation.orderTlAmount)}</strong>
-              </div>
-              {detailLocation.owners.length > 0 && (
-                <div className="mt-2 border-t border-white/10 pt-2">
-                  <p className="mb-1 text-[9px] font-bold uppercase text-white/50">{t('salesMap.owners.breakdown')}</p>
-                  <div className="space-y-1">
-                    {detailLocation.owners
-                      .slice()
-                      .sort((left, right) => (right.quotationCount + right.orderCount) - (left.quotationCount + left.orderCount))
-                      .slice(0, 4)
-                      .map((owner) => (
-                        <div key={owner.userId ?? owner.fullName} className="flex items-center gap-1.5 text-[10px]">
-                          <span className="size-2 shrink-0 rounded-sm" style={{ backgroundColor: getSalesMapOwnerColor(owner) }} />
-                          <span className="min-w-0 flex-1 truncate">{owner.fullName || t('salesMap.owners.unassigned')}</span>
-                          <strong>{numberFormatter.format(owner.quotationCount + owner.orderCount)}</strong>
-                        </div>
-                      ))}
-                  </div>
+                <ChevronDown
+                  size={18}
+                  className={cn(
+                    'shrink-0 text-white/70 transition-transform sm:hidden',
+                    detailExpanded && 'rotate-180',
+                  )}
+                />
+              </button>
+              <div className={cn('border-t border-white/10 px-2.5 pb-2.5 sm:block sm:px-3 sm:pb-3', detailExpanded ? 'block' : 'hidden')}>
+                <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 pt-2 text-[10px] sm:gap-x-4 sm:gap-y-1 sm:text-[11px]">
+                  <span className="text-white/60">{t('salesMap.metrics.quotations')}</span><strong className="text-right">{numberFormatter.format(detailLocation.quotationCount)}</strong>
+                  <span className="text-white/60">{t('salesMap.metrics.orders')}</span><strong className="text-right">{numberFormatter.format(detailLocation.orderCount)}</strong>
+                  <span className="text-white/60">{t('salesMap.metrics.erpOrders')}</span><strong className="text-right">{numberFormatter.format(detailLocation.erpOrderCount)}</strong>
+                  <span className="text-white/60">{t('salesMap.metrics.tlAmount')}</span><strong className="text-right">{currencyFormatter.format(detailLocation.quotationTlAmount + detailLocation.orderTlAmount)}</strong>
                 </div>
-              )}
+                {detailLocation.owners.length > 0 && (
+                  <div className="mt-1.5 border-t border-white/10 pt-1.5 sm:mt-2 sm:pt-2">
+                    <p className="mb-1 text-[9px] font-bold uppercase text-white/50">{t('salesMap.owners.breakdown')}</p>
+                    <div className="space-y-1">
+                      {detailLocation.owners
+                        .slice()
+                        .sort((left, right) => (right.quotationCount + right.orderCount) - (left.quotationCount + left.orderCount))
+                        .slice(0, 3)
+                        .map((owner) => (
+                          <div key={owner.userId ?? owner.fullName} className="flex items-center gap-1.5 text-[10px]">
+                            <span className="size-2 shrink-0 rounded-sm" style={{ backgroundColor: getSalesMapOwnerColor(owner) }} />
+                            <span className="min-w-0 flex-1 truncate">{owner.fullName || t('salesMap.owners.unassigned')}</span>
+                            <strong>{numberFormatter.format(owner.quotationCount + owner.orderCount)}</strong>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
+          </div>
         </div>
 
         <aside className="border-t border-slate-200 bg-slate-50/70 dark:border-white/10 dark:bg-white/[0.025] lg:border-l lg:border-t-0">
@@ -595,8 +704,7 @@ export function DashboardSalesMap() {
                   </span>
                 </span>
                 <span className="text-right text-[10px] font-bold text-slate-600 dark:text-slate-300">
-                  {numberFormatter.format(location.quotationCount + location.orderCount)}<br />
-                  <span className="font-medium text-slate-400">{currencyFormatter.format(location.quotationTlAmount + location.orderTlAmount)}</span>
+                  {formatSalesMapPinLabel(location, i18n.language, metrics)}
                 </span>
               </button>
             ))}

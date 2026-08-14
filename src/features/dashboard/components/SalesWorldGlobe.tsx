@@ -1,19 +1,50 @@
-import { Suspense, useEffect, useMemo, useRef } from 'react';
-import { Canvas, type ThreeEvent, useFrame, useLoader, useThree } from '@react-three/fiber';
+import {
+  forwardRef,
+  Suspense,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+  type MutableRefObject,
+} from 'react';
+import { Html } from '@react-three/drei';
+import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import type { DashboardSalesMapLocation } from '../types/dashboard-sales-map';
+import type { DashboardSalesMapLocation, SalesMapMetricState } from '../types/dashboard-sales-map';
+import type { SalesMapCountriesGeoJson, SalesMapStyle } from '../types/sales-map-geo';
 import type { RankedSalesMapLocation } from '../utils/sales-map-metrics';
+import { formatSalesMapPinLabel, findSalesMapLocationForCountry } from '../utils/sales-map-geo';
+import { PoliticalGlobeLayer, Starfield } from './PoliticalGlobeLayer';
+import { SalesMapLocationPin } from './SalesMapLocationPin';
+import type { SalesMapPanVector } from './SalesMapNavControls';
+
+export interface SalesWorldGlobeHandle {
+  zoomIn: () => void;
+  zoomOut: () => void;
+  pan: (vector: SalesMapPanVector) => void;
+  resetNorth: () => void;
+}
 
 interface SalesWorldGlobeProps {
   locations: RankedSalesMapLocation[];
   selectedKey: string | null;
   autoRotate: boolean;
+  mapStyle: SalesMapStyle;
+  countriesGeo?: SalesMapCountriesGeoJson;
+  countryColors: Map<string, string>;
+  language: string;
+  metrics: SalesMapMetricState;
   onSelect: (location: DashboardSalesMapLocation) => void;
   onHover: (location: DashboardSalesMapLocation | null) => void;
 }
 
 const EARTH_RADIUS = 2;
+const MIN_DISTANCE = 3.05;
+const MAX_DISTANCE = 7.8;
+const SATELLITE_SRC = '/assets/maps/earth-blue-marble-5400.jpg';
+const ZOOM_STEP = 1.12;
 
 function latLngToVector(latitude: number, longitude: number, radius = EARTH_RADIUS): THREE.Vector3 {
   const phi = THREE.MathUtils.degToRad(90 - latitude);
@@ -25,163 +56,362 @@ function latLngToVector(latitude: number, longitude: number, radius = EARTH_RADI
   );
 }
 
-function CameraFocus({ location }: { location?: DashboardSalesMapLocation }) {
+function dollyByFactor(
+  camera: THREE.Camera,
+  controls: ThreeOrbitControls,
+  factor: number,
+): void {
+  const offset = new THREE.Vector3().copy(camera.position).sub(controls.target);
+  const nextDistance = THREE.MathUtils.clamp(offset.length() * factor, MIN_DISTANCE, MAX_DISTANCE);
+  offset.setLength(nextDistance);
+  camera.position.copy(controls.target).add(offset);
+  controls.update();
+}
+
+function panCamera(
+  camera: THREE.Camera,
+  controls: ThreeOrbitControls,
+  vector: { x: number; y: number },
+): void {
+  const offset = camera.position.clone().sub(controls.target);
+  const distance = offset.length();
+  const step = 0.007 + ((distance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE)) * 0.014;
+
+  camera.updateMatrixWorld();
+  const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0).normalize();
+  const up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1).normalize();
+  const worldUp = new THREE.Vector3(0, 1, 0);
+
+  const yaw = new THREE.Quaternion().setFromAxisAngle(up, vector.x * step);
+  offset.applyQuaternion(yaw);
+  up.applyQuaternion(yaw);
+
+  const pitched = offset.clone();
+  const pitch = new THREE.Quaternion().setFromAxisAngle(right, vector.y * step);
+  pitched.applyQuaternion(pitch);
+  if (Math.abs(pitched.clone().normalize().dot(worldUp)) < 0.96) {
+    offset.copy(pitched);
+    up.applyQuaternion(pitch);
+  }
+
+  offset.setLength(distance);
+  camera.position.copy(controls.target).add(offset);
+  camera.up.copy(up.normalize());
+  camera.lookAt(controls.target);
+  controls.update();
+}
+
+function alignCameraNorthUp(camera: THREE.Camera): void {
+  const position = camera.position.clone().normalize();
+  const northPole = new THREE.Vector3(0, 1, 0);
+  const east = new THREE.Vector3().crossVectors(northPole, position);
+  if (east.lengthSq() < 1e-8) {
+    camera.up.set(0, 0, position.y > 0 ? -1 : 1);
+    return;
+  }
+  east.normalize();
+  camera.up.copy(new THREE.Vector3().crossVectors(position, east).normalize());
+}
+
+function rotateSpeedForDistance(distance: number): number {
+  const t = THREE.MathUtils.clamp((distance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE), 0, 1);
+  return 0.018 + t * 0.032;
+}
+
+function CameraFocus({
+  locationKey,
+  location,
+}: {
+  locationKey: string | null;
+  location?: DashboardSalesMapLocation;
+}) {
   const { camera, invalidate } = useThree();
+  const focusedKeyRef = useRef<string | null>(null);
+  const skippedInitialRef = useRef(false);
 
   useEffect(() => {
-    if (!location) return;
-    const destination = latLngToVector(location.latitude, location.longitude, 5.25);
-    camera.position.copy(destination);
+    if (!location || !locationKey) return;
+    if (!skippedInitialRef.current) {
+      skippedInitialRef.current = true;
+      focusedKeyRef.current = locationKey;
+      return;
+    }
+    if (focusedKeyRef.current === locationKey) return;
+    focusedKeyRef.current = locationKey;
+    const radius = THREE.MathUtils.clamp(camera.position.length(), MIN_DISTANCE, MAX_DISTANCE);
+    camera.position.copy(latLngToVector(location.latitude, location.longitude, radius));
+    alignCameraNorthUp(camera);
     camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();
     invalidate();
-  }, [camera, invalidate, location]);
+  }, [camera, invalidate, location, locationKey]);
 
   return null;
 }
 
-function Earth() {
-  const texture = useLoader(THREE.TextureLoader, '/assets/maps/earth-blue-marble-2048.jpg');
+function ClearColor({ mapStyle }: { mapStyle: SalesMapStyle }) {
+  const { gl, invalidate } = useThree();
+
+  useEffect(() => {
+    gl.setClearColor(mapStyle === 'political' ? '#0b1220' : '#061018', 1);
+    invalidate();
+  }, [gl, invalidate, mapStyle]);
+
+  return null;
+}
+
+function SatelliteEarth() {
+  const texture = useLoader(THREE.TextureLoader, SATELLITE_SRC);
   const { gl, invalidate } = useThree();
 
   useEffect(() => {
     texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = Math.min(4, gl.capabilities.getMaxAnisotropy());
+    texture.generateMipmaps = true;
+    texture.minFilter = THREE.LinearMipmapLinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    texture.anisotropy = Math.min(16, gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
     invalidate();
   }, [gl, invalidate, texture]);
 
   return (
     <mesh>
-      <sphereGeometry args={[EARTH_RADIUS, 64, 40]} />
-      <meshStandardMaterial map={texture} roughness={0.88} metalness={0.02} />
+      <sphereGeometry args={[EARTH_RADIUS, 128, 96]} />
+      <meshStandardMaterial map={texture} roughness={0.86} metalness={0.02} />
     </mesh>
   );
 }
 
-function GlobeControls({ autoRotate }: { autoRotate: boolean }) {
+function GlobeControls({
+  autoRotate,
+  controlsRef,
+}: {
+  autoRotate: boolean;
+  controlsRef: MutableRefObject<ThreeOrbitControls | null>;
+}) {
   const { camera, gl, invalidate } = useThree();
   const controls = useMemo(() => new ThreeOrbitControls(camera, gl.domElement), [camera, gl.domElement]);
 
   useEffect(() => {
+    controlsRef.current = controls;
     controls.enablePan = false;
-    controls.enableDamping = autoRotate;
+    controls.enableDamping = true;
     controls.dampingFactor = 0.08;
-    controls.minDistance = 3.3;
-    controls.maxDistance = 8.5;
-    controls.rotateSpeed = 0.55;
-    controls.zoomSpeed = 0.7;
+    controls.minDistance = MIN_DISTANCE;
+    controls.maxDistance = MAX_DISTANCE;
+    controls.rotateSpeed = rotateSpeedForDistance(camera.position.length());
+    controls.zoomSpeed = 0.55;
     controls.autoRotate = autoRotate;
-    controls.autoRotateSpeed = 0.55;
+    controls.autoRotateSpeed = 0.035;
+    controls.enableZoom = true;
+    controls.screenSpacePanning = false;
     controls.target.set(0, 0, 0);
     controls.update();
     const handleChange = () => invalidate();
     controls.addEventListener('change', handleChange);
-    return () => controls.removeEventListener('change', handleChange);
-  }, [autoRotate, controls, invalidate]);
+    return () => {
+      controls.removeEventListener('change', handleChange);
+      if (controlsRef.current === controls) controlsRef.current = null;
+    };
+  }, [autoRotate, camera, controls, controlsRef, invalidate]);
 
   useEffect(() => () => controls.dispose(), [controls]);
 
   useFrame(() => {
-    if (autoRotate) controls.update();
+    controls.rotateSpeed = rotateSpeedForDistance(camera.position.length());
+    controls.autoRotate = autoRotate;
+    controls.update();
   });
 
   return null;
 }
 
-function LocationMarkers({ locations, selectedKey, onSelect, onHover }: Omit<SalesWorldGlobeProps, 'autoRotate'>) {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-  const selectedColor = useMemo(() => new THREE.Color('#fbbf24'), []);
-  const radialAxis = useMemo(() => new THREE.Vector3(0, 1, 0), []);
-  const { invalidate } = useThree();
+function PinMarker({
+  location,
+  selected,
+  language,
+  metrics,
+  onSelect,
+  onHover,
+}: {
+  location: RankedSalesMapLocation;
+  selected: boolean;
+  language: string;
+  metrics: SalesMapMetricState;
+  onSelect: (location: DashboardSalesMapLocation) => void;
+  onHover: (location: DashboardSalesMapLocation | null) => void;
+}) {
+  const { camera } = useThree();
+  const [front, setFront] = useState(true);
+  const position = useMemo(
+    () => latLngToVector(location.latitude, location.longitude, EARTH_RADIUS + 0.03),
+    [location.latitude, location.longitude],
+  );
+  const label = formatSalesMapPinLabel(location, language, metrics);
 
-  useEffect(() => {
-    const mesh = meshRef.current;
-    if (!mesh) return;
+  useFrame(() => {
+    const pinDir = position.clone().normalize();
+    const camDir = camera.position.clone().normalize();
+    const next = pinDir.dot(camDir) > 0.22;
+    setFront((current) => (current === next ? current : next));
+  });
 
-    locations.forEach((location, index) => {
-      const position = latLngToVector(location.latitude, location.longitude, EARTH_RADIUS + 0.095);
-      dummy.position.copy(position);
-      dummy.quaternion.setFromUnitVectors(radialAxis, position.clone().normalize());
-      dummy.scale.setScalar(location.key === selectedKey ? 1.35 : 1);
-      dummy.updateMatrix();
-      mesh.setMatrixAt(index, dummy.matrix);
-      mesh.setColorAt(
-        index,
-        location.key === selectedKey
-          ? selectedColor
-          : new THREE.Color(location.color),
-      );
-    });
-
-    mesh.instanceMatrix.needsUpdate = true;
-    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-    mesh.computeBoundingSphere();
-    invalidate();
-  }, [dummy, invalidate, locations, radialAxis, selectedColor, selectedKey]);
-
-  const resolveLocation = (event: ThreeEvent<PointerEvent | MouseEvent>) => {
-    if (event.instanceId == null) return null;
-    return locations[event.instanceId] ?? null;
-  };
+  if (!front) return null;
 
   return (
-    <instancedMesh
-      ref={meshRef}
-      args={[undefined, undefined, locations.length]}
-      onClick={(event) => {
-        event.stopPropagation();
-        const location = resolveLocation(event);
-        if (location) onSelect(location);
-      }}
-      onPointerMove={(event) => {
-        event.stopPropagation();
-        onHover(resolveLocation(event));
-      }}
-      onPointerOut={() => onHover(null)}
-    >
-      <coneGeometry args={[0.065, 0.19, 10]} />
-      <meshStandardMaterial roughness={0.35} metalness={0.08} emissive="#181028" emissiveIntensity={0.12} />
-    </instancedMesh>
+    <>
+      <mesh
+        position={position}
+        onClick={(event) => {
+          event.stopPropagation();
+          onSelect(location);
+        }}
+        onPointerOver={(event) => {
+          event.stopPropagation();
+          onHover(location);
+          document.body.style.cursor = 'pointer';
+        }}
+        onPointerOut={() => {
+          onHover(null);
+          document.body.style.cursor = 'auto';
+        }}
+      >
+        <sphereGeometry args={[0.048, 10, 10]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+      <Html
+        position={position}
+        center={false}
+        style={{ transform: 'translate(-50%, -100%)', pointerEvents: 'none' }}
+        zIndexRange={[8, 0]}
+      >
+        <SalesMapLocationPin color={location.color} label={label} selected={selected} />
+      </Html>
+    </>
   );
 }
 
-export default function SalesWorldGlobe({
+function GlobeScene({
   locations,
   selectedKey,
   autoRotate,
+  mapStyle,
+  countriesGeo,
+  countryColors,
+  language,
+  metrics,
   onSelect,
   onHover,
-}: SalesWorldGlobeProps) {
+  controlsRef,
+}: SalesWorldGlobeProps & { controlsRef: MutableRefObject<ThreeOrbitControls | null> }) {
   const selectedLocation = locations.find((location) => location.key === selectedKey);
 
   return (
+    <>
+      <ClearColor mapStyle={mapStyle} />
+      <Starfield />
+      <ambientLight intensity={mapStyle === 'political' ? 1.55 : 1.15} />
+      <directionalLight position={[5, 3, 4]} intensity={mapStyle === 'political' ? 1.5 : 2} color="#fff7ed" />
+      <directionalLight position={[-3, -1, -4]} intensity={0.4} color="#93c5fd" />
+      {mapStyle === 'political' ? (
+        countriesGeo ? (
+          <PoliticalGlobeLayer
+            countriesGeo={countriesGeo}
+            countryColors={countryColors}
+            language={language}
+            onSelectCountry={(countryCode) => {
+              const location = findSalesMapLocationForCountry(locations, countryCode);
+              if (location) onSelect(location);
+            }}
+          />
+        ) : (
+          <mesh>
+            <sphereGeometry args={[EARTH_RADIUS, 64, 48]} />
+            <meshStandardMaterial color="#9ec5e8" roughness={0.95} metalness={0} />
+          </mesh>
+        )
+      ) : (
+        <Suspense fallback={null}>
+          <SatelliteEarth />
+        </Suspense>
+      )}
+      {locations.map((location) => (
+        <PinMarker
+          key={location.key}
+          location={location}
+          selected={selectedKey === location.key}
+          language={language}
+          metrics={metrics}
+          onSelect={onSelect}
+          onHover={onHover}
+        />
+      ))}
+      <CameraFocus locationKey={selectedKey} location={selectedLocation} />
+      <GlobeControls autoRotate={autoRotate} controlsRef={controlsRef} />
+    </>
+  );
+}
+
+const SalesWorldGlobe = forwardRef<SalesWorldGlobeHandle, SalesWorldGlobeProps>(function SalesWorldGlobe(
+  props,
+  ref,
+) {
+  const controlsRef = useRef<ThreeOrbitControls | null>(null);
+  const cameraRef = useRef<THREE.Camera | null>(null);
+  const invalidateRef = useRef<(() => void) | null>(null);
+
+  useImperativeHandle(ref, () => ({
+    zoomIn: () => {
+      const controls = controlsRef.current;
+      const camera = cameraRef.current;
+      if (!controls || !camera) return;
+      dollyByFactor(camera, controls, 1 / ZOOM_STEP);
+      invalidateRef.current?.();
+    },
+    zoomOut: () => {
+      const controls = controlsRef.current;
+      const camera = cameraRef.current;
+      if (!controls || !camera) return;
+      dollyByFactor(camera, controls, ZOOM_STEP);
+      invalidateRef.current?.();
+    },
+    pan: (direction) => {
+      const controls = controlsRef.current;
+      const camera = cameraRef.current;
+      if (!controls || !camera) return;
+      panCamera(camera, controls, direction);
+      invalidateRef.current?.();
+    },
+    resetNorth: () => {
+      const controls = controlsRef.current;
+      const camera = cameraRef.current;
+      if (!controls || !camera) return;
+      const radius = THREE.MathUtils.clamp(camera.position.length(), MIN_DISTANCE, MAX_DISTANCE);
+      camera.position.setLength(radius);
+      alignCameraNorthUp(camera);
+      camera.lookAt(controls.target);
+      controls.update();
+      invalidateRef.current?.();
+    },
+  }));
+
+  return (
     <Canvas
-      frameloop={autoRotate ? 'always' : 'demand'}
-      dpr={[1, 1.5]}
-      camera={{ position: [0, 0.25, 5.3], fov: 42, near: 0.1, far: 100 }}
+      frameloop="always"
+      dpr={[1, 1.75]}
+      camera={{ position: [0, 0.35, 5.6], fov: 40, near: 0.05, far: 120 }}
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
-      onCreated={({ gl }) => {
-        gl.setClearColor('#07111f', 1);
+      onCreated={({ gl, camera, invalidate }) => {
+        cameraRef.current = camera;
+        invalidateRef.current = invalidate;
+        gl.setClearColor(props.mapStyle === 'political' ? '#0b1220' : '#061018', 1);
         gl.domElement.setAttribute('data-testid', 'sales-map-canvas');
         gl.domElement.setAttribute('aria-label', 'Interactive sales world map');
       }}
     >
-      <ambientLight intensity={1.25} />
-      <directionalLight position={[4, 3, 5]} intensity={2.1} color="#fff7ed" />
-      <directionalLight position={[-4, -2, -3]} intensity={0.55} color="#38bdf8" />
-      <Suspense fallback={null}>
-        <Earth />
-      </Suspense>
-      <LocationMarkers
-        locations={locations}
-        selectedKey={selectedKey}
-        onSelect={onSelect}
-        onHover={onHover}
-      />
-      <CameraFocus location={selectedLocation} />
-      <GlobeControls autoRotate={autoRotate} />
+      <GlobeScene {...props} controlsRef={controlsRef} />
     </Canvas>
   );
-}
+});
+
+export default SalesWorldGlobe;
