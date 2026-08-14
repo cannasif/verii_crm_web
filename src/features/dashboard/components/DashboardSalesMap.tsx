@@ -34,6 +34,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useDashboardSalesMap } from '../hooks/useDashboardSalesMap';
 import { useSalesMapCountries } from '../hooks/useSalesMapCountries';
+import { useSalesMapProvinces } from '../hooks/useSalesMapProvinces';
 import type {
   DashboardSalesMapLocation,
   SalesMapMetric,
@@ -43,6 +44,7 @@ import type {
 import type { SalesMapStyle } from '../types/sales-map-geo';
 import {
   buildCountryColorMap,
+  buildProvinceColorMap,
   formatSalesMapPinLabel,
 } from '../utils/sales-map-geo';
 import {
@@ -154,6 +156,7 @@ export function DashboardSalesMap() {
   const queryEnd = `${addDays(appliedRange.end, 1)}T00:00:00`;
   const mapQuery = useDashboardSalesMap(queryStart, queryEnd, scope);
   const countriesQuery = useSalesMapCountries(true);
+  const provincesQuery = useSalesMapProvinces(true);
   const countryOptions = useMemo(() => {
     const countries = new Map<string, string>();
     (mapQuery.data?.locations ?? []).forEach((location) => {
@@ -174,6 +177,7 @@ export function DashboardSalesMap() {
     [filteredLocations, metrics],
   );
   const countryColors = useMemo(() => buildCountryColorMap(locations), [locations]);
+  const provinceColors = useMemo(() => buildProvinceColorMap(locations), [locations]);
   const ownerLegend = useMemo(() => {
     const owners = new Map<string, { userId?: number | null; fullName: string; documentCount: number }>();
     filteredLocations.forEach((location) => location.owners.forEach((owner) => {
@@ -537,13 +541,16 @@ export function DashboardSalesMap() {
             <div className="absolute inset-0 z-0">
               <Suspense fallback={<Skeleton className="h-full min-h-[520px] w-full rounded-none bg-slate-900" />}>
                 <SalesWorldGlobe
+                  key="globe-pixel-pan-v3"
                   ref={globeRef}
                   locations={locations}
                   selectedKey={selectedKey}
                   autoRotate={autoRotate}
                   mapStyle={mapStyle}
                   countriesGeo={countriesQuery.data}
+                  provincesGeo={provincesQuery.data}
                   countryColors={countryColors}
+                  provinceColors={provinceColors}
                   language={i18n.language}
                   metrics={metrics}
                   onSelect={(location) => setSelectedKey(location.key)}
@@ -558,7 +565,9 @@ export function DashboardSalesMap() {
                 selectedKey={selectedKey}
                 mapStyle={mapStyle}
                 countries={countriesQuery.data}
+                provinces={provincesQuery.data}
                 countryColors={countryColors}
+                provinceColors={provinceColors}
                 language={i18n.language}
                 metrics={metrics}
                 onSelect={(location) => setSelectedKey(location.key)}

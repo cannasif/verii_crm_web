@@ -4,45 +4,61 @@ interface SalesMapLocationPinProps {
   color: string;
   label?: string;
   selected?: boolean;
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
 }
+
+const SIZE_MAP = {
+  sm: { width: 24, height: 32, font: 9, circle: 5.2 },
+  md: { width: 30, height: 40, font: 11, circle: 6.4 },
+  lg: { width: 36, height: 48, font: 13, circle: 7.4 },
+} as const;
 
 export function SalesMapLocationPin({
   color,
   label,
   selected = false,
+  size = 'md',
   className,
 }: SalesMapLocationPinProps) {
+  const dims = SIZE_MAP[size];
+  const badge = label && label.length > 4 ? label.slice(0, 4) : label;
+
   return (
     <span className={cn('pointer-events-none relative inline-flex flex-col items-center', className)}>
-      {label ? (
-        <span
-          className={cn(
-            'absolute -top-1 left-[18px] z-10 whitespace-nowrap rounded border border-white/90 bg-orange-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white shadow-md',
-            selected && 'ring-2 ring-amber-300',
-          )}
-          style={{ backgroundColor: color }}
-        >
-          {label}
-        </span>
-      ) : null}
       <svg
-        width={selected ? 26 : 22}
-        height={selected ? 34 : 30}
-        viewBox="0 0 24 36"
+        width={selected ? dims.width + 4 : dims.width}
+        height={selected ? dims.height + 4 : dims.height}
+        viewBox="0 0 28 40"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="drop-shadow-md"
+        className="drop-shadow-lg"
         aria-hidden="true"
       >
         <path
-          d="M12 1.75C7.44 1.75 3.75 5.44 3.75 10C3.75 17.4 12 34.25 12 34.25C12 34.25 20.25 17.4 20.25 10C20.25 5.44 16.56 1.75 12 1.75Z"
+          d="M14 2C8.48 2 4 6.48 4 12C4 20.5 14 38 14 38C14 38 24 20.5 24 12C24 6.48 19.52 2 14 2Z"
           fill={color}
           stroke="#ffffff"
-          strokeWidth={selected ? 2.4 : 2}
+          strokeWidth={selected ? 2.6 : 2.1}
           strokeLinejoin="round"
         />
-        <circle cx="12" cy="10" r="4.6" fill="#ffffff" />
+        <circle cx="14" cy="12" r={dims.circle} fill="#ffffff" />
+        {badge ? (
+          <text
+            x="14"
+            y="13"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill={color}
+            fontSize={badge.length > 2 ? dims.font - 2 : dims.font}
+            fontWeight={800}
+            fontFamily="ui-sans-serif, system-ui, sans-serif"
+          >
+            {badge}
+          </text>
+        ) : (
+          <circle cx="14" cy="12" r={dims.circle * 0.35} fill={color} />
+        )}
       </svg>
     </span>
   );

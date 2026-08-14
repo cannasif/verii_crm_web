@@ -11,13 +11,17 @@ import {
 import { Html } from '@react-three/drei';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { resolveAppPath } from '@/lib/api-config';
 import type { DashboardSalesMapLocation, SalesMapMetricState } from '../types/dashboard-sales-map';
 import type { SalesMapCountriesGeoJson, SalesMapStyle } from '../types/sales-map-geo';
 import type { RankedSalesMapLocation } from '../utils/sales-map-metrics';
-import { formatSalesMapPinLabel, findSalesMapLocationForCountry } from '../utils/sales-map-geo';
-import { PoliticalGlobeLayer, Starfield } from './PoliticalGlobeLayer';
+import {
+  formatSalesMapPinLabel,
+  findSalesMapLocationForCountry,
+  findSalesMapLocationForProvince,
+  normalizeSalesMapCountryCode,
+} from '../utils/sales-map-geo';
+import { PoliticalGlobeLayer, SatelliteGlobeBorders, Starfield } from './PoliticalGlobeLayer';
 import { SalesMapLocationPin } from './SalesMapLocationPin';
 import type { SalesMapPanVector } from './SalesMapNavControls';
 
@@ -34,18 +38,31 @@ interface SalesWorldGlobeProps {
   autoRotate: boolean;
   mapStyle: SalesMapStyle;
   countriesGeo?: SalesMapCountriesGeoJson;
+  provincesGeo?: SalesMapCountriesGeoJson;
   countryColors: Map<string, string>;
+  provinceColors?: Map<string, string>;
   language: string;
   metrics: SalesMapMetricState;
   onSelect: (location: DashboardSalesMapLocation) => void;
   onHover: (location: DashboardSalesMapLocation | null) => void;
 }
 
+interface GlobeNavApi {
+  zoomIn: () => void;
+  zoomOut: () => void;
+  pan: (vector: SalesMapPanVector) => void;
+  resetNorth: () => void;
+}
+
 const EARTH_RADIUS = 2;
-const MIN_DISTANCE = 3.05;
+const MIN_DISTANCE = 2.38;
 const MAX_DISTANCE = 7.8;
+const MIN_POLAR = 0.12;
+const MAX_POLAR = Math.PI - 0.12;
 const SATELLITE_SRC = resolveAppPath('/assets/maps/earth-blue-marble-5400.jpg');
 const ZOOM_STEP = 1.12;
+const AUTO_ROTATE_RAD_PER_SEC = 0.045;
+const GLOBE_CONTROLS_VERSION = 'pixel-pan-v3';
 
 function latLngToVector(latitude: number, longitude: number, radius = EARTH_RADIUS): THREE.Vector3 {
   const phi = THREE.MathUtils.degToRad(90 - latitude);
@@ -57,66 +74,109 @@ function latLngToVector(latitude: number, longitude: number, radius = EARTH_RADI
   );
 }
 
-function dollyByFactor(
+function setCameraSpherical(camera: THREE.Camera, next: THREE.Spherical): void {
+  next.phi = THREE.MathUtils.clamp(next.phi, MIN_POLAR, MAX_POLAR);
+  next.radius = THREE.MathUtils.clamp(next.radius, MIN_DISTANCE, MAX_DISTANCE);
+  camera.position.setFromSpherical(next);
+  camera.up.set(0, 1, 0);
+  camera.lookAt(0, 0, 0);
+}
+
+function dollyCamera(camera: THREE.Camera, factor: number): void {
+  const spherical = new THREE.Spherical().setFromVector3(camera.position);
+  spherical.radius *= factor;
+  setCameraSpherical(camera, spherical);
+}
+
+function pointerToNdc(clientX: number, clientY: number, rect: DOMRect): THREE.Vector2 {
+  return new THREE.Vector2(
+    ((clientX - rect.left) / Math.max(1, rect.width)) * 2 - 1,
+    -(((clientY - rect.top) / Math.max(1, rect.height)) * 2 - 1),
+  );
+}
+
+function intersectEarth(
   camera: THREE.Camera,
-  controls: ThreeOrbitControls,
+  ndc: THREE.Vector2,
+  target: THREE.Vector3,
+): boolean {
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(ndc, camera);
+  const sphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), EARTH_RADIUS);
+  return raycaster.ray.intersectSphere(sphere, target) !== null;
+}
+
+function unitToLonLat(point: THREE.Vector3): { lon: number; lat: number } {
+  const n = point.clone().normalize();
+  return {
+    lat: Math.asin(THREE.MathUtils.clamp(n.y, -1, 1)),
+    lon: Math.atan2(n.z, -n.x),
+  };
+}
+
+function keepAnchorUnderCursor(
+  camera: THREE.PerspectiveCamera,
+  anchor: THREE.Vector3,
+  ndc: THREE.Vector2,
+): void {
+  camera.updateMatrixWorld(true);
+  const hit = new THREE.Vector3();
+  if (!intersectEarth(camera, ndc, hit)) return;
+  const from = unitToLonLat(hit);
+  const to = unitToLonLat(anchor);
+  let dLon = to.lon - from.lon;
+  if (dLon > Math.PI) dLon -= Math.PI * 2;
+  if (dLon < -Math.PI) dLon += Math.PI * 2;
+  const spherical = new THREE.Spherical().setFromVector3(camera.position);
+  spherical.theta += dLon;
+  spherical.phi -= to.lat - from.lat;
+  setCameraSpherical(camera, spherical);
+}
+
+function dollyTowardPointer(
+  camera: THREE.PerspectiveCamera,
+  clientX: number,
+  clientY: number,
   factor: number,
+  element: HTMLElement,
 ): void {
-  const offset = new THREE.Vector3().copy(camera.position).sub(controls.target);
-  const nextDistance = THREE.MathUtils.clamp(offset.length() * factor, MIN_DISTANCE, MAX_DISTANCE);
-  offset.setLength(nextDistance);
-  camera.position.copy(controls.target).add(offset);
-  controls.update();
+  const rect = element.getBoundingClientRect();
+  const ndc = pointerToNdc(clientX, clientY, rect);
+  camera.updateMatrixWorld(true);
+  const anchor = new THREE.Vector3();
+  const hasAnchor = intersectEarth(camera, ndc, anchor);
+  dollyCamera(camera, factor);
+  if (!hasAnchor) return;
+  keepAnchorUnderCursor(camera, anchor, ndc);
+  keepAnchorUnderCursor(camera, anchor, ndc);
 }
 
-function panCamera(
-  camera: THREE.Camera,
-  controls: ThreeOrbitControls,
-  vector: { x: number; y: number },
+function panCameraSpherical(camera: THREE.Camera, vector: SalesMapPanVector): void {
+  const spherical = new THREE.Spherical().setFromVector3(camera.position);
+  const distance = THREE.MathUtils.clamp(spherical.radius, MIN_DISTANCE, MAX_DISTANCE);
+  const surfaceDistance = Math.max(0.18, distance - EARTH_RADIUS);
+  const step = 0.034 * (surfaceDistance / (MAX_DISTANCE - EARTH_RADIUS));
+  spherical.theta += vector.x * step;
+  spherical.phi -= vector.y * step;
+  setCameraSpherical(camera, spherical);
+}
+
+function pixelPanCamera(
+  camera: THREE.PerspectiveCamera,
+  dx: number,
+  dy: number,
+  canvasHeight: number,
 ): void {
-  const offset = camera.position.clone().sub(controls.target);
-  const distance = offset.length();
-  const step = 0.007 + ((distance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE)) * 0.014;
-
-  camera.updateMatrixWorld();
-  const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0).normalize();
-  const up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1).normalize();
-  const worldUp = new THREE.Vector3(0, 1, 0);
-
-  const yaw = new THREE.Quaternion().setFromAxisAngle(up, vector.x * step);
-  offset.applyQuaternion(yaw);
-  up.applyQuaternion(yaw);
-
-  const pitched = offset.clone();
-  const pitch = new THREE.Quaternion().setFromAxisAngle(right, vector.y * step);
-  pitched.applyQuaternion(pitch);
-  if (Math.abs(pitched.clone().normalize().dot(worldUp)) < 0.96) {
-    offset.copy(pitched);
-    up.applyQuaternion(pitch);
-  }
-
-  offset.setLength(distance);
-  camera.position.copy(controls.target).add(offset);
-  camera.up.copy(up.normalize());
-  camera.lookAt(controls.target);
-  controls.update();
-}
-
-function alignCameraNorthUp(camera: THREE.Camera): void {
-  const position = camera.position.clone().normalize();
-  const northPole = new THREE.Vector3(0, 1, 0);
-  const east = new THREE.Vector3().crossVectors(northPole, position);
-  if (east.lengthSq() < 1e-8) {
-    camera.up.set(0, 0, position.y > 0 ? -1 : 1);
-    return;
-  }
-  east.normalize();
-  camera.up.copy(new THREE.Vector3().crossVectors(position, east).normalize());
-}
-
-function rotateSpeedForDistance(distance: number): number {
-  const t = THREE.MathUtils.clamp((distance - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE), 0, 1);
-  return 0.55 + t * 0.35;
+  const distance = THREE.MathUtils.clamp(camera.position.length(), MIN_DISTANCE, MAX_DISTANCE);
+  const surfaceDistance = Math.max(0.18, distance - EARTH_RADIUS);
+  const fovRad = THREE.MathUtils.degToRad(camera.fov);
+  const earthPixelRadius =
+    (EARTH_RADIUS / surfaceDistance) * (canvasHeight * 0.5) / Math.tan(fovRad * 0.5);
+  const radiansPerPixel = 1 / Math.max(24, earthPixelRadius);
+  const spherical = new THREE.Spherical().setFromVector3(camera.position);
+  spherical.theta -= dx * radiansPerPixel;
+  spherical.phi -= dy * radiansPerPixel;
+  setCameraSpherical(camera, spherical);
 }
 
 function CameraFocus({
@@ -141,7 +201,7 @@ function CameraFocus({
     focusedKeyRef.current = locationKey;
     const radius = THREE.MathUtils.clamp(camera.position.length(), MIN_DISTANCE, MAX_DISTANCE);
     camera.position.copy(latLngToVector(location.latitude, location.longitude, radius));
-    alignCameraNorthUp(camera);
+    camera.up.set(0, 1, 0);
     camera.lookAt(0, 0, 0);
     camera.updateProjectionMatrix();
     invalidate();
@@ -185,43 +245,142 @@ function SatelliteEarth() {
 
 function GlobeControls({
   autoRotate,
-  controlsRef,
+  navRef,
 }: {
   autoRotate: boolean;
-  controlsRef: MutableRefObject<ThreeOrbitControls | null>;
+  navRef: MutableRefObject<GlobeNavApi | null>;
 }) {
-  const { camera, gl, invalidate } = useThree();
-  const controls = useMemo(() => new ThreeOrbitControls(camera, gl.domElement), [camera, gl.domElement]);
+  const { camera, gl, invalidate, size } = useThree();
+  const dragRef = useRef<{
+    pointerId: number;
+    lastX: number;
+    lastY: number;
+  } | null>(null);
+  const velocityRef = useRef({ theta: 0, phi: 0 });
 
   useEffect(() => {
-    controlsRef.current = controls;
-    controls.enablePan = false;
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.14;
-    controls.minDistance = MIN_DISTANCE;
-    controls.maxDistance = MAX_DISTANCE;
-    controls.rotateSpeed = rotateSpeedForDistance(camera.position.length());
-    controls.zoomSpeed = 0.7;
-    controls.autoRotate = autoRotate;
-    controls.autoRotateSpeed = 0.035;
-    controls.enableZoom = true;
-    controls.screenSpacePanning = false;
-    controls.target.set(0, 0, 0);
-    controls.update();
-    const handleChange = () => invalidate();
-    controls.addEventListener('change', handleChange);
-    return () => {
-      controls.removeEventListener('change', handleChange);
-      if (controlsRef.current === controls) controlsRef.current = null;
+    if (!(camera instanceof THREE.PerspectiveCamera)) return undefined;
+
+    const perspective = camera;
+    const element = gl.domElement;
+    element.style.touchAction = 'none';
+    element.style.cursor = 'grab';
+    element.dataset.globeControls = GLOBE_CONTROLS_VERSION;
+
+    navRef.current = {
+      zoomIn: () => {
+        dollyCamera(perspective, 1 / ZOOM_STEP);
+        invalidate();
+      },
+      zoomOut: () => {
+        dollyCamera(perspective, ZOOM_STEP);
+        invalidate();
+      },
+      pan: (vector) => {
+        panCameraSpherical(perspective, vector);
+        invalidate();
+      },
+      resetNorth: () => {
+        const spherical = new THREE.Spherical().setFromVector3(perspective.position);
+        setCameraSpherical(perspective, spherical);
+        invalidate();
+      },
     };
-  }, [autoRotate, camera, controls, controlsRef, invalidate]);
 
-  useEffect(() => () => controls.dispose(), [controls]);
+    const onPointerDown = (event: PointerEvent): void => {
+      if (event.button !== 0) return;
+      dragRef.current = {
+        pointerId: event.pointerId,
+        lastX: event.clientX,
+        lastY: event.clientY,
+      };
+      velocityRef.current = { theta: 0, phi: 0 };
+      element.setPointerCapture(event.pointerId);
+      element.style.cursor = 'grabbing';
+    };
 
-  useFrame(() => {
-    controls.rotateSpeed = rotateSpeedForDistance(camera.position.length());
-    controls.autoRotate = autoRotate;
-    controls.update();
+    const onPointerMove = (event: PointerEvent): void => {
+      const drag = dragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+
+      const before = new THREE.Spherical().setFromVector3(perspective.position);
+      const dx = event.clientX - drag.lastX;
+      const dy = event.clientY - drag.lastY;
+      drag.lastX = event.clientX;
+      drag.lastY = event.clientY;
+
+      pixelPanCamera(
+        perspective,
+        dx,
+        dy,
+        size.height || element.getBoundingClientRect().height || 1,
+      );
+
+      const after = new THREE.Spherical().setFromVector3(perspective.position);
+      velocityRef.current = {
+        theta: after.theta - before.theta,
+        phi: after.phi - before.phi,
+      };
+      invalidate();
+    };
+
+    const onPointerUp = (event: PointerEvent): void => {
+      if (dragRef.current?.pointerId !== event.pointerId) return;
+      dragRef.current = null;
+      element.style.cursor = 'grab';
+      if (element.hasPointerCapture(event.pointerId)) {
+        element.releasePointerCapture(event.pointerId);
+      }
+    };
+
+    const onWheel = (event: WheelEvent): void => {
+      event.preventDefault();
+      const delta = THREE.MathUtils.clamp(event.deltaY, -120, 120);
+      const factor = Math.exp(delta * 0.0007);
+      dollyTowardPointer(perspective, event.clientX, event.clientY, factor, element);
+      invalidate();
+    };
+
+    element.addEventListener('pointerdown', onPointerDown);
+    element.addEventListener('pointermove', onPointerMove);
+    element.addEventListener('pointerup', onPointerUp);
+    element.addEventListener('pointercancel', onPointerUp);
+    element.addEventListener('wheel', onWheel, { passive: false });
+
+    return () => {
+      element.removeEventListener('pointerdown', onPointerDown);
+      element.removeEventListener('pointermove', onPointerMove);
+      element.removeEventListener('pointerup', onPointerUp);
+      element.removeEventListener('pointercancel', onPointerUp);
+      element.removeEventListener('wheel', onWheel);
+      if (navRef.current) navRef.current = null;
+    };
+  }, [camera, gl, invalidate, navRef, size.height]);
+
+  useFrame((_, delta) => {
+    if (!(camera instanceof THREE.PerspectiveCamera)) return;
+    if (dragRef.current) return;
+
+    const velocity = velocityRef.current;
+    if (Math.hypot(velocity.theta, velocity.phi) > 0.00003) {
+      const spherical = new THREE.Spherical().setFromVector3(camera.position);
+      spherical.theta += velocity.theta;
+      spherical.phi += velocity.phi;
+      setCameraSpherical(camera, spherical);
+      velocityRef.current.theta *= 0.9;
+      velocityRef.current.phi *= 0.9;
+      if (Math.hypot(velocityRef.current.theta, velocityRef.current.phi) < 0.00003) {
+        velocityRef.current = { theta: 0, phi: 0 };
+      }
+      invalidate();
+      return;
+    }
+
+    if (autoRotate) {
+      const spherical = new THREE.Spherical().setFromVector3(camera.position);
+      spherical.theta -= AUTO_ROTATE_RAD_PER_SEC * delta;
+      setCameraSpherical(camera, spherical);
+    }
   });
 
   return null;
@@ -244,6 +403,8 @@ function PinMarker({
 }) {
   const { camera } = useThree();
   const [front, setFront] = useState(true);
+  const [pinSize, setPinSize] = useState<'sm' | 'md' | 'lg'>('md');
+  const frontRef = useRef(true);
   const position = useMemo(
     () => latLngToVector(location.latitude, location.longitude, EARTH_RADIUS + 0.03),
     [location.latitude, location.longitude],
@@ -251,10 +412,26 @@ function PinMarker({
   const label = formatSalesMapPinLabel(location, language, metrics);
 
   useFrame(() => {
+    const camPos = camera.position;
+    const distance = Math.max(camPos.length(), EARTH_RADIUS + 0.05);
     const pinDir = position.clone().normalize();
-    const camDir = camera.position.clone().normalize();
-    const next = pinDir.dot(camDir) > 0.22;
+    const camDir = camPos.clone().normalize();
+    const facing = pinDir.dot(camDir);
+    const horizon = EARTH_RADIUS / distance;
+    const hideBelow = horizon + 0.02;
+    const showAbove = horizon + 0.08;
+
+    let next = frontRef.current;
+    if (frontRef.current) {
+      if (facing < hideBelow) next = false;
+    } else if (facing > showAbove) {
+      next = true;
+    }
+    frontRef.current = next;
     setFront((current) => (current === next ? current : next));
+
+    const nextSize: 'sm' | 'md' | 'lg' = distance > 5.2 ? 'sm' : distance > 3.4 ? 'md' : 'lg';
+    setPinSize((current) => (current === nextSize ? current : nextSize));
   });
 
   if (!front) return null;
@@ -284,9 +461,9 @@ function PinMarker({
         position={position}
         center={false}
         style={{ transform: 'translate(-50%, -100%)', pointerEvents: 'none' }}
-        zIndexRange={[8, 0]}
+        zIndexRange={[12, 2]}
       >
-        <SalesMapLocationPin color={location.color} label={label} selected={selected} />
+        <SalesMapLocationPin color={location.color} label={label} selected={selected} size={pinSize} />
       </Html>
     </>
   );
@@ -298,14 +475,37 @@ function GlobeScene({
   autoRotate,
   mapStyle,
   countriesGeo,
+  provincesGeo,
   countryColors,
+  provinceColors,
   language,
   metrics,
   onSelect,
   onHover,
-  controlsRef,
-}: SalesWorldGlobeProps & { controlsRef: MutableRefObject<ThreeOrbitControls | null> }) {
+  navRef,
+}: SalesWorldGlobeProps & { navRef: MutableRefObject<GlobeNavApi | null> }) {
+  const { camera } = useThree();
+  const [hideTurkeyCountryPin, setHideTurkeyCountryPin] = useState(false);
   const selectedLocation = locations.find((location) => location.key === selectedKey);
+
+  useFrame(() => {
+    const distance = camera.position.length();
+    const turkey = latLngToVector(39, 35).normalize();
+    const facingTurkey = camera.position.clone().normalize().dot(turkey) > 0.42;
+    const next = distance <= 4.45 && facingTurkey;
+    setHideTurkeyCountryPin((current) => (current === next ? current : next));
+  });
+
+  const visibleLocations = useMemo(
+    () => locations.filter((location) => {
+      if (!hideTurkeyCountryPin) return true;
+      if (normalizeSalesMapCountryCode(location.countryCode, location.countryName, location.cityName) !== 'TR') {
+        return true;
+      }
+      return location.administrativeAreaType !== 'country';
+    }),
+    [hideTurkeyCountryPin, locations],
+  );
 
   return (
     <>
@@ -318,10 +518,20 @@ function GlobeScene({
         countriesGeo ? (
           <PoliticalGlobeLayer
             countriesGeo={countriesGeo}
+            provincesGeo={provincesGeo}
             countryColors={countryColors}
+            provinceColors={provinceColors}
             language={language}
             onSelectCountry={(countryCode) => {
               const location = findSalesMapLocationForCountry(locations, countryCode);
+              if (location) onSelect(location);
+            }}
+            onSelectProvince={(provinceCode) => {
+              const feature = provincesGeo?.features.find(
+                (item) => (item.properties.PROVINCE_CODE || '').toLowerCase() === provinceCode.toLowerCase(),
+              );
+              const provinceName = feature?.properties.NAME_TR || feature?.properties.NAME || provinceCode;
+              const location = findSalesMapLocationForProvince(locations, provinceName);
               if (location) onSelect(location);
             }}
           />
@@ -334,9 +544,30 @@ function GlobeScene({
       ) : (
         <Suspense fallback={null}>
           <SatelliteEarth />
+          {countriesGeo ? (
+            <SatelliteGlobeBorders
+              countriesGeo={countriesGeo}
+              provincesGeo={provincesGeo}
+              countryColors={countryColors}
+              provinceColors={provinceColors}
+              language={language}
+              onSelectCountry={(countryCode) => {
+                const location = findSalesMapLocationForCountry(locations, countryCode);
+                if (location) onSelect(location);
+              }}
+              onSelectProvince={(provinceCode) => {
+                const feature = provincesGeo?.features.find(
+                  (item) => (item.properties.PROVINCE_CODE || '').toLowerCase() === provinceCode.toLowerCase(),
+                );
+                const provinceName = feature?.properties.NAME_TR || feature?.properties.NAME || provinceCode;
+                const location = findSalesMapLocationForProvince(locations, provinceName);
+                if (location) onSelect(location);
+              }}
+            />
+          ) : null}
         </Suspense>
       )}
-      {locations.map((location) => (
+      {visibleLocations.map((location) => (
         <PinMarker
           key={location.key}
           location={location}
@@ -348,7 +579,7 @@ function GlobeScene({
         />
       ))}
       <CameraFocus locationKey={selectedKey} location={selectedLocation} />
-      <GlobeControls autoRotate={autoRotate} controlsRef={controlsRef} />
+      <GlobeControls autoRotate={autoRotate} navRef={navRef} />
     </>
   );
 }
@@ -357,47 +588,20 @@ const SalesWorldGlobe = forwardRef<SalesWorldGlobeHandle, SalesWorldGlobeProps>(
   props,
   ref,
 ) {
-  const controlsRef = useRef<ThreeOrbitControls | null>(null);
+  const navRef = useRef<GlobeNavApi | null>(null);
   const cameraRef = useRef<THREE.Camera | null>(null);
   const invalidateRef = useRef<(() => void) | null>(null);
 
   useImperativeHandle(ref, () => ({
-    zoomIn: () => {
-      const controls = controlsRef.current;
-      const camera = cameraRef.current;
-      if (!controls || !camera) return;
-      dollyByFactor(camera, controls, 1 / ZOOM_STEP);
-      invalidateRef.current?.();
-    },
-    zoomOut: () => {
-      const controls = controlsRef.current;
-      const camera = cameraRef.current;
-      if (!controls || !camera) return;
-      dollyByFactor(camera, controls, ZOOM_STEP);
-      invalidateRef.current?.();
-    },
-    pan: (direction) => {
-      const controls = controlsRef.current;
-      const camera = cameraRef.current;
-      if (!controls || !camera) return;
-      panCamera(camera, controls, direction);
-      invalidateRef.current?.();
-    },
-    resetNorth: () => {
-      const controls = controlsRef.current;
-      const camera = cameraRef.current;
-      if (!controls || !camera) return;
-      const radius = THREE.MathUtils.clamp(camera.position.length(), MIN_DISTANCE, MAX_DISTANCE);
-      camera.position.setLength(radius);
-      alignCameraNorthUp(camera);
-      camera.lookAt(controls.target);
-      controls.update();
-      invalidateRef.current?.();
-    },
+    zoomIn: () => navRef.current?.zoomIn(),
+    zoomOut: () => navRef.current?.zoomOut(),
+    pan: (direction) => navRef.current?.pan(direction),
+    resetNorth: () => navRef.current?.resetNorth(),
   }));
 
   return (
     <Canvas
+      key={GLOBE_CONTROLS_VERSION}
       frameloop="always"
       dpr={[1, 1.75]}
       camera={{ position: [0, 0.35, 5.6], fov: 40, near: 0.05, far: 120 }}
@@ -408,9 +612,10 @@ const SalesWorldGlobe = forwardRef<SalesWorldGlobeHandle, SalesWorldGlobeProps>(
         gl.setClearColor(props.mapStyle === 'political' ? '#0b1220' : '#061018', 1);
         gl.domElement.setAttribute('data-testid', 'sales-map-canvas');
         gl.domElement.setAttribute('aria-label', 'Interactive sales world map');
+        gl.domElement.dataset.globeControls = GLOBE_CONTROLS_VERSION;
       }}
     >
-      <GlobeScene {...props} controlsRef={controlsRef} />
+      <GlobeScene {...props} navRef={navRef} />
     </Canvas>
   );
 });
