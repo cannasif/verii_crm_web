@@ -527,7 +527,7 @@ export function CustomerSelectDialog({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={t('customerSelectDialog.searchPlaceholder')}
-                  className={cn(INPUT_STYLE, "crm-ps-9 crm-pe-28")}
+                  className={cn(INPUT_STYLE, "crm-ps-9 crm-pe-20")}
                 />
                 {isThresholdInput ? (
                   <Tooltip>
@@ -535,7 +535,7 @@ export function CustomerSelectDialog({
                       <button
                         type="button"
                         aria-label={minCharsHint}
-                        className="absolute crm-end-16 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
+                        className="absolute crm-end-10 top-1/2 -translate-y-1/2 inline-flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/30"
                       >
                         <AlertCircle size={16} />
                       </button>
@@ -550,22 +550,22 @@ export function CustomerSelectDialog({
                     variant="ghost"
                     onClick={handleVoiceSearch}
                     className={cn(
-                      "absolute crm-end-9 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg",
+                      "absolute crm-end-1 top-1/2 -translate-y-1/2 h-8 w-8 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg",
                       isListening ? 'text-primary' : 'text-zinc-500'
                     )}
                   >
                     <Mic size={16} />
                   </Button>
                 )}
-                <DropdownSearchFieldSelector
-                  options={CUSTOMER_DROPDOWN_SEARCH_FIELD_OPTIONS}
-                  selectedFields={customerSearchFields}
-                  onChange={setCustomerSearchFields}
-                  className="absolute crm-end-1 top-1/2 h-8 w-8 -translate-y-1/2 border-0 bg-transparent shadow-none dark:bg-transparent"
-                />
               </div>
 
-              <div className="flex shrink-0 items-center justify-end gap-2 sm:justify-start">
+              <div className="flex shrink-0 items-center justify-end gap-2">
+              <DropdownSearchFieldSelector
+                options={CUSTOMER_DROPDOWN_SEARCH_FIELD_OPTIONS}
+                selectedFields={customerSearchFields}
+                onChange={setCustomerSearchFields}
+                className="h-11 w-11 sm:h-12 sm:w-12"
+              />
               <Button
                 type="button"
                 variant="outline"
@@ -586,13 +586,14 @@ export function CustomerSelectDialog({
                 )}
               </Button>
 
-              <div className="flex h-11 shrink-0 items-center rounded-xl border border-slate-300 bg-slate-100 p-1 shadow-sm dark:border-white/10 dark:bg-[#1a1025] sm:h-12">
+              <div className="flex h-11 shrink-0 items-center gap-1 rounded-xl border border-slate-300 bg-slate-100 p-1 shadow-sm dark:border-white/10 dark:bg-[#1a1025] sm:h-12">
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => setViewMode('list')}
                   className={cn(
-                    'h-9 w-9 rounded-lg transition-all sm:h-10 sm:w-10',
+                    'h-8 w-8 shrink-0 rounded-lg transition-all sm:h-9 sm:w-9',
                     viewMode === 'list'
                       ? 'border border-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)] shadow-sm dark:border-white/20 dark:bg-white/10 dark:text-white'
                       : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
@@ -601,11 +602,12 @@ export function CustomerSelectDialog({
                   <List size={18} className="sm:h-5 sm:w-5" />
                 </Button>
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon"
                   onClick={() => setViewMode('grid')}
                   className={cn(
-                    'h-9 w-9 rounded-lg transition-all sm:h-10 sm:w-10',
+                    'h-8 w-8 shrink-0 rounded-lg transition-all sm:h-9 sm:w-9',
                     viewMode === 'grid'
                       ? 'border border-[var(--crm-brand-primary)] bg-[var(--crm-brand-soft)] text-[var(--crm-brand-primary)] shadow-sm dark:border-white/20 dark:bg-white/10 dark:text-white'
                       : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10'
