@@ -12,6 +12,7 @@ import { Html } from '@react-three/drei';
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { OrbitControls as ThreeOrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { resolveAppPath } from '@/lib/api-config';
 import type { DashboardSalesMapLocation, SalesMapMetricState } from '../types/dashboard-sales-map';
 import type { SalesMapCountriesGeoJson, SalesMapStyle } from '../types/sales-map-geo';
 import type { RankedSalesMapLocation } from '../utils/sales-map-metrics';
@@ -43,7 +44,7 @@ interface SalesWorldGlobeProps {
 const EARTH_RADIUS = 2;
 const MIN_DISTANCE = 3.05;
 const MAX_DISTANCE = 7.8;
-const SATELLITE_SRC = '/assets/maps/earth-blue-marble-5400.jpg';
+const SATELLITE_SRC = resolveAppPath('/assets/maps/earth-blue-marble-5400.jpg');
 const ZOOM_STEP = 1.12;
 
 function latLngToVector(latitude: number, longitude: number, radius = EARTH_RADIUS): THREE.Vector3 {

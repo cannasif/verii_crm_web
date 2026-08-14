@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { resolveAppPath } from '@/lib/api-config';
 import { cn } from '@/lib/utils';
 import type { DashboardSalesMapLocation, SalesMapMetricState } from '../types/dashboard-sales-map';
 import type { SalesMapCountriesGeoJson, SalesMapStyle } from '../types/sales-map-geo';
@@ -25,7 +26,7 @@ const MAP_HEIGHT = 1024;
 const MAP_ASPECT = MAP_WIDTH / MAP_HEIGHT;
 const MIN_SCALE = 1;
 const MAX_SCALE = 12;
-const SATELLITE_SRC = '/assets/maps/earth-blue-marble-5400.jpg';
+const SATELLITE_SRC = resolveAppPath('/assets/maps/earth-blue-marble-5400.jpg');
 
 interface SalesFlatMapProps {
   locations: RankedSalesMapLocation[];
