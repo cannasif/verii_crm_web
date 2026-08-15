@@ -254,7 +254,14 @@ export function SalesmenPerformancePivotReport({ data, locale, report }: {
         </div>
       ) : null}
 
-      <SalesMovementPivot movements={data.salesMovements ?? []} locale={locale} scope={report} />
+      <SalesMovementPivot
+        movements={data.salesMovements ?? []}
+        locale={locale}
+        scope={report}
+        reportTitle={reportTitle[report]}
+        periodLabel={`${data.period.startDate.slice(0, 10)} – ${data.period.endDate.slice(0, 10)}`}
+        periodFileToken={`${data.period.startDate.slice(0, 10)}-${data.period.endDate.slice(0, 10)}`}
+      />
     </section>
   );
 }

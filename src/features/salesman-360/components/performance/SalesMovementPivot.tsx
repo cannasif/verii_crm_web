@@ -5,9 +5,12 @@ import {
   ChevronDown,
   ChevronRight,
   Columns3,
-  FileDown,
+  FileSpreadsheet,
+  FileText,
   Filter,
   GripVertical,
+  ImageDown,
+  Loader2,
   Rows3,
   RotateCcw,
   Save,
@@ -21,9 +24,14 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useAuthStore } from '@/stores/auth-store';
-import { exportSheetsToXlsx, type ExcelRow } from '@/lib/xlsx-export';
 import { cn } from '@/lib/utils';
 import type { Salesmen360SalesMovementDto } from '../../types/salesmen360.types';
+import {
+  exportSalesPivotToExcel,
+  exportSalesPivotToPdf,
+  exportSalesPivotToPng,
+  type SalesPivotExportModel,
+} from '../../utils/sales-pivot-export';
 
 type DimensionKey =
   | 'salesman'
@@ -78,6 +86,7 @@ type MeasureKey =
   | 'quantity'
   | 'amount';
 type DropZone = 'rows' | 'columns' | 'filters';
+type PivotExportFormat = 'excel' | 'pdf' | 'png';
 
 export type SalesPivotScope = 'movement' | 'sales' | 'demand' | 'quotation' | 'order' | 'activity' | 'customer' | 'stock';
 
@@ -309,6 +318,10 @@ const PIVOT_SCOPES: Record<SalesPivotScope, PivotScopeDefinition> = {
   },
 };
 const PERCENT_MEASURES = new Set<MeasureKey>(['demandConversionRate', 'quotationConversionRate', 'erpIntegrationRate', 'activityCompletionRate']);
+const COUNT_MEASURES = new Set<MeasureKey>([
+  'documentCount', 'demandCount', 'quotationCount', 'orderCount', 'erpOrderCount', 'activityCount',
+  'completedActivityCount', 'convertedDemandCount', 'convertedQuotationCount', 'customerCount',
+]);
 
 function cloneLayout(layout: PivotLayout): PivotLayout {
   return {
@@ -418,6 +431,10 @@ function buildKey(values: string[]): string {
   return JSON.stringify(values);
 }
 
+function leafNodes(nodes: PivotTreeNode[]): PivotTreeNode[] {
+  return nodes.flatMap((node) => node.children.length > 0 ? leafNodes(node.children) : [node]);
+}
+
 function compareText(left: string, right: string): number {
   return left.localeCompare(right, 'tr', { numeric: true, sensitivity: 'base' });
 }
@@ -431,10 +448,13 @@ function FieldChip({ label, onRemove }: { label: string; onRemove?: () => void }
   );
 }
 
-export function SalesMovementPivot({ movements, locale, scope = 'movement' }: {
+export function SalesMovementPivot({ movements, locale, scope = 'movement', reportTitle, periodLabel, periodFileToken }: {
   movements: Salesmen360SalesMovementDto[];
   locale: string;
   scope?: SalesPivotScope;
+  reportTitle?: string;
+  periodLabel?: string;
+  periodFileToken?: string;
 }): ReactElement {
   const userId = useAuthStore((state) => state.user?.id ?? 0);
   const definition = PIVOT_SCOPES[scope];
@@ -453,7 +473,7 @@ export function SalesMovementPivot({ movements, locale, scope = 'movement' }: {
   const [appliedLayout, setAppliedLayout] = useState<PivotLayout>(() => cloneLayout(initialLayout));
   const [savedLayout, setSavedLayout] = useState<PivotLayout>(() => cloneLayout(initialLayout));
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
-  const [isExporting, setIsExporting] = useState(false);
+  const [exportingFormat, setExportingFormat] = useState<PivotExportFormat | null>(null);
   const [fieldSearch, setFieldSearch] = useState('');
   const [movementSearch, setMovementSearch] = useState('');
   const [showDecimals, setShowDecimals] = useState(true);
@@ -587,14 +607,105 @@ export function SalesMovementPivot({ movements, locale, scope = 'movement' }: {
     return result;
   }, [expandedNodes, movementSearch, pivot.roots]);
 
-  const pivotColumns = appliedLayout.columns.length > 0 ? pivot.columns : [[buildKey([]), []] as [string, string[]]];
+  const pivotColumns = useMemo(
+    () => appliedLayout.columns.length > 0
+      ? pivot.columns
+      : [[buildKey([]), []] as [string, string[]]],
+    [appliedLayout.columns.length, pivot.columns],
+  );
   const format = (value: number, measure: MeasureKey): string => {
     const formatted = new Intl.NumberFormat(locale, {
       minimumFractionDigits: showDecimals && (['demandAmount', 'quotationAmount', 'orderAmount', 'erpOrderAmount', 'amount'] as MeasureKey[]).includes(measure) ? 2 : 0,
-      maximumFractionDigits: (['documentCount', 'demandCount', 'quotationCount', 'orderCount', 'erpOrderCount', 'activityCount', 'completedActivityCount', 'convertedDemandCount', 'convertedQuotationCount', 'customerCount'] as MeasureKey[]).includes(measure) || !showDecimals ? 0 : 2,
+      maximumFractionDigits: COUNT_MEASURES.has(measure) || !showDecimals ? 0 : 2,
     }).format(value);
     return PERCENT_MEASURES.has(measure) ? `%${formatted}` : formatted;
   };
+
+  const exportModel = useMemo<SalesPivotExportModel>(() => {
+    const columns = [
+      ...appliedLayout.rows.map((field) => ({
+        label: dimensionMap.get(field)!.label,
+        align: 'left' as const,
+      })),
+      ...pivotColumns.flatMap(([, values]) => appliedLayout.measures.map((measure) => ({
+        label: `${values.length ? `${values.join(' / ')} · ` : ''}${measureMap.get(measure)!.label}`,
+        align: 'right' as const,
+        maximumFractionDigits: COUNT_MEASURES.has(measure) || !showDecimals ? 0 : 2,
+        percent: PERCENT_MEASURES.has(measure),
+      }))),
+      ...(appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => ({
+        label: `Satır toplamı · ${measureMap.get(measure)!.label}`,
+        align: 'right' as const,
+        maximumFractionDigits: COUNT_MEASURES.has(measure) || !showDecimals ? 0 : 2,
+        percent: PERCENT_MEASURES.has(measure),
+      })) : []),
+    ];
+    const rows = leafNodes(pivot.roots).map((node) => [
+      ...node.values,
+      ...pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => (
+        aggregateValue(pivot.cells.get(`${node.key}\u0001${columnKey}`), measure)
+      ))),
+      ...(appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => (
+        aggregateValue(pivot.rowTotals.get(node.key), measure)
+      )) : []),
+    ]);
+    const totalRow = [
+      'Genel toplam',
+      ...appliedLayout.rows.slice(1).map(() => ''),
+      ...pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => (
+        aggregateValue(pivot.columnTotals.get(columnKey), measure)
+      ))),
+      ...(appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => (
+        aggregateValue(pivot.grandTotal, measure)
+      )) : []),
+    ];
+    const activeFilters = appliedLayout.filters.map((field) => {
+      const selected = appliedLayout.filterValues[field] ?? [];
+      return `${dimensionMap.get(field)!.label}: ${selected.length > 0 ? selected.join(', ') : 'Tümü'}`;
+    });
+    const sortLabel = sort.kind === 'label'
+      ? `Satır etiketi (${sort.direction === 'asc' ? 'artan' : 'azalan'})`
+      : `${measureMap.get(sort.measure!)?.label ?? 'Değer'} (${sort.direction === 'asc' ? 'artan' : 'azalan'})`;
+
+    return {
+      fileName: `satis-kpi-${scope}-pivot${periodFileToken ? `-${periodFileToken}` : ''}`,
+      title: reportTitle ?? `${definition.label} pivotu`,
+      subtitle: periodLabel ?? 'Seçili rapor dönemi',
+      locale,
+      columns,
+      rows,
+      totalRow,
+      frozenColumnCount: appliedLayout.rows.length,
+      metadata: [
+        { label: 'Kapsam', value: `${filteredMovements.length} hareket, ${rows.length} sonuç satırı` },
+        { label: 'Filtreler', value: activeFilters.length > 0 ? activeFilters.join(' | ') : 'Filtre yok' },
+        ...(movementSearch.trim() ? [{ label: 'Arama', value: movementSearch.trim() }] : []),
+        { label: 'Sıralama', value: sortLabel },
+      ],
+    };
+  }, [
+    appliedLayout.columns.length,
+    appliedLayout.filterValues,
+    appliedLayout.filters,
+    appliedLayout.measures,
+    appliedLayout.rows,
+    definition.label,
+    filteredMovements.length,
+    locale,
+    movementSearch,
+    periodFileToken,
+    periodLabel,
+    pivot.cells,
+    pivot.columnTotals,
+    pivot.grandTotal,
+    pivot.roots,
+    pivot.rowTotals,
+    pivotColumns,
+    reportTitle,
+    scope,
+    showDecimals,
+    sort,
+  ]);
 
   const toggleSort = (next: Omit<PivotSort, 'direction'>): void => setSort((current) => {
     const sameColumn = current.kind === next.kind && current.measure === next.measure && current.columnKey === next.columnKey;
@@ -666,29 +777,26 @@ export function SalesMovementPivot({ movements, locale, scope = 'movement' }: {
     toast.success(`${definition.label} için önerilen pivot düzeni geri yüklendi.`);
   };
 
-  const exportPivot = async (): Promise<void> => {
-    setIsExporting(true);
+  const exportPivot = async (formatType: PivotExportFormat): Promise<void> => {
+    setExportingFormat(formatType);
     try {
-      const header: ExcelRow = [
-        ...appliedLayout.rows.map((field) => dimensionMap.get(field)!.label),
-        ...pivotColumns.flatMap(([, values]) => appliedLayout.measures.map((measure) => `${values.length ? `${values.join(' / ')} · ` : ''}${measureMap.get(measure)!.label}`)),
-        ...(appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => `Satır toplamı · ${measureMap.get(measure)!.label}`) : []),
-      ];
-      const leaves = (nodes: PivotTreeNode[]): PivotTreeNode[] => nodes.flatMap((node) => node.children.length ? leaves(node.children) : [node]);
-      const rows: ExcelRow[] = leaves(pivot.roots).map((node) => [
-        ...node.values,
-        ...pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => aggregateValue(pivot.cells.get(`${node.key}\u0001${columnKey}`), measure))),
-        ...(appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => aggregateValue(pivot.rowTotals.get(node.key), measure)) : []),
-      ]);
-      const totalRow: ExcelRow = [
-        'Genel toplam',
-        ...appliedLayout.rows.slice(1).map(() => ''),
-        ...pivotColumns.flatMap(([columnKey]) => appliedLayout.measures.map((measure) => aggregateValue(pivot.columnTotals.get(columnKey), measure))),
-        ...(appliedLayout.columns.length > 0 ? appliedLayout.measures.map((measure) => aggregateValue(pivot.grandTotal, measure)) : []),
-      ];
-      await exportSheetsToXlsx(`satis-kpi-${scope}-pivot`, [{ name: 'Satış KPI Pivot', rows: [header, ...rows, totalRow] }]);
+      if (formatType === 'excel') await exportSalesPivotToExcel(exportModel);
+      if (formatType === 'pdf') await exportSalesPivotToPdf(exportModel);
+      if (formatType === 'png') {
+        const result = await exportSalesPivotToPng(exportModel);
+        if (result.scale < 0.5) {
+          toast.warning('Veri çok büyük olduğu için tam görsel okunabilirliği koruyacak en yüksek güvenli boyutta oluşturuldu.');
+        }
+      }
+      toast.success(formatType === 'excel'
+        ? 'Aktif pivot tasarımı Excel olarak indirildi.'
+        : formatType === 'pdf'
+          ? 'Aktif pivot tasarımı PDF olarak indirildi.'
+          : 'Tüm pivot verisini içeren görsel indirildi.');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Pivot çıktısı oluşturulamadı.');
     } finally {
-      setIsExporting(false);
+      setExportingFormat(null);
     }
   };
 
@@ -777,7 +885,18 @@ export function SalesMovementPivot({ movements, locale, scope = 'movement' }: {
                 {movementSearch ? <button type="button" onClick={() => setMovementSearch('')} className="rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-white/10" aria-label="Aramayı temizle"><X className="size-3.5" /></button> : null}
               </label>
             </div>
-            <div className="flex items-center gap-2"><Button variant="outline" size="sm" onClick={() => setShowDecimals((current) => !current)}>Ondalık: {showDecimals ? 'Açık' : 'Kapalı'}</Button><Button variant="outline" size="sm" disabled={isExporting || pivot.roots.length === 0} onClick={() => void exportPivot()}><FileDown className="mr-1.5 size-4" />Excel'e aktar</Button></div>
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setShowDecimals((current) => !current)}>Ondalık: {showDecimals ? 'Açık' : 'Kapalı'}</Button>
+              <Button variant="outline" size="sm" disabled={exportingFormat !== null || pivot.roots.length === 0} onClick={() => void exportPivot('excel')} title="Aktif pivot düzeninin tüm verisini Excel'e aktar">
+                {exportingFormat === 'excel' ? <Loader2 className="mr-1.5 size-4 animate-spin" /> : <FileSpreadsheet className="mr-1.5 size-4 text-emerald-600" />}Excel
+              </Button>
+              <Button variant="outline" size="sm" disabled={exportingFormat !== null || pivot.roots.length === 0} onClick={() => void exportPivot('pdf')} title="Aktif pivot düzeninin tüm verisini PDF'e aktar">
+                {exportingFormat === 'pdf' ? <Loader2 className="mr-1.5 size-4 animate-spin" /> : <FileText className="mr-1.5 size-4 text-red-500" />}PDF
+              </Button>
+              <Button variant="outline" size="sm" disabled={exportingFormat !== null || pivot.roots.length === 0} onClick={() => void exportPivot('png')} title="Scroll dışında kalanlar dahil tüm pivot verisini görsel olarak indir">
+                {exportingFormat === 'png' ? <Loader2 className="mr-1.5 size-4 animate-spin" /> : <ImageDown className="mr-1.5 size-4 text-sky-600" />}Tam görsel
+              </Button>
+            </div>
           </div>
           <div className="max-h-[42rem] overflow-auto rounded-xl border border-slate-200 dark:border-white/10">
             <table className="min-w-max w-full border-collapse text-xs">
