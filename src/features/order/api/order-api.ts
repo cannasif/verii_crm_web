@@ -260,9 +260,16 @@ export const orderApi = {
     });
   },
 
-  startApprovalFlow: async (data: { entityId: number; documentType: number; totalAmount: number }): Promise<ApiResponse<boolean>> => {
+  startApprovalFlow: async (
+    data: { entityId: number; documentType: number; totalAmount: number },
+    operationKey?: string,
+  ): Promise<ApiResponse<boolean>> => {
     try {
-      const response = await api.post<ApiResponse<boolean>>('/api/order/start-approval-flow', data);
+      const response = await api.post<ApiResponse<boolean>>(
+        '/api/order/start-approval-flow',
+        data,
+        operationKey ? { headers: { 'X-Idempotency-Key': operationKey } } : undefined,
+      );
       if (!response.success) {
         const errorMessage = response.message || response.exceptionMessage || 'Onay akışı başlatılamadı';
         const errorData = {
@@ -321,9 +328,13 @@ export const orderApi = {
     };
   },
 
-  approve: async (data: ApproveActionDto): Promise<ApiResponse<boolean>> => {
+  approve: async (data: ApproveActionDto, operationKey?: string): Promise<ApiResponse<boolean>> => {
     try {
-      const response = await api.post<ApiResponse<boolean>>('/api/order/approve', data);
+      const response = await api.post<ApiResponse<boolean>>(
+        '/api/order/approve',
+        data,
+        operationKey ? { headers: { 'X-Idempotency-Key': operationKey } } : undefined,
+      );
       if (!response.success) {
         const errorMessage = response.message || response.exceptionMessage || 'Onay işlemi gerçekleştirilemedi';
         const errorData = {
