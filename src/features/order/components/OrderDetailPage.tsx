@@ -70,6 +70,8 @@ import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermi
 import { useCanEditOrder } from '../hooks/useCanEditOrder';
 import { useCancelOrderByCustomer } from '../hooks/useCancelOrderByCustomer';
 import { canCustomerCancelDocument } from '@/features/approval/utils/resolve-document-status';
+import { SalesDocumentProcessProgressModal } from '@/features/sales-documents/process-progress/SalesDocumentProcessProgressModal';
+import { useSalesDocumentStartApprovalProcess } from '@/features/sales-documents/process-progress/useSalesDocumentProcessController';
 
 function parsePersistedId(formId: string | number | undefined, prefix: string): number | null {
   if (formId == null) return null;
@@ -123,6 +125,17 @@ export function OrderDetailPage(): ReactElement {
   const updateNotesMutation = useUpdateOrderNotesList(orderId);
   const startApprovalFlow = useStartApprovalFlow();
   const cancelByCustomerMutation = useCancelOrderByCustomer();
+  const approvalController = useSalesDocumentStartApprovalProcess({
+    document: order,
+    documentType: PricingRuleType.Order,
+    isPending: startApprovalFlow.isPending,
+    fallbackErrorMessage: t('order.approval.startError'),
+    execute: (request) => startApprovalFlow.mutateAsync(request),
+    fetchDocument: orderApi.getById,
+    onDocumentRefreshed: (current) => {
+      queryClient.setQueryData(queryKeys.order(current.id), current);
+    },
+  });
 
   const [lines, setLinesState] = useState<OrderLineFormState[]>([]);
   const [exchangeRates, setExchangeRates] = useState<OrderExchangeRateFormState[]>([]);
@@ -719,12 +732,7 @@ export function OrderDetailPage(): ReactElement {
   };
 
   const handleStartApprovalFlow = (): void => {
-    if (!order) return;
-    startApprovalFlow.mutate({
-      entityId: order.id,
-      documentType: PricingRuleType.Order,
-      totalAmount: order.grandTotal,
-    });
+    approvalController.start();
   };
 
   const handleCancelByCustomer = async (reason: string): Promise<void> => {
@@ -980,7 +988,7 @@ export function OrderDetailPage(): ReactElement {
                     <Button
                       type="button"
                       onClick={handleStartApprovalFlow}
-                      disabled={isUpdating || startApprovalFlow.isPending || !order}
+                    disabled={isUpdating || startApprovalFlow.isPending || (approvalController.process.open && approvalController.process.status === 'running') || !order}
                       className={`${DOCUMENT_DETAIL_BUTTON_BASE} ${DOCUMENT_DETAIL_BUTTON_APPROVAL}`}
                     >
                       {startApprovalFlow.isPending ? (
@@ -1032,6 +1040,25 @@ export function OrderDetailPage(): ReactElement {
       </Tabs>
 
       {pdfExport.renderPdfExportDialogs()}
+
+      {order && (
+        <SalesDocumentProcessProgressModal
+          open={approvalController.process.open}
+          status={approvalController.process.status}
+          documentKind="order"
+          processKind="start-approval"
+          processKey={approvalController.process.operationKey}
+          documentId={order.id}
+          documentNo={order.revisionNo || order.offerNo}
+          erpNumber={approvalController.process.erpNumber}
+          outcome={approvalController.process.outcome}
+          errorMessage={approvalController.process.errorMessage}
+          technicalDetails={approvalController.process.technicalDetails}
+          onOpenChange={approvalController.setOpen}
+          onRetry={approvalController.retry}
+          onViewDocument={() => approvalController.setOpen(false)}
+        />
+      )}
 
       <CustomerCancellationDialog
         open={customerCancellationOpen}
