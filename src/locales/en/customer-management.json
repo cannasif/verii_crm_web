@@ -242,7 +242,38 @@
       "alreadyIntegrated": "ERP customer already created",
       "confirmTitle": "Create Netsis ERP Record",
       "confirmMessage": "A Netsis ERP customer record will be created for {{name}}. Do you confirm?",
-      "confirmAction": "Yes, Create"
+      "confirmAction": "Yes, Create",
+      "progress": {
+        "eyebrow": "ERP SYNCHRONIZATION",
+        "runningTitle": "RECORD IS BEING SENT TO ERP",
+        "successTitle": "ERP TRANSFER COMPLETED",
+        "errorTitle": "ERP TRANSFER COULD NOT BE COMPLETED",
+        "runningDescription": "The {{name}} customer record is being validated and prepared for ERP.",
+        "successDescription": "The customer record was transferred to ERP securely.",
+        "errorDescription": "The CRM record is preserved. Review the failed step and retry with the same operation key.",
+        "operationLabel": "OPERATION NO",
+        "resultLabel": "ERP ACCOUNT CODE",
+        "runStatus": "RUNNING",
+        "successStatus": "COMPLETED",
+        "errorStatus": "ERROR",
+        "technicalDetails": "Technical Details",
+        "retry": "Retry",
+        "saveDraft": "Keep as CRM Draft",
+        "viewRecord": "View Record",
+        "close": "Close",
+        "continueInBackground": "Continue in Background",
+        "progressLabel": "ERP transfer progress",
+        "steps": {
+          "validateFields": "Validating CRM fields",
+          "checkRequired": "Checking required information",
+          "checkDuplicates": "Checking for duplicate customers",
+          "prepareRelations": "Preparing company and contact relationships",
+          "buildErpPayload": "Building ERP data format",
+          "sendToErp": "Sending record to ERP",
+          "receiveErpCode": "Receiving ERP record number",
+          "updateCrmStatus": "Updating CRM synchronization status"
+        }
+      }
     }
   },
   "advancedFilter": {

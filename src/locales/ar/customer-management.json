@@ -235,7 +235,38 @@
       "alreadyIntegrated": "ERP customer already created",
       "confirmTitle": "إنشاء سجل Netsis ERP",
       "confirmMessage": "سيتم إنشاء سجل عميل Netsis ERP لـ {{name}}. هل تؤكد؟",
-      "confirmAction": "نعم، إنشاء"
+      "confirmAction": "نعم، إنشاء",
+      "progress": {
+        "eyebrow": "مزامنة ERP",
+        "runningTitle": "جارٍ إرسال السجل إلى ERP",
+        "successTitle": "اكتمل النقل إلى ERP",
+        "errorTitle": "تعذر إكمال النقل إلى ERP",
+        "runningDescription": "جارٍ التحقق من سجل العميل {{name}} وإعداده لنظام ERP.",
+        "successDescription": "تم نقل سجل العميل إلى ERP بأمان.",
+        "errorDescription": "تم الاحتفاظ بسجل CRM. راجع الخطوة الفاشلة وأعد المحاولة باستخدام مفتاح العملية نفسه.",
+        "operationLabel": "رقم العملية",
+        "resultLabel": "رمز حساب ERP",
+        "runStatus": "قيد التشغيل",
+        "successStatus": "مكتمل",
+        "errorStatus": "خطأ",
+        "technicalDetails": "التفاصيل التقنية",
+        "retry": "إعادة المحاولة",
+        "saveDraft": "الاحتفاظ كمسودة CRM",
+        "viewRecord": "عرض السجل",
+        "close": "إغلاق",
+        "continueInBackground": "المتابعة في الخلفية",
+        "progressLabel": "تقدم النقل إلى ERP",
+        "steps": {
+          "validateFields": "التحقق من حقول CRM",
+          "checkRequired": "فحص المعلومات المطلوبة",
+          "checkDuplicates": "فحص العملاء المكررين",
+          "prepareRelations": "إعداد علاقات الشركة وجهات الاتصال",
+          "buildErpPayload": "إنشاء تنسيق بيانات ERP",
+          "sendToErp": "إرسال السجل إلى ERP",
+          "receiveErpCode": "استلام رقم سجل ERP",
+          "updateCrmStatus": "تحديث حالة مزامنة CRM"
+        }
+      }
     }
   },
   "advancedFilter": {

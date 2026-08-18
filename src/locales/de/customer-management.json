@@ -236,7 +236,38 @@
       "alreadyIntegrated": "ERP customer already created",
       "confirmTitle": "Netsis ERP-Datensatz erstellen",
       "confirmMessage": "Für {{name}} wird ein Netsis ERP-Kundendatensatz erstellt. Bestätigen Sie?",
-      "confirmAction": "Ja, erstellen"
+      "confirmAction": "Ja, erstellen",
+      "progress": {
+        "eyebrow": "ERP-SYNCHRONISIERUNG",
+        "runningTitle": "DATENSATZ WIRD AN ERP ÜBERTRAGEN",
+        "successTitle": "ERP-ÜBERTRAGUNG ABGESCHLOSSEN",
+        "errorTitle": "ERP-ÜBERTRAGUNG NICHT ABGESCHLOSSEN",
+        "runningDescription": "Der Kundendatensatz {{name}} wird geprüft und für ERP vorbereitet.",
+        "successDescription": "Der Kundendatensatz wurde sicher an ERP übertragen.",
+        "errorDescription": "Der CRM-Datensatz bleibt erhalten. Prüfen Sie den fehlerhaften Schritt und versuchen Sie es mit demselben Vorgangsschlüssel erneut.",
+        "operationLabel": "VORGANGSNR.",
+        "resultLabel": "ERP-DEBITORENKONTO",
+        "runStatus": "LÄUFT",
+        "successStatus": "ABGESCHLOSSEN",
+        "errorStatus": "FEHLER",
+        "technicalDetails": "Technische Details",
+        "retry": "Erneut versuchen",
+        "saveDraft": "Als CRM-Entwurf behalten",
+        "viewRecord": "Datensatz anzeigen",
+        "close": "Schließen",
+        "continueInBackground": "Im Hintergrund fortsetzen",
+        "progressLabel": "ERP-Übertragungsfortschritt",
+        "steps": {
+          "validateFields": "CRM-Felder werden geprüft",
+          "checkRequired": "Pflichtangaben werden geprüft",
+          "checkDuplicates": "Kundendubletten werden geprüft",
+          "prepareRelations": "Firmen- und Kontaktbeziehungen werden vorbereitet",
+          "buildErpPayload": "ERP-Datenformat wird erstellt",
+          "sendToErp": "Datensatz wird an ERP gesendet",
+          "receiveErpCode": "ERP-Datensatznummer wird empfangen",
+          "updateCrmStatus": "CRM-Synchronisierungsstatus wird aktualisiert"
+        }
+      }
     }
   },
   "advancedFilter": {

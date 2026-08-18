@@ -235,7 +235,38 @@
       "alreadyIntegrated": "ERP customer already created",
       "confirmTitle": "Créer l'enregistrement Netsis ERP",
       "confirmMessage": "Un compte client Netsis ERP sera créé pour {{name}}. Confirmez-vous ?",
-      "confirmAction": "Oui, créer"
+      "confirmAction": "Oui, créer",
+      "progress": {
+        "eyebrow": "SYNCHRONISATION ERP",
+        "runningTitle": "ENVOI DE L'ENREGISTREMENT VERS L'ERP",
+        "successTitle": "TRANSFERT ERP TERMINÉ",
+        "errorTitle": "TRANSFERT ERP NON TERMINÉ",
+        "runningDescription": "La fiche client {{name}} est validée et préparée pour l'ERP.",
+        "successDescription": "La fiche client a été transférée vers l'ERP en toute sécurité.",
+        "errorDescription": "La fiche CRM est conservée. Vérifiez l'étape en erreur et réessayez avec la même clé d'opération.",
+        "operationLabel": "N° D'OPÉRATION",
+        "resultLabel": "CODE COMPTE ERP",
+        "runStatus": "EN COURS",
+        "successStatus": "TERMINÉ",
+        "errorStatus": "ERREUR",
+        "technicalDetails": "Détails techniques",
+        "retry": "Réessayer",
+        "saveDraft": "Conserver comme brouillon CRM",
+        "viewRecord": "Voir la fiche",
+        "close": "Fermer",
+        "continueInBackground": "Continuer en arrière-plan",
+        "progressLabel": "Progression du transfert ERP",
+        "steps": {
+          "validateFields": "Validation des champs CRM",
+          "checkRequired": "Contrôle des informations obligatoires",
+          "checkDuplicates": "Recherche de clients en double",
+          "prepareRelations": "Préparation des relations société et contacts",
+          "buildErpPayload": "Création du format de données ERP",
+          "sendToErp": "Envoi de la fiche vers l'ERP",
+          "receiveErpCode": "Réception du numéro ERP",
+          "updateCrmStatus": "Mise à jour du statut de synchronisation CRM"
+        }
+      }
     }
   },
   "advancedFilter": {

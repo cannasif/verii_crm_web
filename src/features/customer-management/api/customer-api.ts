@@ -88,8 +88,12 @@ export const customerApi = {
     throw new Error(response.message || 'Müşteri güncellenemedi');
   },
 
-  createErpCustomer: async (id: number): Promise<CustomerDto> => {
-    const response = await api.post<ApiResponse<CustomerDto>>(`/api/Customer/${id}/erp-customer`, {});
+  createErpCustomer: async (id: number, operationKey: string): Promise<CustomerDto> => {
+    const response = await api.post<ApiResponse<CustomerDto>>(
+      `/api/Customer/${id}/erp-customer`,
+      {},
+      { headers: { 'X-Idempotency-Key': operationKey } },
+    );
     if (response.success && response.data) {
       return response.data;
     }

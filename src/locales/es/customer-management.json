@@ -235,7 +235,38 @@
       "alreadyIntegrated": "ERP customer already created",
       "confirmTitle": "Crear registro Netsis ERP",
       "confirmMessage": "Se creará un registro de cliente Netsis ERP para {{name}}. ¿Confirma?",
-      "confirmAction": "Sí, crear"
+      "confirmAction": "Sí, crear",
+      "progress": {
+        "eyebrow": "SINCRONIZACIÓN ERP",
+        "runningTitle": "ENVIANDO EL REGISTRO AL ERP",
+        "successTitle": "TRANSFERENCIA ERP COMPLETADA",
+        "errorTitle": "NO SE PUDO COMPLETAR LA TRANSFERENCIA ERP",
+        "runningDescription": "El registro de cliente {{name}} se está validando y preparando para el ERP.",
+        "successDescription": "El registro de cliente se transfirió al ERP de forma segura.",
+        "errorDescription": "El registro CRM se conserva. Revise el paso con error y vuelva a intentarlo con la misma clave de operación.",
+        "operationLabel": "N.º DE OPERACIÓN",
+        "resultLabel": "CÓDIGO DE CUENTA ERP",
+        "runStatus": "EN CURSO",
+        "successStatus": "COMPLETADO",
+        "errorStatus": "ERROR",
+        "technicalDetails": "Detalles técnicos",
+        "retry": "Reintentar",
+        "saveDraft": "Conservar como borrador CRM",
+        "viewRecord": "Ver registro",
+        "close": "Cerrar",
+        "continueInBackground": "Continuar en segundo plano",
+        "progressLabel": "Progreso de transferencia ERP",
+        "steps": {
+          "validateFields": "Validando campos CRM",
+          "checkRequired": "Comprobando información obligatoria",
+          "checkDuplicates": "Comprobando clientes duplicados",
+          "prepareRelations": "Preparando relaciones de empresa y contactos",
+          "buildErpPayload": "Creando formato de datos ERP",
+          "sendToErp": "Enviando registro al ERP",
+          "receiveErpCode": "Recibiendo número de registro ERP",
+          "updateCrmStatus": "Actualizando estado de sincronización CRM"
+        }
+      }
     }
   },
   "advancedFilter": {

@@ -2,7 +2,15 @@ import { type ReactElement, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { DataTableGrid, type DataTableGridColumn } from '@/components/shared';
+import { isAxiosError } from 'axios';
+import {
+  DataTableGrid,
+  ProcessProgressModal,
+  useProcessStepPacer,
+  type DataTableGridColumn,
+  type ProcessProgressStatus,
+  type ProcessProgressStep,
+} from '@/components/shared';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -40,8 +48,83 @@ import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPerm
 import { hasPermission } from '@/features/access-control/utils/hasPermission';
 import { useCreateErpCustomer } from '../hooks/useCreateErpCustomer';
 import { calculateCustomerCompletion, getCompletionColorClasses } from '../utils/customer-completion';
+import { createClientId } from '@/lib/create-client-id';
 
 const CRM_NS = 'customer-management' as const;
+
+const ERP_PROCESS_STEP_IDS = [
+  'validate-fields',
+  'check-required',
+  'check-duplicates',
+  'prepare-relations',
+  'build-erp-payload',
+  'send-to-erp',
+  'receive-erp-code',
+  'update-crm-status',
+] as const;
+
+type ErpProcessStepId = (typeof ERP_PROCESS_STEP_IDS)[number];
+
+interface ErpProcessState {
+  open: boolean;
+  status: ProcessProgressStatus;
+  operationKey: string;
+  customer: CustomerDto | null;
+  result: CustomerDto | null;
+  errorMessage: string | null;
+  technicalDetails: string | null;
+  errorStepId: ErpProcessStepId | null;
+}
+
+const INITIAL_ERP_PROCESS_STATE: ErpProcessState = {
+  open: false,
+  status: 'running',
+  operationKey: '',
+  customer: null,
+  result: null,
+  errorMessage: null,
+  technicalDetails: null,
+  errorStepId: null,
+};
+
+function readErrorEnvelope(error: unknown): Record<string, unknown> | null {
+  if (!isAxiosError(error) || !error.response?.data || typeof error.response.data !== 'object') return null;
+  return error.response.data as Record<string, unknown>;
+}
+
+function resolveErpErrorStep(errorCode: string | null): ErpProcessStepId {
+  if (errorCode?.includes('required_fields')) return 'check-required';
+  if (errorCode?.includes('branch') || errorCode?.includes('sales_rep')) return 'prepare-relations';
+  if (errorCode?.includes('customer_code')) return 'build-erp-payload';
+  return 'send-to-erp';
+}
+
+function describeErpProcessError(error: unknown, fallback: string): {
+  message: string;
+  technicalDetails: string | null;
+  errorStepId: ErpProcessStepId;
+} {
+  const envelope = readErrorEnvelope(error);
+  const errorCode = typeof envelope?.errorCode === 'string' ? envelope.errorCode : null;
+  const message = error instanceof Error && error.message ? error.message : fallback;
+  const httpStatus = isAxiosError(error) ? error.response?.status : undefined;
+  const traceId = isAxiosError(error)
+    ? error.response?.headers?.['x-trace-id'] ?? error.response?.headers?.['X-Trace-Id']
+    : undefined;
+  const details = envelope?.details;
+  const lines = [
+    errorCode ? `CODE: ${errorCode}` : null,
+    httpStatus ? `HTTP: ${httpStatus}` : null,
+    traceId ? `TRACE: ${String(traceId)}` : null,
+    details ? `DETAILS: ${typeof details === 'string' ? details : JSON.stringify(details, null, 2)}` : null,
+  ].filter((value): value is string => Boolean(value));
+
+  return {
+    message,
+    technicalDetails: lines.length > 0 ? lines.join('\n') : null,
+    errorStepId: resolveErpErrorStep(errorCode),
+  };
+}
 
 /** Tablo başlıkları customer-management namespace ve customerManagement.* anahtar yolu ile çözülür. */
 function tc(t: TFunction, key: string): string {
@@ -250,6 +333,46 @@ export function CustomerTable({
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerDto | null>(null);
   const [erpCreateDialogOpen, setErpCreateDialogOpen] = useState(false);
   const [erpCreateCustomer, setErpCreateCustomer] = useState<CustomerDto | null>(null);
+  const [erpProcess, setErpProcess] = useState<ErpProcessState>(INITIAL_ERP_PROCESS_STATE);
+  const erpActiveStepIndex = useProcessStepPacer({
+    running: erpProcess.open && erpProcess.status === 'running',
+    stepCount: ERP_PROCESS_STEP_IDS.length,
+    resetKey: erpProcess.operationKey,
+    intervalMs: 700,
+  });
+
+  const erpProcessSteps = useMemo<ProcessProgressStep[]>(() => {
+    const labels: Record<ErpProcessStepId, string> = {
+      'validate-fields': t('customerManagement.erpCreate.progress.steps.validateFields', { ns: CRM_NS }),
+      'check-required': t('customerManagement.erpCreate.progress.steps.checkRequired', { ns: CRM_NS }),
+      'check-duplicates': t('customerManagement.erpCreate.progress.steps.checkDuplicates', { ns: CRM_NS }),
+      'prepare-relations': t('customerManagement.erpCreate.progress.steps.prepareRelations', { ns: CRM_NS }),
+      'build-erp-payload': t('customerManagement.erpCreate.progress.steps.buildErpPayload', { ns: CRM_NS }),
+      'send-to-erp': t('customerManagement.erpCreate.progress.steps.sendToErp', { ns: CRM_NS }),
+      'receive-erp-code': t('customerManagement.erpCreate.progress.steps.receiveErpCode', { ns: CRM_NS }),
+      'update-crm-status': t('customerManagement.erpCreate.progress.steps.updateCrmStatus', { ns: CRM_NS }),
+    };
+
+    const errorStepIndex = erpProcess.errorStepId
+      ? ERP_PROCESS_STEP_IDS.indexOf(erpProcess.errorStepId)
+      : -1;
+
+    return ERP_PROCESS_STEP_IDS.map((id, index) => {
+      let status: ProcessProgressStep['status'] = 'pending';
+      if (erpProcess.status === 'success') {
+        status = 'completed';
+      } else if (erpProcess.status === 'error') {
+        if (index < errorStepIndex) status = 'completed';
+        if (index === errorStepIndex) status = 'error';
+      } else if (index < erpActiveStepIndex) {
+        status = 'completed';
+      } else if (index === erpActiveStepIndex) {
+        status = 'active';
+      }
+
+      return { id, label: labels[id], status };
+    });
+  }, [erpActiveStepIndex, erpProcess.errorStepId, erpProcess.status, t]);
 
   const tableColumns = useMemo(
     () => getColumnsConfig(t),
@@ -275,21 +398,57 @@ export function CustomerTable({
   };
 
   const handleErpCreateClick = (customer: CustomerDto): void => {
-    if (!canCreateErpCustomer) return;
+    if (!canCreateErpCustomer || createErpCustomer.isPending) return;
     setErpCreateCustomer(customer);
     setErpCreateDialogOpen(true);
   };
 
-  const handleErpCreateConfirm = async (): Promise<void> => {
-    if (!erpCreateCustomer) return;
+  const runErpCreate = async (customer: CustomerDto, operationKey: string): Promise<void> => {
+    setErpCreateDialogOpen(false);
+    setErpCreateCustomer(null);
+    setErpProcess({
+      open: true,
+      status: 'running',
+      operationKey,
+      customer,
+      result: null,
+      errorMessage: null,
+      technicalDetails: null,
+      errorStepId: null,
+    });
 
     try {
-      await createErpCustomer.mutateAsync(erpCreateCustomer.id);
-      setErpCreateDialogOpen(false);
-      setErpCreateCustomer(null);
+      const result = await createErpCustomer.mutateAsync({ id: customer.id, operationKey });
+      setErpProcess((current) => ({
+        ...current,
+        status: 'success',
+        result,
+        errorMessage: null,
+        technicalDetails: null,
+        errorStepId: null,
+      }));
     } catch (error) {
-      console.error(error);
+      const failure = describeErpProcessError(
+        error,
+        t('customerManagement.messages.erpCreateError', { ns: CRM_NS }),
+      );
+      setErpProcess((current) => ({
+        ...current,
+        status: 'error',
+        result: null,
+        ...failure,
+      }));
     }
+  };
+
+  const handleErpCreateConfirm = async (): Promise<void> => {
+    if (!erpCreateCustomer || createErpCustomer.isPending) return;
+    await runErpCreate(erpCreateCustomer, createClientId());
+  };
+
+  const handleErpCreateRetry = (): void => {
+    if (!erpProcess.customer || !erpProcess.operationKey || createErpCustomer.isPending) return;
+    void runErpCreate(erpProcess.customer, erpProcess.operationKey);
   };
 
   const cellRenderer = (row: CustomerDto, key: CustomerColumnKey): React.ReactNode => {
@@ -578,6 +737,66 @@ export function CustomerTable({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <ProcessProgressModal
+        open={erpProcess.open}
+        status={erpProcess.status}
+        route="CRM://ERP/SYNC/CUSTOMER"
+        eyebrow={t('customerManagement.erpCreate.progress.eyebrow', { ns: CRM_NS })}
+        title={t(
+          erpProcess.status === 'success'
+            ? 'customerManagement.erpCreate.progress.successTitle'
+            : erpProcess.status === 'error'
+              ? 'customerManagement.erpCreate.progress.errorTitle'
+              : 'customerManagement.erpCreate.progress.runningTitle',
+          { ns: CRM_NS },
+        )}
+        description={t(
+          erpProcess.status === 'success'
+            ? 'customerManagement.erpCreate.progress.successDescription'
+            : erpProcess.status === 'error'
+              ? 'customerManagement.erpCreate.progress.errorDescription'
+              : 'customerManagement.erpCreate.progress.runningDescription',
+          { ns: CRM_NS, name: erpProcess.customer?.name ?? '' },
+        )}
+        operationLabel={t('customerManagement.erpCreate.progress.operationLabel', { ns: CRM_NS })}
+        operationId={erpProcess.customer
+          ? `CRM-${new Date().getFullYear()}-${String(erpProcess.customer.id).padStart(6, '0')}`
+          : undefined}
+        icon={<CloudUpload />}
+        progress={erpProcess.status === 'success' ? 100 : null}
+        steps={erpProcessSteps}
+        resultLabel={t('customerManagement.erpCreate.progress.resultLabel', { ns: CRM_NS })}
+        resultValue={
+          erpProcess.result?.erpIntegrationNumber
+          || erpProcess.result?.customerCode
+          || erpProcess.result?.accountingCode
+          || null
+        }
+        errorMessage={erpProcess.errorMessage}
+        technicalDetails={erpProcess.technicalDetails}
+        allowCloseWhileRunning
+        labels={{
+          runStatus: t('customerManagement.erpCreate.progress.runStatus', { ns: CRM_NS }),
+          successStatus: t('customerManagement.erpCreate.progress.successStatus', { ns: CRM_NS }),
+          errorStatus: t('customerManagement.erpCreate.progress.errorStatus', { ns: CRM_NS }),
+          technicalDetails: t('customerManagement.erpCreate.progress.technicalDetails', { ns: CRM_NS }),
+          retry: t('customerManagement.erpCreate.progress.retry', { ns: CRM_NS }),
+          saveDraft: t('customerManagement.erpCreate.progress.saveDraft', { ns: CRM_NS }),
+          viewRecord: t('customerManagement.erpCreate.progress.viewRecord', { ns: CRM_NS }),
+          close: t('customerManagement.erpCreate.progress.close', { ns: CRM_NS }),
+          continueInBackground: t('customerManagement.erpCreate.progress.continueInBackground', { ns: CRM_NS }),
+          progressLabel: t('customerManagement.erpCreate.progress.progressLabel', { ns: CRM_NS }),
+        }}
+        onOpenChange={(open) => setErpProcess((current) => ({ ...current, open }))}
+        onRetry={handleErpCreateRetry}
+        onSaveDraft={() => setErpProcess((current) => ({ ...current, open: false }))}
+        onViewRecord={() => {
+          const customerId = erpProcess.result?.id ?? erpProcess.customer?.id;
+          setErpProcess((current) => ({ ...current, open: false }));
+          if (customerId) navigate(`/customer-360/${customerId}`);
+        }}
+      />
     </>
   );
 }

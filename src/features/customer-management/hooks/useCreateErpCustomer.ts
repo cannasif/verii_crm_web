@@ -9,7 +9,8 @@ export const useCreateErpCustomer = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: number) => customerApi.createErpCustomer(id),
+    mutationFn: ({ id, operationKey }: { id: number; operationKey: string }) =>
+      customerApi.createErpCustomer(id, operationKey),
     onSuccess: async (customer) => {
       await queryClient.refetchQueries({
         queryKey: [CUSTOMER_MANAGEMENT_QUERY_KEYS.LIST],
