@@ -27,6 +27,7 @@ import {
   WaitingApprovalsRejectDialog,
   WaitingApprovalsStatusBadge,
   type DataTableGridColumn,
+  type ProcessProgressStatus,
 } from '@/components/shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { quotationApi } from '../api/quotation-api';
@@ -36,9 +37,37 @@ import { useRejectAction } from '../hooks/useRejectAction';
 import { QUOTATION_QUERY_KEYS } from '../utils/query-keys';
 import type { ApprovalActionGetDto } from '../types/quotation-types';
 import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
+import { createClientId } from '@/lib/create-client-id';
+import {
+  QuotationProcessProgressModal,
+  describeQuotationProcessError,
+  type QuotationProcessOutcome,
+} from './QuotationProcessProgressModal';
 
 const PAGE_KEY = 'quotation-waiting-approvals';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
+
+interface ApprovalDecisionProcessState {
+  open: boolean;
+  status: ProcessProgressStatus;
+  operationKey: string;
+  approval: ApprovalActionGetDto | null;
+  erpNumber: string | null;
+  outcome: QuotationProcessOutcome | null;
+  errorMessage: string | null;
+  technicalDetails: string | null;
+}
+
+const INITIAL_APPROVAL_DECISION_PROCESS: ApprovalDecisionProcessState = {
+  open: false,
+  status: 'running',
+  operationKey: '',
+  approval: null,
+  erpNumber: null,
+  outcome: null,
+  errorMessage: null,
+  technicalDetails: null,
+};
 
 type WaitingApprovalColumnKey =
   | 'QuotationOwnerName'
@@ -112,6 +141,9 @@ export function WaitingApprovalsPage(): ReactElement {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [selectedApproval, setSelectedApproval] = useState<ApprovalActionGetDto | null>(null);
   const [rejectReason, setRejectReason] = useState('');
+  const [approvalProcess, setApprovalProcess] = useState<ApprovalDecisionProcessState>(
+    INITIAL_APPROVAL_DECISION_PROCESS,
+  );
 
   useEffect(() => {
     setPageTitle(t('waitingApprovals.title'));
@@ -337,8 +369,90 @@ export function WaitingApprovalsPage(): ReactElement {
     return '-';
   };
 
+  const runApprove = async (
+    approval: ApprovalActionGetDto,
+    operationKey: string,
+    recoverFirst = false,
+  ): Promise<void> => {
+    if (approveAction.isPending || rejectAction.isPending) return;
+
+    setApprovalProcess({
+      open: true,
+      status: 'running',
+      operationKey,
+      approval,
+      erpNumber: null,
+      outcome: null,
+      errorMessage: null,
+      technicalDetails: null,
+    });
+
+    try {
+      if (recoverFirst) {
+        const current = await quotationApi.getById(getQuotationTargetId(approval));
+        if (Number(current.status) === 2 || current.isERPIntegrated) {
+          setApprovalProcess((state) => ({
+            ...state,
+            status: 'success',
+            erpNumber: current.erpIntegrationNumber ?? null,
+            outcome: current.isERPIntegrated ? 'erp-completed' : 'approved',
+          }));
+          await queryClient.invalidateQueries({ queryKey: [QUOTATION_QUERY_KEYS.WAITING_APPROVALS] });
+          return;
+        }
+
+        if (Number(current.status) === 1) {
+          const report = await quotationApi.getApprovalFlowReport(getQuotationTargetId(approval));
+          const currentDecisionWasRecorded = report.steps.some((step) =>
+            step.stepOrder === approval.stepOrder
+            && step.actions.some((action) =>
+              action.userId === approval.approvedByUserId && Number(action.status) === 2));
+
+          if (currentDecisionWasRecorded) {
+            setApprovalProcess((state) => ({
+              ...state,
+              status: 'success',
+              outcome: 'approval-continued',
+            }));
+            await queryClient.invalidateQueries({ queryKey: [QUOTATION_QUERY_KEYS.WAITING_APPROVALS] });
+            return;
+          }
+        }
+      }
+
+      await approveAction.mutateAsync({
+        approvalActionId: approval.id,
+        operationKey,
+      });
+
+      let erpNumber: string | null = null;
+      let outcome: QuotationProcessOutcome | null = null;
+      try {
+        const refreshedQuotation = await quotationApi.getById(getQuotationTargetId(approval));
+        erpNumber = refreshedQuotation.erpIntegrationNumber ?? null;
+        outcome = refreshedQuotation.isERPIntegrated
+          ? 'erp-completed'
+          : Number(refreshedQuotation.status) === 1
+            ? 'approval-continued'
+            : 'approved';
+      } catch {
+        // Onay yanıtı başarılıysa sonuç sorgusundaki geçici hata onayı başarısız yapmamalı.
+      }
+
+      setApprovalProcess((state) => ({ ...state, status: 'success', erpNumber, outcome }));
+    } catch (error) {
+      const failure = describeQuotationProcessError(error, t('approval.approveError'));
+      setApprovalProcess((state) => ({ ...state, status: 'error', ...failure }));
+    }
+  };
+
   const handleApprove = (approval: ApprovalActionGetDto): void => {
-    approveAction.mutate({ approvalActionId: approval.id });
+    void runApprove(approval, createClientId());
+  };
+
+  const handleRetryApprove = (): void => {
+    if (!approvalProcess.approval || !approvalProcess.operationKey || approveAction.isPending) return;
+    void runApprove(approvalProcess.approval, approvalProcess.operationKey, true);
   };
 
   const handleRejectClick = (approval: ApprovalActionGetDto): void => {
@@ -572,6 +686,28 @@ export function WaitingApprovalsPage(): ReactElement {
         onCancel={handleRejectCancel}
         isPending={rejectAction.isPending}
       />
+
+      {approvalProcess.approval ? (
+        <QuotationProcessProgressModal
+          open={approvalProcess.open}
+          status={approvalProcess.status}
+          kind="approve-and-sync"
+          processKey={approvalProcess.operationKey}
+          quotationId={getQuotationTargetId(approvalProcess.approval)}
+          quotationNo={approvalProcess.approval.quotationRevisionNo || approvalProcess.approval.quotationOfferNo}
+          erpNumber={approvalProcess.erpNumber}
+          outcome={approvalProcess.outcome}
+          errorMessage={approvalProcess.errorMessage}
+          technicalDetails={approvalProcess.technicalDetails}
+          onOpenChange={(open) => setApprovalProcess((state) => ({ ...state, open }))}
+          onRetry={handleRetryApprove}
+          onViewQuotation={() => {
+            const approval = approvalProcess.approval;
+            setApprovalProcess((state) => ({ ...state, open: false }));
+            if (approval) navigateToQuotation(approval);
+          }}
+        />
+      ) : null}
     </>
   );
 }
