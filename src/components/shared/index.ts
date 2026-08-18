@@ -46,3 +46,12 @@ export {
   WAITING_APPROVALS_TABLE_HEAD_CLASSNAME,
 } from './waiting-approvals';
 export type { WaitingApprovalSidebarItem } from './waiting-approvals';
+export { ProcessProgressModal, useProcessStepPacer } from './ProcessProgressModal';
+export type {
+  ProcessProgressModalLabels,
+  ProcessProgressModalProps,
+  ProcessStepPacerOptions,
+  ProcessProgressStatus,
+  ProcessProgressStep,
+  ProcessProgressStepStatus,
+} from './ProcessProgressModal';

@@ -1,0 +1,378 @@
+.crm-process-progress__overlay {
+  background: rgb(2 6 23 / 72%);
+  backdrop-filter: blur(5px);
+}
+
+.crm-process-progress {
+  --process-tone: var(--crm-brand-primary, var(--primary));
+  position: fixed;
+  display: flex;
+  width: min(42rem, calc(100vw - 1rem));
+  max-width: 42rem;
+  max-height: min(48rem, calc(100dvh - 1rem));
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--process-tone) 30%, var(--crm-app-border, var(--border)));
+  border-radius: 14px;
+  background: color-mix(in oklab, var(--crm-app-panel, var(--background)) 96%, black);
+  color: var(--foreground);
+  box-shadow: 0 28px 90px rgb(2 6 23 / 52%), 0 0 0 1px rgb(255 255 255 / 3%) inset;
+  padding: 0;
+  isolation: isolate;
+}
+
+.crm-process-progress[data-process-status='success'] {
+  --process-tone: #16a34a;
+}
+
+.crm-process-progress[data-process-status='error'] {
+  --process-tone: var(--destructive);
+}
+
+.crm-process-progress__grid,
+.crm-process-progress__glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.crm-process-progress__grid {
+  opacity: 0.16;
+  background-image:
+    linear-gradient(color-mix(in oklab, var(--process-tone) 22%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--process-tone) 22%, transparent) 1px, transparent 1px);
+  background-size: 26px 26px;
+  mask-image: linear-gradient(to bottom, black, transparent 82%);
+}
+
+.crm-process-progress__glow {
+  background: radial-gradient(circle at 50% 20%, color-mix(in oklab, var(--process-tone) 15%, transparent), transparent 44%);
+}
+
+.crm-process-progress__chrome {
+  display: grid;
+  min-height: 42px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid color-mix(in oklab, var(--process-tone) 24%, var(--crm-app-border, var(--border)));
+  background: color-mix(in oklab, var(--crm-app-panel-strong, var(--muted)) 78%, transparent);
+  padding: 0 16px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.crm-process-progress__traffic {
+  display: flex;
+  gap: 5px;
+}
+
+.crm-process-progress__traffic i {
+  width: 7px;
+  height: 7px;
+  border: 1px solid color-mix(in oklab, var(--foreground) 22%, transparent);
+  background: color-mix(in oklab, var(--crm-app-panel-muted, var(--muted)) 82%, transparent);
+}
+
+.crm-process-progress__traffic i:first-child {
+  border-color: color-mix(in oklab, var(--process-tone) 52%, transparent);
+  background: color-mix(in oklab, var(--process-tone) 62%, transparent);
+}
+
+.crm-process-progress__route {
+  min-width: 0;
+  overflow: hidden;
+  color: color-mix(in oklab, var(--foreground) 64%, transparent);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.crm-process-progress__run-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--process-tone);
+  font-weight: 800;
+}
+
+.crm-process-progress__body {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px 26px 18px;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--process-tone) 38%, transparent) transparent;
+}
+
+.crm-process-progress__hero-icon {
+  position: relative;
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  margin: 0 auto 14px;
+  border: 1px solid color-mix(in oklab, var(--process-tone) 54%, transparent);
+  background: color-mix(in oklab, var(--process-tone) 10%, transparent);
+  color: var(--process-tone);
+  box-shadow: 0 0 30px color-mix(in oklab, var(--process-tone) 16%, transparent);
+}
+
+.crm-process-progress__hero-icon > svg {
+  width: 27px;
+  height: 27px;
+}
+
+.crm-process-progress__hero-orbit {
+  position: absolute;
+  inset: -6px;
+  border: 1px dashed color-mix(in oklab, var(--process-tone) 56%, transparent);
+  animation: crm-process-orbit 5s linear infinite;
+}
+
+.crm-process-progress__eyebrow,
+.crm-process-progress__title,
+.crm-process-progress__description {
+  text-align: center;
+}
+
+.crm-process-progress__eyebrow {
+  margin: 0 0 7px;
+  color: var(--process-tone);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.crm-process-progress__title {
+  color: var(--foreground);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(18px, 3vw, 24px);
+  line-height: 1.16;
+  letter-spacing: 0.025em;
+}
+
+.crm-process-progress__description {
+  max-width: 35rem;
+  margin: 10px auto 0;
+  color: var(--crm-app-text-muted, var(--muted-foreground));
+  line-height: 1.55;
+}
+
+.crm-process-progress__operation-badge,
+.crm-process-progress__result {
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 8px;
+  margin: 16px auto 0;
+  border: 1px solid color-mix(in oklab, var(--process-tone) 38%, transparent);
+  background: color-mix(in oklab, var(--process-tone) 8%, transparent);
+  padding: 7px 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.crm-process-progress__operation-badge span,
+.crm-process-progress__result span {
+  color: var(--crm-app-text-muted, var(--muted-foreground));
+}
+
+.crm-process-progress__operation-badge strong,
+.crm-process-progress__result strong {
+  overflow-wrap: anywhere;
+  color: var(--process-tone);
+}
+
+.crm-process-progress__progress {
+  position: relative;
+  height: 8px;
+  margin-top: 19px;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--process-tone) 30%, transparent);
+  background: color-mix(in oklab, var(--crm-app-panel-muted, var(--muted)) 88%, transparent);
+}
+
+.crm-process-progress__progress::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background-image: repeating-linear-gradient(90deg, transparent 0 20px, color-mix(in oklab, var(--background) 75%, transparent) 20px 23px);
+}
+
+.crm-process-progress__progress-value {
+  display: block;
+  height: 100%;
+  background: var(--process-tone);
+  box-shadow: 0 0 16px color-mix(in oklab, var(--process-tone) 60%, transparent);
+  transition: width 240ms ease;
+}
+
+.crm-process-progress__progress--indeterminate .crm-process-progress__progress-value {
+  width: 34%;
+  animation: crm-process-indeterminate 1.35s ease-in-out infinite;
+}
+
+.crm-process-progress__steps {
+  display: grid;
+  gap: 1px;
+  margin-top: 14px;
+  border: 1px solid color-mix(in oklab, var(--process-tone) 18%, var(--crm-app-border, var(--border)));
+  background: color-mix(in oklab, var(--process-tone) 10%, transparent);
+  padding: 5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.crm-process-progress__steps li {
+  display: grid;
+  min-height: 32px;
+  grid-template-columns: 30px 24px minmax(0, 1fr);
+  align-items: center;
+  color: color-mix(in oklab, var(--crm-app-text-muted, var(--muted-foreground)) 80%, transparent);
+  font-size: 11px;
+}
+
+.crm-process-progress__steps li[data-step-status='active'] {
+  background: color-mix(in oklab, var(--process-tone) 9%, transparent);
+  color: var(--process-tone);
+}
+
+.crm-process-progress__steps li[data-step-status='completed'] {
+  color: color-mix(in oklab, #16a34a 80%, var(--foreground));
+}
+
+.crm-process-progress__steps li[data-step-status='error'] {
+  background: color-mix(in oklab, var(--destructive) 8%, transparent);
+  color: var(--destructive);
+}
+
+.crm-process-progress__step-index {
+  color: color-mix(in oklab, currentColor 48%, transparent);
+  text-align: center;
+}
+
+.crm-process-progress__step-icon {
+  display: grid;
+  place-items: center;
+}
+
+.crm-process-progress__step-label {
+  padding-right: 8px;
+}
+
+.crm-process-progress__error {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
+  margin-top: 16px;
+  border: 1px solid color-mix(in oklab, var(--destructive) 36%, transparent);
+  background: color-mix(in oklab, var(--destructive) 8%, transparent);
+  padding: 10px 12px;
+  color: color-mix(in oklab, var(--destructive) 78%, var(--foreground));
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.crm-process-progress__error-tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 900;
+}
+
+.crm-process-progress__technical {
+  margin-top: 12px;
+  border: 1px solid var(--crm-app-border, var(--border));
+  background: color-mix(in oklab, var(--crm-app-panel-muted, var(--muted)) 78%, transparent);
+}
+
+.crm-process-progress__technical summary {
+  display: flex;
+  cursor: pointer;
+  list-style: none;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 11px;
+  color: var(--crm-app-text-muted, var(--muted-foreground));
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.crm-process-progress__technical[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.crm-process-progress__technical pre {
+  max-height: 8rem;
+  overflow: auto;
+  border-top: 1px solid var(--crm-app-border, var(--border));
+  padding: 10px 11px;
+  color: var(--foreground);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 10px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.crm-process-progress__actions {
+  flex-wrap: wrap;
+  border-top: 1px solid var(--crm-app-border, var(--border));
+  background: color-mix(in oklab, var(--crm-app-panel-strong, var(--muted)) 74%, transparent);
+  padding: 14px 18px;
+}
+
+@keyframes crm-process-indeterminate {
+  0% { transform: translateX(-110%); }
+  55% { transform: translateX(135%); }
+  100% { transform: translateX(310%); }
+}
+
+@keyframes crm-process-orbit {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .crm-process-progress {
+    width: calc(100vw - 0.75rem);
+    max-height: calc(100dvh - 0.75rem);
+    border-radius: 10px;
+  }
+
+  .crm-process-progress__chrome {
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .crm-process-progress__body {
+    padding: 20px 14px 14px;
+  }
+
+  .crm-process-progress__steps li {
+    grid-template-columns: 26px 22px minmax(0, 1fr);
+    font-size: 10px;
+  }
+
+  .crm-process-progress__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .crm-process-progress__actions > button {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crm-process-progress *,
+  .crm-process-progress *::before,
+  .crm-process-progress *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
