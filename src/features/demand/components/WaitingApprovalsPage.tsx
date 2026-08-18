@@ -1,6 +1,7 @@
 import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { createDocumentReturnNavigationState } from '@/lib/document-return-navigation';
 import { ArrowDown, ArrowUp, ArrowUpDown, Clock } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
@@ -32,8 +33,11 @@ import { demandApi } from '../api/demand-api';
 import { useWaitingApprovals } from '../hooks/useWaitingApprovals';
 import { useApproveAction } from '../hooks/useApproveAction';
 import { useRejectAction } from '../hooks/useRejectAction';
-import type { ApprovalActionGetDto } from '../types/demand-types';
+import type { ApprovalActionGetDto, DemandGetDto } from '../types/demand-types';
 import { getApprovalStatusTranslationKey } from '@/features/approval/utils/approval-status-key';
+import { SalesDocumentProcessProgressModal } from '@/features/sales-documents/process-progress/SalesDocumentProcessProgressModal';
+import { useSalesDocumentApprovalDecisionProcess } from '@/features/sales-documents/process-progress/useSalesDocumentProcessController';
+import { DEMAND_QUERY_KEYS } from '../utils/query-keys';
 
 const PAGE_KEY = 'demand-waiting-approvals';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
@@ -88,10 +92,20 @@ function resolveLabel(
 export function WaitingApprovalsPage(): ReactElement {
   const { t, i18n } = useTranslation(['demand', 'common', 'approval']);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { user } = useAuthStore();
   const setPageTitle = useUIStore((state) => state.setPageTitle);
   const approveAction = useApproveAction();
   const rejectAction = useRejectAction();
+  const approvalController = useSalesDocumentApprovalDecisionProcess<DemandGetDto, ApprovalActionGetDto>({
+    isPending: approveAction.isPending,
+    isOtherDecisionPending: rejectAction.isPending,
+    fallbackErrorMessage: t('approval.approveError'),
+    execute: (request) => approveAction.mutateAsync(request),
+    fetchDocument: demandApi.getById,
+    fetchApprovalReport: demandApi.getApprovalFlowReport,
+    onResolved: () => queryClient.invalidateQueries({ queryKey: [DEMAND_QUERY_KEYS.WAITING_APPROVALS] }),
+  });
 
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -309,10 +323,10 @@ export function WaitingApprovalsPage(): ReactElement {
       approveLabel={approveLabel}
       rejectLabel={rejectLabel}
       detailLabel={detailLabel}
-      isPending={approveAction.isPending || rejectAction.isPending}
+      isPending={approveAction.isPending || rejectAction.isPending || (approvalController.process.open && approvalController.process.status === 'running')}
       onApprove={(event) => {
         event.stopPropagation();
-        approveAction.mutate({ approvalActionId: approval.id });
+        approvalController.approve(approval);
       }}
       onReject={(event) => {
         event.stopPropagation();
@@ -505,6 +519,28 @@ export function WaitingApprovalsPage(): ReactElement {
         }}
         isPending={rejectAction.isPending}
       />
+
+      {approvalController.process.approval && (
+        <SalesDocumentProcessProgressModal
+          open={approvalController.process.open}
+          status={approvalController.process.status}
+          documentKind="demand"
+          processKind="approve-and-sync"
+          processKey={approvalController.process.operationKey}
+          documentId={approvalController.process.approval.entityId || approvalController.process.approval.approvalRequestId}
+          documentNo={approvalController.process.approval.quotationRevisionNo || approvalController.process.approval.quotationOfferNo}
+          erpNumber={approvalController.process.erpNumber}
+          outcome={approvalController.process.outcome}
+          errorMessage={approvalController.process.errorMessage}
+          technicalDetails={approvalController.process.technicalDetails}
+          onOpenChange={approvalController.setOpen}
+          onRetry={approvalController.retry}
+          onViewDocument={() => {
+            approvalController.setOpen(false);
+            navigateToDemand(approvalController.process.approval!);
+          }}
+        />
+      )}
     </>
   );
 }
