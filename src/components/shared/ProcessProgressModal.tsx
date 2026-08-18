@@ -92,8 +92,8 @@ export function useProcessStepPacer({
   const [activeStepIndex, setActiveStepIndex] = useState(0);
 
   useEffect(() => {
-    setActiveStepIndex(0);
     if (!running || stepCount <= 1) return;
+    setActiveStepIndex(0);
 
     const timer = window.setInterval(() => {
       setActiveStepIndex((current) => {
