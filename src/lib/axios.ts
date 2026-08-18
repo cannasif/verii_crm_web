@@ -10,6 +10,7 @@ import {
   resolveAppPath,
 } from './api-config';
 import { publishAiAssistantErrorContext } from '@/features/ai-assistant/lib/ai-assistant-error-context';
+import { createPagedRequestPayload } from '@/utils/query-params';
 
 export { loadConfig, getApiUrl, getApiBaseUrl, resolveAppPath };
 
@@ -387,7 +388,10 @@ function clampPagedRequestParams(params: unknown): unknown {
     return params;
   }
 
-  const nextParams = { ...(params as Record<string, unknown>) };
+  const sourceParams = params as Record<string, unknown>;
+  const nextParams = 'pageNumber' in sourceParams || 'pageSize' in sourceParams
+    ? createPagedRequestPayload(sourceParams)
+    : { ...sourceParams };
   ['pageSize', 'PageSize'].forEach((key) => {
     if (!(key in nextParams)) return;
     const next = clampPageSizeValue(nextParams[key]);
@@ -419,7 +423,11 @@ function clampPagedRequestData(data: unknown): unknown {
     return data;
   }
 
-  const nextData = { ...(data as Record<string, unknown>) };
+  const sourceData = data as Record<string, unknown>;
+  const isPagedRequest = 'pageNumber' in sourceData || 'pageSize' in sourceData;
+  const nextData = isPagedRequest
+    ? createPagedRequestPayload(sourceData)
+    : { ...sourceData };
   let changed = false;
 
   ['pageNumber', 'PageNumber'].forEach((key) => {
@@ -443,7 +451,7 @@ function clampPagedRequestData(data: unknown): unknown {
     }
   });
 
-  return changed ? nextData : data;
+  return isPagedRequest || changed ? nextData : data;
 }
 
 function getStoredRefreshToken(): string | null {

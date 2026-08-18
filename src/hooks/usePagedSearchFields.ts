@@ -24,10 +24,10 @@ function normalizeDefaultFields(
   defaultFields: readonly string[] | undefined,
   allowedFields: readonly string[]
 ): string[] {
-  if (!defaultFields?.length) return [...allowedFields];
+  if (!defaultFields?.length) return [...allowedFields].sort();
   const allowed = new Set(allowedFields);
-  const normalized = [...new Set(defaultFields.filter((field) => allowed.has(field)))];
-  return normalized.length > 0 ? normalized : [...allowedFields];
+  const normalized = [...new Set(defaultFields.filter((field) => allowed.has(field)))].sort();
+  return normalized.length > 0 ? normalized : [...allowedFields].sort();
 }
 
 function loadSelectedFields(
@@ -45,7 +45,7 @@ function loadSelectedFields(
       const selected = stored.filter(
         (field): field is string => typeof field === 'string' && allowed.has(field)
       );
-      if (selected.length > 0) return [...new Set(selected)];
+      if (selected.length > 0) return [...new Set(selected)].sort();
     }
   } catch {
     // Corrupt/private storage falls back to every allowed text field.
@@ -76,7 +76,7 @@ export function usePagedSearchFields(
   const changeSelectedFields = useCallback(
     (nextFields: string[]): void => {
       const allowed = new Set(allowedFields);
-      const normalized = [...new Set(nextFields.filter((field) => allowed.has(field)))];
+      const normalized = [...new Set(nextFields.filter((field) => allowed.has(field)))].sort();
       const safeFields = normalized.length > 0
         ? normalized
         : normalizeDefaultFields(defaultFields, allowedFields);

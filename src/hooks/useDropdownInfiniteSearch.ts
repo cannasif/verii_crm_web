@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { keepPreviousData, useInfiniteQuery, type InfiniteData } from '@tanstack/react-query';
 import type { PagedFilter, PagedResponse } from '@/types/api';
+import { canonicalizeSearchFields, createPagedRequestPayload } from '@/utils/query-params';
 import {
   isDropdownSearchSettling,
   resolveDropdownSearchInputState,
@@ -74,6 +75,10 @@ export function useDropdownInfiniteSearch<TItem>({
   fetchPage,
   filterLogic = 'or',
 }: UseDropdownInfiniteSearchOptions<TItem>): UseDropdownInfiniteSearchResult<TItem> {
+  const canonicalSearchFields = useMemo(
+    () => canonicalizeSearchFields(searchFields) ?? [],
+    [searchFields],
+  );
   const querySearchState = resolveDropdownSearchInputState(searchTerm, minChars);
   const inputSearchState = resolveDropdownSearchInputState(
     inputSearchTerm ?? searchTerm,
@@ -96,7 +101,7 @@ export function useDropdownInfiniteSearch<TItem>({
       'dropdown',
       modeForQuery,
       activeSearchTerm,
-      searchFields.join('|'),
+      canonicalSearchFields,
       sortBy ?? null,
       sortDirection ?? null,
       pageSize,
@@ -107,18 +112,18 @@ export function useDropdownInfiniteSearch<TItem>({
     initialPageParam: 1,
     queryFn: async ({ pageParam, signal }) => {
       const filters = buildFilters(activeSearchTerm);
-      return fetchPage({
+      return fetchPage(createPagedRequestPayload({
         pageNumber: pageParam,
         pageSize,
         search: activeSearchTerm || undefined,
-        searchFields: activeSearchTerm ? [...searchFields] : undefined,
+        searchFields: canonicalSearchFields,
         sortBy,
         sortDirection,
         filters: filters ?? undefined,
         filterLogic: filters ? filterLogic : undefined,
         contextUserId: contextUserId ?? undefined,
         signal,
-      });
+      }));
     },
     getNextPageParam: (lastPage) => {
       return lastPage.hasNextPage ? lastPage.pageNumber + 1 : undefined;
