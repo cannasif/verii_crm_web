@@ -46,12 +46,12 @@ import {
 import { arraysEqual, cn } from '@/lib/utils';
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { hasPermission } from '@/features/access-control/utils/hasPermission';
+import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 
 const PAGE_KEY = 'stock-list';
 const PAGE_SIZE_OPTIONS = [10, 20, 50, 100] as const;
 const LAYOUT_STORAGE_KEY = 'stock-list-layout';
 const STOCK_CARD_CREATE_ENABLED = false;
-const STOCK_SEARCH_FIELDS_STORAGE_PREFIX = 'page-search-fields:stock-list';
 const DEFAULT_STOCK_SEARCH_FIELDS = ['ErpStockCode', 'StockName'] as const;
 const STOCK_SEARCH_FIELD_DEFINITIONS = [
   ['ErpStockCode', 'ERP stok kodu'], ['StockName', 'Stok adı'],
@@ -61,31 +61,7 @@ const STOCK_SEARCH_FIELD_DEFINITIONS = [
   ['Kod3', 'Kod 3'], ['Kod3Adi', 'Kod 3 adı'], ['Kod4', 'Kod 4'], ['Kod4Adi', 'Kod 4 adı'],
   ['Kod5', 'Kod 5'], ['Kod5Adi', 'Kod 5 adı'],
 ] as const;
-
-function readStoredStockSearchFields(userId?: number): string[] {
-  try {
-    const raw = localStorage.getItem(`${STOCK_SEARCH_FIELDS_STORAGE_PREFIX}:${userId ?? 'anonymous'}`);
-    if (!raw) return [...DEFAULT_STOCK_SEARCH_FIELDS];
-    const allowed = new Set(STOCK_SEARCH_FIELD_DEFINITIONS.map(([key]) => key));
-    const parsed = JSON.parse(raw) as unknown;
-    if (!Array.isArray(parsed)) return [...DEFAULT_STOCK_SEARCH_FIELDS];
-    const fields = parsed.filter((field): field is string => typeof field === 'string' && allowed.has(field as typeof STOCK_SEARCH_FIELD_DEFINITIONS[number][0]));
-    return fields.length > 0 ? [...new Set(fields)] : [...DEFAULT_STOCK_SEARCH_FIELDS];
-  } catch {
-    return [...DEFAULT_STOCK_SEARCH_FIELDS];
-  }
-}
-
-function persistStockSearchFields(fields: readonly string[], userId?: number): void {
-  try {
-    localStorage.setItem(
-      `${STOCK_SEARCH_FIELDS_STORAGE_PREFIX}:${userId ?? 'anonymous'}`,
-      JSON.stringify(fields)
-    );
-  } catch {
-    // Private mode/quota failures must not block searching.
-  }
-}
+const STOCK_SEARCH_FIELD_KEYS = STOCK_SEARCH_FIELD_DEFINITIONS.map(([value]) => value);
 
 function readStoredListLayout(): 'table' | 'grid' {
   try {
@@ -137,7 +113,12 @@ export function StockListPage(): ReactElement {
   const [sortBy, setSortBy] = useState<StockColumnKey>('Id');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchFields, setSearchFields] = useState<string[]>([...DEFAULT_STOCK_SEARCH_FIELDS]);
+  const [searchFields, setSearchFields] = usePagedSearchFields(
+    PAGE_KEY,
+    user?.id,
+    STOCK_SEARCH_FIELD_KEYS,
+    DEFAULT_STOCK_SEARCH_FIELDS,
+  );
   const [searchResetKey, setSearchResetKey] = useState(0);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
@@ -211,10 +192,6 @@ export function StockListPage(): ReactElement {
     setPageTitle(t('list.title'));
     return () => setPageTitle(null);
   }, [setPageTitle, t]);
-
-  useEffect(() => {
-    setSearchFields(readStoredStockSearchFields(user?.id));
-  }, [user?.id]);
 
   useEffect(() => {
     const prefs = loadColumnPreferences(PAGE_KEY, user?.id, defaultColumnKeys, 'Id');
@@ -616,7 +593,6 @@ export function StockListPage(): ReactElement {
               onSelectedFieldsChange: (fields) => {
                 setPageNumber(1);
                 setSearchFields(fields);
-                persistStockSearchFields(fields, user?.id);
               },
             }}
             refresh={{
