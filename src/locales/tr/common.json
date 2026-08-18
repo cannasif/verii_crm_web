@@ -6042,6 +6042,65 @@
   "searchFieldsSelectAll": "Tümünü seç",
   "searchFieldsClear": "Temizle",
   "searchFieldsNoMatch": "Eşleşen alan bulunamadı",
+  "salesDocumentProcess": {
+    "documentTypes": { "demand": "Talep", "quotation": "Teklif", "order": "Sipariş" },
+    "start": {
+      "eyebrow": "{{document}} ONAY VE ERP İŞLEMİ",
+      "runningTitle": "{{document}} ONAYA GÖNDERİLİYOR",
+      "successTitle": "{{document}} ONAY İŞLEMİ TAMAMLANDI",
+      "steps": {
+        "validateRecord": "{{document}} kaydı doğrulanıyor",
+        "validateRequiredFields": "Zorunlu alanlar kontrol ediliyor",
+        "resolveNextAction": "Sonraki işlem belirleniyor: onay akışı / ERP",
+        "prepareApprovalSteps": "Onay akışı adımları hazırlanıyor",
+        "resolveApprovers": "Yetkili kullanıcılar belirleniyor",
+        "createApprovalRequest": "Onay talebi oluşturuluyor",
+        "prepareNotifications": "Bildirimler ve işlem kayıtları hazırlanıyor",
+        "checkCompletionAction": "Onay sonrası ERP/Netsis kuralı kontrol ediliyor"
+      }
+    },
+    "approve": {
+      "eyebrow": "{{document}} ONAY KARARI",
+      "runningTitle": "{{document}} ONAYLANIYOR",
+      "successTitle": "{{document}} ONAYLANDI",
+      "steps": {
+        "validateAuthority": "Onay yetkisi doğrulanıyor",
+        "validateApprovalRequest": "{{document}} ve onay talebi kontrol ediliyor",
+        "recordDecision": "Mevcut onay kararı kaydediliyor",
+        "evaluateRemainingApprovals": "Kalan onay adımları değerlendiriliyor",
+        "prepareFinalStatus": "{{document}} nihai durumu hazırlanıyor",
+        "checkErpAction": "ERP/Netsis sonuç işlemi kontrol ediliyor",
+        "verifyErpResult": "Netsis/CRM işlem sonucu doğrulanıyor",
+        "updateIntegrationStatus": "CRM entegrasyon durumu güncelleniyor"
+      }
+    },
+    "erpSuccessTitle": "NETSİS AKTARIMI TAMAMLANDI",
+    "approvalStartedTitle": "ONAY AKIŞI BAŞLATILDI",
+    "approvalContinuedTitle": "ONAYINIZ KAYDEDİLDİ",
+    "approvalErrorTitle": "ONAY İŞLEMİ TAMAMLANAMADI",
+    "erpErrorTitle": "NETSİS AKTARIMI TAMAMLANAMADI",
+    "runningDescription": "{{document}} doğrulanıyor; onay ve yapılandırılmış ERP/Netsis işlemleri yürütülüyor.",
+    "successDescription": "{{document}} için onay işlemi başarıyla tamamlandı.",
+    "approvalContinuedDescription": "Onayınız kaydedildi. {{document}} sıradaki yetkili kullanıcıların kararını bekliyor.",
+    "erpSuccessDescription": "{{document}} onaylandı ve Netsis belge kaydı başarıyla oluşturuldu.",
+    "errorDescription": "İşlem tamamlanamadı. Başarılı adımlar korunarak hata ayrıntıları aşağıda gösterildi.",
+    "documentNo": "{{document}} NO",
+    "erpDocumentNo": "NETSİS BELGE NO",
+    "operationResult": "İŞLEM SONUCU",
+    "approvalCompleted": "ONAY SÜRECİ TAMAMLANDI",
+    "approvalStarted": "ONAY BEKLİYOR",
+    "approvalContinued": "SONRAKİ ONAY BEKLENİYOR",
+    "approved": "ONAYLANDI",
+    "running": "ÇALIŞIYOR",
+    "completed": "TAMAMLANDI",
+    "failed": "HATA",
+    "technicalDetail": "Teknik Detay",
+    "retry": "Tekrar Dene",
+    "keepRecord": "CRM Kaydını Koru",
+    "viewDocument": "{{document}} Görüntüle",
+    "continueInBackground": "Arka Planda Devam Et",
+    "progressLabel": "{{document}} onay ve ERP işlem ilerlemesi"
+  },
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "ERP kaydı revizyon için plasiyer tarafından kapatıldı",

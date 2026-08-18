@@ -6043,6 +6043,65 @@
   "searchFieldsSelectAll": "Select all",
   "searchFieldsClear": "Clear",
   "searchFieldsNoMatch": "No matching fields",
+  "salesDocumentProcess": {
+    "documentTypes": { "demand": "Demand", "quotation": "Quotation", "order": "Order" },
+    "start": {
+      "eyebrow": "{{document}} APPROVAL AND ERP OPERATION",
+      "runningTitle": "{{document}} IS BEING SENT FOR APPROVAL",
+      "successTitle": "{{document}} APPROVAL OPERATION COMPLETED",
+      "steps": {
+        "validateRecord": "Validating the {{document}} record",
+        "validateRequiredFields": "Checking required fields",
+        "resolveNextAction": "Resolving next operation: approval flow / ERP",
+        "prepareApprovalSteps": "Preparing approval flow steps",
+        "resolveApprovers": "Resolving authorized users",
+        "createApprovalRequest": "Creating the approval request",
+        "prepareNotifications": "Preparing notifications and operation records",
+        "checkCompletionAction": "Checking the post-approval ERP/Netsis rule"
+      }
+    },
+    "approve": {
+      "eyebrow": "{{document}} APPROVAL DECISION",
+      "runningTitle": "{{document}} IS BEING APPROVED",
+      "successTitle": "{{document}} APPROVED",
+      "steps": {
+        "validateAuthority": "Validating approval authority",
+        "validateApprovalRequest": "Checking the {{document}} and approval request",
+        "recordDecision": "Recording the current approval decision",
+        "evaluateRemainingApprovals": "Evaluating remaining approval steps",
+        "prepareFinalStatus": "Preparing the final {{document}} status",
+        "checkErpAction": "Checking the ERP/Netsis completion action",
+        "verifyErpResult": "Verifying the Netsis/CRM operation result",
+        "updateIntegrationStatus": "Updating CRM integration status"
+      }
+    },
+    "erpSuccessTitle": "NETSIS TRANSFER COMPLETED",
+    "approvalStartedTitle": "APPROVAL FLOW STARTED",
+    "approvalContinuedTitle": "YOUR APPROVAL WAS RECORDED",
+    "approvalErrorTitle": "APPROVAL OPERATION COULD NOT BE COMPLETED",
+    "erpErrorTitle": "NETSIS TRANSFER COULD NOT BE COMPLETED",
+    "runningDescription": "The {{document}} is being validated and configured approval and ERP/Netsis operations are running.",
+    "successDescription": "The approval operation for the {{document}} completed successfully.",
+    "approvalContinuedDescription": "Your approval was recorded. The {{document}} is waiting for the next authorized users to decide.",
+    "erpSuccessDescription": "The {{document}} was approved and the Netsis document was created successfully.",
+    "errorDescription": "The operation could not be completed. Successful steps are preserved and error details are shown below.",
+    "documentNo": "{{document}} NO",
+    "erpDocumentNo": "NETSIS DOCUMENT NO",
+    "operationResult": "OPERATION RESULT",
+    "approvalCompleted": "APPROVAL PROCESS COMPLETED",
+    "approvalStarted": "WAITING FOR APPROVAL",
+    "approvalContinued": "WAITING FOR NEXT APPROVAL",
+    "approved": "APPROVED",
+    "running": "RUNNING",
+    "completed": "COMPLETED",
+    "failed": "ERROR",
+    "technicalDetail": "Technical Details",
+    "retry": "Retry",
+    "keepRecord": "Keep CRM Record",
+    "viewDocument": "View {{document}}",
+    "continueInBackground": "Continue in Background",
+    "progressLabel": "{{document}} approval and ERP operation progress"
+  },
   "erpCleanup": {
     "status": {
       "cleanedForRevision": "ERP record closed by salesperson for revision",
