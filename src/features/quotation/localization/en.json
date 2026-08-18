@@ -411,6 +411,64 @@
     "domestic": "Domestic",
     "export": "Export"
   },
+  "processProgress": {
+    "start": {
+      "eyebrow": "QUOTATION APPROVAL AND ERP OPERATION",
+      "runningTitle": "QUOTATION IS BEING SENT FOR APPROVAL",
+      "successTitle": "APPROVAL OPERATION COMPLETED",
+      "steps": {
+        "1": "Validating the quotation record",
+        "2": "Checking required fields",
+        "3": "Resolving the next action: approval flow or ERP",
+        "4": "Preparing approval flow steps",
+        "5": "Resolving authorized users",
+        "6": "Creating the approval request",
+        "7": "Preparing notifications and operation records",
+        "8": "Checking the post-approval ERP/Netsis rule"
+      }
+    },
+    "approve": {
+      "eyebrow": "QUOTATION APPROVAL DECISION",
+      "runningTitle": "QUOTATION IS BEING APPROVED",
+      "successTitle": "QUOTATION APPROVED",
+      "steps": {
+        "1": "Validating approval authority",
+        "2": "Checking the quotation and approval request",
+        "3": "Recording the current approval decision",
+        "4": "Evaluating remaining approval steps",
+        "5": "Preparing the final quotation status",
+        "6": "Checking the ERP/Netsis completion action",
+        "7": "Verifying the Netsis/CRM operation result",
+        "8": "Updating CRM integration status"
+      }
+    },
+    "erpSuccessTitle": "NETSIS TRANSFER COMPLETED",
+    "approvalStartedTitle": "APPROVAL FLOW STARTED",
+    "approvalContinuedTitle": "YOUR APPROVAL WAS RECORDED",
+    "approvalErrorTitle": "APPROVAL OPERATION COULD NOT BE COMPLETED",
+    "erpErrorTitle": "NETSIS TRANSFER COULD NOT BE COMPLETED",
+    "runningDescription": "The quotation is being validated and configured approval and ERP/Netsis operations are running.",
+    "successDescription": "The approval operation for the quotation completed successfully.",
+    "approvalContinuedDescription": "Your approval was recorded. The quotation is waiting for the next authorized users to decide.",
+    "erpSuccessDescription": "The quotation was approved and the Netsis document was created successfully.",
+    "errorDescription": "The operation could not be completed. Successful steps are preserved and error details are shown below.",
+    "quotationNo": "QUOTATION NO",
+    "erpDocumentNo": "NETSIS DOCUMENT NO",
+    "operationResult": "OPERATION RESULT",
+    "approvalCompleted": "APPROVAL PROCESS COMPLETED",
+    "approvalStarted": "WAITING FOR APPROVAL",
+    "approvalContinued": "WAITING FOR NEXT APPROVAL",
+    "approved": "APPROVED",
+    "running": "RUNNING",
+    "completed": "COMPLETED",
+    "failed": "ERROR",
+    "technicalDetail": "Technical Details",
+    "retry": "Retry",
+    "keepRecord": "Keep CRM Record",
+    "viewQuotation": "View Quotation",
+    "continueInBackground": "Continue in Background",
+    "progressLabel": "Quotation approval and ERP operation progress"
+  },
   "wizard": {
     "title": "Create quotation",
     "step1": {
