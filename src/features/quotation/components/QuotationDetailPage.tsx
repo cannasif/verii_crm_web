@@ -24,6 +24,7 @@ import { recordCustomerDocumentSerialUsageSafely } from '@/features/document-ser
 import { CustomerDocumentSerialDocumentKind } from '@/features/document-serial-type-management/types/document-serial-type-types';
 import { Button } from '@/components/ui/button';
 import { DocumentDetailPageHeader } from '@/components/shared/DocumentDetailPageHeader';
+import type { ProcessProgressStatus } from '@/components/shared';
 import { CustomerCancellationDialog } from '@/components/shared/CustomerCancellationDialog';
 import { DocumentDetailStatusAlerts } from '@/components/shared/DocumentDetailStatusAlerts';
 import { FormSubmitTooltipWrap } from '@/components/shared/FormSubmitTooltipWrap';
@@ -96,6 +97,11 @@ import { useCanEditQuotation } from '../hooks/useCanEditQuotation';
 import { useCancelQuotationByCustomer } from '../hooks/useCancelQuotationByCustomer';
 import { canCustomerCancelDocument } from '@/features/approval/utils/resolve-document-status';
 import { useCreateRevisionOfQuotation } from '../hooks/useCreateRevisionOfQuotation';
+import {
+  QuotationProcessProgressModal,
+  describeQuotationProcessError,
+  type QuotationProcessOutcome,
+} from './QuotationProcessProgressModal';
 
 function addDaysToDateOnly(dateValue: string, days: number): string {
   const date = new Date(`${dateValue}T12:00:00`);
@@ -129,6 +135,26 @@ function parsePersistedId(formId: string | number | undefined, prefix: string): 
   }
   return null;
 }
+
+interface ApprovalProcessState {
+  open: boolean;
+  status: ProcessProgressStatus;
+  operationKey: string;
+  erpNumber: string | null;
+  outcome: QuotationProcessOutcome | null;
+  errorMessage: string | null;
+  technicalDetails: string | null;
+}
+
+const INITIAL_APPROVAL_PROCESS_STATE: ApprovalProcessState = {
+  open: false,
+  status: 'running',
+  operationKey: '',
+  erpNumber: null,
+  outcome: null,
+  errorMessage: null,
+  technicalDetails: null,
+};
 
 export function QuotationDetailPage(): ReactElement {
   const { t, i18n } = useTranslation(['quotation', 'approval', 'common']);
@@ -189,6 +215,7 @@ export function QuotationDetailPage(): ReactElement {
   const [googleMailOpen, setGoogleMailOpen] = useState(false);
   const [outlookMailOpen, setOutlookMailOpen] = useState(false);
   const [customerCancellationOpen, setCustomerCancellationOpen] = useState(false);
+  const [approvalProcess, setApprovalProcess] = useState<ApprovalProcessState>(INITIAL_APPROVAL_PROCESS_STATE);
   const quotationStatus = Number((quotation as { status?: number; Status?: number })?.status ?? (quotation as { status?: number; Status?: number })?.Status);
   const isDraftDocument = quotationStatus === 0;
   const isApprovalWaiting = quotationStatus === 1;
@@ -1057,13 +1084,84 @@ export function QuotationDetailPage(): ReactElement {
     await onSubmit(formData);
   };
 
-  const handleStartApprovalFlow = (): void => {
-    if (!quotation) return;
-    startApprovalFlow.mutate({
-      entityId: quotation.id,
-      documentType: PricingRuleType.Quotation,
-      totalAmount: quotation.grandTotal,
+  const runStartApprovalFlow = async (operationKey: string, recoverFirst = false): Promise<void> => {
+    if (!quotation || startApprovalFlow.isPending) return;
+
+    setApprovalProcess({
+      open: true,
+      status: 'running',
+      operationKey,
+      erpNumber: null,
+      outcome: null,
+      errorMessage: null,
+      technicalDetails: null,
     });
+
+    try {
+      if (recoverFirst) {
+        const current = await quotationApi.getById(quotation.id);
+        const currentStatus = Number(current.status ?? 0);
+        if (currentStatus !== 0 || current.isERPIntegrated) {
+          queryClient.setQueryData(queryKeys.quotation(quotation.id), current);
+          setApprovalProcess((state) => ({
+            ...state,
+            status: 'success',
+            erpNumber: current.erpIntegrationNumber ?? null,
+            outcome: current.isERPIntegrated
+              ? 'erp-completed'
+              : currentStatus === 1
+                ? 'approval-started'
+                : 'approved',
+          }));
+          return;
+        }
+      }
+
+      await startApprovalFlow.mutateAsync({
+        entityId: quotation.id,
+        documentType: PricingRuleType.Quotation,
+        totalAmount: quotation.grandTotal,
+        operationKey,
+      });
+
+      let refreshedQuotation = null;
+      try {
+        refreshedQuotation = await quotationApi.getById(quotation.id);
+        queryClient.setQueryData(queryKeys.quotation(quotation.id), refreshedQuotation);
+      } catch {
+        // Onay isteği başarılıysa sonuç sorgusundaki geçici hata işlemi başarısız yapmamalı.
+      }
+
+      setApprovalProcess((state) => ({
+        ...state,
+        status: 'success',
+        erpNumber: refreshedQuotation?.erpIntegrationNumber ?? null,
+        outcome: refreshedQuotation?.isERPIntegrated
+          ? 'erp-completed'
+          : Number(refreshedQuotation?.status) === 1
+            ? 'approval-started'
+            : refreshedQuotation
+              ? 'approved'
+              : null,
+      }));
+    } catch (error) {
+      const failure = describeQuotationProcessError(error, t('approval.startError'));
+      setApprovalProcess((state) => ({
+        ...state,
+        status: 'error',
+        ...failure,
+      }));
+    }
+  };
+
+  const handleStartApprovalFlow = (): void => {
+    if (!quotation || startApprovalFlow.isPending) return;
+    void runStartApprovalFlow(createClientId());
+  };
+
+  const handleRetryStartApprovalFlow = (): void => {
+    if (!approvalProcess.operationKey || startApprovalFlow.isPending) return;
+    void runStartApprovalFlow(approvalProcess.operationKey, true);
   };
 
   const handleRevision = async (): Promise<void> => {
@@ -1478,6 +1576,25 @@ export function QuotationDetailPage(): ReactElement {
           />
         </>
       ) : null}
+
+      <QuotationProcessProgressModal
+        open={approvalProcess.open}
+        status={approvalProcess.status}
+        kind="start-approval"
+        processKey={approvalProcess.operationKey}
+        quotationId={quotation.id}
+        quotationNo={quotation.revisionNo || quotation.offerNo}
+        erpNumber={approvalProcess.erpNumber}
+        outcome={approvalProcess.outcome}
+        errorMessage={approvalProcess.errorMessage}
+        technicalDetails={approvalProcess.technicalDetails}
+        onOpenChange={(open) => setApprovalProcess((state) => ({ ...state, open }))}
+        onRetry={handleRetryStartApprovalFlow}
+        onViewQuotation={() => {
+          setApprovalProcess((state) => ({ ...state, open: false }));
+          setActiveTab('detail');
+        }}
+      />
     </div>
   );
 }
