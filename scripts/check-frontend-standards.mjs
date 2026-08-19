@@ -91,6 +91,33 @@ for (const file of files) {
   checkFile(file, await readFile(file, 'utf8'));
 }
 
+const sharedAxiosFile = path.join(srcDir, 'lib', 'axios.ts');
+const sharedAxiosSource = await readFile(sharedAxiosFile, 'utf8');
+
+if (!/originalMethod === 'put'[\s\S]*?config\.method = 'post'[\s\S]*?appendPathSegment\(config\.url, 'update'\)/.test(sharedAxiosSource)) {
+  addViolation(
+    sharedAxiosFile,
+    1,
+    'shared Axios client must tunnel every PUT as POST with the canonical /update suffix.'
+  );
+}
+
+if (!/originalMethod === 'delete'[\s\S]*?config\.method = 'post'[\s\S]*?appendPathSegment\(config\.url, 'delete'\)/.test(sharedAxiosSource)) {
+  addViolation(
+    sharedAxiosFile,
+    1,
+    'shared Axios client must tunnel every DELETE as POST with the canonical /delete suffix.'
+  );
+}
+
+if (/isPutActionAlreadyInPath/.test(sharedAxiosSource)) {
+  addViolation(
+    sharedAxiosFile,
+    1,
+    'PUT route exceptions bypass the canonical /update contract and are not allowed.'
+  );
+}
+
 if (violations.length > 0) {
   console.error('Frontend standard check failed:\n');
   console.error(violations.join('\n'));

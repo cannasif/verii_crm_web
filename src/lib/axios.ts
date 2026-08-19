@@ -58,24 +58,10 @@ function appendPathSegment(url: string | undefined, segment: string): string | u
   return query ? `${nextPath}?${query}` : nextPath;
 }
 
-// This API is hosted behind IIS, which rejects native PUT/DELETE verbs and the
-// X-HTTP-Method-Override tunnel with 403. Every mutation must therefore be sent
-// as a plain POST. Standard CRUD uses the legacy `POST .../{id}/update` and
-// `POST .../{id}/delete` aliases (the segment is appended below). The endpoints
-// matched here already carry their action verb in the route, so they must be
-// POSTed to the same URL without appending an extra `/update` segment.
-function isPutActionAlreadyInPath(url: string | undefined): boolean {
-  if (!url) return false;
-
-  const path = url.split('?')[0].toLowerCase();
-
-  if (/\/bulk-(quotation|order|demand)\/\d+/.test(path)) return true;
-  if (/\/(quotationline|orderline|demandline)\/update-multiple$/.test(path)) return true;
-  if (path.includes('exchangerate/update-exchange-rate-in-')) return true;
-  if (path.endsWith('/notes-list')) return true;
-
-  return false;
-}
+// CRM mutation contract: native PUT/DELETE verbs are tunneled as plain POST
+// requests with a canonical /update or /delete suffix. The API convention
+// exposes matching aliases for every controller action, including root,
+// numeric, GUID/string and named-action routes.
 
 function resolveBranchCodeFromPersistedState(): string | null {
   try {
@@ -562,9 +548,7 @@ api.interceptors.request.use((config) => {
   if (!useNativeHttpMethod) {
     if (originalMethod === 'put') {
       config.method = 'post';
-      if (!isPutActionAlreadyInPath(config.url)) {
-        config.url = appendPathSegment(config.url, 'update');
-      }
+      config.url = appendPathSegment(config.url, 'update');
     } else if (originalMethod === 'delete') {
       config.method = 'post';
       config.url = appendPathSegment(config.url, 'delete');
