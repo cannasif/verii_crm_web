@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { smtpSettingsApi } from '../api/smtpSettingsApi';
 import type { UpdateSmtpSettingsDto } from '../types/smtpSettings';
 import type { SmtpSettingsDto } from '../types/smtpSettings';
+import { resolveMailSettingsErrorMessage } from '../utils/resolveMailSettingsErrorMessage';
 
 const SMTP_SETTINGS_QUERY_KEY = ['smtp-settings'] as const;
 
@@ -18,7 +19,7 @@ export function useUpdateSmtpSettingsMutation() {
       toast.success(t('mailSettings.SavedSuccessfully'));
     },
     onError: (error: Error) => {
-      toast.error(t(error.message) || error.message || t('common.UnexpectedError'));
+      toast.error(resolveMailSettingsErrorMessage(error, t, 'mailSettings.SaveFailed'));
     },
   });
 }

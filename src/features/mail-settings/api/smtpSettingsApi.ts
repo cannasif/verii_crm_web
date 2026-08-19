@@ -6,6 +6,7 @@ const SMTP_SETTINGS_BASE = '/api/SmtpSettings';
 
 function getErrorMessage(response: ApiResponse<unknown>, fallbackKey: string): string {
   if (response.message?.trim()) return response.message;
+  if (response.exceptionMessage?.trim()) return response.exceptionMessage;
   if (response.errors?.length) return response.errors.join(' ');
   return fallbackKey;
 }
@@ -20,7 +21,9 @@ export const smtpSettingsApi = {
   },
 
   update: async (data: UpdateSmtpSettingsDto): Promise<SmtpSettingsDto> => {
-    const response = await api.put<ApiResponse<SmtpSettingsDto>>(SMTP_SETTINGS_BASE, data);
+    const response = await api.post<ApiResponse<SmtpSettingsDto>>(`${SMTP_SETTINGS_BASE}/update`, data, {
+      timeout: 30_000,
+    });
     if (response.success === true && response.data) {
       return response.data;
     }
