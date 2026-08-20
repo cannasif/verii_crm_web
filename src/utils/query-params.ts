@@ -15,15 +15,15 @@ export function canonicalizeSearchFields(fields?: readonly string[]): string[] |
 
 /**
  * The single serialization boundary for every paged request. Search text is
- * forwarded verbatim; only field identifiers are trimmed, de-duplicated, and
- * sorted so requests and React Query keys are deterministic.
+ * trimmed once at the request boundary; field identifiers are also trimmed,
+ * de-duplicated, and sorted so requests and React Query keys are deterministic.
  */
 export function createPagedRequestPayload<T extends PagedRequestLike>(params: T): T {
   const hasSearch = typeof params.search === 'string' && params.search.trim().length > 0;
 
   return {
     ...params,
-    search: hasSearch ? params.search : undefined,
+    search: hasSearch ? params.search?.trim() : undefined,
     searchFields: hasSearch ? canonicalizeSearchFields(params.searchFields) : undefined,
   };
 }
