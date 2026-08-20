@@ -80,6 +80,20 @@
     "title": "Groupes d’autorisations",
     "description": "Gérer les groupes d’autorisations et leurs attributions",
     "systemAdminLocked": "Le groupe administrateur système ne peut pas être modifié",
+    "systemManagedLocked": "Les groupes système ne peuvent pas être modifiés ni supprimés. Dupliquez-les pour les personnaliser.",
+    "clone": {
+      "action": "Dupliquer",
+      "title": "Dupliquer le groupe d’autorisations",
+      "description": "Copiez les autorisations de \"{{name}}\" dans un nouveau groupe modifiable.",
+      "nameHint": "Le modèle système reste protégé ; la copie est entièrement modifiable.",
+      "submit": "Créer la copie"
+    },
+    "type": {
+      "systemAdmin": "Administrateur système",
+      "systemTemplate": "Modèle système",
+      "custom": "Groupe personnalisé"
+    },
+    "stats": { "systemTemplates": "Modèles système sur cette page" },
     "add": "Ajouter un groupe",
     "selectAll": "Tout sélectionner",
     "noDefinitions": "Aucune définition d’autorisation disponible",
@@ -99,7 +113,9 @@
     "table": {
       "title": "Groupes d’autorisations",
       "name": "Nom",
+      "type": "Type de groupe",
       "isSystemAdmin": "Administrateur système",
+      "isSystemTemplate": "Modèle système",
       "isActive": "Actif",
       "permissionCount": "Autorisations",
       "showing": "{{from}}-{{to}} / {{total}}"

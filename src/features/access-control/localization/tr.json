@@ -81,6 +81,22 @@
     "title": "İzin Grupları",
     "description": "İzin gruplarını ve atamalarını yönetin",
     "systemAdminLocked": "Sistem Admin grubu değiştirilemez",
+    "systemManagedLocked": "Sistem grupları değiştirilemez veya silinemez. Özelleştirmek için kopyalayın.",
+    "clone": {
+      "action": "Kopyala",
+      "title": "Yetki Grubunu Kopyala",
+      "description": "\"{{name}}\" grubunun yetkilerini düzenlenebilir yeni bir gruba kopyalayın.",
+      "nameHint": "Sistem şablonu korunur; oluşturulan kopya tamamen düzenlenebilir.",
+      "submit": "Kopyayı Oluştur"
+    },
+    "type": {
+      "systemAdmin": "Sistem Yöneticisi",
+      "systemTemplate": "Sistem Şablonu",
+      "custom": "Özel Grup"
+    },
+    "stats": {
+      "systemTemplates": "Bu Sayfadaki Sistem Şablonları"
+    },
     "add": "Grup Ekle",
     "selectAll": "Tümünü seç",
     "noDefinitions": "Kullanılabilir izin tanımı yok",
@@ -100,7 +116,9 @@
     "table": {
       "title": "İzin Grupları",
       "name": "Ad",
+      "type": "Grup Türü",
       "isSystemAdmin": "Sistem Yöneticisi",
+      "isSystemTemplate": "Sistem Şablonu",
       "isActive": "Aktif",
       "permissionCount": "İzinler",
       "showing": "{{from}}-{{to}} / {{total}}"

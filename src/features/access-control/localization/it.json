@@ -80,6 +80,20 @@
     "title": "Gruppi permessi",
     "description": "Gestisci i gruppi permesso e le assegnazioni",
     "systemAdminLocked": "Il gruppo amministratore di sistema non può essere modificato",
+    "systemManagedLocked": "I gruppi di sistema non possono essere modificati o eliminati. Copiali per personalizzarli.",
+    "clone": {
+      "action": "Copia",
+      "title": "Copia gruppo di autorizzazioni",
+      "description": "Copia le autorizzazioni di \"{{name}}\" in un nuovo gruppo modificabile.",
+      "nameHint": "Il modello di sistema resta protetto; la copia è completamente modificabile.",
+      "submit": "Crea copia"
+    },
+    "type": {
+      "systemAdmin": "Amministratore di sistema",
+      "systemTemplate": "Modello di sistema",
+      "custom": "Gruppo personalizzato"
+    },
+    "stats": { "systemTemplates": "Modelli di sistema in questa pagina" },
     "add": "Aggiungi gruppo",
     "selectAll": "Seleziona tutto",
     "noDefinitions": "Nessuna definizione permesso disponibile",
@@ -99,7 +113,9 @@
     "table": {
       "title": "Gruppi permessi",
       "name": "Nome",
+      "type": "Tipo di gruppo",
       "isSystemAdmin": "Amministratore di sistema",
+      "isSystemTemplate": "Modello di sistema",
       "isActive": "Attivo",
       "permissionCount": "Permessi",
       "showing": "{{from}}-{{to}} / {{total}}"

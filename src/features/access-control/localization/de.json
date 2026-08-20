@@ -80,6 +80,20 @@
     "title": "Berechtigungsgruppen",
     "description": "Berechtigungsgruppen und Zuweisungen verwalten",
     "systemAdminLocked": "Die Systemadministrator-Gruppe kann nicht geändert werden",
+    "systemManagedLocked": "Systemgruppen können nicht geändert oder gelöscht werden. Zum Anpassen bitte kopieren.",
+    "clone": {
+      "action": "Kopieren",
+      "title": "Berechtigungsgruppe kopieren",
+      "description": "Die Berechtigungen von \"{{name}}\" in eine neue bearbeitbare Gruppe kopieren.",
+      "nameHint": "Die Systemvorlage bleibt geschützt; die Kopie ist vollständig bearbeitbar.",
+      "submit": "Kopie erstellen"
+    },
+    "type": {
+      "systemAdmin": "Systemadministrator",
+      "systemTemplate": "Systemvorlage",
+      "custom": "Benutzerdefinierte Gruppe"
+    },
+    "stats": { "systemTemplates": "Systemvorlagen auf dieser Seite" },
     "add": "Gruppe hinzufügen",
     "selectAll": "Alle auswählen",
     "noDefinitions": "Keine Berechtigungsdefinitionen verfügbar",
@@ -99,7 +113,9 @@
     "table": {
       "title": "Berechtigungsgruppen",
       "name": "Name",
+      "type": "Gruppentyp",
       "isSystemAdmin": "Systemadministrator",
+      "isSystemTemplate": "Systemvorlage",
       "isActive": "Aktiv",
       "permissionCount": "Berechtigungen",
       "showing": "{{from}}-{{to}} / {{total}}"

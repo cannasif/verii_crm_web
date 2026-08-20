@@ -81,6 +81,22 @@
     "title": "Permission groups",
     "description": "Manage permission groups and assignments",
     "systemAdminLocked": "The system administrator group cannot be changed",
+    "systemManagedLocked": "System groups cannot be changed or deleted. Clone one to customize it.",
+    "clone": {
+      "action": "Clone",
+      "title": "Clone Permission Group",
+      "description": "Copy the permissions from \"{{name}}\" into a new editable group.",
+      "nameHint": "The system template stays protected; the copy is fully editable.",
+      "submit": "Create Copy"
+    },
+    "type": {
+      "systemAdmin": "System Administrator",
+      "systemTemplate": "System Template",
+      "custom": "Custom Group"
+    },
+    "stats": {
+      "systemTemplates": "System Templates on This Page"
+    },
     "add": "Add group",
     "selectAll": "Select all",
     "noDefinitions": "No permission definitions available",
@@ -100,7 +116,9 @@
     "table": {
       "title": "Permission groups",
       "name": "Name",
+      "type": "Group Type",
       "isSystemAdmin": "System administrator",
+      "isSystemTemplate": "System Template",
       "isActive": "Active",
       "permissionCount": "Permissions",
       "showing": "{{from}}-{{to}} / {{total}}"

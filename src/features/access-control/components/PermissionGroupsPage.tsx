@@ -4,7 +4,7 @@ import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
 import { usePagedSearchFields } from '@/hooks/usePagedSearchFields';
 import { Button } from '@/components/ui/button';
-import { KeyRound, Loader2, Plus, RefreshCw, Settings, ShieldCheck, Users2, Edit2, Trash2 } from 'lucide-react';
+import { Copy, KeyRound, Loader2, Plus, RefreshCw, Settings, ShieldCheck, Users2, Edit2, Trash2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   DataTableActionBar,
@@ -37,13 +37,16 @@ import { usePermissionGroupsQuery } from '../hooks/usePermissionGroupsQuery';
 import { useCreatePermissionGroupMutation } from '../hooks/useCreatePermissionGroupMutation';
 import { useUpdatePermissionGroupMutation } from '../hooks/useUpdatePermissionGroupMutation';
 import { useDeletePermissionGroupMutation } from '../hooks/useDeletePermissionGroupMutation';
+import { useClonePermissionGroupMutation } from '../hooks/useClonePermissionGroupMutation';
 import { useCrudPermissions } from '../hooks/useCrudPermissions';
 import { useMyPermissionsQuery } from '../hooks/useMyPermissionsQuery';
 import { PermissionGroupForm } from './PermissionGroupForm';
 import { GroupPermissionsPanel } from './GroupPermissionsPanel';
+import { ClonePermissionGroupDialog } from './ClonePermissionGroupDialog';
 import { AccessControlBooleanBadge } from './AccessControlBooleanBadge';
 import type { PermissionGroupDto } from '../types/access-control.types';
 import type { CreatePermissionGroupSchema } from '../schemas/permission-group-schema';
+import type { ClonePermissionGroupSchema } from '../schemas/permission-group-schema';
 import { ensurePermissionDefinitionsSynced } from '../utils/permission-definition-sync';
 import {
   ACCESS_CONTROL_HEADER_CARD_CLASSNAME,
@@ -51,13 +54,18 @@ import {
 } from '../utils/access-control-layout';
 import { DOCUMENT_LINE_FORM_SAVE_BUTTON_CLASS } from '@/lib/document-line-dialog-styles';
 import { arraysEqual, cn } from '@/lib/utils';
+import {
+  buildClonePermissionGroupDto,
+  canClonePermissionGroup,
+  isSystemManagedPermissionGroup,
+} from '../utils/permission-group-policy';
 
 const EMPTY_ITEMS: PermissionGroupDto[] = [];
 const PAGE_KEY = 'permission-groups';
 const PERMISSION_GROUP_SEARCH_FIELDS = ['name'] as const;
 const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
-type PermissionGroupColumnKey = keyof PermissionGroupDto | 'permissionCount';
+type PermissionGroupColumnKey = keyof PermissionGroupDto | 'groupType' | 'permissionCount';
 
 function resolveLabel(t: (key: string) => string, key: string, fallback: string): string {
   const translated = t(key);
@@ -80,8 +88,10 @@ export function PermissionGroupsPage(): ReactElement {
   const [pageSize, setPageSize] = useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<PermissionGroupDto | null>(null);
-  const [visibleColumns, setVisibleColumns] = useState<string[]>(['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
-  const [columnOrder, setColumnOrder] = useState<string[]>(['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
+  const [cloneDialogOpen, setCloneDialogOpen] = useState(false);
+  const [itemToClone, setItemToClone] = useState<PermissionGroupDto | null>(null);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>(['name', 'groupType', 'isActive', 'permissionCount']);
+  const [columnOrder, setColumnOrder] = useState<string[]>(['name', 'groupType', 'isActive', 'permissionCount']);
   const [draftFilterRows, setDraftFilterRows] = useState<FilterRow[]>([]);
   const [appliedFilterRows, setAppliedFilterRows] = useState<FilterRow[]>([]);
 
@@ -90,7 +100,7 @@ export function PermissionGroupsPage(): ReactElement {
   }, [pageSize, searchTerm, appliedFilterRows]);
 
   useEffect(() => {
-    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, ['name', 'isSystemAdmin', 'isActive', 'permissionCount']);
+    const prefs = loadColumnPreferences(PAGE_KEY, user?.id, ['name', 'groupType', 'isActive', 'permissionCount']);
     setVisibleColumns((current) => arraysEqual(current, prefs.visibleKeys) ? current : prefs.visibleKeys);
     setColumnOrder((current) => arraysEqual(current, prefs.order) ? current : prefs.order);
   }, [user?.id]);
@@ -110,6 +120,7 @@ export function PermissionGroupsPage(): ReactElement {
   const createMutation = useCreatePermissionGroupMutation();
   const updateMutation = useUpdatePermissionGroupMutation();
   const deleteMutation = useDeletePermissionGroupMutation();
+  const cloneMutation = useClonePermissionGroupMutation();
   const { data: permissions } = useMyPermissionsQuery();
   const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.permission-groups.view');
 
@@ -117,7 +128,7 @@ export function PermissionGroupsPage(): ReactElement {
   const totalCount = data?.totalCount ?? 0;
   const totalPages = data?.totalPages ?? 1;
   const activeCount = useMemo(() => items.filter((item) => item.isActive).length, [items]);
-  const systemAdminCount = useMemo(() => items.filter((item) => item.isSystemAdmin).length, [items]);
+  const systemTemplateCount = useMemo(() => items.filter((item) => item.isSystemTemplate).length, [items]);
 
   const filteredItems = items;
 
@@ -148,21 +159,21 @@ export function PermissionGroupsPage(): ReactElement {
 
   const handleEditClick = (item: PermissionGroupDto): void => {
     if (!canUpdate) return;
-    if (item.isSystemAdmin) return;
+    if (isSystemManagedPermissionGroup(item)) return;
     setEditingItem(item);
     setFormOpen(true);
   };
 
   const handlePermissionsClick = async (item: PermissionGroupDto): Promise<void> => {
     if (!canUpdate) return;
-    if (item.isSystemAdmin) return;
+    if (isSystemManagedPermissionGroup(item)) return;
     await ensurePermissionCatalogReady();
     setPermissionsPanelGroupId(item.id);
     setPermissionsPanelOpen(true);
   };
 
   const handleFormSubmit = async (formData: CreatePermissionGroupSchema): Promise<void> => {
-    if (editingItem?.isSystemAdmin) return;
+    if (editingItem && isSystemManagedPermissionGroup(editingItem)) return;
     if (editingItem) {
       const updateDto = {
         name: formData.name,
@@ -181,7 +192,7 @@ export function PermissionGroupsPage(): ReactElement {
 
   const handleDeleteClick = (item: PermissionGroupDto): void => {
     if (!canDelete) return;
-    if (item.isSystemAdmin) return;
+    if (isSystemManagedPermissionGroup(item)) return;
     setItemToDelete(item);
     setDeleteDialogOpen(true);
   };
@@ -194,9 +205,25 @@ export function PermissionGroupsPage(): ReactElement {
     }
   };
 
+  const handleCloneClick = (item: PermissionGroupDto): void => {
+    if (!canCreate || !canClonePermissionGroup(item)) return;
+    setItemToClone(item);
+    setCloneDialogOpen(true);
+  };
+
+  const handleCloneSubmit = async (formData: ClonePermissionGroupSchema): Promise<void> => {
+    if (!itemToClone) return;
+    await cloneMutation.mutateAsync({
+      id: itemToClone.id,
+      dto: buildClonePermissionGroupDto(formData),
+    });
+    setCloneDialogOpen(false);
+    setItemToClone(null);
+  };
+
   const baseColumns = [
     { key: 'name', label: t('permissionGroups.table.name') },
-    { key: 'isSystemAdmin', label: t('permissionGroups.table.isSystemAdmin') },
+    { key: 'groupType', label: t('permissionGroups.table.type') },
     { key: 'isActive', label: t('permissionGroups.table.isActive') },
     { key: 'permissionCount', label: t('permissionGroups.table.permissionCount') },
   ];
@@ -204,6 +231,7 @@ export function PermissionGroupsPage(): ReactElement {
   const filterColumns = useMemo<FilterColumnConfig[]>(() => [
     { value: 'name', type: 'string', labelKey: 'permissionGroups.table.name' },
     { value: 'isSystemAdmin', type: 'boolean', labelKey: 'permissionGroups.table.isSystemAdmin' },
+    { value: 'isSystemTemplate', type: 'boolean', labelKey: 'permissionGroups.table.isSystemTemplate' },
     { value: 'isActive', type: 'boolean', labelKey: 'permissionGroups.table.isActive' },
   ], []);
 
@@ -217,7 +245,11 @@ export function PermissionGroupsPage(): ReactElement {
     () =>
       filteredItems.map((item) => ({
         name: item.name,
-        isSystemAdmin: item.isSystemAdmin ? t('common.yes') : t('common.no'),
+        groupType: item.isSystemAdmin
+          ? t('permissionGroups.type.systemAdmin')
+          : item.isSystemTemplate
+            ? t('permissionGroups.type.systemTemplate')
+            : t('permissionGroups.type.custom'),
         isActive: item.isActive ? t('common.yes') : t('common.no'),
         permissionCount: item.permissionDefinitionIds?.length ?? item.permissionCodes?.length ?? 0,
       })),
@@ -227,7 +259,7 @@ export function PermissionGroupsPage(): ReactElement {
   const columns: DataTableGridColumn<PermissionGroupColumnKey>[] = useMemo(
     () => [
       { key: 'name', label: t('permissionGroups.table.name'), cellClassName: 'font-medium' },
-      { key: 'isSystemAdmin', label: t('permissionGroups.table.isSystemAdmin'), cellClassName: 'text-center' },
+      { key: 'groupType', label: t('permissionGroups.table.type'), cellClassName: 'text-center' },
       { key: 'isActive', label: t('permissionGroups.table.isActive'), cellClassName: 'text-center' },
       { key: 'permissionCount', label: t('permissionGroups.table.permissionCount'), cellClassName: 'text-center' },
     ],
@@ -236,6 +268,18 @@ export function PermissionGroupsPage(): ReactElement {
 
   const renderActionsCell = (item: PermissionGroupDto): ReactElement => (
     <div className="flex justify-end gap-2">
+      {canCreate && canClonePermissionGroup(item) && (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="rounded-xl font-semibold text-violet-600 hover:bg-violet-50 dark:text-violet-300 dark:hover:bg-violet-500/10"
+          onClick={() => handleCloneClick(item)}
+          title={t('permissionGroups.clone.action')}
+        >
+          <Copy size={16} className="mr-2" />
+          {t('permissionGroups.clone.action')}
+        </Button>
+      )}
       {canUpdate && (
         <>
           <Button
@@ -243,8 +287,8 @@ export function PermissionGroupsPage(): ReactElement {
             size="sm"
             className="rounded-xl text-cyan-600 hover:bg-cyan-50 dark:text-cyan-400 dark:hover:bg-cyan-900/30 font-semibold"
             onClick={() => handlePermissionsClick(item)}
-            title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : t('permissionGroups.managePermissions')}
-            disabled={item.isSystemAdmin}
+            title={isSystemManagedPermissionGroup(item) ? t('permissionGroups.systemManagedLocked') : t('permissionGroups.managePermissions')}
+            disabled={isSystemManagedPermissionGroup(item)}
           >
             <Settings size={16} className="mr-2" />
             {t('permissionGroups.managePermissions', { defaultValue: 'Yetkiler' })}
@@ -254,8 +298,8 @@ export function PermissionGroupsPage(): ReactElement {
             size="sm"
             className="rounded-xl text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 font-semibold"
             onClick={() => handleEditClick(item)}
-            disabled={item.isSystemAdmin}
-            title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
+            disabled={isSystemManagedPermissionGroup(item)}
+            title={isSystemManagedPermissionGroup(item) ? t('permissionGroups.systemManagedLocked') : undefined}
           >
             <Edit2 size={16} className="mr-2" />
             {t('common.edit')}
@@ -268,8 +312,8 @@ export function PermissionGroupsPage(): ReactElement {
           size="sm"
           className="rounded-xl text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30 font-semibold"
           onClick={() => handleDeleteClick(item)}
-          disabled={item.isSystemAdmin}
-          title={item.isSystemAdmin ? t('permissionGroups.systemAdminLocked', 'System Admin grubu değiştirilemez') : undefined}
+          disabled={isSystemManagedPermissionGroup(item)}
+          title={isSystemManagedPermissionGroup(item) ? t('permissionGroups.systemManagedLocked') : undefined}
         >
           <Trash2 size={16} className="mr-2" />
           {t('common.delete.action')}
@@ -344,9 +388,9 @@ export function PermissionGroupsPage(): ReactElement {
               </div>
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                  {t('permissionGroups.table.isSystemAdmin')}
+                  {t('permissionGroups.stats.systemTemplates')}
                 </p>
-                <p className="text-2xl font-black text-slate-900 dark:text-white leading-none mt-1">{systemAdminCount}</p>
+                <p className="text-2xl font-black text-slate-900 dark:text-white leading-none mt-1">{systemTemplateCount}</p>
               </div>
             </div>
           </div>
@@ -422,15 +466,14 @@ export function PermissionGroupsPage(): ReactElement {
                 rowKey={(r) => r.id}
                 renderCell={(row, key) => {
                   if (key === 'name') return <span className="font-medium">{row.name}</span>;
-                  if (key === 'isSystemAdmin') {
-                    return (
-                      <AccessControlBooleanBadge
-                        value={row.isSystemAdmin}
-                        yesLabel={t('common.yes')}
-                        noLabel={t('common.no')}
-                        variant="admin"
-                      />
-                    );
+                  if (key === 'groupType') {
+                    if (row.isSystemAdmin) {
+                      return <Badge className="border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">{t('permissionGroups.type.systemAdmin')}</Badge>;
+                    }
+                    if (row.isSystemTemplate) {
+                      return <Badge className="border-violet-300 bg-violet-50 text-violet-700 dark:border-violet-500/30 dark:bg-violet-500/10 dark:text-violet-300">{t('permissionGroups.type.systemTemplate')}</Badge>;
+                    }
+                    return <Badge variant="outline">{t('permissionGroups.type.custom')}</Badge>;
                   }
                   if (key === 'isActive') {
                     return (
@@ -464,7 +507,7 @@ export function PermissionGroupsPage(): ReactElement {
                 errorText={t('common.error')}
                 emptyText={t('common.noData')}
                 minTableWidthClassName="min-w-[700px]"
-                showActionsColumn={canUpdate || canDelete}
+                showActionsColumn={canCreate || canUpdate || canDelete}
                 actionsHeaderLabel={t('common.actions')}
                 renderActionsCell={renderActionsCell}
                 pageSize={pageSize}
@@ -510,6 +553,17 @@ export function PermissionGroupsPage(): ReactElement {
       />
 
       <GroupPermissionsPanel groupId={permissionsPanelGroupId} open={permissionsPanelOpen} onOpenChange={setPermissionsPanelOpen} />
+
+      <ClonePermissionGroupDialog
+        source={itemToClone}
+        open={cloneDialogOpen}
+        onOpenChange={(open) => {
+          setCloneDialogOpen(open);
+          if (!open) setItemToClone(null);
+        }}
+        onSubmit={handleCloneSubmit}
+        isLoading={cloneMutation.isPending}
+      />
 
       <Dialog open={canDelete && deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent className="overflow-hidden border-slate-200 bg-white p-0 shadow-2xl dark:border-cyan-800/30 dark:bg-blue-950">
