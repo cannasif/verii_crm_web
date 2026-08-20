@@ -1,11 +1,11 @@
-import { type ReactElement, useState, useMemo } from 'react';
+import { type ReactElement, useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { SelectionDialogContent } from '@/components/shared/SelectionDialogContent';
 import { Input } from '@/components/ui/input';
 import { Search, Package, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -35,6 +35,10 @@ export function ProductPricingStockSelectDialog({
 }: ProductPricingStockSelectDialogProps): ReactElement {
   const { t, i18n } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    if (!open) setSearchQuery('');
+  }, [open]);
 
   const { data: stocksData, isLoading } = useStockList({
     pageNumber: 1,
@@ -83,9 +87,10 @@ export function ProductPricingStockSelectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
+      <SelectionDialogContent
+        size="catalog"
         showCloseButton={false}
-        className="!max-w-4xl max-h-[85vh] flex flex-col p-0 overflow-hidden dark:bg-[#130822]/95 border border-slate-200/60 dark:border-white/10 shadow-2xl rounded-[2rem] backdrop-blur-xl"
+        className="!max-w-4xl p-0 dark:bg-[#130822]/95 border border-slate-200/60 dark:border-white/10 shadow-2xl rounded-[2rem] backdrop-blur-xl"
       >
         <DialogHeader className="px-6 py-5 border-b border-slate-100 dark:border-white/5 bg-white/80 dark:bg-[#130822]/90 backdrop-blur-md flex-shrink-0 flex-row items-center justify-between space-y-0">
           <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
@@ -102,7 +107,7 @@ export function ProductPricingStockSelectDialog({
             <div className="absolute inset-0 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </DialogHeader>
-        <div className="px-6 py-4 border-b border-slate-100 dark:border-white/5 bg-white/50 dark:bg-white/[0.02]">
+        <div className="shrink-0 px-6 py-4 border-b border-slate-100 dark:border-white/5 bg-white/50 dark:bg-white/[0.02]">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
               <Search
@@ -118,14 +123,14 @@ export function ProductPricingStockSelectDialog({
             </div>
           </div>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/30 dark:bg-black/20">
+        <div className="min-h-0 flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/30 dark:bg-black/20">
           {isLoading ? (
-            <div className="flex items-center justify-center py-10 text-slate-500">
+            <div className="flex min-h-full items-center justify-center py-10 text-slate-500">
               <div className="animate-spin mr-2 h-4 w-4 border-2 border-primary border-t-transparent rounded-full" />
               {t('productSelectDialog.loading')}
             </div>
           ) : filteredStocks.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 text-slate-500 dark:text-slate-400">
+            <div className="flex min-h-full flex-col items-center justify-center py-10 text-slate-500 dark:text-slate-400">
               <Package size={48} className="opacity-20 mb-4" />
               <p>
                 {searchQuery.trim()
@@ -185,7 +190,7 @@ export function ProductPricingStockSelectDialog({
             </div>
           )}
         </div>
-      </DialogContent>
+      </SelectionDialogContent>
     </Dialog>
   );
 }

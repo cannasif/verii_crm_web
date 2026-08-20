@@ -2,11 +2,11 @@ import { type ReactElement, useState, useMemo, useEffect, useRef, useCallback } 
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { SelectionDialogContent } from '@/components/shared/SelectionDialogContent';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -477,11 +477,12 @@ export function CustomerSelectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
+      <SelectionDialogContent
+        size="customer"
         showCloseButton={false}
         className={cn(
           // dialog.tsx içindeki lg:max-w-lg (~512px) tüm lg+ ekranlarda genişliği kilitliyor; aşağıda lg/xl/2xl ile açıkça eziyoruz
-          'flex max-h-[min(92dvh,920px)] w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] flex-col overflow-hidden border-slate-300 bg-white p-0 text-slate-900 shadow-xl ring-1 ring-slate-200/90 sm:rounded-2xl dark:border-white/10 dark:bg-[#130822] dark:text-white dark:ring-white/10',
+          'w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] border-slate-300 bg-white p-0 text-slate-900 shadow-xl ring-1 ring-slate-200/90 sm:rounded-2xl dark:border-white/10 dark:bg-[#130822] dark:text-white dark:ring-white/10',
           'sm:w-[min(1152px,calc(100vw-2rem))] sm:max-w-[min(1152px,calc(100vw-2rem))]',
           'md:w-[min(1200px,calc(100vw-2.5rem))] md:max-w-[min(1200px,calc(100vw-2.5rem))]',
           'lg:w-[min(1280px,calc(100vw-3rem))] lg:max-w-[min(1280px,calc(100vw-3rem))]',
@@ -490,7 +491,7 @@ export function CustomerSelectDialog({
           className
         )}
       >
-        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'potential' | 'all')} className="flex h-full flex-col">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'potential' | 'all')} className="flex h-full min-h-0 flex-col">
           <DialogHeader className="sticky top-0 z-10 flex shrink-0 flex-row items-start justify-between gap-3 border-b border-slate-200 bg-slate-50 px-4 py-4 backdrop-blur-sm sm:items-center sm:px-6 sm:py-5 dark:border-white/10 dark:bg-[#1a1025]/80">
             <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-4">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-primary/20 bg-accent text-primary shadow-md sm:h-12 sm:w-12">
@@ -652,7 +653,7 @@ export function CustomerSelectDialog({
 
           <div
             onScroll={handleListScroll}
-            className="custom-scrollbar min-h-0 flex-1 overflow-y-auto bg-slate-50/80 p-4 pt-3 dark:bg-[#130822] sm:p-6 sm:pt-4 max-h-[min(50vh,420px)] sm:max-h-[min(55vh,480px)]"
+            className="custom-scrollbar min-h-0 flex-1 overflow-y-auto bg-slate-50/80 p-4 pt-3 dark:bg-[#130822] sm:p-6 sm:pt-4"
           >
             <TabsContent value="all" className="mt-0 h-full space-y-2">
               {renderCustomerList(displayCustomers, 'noCustomers', true)}
@@ -662,7 +663,7 @@ export function CustomerSelectDialog({
             </TabsContent>
           </div>
         </Tabs>
-      </DialogContent>
+      </SelectionDialogContent>
     </Dialog>
   );
 }

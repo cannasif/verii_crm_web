@@ -1,11 +1,11 @@
-import { type ReactElement, useState, useMemo } from 'react';
+import { type ReactElement, useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Dialog,
-  DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { SelectionDialogContent } from '@/components/shared/SelectionDialogContent';
 import { Input } from '@/components/ui/input';
 import { Search, Layers, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -32,6 +32,10 @@ export function StockGroupSelectDialog({
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const { data: stockGroups = [], isLoading } = useStokGroup();
+
+  useEffect(() => {
+    if (!open) setSearchQuery('');
+  }, [open]);
 
   const excludedSet = useMemo(
     () => (excludeGroupCodes?.length ? new Set(excludeGroupCodes) : undefined),
@@ -60,7 +64,7 @@ export function StockGroupSelectDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col p-0 overflow-hidden bg-white/95 dark:bg-[#0c0516]/95 backdrop-blur-xl border-slate-200 dark:border-white/10 shadow-2xl">
+      <SelectionDialogContent size="medium" className="max-w-2xl p-0 bg-white/95 dark:bg-[#0c0516]/95 backdrop-blur-xl border-slate-200 dark:border-white/10 shadow-2xl">
         <DialogHeader className="px-6 py-5 border-b border-slate-200/50 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 flex-shrink-0">
           <DialogTitle className="flex items-center gap-3 text-slate-900 dark:text-white text-lg">
              <div className="bg-gradient-to-br from-indigo-500 to-violet-600 p-2.5 rounded-xl shadow-lg shadow-indigo-500/20 text-white">
@@ -89,14 +93,14 @@ export function StockGroupSelectDialog({
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/30 dark:bg-black/20">
+        <div className="min-h-0 flex-1 overflow-y-auto p-4 custom-scrollbar bg-slate-50/30 dark:bg-black/20">
           {isLoading ? (
-            <div className="flex items-center justify-center py-10 text-slate-500">
+            <div className="flex min-h-full items-center justify-center py-10 text-slate-500">
               <div className="animate-spin mr-2 h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full"></div>
               {t('stockGroupSelectDialog.loading')}
             </div>
           ) : filteredGroups.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 text-slate-500 dark:text-slate-400">
+            <div className="flex min-h-full flex-col items-center justify-center py-10 text-slate-500 dark:text-slate-400">
               <Layers size={48} className="opacity-20 mb-4" />
               <p>{t('stockGroupSelectDialog.noResults')}</p>
             </div>
@@ -147,7 +151,7 @@ export function StockGroupSelectDialog({
             </div>
           )}
         </div>
-      </DialogContent>
+      </SelectionDialogContent>
     </Dialog>
   );
 }
