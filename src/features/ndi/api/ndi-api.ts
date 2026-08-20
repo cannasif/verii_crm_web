@@ -165,6 +165,30 @@ export interface NdiTransferCreateRequest {
   documents: NdiTransferCreateDocumentRequest[];
 }
 
+export interface NdiSelectionCheckRequest {
+  mode: 'automatic' | 'manual';
+  sourceDocumentNos: string[];
+}
+
+export interface NdiSelectionDocumentResultDto {
+  sourceDocumentNo: string;
+  sourceOrderNo?: string | null;
+  customerCode: string;
+  ruleCode?: string | null;
+  ruleTitle?: string | null;
+  isCompatible: boolean;
+  blockingReason?: string | null;
+}
+
+export interface NdiSelectionCheckResponseDto {
+  isCompatible: boolean;
+  ruleCode?: string | null;
+  ruleTitle?: string | null;
+  customerCode?: string | null;
+  blockingReasons: string[];
+  documents: NdiSelectionDocumentResultDto[];
+}
+
 export interface NdiTransferCreatedDocumentDto {
   sourceDocumentNo: string;
   sourceNetsisCompany: string;
@@ -403,6 +427,19 @@ export const ndiApi = {
       return ensureSuccess(response, 'NDI aktarım önizlemesi hazırlanamadı.');
     } catch (error) {
       throw new Error(getApiErrorMessage(error, 'NDI aktarım önizlemesi hazırlanamadı.'));
+    }
+  },
+
+  checkNdiSelection: async (request: NdiSelectionCheckRequest): Promise<NdiSelectionCheckResponseDto> => {
+    const fallbackMessage = 'NDI belge seçimi sunucu tarafında doğrulanamadı.';
+    try {
+      const response = await api.post<ApiResponse<NdiSelectionCheckResponseDto>>(
+        '/api/NetsisNdiTransfer/selection-check',
+        request
+      );
+      return ensureSuccess(response, fallbackMessage);
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, fallbackMessage));
     }
   },
 

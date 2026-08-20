@@ -1381,25 +1381,14 @@ export function NdiOrderTransferPage(): ReactElement {
 
     try {
       const candidateOrders = [...selectedOrders, order];
-      const checks = await ndiApi.getCustomerDispatchOrderChecks(
-        candidateOrders.map((item) => item.orderNo).join(',')
-      );
-      const checksByDocumentNo = new Map(checks.map((check) => [check.fatirsNo, check]));
-      const resolvedOrders = candidateOrders.map((item) => applyOrderCheck(
-        item,
-        checksByDocumentNo.get(item.orderNo)
-      ));
-
-      const resolvedRules = Array.from(new Map(resolvedOrders.map((item) => {
-        const rule = getRule(item);
-        return [rule.id, rule] as const;
-      })).values());
-
-      if (resolvedRules.length > 1) {
-        const activeRule = getRule(resolvedOrders[0]);
-        const candidateRule = getRule(resolvedOrders[resolvedOrders.length - 1]);
+      const compatibility = await ndiApi.checkNdiSelection({
+        mode: transferMode,
+        sourceDocumentNos: candidateOrders.map((item) => item.orderNo),
+      });
+      if (!compatibility.isCompatible) {
         setSelectionRuleError(
-          `${order.orderNo} seçilemez. Aktif kural “${activeRule.title}”, bu irsaliyenin kuralı “${candidateRule.title}”. Aynı aktarım grubunda yalnızca tek NDI kuralına ait irsaliyeler seçilebilir.`
+          compatibility.blockingReasons[0]
+          ?? `${order.orderNo} seçilemez. Seçili irsaliyeler aynı NDI aktarım grubunda işlenemiyor.`
         );
         return;
       }
