@@ -15,6 +15,13 @@ export function canClonePermissionGroup(
   return Boolean(group && !group.isSystemAdmin);
 }
 
+export function isSystemAdminAssignmentLocked(
+  group: Pick<PermissionGroupDto, 'isSystemAdmin'> | null | undefined,
+  actorIsSystemAdmin: boolean
+): boolean {
+  return group?.isSystemAdmin === true && !actorIsSystemAdmin;
+}
+
 export function buildClonePermissionGroupDto(input: {
   name: string;
   description?: string | null;

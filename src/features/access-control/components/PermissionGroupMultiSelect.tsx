@@ -5,11 +5,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { usePermissionGroupsQuery } from '../hooks/usePermissionGroupsQuery';
+import { isSystemAdminAssignmentLocked } from '../utils/permission-group-policy';
 
 interface PermissionGroupMultiSelectProps {
   value: number[];
   onChange: (ids: number[]) => void;
   disabled?: boolean;
+  actorIsSystemAdmin: boolean;
 }
 
 const CHECKBOX_CLASSNAME =
@@ -19,6 +21,7 @@ export function PermissionGroupMultiSelect({
   value,
   onChange,
   disabled = false,
+  actorIsSystemAdmin,
 }: PermissionGroupMultiSelectProps): ReactElement {
   const { t } = useTranslation(['access-control', 'common']);
   const { data, isLoading } = usePermissionGroupsQuery({
@@ -29,10 +32,17 @@ export function PermissionGroupMultiSelect({
   });
 
   const items = useMemo(() => (data?.data ?? []).filter((d) => d.isActive), [data?.data]);
-  const allSelected = items.length > 0 && value.length === items.length;
-  const someSelected = value.length > 0 && !allSelected;
+  const assignableItems = useMemo(
+    () => items.filter((item) => !isSystemAdminAssignmentLocked(item, actorIsSystemAdmin)),
+    [actorIsSystemAdmin, items]
+  );
+  const allSelected = assignableItems.length > 0 && assignableItems.every((item) => value.includes(item.id));
+  const someSelected = assignableItems.some((item) => value.includes(item.id)) && !allSelected;
 
   const handleToggle = (id: number): void => {
+    const item = items.find((candidate) => candidate.id === id);
+    if (disabled || isSystemAdminAssignmentLocked(item, actorIsSystemAdmin)) return;
+
     if (value.includes(id)) {
       onChange(value.filter((x) => x !== id));
     } else {
@@ -41,10 +51,13 @@ export function PermissionGroupMultiSelect({
   };
 
   const handleSelectAll = (checked: boolean): void => {
+    const lockedSelectedIds = items
+      .filter((item) => isSystemAdminAssignmentLocked(item, actorIsSystemAdmin) && value.includes(item.id))
+      .map((item) => item.id);
     if (checked) {
-      onChange(items.map((i) => i.id));
+      onChange([...lockedSelectedIds, ...assignableItems.map((item) => item.id)]);
     } else {
-      onChange([]);
+      onChange(lockedSelectedIds);
     }
   };
 
@@ -67,8 +80,8 @@ export function PermissionGroupMultiSelect({
         <Checkbox
           id="select-all-groups"
           checked={allSelected ? true : someSelected ? 'indeterminate' : false}
-          onCheckedChange={(c) => handleSelectAll(!!c)}
-          disabled={disabled || items.length === 0}
+          onCheckedChange={(c) => !disabled && handleSelectAll(!!c)}
+          disabled={disabled || assignableItems.length === 0}
           className={CHECKBOX_CLASSNAME}
           onClick={(event) => event.stopPropagation()}
         />
@@ -89,6 +102,8 @@ export function PermissionGroupMultiSelect({
         ) : (
           items.map((item) => {
             const isChecked = value.includes(item.id);
+            const isSystemAdminLocked = isSystemAdminAssignmentLocked(item, actorIsSystemAdmin);
+            const isItemDisabled = disabled || isSystemAdminLocked;
 
             return (
               <div
@@ -98,19 +113,25 @@ export function PermissionGroupMultiSelect({
                   isChecked
                     ? 'border-primary/30 bg-accent/60 shadow-sm dark:border-primary/35 dark:bg-primary/12'
                     : 'border-slate-200/70 bg-white/70 dark:border-white/8 dark:bg-white/[0.02]',
-                  !disabled && 'cursor-pointer hover:border-slate-300 hover:bg-slate-50/90 dark:hover:border-white/15 dark:hover:bg-white/[0.05]'
+                  !isItemDisabled && 'cursor-pointer hover:border-slate-300 hover:bg-slate-50/90 dark:hover:border-white/15 dark:hover:bg-white/[0.05]',
+                  isSystemAdminLocked && 'cursor-not-allowed opacity-70'
                 )}
-                onClick={() => !disabled && handleToggle(item.id)}
+                onClick={() => handleToggle(item.id)}
+                aria-disabled={isItemDisabled}
+                title={isSystemAdminLocked ? t('userGroupAssignments.systemAdminOnly') : undefined}
               >
                 <Checkbox
                   id={`group-${item.id}`}
                   checked={isChecked}
                   onCheckedChange={() => handleToggle(item.id)}
-                  disabled={disabled}
+                  disabled={isItemDisabled}
                   className={CHECKBOX_CLASSNAME}
                   onClick={(event) => event.stopPropagation()}
                 />
-                <label htmlFor={`group-${item.id}`} className="flex min-w-0 flex-1 cursor-pointer items-center gap-2">
+                <label
+                  htmlFor={`group-${item.id}`}
+                  className={cn('flex min-w-0 flex-1 items-center gap-2', isItemDisabled ? 'cursor-not-allowed' : 'cursor-pointer')}
+                >
                   <span
                     className={cn(
                       'flex size-8 shrink-0 items-center justify-center rounded-lg border',

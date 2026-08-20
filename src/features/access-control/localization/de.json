@@ -151,7 +151,8 @@
     "assignedGroups": "Zugewiesene Berechtigungsgruppen",
     "noUsers": "Keine Benutzer gefunden",
     "noGroups": "Keine Berechtigungsgruppen verfügbar",
-    "selectAll": "Alle auswählen"
+    "selectAll": "Alle auswählen",
+    "systemAdminOnly": "Nur ein bestehender Systemadministrator kann die System-Admin-Mitgliedschaft ändern."
   },
   "userVisibilityAssignments": {
     "title": "Benutzersichtbarkeitszuweisungen",

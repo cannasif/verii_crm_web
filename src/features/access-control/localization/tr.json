@@ -154,7 +154,8 @@
     "assignedGroups": "Atanan İzin Grupları",
     "noUsers": "Kullanıcı bulunamadı",
     "noGroups": "Kullanılabilir izin grubu yok",
-    "selectAll": "Tümünü seç"
+    "selectAll": "Tümünü seç",
+    "systemAdminOnly": "System Admin üyeliğini yalnızca mevcut bir sistem yöneticisi değiştirebilir."
   },
   "visibilityPolicies": {
     "title": "Görünürlük Politikaları",

@@ -151,7 +151,8 @@
     "assignedGroups": "Groupes d’autorisations attribués",
     "noUsers": "Aucun utilisateur trouvé",
     "noGroups": "Aucun groupe d’autorisations disponible",
-    "selectAll": "Tout sélectionner"
+    "selectAll": "Tout sélectionner",
+    "systemAdminOnly": "Seul un administrateur système existant peut modifier l’appartenance System Admin."
   },
   "userVisibilityAssignments": {
     "title": "Attributions de visibilité utilisateur",

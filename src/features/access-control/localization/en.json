@@ -154,7 +154,8 @@
     "assignedGroups": "Assigned permission groups",
     "noUsers": "No users found",
     "noGroups": "No permission groups available",
-    "selectAll": "Select all"
+    "selectAll": "Select all",
+    "systemAdminOnly": "Only an existing system administrator can change System Admin membership."
   },
   "visibilityPolicies": {
     "title": "Visibility policies",

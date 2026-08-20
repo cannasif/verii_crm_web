@@ -10,6 +10,7 @@ import { useUserPermissionGroupsQuery } from '../hooks/useUserPermissionGroupsQu
 import { useSetUserPermissionGroupsMutation } from '../hooks/useSetUserPermissionGroupsMutation';
 import { useCrudPermissions } from '../hooks/useCrudPermissions';
 import { PermissionGroupMultiSelect } from './PermissionGroupMultiSelect';
+import { useMyPermissionsQuery } from '../hooks/useMyPermissionsQuery';
 import { FieldHelpTooltip } from './FieldHelpTooltip';
 import {
   ACCESS_CONTROL_HEADER_CARD_CLASSNAME,
@@ -33,6 +34,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
   const userDropdown = useUserOptionsInfinite(userSearchTerm, true);
   const { data: userGroups, isLoading: userGroupsLoading } = useUserPermissionGroupsQuery(selectedUserId);
   const setUserGroups = useSetUserPermissionGroupsMutation(selectedUserId ?? 0);
+  const { data: actorPermissions } = useMyPermissionsQuery();
   const { canUpdate } = useCrudPermissions('access-control.user-group-assignments.view');
 
   useEffect(() => {
@@ -188,6 +190,7 @@ export function UserGroupAssignmentsPage(): ReactElement {
                   value={selectedGroupIds}
                   onChange={handleGroupIdsChange}
                   disabled={setUserGroups.isPending || !canUpdate}
+                  actorIsSystemAdmin={actorPermissions?.isSystemAdmin === true}
                 />
                 {hasChanges && canUpdate && (
                   <div className="mt-4 flex items-center justify-end gap-2 border-t border-slate-200/80 pt-4 dark:border-white/10">
