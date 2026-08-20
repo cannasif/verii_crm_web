@@ -1186,6 +1186,7 @@ export function AiAssistantWidget(): ReactElement | null {
           sources: result.sources ?? [],
           context: result.context ?? null,
           structuredResult: result.structuredResult ?? null,
+          interpretations: result.interpretations ?? [],
           intent: result.intent,
         },
       ]);

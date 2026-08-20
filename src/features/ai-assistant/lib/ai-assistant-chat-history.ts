@@ -1,5 +1,6 @@
 import type {
   AiAssistantActionItemDto,
+  AiAssistantInterpretationDto,
   AiAssistantResponseContextDto,
   AiAssistantSourceDto,
   AiAssistantStructuredResultDto,
@@ -23,6 +24,7 @@ export type AiAssistantChatMessage = {
   sources?: AiAssistantSourceDto[];
   context?: AiAssistantResponseContextDto | null;
   structuredResult?: AiAssistantStructuredResultDto | null;
+  interpretations?: AiAssistantInterpretationDto[];
   intent?: string;
 };
 
@@ -156,6 +158,7 @@ export function createAiAssistantChatMessagesFromServer(
     intent?: string | null;
     context?: AiAssistantResponseContextDto | null;
     structuredResult?: AiAssistantStructuredResultDto | null;
+    interpretations?: AiAssistantInterpretationDto[] | null;
     sources?: AiAssistantSourceDto[] | null;
     toolActions?: AiAssistantToolActionDto[] | null;
   }>
@@ -170,6 +173,7 @@ export function createAiAssistantChatMessagesFromServer(
       intent: message.intent ?? undefined,
       context: isAiAssistantResponseContext(message.context) ? message.context : undefined,
       structuredResult: message.structuredResult ?? undefined,
+      interpretations: message.interpretations ?? [],
       sources: message.sources ?? [],
       toolActions: message.toolActions ?? undefined,
       actionItems: createAiAssistantActionItemsFromToolActions(message.toolActions),

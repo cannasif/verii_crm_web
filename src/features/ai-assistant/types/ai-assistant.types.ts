@@ -5,6 +5,29 @@ export interface AiAssistantGreetingDto {
   fullName: string;
 }
 
+export interface AiAssistantCapabilitiesDto {
+  assistantVersion: string;
+  routingMode: 'Deterministic' | 'Hybrid' | string;
+  semanticRoutingAvailable: boolean;
+  semanticProvider?: string | null;
+  canRunCompoundQueries: boolean;
+  canUseVision: boolean;
+  canTranslateResponses: boolean;
+  canConfirmActions: boolean;
+  canPersistConversations: boolean;
+  canExportStructuredResults: boolean;
+  canUsePageContext: boolean;
+  canUseErrorContext: boolean;
+  maximumQueriesPerMessage: number;
+  maximumAttachmentCount: number;
+  maximumAttachmentBytes: number;
+  readOnlyToolCount: number;
+  confirmationToolCount: number;
+  scopeLabel: string;
+  supportedAttachmentTypes: string[];
+  exampleQuestions: string[];
+}
+
 export interface AiAssistantDocumentMetricDto {
   totalCount: number;
   draftCount: number;
@@ -117,6 +140,22 @@ export interface AiAssistantStructuredResultDto {
   title: string;
   columns: AiAssistantStructuredColumnDto[];
   rows: Array<Record<string, unknown>>;
+  sections?: AiAssistantStructuredResultDto[];
+}
+
+export interface AiAssistantInterpretationDto {
+  order: number;
+  question: string;
+  intent: string;
+  routingMode: 'Deterministic' | 'Hybrid' | string;
+  toolName?: string | null;
+  provider?: string | null;
+  confidence?: number | null;
+  status: 'Completed' | 'Failed' | string;
+  isGrounded: boolean;
+  sourceCount: number;
+  resultCount: number;
+  failureMessage?: string | null;
 }
 
 export interface AiAssistantAnswerDto {
@@ -128,6 +167,7 @@ export interface AiAssistantAnswerDto {
   answer: string;
   context?: AiAssistantResponseContextDto | null;
   structuredResult?: AiAssistantStructuredResultDto | null;
+  interpretations?: AiAssistantInterpretationDto[];
   summary: AiAssistantSummaryDto | null;
   actionItems: AiAssistantActionItemDto[];
   toolActions?: AiAssistantToolActionDto[];
@@ -154,6 +194,7 @@ export interface AiAssistantConversationMessageDto {
   intent?: string | null;
   context?: AiAssistantResponseContextDto | null;
   structuredResult?: AiAssistantStructuredResultDto | null;
+  interpretations?: AiAssistantInterpretationDto[];
   sources: AiAssistantSourceDto[];
   createdDate: string;
   latencyMs?: number | null;

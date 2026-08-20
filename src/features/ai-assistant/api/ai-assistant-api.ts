@@ -8,10 +8,26 @@ import type {
   AiAssistantAskRequestDto,
   AiAssistantConversationHistoryDto,
   AiAssistantConversationListItemDto,
+  AiAssistantCapabilitiesDto,
   AiAssistantGreetingDto,
 } from '../types/ai-assistant.types';
 
 export const aiAssistantApi = {
+  getCapabilities: async (): Promise<AiAssistantCapabilitiesDto> => {
+    const response = await api.get<ApiResponse<AiAssistantCapabilitiesDto>>('/api/AiAssistant/capabilities');
+    if (response.success && response.data) {
+      return response.data;
+    }
+
+    throw new Error(
+      response.message ||
+        i18n.t('apiErrors.capabilities', {
+          ns: 'ai-assistant',
+          defaultValue: 'AI asistan yetenekleri alınamadı.',
+        })
+    );
+  },
+
   getGreeting: async (): Promise<AiAssistantGreetingDto> => {
     const response = await api.get<ApiResponse<AiAssistantGreetingDto>>('/api/AiAssistant/greeting');
     if (response.success && response.data) {

@@ -1,13 +1,22 @@
 import { useQuery } from '@tanstack/react-query';
 import { aiAssistantApi } from '../api/ai-assistant-api';
-import type { AiAssistantAnalyticsDto, AiAssistantConversationHistoryDto, AiAssistantConversationListItemDto, AiAssistantGreetingDto } from '../types/ai-assistant.types';
+import type { AiAssistantAnalyticsDto, AiAssistantCapabilitiesDto, AiAssistantConversationHistoryDto, AiAssistantConversationListItemDto, AiAssistantGreetingDto } from '../types/ai-assistant.types';
 
 export const AI_ASSISTANT_QUERY_KEYS = {
   greeting: ['ai-assistant', 'greeting'] as const,
+  capabilities: ['ai-assistant', 'capabilities'] as const,
   analytics: ['ai-assistant', 'analytics'] as const,
   conversation: (sessionKey: string) => ['ai-assistant', 'conversation', sessionKey] as const,
   conversations: (branchKey: string) => ['ai-assistant', 'conversations', branchKey] as const,
 };
+
+export function useAiAssistantCapabilitiesQuery(): ReturnType<typeof useQuery<AiAssistantCapabilitiesDto>> {
+  return useQuery({
+    queryKey: AI_ASSISTANT_QUERY_KEYS.capabilities,
+    queryFn: aiAssistantApi.getCapabilities,
+    staleTime: 15 * 60 * 1000,
+  });
+}
 
 export function useAiAssistantGreetingQuery(): ReturnType<typeof useQuery<AiAssistantGreetingDto>> {
   return useQuery({
