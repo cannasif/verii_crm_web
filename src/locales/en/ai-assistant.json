@@ -112,7 +112,25 @@
     "failedIntents": "Failed / abandoned intents",
     "noFailedIntent": "No failed intent appears in this period."
   },
+  "capabilities": {
+    "compound": "Up to {{count}} combined queries",
+    "scoped": "Permission and active-branch scoped",
+    "tools": "{{count}} read-only tools"
+  },
+  "evidence": {
+    "title": "Execution trace and evidence",
+    "groundedCount": "{{count}} grounded step",
+    "guidance": "Guidance response",
+    "interpretations": "Query plan",
+    "confidence": "Confidence {{value}}%",
+    "resultCount": "{{count}} results",
+    "context": "Context used",
+    "results": "Structured results",
+    "sources": "Sources and scope",
+    "empty": "No data"
+  },
   "apiErrors": {
+    "capabilities": "AI assistant capabilities could not be loaded.",
     "greeting": "AI assistant greeting could not be loaded.",
     "answer": "AI assistant answer could not be loaded.",
     "history": "AI conversation history could not be loaded.",

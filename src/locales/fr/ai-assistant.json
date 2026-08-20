@@ -46,7 +46,25 @@
   "lastErrorTitle": "Dernière erreur détectée",
   "askLastError": "Demander à l’IA pour cette erreur",
   "askLastErrorQuestion": "Que signifie cette erreur ?",
+  "capabilities": {
+    "compound": "Jusqu’à {{count}} requêtes combinées",
+    "scoped": "Limité aux autorisations et à l’agence active",
+    "tools": "{{count}} outils en lecture seule"
+  },
+  "evidence": {
+    "title": "Trace d’exécution et preuves",
+    "groundedCount": "{{count}} étape sourcée",
+    "guidance": "Réponse de conseil",
+    "interpretations": "Plan de requête",
+    "confidence": "Confiance {{value}} %",
+    "resultCount": "{{count}} résultats",
+    "context": "Contexte utilisé",
+    "results": "Résultats structurés",
+    "sources": "Sources et périmètre",
+    "empty": "Aucune donnée"
+  },
   "apiErrors": {
+    "capabilities": "Les capacités de l’assistant IA n’ont pas pu être chargées.",
     "greeting": "Impossible de charger le message d’accueil de l’assistant IA.",
     "answer": "Impossible de charger la réponse de l’assistant IA."
   }

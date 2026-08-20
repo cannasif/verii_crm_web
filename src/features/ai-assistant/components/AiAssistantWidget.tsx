@@ -9,12 +9,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createClientId } from '@/lib/create-client-id';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
-import { useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
+import { useAiAssistantCapabilitiesQuery, useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
 import { AiAssistantAnswerCard } from './AiAssistantAnswerCard';
 import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
 import { AiAssistantDockDialog } from './AiAssistantDockDialog';
 import { AiAssistantLastErrorButton } from './AiAssistantLastErrorButton';
 import { AiAssistantExportMenu } from './AiAssistantExportMenu';
+import { AiAssistantCapabilityStrip } from './AiAssistantCapabilityStrip';
+import { AiAssistantEvidencePanel } from './AiAssistantEvidencePanel';
 import {
   clampToContentBounds,
   consumeAiAssistantWidgetPlacementResetOnShow,
@@ -394,6 +396,7 @@ export function AiAssistantWidget(): ReactElement | null {
   const location = useLocation();
   const { user, branch } = useAuthStore();
   const { data: greeting, isLoading } = useAiAssistantGreetingQuery();
+  const { data: capabilities } = useAiAssistantCapabilitiesQuery();
   const askMutation = useAskAiAssistantMutation();
   const chatHistoryKey = createAiAssistantChatHistoryKey(user, branch);
   const sessionStorageKey = createAiAssistantSessionStorageKey('widget', user, branch);
@@ -796,7 +799,11 @@ export function AiAssistantWidget(): ReactElement | null {
   const fallbackSuggestions = defaultSuggestions.map((suggestion, index) =>
     readText(`suggestions.${index + 1}`, suggestion)
   );
-  const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
+  const suggestionItems = dynamicSuggestions.length > 0
+    ? dynamicSuggestions
+    : capabilities?.exampleQuestions.length
+      ? capabilities.exampleQuestions
+      : fallbackSuggestions;
   const isAssistantBusy = askMutation.isPending || isThinking;
   isAssistantBusyRef.current = isAssistantBusy;
 
@@ -1675,6 +1682,8 @@ export function AiAssistantWidget(): ReactElement | null {
             </div>
           </header>
 
+          <AiAssistantCapabilityStrip capabilities={capabilities} compact />
+
           {voiceSessionVisible && (
             <div className="relative border-b border-primary/15 bg-primary/[0.04] px-4 py-3 dark:border-primary/20 dark:bg-primary/[0.05]">
               <div
@@ -1854,7 +1863,7 @@ export function AiAssistantWidget(): ReactElement | null {
                           answer={message.content}
                           headerAction={(
                             <div className="flex items-center gap-1">
-                              {message.structuredResult?.rows.length ? (
+                              {message.structuredResult && (message.structuredResult.rows.length > 0 || message.structuredResult.sections?.length) ? (
                                 <AiAssistantExportMenu
                                   result={message.structuredResult}
                                   question={findPrecedingUserQuestion(messages, messageIndex)}
@@ -1900,6 +1909,15 @@ export function AiAssistantWidget(): ReactElement | null {
                         />
                       </div>
                     </div>
+
+                    <AiAssistantEvidencePanel
+                      intent={message.intent}
+                      context={message.context}
+                      interpretations={message.interpretations}
+                      result={message.structuredResult}
+                      sources={message.sources}
+                      compact
+                    />
 
                     {message.actionItems && message.actionItems.length > 0 && (
                       <div className="ms-12 rounded-3xl border border-slate-200 bg-white/70 p-4 shadow-sm dark:border-white/10 dark:bg-white/5">

@@ -16,11 +16,13 @@ import {
   isSalesRepDossierPdfActionUrl,
 } from '../lib/ai-assistant-download';
 import { useAskAiAssistantMutation } from '../hooks/useAskAiAssistantMutation';
-import { useAiAssistantAnalyticsQuery, useAiAssistantConversationsQuery, useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
+import { useAiAssistantAnalyticsQuery, useAiAssistantCapabilitiesQuery, useAiAssistantConversationsQuery, useAiAssistantGreetingQuery } from '../hooks/useAiAssistantGreetingQuery';
 import { AiAssistantAnswerCard } from './AiAssistantAnswerCard';
 import { AiAssistantThinkingIndicator } from './AiAssistantThinkingIndicator';
 import { AiAssistantComposerToolbar } from './AiAssistantComposerToolbar';
 import { AiAssistantExportMenu } from './AiAssistantExportMenu';
+import { AiAssistantCapabilityStrip } from './AiAssistantCapabilityStrip';
+import { AiAssistantEvidencePanel } from './AiAssistantEvidencePanel';
 import { useAiAssistantComposerToolbarOverflow } from '../hooks/useAiAssistantComposerToolbarOverflow';
 import {
   getLatestAiAssistantErrorContext,
@@ -170,6 +172,7 @@ export function AiAssistantPage(): ReactElement {
   const { user, branch } = useAuthStore();
   const { data: greeting, isLoading } = useAiAssistantGreetingQuery();
   const { data: analytics } = useAiAssistantAnalyticsQuery();
+  const { data: capabilities } = useAiAssistantCapabilitiesQuery();
   const branchKey = branch?.code || branch?.id || 'no-branch';
   const conversationsQuery = useAiAssistantConversationsQuery(branchKey);
   const askMutation = useAskAiAssistantMutation();
@@ -247,7 +250,11 @@ export function AiAssistantPage(): ReactElement {
   const fallbackName = user?.name || user?.email || t('fallbackName');
   const displayName = greeting?.fullName?.trim() || fallbackName;
   const fallbackSuggestions = [1, 2, 3, 4].map((index) => t(`suggestions.${index}`));
-  const suggestionItems = dynamicSuggestions.length > 0 ? dynamicSuggestions : fallbackSuggestions;
+  const suggestionItems = dynamicSuggestions.length > 0
+    ? dynamicSuggestions
+    : capabilities?.exampleQuestions.length
+      ? capabilities.exampleQuestions
+      : fallbackSuggestions;
   const isAssistantBusy = askMutation.isPending || isThinking;
 
   const changeLanguagePreference = (nextLanguagePreference: AiAssistantLanguagePreference): void => {
@@ -682,6 +689,8 @@ export function AiAssistantPage(): ReactElement {
             </div>
           </header>
 
+          <AiAssistantCapabilityStrip capabilities={capabilities} />
+
           <div
             className="min-h-0 flex-1 overflow-y-auto px-3 py-4 sm:px-5"
             role="log"
@@ -739,7 +748,7 @@ export function AiAssistantPage(): ReactElement {
                               answer={message.content}
                               headerAction={(
                                 <div className="flex flex-wrap items-center justify-end gap-1">
-                                  {message.structuredResult?.rows.length ? (
+                                  {message.structuredResult && (message.structuredResult.rows.length > 0 || message.structuredResult.sections?.length) ? (
                                     <AiAssistantExportMenu
                                       result={message.structuredResult}
                                       question={findPrecedingUserQuestion(messages, messageIndex)}
@@ -763,6 +772,14 @@ export function AiAssistantPage(): ReactElement {
                             />
                           </div>
                         </div>
+
+                        <AiAssistantEvidencePanel
+                          intent={message.intent}
+                          context={message.context}
+                          interpretations={message.interpretations}
+                          result={message.structuredResult}
+                          sources={message.sources}
+                        />
 
                         {message.actionItems && message.actionItems.length > 0 ? (
                           <div className="ms-12 rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/5">

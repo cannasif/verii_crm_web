@@ -112,7 +112,25 @@
     "failedIntents": "Başarısız / yarım kalan intentler",
     "noFailedIntent": "Bu aralıkta başarısız intent görünmüyor."
   },
+  "capabilities": {
+    "compound": "En fazla {{count}} birleşik sorgu",
+    "scoped": "Yetki ve aktif şube kapsamında",
+    "tools": "{{count}} salt-okunur araç"
+  },
+  "evidence": {
+    "title": "İşlem izi ve kanıt",
+    "groundedCount": "{{count}} kaynaklı adım",
+    "guidance": "Rehber yanıt",
+    "interpretations": "Sorgu planı",
+    "confidence": "Güven %{{value}}",
+    "resultCount": "{{count}} sonuç",
+    "context": "Kullanılan bağlam",
+    "results": "Yapılandırılmış sonuçlar",
+    "sources": "Kaynaklar ve kapsam",
+    "empty": "Veri yok"
+  },
   "apiErrors": {
+    "capabilities": "AI asistan yetenekleri alınamadı.",
     "greeting": "AI asistan karşılama bilgisi alınamadı.",
     "answer": "AI asistan yanıtı alınamadı.",
     "history": "AI sohbet geçmişi alınamadı.",

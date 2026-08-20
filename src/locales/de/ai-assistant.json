@@ -46,7 +46,25 @@
   "lastErrorTitle": "Zuletzt erfasster Fehler",
   "askLastError": "KI zu diesem Fehler fragen",
   "askLastErrorQuestion": "Was bedeutet dieser Fehler?",
+  "capabilities": {
+    "compound": "Bis zu {{count}} kombinierte Abfragen",
+    "scoped": "Nach Berechtigung und aktiver Niederlassung begrenzt",
+    "tools": "{{count}} schreibgeschützte Werkzeuge"
+  },
+  "evidence": {
+    "title": "Ausführungsspur und Nachweise",
+    "groundedCount": "{{count}} belegter Schritt",
+    "guidance": "Hinweisantwort",
+    "interpretations": "Abfrageplan",
+    "confidence": "Sicherheit {{value}} %",
+    "resultCount": "{{count}} Ergebnisse",
+    "context": "Verwendeter Kontext",
+    "results": "Strukturierte Ergebnisse",
+    "sources": "Quellen und Umfang",
+    "empty": "Keine Daten"
+  },
   "apiErrors": {
+    "capabilities": "Die Fähigkeiten des KI-Assistenten konnten nicht geladen werden.",
     "greeting": "Die Begrüßung des KI-Assistenten konnte nicht geladen werden.",
     "answer": "Die Antwort des KI-Assistenten konnte nicht geladen werden."
   }

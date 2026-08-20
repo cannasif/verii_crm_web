@@ -46,7 +46,25 @@
   "lastErrorTitle": "آخر خطأ تم التقاطه",
   "askLastError": "اسأل الذكاء الاصطناعي عن هذا الخطأ",
   "askLastErrorQuestion": "ماذا يعني هذا الخطأ؟",
+  "capabilities": {
+    "compound": "حتى {{count}} استعلامات مدمجة",
+    "scoped": "مقيّد بالصلاحيات والفرع النشط",
+    "tools": "{{count}} أدوات للقراءة فقط"
+  },
+  "evidence": {
+    "title": "مسار التنفيذ والأدلة",
+    "groundedCount": "{{count}} خطوة موثقة",
+    "guidance": "إجابة إرشادية",
+    "interpretations": "خطة الاستعلام",
+    "confidence": "الثقة {{value}}٪",
+    "resultCount": "{{count}} نتائج",
+    "context": "السياق المستخدم",
+    "results": "النتائج المنظمة",
+    "sources": "المصادر والنطاق",
+    "empty": "لا توجد بيانات"
+  },
   "apiErrors": {
+    "capabilities": "تعذر تحميل إمكانات مساعد الذكاء الاصطناعي.",
     "greeting": "تعذر تحميل رسالة ترحيب مساعد الذكاء الاصطناعي.",
     "answer": "تعذر تحميل إجابة مساعد الذكاء الاصطناعي."
   }

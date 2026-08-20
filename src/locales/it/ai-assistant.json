@@ -46,7 +46,25 @@
   "lastErrorTitle": "Ultimo errore rilevato",
   "askLastError": "Chiedi all’IA di questo errore",
   "askLastErrorQuestion": "Cosa significa questo errore?",
+  "capabilities": {
+    "compound": "Fino a {{count}} query combinate",
+    "scoped": "Limitato per permessi e filiale attiva",
+    "tools": "{{count}} strumenti di sola lettura"
+  },
+  "evidence": {
+    "title": "Traccia di esecuzione e prove",
+    "groundedCount": "{{count}} passaggio con fonte",
+    "guidance": "Risposta orientativa",
+    "interpretations": "Piano di query",
+    "confidence": "Confidenza {{value}}%",
+    "resultCount": "{{count}} risultati",
+    "context": "Contesto utilizzato",
+    "results": "Risultati strutturati",
+    "sources": "Fonti e ambito",
+    "empty": "Nessun dato"
+  },
   "apiErrors": {
+    "capabilities": "Impossibile caricare le capacità dell’assistente AI.",
     "greeting": "Impossibile caricare il saluto dell’assistente IA.",
     "answer": "Impossibile caricare la risposta dell’assistente IA."
   }
