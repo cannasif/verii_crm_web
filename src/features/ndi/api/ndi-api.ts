@@ -174,6 +174,7 @@ export interface NdiSelectionDocumentResultDto {
   sourceDocumentNo: string;
   sourceOrderNo?: string | null;
   customerCode: string;
+  shippingCustomerCode?: string | null;
   ruleCode?: string | null;
   ruleTitle?: string | null;
   isCompatible: boolean;
