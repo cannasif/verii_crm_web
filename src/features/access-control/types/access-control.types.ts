@@ -145,6 +145,8 @@ export interface PermissionGroupDto {
   name: string;
   description?: string;
   isSystemAdmin: boolean;
+  isSystemTemplate: boolean;
+  systemKey?: string;
   isActive: boolean;
   permissionDefinitionIds: number[];
   permissionCodes: string[];
@@ -167,6 +169,11 @@ export interface UpdatePermissionGroupDto {
 
 export interface SetPermissionGroupPermissionsDto {
   permissionDefinitionIds: number[];
+}
+
+export interface ClonePermissionGroupDto {
+  name: string;
+  description?: string;
 }
 
 export interface UserPermissionGroupDto {

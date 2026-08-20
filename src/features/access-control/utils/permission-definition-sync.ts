@@ -10,7 +10,7 @@ import {
 } from './permission-config';
 
 const AUTO_SYNC_STORAGE_KEY = 'permission-definition-auto-sync';
-const AUTO_SYNC_VERSION = 'v2';
+const AUTO_SYNC_VERSION = 'v3-system-permission-templates';
 const CANONICAL_PERMISSION_LANGUAGE = 'tr';
 
 let autoSyncPromise: Promise<void> | null = null;

@@ -8,6 +8,7 @@ import type {
   CreatePermissionGroupDto,
   UpdatePermissionGroupDto,
   SetPermissionGroupPermissionsDto,
+  ClonePermissionGroupDto,
 } from '../types/access-control.types';
 
 export const permissionGroupApi = {
@@ -43,6 +44,14 @@ export const permissionGroupApi = {
   create: async (dto: CreatePermissionGroupDto): Promise<PermissionGroupDto> => {
     const response = await api.post<ApiResponse<PermissionGroupDto>>(
       '/api/permission-groups',
+      dto
+    );
+    return extractData(response as ApiResponse<PermissionGroupDto>);
+  },
+
+  clone: async (id: number, dto: ClonePermissionGroupDto): Promise<PermissionGroupDto> => {
+    const response = await api.post<ApiResponse<PermissionGroupDto>>(
+      `/api/permission-groups/${id}/clone`,
       dto
     );
     return extractData(response as ApiResponse<PermissionGroupDto>);

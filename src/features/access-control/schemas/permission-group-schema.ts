@@ -19,6 +19,12 @@ export const setPermissionGroupPermissionsSchema = z.object({
   permissionDefinitionIds: z.array(z.number()),
 });
 
+export const clonePermissionGroupSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+  description: z.string().max(500).optional().nullable(),
+});
+
 export type CreatePermissionGroupSchema = z.infer<typeof createPermissionGroupSchema>;
 export type UpdatePermissionGroupSchema = z.infer<typeof updatePermissionGroupSchema>;
 export type SetPermissionGroupPermissionsSchema = z.infer<typeof setPermissionGroupPermissionsSchema>;
+export type ClonePermissionGroupSchema = z.infer<typeof clonePermissionGroupSchema>;
