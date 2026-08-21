@@ -389,7 +389,7 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
 
   const startDate = toQueryDate(visibleRange.start);
   const endDate = toQueryDate(visibleRange.end);
-  const { data, isLoading, isFetching, isError, refetch } = useDashboardSalesCalendar(documentType, startDate, endDate);
+  const { data, isLoading, isFetching, isError, error, refetch } = useDashboardSalesCalendar(documentType, startDate, endDate);
   const detailQuery = useDashboardSalesDocumentDetail(documentType, selectedItem?.id ?? null);
 
   useEffect(() => {
@@ -656,8 +656,12 @@ export function DashboardSalesCalendar({ documentType }: DashboardSalesCalendarP
       {isLoading ? (
         <div className="flex min-h-96 items-center justify-center gap-2 text-sm font-bold text-slate-500"><Loader2 size={18} className="animate-spin text-primary" />{t('loading')}</div>
       ) : isError ? (
-        <div className="flex min-h-80 flex-col items-center justify-center gap-3 text-sm font-bold text-rose-600">
-          {t('salesCalendar.loadError')}<Button type="button" variant="outline" onClick={() => void refetch()}>{t('refresh')}</Button>
+        <div className="flex min-h-80 flex-col items-center justify-center gap-3 px-6 text-center text-sm font-bold text-rose-600">
+          <p>{t('salesCalendar.loadError')}</p>
+          {error instanceof Error && error.message ? (
+            <p className="max-w-2xl text-xs font-semibold text-slate-500 dark:text-slate-400">{error.message}</p>
+          ) : null}
+          <Button type="button" variant="outline" onClick={() => void refetch()}>{t('refresh')}</Button>
         </div>
       ) : view === 'agenda' ? (
         <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-y-auto p-4 md:p-5">
