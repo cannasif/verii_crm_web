@@ -1,17 +1,24 @@
-import { useShippingAddressesByCustomer } from '@/features/shipping-address-management/hooks/useShippingAddressesByCustomer';
+import { useShippingAddressesPagedByCustomer } from '@/features/shipping-address-management/hooks/useShippingAddressesPagedByCustomer';
 import { buildShippingAddressLabel } from '@/features/shipping-address-management/utils/shipping-address-label';
 import type { ShippingAddress } from '../types/quotation-types';
 
 interface UseShippingAddressesReturn {
   data: ShippingAddress[];
   isLoading: boolean;
+  isFetchingNextPage: boolean;
+  hasNextPage: boolean;
+  fetchNextPage: () => Promise<unknown>;
 }
 
-export const useShippingAddresses = (customerId?: number): UseShippingAddressesReturn => {
-  const { data, isLoading } = useShippingAddressesByCustomer(customerId || 0);
+export const useShippingAddresses = (
+  customerId?: number,
+  searchTerm = '',
+  selectedAddressId?: number | null,
+): UseShippingAddressesReturn => {
+  const query = useShippingAddressesPagedByCustomer(customerId, searchTerm, selectedAddressId);
   return {
     data:
-      data?.map((address) => ({
+      query.items.map((address) => ({
         id: address.id,
         addressText: buildShippingAddressLabel(address),
         customerId: address.customerId,
@@ -19,7 +26,10 @@ export const useShippingAddresses = (customerId?: number): UseShippingAddressesR
         customerName: address.customerName,
         erpShippingCode: address.erpShippingCode,
         erpMainCustomerCode: address.erpMainCustomerCode,
-      })) || [],
-    isLoading,
+      })),
+    isLoading: query.isLoading,
+    isFetchingNextPage: query.isFetchingNextPage,
+    hasNextPage: query.hasNextPage,
+    fetchNextPage: query.fetchNextPage,
   };
 };
