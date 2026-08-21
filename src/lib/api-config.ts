@@ -1,4 +1,9 @@
-export const DEFAULT_API_BASE_URL = 'https://crmapi.v3rii.com';
+const DEVELOPMENT_API_BASE_URL = 'http://localhost:5001';
+const PRODUCTION_API_BASE_URL = 'https://crmapi.v3rii.com';
+
+export const DEFAULT_API_BASE_URL = import.meta.env.DEV
+  ? DEVELOPMENT_API_BASE_URL
+  : PRODUCTION_API_BASE_URL;
 const RUNTIME_CONFIG_FILE_NAME = 'runtime-settings.json';
 const RUNTIME_CONFIG_CACHE_KEY = 'runtime-config-cache';
 
@@ -94,7 +99,9 @@ async function fetchRuntimeConfig(): Promise<ResolvedRuntimeConfig> {
     baseUrl: normalizeAppBasePath(import.meta.env.BASE_URL || '/'),
   };
 
-  if (import.meta.env.DEV && isValidApiUrl(import.meta.env.VITE_API_URL)) {
+  // Development must never silently fall through to the production runtime
+  // configuration. VITE_API_URL remains an explicit local override when needed.
+  if (import.meta.env.DEV) {
     return fallbackConfig;
   }
 

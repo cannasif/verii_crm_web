@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Local API Config Fixture</title>
+  </head>
+  <body>
+    <output id="api-url">yükleniyor</output>
+    <script type="module">
+      import { loadConfig } from '/src/lib/api-config.ts';
+
+      document.getElementById('api-url').textContent = await loadConfig();
+    </script>
+  </body>
+</html>
