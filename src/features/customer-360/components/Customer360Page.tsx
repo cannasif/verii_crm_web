@@ -171,6 +171,10 @@ import {
   buildCohortExportRows,
   sanitizeCustomer360ExportFileName,
 } from '../utils/customer-360-table-export';
+import {
+  ERP_BALANCE_EPSILON,
+  resolveErpTlBalanceTone,
+} from '../utils/erp-tl-balance-tone';
 import { exportGridToExcel } from '@/lib/grid-export';
 import { Customer360ExcelExportButton } from './Customer360ExcelExportButton';
 
@@ -802,29 +806,42 @@ function ErpBalanceCard({
   );
 }
 
-const ERP_AMOUNT_EPS = 1e-6;
+const ERP_AMOUNT_EPS = ERP_BALANCE_EPSILON;
+
+const ERP_SUCCESS_AMOUNT_CLASS =
+  'font-medium tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400';
+const ERP_DANGER_AMOUNT_CLASS =
+  'font-medium tabular-nums tracking-tight text-red-600 dark:text-red-400';
+const ERP_NEUTRAL_AMOUNT_CLASS = 'tabular-nums tracking-tight text-muted-foreground/60';
 
 function erpDebitAmountClass(value: number): string {
   return Math.abs(value) > ERP_AMOUNT_EPS
-    ? 'font-medium tabular-nums tracking-tight text-red-600 dark:text-red-400'
-    : 'tabular-nums tracking-tight text-muted-foreground/60';
+    ? ERP_DANGER_AMOUNT_CLASS
+    : ERP_NEUTRAL_AMOUNT_CLASS;
 }
 
 function erpCreditAmountClass(value: number): string {
   return Math.abs(value) > ERP_AMOUNT_EPS
-    ? 'font-medium tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400'
-    : 'tabular-nums tracking-tight text-muted-foreground/60';
+    ? ERP_SUCCESS_AMOUNT_CLASS
+    : ERP_NEUTRAL_AMOUNT_CLASS;
 }
 
 /** Klasik borsa: pozitif yeşil, negatif kırmızı, sıfır nötr */
 function erpSignedBalanceClass(value: number): string {
   if (value > ERP_AMOUNT_EPS) {
-    return 'font-medium tabular-nums tracking-tight text-emerald-600 dark:text-emerald-400';
+    return ERP_SUCCESS_AMOUNT_CLASS;
   }
   if (value < -ERP_AMOUNT_EPS) {
-    return 'font-medium tabular-nums tracking-tight text-red-600 dark:text-red-400';
+    return ERP_DANGER_AMOUNT_CLASS;
   }
-  return 'tabular-nums tracking-tight text-muted-foreground/60';
+  return ERP_NEUTRAL_AMOUNT_CLASS;
+}
+
+function erpTlBalanceClass(value: number, customerCode?: string | null): string {
+  const tone = resolveErpTlBalanceTone(value, customerCode);
+  if (tone === 'success') return ERP_SUCCESS_AMOUNT_CLASS;
+  if (tone === 'danger') return ERP_DANGER_AMOUNT_CLASS;
+  return ERP_NEUTRAL_AMOUNT_CLASS;
 }
 
 function ErpMovementsTabContent({
@@ -1036,12 +1053,24 @@ function ErpMovementsTabContent({
                         {formatNumber(row.alacak)}
                       </TableCell>
                       <TableCell
-                        className={cn('px-3 py-2 text-right', erpSignedBalanceClass(row.tarihSiraliTlBakiye))}
+                        className={cn(
+                          'px-3 py-2 text-right',
+                          erpTlBalanceClass(
+                            row.tarihSiraliTlBakiye,
+                            row.cariKod?.trim() || customerCode?.trim() || balance?.cariKod?.trim()
+                          )
+                        )}
                       >
                         {formatNumber(row.tarihSiraliTlBakiye)}
                       </TableCell>
                       <TableCell
-                        className={cn('px-3 py-2 text-right', erpSignedBalanceClass(row.vadeSiraliTlBakiye))}
+                        className={cn(
+                          'px-3 py-2 text-right',
+                          erpTlBalanceClass(
+                            row.vadeSiraliTlBakiye,
+                            row.cariKod?.trim() || customerCode?.trim() || balance?.cariKod?.trim()
+                          )
+                        )}
                       >
                         {formatNumber(row.vadeSiraliTlBakiye)}
                       </TableCell>
