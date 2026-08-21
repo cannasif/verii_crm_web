@@ -8,6 +8,6 @@ const STALE_TIME_MS = 30_000;
 export const usePermissionDefinitionsQuery = (params: PagedRequest) =>
   useQuery({
     queryKey: ACCESS_CONTROL_QUERY_KEYS.PERMISSION_DEFINITIONS(params),
-    queryFn: () => permissionDefinitionApi.getList(params),
+    queryFn: ({ signal }) => permissionDefinitionApi.getList(params, signal),
     staleTime: STALE_TIME_MS,
   });

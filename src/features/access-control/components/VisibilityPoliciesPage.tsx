@@ -51,7 +51,9 @@ export function VisibilityPoliciesPage(): ReactElement {
   const setPageTitle = useUIStore((state) => state.setPageTitle);
   const { user } = useAuthStore();
   const queryClient = useQueryClient();
-  const { canCreate, canUpdate, canDelete } = useCrudPermissions('access-control.visibility-policies.view');
+  const { canView, canCreate, canUpdate, canDelete } = useCrudPermissions(
+    'access-control.visibility-policies.view'
+  );
 
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFields, setSearchFields] = usePagedSearchFields(PAGE_KEY, user?.id, VISIBILITY_POLICY_FILTER_COLUMNS);
@@ -89,7 +91,8 @@ export function VisibilityPoliciesPage(): ReactElement {
 
   const { data, isLoading } = useQuery({
     queryKey: ['visibility-policies', queryParams],
-    queryFn: () => visibilityPolicyApi.getList(queryParams),
+    enabled: canView,
+    queryFn: ({ signal }) => visibilityPolicyApi.getList(queryParams, signal),
   });
 
   const createMutation = useMutation({

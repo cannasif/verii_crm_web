@@ -9,6 +9,11 @@ export function hasPermission(
   if (permissions.isSystemAdmin === true) return true;
   if (permissions.permissionCodes.includes(requiredCode)) return true;
 
+  // Access-control endpoints protect privileged configuration with exact
+  // permission codes on the API. A broad/module fallback here would let the
+  // page mount and start a request that the API must reject with 403.
+  if (requiredCode.startsWith('access-control.')) return false;
+
   const parts = requiredCode.split('.').filter(Boolean);
   const isViewLike = parts.length >= 3 && parts[parts.length - 1] === 'view';
   if (!isViewLike) return false;

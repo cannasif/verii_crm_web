@@ -11,7 +11,7 @@ function normalizePagedResponse(data: PagedResponse<AuditLogDto>): PagedResponse
 }
 
 export const auditLogApi = {
-  getList: async (params: PagedRequest): Promise<PagedResponse<AuditLogDto>> => {
+  getList: async (params: PagedRequest, signal?: AbortSignal): Promise<PagedResponse<AuditLogDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<AuditLogDto>>>('/api/audit-logs/query', {
       pageNumber: params.pageNumber ?? 1,
       pageSize: params.pageSize ?? 10,
@@ -21,7 +21,7 @@ export const auditLogApi = {
       sortDirection: params.sortDirection ?? 'desc',
       filterLogic: params.filterLogic ?? 'and',
       filters: params.filters ?? [],
-    });
+    }, { signal });
     const data = extractData(response as ApiResponse<PagedResponse<AuditLogDto>>);
     return normalizePagedResponse(data);
   },
@@ -31,7 +31,11 @@ export const auditLogApi = {
     return extractData(response as ApiResponse<AuditLogDto>);
   },
 
-  getByTraceId: async (traceId: string, params: PagedRequest): Promise<PagedResponse<AuditLogDto>> => {
+  getByTraceId: async (
+    traceId: string,
+    params: PagedRequest,
+    signal?: AbortSignal
+  ): Promise<PagedResponse<AuditLogDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<AuditLogDto>>>(
       `/api/audit-logs/trace/${encodeURIComponent(traceId)}/query`,
       {
@@ -43,13 +47,19 @@ export const auditLogApi = {
         sortDirection: params.sortDirection ?? 'desc',
         filterLogic: params.filterLogic ?? 'and',
         filters: params.filters ?? [],
-      }
+      },
+      { signal }
     );
     const data = extractData(response as ApiResponse<PagedResponse<AuditLogDto>>);
     return normalizePagedResponse(data);
   },
 
-  getByEntity: async (entityType: string, entityId: string, params: PagedRequest): Promise<PagedResponse<AuditLogDto>> => {
+  getByEntity: async (
+    entityType: string,
+    entityId: string,
+    params: PagedRequest,
+    signal?: AbortSignal
+  ): Promise<PagedResponse<AuditLogDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<AuditLogDto>>>(
       `/api/audit-logs/entity/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId)}/query`,
       {
@@ -61,7 +71,8 @@ export const auditLogApi = {
         sortDirection: params.sortDirection ?? 'desc',
         filterLogic: params.filterLogic ?? 'and',
         filters: params.filters ?? [],
-      }
+      },
+      { signal }
     );
     const data = extractData(response as ApiResponse<PagedResponse<AuditLogDto>>);
     return normalizePagedResponse(data);
