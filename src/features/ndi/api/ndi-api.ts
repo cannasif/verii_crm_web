@@ -20,6 +20,8 @@ export interface NetsisCustomerDispatchDto {
 
 export interface NetsisCustomerDispatchLineDto {
   fisNo: string;
+  orderNumber?: string | null;
+  vatRate?: number | null;
   cariKodu?: string | null;
   stokKodu: string;
   stokAdi?: string | null;
@@ -109,6 +111,7 @@ export interface NetsisCustomerDocumentSeriesDto {
 export interface NdiTransferCreateLineRequest {
   sourceLineId?: string | null;
   sourceLineNo?: number | null;
+  orderNumber?: string | null;
   stockCode: string;
   stockName?: string | null;
   sourceQuantity: number;
@@ -187,6 +190,7 @@ export interface NdiSelectionDocumentResultDto {
   shippingCustomerCode?: string | null;
   ruleCode?: string | null;
   ruleTitle?: string | null;
+  quantityRule?: '1/4' | 'Tam' | null;
   isCompatible: boolean;
   blockingReason?: string | null;
 }
