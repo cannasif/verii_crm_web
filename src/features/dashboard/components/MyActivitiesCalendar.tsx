@@ -87,7 +87,7 @@ import { matchesSearchTerm } from '@/lib/search';
 import {
   ActivityPriority,
   ActivityStatus,
-  type ActivityDto,
+  type ActivityCalendarItemDto,
   type ActivityFormSchema,
 } from '@/features/activity-management/types/activity-types';
 
@@ -113,22 +113,19 @@ function numericValue(value: number | string): number {
   return ActivityStatus.Scheduled;
 }
 
-function customerName(activity: ActivityDto): string | undefined {
+function customerName(activity: ActivityCalendarItemDto): string | undefined {
   return activity.potentialCustomerName
-    || activity.potentialCustomer?.name
-    || activity.contact?.fullName
-    || [activity.contact?.firstName, activity.contact?.lastName].filter(Boolean).join(' ')
+    || activity.contactName
     || undefined;
 }
 
-function assigneeName(activity: ActivityDto): string {
-  return activity.assignedUser?.fullName?.trim()
-    || activity.assignedUser?.username
-    || activity.assignedUser?.userName
+function assigneeName(activity: ActivityCalendarItemDto): string {
+  return activity.assignedUserName?.trim()
+    || activity.assignedUsername
     || `#${activity.assignedUserId}`;
 }
 
-function occursOnDay(activity: ActivityDto, day: Date): boolean {
+function occursOnDay(activity: ActivityCalendarItemDto, day: Date): boolean {
   const dayStart = startOfDay(day);
   const nextDay = addDays(dayStart, 1);
   const activityStart = new Date(activity.startDateTime);
@@ -136,7 +133,7 @@ function occursOnDay(activity: ActivityDto, day: Date): boolean {
   return activityStart < nextDay && activityEnd >= dayStart;
 }
 
-function eventTone(activity: ActivityDto): string {
+function eventTone(activity: ActivityCalendarItemDto): string {
   const status = numericValue(activity.status);
   if (status === ActivityStatus.Completed) return 'border-l-emerald-400 bg-emerald-50/80 text-emerald-800 dark:border-l-emerald-400/60 dark:bg-emerald-500/10 dark:text-emerald-200';
   if (status === ActivityStatus.Cancelled) return 'border-l-slate-300 bg-slate-100/80 text-slate-500 line-through dark:border-l-white/15 dark:bg-white/5 dark:text-slate-400';
@@ -147,7 +144,7 @@ function eventTone(activity: ActivityDto): string {
 
 type EventStatusKind = 'completed' | 'cancelled' | 'overdue' | 'high' | 'scheduled';
 
-function eventStatusKind(activity: ActivityDto): EventStatusKind {
+function eventStatusKind(activity: ActivityCalendarItemDto): EventStatusKind {
   const status = numericValue(activity.status);
   if (status === ActivityStatus.Completed) return 'completed';
   if (status === ActivityStatus.Cancelled) return 'cancelled';
@@ -172,7 +169,7 @@ const STATUS_DOT_CLASSES: Record<EventStatusKind, string> = {
   scheduled: 'bg-blue-500',
 };
 
-function statusLabel(activity: ActivityDto, t: (key: string) => string): string {
+function statusLabel(activity: ActivityCalendarItemDto, t: (key: string) => string): string {
   const kind = eventStatusKind(activity);
   if (kind === 'completed') return t('calendar.status.completed');
   if (kind === 'cancelled') return t('calendar.status.cancelled');
@@ -181,7 +178,7 @@ function statusLabel(activity: ActivityDto, t: (key: string) => string): string 
 }
 
 interface ActivityChipProps {
-  activity: ActivityDto;
+  activity: ActivityCalendarItemDto;
   compact?: boolean;
   /** Only shown when the calendar is not already filtered down to a single assignee. */
   showAssignee?: boolean;
@@ -189,11 +186,11 @@ interface ActivityChipProps {
   canDelete: boolean;
   canOpenCustomer: boolean;
   canOpenCustomer360: boolean;
-  onSelect: (activity: ActivityDto) => void;
-  onEdit: (activity: ActivityDto) => void;
-  onDelete: (activity: ActivityDto) => void;
-  onOpenCustomer: (activity: ActivityDto) => void;
-  onOpenCustomer360: (activity: ActivityDto) => void;
+  onSelect: (activity: ActivityCalendarItemDto) => void;
+  onEdit: (activity: ActivityCalendarItemDto) => void;
+  onDelete: (activity: ActivityCalendarItemDto) => void;
+  onOpenCustomer: (activity: ActivityCalendarItemDto) => void;
+  onOpenCustomer360: (activity: ActivityCalendarItemDto) => void;
 }
 
 function ActivityChip({
@@ -273,9 +270,9 @@ function ActivityChip({
           <span className={cn('mt-1.5 h-2 w-2 shrink-0 rounded-full', STATUS_DOT_CLASSES[statusKind])} aria-hidden />
           <div className="min-w-0 flex-1">
             <p className="text-sm font-black leading-snug text-slate-900 dark:text-white">{activity.subject}</p>
-            {activity.activityType?.name && (
+            {activity.activityTypeName && (
               <p className="mt-0.5 flex items-center gap-1 text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                <Tag size={11} />{activity.activityType.name}
+                <Tag size={11} />{activity.activityTypeName}
               </p>
             )}
           </div>
@@ -442,9 +439,9 @@ export function MyActivitiesCalendar(): ReactElement {
   const permissionsReady = permissions !== null || permissionsError;
   const [view, setView] = useState<CalendarView>('week');
   const [cursor, setCursor] = useState(() => new Date());
-  const [selected, setSelected] = useState<ActivityDto | null>(null);
-  const [deleteItem, setDeleteItem] = useState<ActivityDto | null>(null);
-  const [dayPopover, setDayPopover] = useState<{ day: Date; items: ActivityDto[] } | null>(null);
+  const [selected, setSelected] = useState<ActivityCalendarItemDto | null>(null);
+  const [deleteItem, setDeleteItem] = useState<ActivityCalendarItemDto | null>(null);
+  const [dayPopover, setDayPopover] = useState<{ day: Date; items: ActivityCalendarItemDto[] } | null>(null);
   const [detailTab, setDetailTab] = useState('details');
   const [selectedAssigneeId, setSelectedAssigneeId] = useState<number | 'all'>('all');
   const [assigneePickerOpen, setAssigneePickerOpen] = useState(false);
@@ -541,7 +538,7 @@ export function MyActivitiesCalendar(): ReactElement {
     [visibleRange],
   );
   const activitiesByDay = useMemo(() => {
-    const map = new Map<string, ActivityDto[]>();
+    const map = new Map<string, ActivityCalendarItemDto[]>();
     days.forEach((day) => {
       map.set(day.toISOString(), activities.filter((activity) => occursOnDay(activity, day)));
     });
@@ -611,21 +608,21 @@ export function MyActivitiesCalendar(): ReactElement {
       : (direction < 0 ? subMonths(current, 1) : addMonths(current, 1)));
   };
 
-  const openActivityEditor = (activity: ActivityDto): void => {
+  const openActivityEditor = (activity: ActivityCalendarItemDto): void => {
     navigate(`/activity-management?activityId=${activity.id}`);
   };
 
-  const openCustomer = (activity: ActivityDto): void => {
+  const openCustomer = (activity: ActivityCalendarItemDto): void => {
     if (!activity.potentialCustomerId) return;
     navigate(`/customer-management?customerId=${activity.potentialCustomerId}`);
   };
 
-  const openCustomer360 = (activity: ActivityDto): void => {
+  const openCustomer360 = (activity: ActivityCalendarItemDto): void => {
     if (!activity.potentialCustomerId) return;
     navigate(`/customer-360/${activity.potentialCustomerId}`);
   };
 
-  const requestDelete = (activity: ActivityDto): void => {
+  const requestDelete = (activity: ActivityCalendarItemDto): void => {
     setSelected(null);
     setDayPopover(null);
     setDeleteItem(activity);
@@ -639,8 +636,8 @@ export function MyActivitiesCalendar(): ReactElement {
   };
 
   const renderActivityChip = (
-    activity: ActivityDto,
-    options?: { compact?: boolean; onSelect?: (selectedActivity: ActivityDto) => void },
+    activity: ActivityCalendarItemDto,
+    options?: { compact?: boolean; onSelect?: (selectedActivity: ActivityCalendarItemDto) => void },
   ): ReactElement => (
     <ActivityChip
       key={activity.id}
@@ -952,7 +949,7 @@ export function MyActivitiesCalendar(): ReactElement {
             <>
               <DialogHeader>
                 <DialogTitle className="pr-8 text-xl">{selected.subject}</DialogTitle>
-                <DialogDescription>{selected.activityType?.name || t('calendar.activity')}</DialogDescription>
+                <DialogDescription>{selected.activityTypeName || t('calendar.activity')}</DialogDescription>
               </DialogHeader>
 
               <Tabs value={detailTab} onValueChange={setDetailTab} className="min-w-0">
@@ -1081,7 +1078,7 @@ export function MyActivitiesCalendar(): ReactElement {
   );
 }
 
-function formatActivityRange(activity: ActivityDto, locale: string): string {
+function formatActivityRange(activity: ActivityCalendarItemDto, locale: string): string {
   const formatter = new Intl.DateTimeFormat(locale, activity.isAllDay ? { dateStyle: 'long' } : { dateStyle: 'medium', timeStyle: 'short' });
   const start = formatter.format(new Date(activity.startDateTime));
   if (!activity.endDateTime || activity.isAllDay) return start;

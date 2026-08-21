@@ -2,21 +2,21 @@ import { api } from '@/lib/axios';
 import i18n from '@/lib/i18n';
 import { normalizePagedResponse } from '@/lib/paged-response';
 import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/types/api';
-import type { ActivityDto, CreateActivityDto, UpdateActivityDto } from '../types/activity-types';
+import type { ActivityCalendarItemDto, ActivityDto, CreateActivityDto, UpdateActivityDto } from '../types/activity-types';
 
 const AM_NS = 'activity-management' as const;
 
 export const activityApi = {
-  getMyCalendar: async (startDate: string, endDate: string): Promise<ActivityDto[]> => {
-    const response = await api.get<ApiResponse<ActivityDto[]>>('/api/Activity/me', {
+  getMyCalendar: async (startDate: string, endDate: string): Promise<ActivityCalendarItemDto[]> => {
+    const response = await api.get<ApiResponse<ActivityCalendarItemDto[]>>('/api/Activity/me', {
       params: { startDate, endDate },
     });
     if (response.success && response.data) return response.data;
     throw new Error(response.message || response.exceptionMessage || i18n.t('listLoadError', { ns: AM_NS }));
   },
 
-  getAdminCalendar: async (startDate: string, endDate: string): Promise<ActivityDto[]> => {
-    const response = await api.get<ApiResponse<ActivityDto[]>>('/api/Activity/calendar/admin', {
+  getAdminCalendar: async (startDate: string, endDate: string): Promise<ActivityCalendarItemDto[]> => {
+    const response = await api.get<ApiResponse<ActivityCalendarItemDto[]>>('/api/Activity/calendar/admin', {
       params: { startDate, endDate },
     });
     if (response.success && response.data) return response.data;

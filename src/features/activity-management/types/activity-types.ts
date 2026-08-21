@@ -134,6 +134,27 @@ export interface ActivityDto {
   deletedByFullUser?: string;
 }
 
+export interface ActivityCalendarItemDto {
+  id: number;
+  subject: string;
+  description?: string | null;
+  activityTypeId: number;
+  activityTypeName?: string | null;
+  startDateTime: string;
+  endDateTime?: string | null;
+  isAllDay: boolean;
+  status: ActivityStatus | number | string;
+  priority: ActivityPriority | number | string;
+  assignedUserId: number;
+  assignedUserName?: string | null;
+  assignedUsername?: string | null;
+  contactId?: number | null;
+  contactName?: string | null;
+  potentialCustomerId?: number | null;
+  potentialCustomerName?: string | null;
+  erpCustomerCode?: string | null;
+}
+
 export interface CreateActivityDto {
   subject: string;
   description?: string;
