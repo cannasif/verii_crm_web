@@ -5,9 +5,10 @@ import { queryKeys } from '../utils/query-keys';
 export function useMyActivitiesCalendar(startDate: string, endDate: string, enabled = true) {
   return useQuery({
     queryKey: queryKeys.myCalendar(startDate, endDate),
-    queryFn: () => activityApi.getMyCalendar(startDate, endDate),
+    queryFn: ({ signal }) => activityApi.getMyCalendar(startDate, endDate, signal),
     enabled,
     staleTime: 60_000,
+    retry: false,
   });
 }
 
@@ -21,10 +22,14 @@ export function useDashboardActivitiesCalendar(
     queryKey: isSystemAdmin
       ? queryKeys.adminCalendar(startDate, endDate)
       : queryKeys.myCalendar(startDate, endDate),
-    queryFn: () => isSystemAdmin
-      ? activityApi.getAdminCalendar(startDate, endDate)
-      : activityApi.getMyCalendar(startDate, endDate),
+    queryFn: ({ signal }) => activityApi.getDashboardCalendar(
+      startDate,
+      endDate,
+      isSystemAdmin,
+      signal,
+    ),
     enabled,
     staleTime: 60_000,
+    retry: false,
   });
 }

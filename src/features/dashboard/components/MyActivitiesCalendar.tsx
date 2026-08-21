@@ -436,10 +436,12 @@ export function MyActivitiesCalendar(): ReactElement {
   const {
     data: permissions,
     isLoading: permissionsLoading,
-    isError: permissionsError,
+    isError: permissionsQueryFailed,
+    error: permissionsQueryError,
+    refetch: refetchPermissions,
   } = useMyPermissionsQuery();
   const isSystemAdmin = permissions?.isSystemAdmin === true;
-  const permissionsReady = permissions !== null || permissionsError;
+  const permissionsReady = permissions !== null;
   const [view, setView] = useState<CalendarView>('week');
   const [cursor, setCursor] = useState(() => new Date());
   const [selected, setSelected] = useState<ActivityDto | null>(null);
@@ -485,10 +487,13 @@ export function MyActivitiesCalendar(): ReactElement {
     data: calendarActivities = [],
     isLoading: calendarLoading,
     isFetching,
-    isError,
+    isError: calendarQueryFailed,
+    error: calendarQueryError,
     refetch,
   } = useDashboardActivitiesCalendar(queryStart, queryEnd, isSystemAdmin, permissionsReady);
-  const isLoading = permissionsLoading || !permissionsReady || calendarLoading;
+  const isLoading = permissionsLoading || (!permissionsReady && !permissionsQueryFailed) || calendarLoading;
+  const isError = permissionsQueryFailed || calendarQueryFailed;
+  const error = permissionsQueryFailed ? permissionsQueryError : calendarQueryError;
 
   const assignees = useMemo(() => {
     const byId = new Map<number, { id: number; name: string; count: number }>();
@@ -823,7 +828,14 @@ export function MyActivitiesCalendar(): ReactElement {
       {isLoading ? (
         <div className="flex min-h-96 items-center justify-center gap-2 text-slate-500"><Loader2 className="animate-spin" />{t('loading')}</div>
       ) : isError ? (
-        <div className="flex min-h-80 flex-col items-center justify-center gap-3 p-6 text-center"><CircleAlert className="text-rose-500" size={32} /><p className="font-semibold text-slate-700 dark:text-slate-200">{t('calendar.loadError')}</p><Button onClick={() => void refetch()}>{t('refresh')}</Button></div>
+        <div className="flex min-h-80 flex-col items-center justify-center gap-3 p-6 text-center">
+          <CircleAlert className="text-rose-500" size={32} />
+          <p className="font-semibold text-slate-700 dark:text-slate-200">{t('calendar.loadError')}</p>
+          {error instanceof Error && error.message ? (
+            <p className="max-w-2xl text-xs font-semibold text-slate-500 dark:text-slate-400">{error.message}</p>
+          ) : null}
+          <Button onClick={() => void (permissionsQueryFailed ? refetchPermissions() : refetch())}>{t('refresh')}</Button>
+        </div>
       ) : view === 'agenda' ? (
         <div className="h-[calc(100vh-410px)] min-h-[380px] overflow-y-auto p-4 md:p-5">
           {days.map((day) => {

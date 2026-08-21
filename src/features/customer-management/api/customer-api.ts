@@ -33,18 +33,25 @@ const sanitizeCustomerPayload = <T extends CreateCustomerDto | UpdateCustomerDto
 };
 
 export const customerApi = {
-  getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<CustomerDto>> => {
-    const response = await api.post<ApiResponse<PagedResponse<CustomerDto>>>('/api/Customer/query', {
-      pageNumber: params.pageNumber ?? 1,
-      pageSize: params.pageSize ?? 10,
-      search: params.search ?? '',
-      searchFields: params.search ? params.searchFields : undefined,
-      sortBy: params.sortBy ?? 'Id',
-      sortDirection: params.sortDirection ?? 'asc',
-      filterLogic: params.filterLogic ?? 'and',
-      filters: params.filters ?? [],
-      ...(params.contextUserId ? { contextUserId: params.contextUserId } : {}),
-    });
+  getList: async (
+    params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> },
+    signal?: AbortSignal,
+  ): Promise<PagedResponse<CustomerDto>> => {
+    const response = await api.post<ApiResponse<PagedResponse<CustomerDto>>>(
+      '/api/Customer/query',
+      {
+        pageNumber: params.pageNumber ?? 1,
+        pageSize: params.pageSize ?? 10,
+        search: params.search ?? '',
+        searchFields: params.search ? params.searchFields : undefined,
+        sortBy: params.sortBy ?? 'Id',
+        sortDirection: params.sortDirection ?? 'asc',
+        filterLogic: params.filterLogic ?? 'and',
+        filters: params.filters ?? [],
+        ...(params.contextUserId ? { contextUserId: params.contextUserId } : {}),
+      },
+      { signal },
+    );
     
     if (response.success && response.data) {
       const pagedData = response.data as PagedResponse<CustomerDto> & { items?: CustomerDto[] };

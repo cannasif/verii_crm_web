@@ -6,21 +6,58 @@ import type { ActivityDto, CreateActivityDto, UpdateActivityDto } from '../types
 
 const AM_NS = 'activity-management' as const;
 
+function getHttpStatus(error: unknown): number | null {
+  if (typeof error !== 'object' || error === null || !('response' in error)) return null;
+  const response = (error as { response?: { status?: unknown } }).response;
+  return typeof response?.status === 'number' ? response.status : null;
+}
+
 export const activityApi = {
-  getMyCalendar: async (startDate: string, endDate: string): Promise<ActivityDto[]> => {
+  getMyCalendar: async (
+    startDate: string,
+    endDate: string,
+    signal?: AbortSignal,
+  ): Promise<ActivityDto[]> => {
     const response = await api.get<ApiResponse<ActivityDto[]>>('/api/Activity/me', {
       params: { startDate, endDate },
+      signal,
     });
     if (response.success && response.data) return response.data;
     throw new Error(response.message || response.exceptionMessage || i18n.t('listLoadError', { ns: AM_NS }));
   },
 
-  getAdminCalendar: async (startDate: string, endDate: string): Promise<ActivityDto[]> => {
+  getAdminCalendar: async (
+    startDate: string,
+    endDate: string,
+    signal?: AbortSignal,
+  ): Promise<ActivityDto[]> => {
     const response = await api.get<ApiResponse<ActivityDto[]>>('/api/Activity/calendar/admin', {
       params: { startDate, endDate },
+      signal,
     });
     if (response.success && response.data) return response.data;
     throw new Error(response.message || response.exceptionMessage || i18n.t('listLoadError', { ns: AM_NS }));
+  },
+
+  getDashboardCalendar: async (
+    startDate: string,
+    endDate: string,
+    isSystemAdmin: boolean,
+    signal?: AbortSignal,
+  ): Promise<ActivityDto[]> => {
+    if (!isSystemAdmin) return activityApi.getMyCalendar(startDate, endDate, signal);
+
+    try {
+      return await activityApi.getAdminCalendar(startDate, endDate, signal);
+    } catch (error) {
+      // The app-shell permission cache can briefly be stale after an assignment change.
+      // The API remains authoritative: if it rejects the admin scope, fall back to the
+      // personal calendar instead of leaving the whole dashboard empty.
+      if (getHttpStatus(error) === 403) {
+        return activityApi.getMyCalendar(startDate, endDate, signal);
+      }
+      throw error;
+    }
   },
 
   getList: async (params: Omit<PagedParams, 'filters'> & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<ActivityDto>> => {
@@ -29,8 +66,8 @@ export const activityApi = {
       {
         pageNumber: params.pageNumber ?? 1,
         pageSize: params.pageSize ?? 10,
-      search: params.search ?? '',
-      searchFields: params.search ? params.searchFields : undefined,
+        search: params.search ?? '',
+        searchFields: params.search ? params.searchFields : undefined,
         sortBy: params.sortBy ?? 'Id',
         sortDirection: params.sortDirection ?? 'asc',
         filterLogic: params.filterLogic ?? 'and',
