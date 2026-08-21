@@ -13,6 +13,7 @@ import type { CustomerTypeDto } from '@/features/customer-type-management/types/
 import type { ActivityTypeDto } from '@/features/activity-type/types/activity-type-types';
 import type { PaymentTypeDto } from '@/features/payment-type-management/types/payment-type-types';
 import type { SalesTypeGetDto } from '@/features/sales-type-management/types/sales-type-types';
+import type { ShippingAddressDto } from '@/features/shipping-address-management/types/shipping-address-types';
 
 interface DropdownPageRequest {
   pageNumber: number;
@@ -135,5 +136,15 @@ export const dropdownApi = {
   },
   getSalesTypePage: (request: DropdownPageRequest): Promise<PagedResponse<SalesTypeGetDto>> => {
     return getDropdownPageByQuery<SalesTypeGetDto>('/api/SalesType', request, ['SalesType', 'Code', 'Name']);
+  },
+  getShippingAddressPage: (request: DropdownPageRequest): Promise<PagedResponse<ShippingAddressDto>> => {
+    return getDropdownPageByQuery<ShippingAddressDto>('/api/ShippingAddress', request, [
+      'Name',
+      'ErpShippingCode',
+      'Address',
+      'ContactPerson',
+      'City.Name',
+      'District.Name',
+    ]);
   },
 };

@@ -3,7 +3,10 @@ import type { ApiResponse, PagedResponse, PagedParams, PagedFilter } from '@/typ
 import type { ShippingAddressDto, CreateShippingAddressDto, UpdateShippingAddressDto } from '../types/shipping-address-types';
 
 export const shippingAddressApi = {
-  getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<ShippingAddressDto>> => {
+  getList: async (
+    params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> },
+    signal?: AbortSignal,
+  ): Promise<PagedResponse<ShippingAddressDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<ShippingAddressDto>>>('/api/ShippingAddress/query', {
       pageNumber: params.pageNumber ?? 1,
       pageSize: params.pageSize ?? 10,
@@ -13,7 +16,7 @@ export const shippingAddressApi = {
       sortDirection: params.sortDirection ?? 'asc',
       filterLogic: params.filterLogic ?? 'and',
       filters: params.filters ?? [],
-    });
+    }, { signal });
     
     if (response.success && response.data) {
       const pagedData = response.data;
@@ -31,20 +34,12 @@ export const shippingAddressApi = {
     throw new Error(response.message || 'Sevk adresi listesi yüklenemedi');
   },
 
-  getById: async (id: number): Promise<ShippingAddressDto> => {
-    const response = await api.get<ApiResponse<ShippingAddressDto>>(`/api/ShippingAddress/${id}`);
+  getById: async (id: number, signal?: AbortSignal): Promise<ShippingAddressDto> => {
+    const response = await api.get<ApiResponse<ShippingAddressDto>>(`/api/ShippingAddress/${id}`, { signal });
     if (response.success && response.data) {
       return response.data;
     }
     throw new Error(response.message || 'Sevk adresi detayı yüklenemedi');
-  },
-
-  getByCustomerId: async (customerId: number): Promise<ShippingAddressDto[]> => {
-    const response = await api.get<ApiResponse<ShippingAddressDto[]>>(`/api/ShippingAddress/customer/${customerId}`);
-    if (response.success && response.data) {
-      return response.data;
-    }
-    throw new Error(response.message || 'Müşteri sevk adresleri yüklenemedi');
   },
 
   create: async (data: CreateShippingAddressDto): Promise<ShippingAddressDto> => {
