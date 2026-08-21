@@ -13,10 +13,10 @@ export const useQuotationList = (
 ): UseQueryResult<PagedResponse<QuotationGetDto>, Error> => {
   return useQuery({
     queryKey: queryKeys.quotations(params),
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       fetchPagedDocumentList<QuotationGetDto>(
         params,
-        (queryParams) => quotationApi.getList(queryParams)
+        (queryParams) => quotationApi.getList(queryParams, signal)
       ),
     staleTime: 2 * 60 * 1000,
     refetchOnMount: 'always',

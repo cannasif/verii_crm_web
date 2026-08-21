@@ -21,7 +21,7 @@ export const useWaitingApprovals = (
 ): UseQueryResult<PagedResponse<ApprovalActionGetDto>, Error> => {
   return useQuery({
     queryKey: queryKeys.waitingApprovals(params),
-    queryFn: () => orderApi.getWaitingApprovals(params),
+    queryFn: ({ signal }) => orderApi.getWaitingApprovals(params, signal),
     staleTime: 30 * 1000,
     refetchInterval: 60 * 1000,
     refetchIntervalInBackground: false,

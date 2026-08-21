@@ -44,19 +44,23 @@ export const demandApi = {
     }
   },
 
-  getList: async (params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> }): Promise<PagedResponse<DemandGetDto>> => {
+  getList: async (
+    params: PagedParams & { filters?: PagedFilter[] | Record<string, unknown> },
+    signal?: AbortSignal
+  ): Promise<PagedResponse<DemandGetDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<DemandGetDto>>>(
       '/api/Demand/related/query',
       {
         pageNumber: params.pageNumber ?? 1,
         pageSize: params.pageSize ?? 10,
-      search: params.search ?? '',
-      searchFields: params.search ? params.searchFields : undefined,
+        search: params.search ?? '',
+        searchFields: params.search ? params.searchFields : undefined,
         sortBy: params.sortBy ?? 'Id',
         sortDirection: params.sortDirection ?? 'asc',
         filterLogic: params.filterLogic ?? 'and',
         filters: params.filters ?? [],
-      }
+      },
+      { signal }
     );
     
     if (response.success && response.data) {
@@ -307,7 +311,10 @@ export const demandApi = {
     }
   },
 
-  getWaitingApprovals: async (params: PagedParams): Promise<PagedResponse<ApprovalActionGetDto>> => {
+  getWaitingApprovals: async (
+    params: PagedParams,
+    signal?: AbortSignal
+  ): Promise<PagedResponse<ApprovalActionGetDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<ApprovalActionGetDto>>>(
       '/api/demand/waiting-approvals/query',
       {
@@ -319,7 +326,8 @@ export const demandApi = {
         sortDirection: params.sortDirection ?? 'asc',
         filterLogic: params.filterLogic ?? 'and',
         filters: params.filters ?? [],
-      }
+      },
+      { signal }
     );
     if (response.success && response.data) {
       return normalizePagedResponse<ApprovalActionGetDto>(response.data, {

@@ -13,8 +13,10 @@ export const useOrderList = (
 ): UseQueryResult<PagedResponse<OrderGetDto>, Error> => {
   return useQuery({
     queryKey: queryKeys.orders(params),
-    queryFn: () =>
-      fetchPagedDocumentList<OrderGetDto>(params, (queryParams) => orderApi.getList(queryParams)),
+    queryFn: ({ signal }) =>
+      fetchPagedDocumentList<OrderGetDto>(params, (queryParams) =>
+        orderApi.getList(queryParams, signal)
+      ),
     staleTime: 2 * 60 * 1000,
     refetchOnMount: 'always',
   });
