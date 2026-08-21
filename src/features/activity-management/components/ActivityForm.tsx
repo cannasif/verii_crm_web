@@ -259,7 +259,7 @@ export function ActivityForm({
   const {
     data: customerOptions = [],
     isFetched: hasCustomerOptionsLoaded,
-  } = useCustomerOptions(watchedAssignedUserId);
+  } = useCustomerOptions(watchedAssignedUserId, open);
 
   const { fields: reminderFields, append: appendReminder, remove: removeReminder } = useFieldArray({
     control: form.control,
@@ -300,7 +300,7 @@ export function ActivityForm({
       });
       return response.data || [];
     },
-    enabled: !!watchedCustomerId,
+    enabled: open && !!watchedCustomerId,
     staleTime: 5 * 60 * 1000,
   });
   const contactOptions = contactData || [];

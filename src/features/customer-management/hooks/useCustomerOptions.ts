@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { customerApi } from '../api/customer-api';
 import type { CustomerDto } from '../types/customer-types';
 
-export const useCustomerOptions = (contextUserId?: number | null) => {
+export const useCustomerOptions = (contextUserId?: number | null, enabled = true) => {
   return useQuery({
     queryKey: ['customerOptions', contextUserId ?? null],
     queryFn: async (): Promise<CustomerDto[]> => {
@@ -15,6 +15,7 @@ export const useCustomerOptions = (contextUserId?: number | null) => {
       });
       return response.data || [];
     },
+    enabled,
     staleTime: 5 * 60 * 1000,
   });
 };
