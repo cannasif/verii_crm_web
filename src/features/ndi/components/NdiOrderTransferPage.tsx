@@ -48,6 +48,9 @@ interface NdiOrderLine {
   stockName: string;
   quantity: number;
   unitPrice: number;
+  iskonto1?: number | null;
+  iskonto2?: number | null;
+  iskonto3?: number | null;
   foreignUnitPrice?: number | null;
   currencyType?: number | null;
   currencyRate?: number | null;
@@ -71,6 +74,9 @@ interface NdiPreparedLine {
   sourceQuantity: number;
   transferQuantity: number;
   unitPrice: number;
+  iskonto1?: number | null;
+  iskonto2?: number | null;
+  iskonto3?: number | null;
   foreignUnitPrice?: number | null;
   currencyType?: number | null;
   currencyRate?: number | null;
@@ -128,15 +134,20 @@ interface NdiPreparedTransfer {
   previewDocuments: NdiTransferPreviewDocumentDto[];
   lines: NdiPreparedLine[];
   warnings: string[];
+  preparationId: string;
+  preparedAtUtc: string;
+  preparedRequest: NdiTransferCreateRequest;
 }
 
-function buildNdiTransferRequest(transfer: NdiPreparedTransfer): NdiTransferCreateRequest {
-  assertPreparedSeriesIntegrity(transfer);
+function buildNdiTransferDraftRequest(transfer: Omit<NdiPreparedTransfer, 'preparationId' | 'preparedAtUtc' | 'preparedRequest'>): NdiTransferCreateRequest {
   return {
     mode: transfer.mode,
     dispatchSeries: transfer.dispatchSeries,
     invoiceSeries: transfer.invoiceSeries,
     quantityMode: transfer.quantityMode,
+    isPrepared: false,
+    preparationId: null,
+    preparedAtUtc: null,
     manualDocuments: transfer.manualDocuments,
     documents: transfer.createdDocuments.map((document) => ({
       sourceDocumentNo: document.sourceDocumentNo,
@@ -159,39 +170,35 @@ function buildNdiTransferRequest(transfer: NdiPreparedTransfer): NdiTransferCrea
       customerName: document.customerName,
       description: document.description,
       date: document.date,
-      lines: transfer.lines
-        .filter((line) => line.orderNo === document.sourceDocumentNo)
-        .map((line) => ({
-          sourceLineId: line.id,
-          sourceLineNo: line.sourceLineNo,
-          stockCode: line.stockCode,
-          stockName: line.stockName,
-          sourceQuantity: line.sourceQuantity,
-          quantity: line.transferQuantity,
-          unitPrice: line.unitPrice,
-          foreignUnitPrice: line.foreignUnitPrice,
-          currencyType: line.currencyType,
-          currencyRate: line.currencyRate,
-          exchangeRate: line.exchangeRate,
-          unit: line.unit,
-          sourceWarehouse: line.sourceWarehouse,
-          targetWarehouse: line.targetWarehouse,
-          vatRate: line.targetVat,
-          ekalan: line.ekalan,
-          ekalan1: line.ekalan1,
-        })),
+      // Hazırlama isteğinde tarayıcıdaki kalemler kaynak kabul edilmez. API önce
+      // hazırlama FN/prosedürünü çalıştıracak, sonra kalemleri ERP'den yeniden okuyacaktır.
+      lines: [],
     })),
   };
 }
 
+function getPreparedNdiTransferRequest(transfer: NdiPreparedTransfer): NdiTransferCreateRequest {
+  assertPreparedSeriesIntegrity(transfer);
+  if (!transfer.preparedRequest.isPrepared
+    || transfer.preparedRequest.preparationId !== transfer.preparationId
+    || transfer.preparedRequest.preparedAtUtc !== transfer.preparedAtUtc) {
+    throw new Error('ERP kalem hazırlama snapshotı geçersiz. Kalemleri yeniden hazırlayın.');
+  }
+
+  return transfer.preparedRequest;
+}
+
 function assertPreparedSeriesIntegrity(transfer: NdiPreparedTransfer): void {
+  const plannedDocuments = transfer.previewDocuments.length > 0
+    ? transfer.previewDocuments
+    : transfer.createdDocuments;
   if (transfer.mode === 'automatic') {
     if (!isValidNdiSeries(transfer.invoiceSeries)) {
       throw new Error('NDI fatura serisi seçimi kayboldu. Belge gönderilmedi; seriyi yeniden seçin.');
     }
 
-    transfer.createdDocuments.forEach((document) => {
-      const selectedSeries = document.documentType === 'İrsaliye'
+    plannedDocuments.forEach((document) => {
+      const selectedSeries = document.documentType.includes('İrsaliye')
         ? transfer.dispatchSeries
         : transfer.invoiceSeries;
       if (!isValidNdiSeries(selectedSeries)
@@ -208,13 +215,31 @@ function assertPreparedSeriesIntegrity(transfer: NdiPreparedTransfer): void {
     `${selection.targetNetsisCompany.trim().toUpperCase()}|${selection.documentType}`,
     normalizeNdiSeriesInput(selection.targetSeries),
   ]));
+  transfer.manualDocuments.forEach((selection) => {
+    if (selection.documentType === 'Fatura'
+      && selection.targetNetsisCompany.trim().toUpperCase() !== 'SIRKET24'
+      && !manualSeries.has(`${selection.targetNetsisCompany.trim().toUpperCase()}|İrsaliye`)) {
+      manualSeries.set(
+        `${selection.targetNetsisCompany.trim().toUpperCase()}|İrsaliye`,
+        normalizeNdiSeriesInput(selection.dispatchSeries)
+      );
+    }
+  });
   if (transfer.manualDocuments.length === 0
-    || transfer.manualDocuments.some((selection) => !isValidNdiSeries(selection.targetSeries))) {
+    || transfer.manualDocuments.some((selection) =>
+      !isValidNdiSeries(selection.targetSeries)
+      || (selection.documentType === 'Fatura'
+        && selection.targetNetsisCompany.trim().toUpperCase() !== 'SIRKET24'
+        && !transfer.manualDocuments.some((candidate) =>
+          candidate.targetNetsisCompany === selection.targetNetsisCompany
+          && candidate.documentType === 'İrsaliye')
+        && !isValidNdiSeries(selection.dispatchSeries)))) {
     throw new Error('Manuel NDI belge planındaki seri seçimi geçersiz. Belge gönderilmedi; serileri yeniden seçin.');
   }
 
-  transfer.createdDocuments.forEach((document) => {
-    const key = `${document.targetNetsisCompany.trim().toUpperCase()}|${document.documentType}`;
+  plannedDocuments.forEach((document) => {
+    const normalizedDocumentType = document.documentType.includes('İrsaliye') ? 'İrsaliye' : 'Fatura';
+    const key = `${document.targetNetsisCompany.trim().toUpperCase()}|${normalizedDocumentType}`;
     const selectedSeries = manualSeries.get(key);
     if (!selectedSeries
       || !isValidNdiSeries(selectedSeries)
@@ -703,8 +728,8 @@ function resolveQuantityRule(order: NdiOrder, lines: NdiOrderLine[], rule: NdiTr
     return {
       label: '1/4',
       requestedQuantity,
-      transferQuantity: requestedQuantity / 4,
-      note: `Kullanıcı 1/4 aktarımı seçti: ${numberFormatter.format(requestedQuantity)} miktarın ${numberFormatter.format(requestedQuantity / 4)} kadarı aktarılır.`,
+      transferQuantity: requestedQuantity,
+      note: '1/4 kuralı hazırlama FN/prosedürüne iletilir; kesin aktarım miktarı ERP’den yeniden okunan kalemden alınır.',
     };
   }
 
@@ -718,13 +743,11 @@ function resolveQuantityRule(order: NdiOrder, lines: NdiOrderLine[], rule: NdiTr
   }
 
   if (description.includes('1/4')) {
-    const transferQuantity = requestedQuantity / 4;
-
     return {
       label: '1/4',
       requestedQuantity,
-      transferQuantity,
-      note: `1/4 kuralı: seçilen ${numberFormatter.format(requestedQuantity)} adet kalan miktarın ${numberFormatter.format(transferQuantity)} adedi aktarılır.`,
+      transferQuantity: requestedQuantity,
+      note: 'Sipariş açıklamasındaki 1/4 kuralı hazırlama FN/prosedürüne iletilir; miktar tarayıcıda hesaplanmaz.',
     };
   }
 
@@ -745,9 +768,9 @@ function resolveManualQuantityRule(
   return {
     label: isQuarter ? '1/4' : 'Tam',
     requestedQuantity,
-    transferQuantity: isQuarter ? requestedQuantity / 4 : requestedQuantity,
+    transferQuantity: requestedQuantity,
     note: isQuarter
-      ? `Manuel 1/4 seçimi: ${numberFormatter.format(requestedQuantity)} miktarın ${numberFormatter.format(requestedQuantity / 4)} kadarı aktarılır.`
+      ? 'Manuel 1/4 kuralı hazırlama FN/prosedürüne iletilir; kesin miktar ERP’den yeniden okunur.'
       : 'Manuel seçimde kalan miktarın tamamı aktarılır.',
   };
 }
@@ -905,6 +928,9 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, indexInFis: number
     stockName: line.stokAdi || line.stokKodu,
     quantity,
     unitPrice,
+    iskonto1: line.iskonto1 ?? null,
+    iskonto2: line.iskonto2 ?? null,
+    iskonto3: line.iskonto3 ?? null,
     foreignUnitPrice,
     currencyType,
     currencyRate,
@@ -974,7 +1000,6 @@ export function NdiOrderTransferPage(): ReactElement {
   const [dispatchSeries, setDispatchSeries] = useState('');
   const [invoiceSeries, setInvoiceSeries] = useState('');
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<string>>(() => new Set());
-  const [selectedLineIds, setSelectedLineIds] = useState<Set<string>>(() => new Set());
   const [checkingOrderId, setCheckingOrderId] = useState<string | null>(null);
   const [selectionRuleError, setSelectionRuleError] = useState<string | null>(null);
   const [prepareAttempted, setPrepareAttempted] = useState(false);
@@ -987,7 +1012,6 @@ export function NdiOrderTransferPage(): ReactElement {
   const [transferResult, setTransferResult] = useState<NdiTransferCreateResponseDto | null>(null);
   const [transferResultDialog, setTransferResultDialog] = useState<NdiTransferCreateResponseDto | null>(null);
   const preparedTransferRef = useRef<HTMLDivElement | null>(null);
-  const previousLineIdsRef = useRef<Set<string>>(new Set());
   const {
     expanded: rulesPanelExpanded,
     toggle: toggleRulesPanel,
@@ -1047,42 +1071,6 @@ export function NdiOrderTransferPage(): ReactElement {
     [linesQuery.data, ordersById]
   );
 
-  const lineIdsKey = useMemo(() => selectedOrderLines.map((line) => line.id).join('|'), [selectedOrderLines]);
-
-  useEffect(() => {
-    if (selectedIrsNoList.length === 0) {
-      previousLineIdsRef.current = new Set();
-      setSelectedLineIds((current) => (current.size === 0 ? current : new Set()));
-      return;
-    }
-
-    if (!linesQuery.data) {
-      return;
-    }
-
-    const currentLineIds = selectedOrderLines.map((line) => line.id);
-    const previousLineIds = previousLineIdsRef.current;
-
-    setSelectedLineIds((current) => {
-      const next = new Set<string>();
-
-      currentLineIds.forEach((lineId) => {
-        const isNewlyAppeared = !previousLineIds.has(lineId);
-        if (isNewlyAppeared || current.has(lineId)) {
-          next.add(lineId);
-        }
-      });
-
-      if (next.size === current.size && [...next].every((lineId) => current.has(lineId))) {
-        return current;
-      }
-
-      return next;
-    });
-
-    previousLineIdsRef.current = new Set(currentLineIds);
-  }, [lineIdsKey, linesQuery.data, selectedIrsNoList, selectedOrderLines]);
-
   const lineCountByOrderNo = useMemo(() => {
     const counts = new Map<string, number>();
     selectedOrderLines.forEach((line) => counts.set(line.orderNo, (counts.get(line.orderNo) ?? 0) + 1));
@@ -1112,10 +1100,9 @@ export function NdiOrderTransferPage(): ReactElement {
     });
   }, [orders, search]);
 
-  const selectedLines = useMemo(
-    () => selectedOrderLines.filter((line) => selectedLineIds.has(line.id)),
-    [selectedOrderLines, selectedLineIds]
-  );
+  // NDI hazırlama birimi satır seçimi değil, üst bilgiden seçilen irsaliyedir.
+  // Hazırlama endpoint'i bu irsaliyelerin tüm kalemlerini ERP'den yeniden okur.
+  const selectedLines = selectedOrderLines;
   const selectedQuantity = useMemo(
     () => selectedLines.reduce((total, line) => total + line.remainingQuantity, 0),
     [selectedLines]
@@ -1276,10 +1263,13 @@ export function NdiOrderTransferPage(): ReactElement {
   const batchAction = useMemo(() => resolveBatchAction(ruleOutcomes), [ruleOutcomes]);
   const blockedRuleCount = ruleOutcomes.reduce((total, outcome) => total + outcome.blocks.length, 0);
   const warningCount = ruleOutcomes.reduce((total, outcome) => total + outcome.warnings.length, 0);
-  const selectedLinesWithoutPrice = selectedLines.filter((line) => line.unitPrice <= 0);
   const needsDispatchSeries = transferMode === 'manual'
-    ? manualDocuments.some((selection) => selection.documentType === 'İrsaliye')
-    : ruleOutcomes.some((outcome) => outcome.action === 'IRSALIYELISTIR');
+    ? manualDocuments.some((selection) =>
+      selection.documentType === 'İrsaliye'
+      || (selection.documentType === 'Fatura' && selection.targetNetsisCompany !== 'SIRKET24'))
+    : ruleOutcomes.some((outcome) =>
+      outcome.action === 'IRSALIYELISTIR'
+      || (outcome.action === 'FATURALASTIR' && outcome.targetNetsisCompany !== 'SIRKET24'));
   const needsInvoiceSeries = transferMode === 'manual'
     ? manualDocuments.some((selection) => selection.documentType === 'Fatura')
     : true;
@@ -1291,12 +1281,19 @@ export function NdiOrderTransferPage(): ReactElement {
   );
   const hasValidManualDocuments = manualDocuments.length > 0 && manualDocuments.every((selection) => {
     const target = selection.targetNetsisCompany as NdiManualTarget;
-    const options = getDocumentSeriesOptions(
-      manualDocumentSeriesByTarget.get(target) ?? [],
-      selection.documentType
-    );
+    const rows = manualDocumentSeriesByTarget.get(target) ?? [];
+    const options = getDocumentSeriesOptions(rows, selection.documentType);
+    const explicitDispatchSelected = manualDocuments.some((candidate) =>
+      candidate.targetNetsisCompany === target && candidate.documentType === 'İrsaliye');
+    const prerequisiteDispatchValid = selection.documentType !== 'Fatura'
+      || target === 'SIRKET24'
+      || explicitDispatchSelected
+      || (isValidNdiSeries(selection.dispatchSeries)
+        && getDocumentSeriesOptions(rows, 'İrsaliye').some(
+          (option) => option.value === selection.dispatchSeries));
     return isValidNdiSeries(selection.targetSeries)
-      && options.some((option) => option.value === selection.targetSeries);
+      && options.some((option) => option.value === selection.targetSeries)
+      && prerequisiteDispatchValid;
   });
   const hasValidDocumentSeries = transferMode === 'manual'
     ? hasValidManualDocuments
@@ -1325,12 +1322,10 @@ export function NdiOrderTransferPage(): ReactElement {
       .map((index) => manualDocumentSeriesQueries[index]?.error)
       .find((error): error is Error => error instanceof Error)?.message
       ?? 'Seçilen hedef şirketin cari belge serileri doğrulanamadı.';
-  const canPrepareSelectedLines = selectedLines.length > 0
+  const canPrepareSelectedLines = selectedOrdersForTransfer.length > 0
     && blockedRuleCount === 0
-    && selectedLinesWithoutPrice.length === 0
     && hasValidDocumentSeries;
-  const prepareDisabled = selectedLines.length === 0
-    || linesQuery.isFetching
+  const prepareDisabled = selectedOrdersForTransfer.length === 0
     || orderChecksQuery.isFetching
     || isPreparingTransfer
     || documentSeriesLookupPending
@@ -1417,52 +1412,12 @@ export function NdiOrderTransferPage(): ReactElement {
     setSuccessDialogTransfer(null);
   }, [selectedCustomerCode, selectedSeriesCompany]);
 
-  const toggleLine = (lineId: string) => {
-    setPreparedTransfer(null);
-    setSuccessDialogTransfer(null);
-    setTransferResult(null);
-    setTransferResultDialog(null);
-    setSendError(null);
-    setPrepareAttempted(false);
-    setPrepareError(null);
-    setSelectedLineIds((current) => {
-      const next = new Set(current);
-      if (next.has(lineId)) {
-        next.delete(lineId);
-      } else {
-        next.add(lineId);
-      }
-      return next;
-    });
-  };
-
-  const toggleAllLines = () => {
-    setPreparedTransfer(null);
-    setSuccessDialogTransfer(null);
-    setTransferResult(null);
-    setTransferResultDialog(null);
-    setSendError(null);
-    setPrepareAttempted(false);
-    setPrepareError(null);
-    setSelectedLineIds((current) => {
-      const allLineIds = selectedOrderLines.map((line) => line.id);
-      const selectedInGroupCount = allLineIds.filter((lineId) => current.has(lineId)).length;
-
-      if (selectedInGroupCount === allLineIds.length) {
-        return new Set();
-      }
-
-      return new Set(allLineIds);
-    });
-  };
-
   const resetSelection = () => {
     setSearch('');
     setTransferMode('automatic');
     setManualDocuments([]);
     setQuantityMode('auto');
     setSelectedOrderIds(new Set());
-    setSelectedLineIds(new Set());
     setCheckingOrderId(null);
     setSelectionRuleError(null);
     setPrepareAttempted(false);
@@ -1505,7 +1460,12 @@ export function NdiOrderTransferPage(): ReactElement {
           selection.targetNetsisCompany !== target || selection.documentType !== documentType);
       }
 
-      return [...current, { targetNetsisCompany: target, documentType, targetSeries: '' }];
+      return [...current, {
+        targetNetsisCompany: target,
+        documentType,
+        targetSeries: '',
+        dispatchSeries: '',
+      }];
     });
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
@@ -1518,12 +1478,15 @@ export function NdiOrderTransferPage(): ReactElement {
   const changeManualDocumentSeries = (
     target: NdiManualTarget,
     documentType: NdiManualDocumentType,
-    value: string
+    value: string,
+    seriesType: 'target' | 'dispatch' = 'target'
   ) => {
     const normalizedValue = normalizeNdiSeriesInput(value);
     setManualDocuments((current) => current.map((selection) =>
       selection.targetNetsisCompany === target && selection.documentType === documentType
-        ? { ...selection, targetSeries: normalizedValue }
+        ? seriesType === 'dispatch'
+          ? { ...selection, dispatchSeries: normalizedValue }
+          : { ...selection, targetSeries: normalizedValue }
         : selection));
     setPreparedTransfer(null);
     setSuccessDialogTransfer(null);
@@ -1579,11 +1542,8 @@ export function NdiOrderTransferPage(): ReactElement {
     try {
       const outcomeByOrderNo = new Map(ruleOutcomes.map((outcome) => [outcome.orderNo, outcome]));
 
-      const preparedLines = selectedLines.map((line) => {
+      const draftLines = selectedOrderLines.map((line) => {
         const outcome = outcomeByOrderNo.get(line.orderNo);
-        const lineRatio = outcome && outcome.requestedQuantity > 0
-          ? outcome.transferQuantity / outcome.requestedQuantity
-          : 1;
         const lineIdParts = line.id.split('::');
         const sourceLineNo = Number(lineIdParts[lineIdParts.length - 1] ?? 0) + 1;
 
@@ -1593,11 +1553,15 @@ export function NdiOrderTransferPage(): ReactElement {
           orderNo: line.orderNo,
           stockCode: line.stockCode,
           stockName: line.stockName,
-          sourceQuantity: line.remainingQuantity,
-          transferQuantity: Math.max(0, line.remainingQuantity * lineRatio),
-        unitPrice: line.unitPrice,
-        foreignUnitPrice: line.foreignUnitPrice,
-        currencyType: line.currencyType,
+          sourceQuantity: line.quantity,
+          // Kesin miktar prepare endpoint'inin ERP'den yeniden okuduğu snapshot ile değiştirilecek.
+          transferQuantity: line.remainingQuantity,
+          unitPrice: line.unitPrice,
+          iskonto1: line.iskonto1,
+          iskonto2: line.iskonto2,
+          iskonto3: line.iskonto3,
+          foreignUnitPrice: line.foreignUnitPrice,
+          currencyType: line.currencyType,
           currencyRate: line.currencyRate,
           exchangeRate: line.exchangeRate,
           lineSpecialCode1: line.lineSpecialCode1,
@@ -1645,19 +1609,21 @@ export function NdiOrderTransferPage(): ReactElement {
           orderTipi: order.orderTipi,
           projectCode: order.projectCode,
           followUpNote: transferMode === 'manual'
-            ? 'Manuel seçimde yalnız seçilen hedef belge oluşturulacak; otomatik takip faturası oluşturulmayacak.'
+            ? 'Manuel fatura seçiminde önce hedef irsaliye oluşturulur; fatura bu gerçek irsaliye numarasından IrsToFat ile üretilir.'
             : outcome?.targetNetsisCompany === 'SIRKET24'
               ? 'Kaynak irsaliyeler yalnız ŞİRKET24 bağlantılı faturasında birleştirilecek.'
-              : 'Hedef belge ayrıca faturalaştırılmayacak; kaynak ŞİRKET24 irsaliyeleri bağlantılı tek faturada birleştirilecek.',
+              : outcome?.action === 'FATURALASTIR'
+                ? 'Hedefte önce tek irsaliye oluşturulacak ve IrsToFat ile faturalaştırılacak; kaynak ŞİRKET24 irsaliyeleri ayrıca bağlantılı tek faturada birleştirilecek.'
+                : 'Hedefte yalnız irsaliye oluşturulacak; kaynak ŞİRKET24 irsaliyeleri bağlantılı tek faturada birleştirilecek.',
           customerCode: order.customerCode,
           customerName: order.customer,
           description: order.description,
           date: order.documentDate,
-          lineCount: preparedLines.filter((line) => line.orderNo === order.orderNo).length,
+          lineCount: draftLines.filter((line) => line.orderNo === order.orderNo).length,
         };
       });
 
-      const transfer: NdiPreparedTransfer = {
+      const draftTransfer: Omit<NdiPreparedTransfer, 'preparationId' | 'preparedAtUtc' | 'preparedRequest'> = {
         actionLabel: transferMode === 'manual'
           ? `${manualDocuments.length} manuel hedef belge oluştur`
           : batchAction.action ? getActionLabel(batchAction.action) : 'Uyumluluk gruplarına göre oluştur',
@@ -1672,30 +1638,72 @@ export function NdiOrderTransferPage(): ReactElement {
           : Array.from(new Set(ruleOutcomes.map((outcome) => outcome.targetNetsisCompany))),
         documentNos: selectedOrdersForTransfer.map((order) => order.orderNo),
         createdDocuments,
-        lineCount: preparedLines.length,
-        totalSourceQuantity: preparedLines.reduce((total, line) => total + line.sourceQuantity, 0),
-        totalTransferQuantity: preparedLines.reduce((total, line) => total + line.transferQuantity, 0),
+        lineCount: draftLines.length,
+        totalSourceQuantity: draftLines.reduce((total, line) => total + line.sourceQuantity, 0),
+        totalTransferQuantity: draftLines.reduce((total, line) => total + line.transferQuantity, 0),
         targetDocumentGroupCount: 0,
         sirket24InvoiceGroupCount: 0,
         previewDocuments: [],
-        lines: preparedLines,
+        lines: draftLines,
         warnings: ruleOutcomes.flatMap((outcome) => outcome.warnings),
       };
-      const apiPreview = await ndiApi.previewNdiTransfer(buildNdiTransferRequest(transfer));
+      const preparedResult = await ndiApi.prepareNdiTransfer(buildNdiTransferDraftRequest(draftTransfer));
+      const apiPreview = preparedResult.preview;
       if (apiPreview.documents.length === 0) {
         throw new Error('API geçerli bir NDI belge planı döndürmedi. Netsis aktarımı başlatılmadı.');
       }
 
-      transfer.targetDocumentGroupCount = apiPreview.targetDocumentGroupCount;
-      transfer.sirket24InvoiceGroupCount = apiPreview.sirket24InvoiceGroupCount;
-      transfer.previewDocuments = apiPreview.documents;
-      transfer.sourceNetsisCompanies = Array.from(new Set(
-        apiPreview.documents.map((document) => document.sourceNetsisCompany)
-      ));
-      transfer.targetNetsisCompanies = Array.from(new Set(
-        apiPreview.documents.map((document) => document.targetNetsisCompany)
-      ));
-      transfer.warnings = Array.from(new Set([...transfer.warnings, ...apiPreview.warnings]));
+      const preparedLines: NdiPreparedLine[] = preparedResult.preparedRequest.documents.flatMap((document) =>
+        document.lines.map((line, index) => ({
+          id: line.sourceLineId || `${document.sourceDocumentNo}::${line.stockCode}::${index}`,
+          sourceLineNo: line.sourceLineNo ?? index + 1,
+          orderNo: document.sourceDocumentNo,
+          stockCode: line.stockCode,
+          stockName: line.stockName || line.stockCode,
+          sourceQuantity: Number(line.sourceQuantity ?? line.quantity),
+          transferQuantity: Number(line.quantity),
+          unitPrice: Number(line.unitPrice ?? 0),
+          iskonto1: line.iskonto1,
+          iskonto2: line.iskonto2,
+          iskonto3: line.iskonto3,
+          foreignUnitPrice: line.foreignUnitPrice,
+          currencyType: line.currencyType,
+          currencyRate: line.currencyRate,
+          exchangeRate: line.exchangeRate,
+          lineSpecialCode1: null,
+          unit: line.unit || '-',
+          sourceWarehouse: line.sourceWarehouse || '',
+          targetWarehouse: line.targetWarehouse || line.sourceWarehouse || '',
+          targetVat: line.vatRate ?? null,
+          ekalan: line.ekalan,
+          ekalan1: line.ekalan1,
+        }))
+      );
+      const preparedDocuments = draftTransfer.createdDocuments.map((document) => ({
+        ...document,
+        lineCount: preparedLines.filter((line) => line.orderNo === document.sourceDocumentNo).length,
+      }));
+      const transfer: NdiPreparedTransfer = {
+        ...draftTransfer,
+        preparationId: preparedResult.preparationId,
+        preparedAtUtc: preparedResult.preparedAtUtc,
+        preparedRequest: preparedResult.preparedRequest,
+        createdDocuments: preparedDocuments,
+        lineCount: preparedLines.length,
+        totalSourceQuantity: preparedLines.reduce((total, line) => total + line.sourceQuantity, 0),
+        totalTransferQuantity: preparedLines.reduce((total, line) => total + line.transferQuantity, 0),
+        targetDocumentGroupCount: apiPreview.targetDocumentGroupCount,
+        sirket24InvoiceGroupCount: apiPreview.sirket24InvoiceGroupCount,
+        previewDocuments: apiPreview.documents,
+        sourceNetsisCompanies: Array.from(new Set(
+          apiPreview.documents.map((document) => document.sourceNetsisCompany)
+        )),
+        targetNetsisCompanies: Array.from(new Set(
+          apiPreview.documents.map((document) => document.targetNetsisCompany)
+        )),
+        lines: preparedLines,
+        warnings: Array.from(new Set([...draftTransfer.warnings, ...apiPreview.warnings])),
+      };
 
       setPreparedTransfer(transfer);
       setSuccessDialogTransfer(transfer);
@@ -1720,14 +1728,13 @@ export function NdiOrderTransferPage(): ReactElement {
     setIsSendingTransfer(true);
 
     try {
-      const result = await ndiApi.createNdiTransfer(buildNdiTransferRequest(transfer));
+      const result = await ndiApi.createNdiTransfer(getPreparedNdiTransferRequest(transfer));
 
       setTransferResult(result);
       setTransferResultDialog(result);
       setSuccessDialogTransfer(null);
       if (result.createdDocuments.length > 0) {
         setSelectedOrderIds(new Set());
-        setSelectedLineIds(new Set());
         setPreparedTransfer(null);
         await Promise.all([dispatchesQuery.refetch(), transferredQuery.refetch()]);
       }
@@ -1763,7 +1770,7 @@ export function NdiOrderTransferPage(): ReactElement {
             <NdiConnectionTestDialog />
             <div className="grid grid-cols-3 gap-2 text-sm">
               <MetricPill label="Grup" value={`${selectedPrefix} / ${selectedOrders.length} belge`} />
-              <MetricPill label="Seçili Kalem" value={String(selectedLines.length)} />
+              <MetricPill label="Hazırlanacak Kalem" value={String(selectedLines.length)} />
               <MetricPill label="Miktar" value={numberFormatter.format(selectedQuantity)} />
             </div>
           </div>
@@ -2057,6 +2064,12 @@ export function NdiOrderTransferPage(): ReactElement {
                           const selection = manualDocuments.find((item) =>
                             item.targetNetsisCompany === target && item.documentType === documentType);
                           const options = getDocumentSeriesOptions(rows, documentType);
+                          const dispatchOptions = getDocumentSeriesOptions(rows, 'İrsaliye');
+                          const hasExplicitDispatchSelection = manualDocuments.some((item) =>
+                            item.targetNetsisCompany === target && item.documentType === 'İrsaliye');
+                          const needsPrerequisiteDispatch = documentType === 'Fatura'
+                            && target !== 'SIRKET24'
+                            && !hasExplicitDispatchSelection;
                           const selected = Boolean(selection);
                           return (
                             <div key={documentType} className={`rounded-md border p-2 ${selected ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-white/10'}`}>
@@ -2085,6 +2098,33 @@ export function NdiOrderTransferPage(): ReactElement {
                                     searchable={false}
                                     className="h-10 text-xs font-black"
                                   />
+                                  {needsPrerequisiteDispatch ? (
+                                    <div className="mt-2 rounded-md border border-blue-200 bg-blue-50/70 p-2 dark:border-blue-400/30 dark:bg-blue-950/20">
+                                      <span className="mb-1.5 block text-[11px] font-black text-blue-900 dark:text-blue-100">
+                                        Önce oluşturulacak irsaliye serisi
+                                      </span>
+                                      <Combobox
+                                        options={dispatchOptions}
+                                        value={selection?.dispatchSeries ?? ''}
+                                        onValueChange={(value) => changeManualDocumentSeries(
+                                          target,
+                                          documentType,
+                                          value,
+                                          'dispatch'
+                                        )}
+                                        placeholder="İrsaliye serisi seçin"
+                                        emptyText={query?.isError ? 'Seriler alınamadı.' : 'Uygun irsaliye serisi bulunamadı.'}
+                                        disabled={!selectedCustomerCode || query?.isError}
+                                        isLoading={query?.isFetching ?? false}
+                                        loadingText="Seriler yükleniyor..."
+                                        searchable={false}
+                                        className="h-10 text-xs font-black"
+                                      />
+                                      <span className="mt-1.5 block text-[10px] font-semibold text-blue-800 dark:text-blue-200">
+                                        Fatura doğrudan kesilmez; bu seriyle oluşan irsaliye IrsToFat ile faturalaştırılır.
+                                      </span>
+                                    </div>
+                                  ) : null}
                                 </div>
                               ) : null}
                             </div>
@@ -2249,8 +2289,8 @@ export function NdiOrderTransferPage(): ReactElement {
                     <AlertCircle size={16} /> Seçili kalemler henüz hazırlanamaz
                   </div>
                   <div className="mt-2 space-y-1">
-                    {selectedLines.length === 0 ? (
-                      <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">En az bir satır seçilmelidir.</div>
+                    {selectedOrdersForTransfer.length === 0 ? (
+                      <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">En az bir irsaliye üst bilgisi seçilmelidir.</div>
                     ) : null}
                     {transferMode === 'manual' && manualDocuments.length === 0 ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">En az bir hedef firma ve belge türü işaretlenmelidir.</div>
@@ -2276,11 +2316,6 @@ export function NdiOrderTransferPage(): ReactElement {
                     {transferMode === 'automatic' && needsInvoiceSeries && isValidNdiSeries(invoiceSeries) && !hasSelectedInvoiceSeries ? (
                       <div className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">Fatura serisi cari belge serileri fonksiyonundan gelen seçeneklerden seçilmelidir.</div>
                     ) : null}
-                    {selectedLinesWithoutPrice.map((line) => (
-                      <div key={`price-${line.id}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
-                        {line.orderNo} / {line.stockCode}: Netsis aktarımı için satır fiyatı yok veya 0. Kaynak irsaliye fonksiyonu NET_FIYAT döndürmelidir.
-                      </div>
-                    ))}
                     {ruleOutcomes.flatMap((outcome) => outcome.blocks.map((block) => (
                       <div key={`${outcome.orderNo}-${block}`} className="rounded-md bg-white px-2 py-1 text-xs font-bold text-[#7f1d1d]">
                         {outcome.orderNo}: {block}
@@ -2341,30 +2376,26 @@ export function NdiOrderTransferPage(): ReactElement {
           <div className="border-b border-slate-300 dark:border-white/20" />
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1320px] border-collapse text-sm">
+            <table className="w-full min-w-[1580px] border-collapse text-sm">
               <thead>
                 <tr className="border-b border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-strong)] text-left text-xs font-black uppercase tracking-[0.08em] text-[var(--crm-app-text-muted)]">
                   <th className={`w-14 ${NDI_TABLE_CELL}`}>
-                    <button
-                      type="button"
-                      onClick={toggleAllLines}
-                      disabled={selectedOrderLines.length === 0}
-                      className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] text-primary disabled:opacity-50"
-                      aria-label="Tüm satırları seç"
+                    <div
+                      className="flex h-8 w-8 items-center justify-center rounded-md border border-primary/30 bg-primary/10 text-primary"
+                      title="Seçili irsaliyelerin tüm kalemleri hazırlanır"
                     >
-                      {selectedOrderLines.length > 0 && selectedOrderLines.every((line) => selectedLineIds.has(line.id)) ? (
-                        <CheckCircle2 size={18} />
-                      ) : (
-                        <Circle size={18} />
-                      )}
-                    </button>
+                      <PackageCheck size={18} />
+                    </div>
                   </th>
                   <th className={NDI_TABLE_CELL}>İrsaliye</th>
                   <th className={NDI_TABLE_CELL}>Stok Kodu</th>
                   <th className={NDI_TABLE_CELL}>Stok Adı</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Miktar</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Bakiye</th>
-                        <th className={`${NDI_TABLE_CELL} text-right`}>TL Fiyatı</th>
+                  <th className={`${NDI_TABLE_CELL} text-right`}>TL Fiyatı</th>
+                  <th className={`${NDI_TABLE_CELL} text-right`}>İskonto 1 %</th>
+                  <th className={`${NDI_TABLE_CELL} text-right`}>İskonto 2 %</th>
+                  <th className={`${NDI_TABLE_CELL} text-right`}>İskonto 3 %</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Döviz Fiyatı</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Kur</th>
                   <th className={NDI_TABLE_CELL}>Depo/Teslim</th>
@@ -2375,13 +2406,13 @@ export function NdiOrderTransferPage(): ReactElement {
               <tbody>
                 {linesQuery.isFetching ? (
                   <tr>
-                    <td colSpan={12} className="px-4 py-10">
+                    <td colSpan={15} className="px-4 py-10">
                       <StatePanel icon={<Loader2 className="animate-spin" size={18} />} title="Kalemler yükleniyor" />
                     </td>
                   </tr>
                 ) : linesQuery.isError ? (
                   <tr>
-                    <td colSpan={12} className="px-4 py-10">
+                    <td colSpan={15} className="px-4 py-10">
                       <StatePanel
                         icon={<AlertCircle size={18} />}
                         title="Kalemler yüklenemedi"
@@ -2391,30 +2422,24 @@ export function NdiOrderTransferPage(): ReactElement {
                   </tr>
                 ) : selectedOrderLines.length === 0 ? (
                   <tr>
-                    <td colSpan={12} className="px-4 py-10">
+                    <td colSpan={15} className="px-4 py-10">
                       <StatePanel icon={<FileText size={18} />} title="Kalem bulunamadı" description="Satırları görmek için irsaliye seçin." />
                     </td>
                   </tr>
                 ) : (
                   selectedOrderLines.map((line) => {
-                    const isSelected = selectedLineIds.has(line.id);
-
                     return (
                       <tr
                         key={line.id}
-                        className={`border-b border-slate-300 dark:border-white/20 transition ${isSelected ? 'bg-primary/10' : 'bg-[var(--crm-app-panel)] hover:bg-[var(--crm-app-panel-muted)]'}`}
+                        className="border-b border-slate-300 bg-primary/10 transition dark:border-white/20"
                       >
                         <td className={NDI_TABLE_CELL}>
-                          <button
-                            type="button"
-                            onClick={() => toggleLine(line.id)}
-                            className={`flex h-8 w-8 items-center justify-center rounded-md border ${
-                              isSelected ? 'border-primary bg-primary text-white' : 'border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] text-muted-foreground'
-                            }`}
-                            aria-label="Satırı seç"
+                          <div
+                            className="flex h-8 w-8 items-center justify-center rounded-md border border-primary bg-primary text-white"
+                            title="Üst bilgiden seçilen irsaliyeye dahil"
                           >
-                            {isSelected ? <CheckCircle2 size={18} /> : <Circle size={18} />}
-                          </button>
+                            <CheckCircle2 size={18} />
+                          </div>
                         </td>
                         <td className={NDI_TABLE_CELL}>
                           <div className="font-black text-foreground">{line.orderNo}</div>
@@ -2439,10 +2464,19 @@ export function NdiOrderTransferPage(): ReactElement {
                           {line.unitPrice > 0 ? numberFormatter.format(line.unitPrice) : 'Fiyat yok'}
                         </td>
                         <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
-                            {line.foreignUnitPrice && line.foreignUnitPrice > 0 ? numberFormatter.format(line.foreignUnitPrice) : '-'}
+                          {line.iskonto1 == null ? '-' : numberFormatter.format(line.iskonto1)}
                         </td>
                         <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
-                            {line.currencyType || line.exchangeRate ? `${line.currencyType ?? '-'} / ${line.exchangeRate ? numberFormatter.format(line.exchangeRate) : '-'}` : '-'}
+                          {line.iskonto2 == null ? '-' : numberFormatter.format(line.iskonto2)}
+                        </td>
+                        <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
+                          {line.iskonto3 == null ? '-' : numberFormatter.format(line.iskonto3)}
+                        </td>
+                        <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
+                          {line.foreignUnitPrice && line.foreignUnitPrice > 0 ? numberFormatter.format(line.foreignUnitPrice) : '-'}
+                        </td>
+                        <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
+                          {line.currencyType || line.exchangeRate ? `${line.currencyType ?? '-'} / ${line.exchangeRate ? numberFormatter.format(line.exchangeRate) : '-'}` : '-'}
                         </td>
                         <td className={NDI_TABLE_CELL}>
                           <span className="inline-flex items-center gap-1 rounded-full bg-[var(--crm-app-panel-strong)] px-2 py-1 text-xs font-black text-muted-foreground">
@@ -2477,10 +2511,10 @@ export function NdiOrderTransferPage(): ReactElement {
                 <span className="inline-flex items-center gap-2">
                   <Loader2 size={16} className="animate-spin" /> API cevabı bekleniyor...
                 </span>
-              ) : selectedLines.length === 0 ? (
-                'Kalem Seçin'
+              ) : selectedOrdersForTransfer.length === 0 ? (
+                'İrsaliye Seçin'
               ) : (
-                'Seçili Kalemleri Hazırla'
+                'Kalemleri Hazırla'
               )}
             </button>
           </div>
@@ -2828,6 +2862,77 @@ function StatePanel({ icon, title, description }: { icon: ReactElement; title: s
   );
 }
 
+function PreparedLinesTable({
+  lines,
+  maxHeightClass = 'max-h-56',
+}: {
+  lines: NdiPreparedLine[];
+  maxHeightClass?: string;
+}): ReactElement {
+  return (
+    <div className={`overflow-auto rounded-md border border-[#d7e1ef] bg-white ${maxHeightClass}`}>
+      <table className="w-full min-w-[1320px] text-xs">
+        <thead className="sticky top-0 z-10 bg-[#edf3fb] text-left font-black uppercase tracking-[0.08em] text-[#536780]">
+          <tr>
+            <th className="px-3 py-2">İrsaliye</th>
+            <th className="px-3 py-2">Stok</th>
+            <th className="px-3 py-2 text-right">Kaynak</th>
+            <th className="px-3 py-2 text-right">Aktarım</th>
+            <th className="px-3 py-2 text-right">TL Fiyatı</th>
+            <th className="px-3 py-2 text-right">İskonto 1 %</th>
+            <th className="px-3 py-2 text-right">İskonto 2 %</th>
+            <th className="px-3 py-2 text-right">İskonto 3 %</th>
+            <th className="px-3 py-2 text-right">Döviz Fiyatı</th>
+            <th className="px-3 py-2 text-right">Kur</th>
+            <th className="px-3 py-2">Kaynak Depo</th>
+            <th className="px-3 py-2">Hedef Depo</th>
+            <th className="px-3 py-2">Ön Kontrol KDV</th>
+          </tr>
+        </thead>
+        <tbody>
+          {lines.map((line) => (
+            <tr key={line.id} className="border-t border-[#e4ebf4]">
+              <td className="px-3 py-2 font-black text-[#172033]">{line.orderNo}</td>
+              <td className="px-3 py-2">
+                <div className="font-black text-[#e11d73]">{line.stockCode}</div>
+                <div className="line-clamp-1 font-bold text-[#42536b]">{line.stockName}</div>
+                {line.lineSpecialCode1 && (
+                  <div className="text-xs font-bold text-[#718096]">Satır Kod1: {line.lineSpecialCode1}</div>
+                )}
+              </td>
+              <td className="px-3 py-2 text-right font-black">
+                {numberFormatter.format(line.sourceQuantity)} {line.unit}
+              </td>
+              <td className="px-3 py-2 text-right font-black text-[#047857]">
+                {numberFormatter.format(line.transferQuantity)} {line.unit}
+              </td>
+              <td className="px-3 py-2 text-right font-black text-[#172033]">{numberFormatter.format(line.unitPrice)}</td>
+              <td className="px-3 py-2 text-right font-bold text-[#536780]">
+                {line.iskonto1 == null ? '-' : numberFormatter.format(line.iskonto1)}
+              </td>
+              <td className="px-3 py-2 text-right font-bold text-[#536780]">
+                {line.iskonto2 == null ? '-' : numberFormatter.format(line.iskonto2)}
+              </td>
+              <td className="px-3 py-2 text-right font-bold text-[#536780]">
+                {line.iskonto3 == null ? '-' : numberFormatter.format(line.iskonto3)}
+              </td>
+              <td className="px-3 py-2 text-right font-bold text-[#536780]">
+                {line.foreignUnitPrice && line.foreignUnitPrice > 0 ? numberFormatter.format(line.foreignUnitPrice) : '-'}
+              </td>
+              <td className="px-3 py-2 text-right font-bold text-[#536780]">
+                {line.currencyType || line.exchangeRate ? `${line.currencyType ?? '-'} / ${line.exchangeRate ? numberFormatter.format(line.exchangeRate) : '-'}` : '-'}
+              </td>
+              <td className="px-3 py-2 font-bold text-[#42536b]">{line.sourceWarehouse}</td>
+              <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetWarehouse}</td>
+              <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetVat ?? '-'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function PreparedTransferPanel({
   transfer,
   isSending,
@@ -2909,53 +3014,8 @@ function PreparedTransferPanel({
 
       {transfer.warnings.length > 0 ? <RuleTextList title="Hazırlık Uyarıları" values={transfer.warnings} tone="warn" /> : null}
 
-      <div className="mt-3 max-h-56 overflow-auto rounded-md border border-[#d7e1ef] bg-white">
-        <table className="w-full min-w-[1040px] text-xs">
-          <thead className="bg-[#edf3fb] text-left font-black uppercase tracking-[0.08em] text-[#536780]">
-            <tr>
-              <th className="px-3 py-2">İrsaliye</th>
-              <th className="px-3 py-2">Stok</th>
-              <th className="px-3 py-2 text-right">Kaynak</th>
-              <th className="px-3 py-2 text-right">Aktarım</th>
-                            <th className="px-3 py-2 text-right">TL Fiyatı</th>
-              <th className="px-3 py-2 text-right">Döviz Fiyatı</th>
-              <th className="px-3 py-2 text-right">Kur</th>
-              <th className="px-3 py-2">Kaynak Depo</th>
-              <th className="px-3 py-2">Hedef Depo</th>
-              <th className="px-3 py-2">Ön Kontrol KDV</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transfer.lines.map((line) => (
-              <tr key={line.id} className="border-t border-[#e4ebf4]">
-                <td className="px-3 py-2 font-black text-[#172033]">{line.orderNo}</td>
-                <td className="px-3 py-2">
-                  <div className="font-black text-[#e11d73]">{line.stockCode}</div>
-                  <div className="line-clamp-1 font-bold text-[#42536b]">{line.stockName}</div>
-                  {line.lineSpecialCode1 && (
-                    <div className="text-xs font-bold text-[#718096]">Satır Kod1: {line.lineSpecialCode1}</div>
-                  )}
-                </td>
-                <td className="px-3 py-2 text-right font-black">
-                  {numberFormatter.format(line.sourceQuantity)} {line.unit}
-                </td>
-                <td className="px-3 py-2 text-right font-black text-[#047857]">
-                  {numberFormatter.format(line.transferQuantity)} {line.unit}
-                </td>
-                <td className="px-3 py-2 text-right font-black text-[#172033]">{numberFormatter.format(line.unitPrice)}</td>
-                <td className="px-3 py-2 text-right font-bold text-[#536780]">
-                              {line.foreignUnitPrice && line.foreignUnitPrice > 0 ? numberFormatter.format(line.foreignUnitPrice) : '-'}
-                </td>
-                            <td className="px-3 py-2 text-right font-bold text-[#536780]">
-                              {line.currencyType || line.exchangeRate ? `${line.currencyType ?? '-'} / ${line.exchangeRate ? numberFormatter.format(line.exchangeRate) : '-'}` : '-'}
-                            </td>
-                <td className="px-3 py-2 font-bold text-[#42536b]">{line.sourceWarehouse}</td>
-                <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetWarehouse}</td>
-                <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetVat ?? '-'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="mt-3">
+        <PreparedLinesTable lines={transfer.lines} />
       </div>
     </div>
   );
@@ -2983,7 +3043,7 @@ function TransferPreviewDialog({
             <div>
               <h3 className="text-xl font-black text-[#172033]">Netsis aktarım önizlemesi</h3>
               <p className="mt-1 text-sm font-semibold text-[#5c6f87]">
-                Seçili kalemler Excel/NDI kuralına göre hazırlandı. Bu adımda Netsis'e kayıt atılmaz; gerçek irsaliye/fatura oluşturma için alttaki gönderim butonunu kullanın.
+                Seçili irsaliyelerin kalemleri hazırlama adımından sonra ERP'den yeniden okundu. Bu adımda Netsis'e belge kaydı atılmaz; aşağıdaki miktar ve seriler gönderimde aynen kullanılır.
               </p>
             </div>
           </div>
@@ -3033,6 +3093,15 @@ function TransferPreviewDialog({
                 </div>
               </div>
             ))}
+          </div>
+          <div className="mt-5">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <h4 className="text-sm font-black text-[#172033]">Hazırlanan kalemler</h4>
+              <span className="text-xs font-bold text-[#536780]">
+                Üç iskonto oranı Netsis irsaliye satırlarına aktarılır; sıfır oranlar REST gövdesinden çıkarılır.
+              </span>
+            </div>
+            <PreparedLinesTable lines={transfer.lines} maxHeightClass="max-h-72" />
           </div>
           {transfer.warnings.length > 0 ? <RuleTextList title="Aktarım Uyarıları" values={transfer.warnings} tone="warn" /> : null}
         </div>

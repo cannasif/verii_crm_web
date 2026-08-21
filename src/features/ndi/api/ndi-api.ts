@@ -27,6 +27,9 @@ export interface NetsisCustomerDispatchLineDto {
   miktar: number;
   tlFiyat?: number | null;
   netFiyat?: number | null;
+  iskonto1?: number | null;
+  iskonto2?: number | null;
+  iskonto3?: number | null;
   dovizTipi?: number | null;
   dovizFiyat?: number | null;
   dovizKuru?: number | null;
@@ -111,6 +114,9 @@ export interface NdiTransferCreateLineRequest {
   sourceQuantity: number;
   quantity: number;
   unitPrice?: number | null;
+  iskonto1?: number | null;
+  iskonto2?: number | null;
+  iskonto3?: number | null;
   foreignUnitPrice?: number | null;
   currencyType?: number | null;
   currencyRate?: number | null;
@@ -154,6 +160,7 @@ export interface NdiManualDocumentRequest {
   targetNetsisCompany: string;
   documentType: 'İrsaliye' | 'Fatura';
   targetSeries: string;
+  dispatchSeries: string;
 }
 
 export interface NdiTransferCreateRequest {
@@ -161,6 +168,9 @@ export interface NdiTransferCreateRequest {
   dispatchSeries: string;
   invoiceSeries: string;
   quantityMode: 'auto' | 'full' | 'quarter';
+  isPrepared: boolean;
+  preparationId?: string | null;
+  preparedAtUtc?: string | null;
   manualDocuments: NdiManualDocumentRequest[];
   documents: NdiTransferCreateDocumentRequest[];
 }
@@ -242,6 +252,13 @@ export interface NdiTransferPreviewResponseDto {
   sirket24InvoiceGroupCount: number;
   documents: NdiTransferPreviewDocumentDto[];
   warnings: string[];
+}
+
+export interface NdiTransferPrepareResponseDto {
+  preparationId: string;
+  preparedAtUtc: string;
+  preparedRequest: NdiTransferCreateRequest;
+  preview: NdiTransferPreviewResponseDto;
 }
 
 export interface NdiTransferredDocumentDto {
@@ -428,6 +445,19 @@ export const ndiApi = {
       return ensureSuccess(response, 'NDI aktarım önizlemesi hazırlanamadı.');
     } catch (error) {
       throw new Error(getApiErrorMessage(error, 'NDI aktarım önizlemesi hazırlanamadı.'));
+    }
+  },
+
+  prepareNdiTransfer: async (request: NdiTransferCreateRequest): Promise<NdiTransferPrepareResponseDto> => {
+    const fallbackMessage = 'NDI kalemleri ERP verisiyle hazırlanamadı.';
+    try {
+      const response = await api.post<ApiResponse<NdiTransferPrepareResponseDto>>(
+        '/api/NetsisNdiTransfer/prepare',
+        request
+      );
+      return ensureSuccess(response, fallbackMessage);
+    } catch (error) {
+      throw new Error(getApiErrorMessage(error, fallbackMessage));
     }
   },
 
