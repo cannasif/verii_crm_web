@@ -147,6 +147,8 @@ export interface ActivityCalendarItemDto {
   priority: ActivityPriority | number | string;
   assignedUserId: number;
   assignedUserName?: string | null;
+  assignedUserLoginName?: string | null;
+  /** @deprecated Kept while older API deployments are drained. */
   assignedUsername?: string | null;
   contactId?: number | null;
   contactName?: string | null;

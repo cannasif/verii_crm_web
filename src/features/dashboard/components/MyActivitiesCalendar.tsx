@@ -121,7 +121,8 @@ function customerName(activity: ActivityCalendarItemDto): string | undefined {
 
 function assigneeName(activity: ActivityCalendarItemDto): string {
   return activity.assignedUserName?.trim()
-    || activity.assignedUsername
+    || activity.assignedUserLoginName?.trim()
+    || activity.assignedUsername?.trim()
     || `#${activity.assignedUserId}`;
 }
 
