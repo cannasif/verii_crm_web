@@ -12,7 +12,6 @@ import {
   isBefore,
   isSameMonth,
   isToday,
-  startOfDay,
   startOfMonth,
   startOfWeek,
   subMonths,
@@ -78,6 +77,7 @@ import { useDeleteActivity } from '@/features/activity-management/hooks/useDelet
 import { useMyPermissionsQuery } from '@/features/access-control/hooks/useMyPermissionsQuery';
 import { useCrudPermissions } from '@/features/access-control/hooks/useCrudPermissions';
 import { buildCreateActivityPayload } from '@/features/activity-management/utils/build-create-payload';
+import { occursOnCalendarDay } from '@/features/activity-management/utils/activity-calendar-range';
 import { ActivityForm } from '@/features/activity-management/components/ActivityForm';
 import { activityImageApi } from '@/features/activity-image-management/api/activity-image-api';
 import { useActivityImages } from '@/features/activity-image-management/hooks/useActivityImages';
@@ -123,14 +123,6 @@ function assigneeName(activity: ActivityCalendarItemDto): string {
   return activity.assignedUserName?.trim()
     || activity.assignedUsername
     || `#${activity.assignedUserId}`;
-}
-
-function occursOnDay(activity: ActivityCalendarItemDto, day: Date): boolean {
-  const dayStart = startOfDay(day);
-  const nextDay = addDays(dayStart, 1);
-  const activityStart = new Date(activity.startDateTime);
-  const activityEnd = new Date(activity.endDateTime || activity.startDateTime);
-  return activityStart < nextDay && activityEnd >= dayStart;
 }
 
 function eventTone(activity: ActivityCalendarItemDto): string {
@@ -540,7 +532,7 @@ export function MyActivitiesCalendar(): ReactElement {
   const activitiesByDay = useMemo(() => {
     const map = new Map<string, ActivityCalendarItemDto[]>();
     days.forEach((day) => {
-      map.set(day.toISOString(), activities.filter((activity) => occursOnDay(activity, day)));
+      map.set(day.toISOString(), activities.filter((activity) => occursOnCalendarDay(activity, day)));
     });
     return map;
   }, [days, activities]);

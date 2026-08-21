@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Activity calendar range fixture</title>
+  </head>
+  <body>
+    <output id="ends-at-start"></output>
+    <output id="spans-start"></output>
+    <output id="point-at-start"></output>
+    <output id="starts-next-day"></output>
+
+    <script type="module">
+      import { occursOnCalendarDay } from '/src/features/activity-management/utils/activity-calendar-range.ts';
+
+      const day = new Date('2026-08-21T12:00:00');
+      const cases = {
+        'ends-at-start': {
+          startDateTime: '2026-08-20T23:00:00',
+          endDateTime: '2026-08-21T00:00:00',
+        },
+        'spans-start': {
+          startDateTime: '2026-08-20T23:00:00',
+          endDateTime: '2026-08-21T00:00:01',
+        },
+        'point-at-start': {
+          startDateTime: '2026-08-21T00:00:00',
+          endDateTime: '2026-08-21T00:00:00',
+        },
+        'starts-next-day': {
+          startDateTime: '2026-08-22T00:00:00',
+          endDateTime: '2026-08-22T01:00:00',
+        },
+      };
+
+      Object.entries(cases).forEach(([id, activity]) => {
+        document.getElementById(id).textContent = String(occursOnCalendarDay(activity, day));
+      });
+    </script>
+  </body>
+</html>
