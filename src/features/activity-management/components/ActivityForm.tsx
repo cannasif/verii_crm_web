@@ -28,8 +28,8 @@ import {
   useActivityMeetingTypeOptionsInfinite,
   useActivityShippingOptionsInfinite,
   useActivityTopicPurposeOptionsInfinite,
+  useActivityAssigneeOptionsInfinite,
   usePaymentTypeOptionsInfinite,
-  useUserOptionsInfinite,
 } from '@/components/shared/dropdown/useDropdownEntityInfinite';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -206,7 +206,7 @@ export function ActivityForm({
   const [topicPurposeSearchTerm, setTopicPurposeSearchTerm] = useState('');
   const [shippingSearchTerm, setShippingSearchTerm] = useState('');
   const activityTypeDropdown = useActivityTypeOptionsInfinite(activityTypeSearchTerm, open);
-  const assignedUserDropdown = useUserOptionsInfinite(assignedUserSearchTerm, open);
+  const assignedUserDropdown = useActivityAssigneeOptionsInfinite(assignedUserSearchTerm, open);
   const paymentTypeDropdown = usePaymentTypeOptionsInfinite(paymentTypeSearchTerm, open);
   const meetingTypeDropdown = useActivityMeetingTypeOptionsInfinite(meetingTypeSearchTerm, open);
   const topicPurposeDropdown = useActivityTopicPurposeOptionsInfinite(topicPurposeSearchTerm, open);

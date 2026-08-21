@@ -13,6 +13,7 @@ import type { ApprovalRoleGroupDto } from '@/features/approval-role-group-manage
 import type { TitleDto } from '@/features/title-management/types/title-types';
 import type { CustomerTypeDto } from '@/features/customer-type-management/types/customer-type-types';
 import type { ActivityTypeDto } from '@/features/activity-type/types/activity-type-types';
+import type { ActivityAssigneeOptionDto } from '@/features/activity-management/types/activity-types';
 import type { PaymentTypeDto } from '@/features/payment-type-management/types/payment-type-types';
 import type { SalesTypeGetDto } from '@/features/sales-type-management/types/sales-type-types';
 
@@ -36,6 +37,13 @@ function toUserOptions(items: UserDto[]): ComboboxOption[] {
   return items.map((u) => ({
     value: u.id.toString(),
     label: u.fullName?.trim() || u.username || u.email,
+  }));
+}
+
+function toActivityAssigneeOptions(items: ActivityAssigneeOptionDto[]): ComboboxOption[] {
+  return items.map((user) => ({
+    value: user.id.toString(),
+    label: user.displayName?.trim() || user.username || user.email,
   }));
 }
 
@@ -171,6 +179,23 @@ export function useUserOptionsInfinite(searchTerm: string, enabled = true) {
     fetchPage: dropdownApi.getUserPage,
   });
   const options = useMemo(() => toUserOptions(result.items), [result.items]);
+  return { ...result, options };
+}
+
+export function useActivityAssigneeOptionsInfinite(searchTerm: string, enabled = true) {
+  const result = useDropdownInfiniteSearch<ActivityAssigneeOptionDto>({
+    entityKey: 'activityAssignees',
+    searchTerm,
+    enabled,
+    minChars: DROPDOWN_MIN_CHARS,
+    pageSize: DROPDOWN_PAGE_SIZE,
+    sortBy: 'displayName',
+    sortDirection: 'asc',
+    searchFields: ['displayName', 'username', 'email'],
+    buildFilters: () => undefined,
+    fetchPage: dropdownApi.getActivityAssigneePage,
+  });
+  const options = useMemo(() => toActivityAssigneeOptions(result.items), [result.items]);
   return { ...result, options };
 }
 

@@ -134,6 +134,14 @@ export interface ActivityDto {
   deletedByFullUser?: string;
 }
 
+export interface ActivityAssigneeOptionDto {
+  id: number;
+  displayName: string;
+  username: string;
+  email: string;
+  isCurrentUser: boolean;
+}
+
 export interface ActivityCalendarItemDto {
   id: number;
   subject: string;

@@ -11,6 +11,7 @@ import type { ApprovalRoleGroupDto } from '@/features/approval-role-group-manage
 import type { TitleDto } from '@/features/title-management/types/title-types';
 import type { CustomerTypeDto } from '@/features/customer-type-management/types/customer-type-types';
 import type { ActivityTypeDto } from '@/features/activity-type/types/activity-type-types';
+import type { ActivityAssigneeOptionDto } from '@/features/activity-management/types/activity-types';
 import type { PaymentTypeDto } from '@/features/payment-type-management/types/payment-type-types';
 import type { SalesTypeGetDto } from '@/features/sales-type-management/types/sales-type-types';
 import type { ShippingAddressDto } from '@/features/shipping-address-management/types/shipping-address-types';
@@ -106,6 +107,11 @@ export const dropdownApi = {
   },
   getUserPage: (request: DropdownPageRequest): Promise<PagedResponse<UserDto>> => {
     return getDropdownPageByQuery<UserDto>('/api/User', request, ['Username', 'Email', 'FirstName', 'LastName']);
+  },
+  getActivityAssigneePage: (request: DropdownPageRequest): Promise<PagedResponse<ActivityAssigneeOptionDto>> => {
+    return getDropdownPageByQuery<ActivityAssigneeOptionDto>('/api/Activity/assignees', request, [
+      'displayName', 'username', 'email',
+    ]);
   },
   getApprovalRolePage: (request: DropdownPageRequest): Promise<PagedResponse<ApprovalRoleDto>> => {
     return getDropdownPageByQuery<ApprovalRoleDto>('/api/ApprovalRole', request, ['Code', 'Name']);
