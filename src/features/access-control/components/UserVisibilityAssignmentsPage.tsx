@@ -213,10 +213,10 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [userSearchTerm, setUserSearchTerm] = useState('');
   const [draftSelections, setDraftSelections] = useState<DraftSelections>({});
-  const userDropdown = useUserOptionsInfinite(userSearchTerm, true);
-  const { canCreate, canUpdate, canDelete, isSystemAdmin } = useCrudPermissions(
+  const { canView, canCreate, canUpdate, canDelete, isSystemAdmin } = useCrudPermissions(
     'access-control.user-visibility-assignments.view'
   );
+  const userDropdown = useUserOptionsInfinite(userSearchTerm, canView);
 
   useEffect(() => {
     setPageTitle(t('userVisibilityAssignments.title'));
@@ -225,26 +225,27 @@ export function UserVisibilityAssignmentsPage(): ReactElement {
 
   const assignmentsQuery = useQuery({
     queryKey: ['user-visibility-policies', selectedUserId],
-    enabled: selectedUserId != null,
-    queryFn: async () => {
+    enabled: canView && selectedUserId != null,
+    queryFn: async ({ signal }) => {
       if (selectedUserId == null) return { data: [] as UserVisibilityPolicyDto[] };
       return userVisibilityPolicyApi.getList({
         pageNumber: 1,
         pageSize: 100,
         filters: [{ column: 'userId', operator: 'Equals', value: String(selectedUserId) }],
-      });
+      }, signal);
     },
   });
 
   const policiesQuery = useQuery({
     queryKey: ['visibility-policies', 'all-for-assignment'],
-    queryFn: () =>
+    enabled: canView,
+    queryFn: ({ signal }) =>
       visibilityPolicyApi.getList({
         pageNumber: 1,
         pageSize: 200,
         sortBy: 'name',
         sortDirection: 'asc',
-      }),
+      }, signal),
   });
 
   const invalidateVisibilityDependentQueries = useCallback(async () => {

@@ -113,6 +113,12 @@ test('satış takvimi sorumlu görünürlüğünü uygular ve belge kalemlerini 
 });
 
 test('aktivite sekmesi takvim verisini API hatası olmadan yükler', async ({ page }) => {
+  const startupApiRequests: string[] = [];
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+    if (url.pathname.startsWith('/api/')) startupApiRequests.push(url.pathname);
+  });
+
   const activityResponsePromise = page.waitForResponse((response) =>
     response.url().includes('/api/Activity/calendar/admin') && response.request().method() === 'GET');
 
@@ -122,6 +128,15 @@ test('aktivite sekmesi takvim verisini API hatası olmadan yükler', async ({ pa
   expect(activityResponse.ok(), await activityResponse.text()).toBeTruthy();
   await expect(page.getByText(/Aktivite takvimim|My activity calendar/i)).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText(/Takvim aktiviteleri yüklenemedi|Calendar activities could not be loaded/i)).toHaveCount(0);
+
+  const bootstrapRequestIndex = startupApiRequests.findIndex((path) => path === '/api/auth/bootstrap');
+  const calendarRequestIndex = startupApiRequests.findIndex((path) => path === '/api/Activity/calendar/admin');
+  expect(bootstrapRequestIndex).toBeGreaterThanOrEqual(0);
+  expect(calendarRequestIndex).toBeGreaterThan(bootstrapRequestIndex);
+  expect(startupApiRequests.filter((path) => path === '/api/Activity/calendar/admin')).toHaveLength(1);
+  expect(startupApiRequests).not.toContain('/api/Customer/query');
+  expect(startupApiRequests).not.toContain('/api/AiAssistant/greeting');
+  expect(startupApiRequests).not.toContain('/api/AiAssistant/capabilities');
 
   const activityCalendarDays = page.getByTestId('activity-calendar-day');
   for (let index = 0; index < await activityCalendarDays.count(); index += 1) {

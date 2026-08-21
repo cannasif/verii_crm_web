@@ -13,8 +13,8 @@ import type {
 } from '../types/ai-assistant.types';
 
 export const aiAssistantApi = {
-  getCapabilities: async (): Promise<AiAssistantCapabilitiesDto> => {
-    const response = await api.get<ApiResponse<AiAssistantCapabilitiesDto>>('/api/AiAssistant/capabilities');
+  getCapabilities: async (signal?: AbortSignal): Promise<AiAssistantCapabilitiesDto> => {
+    const response = await api.get<ApiResponse<AiAssistantCapabilitiesDto>>('/api/AiAssistant/capabilities', { signal });
     if (response.success && response.data) {
       return response.data;
     }
@@ -28,8 +28,8 @@ export const aiAssistantApi = {
     );
   },
 
-  getGreeting: async (): Promise<AiAssistantGreetingDto> => {
-    const response = await api.get<ApiResponse<AiAssistantGreetingDto>>('/api/AiAssistant/greeting');
+  getGreeting: async (signal?: AbortSignal): Promise<AiAssistantGreetingDto> => {
+    const response = await api.get<ApiResponse<AiAssistantGreetingDto>>('/api/AiAssistant/greeting', { signal });
     if (response.success && response.data) {
       return response.data;
     }

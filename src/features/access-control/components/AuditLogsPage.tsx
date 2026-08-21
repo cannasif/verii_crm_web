@@ -214,11 +214,13 @@ export function AuditLogsPage(): ReactElement {
 
   const listQuery = useQuery({
     queryKey: ['audit-logs', traceFilter ?? 'all', entityTypeFilter ?? 'all', entityIdFilter ?? 'all', queryParams],
-    queryFn: () => {
+    queryFn: ({ signal }) => {
       if (hasEntityFilter && entityTypeFilter && entityIdFilter) {
-        return auditLogApi.getByEntity(entityTypeFilter, entityIdFilter, queryParams);
+        return auditLogApi.getByEntity(entityTypeFilter, entityIdFilter, queryParams, signal);
       }
-      return traceFilter ? auditLogApi.getByTraceId(traceFilter, queryParams) : auditLogApi.getList(queryParams);
+      return traceFilter
+        ? auditLogApi.getByTraceId(traceFilter, queryParams, signal)
+        : auditLogApi.getList(queryParams, signal);
     },
   });
 

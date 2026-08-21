@@ -13,19 +13,20 @@ import type {
 } from '../types/access-control.types';
 
 export const visibilityPolicyApi = {
-  getList: async (params: PagedRequest): Promise<PagedResponse<VisibilityPolicyDto>> => {
+  getList: async (params: PagedRequest, signal?: AbortSignal): Promise<PagedResponse<VisibilityPolicyDto>> => {
     const response = await api.post<ApiResponse<PagedResponse<VisibilityPolicyDto>>>(
       '/api/visibility-policies/query',
       {
         pageNumber: params.pageNumber ?? 1,
         pageSize: params.pageSize ?? 10,
-      search: params.search ?? '',
-      searchFields: params.search ? params.searchFields : undefined,
+        search: params.search ?? '',
+        searchFields: params.search ? params.searchFields : undefined,
         sortBy: params.sortBy ?? 'id',
         sortDirection: params.sortDirection ?? 'asc',
         filterLogic: params.filterLogic ?? 'and',
         filters: params.filters ?? [],
-      }
+      },
+      { signal }
     );
     const data = extractData(response as ApiResponse<PagedResponse<VisibilityPolicyDto>>);
     const rawData = data as unknown as { items?: VisibilityPolicyDto[]; data?: VisibilityPolicyDto[] };

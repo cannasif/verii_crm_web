@@ -8,6 +8,6 @@ const STALE_TIME_MS = 30_000;
 export const usePermissionGroupsQuery = (params: PagedRequest) =>
   useQuery({
     queryKey: ACCESS_CONTROL_QUERY_KEYS.PERMISSION_GROUPS(params),
-    queryFn: () => permissionGroupApi.getList(params),
+    queryFn: ({ signal }) => permissionGroupApi.getList(params, signal),
     staleTime: STALE_TIME_MS,
   });

@@ -395,12 +395,12 @@ export function AiAssistantWidget(): ReactElement | null {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, branch } = useAuthStore();
-  const { data: greeting, isLoading } = useAiAssistantGreetingQuery();
-  const { data: capabilities } = useAiAssistantCapabilitiesQuery();
+  const [isOpen, setIsOpen] = useState(false);
+  const { data: greeting, isLoading } = useAiAssistantGreetingQuery(isOpen);
+  const { data: capabilities } = useAiAssistantCapabilitiesQuery(isOpen);
   const askMutation = useAskAiAssistantMutation();
   const chatHistoryKey = createAiAssistantChatHistoryKey(user, branch);
   const sessionStorageKey = createAiAssistantSessionStorageKey('widget', user, branch);
-  const [isOpen, setIsOpen] = useState(false);
   const [question, setQuestion] = useState('');
   const [messages, setMessages] = useState<AiAssistantChatMessage[]>(() =>
     readAiAssistantChatHistory(chatHistoryKey)

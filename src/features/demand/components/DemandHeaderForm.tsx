@@ -146,6 +146,7 @@ export function DemandHeaderForm({
   const [ozelKod2SearchTerm, setOzelKod2SearchTerm] = useState('');
   const [paymentTypeSearchTerm, setPaymentTypeSearchTerm] = useState('');
   const [deliveryMethodSearchTerm, setDeliveryMethodSearchTerm] = useState('');
+  const [shippingAddressSearchTerm, setShippingAddressSearchTerm] = useState('');
   const [activitySearchTerm, setActivitySearchTerm] = useState('');
   const [activityDropdownOpen, setActivityDropdownOpen] = useState(false);
   const isInitialLoadRef = useRef(true);
@@ -160,6 +161,7 @@ export function DemandHeaderForm({
   const watchedErpCustomerCode = form.watch('demand.erpCustomerCode');
   const watchedCurrency = form.watch('demand.currency');
   const watchedRepresentativeId = form.watch('demand.representativeId');
+  const watchedShippingAddressId = form.watch('demand.shippingAddressId');
   const watchedActivityId = form.watch('demand.activityId');
   const watchedDocumentSerialTypeId = form.watch('demand.documentSerialTypeId');
   const prevRepresentativeIdRef = useRef<number | null | undefined>(watchedRepresentativeId);
@@ -267,7 +269,17 @@ export function DemandHeaderForm({
     specialCode2DefaultExists.data,
   ]);
 
-  const { data: shippingAddresses, isLoading: isShippingAddressesLoading } = useShippingAddresses(watchedCustomerId || undefined);
+  const {
+    data: shippingAddresses,
+    isLoading: isShippingAddressesLoading,
+    isFetchingNextPage: isFetchingNextShippingAddressPage,
+    hasNextPage: hasNextShippingAddressPage,
+    fetchNextPage: fetchNextShippingAddressPage,
+  } = useShippingAddresses(
+    watchedCustomerId || undefined,
+    shippingAddressSearchTerm,
+    watchedShippingAddressId,
+  );
   const { data: relatedUsers = [], isLoading: isRelatedUsersLoading } = useDemandRelatedUsers(user?.id);
   const {
     data: customerOptions = [],
@@ -710,10 +722,15 @@ export function DemandHeaderForm({
                             }))}
                             value={field.value?.toString() || ''}
                             onSelect={(v) => field.onChange(v ? Number(v) : null)}
+                            onDebouncedSearchChange={setShippingAddressSearchTerm}
+                            onFetchNextPage={fetchNextShippingAddressPage}
+                            hasNextPage={hasNextShippingAddressPage}
                             isLoading={isShippingAddressesLoading}
+                            isFetchingNextPage={isFetchingNextShippingAddressPage}
                             placeholder={t('demand:header.selectShippingAddress')}
                             className={cn(styles.selectTrigger, "min-w-0 px-4 hover:border-emerald-400 dark:hover:border-emerald-600 shadow-sm focus:ring-4 focus:ring-primary/20 focus:border-primary")}
                             popoverContentClassName="md:min-w-[var(--radix-popover-trigger-width)] md:w-auto md:max-w-[400px]"
+                            disabled={readOnly || !watchedCustomerId}
                           />
                         </FormControl>
                         <FormMessage />

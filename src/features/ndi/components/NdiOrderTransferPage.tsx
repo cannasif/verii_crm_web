@@ -41,6 +41,8 @@ import { NdiConnectionTestDialog } from './NdiConnectionTestDialog';
 interface NdiOrderLine {
   id: string;
   orderNo: string;
+  sourceOrderNumber?: string | null;
+  sourceVatRate?: number | null;
   customer: string;
   route: string;
   shipmentType: string;
@@ -69,6 +71,8 @@ interface NdiPreparedLine {
   id: string;
   sourceLineNo: number;
   orderNo: string;
+  sourceOrderNumber?: string | null;
+  sourceVatRate?: number | null;
   stockCode: string;
   stockName: string;
   sourceQuantity: number;
@@ -85,7 +89,6 @@ interface NdiPreparedLine {
   unit: string;
   sourceWarehouse: string;
   targetWarehouse: string;
-  targetVat: number | null;
   ekalan?: string | null;
   ekalan1?: string | null;
 }
@@ -292,6 +295,7 @@ interface NdiTransferRule {
 type NdiBusinessSeries = 'NUR' | 'VIN' | 'DIS' | 'SIP';
 type NdiBatchAction = 'IRSALIYELISTIR' | 'FATURALASTIR';
 type NdiQuantityMode = 'auto' | 'full' | 'quarter';
+type NdiSourceQuantityRule = 'full' | 'quarter';
 type NdiTransferMode = 'automatic' | 'manual';
 type NdiManualTarget = 'NURAY24' | 'WIN24' | 'DISTIC24' | 'SIRKET24';
 type NdiManualDocumentType = 'İrsaliye' | 'Fatura';
@@ -485,6 +489,16 @@ const NDI_TABLE_CELL = 'border-r border-slate-300 px-4 py-3 dark:border-white/20
 
 function getOrderPrefix(order: NdiOrder): string {
   return order.orderNo.slice(0, 3).toLocaleUpperCase('tr-TR');
+}
+
+function resolveSourceQuantityRule(order: NdiOrder): NdiSourceQuantityRule {
+  return order.operationProfile === 'nuray' && order.description.includes('1/4')
+    ? 'quarter'
+    : 'full';
+}
+
+function getSourceQuantityRuleLabel(rule: NdiSourceQuantityRule): '1/4' | 'Tam' {
+  return rule === 'quarter' ? '1/4' : 'Tam';
 }
 
 function getKnownSeries(value: string): NdiBusinessSeries | null {
@@ -921,6 +935,8 @@ function mapDispatchLine(line: NetsisCustomerDispatchLineDto, indexInFis: number
   return {
     id: `${line.fisNo}::${line.stokKodu}::${indexInFis}`,
     orderNo: line.fisNo,
+    sourceOrderNumber: line.orderNumber?.trim() || null,
+    sourceVatRate: line.vatRate ?? null,
     customer: order?.customer || line.cariKodu || '-',
     route: order?.route || '-',
     shipmentType: order?.shipmentType || '-',
@@ -1059,6 +1075,14 @@ export function NdiOrderTransferPage(): ReactElement {
       orderChecksByDocumentNo.get(order.orderNo)
     ));
   }, [orderChecksByDocumentNo, selectedOrders]);
+  const selectedSourceQuantityRules = useMemo(
+    () => new Set(selectedOrdersForTransfer.map(resolveSourceQuantityRule)),
+    [selectedOrdersForTransfer]
+  );
+  const selectedSourceQuantityRule = selectedOrdersForTransfer[0]
+    ? resolveSourceQuantityRule(selectedOrdersForTransfer[0])
+    : null;
+  const hasMixedSourceQuantityRules = selectedSourceQuantityRules.size > 1;
   const linesQuery = useQuery({
     queryKey: ['ndi', 'customer-dispatch-lines', selectedIrsNoList],
     queryFn: () => ndiApi.getCustomerDispatchLines(selectedIrsNoList),
@@ -1324,8 +1348,10 @@ export function NdiOrderTransferPage(): ReactElement {
       ?? 'Seçilen hedef şirketin cari belge serileri doğrulanamadı.';
   const canPrepareSelectedLines = selectedOrdersForTransfer.length > 0
     && blockedRuleCount === 0
+    && !hasMixedSourceQuantityRules
     && hasValidDocumentSeries;
   const prepareDisabled = selectedOrdersForTransfer.length === 0
+    || hasMixedSourceQuantityRules
     || orderChecksQuery.isFetching
     || isPreparingTransfer
     || documentSeriesLookupPending
@@ -1369,6 +1395,18 @@ export function NdiOrderTransferPage(): ReactElement {
       && selectedCustomer.localeCompare(order.customerCode.trim(), undefined, { sensitivity: 'accent' }) !== 0) {
       setSelectionRuleError(`Bu irsaliye seçilemez. Aktif grupta yalnızca ${selectedCustomer} carisine ait irsaliyeler kullanılabilir.`);
       return;
+    }
+
+    if (selectedSourceQuantityRule) {
+      const candidateQuantityRule = resolveSourceQuantityRule(order);
+      if (candidateQuantityRule !== selectedSourceQuantityRule) {
+        setSelectionRuleError(
+          `${order.orderNo} seçilemez. Aktif gruptaki miktar kuralı ${getSourceQuantityRuleLabel(selectedSourceQuantityRule)}, `
+          + `bu irsaliyenin miktar kuralı ${getSourceQuantityRuleLabel(candidateQuantityRule)}. `
+          + '1/4 ve Tam irsaliyeler aynı seçimde birlikte kullanılamaz.'
+        );
+        return;
+      }
     }
 
     setCheckingOrderId(order.id);
@@ -1551,6 +1589,8 @@ export function NdiOrderTransferPage(): ReactElement {
           id: line.id,
           sourceLineNo,
           orderNo: line.orderNo,
+          sourceOrderNumber: line.sourceOrderNumber,
+          sourceVatRate: line.sourceVatRate,
           stockCode: line.stockCode,
           stockName: line.stockName,
           sourceQuantity: line.quantity,
@@ -1568,7 +1608,6 @@ export function NdiOrderTransferPage(): ReactElement {
           unit: line.unit,
           sourceWarehouse: line.warehouse,
           targetWarehouse: outcome?.targetWarehouseLocked ? outcome.targetWarehouse : line.warehouse,
-          targetVat: outcome?.primaryVat ?? null,
           ekalan: line.ekalan,
           ekalan1: line.ekalan1,
         };
@@ -1658,6 +1697,8 @@ export function NdiOrderTransferPage(): ReactElement {
           id: line.sourceLineId || `${document.sourceDocumentNo}::${line.stockCode}::${index}`,
           sourceLineNo: line.sourceLineNo ?? index + 1,
           orderNo: document.sourceDocumentNo,
+          sourceOrderNumber: line.orderNumber?.trim() || null,
+          sourceVatRate: line.vatRate ?? null,
           stockCode: line.stockCode,
           stockName: line.stockName || line.stockCode,
           sourceQuantity: Number(line.sourceQuantity ?? line.quantity),
@@ -1674,7 +1715,6 @@ export function NdiOrderTransferPage(): ReactElement {
           unit: line.unit || '-',
           sourceWarehouse: line.sourceWarehouse || '',
           targetWarehouse: line.targetWarehouse || line.sourceWarehouse || '',
-          targetVat: line.vatRate ?? null,
           ekalan: line.ekalan,
           ekalan1: line.ekalan1,
         }))
@@ -1761,16 +1801,16 @@ export function NdiOrderTransferPage(): ReactElement {
           <div className="relative z-10 flex w-full flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-6 md:py-5">
             <div>
               <div className="text-xs font-black uppercase tracking-[0.28em] text-white/75 dark:text-primary/80">NDI</div>
-              <h1 className="mt-1 text-2xl font-black tracking-tight dark:text-white">İrsaliye Kalem Seçim Konsolu</h1>
+              <h1 className="mt-1 text-2xl font-black tracking-tight dark:text-white">İrsaliye Aktarım Konsolu</h1>
               <p className="mt-1 text-sm font-semibold text-white/85 dark:text-slate-400">
-                Otomatik mod kaynak grubunu izler; manuel modda hedef şirket ve izin verilen belge türü kullanıcı tarafından seçilir.
+                İrsaliye üst bilgisi seçildiğinde bütün kalemleri zorunlu olarak kapsama alınır; kalem bazında seçim veya kapsam dışı bırakma yapılamaz.
               </p>
             </div>
 
             <NdiConnectionTestDialog />
             <div className="grid grid-cols-3 gap-2 text-sm">
               <MetricPill label="Grup" value={`${selectedPrefix} / ${selectedOrders.length} belge`} />
-              <MetricPill label="Hazırlanacak Kalem" value={String(selectedLines.length)} />
+              <MetricPill label="Zorunlu Kalem" value={String(selectedLines.length)} />
               <MetricPill label="Miktar" value={numberFormatter.format(selectedQuantity)} />
             </div>
           </div>
@@ -1867,17 +1907,26 @@ export function NdiOrderTransferPage(): ReactElement {
                 const isSelected = selectedOrderIds.has(order.id);
                 const lineCount = lineCountByOrderNo.get(order.orderNo);
                 const orderCheck = orderChecksByDocumentNo.get(order.orderNo);
+                const sourceQuantityRule = resolveSourceQuantityRule(order);
+                const quantityRuleIncompatible = selectedSourceQuantityRule !== null
+                  && sourceQuantityRule !== selectedSourceQuantityRule;
 
                 return (
                   <button
                     key={order.id}
                     type="button"
                     onClick={() => void toggleOrder(order)}
-                    disabled={checkingOrderId !== null}
+                    disabled={checkingOrderId !== null || quantityRuleIncompatible}
                     aria-busy={checkingOrderId === order.id}
+                    aria-label={quantityRuleIncompatible
+                      ? `${order.orderNo} seçilemez: 1/4 ve Tam irsaliyeler birlikte seçilemez.`
+                      : undefined}
+                    title={quantityRuleIncompatible
+                      ? `Aktif seçim ${getSourceQuantityRuleLabel(selectedSourceQuantityRule)}; bu irsaliye ${getSourceQuantityRuleLabel(sourceQuantityRule)}. 1/4 ve Tam birlikte seçilemez.`
+                      : undefined}
                     className={`grid w-full grid-cols-[30px_1fr_auto] gap-3 rounded-lg border p-3 text-left transition ${
                       isSelected ? 'border-primary bg-primary/10 shadow-sm' : 'border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel)] hover:border-primary/40'
-                    } disabled:cursor-wait disabled:opacity-60`}
+                    } ${quantityRuleIncompatible ? 'cursor-not-allowed opacity-45' : 'disabled:cursor-wait disabled:opacity-60'}`}
                   >
                     <div
                       className={`mt-1 flex h-7 w-7 items-center justify-center rounded-md border ${
@@ -1920,9 +1969,11 @@ export function NdiOrderTransferPage(): ReactElement {
                         ) : null}
                       </div>
                       <p className="mt-3 rounded-md bg-[var(--crm-app-panel-muted)] px-2 py-1 text-[11px] font-bold text-[var(--crm-app-text-muted)]">
-                        {transferMode === 'manual'
+                        {quantityRuleIncompatible
+                          ? `${getSourceQuantityRuleLabel(sourceQuantityRule)} miktar kuralı, aktif ${getSourceQuantityRuleLabel(selectedSourceQuantityRule)} seçimiyle birlikte kullanılamaz.`
+                          : transferMode === 'manual'
                           ? 'Manuel modda kaynak seri hedef şirketi kısıtlamaz.'
-                          : 'İlk 3 karakteri aynı irsaliyeler birlikte seçilebilir.'}
+                          : `Miktar kuralı: ${getSourceQuantityRuleLabel(sourceQuantityRule)} · İlk 3 karakteri aynı irsaliyeler birlikte seçilebilir.`}
                       </p>
                     </div>
 
@@ -2286,7 +2337,7 @@ export function NdiOrderTransferPage(): ReactElement {
               {prepareAttempted && !canPrepareSelectedLines ? (
                 <div className="mt-3 rounded-lg border border-[#fecaca] bg-[#fff8f8] p-3">
                   <div className="flex items-center gap-2 text-sm font-black text-[#b91c1c]">
-                    <AlertCircle size={16} /> Seçili kalemler henüz hazırlanamaz
+                    <AlertCircle size={16} /> Seçili irsaliyeler henüz hazırlanamaz
                   </div>
                   <div className="mt-2 space-y-1">
                     {selectedOrdersForTransfer.length === 0 ? (
@@ -2375,19 +2426,32 @@ export function NdiOrderTransferPage(): ReactElement {
 
           <div className="border-b border-slate-300 dark:border-white/20" />
 
+          <div className="flex items-start gap-3 border-b border-slate-300 bg-emerald-50 px-4 py-3 text-emerald-950 dark:border-white/20 dark:bg-emerald-500/10 dark:text-emerald-100">
+            <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
+              <ShieldCheck size={18} />
+            </div>
+            <div>
+              <div className="text-sm font-black">Kalem kapsamı kilitli</div>
+              <p className="mt-0.5 text-xs font-bold opacity-80">
+                Üst bilgiden seçilen her irsaliyenin tüm kalemleri otomatik olarak hazırlanır. Aşağıdaki satırlar yalnızca bilgi amaçlıdır ve tek tek değiştirilemez.
+              </p>
+            </div>
+          </div>
+
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1580px] border-collapse text-sm">
+            <table className="w-full min-w-[1740px] border-collapse text-sm">
               <thead>
                 <tr className="border-b border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-strong)] text-left text-xs font-black uppercase tracking-[0.08em] text-[var(--crm-app-text-muted)]">
                   <th className={`w-14 ${NDI_TABLE_CELL}`}>
                     <div
                       className="flex h-8 w-8 items-center justify-center rounded-md border border-primary/30 bg-primary/10 text-primary"
-                      title="Seçili irsaliyelerin tüm kalemleri hazırlanır"
+                      title="İrsaliyelerin tüm kalemleri zorunlu olarak hazırlanır"
                     >
                       <PackageCheck size={18} />
                     </div>
                   </th>
                   <th className={NDI_TABLE_CELL}>İrsaliye</th>
+                  <th className={NDI_TABLE_CELL}>Sipariş No</th>
                   <th className={NDI_TABLE_CELL}>Stok Kodu</th>
                   <th className={NDI_TABLE_CELL}>Stok Adı</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Miktar</th>
@@ -2396,6 +2460,7 @@ export function NdiOrderTransferPage(): ReactElement {
                   <th className={`${NDI_TABLE_CELL} text-right`}>İskonto 1 %</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>İskonto 2 %</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>İskonto 3 %</th>
+                  <th className={`${NDI_TABLE_CELL} text-right`}>Kaynak KDV %</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Döviz Fiyatı</th>
                   <th className={`${NDI_TABLE_CELL} text-right`}>Kur</th>
                   <th className={NDI_TABLE_CELL}>Depo/Teslim</th>
@@ -2406,13 +2471,13 @@ export function NdiOrderTransferPage(): ReactElement {
               <tbody>
                 {linesQuery.isFetching ? (
                   <tr>
-                    <td colSpan={15} className="px-4 py-10">
+                    <td colSpan={17} className="px-4 py-10">
                       <StatePanel icon={<Loader2 className="animate-spin" size={18} />} title="Kalemler yükleniyor" />
                     </td>
                   </tr>
                 ) : linesQuery.isError ? (
                   <tr>
-                    <td colSpan={15} className="px-4 py-10">
+                    <td colSpan={17} className="px-4 py-10">
                       <StatePanel
                         icon={<AlertCircle size={18} />}
                         title="Kalemler yüklenemedi"
@@ -2422,7 +2487,7 @@ export function NdiOrderTransferPage(): ReactElement {
                   </tr>
                 ) : selectedOrderLines.length === 0 ? (
                   <tr>
-                    <td colSpan={15} className="px-4 py-10">
+                    <td colSpan={17} className="px-4 py-10">
                       <StatePanel icon={<FileText size={18} />} title="Kalem bulunamadı" description="Satırları görmek için irsaliye seçin." />
                     </td>
                   </tr>
@@ -2436,7 +2501,7 @@ export function NdiOrderTransferPage(): ReactElement {
                         <td className={NDI_TABLE_CELL}>
                           <div
                             className="flex h-8 w-8 items-center justify-center rounded-md border border-primary bg-primary text-white"
-                            title="Üst bilgiden seçilen irsaliyeye dahil"
+                            title="Zorunlu kapsam: üst bilgiden seçilen irsaliyenin kalemi"
                           >
                             <CheckCircle2 size={18} />
                           </div>
@@ -2444,6 +2509,9 @@ export function NdiOrderTransferPage(): ReactElement {
                         <td className={NDI_TABLE_CELL}>
                           <div className="font-black text-foreground">{line.orderNo}</div>
                           <div className="text-xs font-bold text-[var(--crm-app-text-muted)]">{line.shipmentType}</div>
+                        </td>
+                        <td className={`${NDI_TABLE_CELL} font-semibold text-[var(--crm-app-text-muted)]`}>
+                          {line.sourceOrderNumber || '-'}
                         </td>
                         <td className={`${NDI_TABLE_CELL} font-black text-primary`}>{line.stockCode}</td>
                         <td className={NDI_TABLE_CELL}>
@@ -2473,6 +2541,9 @@ export function NdiOrderTransferPage(): ReactElement {
                           {line.iskonto3 == null ? '-' : numberFormatter.format(line.iskonto3)}
                         </td>
                         <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
+                          {line.sourceVatRate == null ? '-' : numberFormatter.format(line.sourceVatRate)}
+                        </td>
+                        <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
                           {line.foreignUnitPrice && line.foreignUnitPrice > 0 ? numberFormatter.format(line.foreignUnitPrice) : '-'}
                         </td>
                         <td className={`${NDI_TABLE_CELL} text-right font-bold text-[var(--crm-app-text-muted)]`}>
@@ -2499,7 +2570,7 @@ export function NdiOrderTransferPage(): ReactElement {
 
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-300 dark:border-white/20 bg-[var(--crm-app-panel-muted)] p-4">
             <div className="text-sm font-bold text-[var(--crm-app-text-muted)]">
-              Seçilen irsaliye satırları kural listesine göre seri, KDV, depo ve ek alan bilgileriyle aktarım önizlemesine hazırlanır.
+              Seçilen irsaliyelerin tüm satırları; seri, KDV, depo ve ek alan kurallarıyla birlikte tek paket olarak hazırlanır.
             </div>
             <button
               type="button"
@@ -2871,10 +2942,11 @@ function PreparedLinesTable({
 }): ReactElement {
   return (
     <div className={`overflow-auto rounded-md border border-[#d7e1ef] bg-white ${maxHeightClass}`}>
-      <table className="w-full min-w-[1320px] text-xs">
+      <table className="w-full min-w-[1460px] text-xs">
         <thead className="sticky top-0 z-10 bg-[#edf3fb] text-left font-black uppercase tracking-[0.08em] text-[#536780]">
           <tr>
             <th className="px-3 py-2">İrsaliye</th>
+            <th className="px-3 py-2">Sipariş No</th>
             <th className="px-3 py-2">Stok</th>
             <th className="px-3 py-2 text-right">Kaynak</th>
             <th className="px-3 py-2 text-right">Aktarım</th>
@@ -2886,13 +2958,14 @@ function PreparedLinesTable({
             <th className="px-3 py-2 text-right">Kur</th>
             <th className="px-3 py-2">Kaynak Depo</th>
             <th className="px-3 py-2">Hedef Depo</th>
-            <th className="px-3 py-2">Ön Kontrol KDV</th>
+            <th className="px-3 py-2 text-right">Kaynak KDV %</th>
           </tr>
         </thead>
         <tbody>
           {lines.map((line) => (
             <tr key={line.id} className="border-t border-[#e4ebf4]">
               <td className="px-3 py-2 font-black text-[#172033]">{line.orderNo}</td>
+              <td className="px-3 py-2 font-bold text-[#42536b]">{line.sourceOrderNumber || '-'}</td>
               <td className="px-3 py-2">
                 <div className="font-black text-[#e11d73]">{line.stockCode}</div>
                 <div className="line-clamp-1 font-bold text-[#42536b]">{line.stockName}</div>
@@ -2924,7 +2997,9 @@ function PreparedLinesTable({
               </td>
               <td className="px-3 py-2 font-bold text-[#42536b]">{line.sourceWarehouse}</td>
               <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetWarehouse}</td>
-              <td className="px-3 py-2 font-bold text-[#42536b]">{line.targetVat ?? '-'}</td>
+              <td className="px-3 py-2 text-right font-bold text-[#42536b]">
+                {line.sourceVatRate == null ? '-' : numberFormatter.format(line.sourceVatRate)}
+              </td>
             </tr>
           ))}
         </tbody>
