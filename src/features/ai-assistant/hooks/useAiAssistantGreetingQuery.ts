@@ -10,18 +10,20 @@ export const AI_ASSISTANT_QUERY_KEYS = {
   conversations: (branchKey: string) => ['ai-assistant', 'conversations', branchKey] as const,
 };
 
-export function useAiAssistantCapabilitiesQuery(): ReturnType<typeof useQuery<AiAssistantCapabilitiesDto>> {
+export function useAiAssistantCapabilitiesQuery(enabled = true): ReturnType<typeof useQuery<AiAssistantCapabilitiesDto>> {
   return useQuery({
     queryKey: AI_ASSISTANT_QUERY_KEYS.capabilities,
-    queryFn: aiAssistantApi.getCapabilities,
+    queryFn: ({ signal }) => aiAssistantApi.getCapabilities(signal),
+    enabled,
     staleTime: 15 * 60 * 1000,
   });
 }
 
-export function useAiAssistantGreetingQuery(): ReturnType<typeof useQuery<AiAssistantGreetingDto>> {
+export function useAiAssistantGreetingQuery(enabled = true): ReturnType<typeof useQuery<AiAssistantGreetingDto>> {
   return useQuery({
     queryKey: AI_ASSISTANT_QUERY_KEYS.greeting,
-    queryFn: aiAssistantApi.getGreeting,
+    queryFn: ({ signal }) => aiAssistantApi.getGreeting(signal),
+    enabled,
     staleTime: 5 * 60 * 1000,
   });
 }
