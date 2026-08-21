@@ -1,13 +1,15 @@
 import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
+import { useAppShellStore } from '@/stores/app-shell-store';
 import { notificationService } from '../services/notification-service';
 
 export function useNotificationConnection(): void {
   const token = useAuthStore((state) => state.token);
   const userId = useAuthStore((state) => state.user?.id ?? null);
+  const bootstrapStatus = useAppShellStore((state) => state.bootstrapStatus);
 
   useEffect(() => {
-    const shouldConnect = !!token && !!userId;
+    const shouldConnect = !!token && !!userId && bootstrapStatus === 'ready';
     let isCurrentEffect = true;
 
     if (shouldConnect) {
@@ -25,5 +27,5 @@ export function useNotificationConnection(): void {
     return () => {
       isCurrentEffect = false;
     };
-  }, [token, userId]);
+  }, [bootstrapStatus, token, userId]);
 }
